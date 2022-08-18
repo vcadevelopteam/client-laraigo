@@ -213,6 +213,34 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
         }
     }, [countnewmessages, dispatch, item, setTicketSelected, t, ticketnum, userType, waitingcustomermessage])
 
+    React.useEffect(() => {
+        if (callVoxiTmp.type === "INBOUND" && statusCall === "CONNECTING") {
+            setWaitingDate(new Date().toISOString())
+            setTimeWaiting(0);
+        }
+    }, [callVoxiTmp, statusCall])
+
+    React.useEffect(() => {
+        if (timeWaiting >= 0 && (secondsToAnwserCall || 0) > 0) {
+
+            if (timeWaiting >= (secondsToAnwserCall || 0) && (callVoxiTmp.type === "INBOUND" && statusCall === "CONNECTING")) {
+                dispatch(answerCall({ call: callVoxi!!, conversationid }));
+                setWaitingDate(null);
+                setTimeWaiting(-1);
+                return;
+            }
+            if (callVoxiTmp.type === "INBOUND" && statusCall === "CONNECTING") {
+                setTimeout(() => {
+                    setTimeWaiting(getSecondsUntelNow(convertLocalDate(waitingDate)));
+                }, 1000)
+            } else {
+                setTimeWaiting(-1);
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [timeWaiting]);
+
+
     return (
         <div
             className={clsx(classes.containerItemTicket, {

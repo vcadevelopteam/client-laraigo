@@ -37,7 +37,7 @@ export const ChannelAddBlogger: FC<{ setOpenWarning: (param: any) => void }> = (
     const exchangeCodeResult = useSelector(state => state.google.requestExchangeCode);
     const listBloggerResult = useSelector(state => state.google.requestListBlogger);
 
-    const { commonClasses, deleteChannel, finishreg, foreground, selectedChannels, setForeground, submitObservable, } = useContext(SubscriptionContext);
+    const { commonClasses, deleteChannel, foreground, setForeground, submitObservable, } = useContext(SubscriptionContext);
     const { getValues, setValue, register, unregister, formState: { errors }, trigger } = useFormContext<MainData>();
 
     const [channellist, setChannellist] = useState([]);
@@ -174,7 +174,7 @@ export const ChannelAddBlogger: FC<{ setOpenWarning: (param: any) => void }> = (
         if (waitExchange) {
             if (!exchangeCodeResult.loading) {
                 if (!exchangeCodeResult.error) {
-                    dispatch(showSnackbar({ show: true, severity: 'success', message: t(langKeys.success) }));
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
                     if (exchangeCodeResult.data) {
                         setValue('channels.blogger.accesstoken', exchangeCodeResult.data.access_token);
                         setValue('channels.blogger.idtoken', exchangeCodeResult.data.id_token);
@@ -191,7 +191,7 @@ export const ChannelAddBlogger: FC<{ setOpenWarning: (param: any) => void }> = (
                     }
                 }
                 else {
-                    dispatch(showSnackbar({ show: true, severity: 'error', message: t(((exchangeCodeResult.msg || exchangeCodeResult.message) || exchangeCodeResult.code) || 'error_unexpected_error') }));
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(((exchangeCodeResult.msg || exchangeCodeResult.message) || exchangeCodeResult.code) || 'error_unexpected_error') }));
                 }
                 dispatch(showBackdrop(false));
                 setWaitExchange(false);
@@ -203,7 +203,7 @@ export const ChannelAddBlogger: FC<{ setOpenWarning: (param: any) => void }> = (
         if (waitList) {
             if (!listBloggerResult.loading) {
                 if (!listBloggerResult.error) {
-                    dispatch(showSnackbar({ show: true, severity: 'success', message: t(langKeys.success) }));
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
                     if (listBloggerResult.data) {
                         if (listBloggerResult.data.items) {
                             setChannellist(listBloggerResult.data.items);
@@ -211,7 +211,7 @@ export const ChannelAddBlogger: FC<{ setOpenWarning: (param: any) => void }> = (
                     }
                 }
                 else {
-                    dispatch(showSnackbar({ show: true, severity: 'error', message: t(((listBloggerResult.msg || listBloggerResult.message) || listBloggerResult.code) || 'error_unexpected_error') }));
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(((listBloggerResult.msg || listBloggerResult.message) || listBloggerResult.code) || 'error_unexpected_error') }));
                 }
                 dispatch(showBackdrop(false));
                 setWaitList(false);

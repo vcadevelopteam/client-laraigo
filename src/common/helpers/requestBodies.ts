@@ -24,7 +24,7 @@ export const getOrgUserSel = (userid: number, orgid: number): IRequestBody => ({
 export const callUpdateToken = (): IRequestBody => ({
     method: "UFN_TEST",
     key: "UFN_TEST",
-    parameters: { }
+    parameters: {}
 })
 export const getConversationSelVoxi = (): IRequestBody => ({
     method: "UFN_CONVERSATION_SEL_VOXI",
@@ -251,10 +251,10 @@ export const getWhitelistSel = (whitelistid: number): IRequestBody => ({
     }
 });
 
-export const insWhitelist = ({ id, operation, documenttype,phone, documentnumber, usergroup, type, status, username }: Dictionary): IRequestBody => ({
+export const insWhitelist = ({ id, operation, documenttype, phone, documentnumber, usergroup, type, status, username }: Dictionary): IRequestBody => ({
     method: "UFN_WHITELIST_INS",
     key: "UFN_WHITELIST_INS",
-    parameters: { id, operation, documenttype,phone: phone.toString()||"", documentnumber: documentnumber.toString(), usergroup, type, status, asesorname: username }
+    parameters: { id, operation, documenttype, phone: phone.toString() || "", documentnumber: documentnumber.toString(), usergroup, type, status, asesorname: username }
 });
 
 export const getInappropriateWordsSel = (id: number): IRequestBody => ({
@@ -1949,7 +1949,7 @@ export const getdashboardoperativoEncuesta2Seldata = ({ startdate, enddate, chan
     }
 });
 
-export const getPropertySelByName = (propertyname: string, key=""): IRequestBody => ({
+export const getPropertySelByName = (propertyname: string, key = ""): IRequestBody => ({
     method: 'UFN_PROPERTY_SELBYNAME',
     key: `UFN_PROPERTY_SELBYNAME${key}`,
     parameters: {
@@ -2010,6 +2010,10 @@ export const getPropertyConfigurationsBody = (): IRequestBody[] => ([
     {
         method: "UFN_PROPERTY_SELBYNAME",
         parameters: { propertyname: 'WAITINGREPETITIVEMESSAGE' },
+    },
+    {
+        method: "UFN_PROPERTY_SELBYNAME",
+        parameters: { propertyname: 'AMBIENTE' },
     },
 ]);
 
@@ -3092,9 +3096,9 @@ export const getDisconnectionDataTimes = ({ startdate, enddate, asesorid, superv
     key: "UFN_DASHBOARD_DISCONNECTIONTIMES_DATA_SEL",
     parameters: {
         startdate,
-        enddate, 
+        enddate,
         asesorid,
-        supervisorid, 
+        supervisorid,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
@@ -3155,15 +3159,16 @@ export const getPropertiesIncludingName = (propertyname: string): IRequestBody =
     }
 })
 
-export const selCommunicationChannelWhatsApp = (): IRequestBody => ({
-    method: "UFN_COMMUNICATIONCHANNEL_SEL_WHATSAPP",
-    key: "UFN_COMMUNICATIONCHANNEL_SEL_WHATSAPP",
-    parameters: {}
-})
 export const deleteClassificationTree = (id: number): IRequestBody => ({
     method: "UFN_CLASSIFICATION_DEL",
     key: "UFN_CLASSIFICATION_DEL",
     parameters: {
         id
     }
+})
+
+export const selCommunicationChannelWhatsApp = (): IRequestBody => ({
+    method: "UFN_COMMUNICATIONCHANNEL_SEL_WHATSAPP",
+    key: "UFN_COMMUNICATIONCHANNEL_SEL_WHATSAPP",
+    parameters: {}
 })

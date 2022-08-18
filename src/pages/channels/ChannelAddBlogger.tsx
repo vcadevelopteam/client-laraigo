@@ -140,7 +140,7 @@ export const ChannelAddBlogger: FC = () => {
         if (waitExchange) {
             if (!exchangeCodeResult.loading) {
                 if (!exchangeCodeResult.error) {
-                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.success) }));
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
                     if (exchangeCodeResult.data) {
                         let partialFields = fields;
                         partialFields.service.accesstoken = exchangeCodeResult.data.access_token;
@@ -159,7 +159,7 @@ export const ChannelAddBlogger: FC = () => {
                     }
                 }
                 else {
-                    dispatch(showSnackbar({ show: true, success: false, message: t(((exchangeCodeResult.msg || exchangeCodeResult.message) || exchangeCodeResult.code) || 'error_unexpected_error') }));
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(((exchangeCodeResult.msg || exchangeCodeResult.message) || exchangeCodeResult.code) || 'error_unexpected_error') }));
                 }
                 dispatch(showBackdrop(false));
                 setWaitExchange(false);
@@ -171,7 +171,7 @@ export const ChannelAddBlogger: FC = () => {
         if (waitList) {
             if (!listBloggerResult.loading) {
                 if (!listBloggerResult.error) {
-                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.success) }));
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
                     if (listBloggerResult.data) {
                         if (listBloggerResult.data.items) {
                             setChannellist(listBloggerResult.data.items);
@@ -179,7 +179,7 @@ export const ChannelAddBlogger: FC = () => {
                     }
                 }
                 else {
-                    dispatch(showSnackbar({ show: true, success: false, message: t(((listBloggerResult.msg || listBloggerResult.message) || listBloggerResult.code) || 'error_unexpected_error') }));
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(((listBloggerResult.msg || listBloggerResult.message) || listBloggerResult.code) || 'error_unexpected_error') }));
                 }
                 dispatch(showBackdrop(false));
                 setWaitList(false);
