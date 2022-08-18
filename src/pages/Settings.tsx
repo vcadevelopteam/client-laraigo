@@ -311,9 +311,9 @@ const Settings: FC = () => {
     const history = useHistory();
     const dispatch = useDispatch();
     const user = useSelector(state => state.login.validateToken.user);
+    console.log(user)
     const setting = useSelector(state => state.setting.setting);
     const propertySettings = useSelector(state => state.setting.propertySettings);
-    const [ambiente, setAmbiente] = useState("");
 
     useEffect(() => {
         dispatch(getSetting(getCountConfigurationsBody()));
@@ -326,9 +326,6 @@ const Settings: FC = () => {
     }, [dispatch]);
 
     useEffect(() => {
-        if (!propertySettings.loading && !propertySettings.error){
-            setAmbiente(propertySettings?.data?.[9]?.data?.[0]?.propertyvalue||"");
-        }        
         if (propertySettings.error === true) {
             dispatch(showSnackbar({
                 message: propertySettings.message || 'Error',
@@ -625,7 +622,7 @@ const Settings: FC = () => {
                         </Grid> 
                     </Grid>
                     
-                    {(ambiente!=="CLARO") &&
+                    {(user.properties.environment!=="CLARO") &&
                     <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
                         <Grid container direction="column">
                             <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
@@ -665,7 +662,7 @@ const Settings: FC = () => {
                             </Grid>
                         </Grid>
                     </Grid>
-                    {(ambiente!=="CLARO") &&
+                    {(user.properties.environment!=="CLARO") &&
                     <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
                         <Grid container direction="column">
                             <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
