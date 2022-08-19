@@ -573,7 +573,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                         setValue('newUserId', value ? value.userid : 0);
                     }}
                     error={errors?.newUserId?.message}
-                    data={agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && (getValues('newUserGroup') ? (x.groups || "").split(",").includes(getValues('newUserGroup')) : (user?.properties.limit_reassign_group ? groups.some(y => (x.groups || "").split(",").includes(y)) : true) ) )}
+                    data={agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && (getValues('newUserGroup') ? (x.groups || "").split(",").includes(getValues('newUserGroup')) : (user?.properties.limit_reassign_group && groups.length > 0 ? groups.some(y => (x.groups || "").split(",").includes(y)) : true) ) )}
                     optionDesc="displayname"
                     optionValue="userid"
                 />
