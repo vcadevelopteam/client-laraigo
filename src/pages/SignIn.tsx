@@ -177,12 +177,15 @@ const SignIn = () => {
     useEffect(() => {
         if (getAccessToken()) {
             history.push('/');
+        } else {
+            localStorage.removeItem("firstLoad")
         }
     }, [])
 
     useEffect(() => {
         if (!resLogin.error && resLogin.user && getAccessToken()) {
             dispatch(connectAgentUI(resLogin.user.automaticConnection!!))
+            localStorage.setItem("firstLoad", "1") //para saber si lanzar el automatic connection cuando el get user haya terminado
             window.open(resLogin.user.redirect ? resLogin.user.redirect : "/supervisor", "_self");
         }
     }, [resLogin]);
