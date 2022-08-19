@@ -88,7 +88,6 @@ const MessageInbox: React.FC = () => {
             getPropertySelByName("TIPIFICACION"),
             getUserChannelSel(),
             getPropertiesIncludingName("WAITINGTIMECUSTOMER"),
-            getPropertySelByName("LIMITARREASIGNACIONGRUPO","_LIMITARREASIGNACIONGRUPO"),
         ]))
         dispatch(getMultiCollectionAux2([
             getValuesFromDomainLight("MOTIVOCIERRE"),

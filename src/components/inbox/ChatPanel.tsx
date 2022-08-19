@@ -454,7 +454,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     const user = useSelector(state => state.login.validateToken.user);
     const groups = user?.groups?.split(",") || [];
 
-    const [usergroupslist, setusergroupslist] = useState<Dictionary[]>([])
+    const [userToReassign, setUserToReassign] = useState<Dictionary[]>([])
     const userType = useSelector(state => state.inbox.userType);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const reassigningRes = useSelector(state => state.inbox.triggerReassignTicket);
@@ -531,15 +531,11 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
 
     useEffect(() => {
         if (user) {
-            if(!(multiData.data.filter(x=>x.key==="UFN_PROPERTY_SELBYNAME_LIMITARREASIGNACIONGRUPO")?.[0]?.data?.[0]?.propertyvalue==="1"||false)){
-                setusergroupslist((multiData?.data?.[3]?.data || []))
-            }else{
-                const groups = user?.groups ? user?.groups.split(",") : [];
-                if (user.properties.limit_reassign_group) {
-                    setusergroupslist((multiData?.data?.[3]?.data || []).filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true))
-                } else {
-                    setusergroupslist((multiData?.data?.[3]?.data || []))
-                }
+            const groups = user?.groups ? user?.groups.split(",") : [];
+            if (user.properties.limit_reassign_group) {
+                setUserToReassign((multiData?.data?.[3]?.data || []).filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true))
+            } else {
+                setUserToReassign((multiData?.data?.[3]?.data || []))
             }
         }
     }, [user, multiData])
@@ -565,7 +561,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                         trigger('newUserId');
                     }}
                     error={errors?.newUserGroup?.message}
-                    data={usergroupslist}
+                    data={userToReassign}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />
@@ -577,18 +573,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                         setValue('newUserId', value ? value.userid : 0);
                     }}
                     error={errors?.newUserId?.message}
-                    data={agentToReassignList.filter(x=>{
-                        if(!(multiData.data.filter(x=>x.key==="UFN_PROPERTY_SELBYNAME_LIMITARREASIGNACIONGRUPO")?.[0]?.data?.[0]?.propertyvalue==="1"||false)){
-                            if(getValues("newUserGroup")===""){
-                                return true
-                            }else{
-                                return (x.status === "ACTIVO" && x.groups.includes(getValues("newUserGroup")))
-                            }
-                        }else{
-                            return (x.status === "ACTIVO" && x.groups.includes(getValues("newUserGroup")))
-                        }
-                    })
-                    }
+                    data={agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && (getValues('newUserGroup') ? (x.groups || "").split(",").includes(getValues('newUserGroup')) : (user?.properties.limit_reassign_group ? groups.some(y => (x.groups || "").split(",").includes(y)) : true) ) )}
                     optionDesc="displayname"
                     optionValue="userid"
                 />
