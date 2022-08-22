@@ -118,6 +118,10 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
     const multiData = useSelector(state => state.main.multiData);
     const [dateToClose, setDateToClose] = useState<Date | null>(null)
     const data14 = React.useRef<Dictionary[] | null>(null)
+    
+    // const refreshToken = React.useRef<number>(-1)
+    const [refreshToken, setRefreshToken] = useState(-1)
+
     const dictAutoClose = useSelector(state => state.login.validateToken.user?.properties?.auto_close);
     const secondsToAnwserCall = useSelector(state => state.login.validateToken.user?.properties?.seconds_to_answer_call);
     const statusCall = useSelector(state => state.voximplant?.statusCall);
@@ -166,17 +170,18 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dictAutoClose, dictAutoCloseHolding, countnewmessages, userType, agentSelected?.userid, communicationchannelid, lastreplyuser])
-
+    
     useEffect(() => {
         let timer = null;
         if (statusCall === "CONNECTED") {
             timer = setTimeout(() => {
+                setRefreshToken(refreshToken * -1)
                 dispatch(getCollectionAux(callUpdateToken()))
             }, 30000)
         } else {
             timer && clearTimeout(timer);
         }
-    }, [dispatch, statusCall])
+    }, [dispatch, statusCall, refreshToken])
 
     const validateTime = React.useCallback((time: number) => {
         if (userType === "AGENT" && (countnewmessages || 0) > 0) {
