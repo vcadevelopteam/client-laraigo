@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 const ENV = "DEVELOP";
+=======
+const ENV = "TESTING";
+>>>>>>> feature/RLACL034
 
 const APIS_URL = {
     DEVELOP: {
