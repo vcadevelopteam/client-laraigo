@@ -3,18 +3,20 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect } from 'components';
 import { getWhitelistSel, getValuesFromDomain, insWhitelist } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
+import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
+import { getCollection, resetAllMain, getMultiCollection, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
+import paths from 'common/constants/paths';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -28,12 +30,9 @@ interface DetailWhitelistProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
-    fetchData: () => void
+    fetchData: () => void;
+    arrayBread: any;
 }
-const arrayBread = [
-    { id: "view-1", name: "Whitelist" },
-    { id: "view-2", name: "Whitelist Detail" }
-];
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -49,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DetailWhitelist: React.FC<DetailWhitelistProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+const DetailWhitelist: React.FC<DetailWhitelistProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData,arrayBread }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
@@ -63,6 +62,7 @@ const DetailWhitelist: React.FC<DetailWhitelistProps> = ({ data: { row, edit }, 
             type: 'NINGUNO',
             id: row ? row.whitelistid : 0,
             username: row ? (row.username || '') : '',
+            phone: row ? (row.phone || '') : '',
             documenttype: row ? (row.documenttype || '') : '',
             documentnumber: row ? row.documentnumber : 0,
             usergroup: row ? row.usergroup : "",
@@ -76,6 +76,7 @@ const DetailWhitelist: React.FC<DetailWhitelistProps> = ({ data: { row, edit }, 
         register('id');
         register('username', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('documenttype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('phone', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('documentnumber', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('usergroup', { validate: (value) => (value && value.length ) || t(langKeys.field_required) });
     }, [edit, register]);
@@ -83,13 +84,13 @@ const DetailWhitelist: React.FC<DetailWhitelistProps> = ({ data: { row, edit }, 
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.whitelist).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
@@ -116,7 +117,7 @@ const DetailWhitelist: React.FC<DetailWhitelistProps> = ({ data: { row, edit }, 
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
+                            breadcrumbs={[...arrayBread, { id: "view-2", name: t(langKeys.whitelist) + " " + t(langKeys.detail) }]}
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
@@ -147,64 +148,53 @@ const DetailWhitelist: React.FC<DetailWhitelistProps> = ({ data: { row, edit }, 
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.username)} 
-                                className="col-6"
-                                onChange={(value) => setValue('username', value)}
-                                valueDefault={row ? (row.username || "") : ""}
-                                error={errors?.username?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.username)}
-                                value={row ? (row.username || "") : ""}
-                                className="col-6"
-                            />}
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.documenttype)} 
-                                className="col-6"
-                                onChange={(value) => setValue('documenttype', value)}
-                                valueDefault={row ? (row.documenttype || "") : ""}
-                                error={errors?.documenttype?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.documenttype)}
-                                value={row ? (row.documenttype || "") : ""}
-                                className="col-6"
-                            />}
+                        <FieldEdit
+                            label={t(langKeys.username)} 
+                            className="col-6"
+                            onChange={(value) => setValue('username', value)}
+                            valueDefault={row ? (row.username || "") : ""}
+                            error={errors?.username?.message}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.phone)} 
+                            className="col-6"
+                            onChange={(value) => setValue('phone', value ? parseInt(value) : 0)}
+                            valueDefault={row ? (row.phone || "") : ""}
+                            type="number"
+                            error={errors?.phone?.message}
+                        />
                     </div>
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.documentnumber)} 
-                                error={errors?.documentnumber?.message}
-                                onChange={(value) => setValue('documentnumber', value ? parseInt(value) : 0)}
-                                type="number"
-                                className="col-6"
-                                valueDefault={row ? (row.documentnumber || "") : ""}
-                            />
-                            : <FieldView
-                                label={t(langKeys.documentnumber)}
-                                value={row ? (row.documentnumber || "") : ""}
-                                className="col-6"
-                            />}
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.usergroup)}                                
-                                className="col-6"
-                                valueDefault={row ? (row.usergroup || "") : ""}
-                                onChange={(value) => setValue('usergroup', (value?value.domainvalue:""))}
-                                error={errors?.usergroup?.message}
-                                data={dataDomain}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            />
-                            : <FieldView
-                                label={t(langKeys.usergroup)}
-                                value={row ? (row.domaindesc || "") : ""}
-                                className="col-6"
-                            />}
+                        <FieldSelect
+                            label={t(langKeys.documenttype)}                                
+                            className="col-6"
+                            valueDefault={row ? (row.documenttype || "") : ""}
+                            onChange={(value) => setValue('documenttype', (value?value.domainvalue:""))}
+                            error={errors?.usergroup?.message}
+                            data={[{domainvalue: "DNI"},{domainvalue: "RUC"}]}
+                            optionDesc="domainvalue"
+                            optionValue="domainvalue"
+                        />
+                        <FieldEdit
+                            label={t(langKeys.documentnumber)} 
+                            error={errors?.documentnumber?.message}
+                            onChange={(value) => setValue('documentnumber', value ? parseInt(value) : 0)}
+                            type="number"
+                            className="col-6"
+                            valueDefault={row ? (row.documentnumber || "") : ""}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldSelect
+                            label={t(langKeys.usergroup)}                                
+                            className="col-6"
+                            valueDefault={row ? (row.usergroup || "") : ""}
+                            onChange={(value) => setValue('usergroup', (value?value.domainvalue:""))}
+                            error={errors?.usergroup?.message}
+                            data={dataDomain}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
                     </div>
                     
                 </div>
@@ -214,7 +204,7 @@ const DetailWhitelist: React.FC<DetailWhitelistProps> = ({ data: { row, edit }, 
 }
 
 const Whitelist: FC = () => {
-    // const history = useHistory();
+    const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
@@ -224,12 +214,19 @@ const Whitelist: FC = () => {
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
 
+    const arrayBread = [
+        { id: "view-0", name: t(langKeys.configuration_plural) },
+        { id: "view-1", name: t(langKeys.whitelist)}
+    ];
+
     const columns = React.useMemo(
         () => [
             {
                 accessor: 'userid',
                 NoFilter: true,
                 isComponent: true,
+                minWidth: 60,
+                width: '1%',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
@@ -258,6 +255,11 @@ const Whitelist: FC = () => {
                 NoFilter: true
             },
             {
+                Header: t(langKeys.phone),
+                accessor: 'phone',
+                NoFilter: true
+            },
+            {
                 Header: t(langKeys.usergroup),
                 accessor: 'usergroup',
                 NoFilter: true
@@ -273,20 +275,20 @@ const Whitelist: FC = () => {
         fetchData();
         dispatch(getMultiCollection([getValuesFromDomain("GRUPOS"), getValuesFromDomain("ESTADOGENERICO")]));
         return () => {
-            dispatch(resetMain());
+            dispatch(resetAllMain());
         };
     }, []);
 
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.whitelist).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
@@ -321,29 +323,57 @@ const Whitelist: FC = () => {
             callback
         }))
     }
+    function redirectFunc(view:string){
+        if(view ==="view-0"){
+            history.push(paths.CONFIGURATION)
+            return;
+        }
+        setViewSelected(view)
+    }
 
     if (viewSelected === "view-1") {
 
         return (
-            <TableZyx
-                columns={columns}
-                titlemodule={t(langKeys.whitelist, { count: 2 })}
-                data={mainResult.mainData.data}
-                download={true}
-                loading={mainResult.mainData.loading}
-                register={true}
-                handleRegister={handleRegister}
-            // fetchData={fetchData}
-            />
+            <div style={{width:"100%"}}>
+                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={arrayBread}
+                            handleClick={redirectFunc}
+                        />
+                </div>
+                <TableZyx
+                    columns={columns}
+                    titlemodule={t(langKeys.whitelist, { count: 2 })}
+                    data={mainResult.mainData.data}
+                    download={true}
+                    onClickRow={handleEdit}
+                    ButtonsElement={() => (
+                        <Button
+                            disabled={mainResult.mainData.loading}
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => history.push(paths.CONFIGURATION)}
+                        >{t(langKeys.back)}</Button>
+                    )}
+                    loading={mainResult.mainData.loading}
+                    register={true}
+                    handleRegister={handleRegister}
+                // fetchData={fetchData}
+                />
+            </div>
         )
     }
     else if (viewSelected === "view-2") {
         return (
             <DetailWhitelist
                 data={rowSelected}
-                setViewSelected={setViewSelected}
+                setViewSelected={redirectFunc}
                 multiData={mainResult.multiData.data}
                 fetchData={fetchData}
+                arrayBread={arrayBread}
             />
         )
     } else

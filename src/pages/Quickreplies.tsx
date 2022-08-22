@@ -7,7 +7,7 @@ import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, 
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { getQuickrepliesSel, getValuesFromDomain, insQuickreplies, getValuesForTree, uploadExcel, getParentSel, exportExcel, templateMaker } from 'common/helpers';
+import { getQuickrepliesSel, getValuesFromDomain, insQuickreplies, getValuesForTree, uploadExcel, getParentSel, exportExcel, templateMaker,deleteClassificationTree } from 'common/helpers';
 import { EmojiPickerZyx } from 'components'
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import { Dictionary } from "@types";
@@ -17,14 +17,20 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute, getMultiCollectionAux } from 'store/main/actions';
+import { getCollection, resetAllMain, getMultiCollection, execute, getMultiCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 import ClearIcon from '@material-ui/icons/Clear';
 import { TreeItem, TreeView } from '@material-ui/lab';
-import { IconButton, Input, InputAdornment, InputLabel } from '@material-ui/core';
+import { IconButton, Input, InputAdornment, InputLabel, Menu, MenuItem } from '@material-ui/core';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import { DetailTipification } from './Tipifications';
+import { useHistory } from 'react-router-dom';
+import paths from 'common/constants/paths';
+import {
+    MoreVert as MoreVertIcon,
+} from '@material-ui/icons';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -40,11 +46,8 @@ interface DetailQuickreplyProps {
     multiData: MultiData[];
     fetchData: () => void
     fetchMultiData: () => void;
+    arrayBread: any;
 }
-const arrayBread = [
-    { id: "view-1", name: "Quickreplies" },
-    { id: "view-2", name: "Quickreply detail" }
-];
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
@@ -68,12 +71,15 @@ const useStyles = makeStyles((theme) => ({
         height: 240,
         flexGrow: 1,
         maxWidth: 400,
-    }
+    },
+    treelabels: {display:"flex",justifyContent:"space-between"}
 }));
 
-const TreeItemsFromData2: React.FC<{ dataClassTotal: Dictionary}> = ({ dataClassTotal }) => {
+const TreeItemsFromData2: React.FC<{ dataClassTotal: Dictionary,setAnchorEl: (param: any) => void, setonclickdelete:(param: any) => void}> = ({ dataClassTotal,setAnchorEl,setonclickdelete }) => {
     const parents: any[] = []
     const children: any[] = []
+    const classes = useStyles();
+    
 
     dataClassTotal.forEach((x: Dictionary) => {
         if (x.parent === 0) {
@@ -81,7 +87,8 @@ const TreeItemsFromData2: React.FC<{ dataClassTotal: Dictionary}> = ({ dataClass
                 key: x.classificationid,
                 nodeId: x.classificationid.toString(),
                 label: x.description.toString(),
-                children: x.haschildren
+                children: x.haschildren,
+                quickreplies: x.quickreplies
             }
             parents.push(item)// = [...parents, item])
         } else {
@@ -90,22 +97,43 @@ const TreeItemsFromData2: React.FC<{ dataClassTotal: Dictionary}> = ({ dataClass
                 nodeId: x.classificationid?.toString(),
                 label: x.description?.toString(),
                 children: x.haschildren,
-                father: x.parent
+                father: x.parent,
+                quickreplies: x.quickreplies
             }
             children.push(item)
         }
     })
+    function Loadchildren(id: number) {
 
-    function loadchildren(id: number) {
         return children.map(x => {
             if (x.father === id) {
                 return (
                     <TreeItem
                         key={x.key}
                         nodeId={String(x.nodeId)}
-                        label={x.label}
+                        label={
+                        <div className={classes.treelabels}>
+                            <div>{x.label}</div>
+                            <div>
+                            {(!x.children) && 
+                                <IconButton
+                                    onClick={(event)=>{setAnchorEl(event.currentTarget);setonclickdelete(x)}}
+                                    size="small"
+                                >
+                                <MoreVertIcon
+                                    style={{ cursor: 'pointer' }}
+                                    aria-label="more"
+                                    aria-controls="long-menu"
+                                    aria-haspopup="true"
+                                    color="action"
+                                    fontSize="small"
+                                />
+                                </IconButton>
+                            }
+                            </div>
+                        </div>}
                     >
-                        {x.children ? loadchildren(x.key) : null}
+                        {x.children ? Loadchildren(x.key) : null}
                     </TreeItem>
                 )
             }
@@ -118,17 +146,39 @@ const TreeItemsFromData2: React.FC<{ dataClassTotal: Dictionary}> = ({ dataClass
                 <TreeItem
                     key={x.key}
                     nodeId={String(x.nodeId)}
-                    label={x.label}
+                    label={
+                        <div className={classes.treelabels}>
+                            <div>{x.label}</div>
+                            <div>
+                            {(!x.children) && 
+                                <IconButton
+                                    onClick={(event)=>{setAnchorEl(event.currentTarget);setonclickdelete(x)}}
+                                    size="small"
+                                >
+                                <MoreVertIcon
+                                    style={{ cursor: 'pointer' }}
+                                    aria-label="more"
+                                    aria-controls="long-menu"
+                                    aria-haspopup="true"
+                                    color="action"
+                                    fontSize="small"
+                                />
+                                </IconButton>
+                            }
+                            </div>
+                        </div>}
                 >
-                    {x.children ? loadchildren(x.key) : null}
+                    {x.children ? Loadchildren(x.key) : null}
                 </TreeItem>)}
         </>
     )
 };
 
-const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary, setValueTmp: (p1: number) => void, setselectedlabel: (param: any) => void }> = ({ dataClassTotal, setValueTmp, setselectedlabel }) => {
+const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary, setValueTmp: (p1: number) => void, setselectedlabel: (param: any) => void ,setAnchorEl: (param: any) => void, 
+    setonclickdelete:(param: any) => void}> = ({ dataClassTotal, setValueTmp, setselectedlabel,setAnchorEl,setonclickdelete }) => {
     const parents: any[] = []
     const children: any[] = []
+    const classes = useStyles();
 
     dataClassTotal.forEach((x: Dictionary) => {
         if (x.parent === 0) {
@@ -136,7 +186,8 @@ const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary, setValueTmp: (p1
                 key: x.classificationid,
                 nodeId: x.classificationid.toString(),
                 label: x.description.toString(),
-                children: x.haschildren
+                children: x.haschildren,
+                quickreplies: x.quickreplies
             }
             parents.push(item)// = [...parents, item])
         } else {
@@ -145,7 +196,8 @@ const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary, setValueTmp: (p1
                 nodeId: x.classificationid.toString(),
                 label: x.description.toString(),
                 children: x.haschildren,
-                father: x.parent
+                father: x.parent,
+                quickreplies: x.quickreplies
             }
             children.push(item)
         }
@@ -156,17 +208,36 @@ const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary, setValueTmp: (p1
         setselectedlabel(x.label)
     }
 
-    function loadchildren(id: number) {
+    function Loadchildren(id: number) {
         return children.map(x => {
             if (x.father === id) {
                 return (
                     <TreeItem
                         key={x.key}
                         nodeId={String(x.nodeId)}
-                        label={x.label}
+                        label={<div className={classes.treelabels}>
+                        <div>{x.label}</div>
+                        <div>
+                        {(!x.children) && 
+                            <IconButton
+                                onClick={(event)=>{setAnchorEl(event.currentTarget);setonclickdelete(x)}}
+                                size="small"
+                            >
+                            <MoreVertIcon
+                                style={{ cursor: 'pointer' }}
+                                aria-label="more"
+                                aria-controls="long-menu"
+                                aria-haspopup="true"
+                                color="action"
+                                fontSize="small"
+                            />
+                            </IconButton>
+                        }
+                        </div>
+                    </div>}
                         onLabelClick={() => setselect(x)}
                     >
-                        {x.children ? loadchildren(x.key) : null}
+                        {x.children ? Loadchildren(x.key) : null}
                     </TreeItem>
                 )
             }
@@ -179,22 +250,47 @@ const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary, setValueTmp: (p1
                 <TreeItem
                     key={x.key}
                     nodeId={String(x.nodeId)}
-                    label={x.label}
+                    label={<div className={classes.treelabels}>
+                    <div>{x.label}</div>
+                    <div>
+                    {(!x.children) && 
+                        <IconButton
+                            onClick={(event)=>{setAnchorEl(event.currentTarget);setonclickdelete(x)}}
+                            size="small"
+                        >
+                        <MoreVertIcon
+                            style={{ cursor: 'pointer' }}
+                            aria-label="more"
+                            aria-controls="long-menu"
+                            aria-haspopup="true"
+                            color="action"
+                            fontSize="small"
+                        />
+                        </IconButton>
+                    }
+                    </div>
+                </div>}
                     onLabelClick={() => setselect(x)}
                 >
-                    {x.children ? loadchildren(x.key) : null}
+                    {x.children ? Loadchildren(x.key) : null}
                 </TreeItem>)}
         </>
     )
 };
 
-const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, fetchMultiData }) => {
+const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, fetchMultiData,arrayBread }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [selectedlabel, setselectedlabel] = useState(row ? row.classificationdesc : "")
     const [quickreply, setQuickreply] = useState(row ? row.quickreply : "")
     const executeRes = useSelector(state => state.main.execute);
     const multiDataAuxRes = useSelector(state => state.main.multiDataAux)
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [onclickdelete, setonclickdelete] = useState<any>(null);
+    const open = Boolean(anchorEl);
+    const handleCloseMenu = () => {
+        setAnchorEl(null);
+    };
 
     const dispatch = useDispatch();
 
@@ -238,13 +334,21 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
-                fetchData && fetchData();
-                dispatch(showBackdrop(false));
-                setViewSelected("view-1")
+                fetchMultiData();
+                if(open){
+                    setAnchorEl(null);
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))                    
+                    dispatch(showBackdrop(false));
+                }else{
+
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                    fetchData && fetchData();
+                    dispatch(showBackdrop(false));
+                    setViewSelected("view-1")
+                }
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.quickreplies).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
@@ -299,7 +403,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
+                            breadcrumbs={[...arrayBread,{ id: "view-2", name: `${t(langKeys.quickreply)} ${t(langKeys.detail)}` }]}
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
@@ -360,76 +464,51 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                     <Typography style={{ fontSize: 22, paddingBottom: "10px" }} color="textPrimary">{t(langKeys.quickreply)}</Typography>
 
                     <div className="row-zyx">
-                        {edit ?
-                            <TemplateSwitch
-                                label={t(langKeys.favorite)}
-                                className="col-12"
-                                valueDefault={row?.favorite || false}
-                                onChange={(value) => setValue('favorite', value)}
-                            /> :
-                            <FieldView
-                                label={t(langKeys.favorite)}
-                                value={row ? (row.value ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
-                                className="col-6"
-                            />
-                        }
+                        <TemplateSwitch
+                            label={t(langKeys.favorite)}
+                            className="col-12"
+                            valueDefault={row?.favorite || false}
+                            onChange={(value) => setValue('favorite', value)}
+                        /> 
                     </div>
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.summarize)}
-                                className="col-12"
-                                valueDefault={row?.description || ""}
-                                onChange={(value) => setValue('description', value)}
-                                error={errors?.description?.message}
-                            /> :
-                            <FieldView
-                                label={t(langKeys.summarize)}
-                                value={row?.description || ""}
-                                className="col-6"
-                            />}
+                        <FieldEdit
+                            label={t(langKeys.summarize)}
+                            className="col-12"
+                            valueDefault={row?.description || ""}
+                            onChange={(value) => setValue('description', value)}
+                            error={errors?.description?.message}
+                        /> 
                     </div>
                     <div className="row-zyx" style={{ position: 'relative' }}>
-                        {edit ?
-                            <>
-                                <FieldEditMulti
-                                    label={t(langKeys.detail)}
-                                    className="col-12"
-                                    valueDefault={quickreply}
-                                    onChange={(value) => setQuickreply(value)}
-                                    error={errors?.quickreply?.message}
-                                    maxLength={1024}
-                                />
-                                <EmojiPickerZyx
-                                    style={{ position: "absolute", bottom: "40px", display: 'flex', justifyContent: 'end', right: 16 }}
-                                    onSelect={e => setQuickreply(quickreply + e.native)} />
-
-                            </>
-                            : <FieldView
+                        <>
+                            <FieldEditMulti
                                 label={t(langKeys.detail)}
-                                value={row ? (row.quickreply || "") : ""}
                                 className="col-12"
-                            />}
+                                valueDefault={quickreply}
+                                onChange={(value) => setQuickreply(value)}
+                                error={errors?.quickreply?.message}
+                                maxLength={1024}
+                            />
+                            <EmojiPickerZyx
+                                style={{ position: "absolute", bottom: "40px", display: 'flex', justifyContent: 'end', right: 16 }}
+                                onSelect={e => setQuickreply(quickreply + e.native)} />
+
+                        </>
                     </div>
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.status)}
-                                className="col-12"
-                                valueDefault={row?.status || "ACTIVO"}
-                                onChange={(value) => setValue('status', value ? value.domainvalue : '')}
-                                error={errors?.status?.message}
-                                data={dataStatus}
-                                uset={true}
-                                prefixTranslation="status_"
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            />
-                            : <FieldView
-                                label={t(langKeys.status)}
-                                value={row ? (row.status || "") : ""}
-                                className="col-12"
-                            />}
+                        <FieldSelect
+                            label={t(langKeys.status)}
+                            className="col-12"
+                            valueDefault={row?.status || "ACTIVO"}
+                            onChange={(value) => setValue('status', value ? value.domainvalue : '')}
+                            error={errors?.status?.message}
+                            data={dataStatus}
+                            uset={true}
+                            prefixTranslation="status_"
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
                     </div>
 
                 </div>
@@ -439,8 +518,10 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                 title={t(langKeys.organizationclass)}
                 buttonText1={t(langKeys.select)}
                 buttonText2={t(langKeys.register)}
+                buttonText3={t(langKeys.clear)}
                 handleClickButton1={() => setOpenDialog(false)}
                 handleClickButton2={handleClassificationModal}
+                handleClickButton3={() => {setselectedlabel(""); setValue('classificationid', 0);setOpenDialog(false)}}
                 >
                 <TreeView
                     className={classes.treeviewroot}
@@ -451,8 +532,46 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                         dataClassTotal={dataClassTotal}
                         setValueTmp={(e) => setValue('classificationid', e)}
                         setselectedlabel={setselectedlabel}
+                        setAnchorEl={setAnchorEl}
+                        setonclickdelete={setonclickdelete}
                     />
                 </TreeView>
+                <Menu
+                    id="long-menu"
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleCloseMenu}
+                    PaperProps={{
+                        style: {
+                            maxHeight: 48 * 4.5,
+                            width: '20ch',
+                        },
+                    }}
+                >
+                    <MenuItem 
+                        onClick={() => {
+                            if(onclickdelete){
+                                if(onclickdelete?.quickreplies !== 0){
+                                    dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.warningnoquickreplies) }))  
+
+                                }else{
+                                    const callback = () => {
+                                        dispatch(execute(deleteClassificationTree(onclickdelete?.key||0)));
+                                        dispatch(showBackdrop(true));
+                                        setWaitSave(true);
+                                    }
+                                    dispatch(manageConfirmation({
+                                        visible: true,
+                                        question: t(langKeys.confirmation_delete),
+                                        callback
+                                    }))
+                                }
+                            }
+                        }}
+                    >
+                        <DeleteIcon style={{color:"rgb(119, 33, 173)"}}/>  {t(langKeys.delete)}
+                    </MenuItem>
+                </Menu>
                 <div className="row-zyx">
                 </div>
             </DialogZyx>
@@ -477,7 +596,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
 }
 
 const Quickreplies: FC = () => {
-    // const history = useHistory();
+    const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
@@ -489,6 +608,23 @@ const Quickreplies: FC = () => {
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
     const [insertexcel, setinsertexcel] = useState(false);
+    const arrayBread = [
+        { id: "view-0", name: t(langKeys.configuration_plural) },
+        { id: "view-1", name: t(langKeys.quickreply_plural) },
+    ];
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [onclickdelete, setonclickdelete] = useState<any>(null);
+    const open = Boolean(anchorEl);
+    const handleCloseMenu = () => {
+        setAnchorEl(null);
+    };
+    function redirectFunc(view:string){
+        if(view ==="view-0"){
+            history.push(paths.CONFIGURATION)
+            return;
+        }
+        setViewSelected(view)
+    }
 
     const columns = React.useMemo(
         () => [
@@ -516,7 +652,7 @@ const Quickreplies: FC = () => {
                 NoFilter: true
             },
             {
-                Header: t(langKeys.quickreply),
+                Header: t(langKeys.quickresponse),
                 accessor: 'quickreply',
                 NoFilter: true
             },
@@ -551,21 +687,23 @@ const Quickreplies: FC = () => {
         fetchData();
         fetchMultiData();
         return () => {
-            dispatch(resetMain());
+            dispatch(resetAllMain());
         };
     }, []);
 
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(insertexcel?langKeys.successful_edit: langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(insertexcel?langKeys.successful_edit: langKeys.successful_delete) }))
+                setAnchorEl(null);
+                fetchMultiData();
                 fetchData();
                 setinsertexcel(false)
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.quickreplies).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
@@ -604,11 +742,14 @@ const Quickreplies: FC = () => {
         setinsertexcel(true)
         const file = files[0];
         if (file) {
+            debugger
+            let classificationids = Object.keys(mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.description}), {}))
             let data: any = (await uploadExcel(file, undefined) as any[])
                 .filter((d: any) => !['', null, undefined].includes(d.summarize)
                     && !['', null, undefined].includes(d.detail)
-                    && Object.keys(mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.description}), {})).includes('' + d.classificationid)
+                    && classificationids.includes(d.classificationid.toString().trim().split('-')[0].split(' ')[0])
                 );
+            debugger
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
                 dispatch(execute({
@@ -619,13 +760,15 @@ const Quickreplies: FC = () => {
                         quickreply: x.detail, 
                         status: x.status || 'ACTIVO', 
                         favorite: x.favorite || false,
-                        classificationid: x.classificationid,
+                        classificationid: parseInt(x.classificationid.toString().trim().split('-')[0].split(' ')[0]),
                         operation: "INSERT",
                         type: 'NINGUNO',
                         id: 0,
                     }))
                 }, true));
                 setWaitSave(true)
+            }else{
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_invaliddata) }))
             }
         }
     }
@@ -645,61 +788,120 @@ const Quickreplies: FC = () => {
     if (viewSelected === "view-1") {
 
         return (
-            <Fragment>
-                <TableZyx
-                    columns={columns}
-                    titlemodule={t(langKeys.quickreplies, { count: 2 })}
-                    data={mainResult.mainData.data}
-                    download={true}
-                    loading={mainResult.mainData.loading}
-                    register={true}
-                    importCSV={importCSV}
-                    handleTemplate={handleTemplate}
-                    handleRegister={handleRegister}
-                    // fetchData={fetchData}
-                    ButtonsElement={()=>
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            style={{ backgroundColor: "#7721ad" }}
-                            onClick={() => setOpenDialog(true)}
-                            startIcon={<AccountTreeIcon color="secondary" />}
-                        >{t(langKeys.opendrilldown)}
-                        </Button>
-                    }
-                />
-                <DialogZyx
-                    open={openDialog}
-                    title={t(langKeys.organizationclass)}
-                    buttonText1={t(langKeys.close)}
-                    //buttonText2={t(langKeys.select)}
-                    handleClickButton1={() => setOpenDialog(false)}
-                    handleClickButton2={() => setOpenDialog(false)}
-                >   
-                    <TreeView
-                        className={classes.treeviewroot}
-                        defaultCollapseIcon={<ExpandMoreIcon />}
-                        defaultExpandIcon={<ChevronRightIcon />}
+            <div style={{width:"100%"}}>
+                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={arrayBread}
+                        handleClick={redirectFunc}
+                    />
+                </div>
+            
+                <Menu
+                    id="long-menu"
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleCloseMenu}
+                    PaperProps={{
+                        style: {
+                            maxHeight: 48 * 4.5,
+                            width: '20ch',
+                        },
+                    }}
+                >
+                    <MenuItem 
+                        onClick={() => {
+                            if(onclickdelete){
+                                if(onclickdelete?.quickreplies !== 0){
+                                    dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.warningnoquickreplies) }))  
+
+                                }else{
+                                    const callback = () => {
+                                        dispatch(execute(deleteClassificationTree(onclickdelete?.key||0)));
+                                        dispatch(showBackdrop(true));
+                                        setWaitSave(true);
+                                    }
+                                    dispatch(manageConfirmation({
+                                        visible: true,
+                                        question: t(langKeys.confirmation_delete),
+                                        callback
+                                    }))
+                                }
+                            }
+                        }}
                     >
-                        <TreeItemsFromData2
-                            dataClassTotal={mainResult.multiData.data[1] && mainResult.multiData.data[1].success ? mainResult.multiData.data[1].data : []}
-                        />
-                    </TreeView>
-                    <div className="row-zyx">
-                    </div>
-                </DialogZyx>
-            </Fragment>
+                        <DeleteIcon style={{color:"rgb(119, 33, 173)"}}/>  {t(langKeys.delete)}
+                    </MenuItem>
+                </Menu>
+                <Fragment>
+                    <TableZyx
+                        columns={columns}
+                        titlemodule={t(langKeys.quickreplies, { count: 2 })}
+                        data={mainResult.mainData.data}
+                        download={true}
+                        loading={mainResult.mainData.loading}
+                        register={true}
+                        importCSV={importCSV}
+                        handleTemplate={handleTemplate}
+                        handleRegister={handleRegister}
+                        onClickRow={handleEdit}
+                        ButtonsElement={()=>
+                            <>
+                                <Button
+                                    disabled={mainResult.mainData.loading}
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    startIcon={<ClearIcon color="secondary" />}
+                                    style={{ backgroundColor: "#FB5F5F" }}
+                                    onClick={() => history.push(paths.CONFIGURATION)}
+                                >{t(langKeys.back)}</Button>
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    style={{ backgroundColor: "#7721ad" }}
+                                    onClick={() => setOpenDialog(true)}
+                                    startIcon={<AccountTreeIcon color="secondary" />}
+                                >{t(langKeys.opendrilldown)}
+                                </Button>
+                            </>
+                        }
+                    />
+                    <DialogZyx
+                        open={openDialog}
+                        title={t(langKeys.organizationclass)}
+                        buttonText1={t(langKeys.close)}
+                        //buttonText2={t(langKeys.select)}
+                        handleClickButton1={() => setOpenDialog(false)}
+                        handleClickButton2={() => setOpenDialog(false)}
+                    >   
+                        <TreeView
+                            className={classes.treeviewroot}
+                            defaultCollapseIcon={<ExpandMoreIcon />}
+                            defaultExpandIcon={<ChevronRightIcon />}
+                        >
+                            <TreeItemsFromData2
+                                dataClassTotal={mainResult.multiData.data[1] && mainResult.multiData.data[1].success ? mainResult.multiData.data[1].data : []}
+                                setAnchorEl={setAnchorEl}
+                                setonclickdelete={setonclickdelete}
+                            />
+                        </TreeView>
+                        <div className="row-zyx">
+                        </div>
+                    </DialogZyx>
+                </Fragment>
+            </div>
         )
     }
     else if (viewSelected === "view-2") {
         return (
             <DetailQuickreply
                 data={rowSelected}
-                setViewSelected={setViewSelected}
+                setViewSelected={redirectFunc}
                 multiData={mainResult.multiData.data}
                 fetchData={fetchData}
                 fetchMultiData={fetchMultiData}
+                arrayBread={arrayBread}
             />
         )
     } else

@@ -2,8 +2,8 @@ import { IActionCall, IRequestBody } from "@types";
 import { ChannelsService } from "network";
 import actionTypes from "./actionTypes";
 
-export const getChannelsListSub = (accessToken: String): IActionCall => ({
-    callAPI: () => ChannelsService.getPagelistSub(accessToken),
+export const getChannelsListSub = (accessToken: String, appId: String): IActionCall => ({
+    callAPI: () => ChannelsService.getPagelistSub(accessToken, appId),
     types: {
         loading: actionTypes.PAGELIST,
         success: actionTypes.PAGELIST_SUCCESS,
@@ -11,6 +11,7 @@ export const getChannelsListSub = (accessToken: String): IActionCall => ({
     },
     type: null,
 });
+
 export const executeSubscription = (requestBody: IRequestBody): IActionCall => ({
     callAPI: () => ChannelsService.execSub(requestBody),
     types: {
@@ -20,6 +21,17 @@ export const executeSubscription = (requestBody: IRequestBody): IActionCall => (
     },
     type: null,
 });
+
+export const validatechannels = (requestBody: IRequestBody): IActionCall => ({
+    callAPI: () => ChannelsService.valChannels(requestBody),
+    types: {
+        loading: actionTypes.VALCHANNELS,
+        success: actionTypes.VALCHANNELS_SUCCESS,
+        failure: actionTypes.VALCHANNELS_FAILURE,
+    },
+    type: null,
+});
+
 export const executeCheckNewUser = (requestBody: IRequestBody): IActionCall => ({
     callAPI: () => ChannelsService.validateNewUser(requestBody),
     types: {
@@ -29,6 +41,7 @@ export const executeCheckNewUser = (requestBody: IRequestBody): IActionCall => (
     },
     type: null,
 });
+
 export const verifyPlan = (accessToken: String): IActionCall => ({
     callAPI: () => ChannelsService.vrfplan(accessToken),
     types: {
@@ -38,7 +51,25 @@ export const verifyPlan = (accessToken: String): IActionCall => ({
     },
     type: null,
 });
+
 export const resetGetChannelsListSub = (): IActionCall => ({type: actionTypes.PAGELIST_RESET});
 
+export const getCurrencyList = (): IActionCall => ({
+    callAPI: () => ChannelsService.getCurrencyList(),
+    types: {
+        loading: actionTypes.CURRENCYLIST,
+        success: actionTypes.CURRENCYLIST_SUCCESS,
+        failure: actionTypes.CURRENCYLIST_FAILURE,
+    },
+    type: null,
+});
 
-
+export const getCountryList = (): IActionCall => ({
+    callAPI: () => ChannelsService.getCountryList(),
+    types: {
+        loading: actionTypes.COUNTRYLIST,
+        success: actionTypes.COUNTRYLIST_SUCCESS,
+        failure: actionTypes.COUNTRYLIST_FAILURE,
+    },
+    type: null,
+});

@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldEditMulti, FieldCheckbox, DialogZyx } from 'components';
-import { getIntegrationManagerSel, insIntegrationManager, getValuesFromDomain, uuidv4, extractVariablesFromArray, downloadJson } from 'common/helpers';
+import { getIntegrationManagerSel, insIntegrationManager, getValuesFromDomain, uuidv4, extractVariablesFromArray, downloadJson, uploadExcel, insarrayIntegrationManager, deldataIntegrationManager, getdataIntegrationManager } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -16,12 +16,17 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
+import { getCollection, resetAllMain, getMultiCollection, execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import { apiUrls } from 'common/constants';
 import { request_send, resetRequest } from 'store/integrationmanager/actions';
 import { dictToArrayKV, extractVariables, isJson } from 'common/helpers';
+import BackupIcon from '@material-ui/icons/Backup';
+import ListAltIcon from '@material-ui/icons/ListAlt';
+import InfoIcon from '@material-ui/icons/Info';
+import { useHistory } from 'react-router-dom';
+import paths from 'common/constants/paths';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -32,12 +37,9 @@ interface DetailProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
-    fetchData: () => void
+    fetchData: () => void;
+    arrayBread: any;
 }
-const arrayBread = [
-    { id: "view-1", name: "Integration Manager" },
-    { id: "view-2", name: "Integration Manager detail" }
-];
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -113,9 +115,10 @@ const dataLevel: Dictionary = {
     ORGANIZATION: 'organization',
 }
 
-const dataLevelKeys = ['corpid','orgid','status'];
+const dataLevelKeys = ['corpid','orgid'];
 
 const IntegrationManager: FC = () => {
+    const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
@@ -124,6 +127,18 @@ const IntegrationManager: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const [mainData, setMainData] = useState<any>([]);
+    const arrayBread = [
+        { id: "view-0", name: t(langKeys.configuration_plural) },
+        { id: "view-1", name: t(langKeys.integrationmanager_plural) },
+    ];
+    function redirectFunc(view:string){
+        if(view ==="view-0"){
+            history.push(paths.CONFIGURATION)
+            return;
+        }
+        setViewSelected(view)
+    }
 
     const columns = React.useMemo(
         () => [
@@ -151,13 +166,8 @@ const IntegrationManager: FC = () => {
             },
             {
                 Header: t(langKeys.type),
-                accessor: 'type',
+                accessor: 'type_translated',
                 NoFilter: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    const column = props.cell.column;
-                    return t(`${row[column.id]?.toLowerCase()}`).toUpperCase()
-                }
             },
             {
                 Header: t(langKeys.status),
@@ -181,20 +191,20 @@ const IntegrationManager: FC = () => {
             getValuesFromDomain("ESTADOGENERICO"),
         ]));
         return () => {
-            dispatch(resetMain());
+            dispatch(resetAllMain());
         };
     }, []);
 
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.integrationmanager).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
@@ -229,6 +239,13 @@ const IntegrationManager: FC = () => {
             callback
         }))
     }
+    
+    useEffect(() => {
+        setMainData(mainResult.mainData.data.map(x => ({
+            ...x,
+            type_translated: (t(`${x.type}`.toLowerCase()) || "").toUpperCase(),
+        })))
+    }, [mainResult.mainData.data])
 
     if (viewSelected === "view-1") {
 
@@ -237,24 +254,45 @@ const IntegrationManager: FC = () => {
         }
 
         return (
-            <TableZyx
-                columns={columns}
-                titlemodule={t(langKeys.integrationmanager_plural, { count: 2 })}
-                data={mainResult.mainData.data}
-                download={true}
-                loading={mainResult.mainData.loading}
-                register={true}
-                handleRegister={handleRegister}
-            />
+            <div style={{width:"100%"}}>
+                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={arrayBread}
+                        handleClick={redirectFunc}
+                    />
+                </div>
+                <TableZyx
+                    columns={columns}
+                    titlemodule={t(langKeys.integrationmanager_plural, { count: 2 })}
+                    data={mainData}
+                    ButtonsElement={() => (
+                        <Button
+                            disabled={mainResult.mainData.loading}
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => history.push(paths.CONFIGURATION)}
+                        >{t(langKeys.back)}</Button>
+                    )}
+                    onClickRow={handleEdit}
+                    download={true}
+                    loading={mainResult.mainData.loading}
+                    register={true}
+                    handleRegister={handleRegister}
+                />
+            </div>
         )
     }
     else
         return (
             <DetailIntegrationManager
                 data={rowSelected}
-                setViewSelected={setViewSelected}
+                setViewSelected={redirectFunc}
                 multiData={mainResult.multiData.data}
                 fetchData={fetchData}
+                arrayBread={arrayBread}
             />
         )
 }
@@ -293,7 +331,7 @@ type FormFields = {
     operation: string
 }
 
-const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, arrayBread }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
@@ -302,9 +340,18 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
+    const [waitImport, setWaitImport] = useState(false);
+    const [waitDelete, setWaitDelete] = useState(false);
+
+    const mainAuxRes = useSelector(state => state.main.mainAux);
+    const [waitView, setWaitView] = useState(false);
+    const [openViewTableModal, setOpenViewTableModal] = useState(false);
+    const [tableData, setTableData] = useState<any[]>([]);
+    const [columnData, setColumnData] = useState<any[]>([]);
+
     // const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     
-    const dataKeys = new Set([...dataLevelKeys, ...(row?.fields?.filter((r: FieldType) => r.key)?.map((r: FieldType) => r.id) || [])]);
+    const dataKeys = new Set([...dataLevelKeys, ...(row?.fields?.filter((r: FieldType) => r.key)?.map((r: FieldType) => r.name) || [])]);
 
     const { control, register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm<FormFields>({
         defaultValues: {
@@ -325,8 +372,8 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
             variables: row ? (row.variables || []) : [],
             level: row ? (row.level || 'CORPORATION') : 'CORPORATION',
             fields: row
-            ? (row.fields || [{name: 'corpid', key: true}, {name: 'status', key: false}])
-            : [{name: 'corpid', key: true}, {name: 'status', key: false}],
+            ? (row.fields || [{name: 'corpid', key: true}])
+            : [{name: 'corpid', key: true}],
             operation: row ? "EDIT" : "INSERT",
         }
     });
@@ -360,13 +407,13 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.integrationmanager).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
@@ -388,7 +435,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
         }
         else if (data.isnew && data.type === 'CUSTOM') {
             if (data.fields.filter(d => !dataLevelKeys.includes(d.name) && d.key === true).length === 0) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.field_key_required) }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.field_key_required) }))
                 return null;
             }
             let rex1 = new RegExp(/[^0-9a-zA-Z\s-_]/,'g');
@@ -495,7 +542,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
         if (data?.key === 'CORPORATION') {
             setValue('fields', [
                 { name: 'corpid', key: true },
-                { name: 'status', key: false },
                 ...getValues('fields').filter(f => !dataLevelKeys.includes(f.name))
             ])
         }
@@ -503,7 +549,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
             setValue('fields', [
                 { name: 'corpid', key: true },
                 { name: 'orgid', key: true },
-                { name: 'status', key: false },
                 ...getValues('fields').filter(f => !dataLevelKeys.includes(f.name))
             ])
         }
@@ -525,7 +570,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
         if (dataLevelKeys.includes(field?.name)) {
             return true;
         }
-        else if (dataKeys.has(field?.id) && !getValues('isnew')) {
+        else if (dataKeys.has(field?.name) && !getValues('isnew')) {
             return true
         }
         return false;
@@ -596,13 +641,97 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
         );
     }
 
+    const handleUpload = async (files: any) => {
+        const file = files?.item(0);
+        if (file) {
+            const data: any = await uploadExcel(file, undefined)
+            if (data.length > 0) {
+                dispatch(showBackdrop(true));
+                dispatch(execute(insarrayIntegrationManager(getValues('id'), data)));
+                setWaitImport(true);
+            }
+        }
+    }
+
+    useEffect(() => {
+        if (waitImport) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
+                dispatch(showBackdrop(false));
+                setWaitImport(false);
+            } else if (executeRes.error) {
+                const errormessage = t(langKeys.invalid_data)
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitImport(false);
+            }
+        }
+    }, [executeRes, waitImport]);
+
+    const onDeleteData = () => {
+        const callback = () => {
+            dispatch(showBackdrop(true));
+            dispatch(execute(deldataIntegrationManager(getValues('id'))));
+            setWaitDelete(true)
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete_data),
+            callback
+        }))
+    }
+
+    useEffect(() => {
+        if (waitDelete) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
+                dispatch(showBackdrop(false));
+                setWaitDelete(false);
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.integrationmanager).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitDelete(false);
+            }
+        }
+    }, [executeRes, waitDelete]);
+    
+    const handleViewTable = () => {
+        dispatch(showBackdrop(true));
+        dispatch(getCollectionAux(getdataIntegrationManager(getValues('id'))));
+        setWaitView(true);
+    }
+
+    useEffect(() => {
+        if (waitView) {
+            if (!mainAuxRes.loading && !mainAuxRes.error) {
+                dispatch(showBackdrop(false));
+                setWaitView(false);
+                if (mainAuxRes.data[0]?.data && mainAuxRes.data[0]?.data?.length > 0) {
+                    setTableData(mainAuxRes.data[0]?.data);
+                    setColumnData(Object.keys(mainAuxRes.data[0].data[0]).map(c => ({
+                        Header: c,
+                        accessor: c
+                    })))
+                }
+                setOpenViewTableModal(true);
+            } else if (mainAuxRes.error) {
+                const errormessage = t(mainAuxRes.code || "error_unexpected_error", { module: t(langKeys.integration_plural).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitView(false);
+            }
+        }
+    }, [mainAuxRes, waitView]);
+
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
+                            breadcrumbs={[...arrayBread, { id: "view-2", name: t(langKeys.integrationmanagerdetail) }]}
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
@@ -619,11 +748,49 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                             onClick={() => onClickTest()}
                         >{t(langKeys.test)}</Button>
                         }
+                        {!getValues('isnew') && getValues('type') === 'CUSTOM' && (
+                            <React.Fragment>
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    startIcon={<ListAltIcon color="secondary" />}
+                                    style={{ backgroundColor: "#7721AD" }}
+                                    onClick={handleViewTable}
+                                >{t(langKeys.view_table)}</Button>
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    startIcon={<DeleteIcon color="secondary" />}
+                                    style={{ backgroundColor: "#FB5F5F" }}
+                                    onClick={onDeleteData}
+                                >{t(langKeys.deletedata)}</Button>
+                                <input
+                                    accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
+                                    id="uploadfile"
+                                    type="file"
+                                    style={{ display: 'none' }}
+                                    onChange={(e) => handleUpload(e.target.files)}
+                                />
+                                <label htmlFor="uploadfile">
+                                    <Button
+                                        className={classes.button}
+                                        variant="contained"
+                                        component="span"
+                                        color="primary"
+                                        startIcon={<BackupIcon color="secondary" />}
+                                        style={{ backgroundColor: "#55BD84" }}
+                                    >{t(langKeys.import)}</Button>
+                                </label>
+                            </React.Fragment>
+                        )}
                         {getValues('type') === 'CUSTOM' &&
                         <Button
                             variant="contained"
                             type="button"
                             color="primary"
+                            startIcon={<InfoIcon color="secondary" />}
                             style={{ backgroundColor: "#7721AD" }}
                             onClick={() => onClickInfo()}
                         >{t(langKeys.info)}</Button>
@@ -726,63 +893,40 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                             }
                         </div>
                         <div className="row-zyx">
-                            {edit ?
-                                <FieldSelect
-                                    uset={true}
-                                    fregister={{...register(`authorization.type`, {
-                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                    })}}       
-                                    label={t(langKeys.authorization)}
-                                    valueDefault={getValues('authorization.type')}
-                                    onChange={onChangeAuthorization}
-                                    error={errors?.authorization?.type?.message}
-                                    data={dictToArrayKV(dataAuthorizationType)}
-                                    optionDesc="value"
-                                    optionValue="key"
-                                />
-                                :
-                                <FieldView
-                                    label={t(langKeys.authorization)}
-                                    value={row?.authorization?.type || ""}
-                                    className="col-12"
-                                />
-                            }
+                            <FieldSelect
+                                uset={true}
+                                fregister={{...register(`authorization.type`, {
+                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                })}}       
+                                label={t(langKeys.authorization)}
+                                valueDefault={getValues('authorization.type')}
+                                onChange={onChangeAuthorization}
+                                error={errors?.authorization?.type?.message}
+                                data={dictToArrayKV(dataAuthorizationType)}
+                                optionDesc="value"
+                                optionValue="key"
+                            />
                         </div>
                         {getValues('authorization.type') === 'BASIC' ?
                             <div className="row-zyx">
-                                {edit ?
-                                    <React.Fragment>
-                                        <FieldEdit
-                                            fregister={{...register(`authorization.username`)}}
-                                            label={t(langKeys.username)}
-                                            className="col-6"
-                                            valueDefault={getValues('authorization.username')}
-                                            onChange={(value) => setValue('authorization.username', value)}
-                                            error={errors?.authorization?.username?.message}
-                                        />
-                                        <FieldEdit
-                                            fregister={{...register(`authorization.password`)}}
-                                            label={t(langKeys.password)}
-                                            className="col-6"
-                                            valueDefault={getValues('authorization.password')}
-                                            onChange={(value) => setValue('authorization.password', value)}
-                                            error={errors?.authorization?.password?.message}
-                                        />
-                                    </React.Fragment>
-                                    :
-                                    <React.Fragment>
-                                        <FieldView
-                                            label={t(langKeys.username)}
-                                            value={row?.authorization?.username || ""}
-                                            className="col-6"
-                                        />
-                                        <FieldView
-                                            label={t(langKeys.password)}
-                                            value={row?.authorization?.password || ""}
-                                            className="col-6"
-                                        />
-                                    </React.Fragment>
-                                }
+                                <React.Fragment>
+                                    <FieldEdit
+                                        fregister={{...register(`authorization.username`, { validate: (value:any) => getValues('authorization.type')==="BASIC"?((value && value.length) || t(langKeys.field_required)):null })}}
+                                        label={t(langKeys.username)}
+                                        className="col-6"
+                                        valueDefault={getValues('authorization.username')}
+                                        onChange={(value) => setValue('authorization.username', value)}
+                                        error={errors?.authorization?.username?.message}
+                                    />
+                                    <FieldEdit
+                                        fregister={{...register(`authorization.password`, { validate: (value:any) => getValues('authorization.type')==="BASIC"?((value && value.length) || t(langKeys.field_required)):null })}}
+                                        label={t(langKeys.password)}
+                                        className="col-6"
+                                        valueDefault={getValues('authorization.password')}
+                                        onChange={(value) => setValue('authorization.password', value)}
+                                        error={errors?.authorization?.password?.message}
+                                    />
+                                </React.Fragment>
                             </div>
                             :
                             null
@@ -791,7 +935,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                             <div className="row-zyx">
                                 {edit ?
                                     <FieldEdit
-                                        fregister={{...register(`authorization.token`)}}
+                                        fregister={{...register(`authorization.token`, { validate: (value:any) => getValues('authorization.type')==="BEARER"?((value && value.length) || t(langKeys.field_required)):null })}}
                                         label={t(langKeys.token)}
                                         className="col-12"
                                         valueDefault={getValues('authorization.token')}
@@ -1154,6 +1298,12 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                 cleanModalData={cleanRequestData}
             />
 
+            <ModalViewTable
+                openModal={openViewTableModal}
+                setOpenModal={setOpenViewTableModal}
+                columns={columnData}
+                data={tableData}
+            />
         </div>
     );
 }
@@ -1182,6 +1332,48 @@ const ModalIntegrationManager: React.FC<ModalProps> = ({ data, openModal, setOpe
             <div className="row-zyx">
                 {JSON.stringify(data, null, 4)}
             </div>
+        </DialogZyx>
+    )
+}
+
+interface ViewTableModalProps {
+    openModal: boolean;
+    setOpenModal: (value: boolean) => any;
+    columns: Dictionary[];
+    data: Dictionary[];
+}
+
+const ModalViewTable: React.FC<ViewTableModalProps> = ({ openModal, setOpenModal, columns = [], data = [] }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+
+    const handleCancelModal = () => {
+        setOpenModal(false);
+    }
+
+    useEffect(() => {
+        return () => {
+            dispatch(resetMainAux());
+        }
+
+    }, [])
+
+    return (
+        <DialogZyx
+            title=''    
+            open={openModal}
+            maxWidth="lg"
+            button1Type="button"
+            buttonText1={t(langKeys.close)}
+            handleClickButton1={handleCancelModal}
+        >
+            <TableZyx
+                columns={columns}
+                data={data}
+                download={true}
+                pageSizeDefault={20}
+                filterGeneral={false}
+            />
         </DialogZyx>
     )
 }

@@ -3,21 +3,24 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch } from 'components';
-import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText } from 'common/helpers';
+import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, TemplateSwitchYesNo } from 'components';
+import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText, templateMaker, exportExcel, uploadExcel, array_trimmer, checkUserPaymentPlan } from 'common/helpers';
+import { getDomainsByTypename } from 'store/person/actions';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import Avatar from '@material-ui/core/Avatar';
 import { uploadFile } from 'store/main/actions';
+import ListAltIcon from '@material-ui/icons/ListAlt';
 import {
-    getCollection, resetMain, getMultiCollection,
-    execute, getCollectionAux, resetMainAux, getMultiCollectionAux
+    getCollection, resetAllMain, getMultiCollection,
+    getCollectionAux, resetMainAux, getMultiCollectionAux
 } from 'store/main/actions';
+import { saveUser, delUser } from 'store/activationuser/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import AddIcon from '@material-ui/icons/Add';
@@ -34,6 +37,9 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import { DuplicateIcon } from 'icons';
+import { useHistory } from 'react-router-dom';
+import paths from 'common/constants/paths';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -44,7 +50,8 @@ interface DetailProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
-    fetchData?: () => void
+    fetchData?: () => void;
+    arrayBread: any;
 }
 interface ModalProps {
     data: RowSelected;
@@ -58,10 +65,6 @@ interface ModalProps {
     setAllIndex: (index: any) => void;
     handleDelete: (row: Dictionary | null, index: number) => void;
 }
-const arrayBread = [
-    { id: "view-1", name: "Users" },
-    { id: "view-2", name: "User detail" }
-];
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -129,18 +132,22 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                 const allOk = await trigger(); //para q valide el formulario
                 const data = getValues();
                 if (allOk) {
-                    if (!row)
-                        updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
-                            p[index] = { ...data, operation: "INSERT" }
-                            return p;
-                        })
-                    else
-                        updateRecords && updateRecords((p: Dictionary[]) => p.map(x => x?.orgid === row.orgid ? { ...x, ...data, operation: (x.operation || "UPDATE") } : x))
+                    updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
+                        p[index] = { ...data, operation: (p[index].id === 0 || p[index].operation ==="INSERT") ? "INSERT" : "UPDATE" }
+                        return p;
+                    })
                 }
                 setAllIndex((p: number[]) => [...p, { index, allOk }]);
             })()
         }
     }, [triggerSave])
+
+    function updatefield(field: string, value: any) {
+        updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
+            p[index] = { ...p[index], [field]: value }
+            return p;
+        })
+    }
 
     useEffect(() => {//validar la respuesta y asignar la  data a supervisores y canales segun la organización q cambió
         const indexSupervisor = resFromOrg.data.findIndex((x: MultiData) => x.key === ("UFN_USER_SUPERVISOR_LST" + (index + 1)));
@@ -157,8 +164,22 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         if (indexGroups > -1)
             setDataGroups({ loading: false, data: resFromOrg.data[indexGroups] && resFromOrg.data[indexGroups].success ? resFromOrg.data[indexGroups].data : [] });
 
-        if (indexApplications > -1)
-            setDataApplications({ loading: false, data: resFromOrg.data[indexApplications] && resFromOrg.data[indexApplications].success ? resFromOrg.data[indexApplications].data : [] });
+        if (indexApplications > -1) {
+            let tempdata = resFromOrg.data[indexApplications] && resFromOrg.data[indexApplications].success ? resFromOrg.data[indexApplications].data.map(x => ({
+                ...x,
+                description: (t(`app_${x.description}`.toLowerCase()) || "").toUpperCase(),
+            })) : []
+            tempdata.sort(function (a, b) {
+                if (a.description < b.description) {
+                    return -1;
+                }
+                if (a.description > b.description) {
+                    return 1;
+                }
+                return 0;
+            })
+            setDataApplications({ loading: false, data: resFromOrg.data[indexApplications] && resFromOrg.data[indexApplications].success ? tempdata : [] });
+        }
     }, [resFromOrg])
 
     useEffect(() => {
@@ -177,7 +198,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
             groups: row?.groups || '',
             labels: row?.labels || '',
             status: 'DESCONECTADO',
-            bydefault: row ? row.bydefault : true,
+            bydefault: row?.bydefault || false,
         })
 
         register('orgid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
@@ -198,13 +219,13 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         setDataOrganizations({ loading: false, data: dataOrganizationsTmp.filter(x => x.orgid === row?.orgid || !preData.some(y => y?.orgid === x.orgid)) });
 
         //forzar a que el select de aplicaciones renderice, por eso se desactivó el triggerOnChangeOnFirst en role
-        if (row) {
+        if (row && row.id !== 0) {
             setDataApplications({ loading: true, data: [] });
             dispatch(getMultiCollectionAux([
                 getApplicationsByRole(row.roleid, index + 1),
             ]))
         }
-    }, [])
+    }, [preData])
 
     const onSubmit = handleSubmit((data) => { //GUARDAR MODAL
         if (!row)
@@ -215,8 +236,12 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     });
 
     const onChangeOrganization = (value: Dictionary) => {
-        setValue('orgid', value ? value.orgid : 0);
-        setValue('orgdesc', value ? value.orgdesc : '');
+        setValue('orgid', value?.orgid || 0);
+        setValue('orgdesc', value?.orgdesc || '');
+        updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
+            p[index] = { ...p[index], orgid: value?.orgid || 0, orgdesc: value?.orgdesc || '' }
+            return p;
+        })
         if (value) {
             setDataSupervisors({ loading: true, data: [] });
             setDataChannels({ loading: true, data: [] });
@@ -237,6 +262,13 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         setValue('roleid', value ? value.roleid : 0);
         setValue('roledesc', value ? value.roldesc : 0);
         setValue('type', value ? value.type : 0);
+        setValue('redirect', ''); 
+        updatefield('redirect', '');
+
+        updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
+            p[index] = { ...p[index], roleid: value?.roleid || 0, roledesc: value?.roldesc || 0, type: value?.type || 0 }
+            return p;
+        })
         if (value) {
             setDataApplications({ loading: true, data: [] });
             dispatch(getMultiCollectionAux([
@@ -248,153 +280,105 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     }
 
     return (
-        <Accordion defaultExpanded={!row} style={{ marginBottom: '8px' }}>
+        <Accordion defaultExpanded={row?.id === 0} style={{ marginBottom: '8px' }}>
 
             <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel1a-content"
                 id="panel1a-header"
             >
-                <Typography>{(row) ? row.orgdesc : t(langKeys.neworganization)}</Typography>
+                <Typography>{(row?.orgid) ? row.orgdesc : t(langKeys.neworganization)}</Typography>
             </AccordionSummary>
             <AccordionDetails>
                 <form onSubmit={onSubmit} style={{ width: '100%' }}>
                     <div className="row-zyx">
                         <div className="col-6">
-                            {edit ?
-                                <FieldSelect
-                                    label={t(langKeys.organization)}
-                                    className={classes.mb2}
-                                    valueDefault={getValues('orgid')}
-                                    onChange={onChangeOrganization}
-                                    triggerOnChangeOnFirst={true}
-                                    error={errors?.orgid?.message}
-                                    data={dataOrganizations.data}
-                                    optionDesc="orgdesc"
-                                    optionValue="orgid"
-                                /> :
-                                <FieldView
-                                    label={t(langKeys.organization)}
-                                    value={row ? row.orgdesc : ""}
-                                    className={classes.mb2}
-                                />
-                            }
-                            {edit ?
-                                <FieldSelect
-                                    label={t(langKeys.role)}
-                                    className={classes.mb2}
-                                    valueDefault={row?.roleid || ""}
-                                    onChange={onChangeRole}
-                                    error={errors?.roleid?.message}
-                                    // triggerOnChangeOnFirst={true}
-                                    data={dataRoles}
-                                    optionDesc="roldesc"
-                                    optionValue="roleid"
-                                /> :
-                                <FieldView
-                                    label={t(langKeys.role)}
-                                    value={row ? row.roledesc : ""}
-                                    className={classes.mb2}
-                                />
-                            }
-                            {edit ?
-                                <FieldMultiSelect //los multiselect te devuelven un array de objetos en OnChange por eso se le recorre
-                                    label={t(langKeys.channel)}
-                                    className={classes.mb2}
-                                    valueDefault={row?.channels || ""}
-                                    onChange={(value) => {
-                                        setValue('channels', value.map((o: Dictionary) => o.communicationchannelid).join())
-                                        setValue('channelsdesc', value.map((o: Dictionary) => o.description).join())
-                                    }}
-                                    error={errors?.channels?.message}
-                                    loading={dataChannels.loading}
-                                    data={dataChannels.data}
-                                    optionDesc="description"
-                                    optionValue="communicationchannelid"
-                                /> :
-                                <FieldView
-                                    label={t(langKeys.channel)}
-                                    value={row ? row.channelsdesc : ""}
-                                    className={classes.mb2}
-                                />
-                            }
+                            <FieldSelect
+                                label={t(langKeys.organization)}
+                                className={classes.mb2}
+                                valueDefault={getValues('orgid')}
+                                onChange={onChangeOrganization}
+                                triggerOnChangeOnFirst={true}
+                                error={errors?.orgid?.message}
+                                data={dataOrganizations.data}
+                                optionDesc="orgdesc"
+                                optionValue="orgid"
+                            />
+                            <FieldSelect
+                                label={t(langKeys.role)}
+                                className={classes.mb2}
+                                valueDefault={row?.roleid || ""}
+                                onChange={onChangeRole}
+                                error={errors?.roleid?.message}
+                                // triggerOnChangeOnFirst={true}
+                                data={dataRoles}
+                                optionDesc="roldesc"
+                                optionValue="roleid"
+                            />
+                            <FieldMultiSelect //los multiselect te devuelven un array de objetos en OnChange por eso se le recorre
+                                label={t(langKeys.channel)}
+                                className={classes.mb2}
+                                valueDefault={row?.channels || ""}
+                                onChange={(value) => {
+                                    setValue('channels', value.map((o: Dictionary) => o.communicationchannelid).join())
+                                    setValue('channelsdesc', value.map((o: Dictionary) => o.description).join())
+                                    updatefield('channels', value.map((o: Dictionary) => o.communicationchannelid).join())
+                                    updatefield('channelsdesc', value.map((o: Dictionary) => o.description).join())
+                                }}
+                                error={errors?.channels?.message}
+                                loading={dataChannels.loading}
+                                data={dataChannels.data}
+                                optionDesc="description"
+                                optionValue="communicationchannelid"
+                            />
                         </div>
                         <div className="col-6">
-                            {edit ?
-                                <TemplateSwitch
-                                    label={t(langKeys.default_organization)}
-                                    className={classes.mb2}
-                                    valueDefault={row ? row.bydefault : true}
-                                    onChange={(value) => setValue('bydefault', value)}
-                                /> :
-                                <FieldView
-                                    label={t(langKeys.default_organization)}
-                                    value={row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
-                                    className={classes.mb2}
-                                />
-                            }
-                            {edit ?
-                                <FieldSelect
-                                    label={t(langKeys.supervisor)}
-                                    className={classes.mb2}
-                                    valueDefault={row?.supervisor || ""}
-                                    triggerOnChangeOnFirst={true}
-                                    onChange={(value) => {
-                                        setValue('supervisor', value ? value.usr : '');
-                                        setValue('supervisordesc', value ? value.userdesc : '');
-                                    }}
-                                    error={errors?.supervisor?.message}
-                                    data={dataSupervisors.data}
-                                    loading={dataSupervisors.loading}
-                                    optionDesc="userdesc"
-                                    optionValue="usr"
-                                /> :
-                                <FieldView
-                                    label={t(langKeys.supervisor)}
-                                    value={row ? row.supervisordesc : ""}
-                                    className={classes.mb2}
-                                />
-                            }
+                            <TemplateSwitchYesNo
+                                label={t(langKeys.default_organization)}
+                                className={classes.mb2}
+                                valueDefault={row?.bydefault || false}
+                                onChange={(value) => { setValue('bydefault', value); updatefield('bydefault', value) }} />
+                            <FieldSelect
+                                label={t(langKeys.supervisor)}
+                                className={classes.mb2}
+                                valueDefault={row?.supervisor || ""}
+                                triggerOnChangeOnFirst={true}
+                                onChange={(value) => {
+                                    setValue('supervisor', value ? value.usr : '');
+                                    setValue('supervisordesc', value ? value.userdesc : '');
+                                    updatefield('supervisor', value?.usr || '');
+                                    updatefield('supervisordesc', value?.userdesc || '');
+                                }}
+                                error={errors?.supervisor?.message}
+                                data={dataSupervisors.data}
+                                loading={dataSupervisors.loading}
+                                optionDesc="userdesc"
+                                optionValue="usr"
+                            />
 
-                            {edit ?
-                                <FieldSelect
-                                    uset={true}
-                                    label={t(langKeys.default_application)}
-                                    className={classes.mb2}
-                                    valueDefault={row?.redirect || ""}
-                                    onChange={(value) => setValue('redirect', value ? value.path : '')}
-                                    error={errors?.redirect?.message}
-                                    data={dataApplications.data}
-                                    loading={dataApplications.loading}
-                                    triggerOnChangeOnFirst={true}
-                                    prefixTranslation="app_"
-                                    optionDesc="description"
-                                    optionValue="path"
-                                /> :
-                                <FieldView
-                                    label={t(langKeys.default_application)}
-                                    value={row ? row.redirect : ""}
-                                    className={classes.mb2}
-                                />
-                            }
-                            {edit ?
-                                <FieldMultiSelect //los multiselect te devuelven un array de objetos en OnChange por eso se le recorre
-                                    label={t(langKeys.group)}
-                                    className={classes.mb2}
-                                    valueDefault={row?.groups || ""}
-                                    onChange={(value) => setValue('groups', value.map((o: Dictionary) => o.domainvalue).join())}
-                                    error={errors?.groups?.message}
-                                    loading={dataGroups.loading}
-                                    data={dataGroups.data}
-                                    optionDesc="domaindesc"
-                                    optionValue="domainvalue"
-                                /> :
-                                <FieldView
-                                    label={t(langKeys.group)}
-                                    value={row ? row.groups : ""}
-                                    className={classes.mb2}
-                                />
-                            }
+                            <FieldSelect
+                                label={t(langKeys.default_application)}
+                                className={classes.mb2}
+                                valueDefault={getValues("redirect")}
+                                onChange={(value) => { setValue('redirect', value?.path || ''); updatefield('redirect', value?.path || '') }}
+                                error={errors?.redirect?.message}
+                                data={dataApplications.data}
+                                loading={dataApplications.loading}
+                                triggerOnChangeOnFirst={true}
+                                optionDesc="description"
+                                optionValue="path"
+                            />
+                            <FieldMultiSelect //los multiselect te devuelven un array de objetos en OnChange por eso se le recorre
+                                label={t(langKeys.group)}
+                                className={classes.mb2}
+                                valueDefault={row?.groups || ""}
+                                onChange={(value) => { setValue('groups', value.map((o: Dictionary) => o.domainvalue).join()); updatefield('groups', value.map((o: Dictionary) => o.domainvalue).join()) }}
+                                error={errors?.groups?.message}
+                                loading={dataGroups.loading}
+                                data={dataGroups.data}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                            />
                         </div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
@@ -442,16 +426,14 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
         setValue('change_password_on_login', data?.pwdchangefirstlogin);
     }, [data]);
 
-    const validateSamePassword = (value: string): any => {
-        return getValues('password') === value;
-    }
+    const validateSamePassword = (value: string): any => getValues('password') === value;
 
     useEffect(() => {
         register('password', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('confirmpassword', {
             validate: {
                 validate: (value: any) => (value && value.length) || t(langKeys.field_required),
-                same: (value: any) => validateSamePassword(value) || "Contraseñas no coinciden"
+                same: (value: any) => validateSamePassword(value) || t(langKeys.password_different)
             }
         });
     }, [])
@@ -558,13 +540,13 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
     )
 }
 
-const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData,arrayBread }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
     const [waitSave, setWaitSave] = useState(false);
-    const executeRes = useSelector(state => state.main.execute);
+    const executeRes = useSelector(state => state.activationuser.saveUser);
     const detailRes = useSelector(state => state.main.mainAux); //RESULTADO DEL DETALLE
 
     const [dataOrganizations, setDataOrganizations] = useState<(Dictionary | null)[]>([]);
@@ -592,16 +574,14 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     }, [detailRes]);
 
     const handleRegister = () => {
-        setDataOrganizations(p => [...p, null]);
+        setDataOrganizations(p => [...p, { id: 0 }]);
     }
     const handleDelete = (row: Dictionary | null, index: number) => {
-        if (row && row.operation !== "INSERT") {
+        if (row && row.id !== 0 && row.operation !== "INSERT") {
             setOrgsToDelete(p => [...p, { ...row, operation: "DELETE", status: 'ELIMINADO' }]);
         }
-        if (row)
-            setDataOrganizations(p => p.filter((x) => row.orgid !== x?.orgid));
-        else
-            setDataOrganizations(p => p.filter((x, i) => i !== index));
+        const filterDataOrg = dataOrganizations.filter((x, i) => i !== index)
+        setDataOrganizations(filterDataOrg);
     }
 
 
@@ -629,20 +609,20 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
-            id: row ? row.userid : 0,
-            operation: row ? "EDIT" : "INSERT",
+            id: edit ? (row?.userid || 0) : 0,
+            operation: edit ? (row ? "EDIT" : "INSERT") : "INSERT",
             description: row?.description || '',
             firstname: row?.firstname || '',
             lastname: row?.lastname || '',
-            password: row?.password || '',
-            // usr: row?.usr || '',
-            email: row?.email || '',
+            password: edit ? (row?.password || '') : "",
+            usr: row?.usr || '',
+            email: edit ? (row?.email || '') : "",
             doctype: row?.doctype || '',
             docnum: row?.docnum || '',
             company: row?.company || '',
             billinggroupid: row?.billinggroupid || 0,
             registercode: row?.registercode || '',
-            twofactorauthentication: row?.twofactorauthentication || 'INACTIVO',
+            twofactorauthentication: row?.twofactorauthentication || false,
             status: row?.status || 'ACTIVO',
             image: row?.image || null,
             send_password_by_email: false,
@@ -653,18 +633,26 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
         }
     }, [executeRes, waitSave])
+
+    const emailRequired = (value: string) => {
+        if (value.length === 0) {
+            return t(langKeys.field_required) as string;
+        } else if (!/\S+@\S+\.\S+/.test(value)) {
+            return t(langKeys.emailverification) as string;
+        }
+    }
 
     React.useEffect(() => {
         register('type');
@@ -673,24 +661,28 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('firstname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('lastname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('email', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('usr', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('email', { validate: emailRequired, value: '' });
         register('doctype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('docnum', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('docnum', { validate: {
+            needsvalidation: (value:any) => ((value && value.length) || t(langKeys.field_required)),
+            dnivalidation: (value:any) => (getValues("doctype") === "DNI")? ((value && value.length === 8) || t(langKeys.doctype_dni_error)) : true,
+            cevalidation: (value:any) => (getValues("doctype") === "CE")? ((value && value.length === 12) || t(langKeys.doctype_foreigners_card)) : true,
+            rucvalidation: (value:any) => (getValues("doctype") === "RUC")? ((value && value.length === 11) || t(langKeys.doctype_ruc_error)) : true,
+        }});
         register('billinggroupid');
         register('description');
         register('twofactorauthentication');
         register('image');
 
         dispatch(resetMainAux())
-        if (row) {
+        if (row && edit) {
             setGetOrganizations(true)
             dispatch(getCollectionAux(getOrgUserSel((row?.userid || 0), 0))); //TRAE LAS ORGANIZACIONES ASIGNADAS DEL USUARIO
         }
         if (!row)
-            setDataOrganizations(p => [...p, null]);
+            setDataOrganizations(p => [...p, { id: 0 }]);
     }, [register]);
-
-    console.log(dataOrganizations)
 
     useEffect(() => {
         if (allIndex.length === dataOrganizations.length && triggerSave) {
@@ -700,18 +692,18 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                 return
             }
             if (!dataOrganizations.some(x => x?.bydefault)) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.organization_by_default) }));
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.organization_by_default) }));
                 return;
             } else if (dataOrganizations.filter(x => x?.bydefault).length > 1) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.organization_by_default) }));
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.organization_by_default) }));
                 return;
             }
             const data = getValues();
 
             const callback = () => {
                 dispatch(showBackdrop(true));
-                dispatch(execute({
-                    header: insUser({ ...data, usr: data.email, twofactorauthentication: data.twofactorauthentication === 'ACTIVO' }),
+                dispatch(saveUser({
+                    header: insUser({ ...data, language: t(langKeys.currentlanguage) }),
                     detail: [...dataOrganizations.filter(x => x && x?.operation).map(x => x && insOrgUser(x)), ...orgsToDelete.map(x => insOrgUser(x))]!
                 }, true));
                 setWaitSave(true)
@@ -727,12 +719,18 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
 
 
     const onSubmit = handleSubmit((data) => {
+        console.log(dataOrganizations)
+        
         if (!row && !data.password) {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.password_required) }));
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.password_required) }));
             return;
         }
-        setAllIndex([])
+        if (!edit && data.password === "") {
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.password_required) }));
+            return;
+        }
         setTriggerSave(true)
+        setAllIndex([])
     });
 
     const onChangeStatus = (value: Dictionary) => {
@@ -746,11 +744,11 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
+                            breadcrumbs={[...arrayBread,{ id: "view-2", name: `${t(langKeys.user)} ${t(langKeys.detail)}` }]}
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={row ? `${row.firstname} ${row.lastname}` : t(langKeys.newuser)}
+                            title={edit ? (row ? `${row.firstname} ${row.lastname}` : t(langKeys.newuser)) : t(langKeys.newuser)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -762,24 +760,22 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             style={{ backgroundColor: "#FB5F5F" }}
                             onClick={() => setViewSelected("view-1")}
                         >{t(langKeys.back)}</Button>
-                        {edit &&
-                            <>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    type="button"
-                                    startIcon={<LockOpenIcon color="secondary" />}
-                                    onClick={() => setOpenDialogPassword(true)}
-                                >{t(row ? langKeys.changePassword : langKeys.setpassword)}</Button>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    type="submit"
-                                    startIcon={<SaveIcon color="secondary" />}
-                                    style={{ backgroundColor: "#55BD84" }}
-                                >{t(langKeys.save)}</Button>
-                            </>
-                        }
+                        <>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                type="button"
+                                startIcon={<LockOpenIcon color="secondary" />}
+                                onClick={() => setOpenDialogPassword(true)}
+                            >{t(edit ? (row ? langKeys.changePassword : langKeys.setpassword) : langKeys.setpassword)}</Button>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                                startIcon={<SaveIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >{t(langKeys.save)}</Button>
+                        </>
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
@@ -821,12 +817,21 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={`${t(langKeys.email)} (${t(langKeys.user)})`}
+                            label={`${t(langKeys.user)}`}
                             className="col-6"
-                            valueDefault={row?.email || ""}
+                            valueDefault={edit ? (row?.usr || "") : ""}
+                            onChange={(value) => setValue('usr', value)}
+                            error={errors?.usr?.message}
+                        />
+                        <FieldEdit
+                            label={`${t(langKeys.email)}`}
+                            className="col-6"
+                            valueDefault={edit ? (row?.email || "") : ""}
                             onChange={(value) => setValue('email', value)}
                             error={errors?.email?.message}
                         />
+                    </div>
+                    <div className="row-zyx">
                         <FieldSelect
                             label={t(langKeys.company)}
                             className="col-6"
@@ -837,108 +842,70 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
                         />
-                    </div>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.docType)}
-                                className="col-6"
-                                valueDefault={row?.doctype || ""}
-                                onChange={(value) => setValue('doctype', value ? value.domainvalue : '')}
-                                error={errors?.doctype?.message}
-                                data={dataDocType}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            /> :
-                            <FieldView
-                                label={t(langKeys.docType)}
-                                value={row ? row.doctype : ""}
-                                className="col-6"
-                            />}
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.docNumber)}
-                                className="col-6"
-                                valueDefault={row?.docnum || ""}
-                                onChange={(value) => setValue('docnum', value)}
-                                error={errors?.docnum?.message}
-                            /> :
-                            <FieldView
-                                label={t(langKeys.docNumber)}
-                                value={row ? row.docnum : ""}
-                                className="col-6"
-                            />}
+                        <FieldSelect
+                            label={t(langKeys.docType)}
+                            className="col-6"
+                            valueDefault={row?.doctype || ""}
+                            onChange={(value) => setValue('doctype', value ? value.domainvalue : '')}
+                            error={errors?.doctype?.message}
+                            data={dataDocType}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
                     </div>
 
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.billingGroup)}
-                                className="col-6"
-                                valueDefault={row?.billinggroupid || ""}
-                                onChange={(value) => setValue('billinggroupid', (value ? value.domainid : 0))}
-                                error={errors?.billinggroupid?.message}
-                                data={dataBillingGroups}
-                                optionDesc="domaindesc"
-                                optionValue="domainid"
-                            /> :
-                            <FieldView
-                                label={t(langKeys.billingGroup)}
-                                value={row ? row.billinggroup : ""}
-                                className="col-6"
-                            />}
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.registerCode)}
-                                className="col-6"
-                                valueDefault={row?.registercode || ""}
-                                onChange={(value) => setValue('registercode', value)}
-                                error={errors?.registercode?.message}
-                            /> :
-                            <FieldView
-                                label={t(langKeys.registerCode)}
-                                value={row ? row.registercode : ""}
-                                className="col-6"
-                            />}
+                        <FieldEdit
+                            label={t(langKeys.docNumber)}
+                            className="col-6"
+                            valueDefault={row?.docnum || ""}
+                            type="number"
+                            onChange={(value) => setValue('docnum', value)}
+                            error={errors?.docnum?.message}
+                        />
+                        <FieldSelect
+                            label={t(langKeys.billingGroup)}
+                            className="col-6"
+                            valueDefault={row?.billinggroupid || ""}
+                            onChange={(value) => setValue('billinggroupid', (value ? value.domainid : 0))}
+                            error={errors?.billinggroupid?.message}
+                            data={dataBillingGroups}
+                            optionDesc="domaindesc"
+                            optionValue="domainid"
+                        />
                     </div>
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.twofactorauthentication)}
-                                className="col-6"
-                                valueDefault={row?.twofactorauthentication ? 'ACTIVO' : "INACTIVO"}
-                                onChange={(value) => setValue('twofactorauthentication', (value ? value.domainvalue : ''))}
-                                error={errors?.twofactorauthentication?.message}
-                                data={dataStatus}
-                                uset={true}
-                                prefixTranslation="status_"
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            /> :
-                            <FieldView
-                                label={t(langKeys.twofactorauthentication)}
-                                value={(row?.twofactorauthentication ? t(langKeys.active) : t(langKeys.inactive)).toUpperCase()}
-                                className="col-6"
-                            />}
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.status)}
-                                className="col-6"
-                                valueDefault={row?.status || "ACTIVO"}
-                                onChange={onChangeStatus}
-                                uset={true}
-                                error={errors?.status?.message}
-                                data={dataStatusUsers}
-                                prefixTranslation="status_"
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            /> :
-                            <FieldView
-                                label={t(langKeys.status)}
-                                value={row ? row.status : ""}
-                                className="col-6"
-                            />
-                        }
+                        <FieldEdit
+                            label={t(langKeys.registerCode)}
+                            className="col-6"
+                            valueDefault={row?.registercode || ""}
+                            onChange={(value) => setValue('registercode', value)}
+                            error={errors?.registercode?.message}
+                        />
+                        <FieldSelect
+                            label={t(langKeys.twofactorauthentication)}
+                            className="col-6"
+                            valueDefault={getValues('twofactorauthentication') ? 'ACTIVO' : "INACTIVO"}
+                            onChange={(value) => setValue('twofactorauthentication', (value ? value.domainvalue === 'ACTIVO' : false))}
+                            error={errors?.twofactorauthentication?.message}
+                            data={dataStatus}
+                            uset={true}
+                            prefixTranslation="status_"
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
+                        <FieldSelect
+                            label={t(langKeys.status)}
+                            className="col-6"
+                            valueDefault={row?.status || "ACTIVO"}
+                            onChange={onChangeStatus}
+                            uset={true}
+                            error={errors?.status?.message}
+                            data={dataStatusUsers}
+                            prefixTranslation="status_"
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
                     </div>
                 </div>
             </form>
@@ -965,7 +932,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             <ListItemSkeleton /> :
                             dataOrganizations.map((item, index) => (
                                 <DetailOrgUser
-                                    key={`detail${index}`}
+                                    key={item?.orgid || `detail${index*1000}`}
                                     index={index}
                                     data={{ row: item, edit }}
                                     multiData={multiData}
@@ -1005,16 +972,44 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
 }
 
 const Users: FC = () => {
+    const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main.mainData);
     const mainMultiResult = useSelector(state => state.main.multiData);
-    const executeResult = useSelector(state => state.main.execute);
+    const executeRes = useSelector(state => state.activationuser.saveUser);
+    const deleteResult = useSelector(state => state.activationuser.delUser);
     const [dataUsers, setdataUsers] = useState<Dictionary[]>([]);
-
+    // const [dataOrganizationsTmp, setdataOrganizationsTmp] = useState<Dictionary[]>([]);
+    const [dataChannelsTemp, setdataChannelsTemp] = useState<Dictionary[]>([]);
+    const [waitImport, setWaitImport] = useState(false);
+    const [waitChanges, setwaitChanges] = useState(false);
+    const domains = useSelector(state => state.person.editableDomains);
+    const user = useSelector(state => state.login.validateToken.user);
+    useEffect(() => {
+        // setdataOrganizationsTmp(mainMultiResult.data[8] && mainMultiResult.data[8].success ? mainMultiResult.data[8].data : [])
+        setdataChannelsTemp(mainMultiResult.data[10] && mainMultiResult.data[10].success ? mainMultiResult.data[10].data : [])
+    }, [mainMultiResult.data]);
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const [waitCheck, setWaitCheck] = useState(false);
+    const [operation, setOperation] = useState('REGISTER');
+    const [fileToUpload, setFileToUpload] = useState(null);
+    const mainAuxResult = useSelector(state => state.main.mainAux);
+    const [messageError, setMessageError] = useState('');
+    const [importCount, setImportCount] = useState(0)
+    const arrayBread = [
+        { id: "view-0", name: t(langKeys.configuration_plural) },
+        { id: "view-1", name: t(langKeys.user_plural) },
+    ];
+    function redirectFunc(view:string){
+        if(view ==="view-0"){
+            history.push(paths.CONFIGURATION)
+            return;
+        }
+        setViewSelected(view)
+    }
 
     const columns = React.useMemo(
         () => [
@@ -1028,9 +1023,11 @@ const Users: FC = () => {
                     const row = props.cell.row.original;
                     return (
                         <TemplateIcons
-                            viewFunction={() => handleView(row)}
+                            extraOption={t(langKeys.duplicate)}
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
+                            extraFunction={() => handleDuplicate(row)}
+                            ExtraICon={() => <DuplicateIcon width={28} style={{ fill: '#7721AD' }} />}
                         />
                     )
                 }
@@ -1046,12 +1043,12 @@ const Users: FC = () => {
                 NoFilter: true
             },
             {
-                Header: t(langKeys.user),
+                Header: `${t(langKeys.user)}`,
                 accessor: 'usr',
                 NoFilter: true
             },
             {
-                Header: t(langKeys.email),
+                Header: `${t(langKeys.email)}`,
                 accessor: 'email',
                 NoFilter: true
             },
@@ -1075,19 +1072,81 @@ const Users: FC = () => {
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
                 }
             },
+            {
+                Header: t(langKeys.billingGroup),
+                accessor: 'billinggroup',
+                NoFilter: true
+            },
 
         ],
         []
     );
+    const handleTemplate = () => {
+        console.log(domains)
+        debugger
+        const data = [
+            {},
+            {},
+            {},
+            domains.value?.company?.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
+            domains.value?.docTypes.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_documenttype_${d.domainvalue?.toLowerCase()}`) }), {}),
+            {},
+            domains.value?.billinggroups?.reduce((a, d) => ({ ...a, [d.domainid]: d.domaindesc }), {}),
+            {},
+            domains.value?.genericstatus?.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`status_${d.domainvalue?.toLowerCase()}`) }), {}),
+            domains.value?.userstatus?.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`status_${d.domainvalue?.toLowerCase()}`) }), {}),
+            {},
+            {},
+            {},
+            { 'true': 'true', 'false': 'false' },
+            domains.value?.roles?.reduce((a, d) => ({ ...a, [d.roleid]: d.roldesc }), {}),
+            dataChannelsTemp.reduce((a, d) => ({ ...a, [d.communicationchannelid]: d.description }), {}),
+            domains.value?.usergroup?.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
+        ];
+        const header = [
+            'firstname',
+            'lastname',
+            'email',
+            'company',
+            'doctype',
+            'docnum',
+            'billinggroup',
+            'registercode',
+            'twofactorauthentication',
+            'status',
+            'image',
+            'user',
+            'password',
+            'pwdchangefirstlogin',
+            'role',
+            'channels',
+            'groups'
+        ];
+        exportExcel(`${t(langKeys.template)} ${t(langKeys.import)}`, templateMaker(data, header));
+    }
+    const handleTemplateDrop = () => {
+        const data = [
+            {},
+            domains.value?.userstatus?.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`status_${d.domainvalue?.toLowerCase()}`) }), {}),
+            { 0: 'true', 1: 'false' },
+        ];
+        const header = [
+            'username',
+            'status',
+            'delete',
+        ];
+        exportExcel(`${t(langKeys.template)} ${t(langKeys.dropusers)}`, templateMaker(data, header));
+    }
 
     const fetchData = () => dispatch(getCollection(getUserSel(0)));
 
     useEffect(() => {
-        mainResult.data && setdataUsers(mainResult.data.map(x => ({ ...x, twofactorauthentication: !!x.twofactorauthentication ? t(langKeys.affirmative) : t(langKeys.negative) })));
+        mainResult.data && setdataUsers(mainResult.data);
     }, [mainResult]);
 
     useEffect(() => {
         fetchData();
+        dispatch(getDomainsByTypename());
         dispatch(getMultiCollection([
             getValuesFromDomain("ESTADOGENERICO"),
             getValuesFromDomain("TIPODOCUMENTO"),
@@ -1099,46 +1158,228 @@ const Users: FC = () => {
             getValuesFromDomain("ESTADOORGUSER"), //formulario orguser
             getOrgsByCorp(0), //formulario orguser
             getRolesByOrg(), //formulario orguser
+            getChannelsByOrg(user?.orgid)
         ]));
         return () => {
-            dispatch(resetMain());
+            dispatch(resetAllMain());
         };
     }, []);
 
     useEffect(() => {
+        if (waitImport) {
+            if (!executeRes.loading && !executeRes.error) {
+                const newcount = importCount - 1;
+
+                if (newcount === 0) {
+                    setImportCount(0);
+                    setMessageError('');
+                    if (messageError) {
+                        dispatch(showSnackbar({ show: true, severity: "error", message: messageError }));
+                    } else {
+                        dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
+                    }
+                    fetchData();
+                    dispatch(showBackdrop(false));
+                    setWaitImport(false);
+                } else {
+                    setImportCount(newcount);
+                }
+                // dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
+            } else if (executeRes.error) {
+                const newcount = importCount - 1;
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: `${t(langKeys.user).toLocaleLowerCase()}(${executeRes.key})` })
+                if (newcount === 0) {
+                    setImportCount(0);
+                    setMessageError('');
+                    dispatch(showSnackbar({ show: true, severity: "error", message: messageError + errormessage }));
+
+                    fetchData();
+                    dispatch(showBackdrop(false));
+                    setWaitImport(false);
+                } else {
+                    setImportCount(newcount);
+                    setMessageError(messageError + errormessage + "\n");
+                }
+                // dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                // dispatch(showBackdrop(false));
+                // setWaitImport(false);
+            }
+        }
+    }, [executeRes, waitImport, importCount])
+
+    useEffect(() => {
+        if (waitChanges) {
+            if (!deleteResult.loading && !deleteResult.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
+                fetchData();
+                dispatch(showBackdrop(false));
+                setwaitChanges(false);
+            } else if (deleteResult.error) {
+                const errormessage = t(deleteResult.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setwaitChanges(false);
+            }
+        }
+    }, [deleteResult, waitChanges])
+
+    useEffect(() => {
         if (waitSave) {
-            if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+            if (!deleteResult.loading && !deleteResult.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+            } else if (deleteResult.error) {
+                const errormessage = t(deleteResult.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
         }
-    }, [executeResult, waitSave])
+    }, [deleteResult, waitSave])
 
     const handleRegister = () => {
         setViewSelected("view-2");
         setRowSelected({ row: null, edit: true });
     }
 
-    const handleView = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected({ row, edit: false });
+    const handleUpload = async (files: any, useravailable: number, limit: number) => {
+        
+        const file = files?.item(0);
+        if (file) {
+            let excel: any = await uploadExcel(file, undefined);
+            const datainit = array_trimmer(excel);
+            const data = datainit.filter((f: any) => {
+                return (f.company === undefined || Object.keys(domains.value?.company?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.company))
+                    && (f.doctype === undefined || Object.keys(domains.value?.docTypes?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.doctype))
+                    && (f.billinggroup === undefined || Object.keys(domains.value?.billinggroups?.reduce((a: any, d) => ({ ...a, [d.domainid]: `${d.domainid}` }), {})).includes('' + f.billinggroup))
+                    && (f.twofactorauthentication === undefined || Object.keys(domains.value?.genericstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.twofactorauthentication))
+                    && (f.status === undefined || Object.keys(domains.value?.userstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.status))
+                    && (f.pwdchangefirstlogin === undefined || ["true", "false"].includes('' + f.pwdchangefirstlogin))
+                    && (f.role === undefined || Object.keys(domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.roleid]: `${d.roleid}` }), {})).includes('' + f.role))
+            });
+
+            debugger
+            const messageerrors = datainit.filter((f: any) => {
+                return !(f.company === undefined || Object.keys(domains.value?.company?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.company))
+                    || !(f.doctype === undefined || Object.keys(domains.value?.docTypes?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.doctype))
+                    || !(f.billinggroup === undefined || Object.keys(domains.value?.billinggroups?.reduce((a: any, d) => ({ ...a, [d.domainid]: `${d.domainid}` }), {})).includes('' + f.billinggroup))
+                    || !(f.twofactorauthentication === undefined || Object.keys(domains.value?.genericstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.twofactorauthentication))
+                    || !(f.status === undefined || Object.keys(domains.value?.userstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.status))
+                    || !(f.pwdchangefirstlogin === undefined || ["true", "false"].includes('' + f.pwdchangefirstlogin))
+                    || !(f.role === undefined || Object.keys(domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.roleid]: `${d.roleid}` }), {})).includes('' + f.role))
+            }).reduce((acc, x) => acc + t(langKeys.error_estructure_user, { email: x.email }) + `\n`, '');
+
+            setMessageError(messageerrors)
+
+            if (data.length > 0) {
+                if (data.length > useravailable) {
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.userlimit, { limit }) }))
+                }
+                else {
+                    dispatch(showBackdrop(true));
+                    setImportCount(data.length);
+                    let table: Dictionary = data.reduce((a: any, d) => ({
+                        ...a,
+                        [`${d.user}_${d.docnum}`]: {
+                            id: 0,
+                            usr: String(d.user||d.email),
+                            doctype: d.doctype,
+                            docnum: String(d.docnum),
+                            password: String(d.password),
+                            firstname: String(d.firstname),
+                            lastname: String(d.lastname),
+                            email: String(d.email),
+                            pwdchangefirstlogin: Boolean(d.pwdchangefirstlogin),
+                            type: "NINGUNO",
+                            status: d.status,
+                            operation: "INSERT",
+                            company: d.company,
+                            twofactorauthentication: d.twofactorauthentication === "ACTIVO",
+                            registercode: String(d.registercode),
+                            billinggroupid: d.billinggroup,
+                            image: d?.image || "",
+                            detail: {
+                                roleid: d.role,
+                                orgid: user?.orgid,
+                                bydefault: true,
+                                labels: "",
+                                groups: d.groups || "",
+                                channels: d.channels || "",
+                                status: "DESCONECTADO",
+                                type: domains?.value?.roles?.filter(x=>x.roleid===d.role)?.[0]?.roldesc||"",
+                                supervisor: "",
+                                operation: "INSERT",
+                                redirect: "/usersettings"
+                            }
+                        }
+                    }), {});
+                    Object.values(table).forEach((p) => {
+                        dispatch(saveUser({
+                            header: insUser({ ...p, key: p.usr }),
+                            detail: [insOrgUser({ ...p.detail })]
+                        }, true));
+                    })
+                    setWaitImport(true)
+                }
+
+            }
+            else {
+                dispatch(showSnackbar({ show: true, severity: "error", message: messageerrors }));
+            }
+        }
+    }
+    const handleDropUsers = async (files: any) => {
+        const file = files?.item(0);
+        if (file) {
+            let excel: any = await uploadExcel(file, undefined);
+            let data = array_trimmer(excel);
+            data = data.filter((f: any) =>
+                (f.status === undefined || Object.keys(domains.value?.userstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.status))
+                && (f.delete === undefined || [0, 1].includes(Number(f.delete)))
+            );
+            if (data.length > 0) {
+                dispatch(showBackdrop(true));
+                let table: Dictionary = data.reduce((a: any, d) => ({
+                    ...a,
+                    [`${d.username}_${d.status}`]: {
+                        ...dataUsers.filter(x => x.usr === d.username)[0],
+                        status: d.delete === 0 ? "ELIMINADO" : d.status,
+                        operation: d.delete === 0 ? "DELETE" : "UPDATE",
+                    }
+                }), {});
+                Object.values(table).forEach((p) => {
+                    dispatch(delUser({
+                        header: null,
+                        detail: [insUser({ ...p, id: p.userid, pwdchangefirstlogin: false })]
+                    }, false));
+                    // dispatch(execute(insUser({ ...p, id: p.userid, pwdchangefirstlogin: false })));
+                });
+                setwaitChanges(true)
+            }
+            else {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) }));
+            }
+        }
     }
 
     const handleEdit = (row: Dictionary) => {
         setViewSelected("view-2");
         setRowSelected({ row, edit: true });
     }
+    const handleDuplicate = (row: Dictionary) => {
+        setViewSelected("view-2");
+        setRowSelected({ row, edit: false });
+    }
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(insUser({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.userid, pwdchangefirstlogin: false })));
+            dispatch(delUser({
+                header: null,
+                detail: [insUser({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.userid, pwdchangefirstlogin: false })]
+            }, false));
+            // dispatch(execute(insUser({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.userid, pwdchangefirstlogin: false })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -1150,6 +1391,44 @@ const Users: FC = () => {
         }))
     }
 
+    const checkLimit = (operation: string) => {
+        setOperation(operation);
+        dispatch(getCollectionAux(checkUserPaymentPlan()));
+        setWaitCheck(true);
+    }
+
+    useEffect(() => {
+        if (waitCheck) {
+            if (!mainAuxResult.loading && !mainAuxResult.error) {
+                if (mainAuxResult.data.length > 0) {
+                    dispatch(showBackdrop(false));
+                    setWaitCheck(false);
+                    if (!(mainAuxResult.data[0].usernumber < mainAuxResult.data[0].userscontracted)) {
+                        
+                        dispatch(showSnackbar({
+                            show: true, severity: "error", message: t(langKeys.userlimit, {
+                                limit: mainAuxResult.data[0].userscontracted
+                            })
+                        }))
+                    }
+                    else {
+                        if (operation === 'REGISTER') {
+                            handleRegister();
+                        }
+                        if (operation === 'UPLOAD') {
+                            handleUpload(fileToUpload, mainAuxResult.data[0].userscontracted - mainAuxResult.data[0].usernumber, mainAuxResult.data[0].userscontracted);
+                        }
+                    }
+                }
+            } else if (mainAuxResult.error) {
+                const errormessage = t(mainAuxResult.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitCheck(false);
+            }
+        }
+    }, [mainAuxResult, waitCheck]);
+
     if (viewSelected === "view-1") {
 
         if (mainResult.error) {
@@ -1157,25 +1436,94 @@ const Users: FC = () => {
         }
 
         return (
-            <TableZyx
-                columns={columns}
-                titlemodule={t(langKeys.user, { count: 2 })}
-                data={dataUsers}
-                download={true}
-                loading={mainResult.loading}
-                register={true}
-                hoverShadow={true}
-                handleRegister={handleRegister}
-            />
+            <div style={{width:"100%"}}>
+                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={arrayBread}
+                        handleClick={redirectFunc}
+                    />
+                </div>
+                <TableZyx
+                    columns={columns}
+                    titlemodule={t(langKeys.user, { count: 2 })}
+                    data={dataUsers}
+                    download={true}
+                    loading={mainResult.loading}
+                    register={true}
+                    hoverShadow={true}
+                    handleRegister={() => checkLimit('REGISTER')}
+                    importCSV={(file) => {
+                        setFileToUpload(file);
+                        checkLimit('UPLOAD');
+                    }}
+                    onClickRow={handleEdit}
+                    ButtonsElement={() => (
+                        <>
+                            <Button
+                                disabled={mainResult.loading}
+                                variant="contained"
+                                type="button"
+                                color="primary"
+                                startIcon={<ClearIcon color="secondary" />}
+                                style={{ backgroundColor: "#FB5F5F" }}
+                                onClick={() => history.push(paths.CONFIGURATION)}
+                            >{t(langKeys.back)}</Button>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                disabled={mainResult.loading}
+                                startIcon={<ListAltIcon color="secondary" />}
+                                onClick={handleTemplateDrop}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >
+                                {`${t(langKeys.template)}  ${t(langKeys.dropusers)}`}
+                            </Button>
+                            <>
+                                <input
+                                    name="file"
+                                    accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
+                                    id="laraigo-dropusers-csv-file"
+                                    type="file"
+                                    style={{ display: 'none' }}
+                                    onChange={(e) => handleDropUsers(e.target.files)}
+                                />
+                                <label htmlFor="laraigo-dropusers-csv-file">
+                                    <Button
+                                        variant="contained"
+                                        component="span"
+                                        color="primary"
+                                        disabled={mainResult.loading}
+                                        startIcon={<ClearIcon color="secondary" />}
+                                        //onClick={handleTemplate}
+                                        style={{ backgroundColor: "#fb5f5f" }}>
+                                        <Trans i18nKey={langKeys.dropusers} />
+                                    </Button>
+                                </label>
+                            </>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                disabled={mainResult.loading}
+                                startIcon={<ListAltIcon color="secondary" />}
+                                onClick={handleTemplate}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >
+                                {`${t(langKeys.template)}  ${t(langKeys.import)}`}
+                            </Button>
+                        </>
+                    )}
+                />
+            </div>
         )
     }
     else
         return (
             <DetailUsers
                 data={rowSelected}
-                setViewSelected={setViewSelected}
+                setViewSelected={redirectFunc}
                 multiData={mainMultiResult.data}
                 fetchData={fetchData}
+                arrayBread={arrayBread}
             />
         )
 }

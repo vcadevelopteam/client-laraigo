@@ -2,13 +2,19 @@ import { RouteConfig } from "@types";
 import paths from "common/constants/paths";
 import {
     DashboardIcon, TicketIcon, ReportsIcon, MessageInboxIcon, SupervisorIcon, ConfigurationIcon, ExtrasIcon,
-    BotDesignerIcon,
+    BotDesignerIcon, BillingSetupIcon, InvoiceIcon,
     IAServicesIcon,
     OutboundIcon,
     MessageTemplateIcon,
     AIModelsIcon,
     ClientIcon,
-    CRMIcon
+    CRMIcon,
+    EnvioIcon,
+    KPIIcon,
+    CalendaryIcon,
+    RulesIcon,
+    ProductsIcon
+
 } from 'icons';
 import { langKeys } from "lang/keys";
 import { Trans } from "react-i18next";
@@ -27,6 +33,27 @@ export const routes: RouteConfig[] = [
         tooltip: <Trans i18nKey={langKeys.report} count={2} />,
         path: paths.REPORTS,
         icon: (className) => <ReportsIcon style={{ width: 22, height: 22 }} className={className} />,
+    },
+    {
+        key: paths.REPORTSCHEDULER,
+        description: <Trans i18nKey={langKeys.reportscheduler} count={2} />, // prop:count for plural purposes
+        tooltip: <Trans i18nKey={langKeys.reportscheduler} count={2} />,
+        path: paths.REPORTSCHEDULER,
+        icon: (className) => <EnvioIcon style={{ width: 22, height: 22 }} className={className} />,
+    },
+    {
+        key: paths.KPIMANAGER,
+        description: <Trans i18nKey={langKeys.kpimanager_plural} />,
+        tooltip: <Trans i18nKey={langKeys.kpimanager} />,
+        path: paths.KPIMANAGER,
+        icon: (className) => <KPIIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
+    },
+    {
+        key: paths.CALENDAR,
+        description: <Trans i18nKey={langKeys.calendar_plural} />,
+        tooltip: <Trans i18nKey={langKeys.calendar} />,
+        path: paths.CALENDAR,
+        icon: (className) => <CalendaryIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
     },
     // {
     //     key: paths.REPORTDESIGNER,
@@ -48,6 +75,27 @@ export const routes: RouteConfig[] = [
         tooltip: <Trans i18nKey={langKeys.person} count={2} />,
         path: paths.PERSON,
         icon: (className) => <ClientIcon style={{ width: 22, height: 22 }} className={className} />,
+    },
+    {
+        key: paths.CRM,
+        description: <Trans i18nKey={langKeys.lead} count={2} />,
+        tooltip: <Trans i18nKey={langKeys.lead} count={2} />,
+        path: paths.CRM,
+        icon: (className) => <CRMIcon style={{ width: 22, height: 26 }} className={className} />,
+    },
+    {
+        key: paths.AUTOMATIZATIONRULES,
+        description: <Trans i18nKey={langKeys.automatizationrules} count={2} />,
+        tooltip: <Trans i18nKey={langKeys.automatizationrules} count={2} />,
+        path: paths.AUTOMATIZATIONRULES,
+        icon: (className) => <RulesIcon style={{ width: 22, height: 26 }} className={className} />,
+    },
+    {
+        key: paths.PRODUCTCATALOG,
+        description: <Trans i18nKey={langKeys.productcatalog} count={2} />,
+        tooltip: <Trans i18nKey={langKeys.productcatalog} count={2} />,
+        path: paths.PRODUCTCATALOG,
+        icon: (className) => <ProductsIcon style={{ width: 22, height: 26 }} className={className} />,
     },
     // {
     //     key: paths.EMAIL_INBOX,
@@ -75,18 +123,20 @@ export const routes: RouteConfig[] = [
         path: paths.SUPERVISOR,
         icon: (className) => <SupervisorIcon style={{ width: 22, height: 22 }} className={className} />,
     },
-    // {
-    //     key: paths.BILLING_SETUPS,
-    //     description: <Trans i18nKey={langKeys.billingSetup} />,
-    //     path: paths.BILLING_SETUPS,
-    //     icon: (className) => <BillingSetupIcon style={{width: 22, height: 22}} className={className} />,
-    // },
-    // {
-    //     key: paths.BILLING_SETUPS,
-    //     description: <Trans i18nKey={langKeys.billingSetup} />,
-    //     path: paths.BILLING_SETUPS,
-    //     icon: (className) => <BillingSetupIcon style={{ width: 22, height: 22 }} className={className} />,
-    // },
+    {
+        key: paths.BILLING_SETUPS,
+        description: <Trans i18nKey={langKeys.billingSetup} />,
+        tooltip: <Trans i18nKey={langKeys.billingSetup} />,
+        path: paths.BILLING_SETUPS,
+        icon: (className) => <BillingSetupIcon style={{width: 22, height: 22}} className={className} />,
+    },
+    {
+        key: paths.INVOICE,
+        description: <Trans i18nKey={langKeys.invoice} />,
+        tooltip: <Trans i18nKey={langKeys.invoice} />,
+        path: paths.INVOICE,
+        icon: (className) => <InvoiceIcon style={{width: 22, height: 22}} className={className} />,
+    },
     {
         key: paths.CONFIGURATION,
         description: <Trans i18nKey={langKeys.configuration} />,
@@ -146,13 +196,6 @@ export const routes: RouteConfig[] = [
         path: paths.IASERVICES,
         icon: (className) => <IAServicesIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
     },
-    {
-        key: paths.CRM,
-        description: 'CRM',
-        tooltip: 'CRM',
-        path: paths.CRM,
-        icon: (className) => <CRMIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
-    },
     // {
     //     key: paths.EXTRAS,
     //     description: <Trans i18nKey={langKeys.extra} count={2} />,
@@ -189,10 +232,10 @@ export const subroutes: RouteConfig[] = [
         path: paths.QUICKREPLIES,
     },
     {
-        key: paths.WHITELIST,
-        description: <Trans i18nKey={langKeys.whitelist} />,
+        key: paths.INPUTVALIDATION,
+        description: <Trans i18nKey={langKeys.inputvalidation} />,
         tooltip: "",
-        path: paths.WHITELIST,
+        path: paths.INPUTVALIDATION,
     },
     {
         key: paths.INAPPROPRIATEWORDS,
@@ -226,6 +269,13 @@ export const subroutes: RouteConfig[] = [
         description: <Trans i18nKey={langKeys.domain_plural} count={2} />,
         tooltip: "",
         path: paths.DOMAINS,
+        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+    },
+    {
+        key: paths.WHITELIST,
+        description: <Trans i18nKey={langKeys.whitelist} count={2} />,
+        tooltip: "",
+        path: paths.WHITELIST,
         icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
     },
     {

@@ -21,6 +21,9 @@ const actionType = {
     LOGOUT_FAILURE: 'login/LOGOUT_FAILURE',
     LOGOUT_SUCCESS: 'login/LOGOUT_SUCCESS',
     LOGOUT_RESET: 'login/LOGOUT_RESET',
+
+    CHANGE_PWD_FIRST_LOGIN: 'login/CHANGE_PWD_FIRST_LOGIN',
+    NEW_NOTIFICATION: 'login/NEW_NOTIFICATION',
 };
 
 export default actionType;

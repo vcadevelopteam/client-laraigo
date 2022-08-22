@@ -1,4 +1,4 @@
-import { IActionCall, IRequestBodyPaginated, IRequestBody, ITransaction, IRequestBodyDynamic } from "@types";
+import { IActionCall, IRequestBodyPaginated, IRequestBody, ITransaction, IRequestBodyDynamic, Dictionary } from "@types";
 import { CommonService } from "network";
 import actionTypes from "./actionTypes";
 
@@ -46,13 +46,14 @@ export const getCollectionDynamic = (requestBody: IRequestBodyDynamic): IActionC
 export const resetMainDynamic = (): IActionCall => ({ type: actionTypes.DATA_DYNAMIC_RESET });
 
 
-export const exportDynamic = (requestBody: IRequestBodyDynamic, reportName: string = "", formatToExport: "excel" | "csv" = "excel"): IActionCall => ({
+export const exportDynamic = (requestBody: IRequestBodyDynamic, reportName: string = "", formatToExport: "excel" | "csv" = "excel", headerClient: Dictionary[] | null = null): IActionCall => ({
     callAPI: () => CommonService.mainDynamicExport({
         ...requestBody,
         parameters: {
             ...requestBody.parameters,
             formatToExport,
-            reportName
+            reportName, 
+            headerClient
         }
     }),
     types: {
@@ -81,14 +82,15 @@ export const uploadFile = (data: FormData): IActionCall => ({
 export const resetUploadFile = (): IActionCall => ({ type: actionTypes.UPLOAD_FILE_RESET });
 
 
-export const exportData = (requestBody: IRequestBody, reportName: string = "", formatToExport: "excel" | "csv" = "excel", isNotPaginated: boolean = false): IActionCall => ({
+export const exportData = (requestBody: IRequestBody, reportName: string = "", formatToExport: "excel" | "csv" = "excel", isNotPaginated: boolean = false, headerClient: Dictionary[] | null = null): IActionCall => ({
     callAPI: () => CommonService.exportData({
         ...requestBody,
         parameters: {
             ...requestBody.parameters,
             formatToExport,
             isNotPaginated,
-            reportName
+            reportName,
+            headerClient
         }
     }),
     types: {
@@ -114,6 +116,19 @@ export const getCollectionAux = (requestBody: IRequestBody): IActionCall => ({
 
 export const resetMainAux = (): IActionCall => ({ type: actionTypes.AUX_MAIN_RESET });
 
+export const getCollectionAux2 = (requestBody: IRequestBody): IActionCall => ({
+    callAPI: () => CommonService.main(requestBody),
+    types: {
+        loading: actionTypes.AUX2_MAIN,
+        success: actionTypes.AUX2_MAIN_SUCCESS,
+        failure: actionTypes.AUX2_MAIN_FAILURE,
+    },
+    type: null,
+});
+
+export const resetMainAux2 = (): IActionCall => ({ type: actionTypes.AUX2_MAIN_RESET });
+
+/**Action type = EXECUTE_MAIN */
 export const execute = (requestBody: IRequestBody | ITransaction, transaction: boolean = false): IActionCall => ({
     callAPI: () => CommonService.main(requestBody, transaction),
     types: {
@@ -124,6 +139,34 @@ export const execute = (requestBody: IRequestBody | ITransaction, transaction: b
     type: null,
 });
 
+type Url = string;
+/**Action type = EXECUTE_MAIN */
+export const executeWithFiles = (
+    build: (uploader: (file: File) => Promise<Url>) => Promise<IRequestBody | ITransaction>,
+    transaction: boolean = false,
+): IActionCall => {
+    const uploadCb = async (mediaFile: File): Promise<Url> => {
+        const fd = new FormData();
+        fd.append('file', mediaFile, mediaFile.name);
+        const uploadResult = await CommonService.uploadFile(fd);
+        return (uploadResult.data["url"] || '') as Url;
+    };
+
+    return {
+        callAPI: async () => {
+            const requestBody = await build(uploadCb);
+            return CommonService.main(requestBody, transaction);
+        },
+        types: {
+            loading: actionTypes.EXECUTE_MAIN,
+            success: actionTypes.EXECUTE_MAIN_SUCCESS,
+            failure: actionTypes.EXECUTE_MAIN_FAILURE,
+        },
+        type: null,
+    };
+}
+
+/**Action type = EXECUTE_MAIN */
 export const resetExecute = (): IActionCall => ({ type: actionTypes.EXECUTE_MAIN_RESET });
 
 export const getMultiCollection = (requestBodies: IRequestBody[]): IActionCall => ({
@@ -150,6 +193,18 @@ export const getMultiCollectionAux = (requestBodies: IRequestBody[]): IActionCal
 
 export const resetMultiMainAux = (): IActionCall => ({ type: actionTypes.AUX_MULTI_MAIN_RESET });
 
+export const getMultiCollectionAux2 = (requestBodies: IRequestBody[]): IActionCall => ({
+    callAPI: () => CommonService.multiMain(requestBodies),
+    types: {
+        loading: actionTypes.AUX2_MULTI_MAIN,
+        success: actionTypes.AUX2_MULTI_MAIN_SUCCESS,
+        failure: actionTypes.AUX2_MULTI_MAIN_FAILURE,
+    },
+    type: null,
+});
+
+export const resetMultiMainAux2 = (): IActionCall => ({ type: actionTypes.AUX2_MULTI_MAIN_RESET });
+
 export const getCollectionPaginated = (requestBody: IRequestBodyPaginated): IActionCall => ({
     callAPI: () => CommonService.mainPaginated(requestBody),
     types: {
@@ -161,3 +216,45 @@ export const getCollectionPaginated = (requestBody: IRequestBodyPaginated): IAct
 });
 
 export const resetCollectionPaginated = (): IActionCall => ({ type: actionTypes.PAGINATED_MAIN_RESET });
+
+// export const resetAllMain = (): IActionCall => ({ type: actionTypes.RESET_ALL });
+
+export const setMemoryTable = (payload: any): IActionCall => ({ type: actionTypes.SET_MEMORY_TABLE, payload });
+
+export const cleanMemoryTable = (): IActionCall => ({ type: actionTypes.CLEAN_MEMORY_TABLE });
+export const getCollectionPaginatedAux = (requestBody: IRequestBodyPaginated): IActionCall => ({
+    callAPI: () => CommonService.mainPaginated(requestBody),
+    types: {
+        loading: actionTypes.AUX_PAGINATED_MAIN,
+        success: actionTypes.AUX_PAGINATED_MAIN_SUCCESS,
+        failure: actionTypes.AUX_PAGINATED_MAIN_FAILURE,
+    },
+    type: null,
+});
+
+export const resetCollectionPaginatedAux = (): IActionCall => ({ type: actionTypes.AUX_PAGINATED_MAIN_RESET });
+
+export const getMainGraphic = (requestBody: IRequestBody): IActionCall => ({
+    callAPI: () => CommonService.mainGraphic(requestBody),
+    types: {
+        loading: actionTypes.GRAPHIC_MAIN,
+        success: actionTypes.GRAPHIC_MAIN_SUCCESS,
+        failure: actionTypes.GRAPHIC_MAIN_FAILURE,
+    },
+    type: null,
+});
+
+export const resetMainGraphic = (): IActionCall => ({ type: actionTypes.GRAPHIC_MAIN_RESET });
+
+export const resetAllMain = (): IActionCall => ({ type: actionTypes.RESET_ALL });
+
+
+export const getCollEventBooking = (requestBody: IRequestBody): IActionCall => ({
+    callAPI: () => CommonService.mainEventBooking(requestBody),
+    types: {
+        loading: actionTypes.MAIN_EVENT_BOOKING,
+        success: actionTypes.MAIN_EVENT_BOOKING_SUCCESS,
+        failure: actionTypes.MAIN_EVENT_BOOKING_FAILURE,
+    },
+    type: null,
+});

@@ -1,5 +1,5 @@
-import { IListStatePaginated, ITicket, IGroupInteraction, IPerson, IAgent, Dictionary } from "@types";
-import { createReducer, initialListPaginatedState } from "common/helpers";
+import { IListStatePaginated, ITicket, IGroupInteraction, IPerson, IAgent, Dictionary, IObjectState, IInteraction } from "@types";
+import { createReducer, initialListPaginatedState, initialObjectState } from "common/helpers";
 import * as caseFunctions from './caseFunctions';
 import actionTypes from "./actionTypes";
 
@@ -26,6 +26,8 @@ export interface IState {
     ticketFilteredList: IListStatePaginated<ITicket>;
     previewTicketList: IListStatePaginated<ITicket>;
     interactionList: IListStatePaginated<IGroupInteraction>;
+    interactionBaseList: IInteraction[];
+    agentToReassignList: Dictionary[];
     interactionExtraList: IListStatePaginated<IGroupInteraction>;
     configurationVariables: IListStatePaginated<Dictionary>;
     richResponseList: IListStatePaginated<Dictionary>;
@@ -40,15 +42,28 @@ export interface IState {
     triggerMassiveCloseTicket: IBaseState;
     triggerReplyTicket: IBaseState;
     triggerReassignTicket: IBaseState;
+    triggerImportTicket: IBaseState;
     showInfoPanel: boolean;
     userType: "SUPERVISOR" | "AGENT" | null;
+    holdingBySupervisor: "CANAL" | "GRUPO";
+    userGroup: string;
+    role: string;
+    hideLogsOnTicket: boolean;
     wsConnected: boolean;
     userConnected: boolean;
+    aNewTicket: boolean | null;
+    aNewMessage: boolean | null;
     isOnBottom: boolean | null;
     showGoToBottom: boolean | null;
     triggerNewMessageClient: boolean;
     triggerConnectAgentGo: IBaseState;
     isFiltering: boolean;
+    showModalClose: number;
+    outboundData: IObjectState<Dictionary>;
+    forceddisconnect: IObjectState<{ userid: number, code: "SESSION_EXPIRED" | "OTHER_PC_CONNECTION" }>;
+    alertTMO: {
+        [key: string]: number
+    }
 }
 
 export const initialState: IState = {
@@ -56,6 +71,8 @@ export const initialState: IState = {
     ticketFilteredList: initialListPaginatedState,
     ticketList: initialListPaginatedState,
     previewTicketList: initialListPaginatedState,
+    interactionBaseList: [],
+    agentToReassignList: [],
     interactionList: initialListPaginatedState,
     richResponseList: initialListPaginatedState,
     interactionExtraList: initialListPaginatedState,
@@ -69,8 +86,12 @@ export const initialState: IState = {
     triggerReplyTicket: initialTransaction,
     triggerConnectAgentGo: initialTransaction,
     triggerReassignTicket: initialTransaction,
+    triggerImportTicket: initialTransaction,
     ticketSelected: null,
     agentSelected: null,
+    aNewTicket: null,
+    aNewMessage: null,
+    hideLogsOnTicket: false,
     showInfoPanel: false,
     userType: null,
     wsConnected: false,
@@ -79,6 +100,13 @@ export const initialState: IState = {
     showGoToBottom: false,
     triggerNewMessageClient: false,
     isFiltering: false,
+    outboundData: initialObjectState,
+    forceddisconnect: initialObjectState,
+    showModalClose: 0,
+    holdingBySupervisor: "CANAL",
+    role: "",
+    userGroup: "",
+    alertTMO: {}
 };
 
 export default createReducer<IState>(initialState, {
@@ -161,6 +189,19 @@ export default createReducer<IState>(initialState, {
     [actionTypes.SEND_HSM_RESET]: caseFunctions.sendHSMReset,
 
 
+    [actionTypes.IMPORT_TICKET]: caseFunctions.importTicket,
+    [actionTypes.IMPORT_TICKET_SUCCESS]: caseFunctions.importTicketSuccess,
+    [actionTypes.IMPORT_TICKET_FAILURE]: caseFunctions.importTicketFailure,
+    [actionTypes.IMPORT_TICKET_RESET]: caseFunctions.importTicketReset,
+
+    
+
+    [actionTypes.GET_DATA_FOR_OUTBOUND]: caseFunctions.getDataForOutbound,
+    [actionTypes.GET_DATA_FOR_OUTBOUND_SUCCESS]: caseFunctions.getDataForOutboundSuccess,
+    [actionTypes.GET_DATA_FOR_OUTBOUND_FAILURE]: caseFunctions.getDataForOutboundFailure,
+    [actionTypes.GET_DATA_FOR_OUTBOUND_RESET]: caseFunctions.getDataForOutboundReset,
+
+
     [actionTypes.REASSIGN_TICKET]: caseFunctions.reassignTicket,
     [actionTypes.REASSIGN_TICKET_SUCCESS]: caseFunctions.reassignTicketSuccess,
     [actionTypes.REASSIGN_TICKET_FAILURE]: caseFunctions.reassignTicketFailure,
@@ -183,7 +224,23 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_TIPIFICATION_LEVEL_3_RESET]: caseFunctions.getTipificationLevel3Reset,
     [actionTypes.WS_CONNECTED]: caseFunctions.wsConnect,
     [actionTypes.GO_TO_BOTTOM]: caseFunctions.goToBottom,
+    [actionTypes.SET_AGENTS_TO_REASSIGN]: caseFunctions.setAgentsToReassign,
     [actionTypes.SET_SHOW_GO_TO_BOTTOM]: caseFunctions.showGoToBottom,
     [actionTypes.SET_IS_FILTERING]: caseFunctions.setIsFiltering,
     [actionTypes.UPDATE_PERSON]: caseFunctions.updatePerson,
+    [actionTypes.CLEAN_ALERT]: caseFunctions.cleanAlerts,
+
+    [actionTypes.FORCEDDISCONECTION]: caseFunctions.forceddesconection,
+    [actionTypes.FORCEDDISCONECTION_RESET]: caseFunctions.resetForceddesconection,
+    [actionTypes.RESET_INBOX_SUPERVISOR]: caseFunctions.resetInboxSupervisor,
+    [actionTypes.CHANGE_STATUS_TICKET]: caseFunctions.changeStatusTicket,
+    [actionTypes.CHANGE_STATUS_TICKET_WS]: caseFunctions.changeStatusTicketWS,
+    
+    [actionTypes.SHOW_LOG_INTERACTIONS]: caseFunctions.hideLogInteractions,
+    [actionTypes.RESET_SHOW_MODAL_CLOSE]: caseFunctions.resetShowModal,
+    [actionTypes.SET_HIDE_LOGS_ON_TICKET]: caseFunctions.setHideLogsOnTicket,
+    [actionTypes.NEW_TICKET_CALL]: caseFunctions.newCallTicket,
+    [actionTypes.CALL_CONNECTED]: caseFunctions.callConnected,
+    [actionTypes.SET_DATA_USER]: caseFunctions.setDataUser,
+    [actionTypes.UPDATE_CLASSIFICATION_PERSON]: caseFunctions.updatePersonClassification,
 });

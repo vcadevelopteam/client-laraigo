@@ -5,23 +5,31 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Tabs from '@material-ui/core/Tabs';
 import Avatar from '@material-ui/core/Avatar';
-import { EMailInboxIcon, PhoneIcon } from 'icons';
-import { getTicketsPerson, showInfoPanel, updatePerson } from 'store/inbox/actions';
-import { GetIcon, FieldEdit, FieldSelect, DialogInteractions, AntTab } from 'components'
+import { EMailInboxIcon, PhoneIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon } from 'icons';
+import { getTicketsPerson, showInfoPanel, updateClassificationPerson, updatePerson } from 'store/inbox/actions';
+import { GetIcon, FieldEdit, FieldSelect, DialogInteractions, AntTab, FieldEditMulti } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
-import { convertLocalDate, getValuesFromDomain, insPersonBody } from 'common/helpers';
+import { convertLocalDate, getConversationClassification2, getValuesFromDomain, insertClassificationConversation, insPersonBody, validateIsUrl } from 'common/helpers';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import { Dictionary } from '@types';
 import EditIcon from '@material-ui/icons/Edit';
 import SaveIcon from '@material-ui/icons/Save';
 import { useForm } from 'react-hook-form';
-import { getMultiCollectionAux, resetMultiMainAux, execute } from 'store/main/actions';
+import { getMultiCollectionAux, resetMultiMainAux, execute, getCollectionAux2 } from 'store/main/actions';
 import Fab from '@material-ui/core/Fab';
+import { CircularProgress } from '@material-ui/core';
+import AttachFileIcon from '@material-ui/icons/AttachFile';
+import ImportExportIcon from '@material-ui/icons/ImportExport';
+import clsx from 'clsx';
+import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
+import DeleteIcon from '@material-ui/icons/Delete';
+
 const useStyles = makeStyles((theme) => ({
     containerInfo: {
         flex: '0 0 300px',
+        width: 300,
         display: 'flex',
         flexDirection: 'column',
 
@@ -58,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(1),
         display: 'flex',
         flexDirection: 'column',
-        gap: theme.spacing(1),
+        gap: theme.spacing(.5),
         overflowY: 'auto',
         cursor: 'pointer',
         flex: 1,
@@ -94,6 +102,24 @@ const useStyles = makeStyles((theme) => ({
     propIcon: {
         stroke: '#8F92A1'
     },
+    orderReverse: {
+        flexDirection: 'column-reverse'
+    },
+    orderDefault: {
+        flexDirection: 'column'
+    },
+    containerAttachment: {
+        display: 'flex',
+        gap: 8,
+        alignItems: 'center',
+        borderBottom: '1px solid #e1e1e1',
+        padding: theme.spacing(1),
+        paddingLeft: 16,
+        cursor: 'pointer',
+        '&:hover': {
+            backgroundColor: '#ececec'
+        }
+    }
 }));
 
 const InfoClient: React.FC = () => {
@@ -116,9 +142,7 @@ const InfoClient: React.FC = () => {
                     <Avatar alt="" style={{ width: 120, height: 120 }} src={person?.imageurldef} />
                     <div style={{ flex: 1, textAlign: 'center' }}>
                         <div style={{ fontSize: 18, fontWeight: 500 }}>{person?.firstname} {person?.lastname}</div>
-                        <div className={classes.label}>{`ID# ${person?.personid}`}</div>
                     </div>
-                    {/* <div className={classes.btn}>{t(langKeys.active)}</div> */}
                 </div>
                 <div className={classes.containerName}>
                     <EMailInboxIcon className={classes.propIcon} />
@@ -148,8 +172,6 @@ const InfoTab: React.FC = () => {
     const [view, setView] = useState('view');
 
     const multiData = useSelector(state => state.main.multiDataAux);
-    const resUpdatePerson = useSelector(state => state.main.execute);
-
     const { setValue, getValues, trigger, register, formState: { errors } } = useForm<any>({
         defaultValues: { ...person, birthday: person?.birthday || '' }
     });
@@ -158,6 +180,7 @@ const InfoTab: React.FC = () => {
         register('firstname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('lastname');
         register('email');
+        register('observation');
         register('phone');
         register('documenttype');
         register('documentnumber');
@@ -216,12 +239,14 @@ const InfoTab: React.FC = () => {
                             onChange={(value) => setValue('firstname', value)}
                             valueDefault={getValues('firstname')}
                             error={errors?.firstname?.message}
+                            maxLength={50}
                         />
                         <FieldEdit
                             label={t(langKeys.lastname)}
                             onChange={(value) => setValue('lastname', value)}
                             valueDefault={getValues('lastname')}
                             error={errors?.lastname?.message}
+                            maxLength={50}
                         />
                         <FieldSelect
                             onChange={(value) => setValue('documenttype', value?.domainvalue)}
@@ -241,30 +266,35 @@ const InfoTab: React.FC = () => {
                             valueDefault={getValues('documentnumber')}
                             type="number"
                             error={errors?.documentnumber?.message}
+                            maxLength={50}
                         />
                         <FieldEdit
                             label={t(langKeys.email)}
                             onChange={(value) => setValue('email', value)}
                             valueDefault={getValues('email')}
                             error={errors?.email?.message}
+                            maxLength={50}
                         />
                         <FieldEdit
                             label={t(langKeys.phone)}
                             onChange={(value) => setValue('phone', value)}
                             valueDefault={getValues('phone')}
                             error={errors?.phone?.message}
+                            maxLength={20}
                         />
                         <FieldEdit
                             label={t(langKeys.alternativeEmail)}
                             onChange={(value) => setValue('alternativeemail', value)}
                             valueDefault={getValues('alternativeemail')}
                             error={errors?.alternativeemail?.message}
+                            maxLength={50}
                         />
                         <FieldEdit
                             label={t(langKeys.alternativePhone)}
                             onChange={(value) => setValue('alternativephone', value)}
                             valueDefault={getValues('alternativephone')}
                             error={errors?.alternativephone?.message}
+                            maxLength={20}
                         />
                         <FieldEdit
                             label={t(langKeys.birthday)}
@@ -321,6 +351,12 @@ const InfoTab: React.FC = () => {
                             prefixTranslation="type_educationlevel_"
                             error={errors?.educationlevel?.message}
                         />
+                        <FieldEditMulti
+                            label={t(langKeys.observation)}
+                            onChange={(value) => setValue('observation', value)}
+                            valueDefault={getValues('observation')}
+                            error={errors?.observation?.message}
+                        />
                     </div>
                     <Fab
                         onClick={() => setView('view')}
@@ -349,18 +385,6 @@ const InfoTab: React.FC = () => {
                         <div>{person?.lastname}</div>
                     </div>
                 </div>}
-                {person?.documenttype && <div className={classes.containerName}>
-                    <div style={{ flex: 1 }}>
-                        <div className={classes.label}>{t(langKeys.documenttype)}</div>
-                        <div>{person?.documenttype && t("type_documenttype_" + person?.documenttype.toLocaleLowerCase())}</div>
-                    </div>
-                </div>}
-                {person?.documentnumber && <div className={classes.containerName}>
-                    <div style={{ flex: 1 }}>
-                        <div className={classes.label}>{t(langKeys.documentnumber)}</div>
-                        <div>{person?.documentnumber}</div>
-                    </div>
-                </div>}
                 {person?.email && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.email)}</div>
@@ -373,6 +397,31 @@ const InfoTab: React.FC = () => {
                         <div>{person?.phone}</div>
                     </div>
                 </div>}
+                {person?.firstcontact && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.firstContactDate)}</div>
+                        <div>{new Date(person?.firstcontact).toLocaleString()}</div>
+                    </div>
+                </div>}
+                {person?.lastcontact && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.lastContactDate)}</div>
+                        <div>{new Date(person?.lastcontact).toLocaleString()}</div>
+                    </div>
+                </div>}
+                {person?.documenttype && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.documenttype)}</div>
+                        <div>{person?.documenttype && t("type_documenttype_" + person?.documenttype.toLocaleLowerCase())}</div>
+                    </div>
+                </div>}
+                {person?.documentnumber && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.documentnumber)}</div>
+                        <div>{person?.documentnumber}</div>
+                    </div>
+                </div>}
+
                 {person?.alternativephone && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.alternativePhone)}</div>
@@ -427,18 +476,7 @@ const InfoTab: React.FC = () => {
                         <div>{person?.educationlevel && t("type_educationlevel_" + person?.educationlevel.toLocaleLowerCase())}</div>
                     </div>
                 </div>}
-                {person?.firstcontact && <div className={classes.containerName}>
-                    <div style={{ flex: 1 }}>
-                        <div className={classes.label}>{t(langKeys.firstContactDate)}</div>
-                        <div>{new Date(person?.firstcontact).toLocaleString()}</div>
-                    </div>
-                </div>}
-                {person?.lastcontact && <div className={classes.containerName}>
-                    <div style={{ flex: 1 }}>
-                        <div className={classes.label}>{t(langKeys.lastContactDate)}</div>
-                        <div>{new Date(person?.lastcontact).toLocaleString()}</div>
-                    </div>
-                </div>}
+
                 {person?.lastcommunicationchannel && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.lastCommunicationChannel)}</div>
@@ -449,6 +487,12 @@ const InfoTab: React.FC = () => {
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.totalconversations)}</div>
                         <div>{person?.totaltickets}</div>
+                    </div>
+                </div>}
+                {person?.observation && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.observation)}</div>
+                        <div>{person?.observation}</div>
                     </div>
                 </div>}
             </div>
@@ -471,13 +515,17 @@ const Variables: React.FC = () => {
     return (
         <div className={`scroll-style-go ${classes.containerInfoClient}`} style={{ overflowY: 'auto', flex: 1, backgroundColor: 'transparent' }}>
 
-            {variablecontext && !(variablecontext instanceof Array) && configurationVariables.map(({ description, fontbold, fontcolor, variable }, index) => {
+            {variablecontext && !(variablecontext instanceof Array) && configurationVariables.map(({ fontbold, fontcolor, variable, description }, index) => {
                 const variabletmp = variablecontext[variable];
+                if (!variabletmp?.Value) {
+                    return null;
+                }
                 return (
                     <div key={index} className={classes.containerName}>
                         <div style={{ fontWeight: fontbold ? 'bold' : 'normal' }}>
                             <div className={classes.label}>{description}</div>
-                            <div style={{ color: fontcolor }}>{variabletmp?.Value || '-'}</div>
+                            <div style={{ color: fontcolor }} dangerouslySetInnerHTML={{ __html: validateIsUrl(variabletmp?.Value) || '-' }}>
+                            </div>
                         </div>
                     </div>
                 )
@@ -486,13 +534,100 @@ const Variables: React.FC = () => {
     )
 }
 
-const PreviewTickets = () => {
+const Classifications: React.FC = () => {
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const classes = useStyles();
+    const dispatch = useDispatch();
+    const { t } = useTranslation();
+    const [classifications, setClassifications] = useState<any[]>([]);
+    const [waitSave, setWaitSave] = useState(false);
+    const tipifyRes = useSelector(state => state.main.execute);
+
+    const mainAux2 = useSelector(state => state.main.mainAux2);
+    const fetchData = () => dispatch(getCollectionAux2(getConversationClassification2(ticketSelected?.conversationid!!)))
+
+    useEffect(() => {
+        dispatch(getCollectionAux2(getConversationClassification2(ticketSelected?.conversationid!!)))
+    }, [])
+
+    useEffect(() => {
+        if (!tipifyRes.loading && !tipifyRes.error) {
+            fetchData()
+        }
+    }, [tipifyRes])
+
+    useEffect(() => {
+        if (!mainAux2.loading && !mainAux2.error) {
+            dispatch(updateClassificationPerson(mainAux2.data.length > 0))
+            setClassifications(mainAux2?.data?.reverse() || [])
+        }
+    }, [mainAux2])
+
+    useEffect(() => {
+        if (waitSave) {
+            dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
+            dispatch(showBackdrop(false));
+            setWaitSave(false);
+        }
+    }, [waitSave])
+
+    const handleDelete = (row: Dictionary) => {
+        const callback = () => {
+            dispatch(execute(insertClassificationConversation(ticketSelected?.conversationid || 0, row.classificationid, row.jobplan, 'DELETE')));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete),
+            callback
+        }))
+    }
+
+    if (mainAux2.loading) {
+        return (
+            <div style={{ flex: 1, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <CircularProgress />
+            </div>
+        )
+    }
+
+    if (classifications.length === 0) {
+        return (
+            <div className={classes.label} style={{ padding: 8, flex: 1 }}>
+                {t(langKeys.without_result)}
+            </div>
+        )
+    }
+
+    return (
+        <div style={{ overflowY: 'auto' }} className="scroll-style-go">
+            <div className={classes.containerInfoClient} style={{ paddingTop: 0, backgroundColor: 'transparent' }}>
+                {classifications.map((x, i) => {
+                    return (
+                        <div className={classes.containerPreviewTicket} style={{ flexDirection: "initial", alignItems: "center" }} key={x.classificationid}>
+                            <div style={{ flex: 1 }}>
+                                <div>- {x.path.replace("/", " / ")}</div>
+                            </div>
+                            <DeleteIcon style={{ color: "#B6B4BA" }} onClick={() => { handleDelete(x) }} />
+                        </div>
+                    )
+                })}
+            </div>
+        </div>
+    )
+}
+
+const PreviewTickets: React.FC<{ order: number }> = ({ order }) => {
     const dispatch = useDispatch();
     const classes = useStyles();
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const previewTicketList = useSelector(state => state.inbox.previewTicketList);
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
     const [openModal, setOpenModal] = useState(false);
+    const el = React.useRef<null | HTMLDivElement>(null);
+    const el1 = React.useRef<null | HTMLDivElement>(null);
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -504,28 +639,56 @@ const PreviewTickets = () => {
         setRowSelected(row)
     };
 
+    useEffect(() => {
+        if (order === 1)
+            el1.current?.scrollIntoView();
+        else
+            el?.current?.scrollIntoView();
+    }, [order])
+
+    if (previewTicketList.loading) {
+        return (
+            <div style={{ flex: 1, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <CircularProgress />
+            </div>
+        )
+    }
+
+    if (previewTicketList.data.length === 0) {
+        return (
+            <div className={classes.label} style={{ padding: 8, flex: 1 }}>
+                {t(langKeys.without_result)}
+            </div>
+        )
+    }
+
     return (
-        <div style={{ flex: 1 }} className="scroll-style-go">
-            {previewTicketList.loading ? "Espere" :
-                previewTicketList.data?.map((ticket, index) => (
-                    <div key={index} className={classes.containerPreviewTicket} onClick={() => handleClickOpen(ticket)}>
+        <div style={{ display: 'flex', flex: 1, justifyContent: 'start' }} className={clsx("scroll-style-go", {
+            [classes.orderDefault]: order === -1,
+            [classes.orderReverse]: order === 1,
+        })}>
+            <div ref={el}></div>
+            {previewTicketList.data?.map((ticket, index) => (
+                <div key={index}>
+                    <div className={classes.containerPreviewTicket} onClick={() => handleClickOpen(ticket)}>
                         <div className={classes.titlePreviewTicket}>
                             <GetIcon color={ticket.coloricon} channelType={ticket.communicationchanneltype} />
-                            <div>#{ticket.ticketnum}</div>
+                            <div>{ticket.ticketnum}</div>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <div style={{ flex: 1 }}>
-                                <div className={classes.label}>{t(langKeys.created_on)}</div>
+                                <div className={classes.label}>{t(langKeys.creationDate)}</div>
                                 <div>{convertLocalDate(ticket.firstconversationdate).toLocaleString()}</div>
                             </div>
                             <div style={{ flex: 1 }}>
-                                <div className={classes.label}>{t(langKeys.closed_on)}</div>
+                                <div className={classes.label}>{t(langKeys.close_date)}</div>
                                 <div>{convertLocalDate(ticket.finishdate).toLocaleString()}</div>
                             </div>
                         </div>
                     </div>
-                ))
-            }
+                </div>
+            ))}
+            <div ref={el1}></div>
             <DialogInteractions
                 openModal={openModal}
                 setOpenModal={setOpenModal}
@@ -535,28 +698,135 @@ const PreviewTickets = () => {
     )
 }
 
+const Attachments: React.FC = () => {
+    const classes = useStyles();
+    const [listFiles, setListFiles] = useState<Dictionary[]>([]);
+    const interactionList = useSelector(state => state.inbox.interactionList);
+    const { t } = useTranslation();
+    
+    useEffect(() => {
+        if (interactionList.data[0].interactiontype === "email") {
+            let interactions = interactionList.data.reduce<Dictionary[]>((acc, item) => [
+                ...acc,
+                ...(item.interactions || [])
+            ], []);
+            setListFiles(interactions.reduce<Dictionary[]>((acc, item) => {
+                if (item?.interactiontext?.split("&%MAIL%&")[2] && item?.interactiontext?.split("&%MAIL%&")[2] !== "{}") {
+                    const filesjson = JSON.parse(item.interactiontext.split("&%MAIL%&")[2])
+                    const keys = Object.keys(filesjson)
+                    let arrayres = keys.filter(key => (key.split(".").pop() !== "jpg" && key.split(".").pop() !== "png" && key.split(".").pop() !== "jpeg")).reduce<Dictionary[]>((acc1, key) => [
+                        ...acc1, {
+                            url: filesjson[String(key)],
+                            filename: decodeURI(key),
+                            extension: key.split(".").pop(),
+                            date: convertLocalDate(item.createdate).toLocaleString()
+                        }
+                    ], [])
+
+                    return [...acc, ...arrayres]
+
+                }
+                return [...acc]
+            }, []));
+
+        } else {
+            setListFiles(interactionList.data.reduce<Dictionary[]>((acc, item) => [
+                ...acc,
+                ...(item.interactions?.filter((x) => ["file", "video"].includes(x.interactiontype)) || []).map(x => ({
+                    url: x.interactiontext,
+                    // filename: x.interactiontext.split("/").pop(),
+                    filename: x.interactiontext.split("/").pop(),
+                    extension: ((x.interactiontext.split("/").pop() || '') || "").split(".").pop(),
+                    date: convertLocalDate(x.createdate).toLocaleString(),
+                }))
+            ], []));
+        }
+    }, [interactionList])
+
+    if (listFiles.length === 0) {
+        return (
+            <div className={classes.label} style={{ padding: 8, flex: 1 }}>
+                {t(langKeys.without_files)}
+            </div>
+        )
+    }
+
+    return (
+        <div className={`scroll-style-go`} style={{ overflowY: 'auto', flex: 1, backgroundColor: 'transparent' }}>
+            {listFiles.map(({ filename, date, url, extension }, index) => (
+                <a
+                    key={index}
+                    className={classes.containerAttachment}
+                    href={url}
+                    download
+                    style={{ textDecoration: 'none', color: 'inherit' }}
+                    rel="noreferrer" target="_blank"
+                // onClick={() => window.open(url, "_blank")}
+                >
+                    {extension === "pdf" ? (
+                        <PdfIcon width="30" height="30" />
+                    ) : (extension === "doc" || extension === "docx") ? (
+                        <DocIcon width="30" height="30" />
+                    ) : (extension === "xls" || extension === "xlsx" || extension === "csv") ? (
+                        <XlsIcon width="30" height="30" />
+                    ) : (extension === "ppt" || extension === "pptx") ? (
+                        <PptIcon width="30" height="30" />
+                    ) : (extension === "zip" || extension === "rar") ? (
+                        <ZipIcon width="30" height="30" />
+                    ) : (extension === "text" || extension === "txt") ? (
+                        <TxtIcon width="30" height="30" />
+                    ) : <FileIcon width="30" height="30" />
+                    }
+                    <div>
+                        <div>{filename}</div>
+                        <div className={classes.label}>{date}</div>
+                    </div>
+                </a>
+            ))}
+        </div>
+    )
+}
+
 const InfoPanel: React.FC = () => {
     const classes = useStyles();
     const [pageSelected, setPageSelected] = useState(0);
+    const [order, setOrder] = useState(-1)
+    const { t } = useTranslation();
+    const loading = useSelector(state => state.inbox.person.loading);
 
+    if (loading) {
+        return (
+            <div className={classes.containerInfo}>
+                <div style={{ flex: 1, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <CircularProgress />
+                </div>
+            </div>
+        )
+    }
     return (
         <div className={classes.containerInfo}>
+
             <InfoClient />
             <Tabs
                 value={pageSelected}
                 indicatorColor="primary"
-                variant="fullWidth"
+                variant="scrollable"
+                scrollButtons="auto"
                 style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
                 textColor="primary"
                 onChange={(_, value) => setPageSelected(value)}
             >
-                <AntTab label="Info" />
+                <AntTab label={t(langKeys.information)} />
+                <AntTab label="Tickets" icon={<ImportExportIcon onClick={() => setOrder(order * -1)} />} />
+                <AntTab icon={<AttachFileIcon />} />
                 <AntTab label="Variables" />
-                <AntTab label="Tickets" />
+                <AntTab label={t(langKeys.classification_plural)} />
             </Tabs>
             {pageSelected === 0 && <InfoTab />}
-            {pageSelected === 1 && <Variables />}
-            {pageSelected === 2 && <PreviewTickets />}
+            {pageSelected === 1 && <PreviewTickets order={order} />}
+            {pageSelected === 2 && <Attachments />}
+            {pageSelected === 3 && <Variables />}
+            {pageSelected === 4 && <Classifications />}
         </div>
     );
 }

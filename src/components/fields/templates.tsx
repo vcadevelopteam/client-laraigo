@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
-
+import React, { CSSProperties, FC, useEffect, useState } from 'react';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import VisibilityIcon from '@material-ui/icons/Visibility';
+import { emojis } from "common/constants";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import IconButton from '@material-ui/core/IconButton';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
@@ -26,8 +25,9 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Tab, { TabProps } from '@material-ui/core/Tab';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { FormHelperText, useTheme } from '@material-ui/core';
-import { Divider, Grid, ListItem, ListItemText } from '@material-ui/core';
+import { FormControlLabel, FormHelperText, OutlinedInputProps, Radio, RadioGroup, RadioGroupProps, useTheme, TypographyVariant } from '@material-ui/core';
+import { Divider, Grid, ListItem, ListItemText, styled } from '@material-ui/core';
+import ListSubheader from '@material-ui/core/ListSubheader';
 import { Skeleton } from '@material-ui/lab';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { EmojiICon, GifIcon } from 'icons';
@@ -36,6 +36,8 @@ import { SearchField } from 'components';
 import CameraAltIcon from '@material-ui/icons/CameraAlt';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Tooltip from '@material-ui/core/Tooltip';
+import { ListItemIcon } from '@material-ui/core';
+import PhoneIcon from '@material-ui/icons/Phone';
 import {
     WebMessengerIcon,
     ZyxmeMessengerIcon,
@@ -50,24 +52,35 @@ import {
     YoutubeIcon,
     WhatsappIcon,
     EmailIcon,
-    TelegramIcon
+    TelegramIcon,
+    TeamsIcon,
 } from 'icons';
-import { FixedSizeList, ListChildComponentProps } from 'react-window';
+import { VariableSizeList, FixedSizeList, ListChildComponentProps } from 'react-window';
+import MuiPhoneNumber, { MaterialUiPhoneNumberProps } from 'material-ui-phone-number';
+import NumberFormat from 'react-number-format';
+import InfoIcon from '@material-ui/icons/Info';
 
+const EMOJISINDEXED = emojis.reduce((acc, item) => ({ ...acc, [item.emojihex]: item }), {});
 
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
     deleteFunction?: (param: any) => void;
     editFunction?: (param: any) => void;
+    extraOption?: string;
+    ExtraICon?: () => JSX.Element;
+    extraFunction?: (param: any) => void;
 }
 
-export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, deleteFunction, editFunction }) => {
+export const TemplateIcons: React.FC<TemplateIconsProps> = ({ extraOption, viewFunction, deleteFunction, editFunction, extraFunction, ExtraICon }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const handleClose = () => setAnchorEl(null);
+    const handleClose = (e: any) => {
+        e.stopPropagation();
+        setAnchorEl(null);
+    }
 
     return (
         <div style={{ whiteSpace: 'nowrap', display: 'flex' }}>
-            <IconButton
+            {/* <IconButton
                 aria-label="more"
                 aria-controls="long-menu"
                 aria-haspopup="true"
@@ -75,14 +88,17 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, dele
                 onClick={editFunction}
             >
                 <VisibilityIcon style={{ color: '#B6B4BA' }} />
-            </IconButton>
+            </IconButton> */}
             <IconButton
                 aria-label="more"
                 aria-controls="long-menu"
                 aria-haspopup="true"
                 size="small"
-                onClick={(e) => setAnchorEl(e.currentTarget)}
-                style={{ display: deleteFunction ? 'block' : 'none' }}
+                onClick={(e) => {
+                    setAnchorEl(e.currentTarget);
+                    e.stopPropagation();
+                }}
+                style={{ display: (deleteFunction || extraFunction) ? 'block' : 'none' }}
             >
                 <MoreVertIcon style={{ color: '#B6B4BA' }} />
             </IconButton>
@@ -101,14 +117,32 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, dele
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                {/* <MenuItem onClick={(e) => {
-                    setAnchorEl(null)
-                    editFunction && editFunction(e)
-                    }}><Trans i18nKey={langKeys.edit} /></MenuItem> */}
-                <MenuItem onClick={(e) => {
-                    setAnchorEl(null)
-                    deleteFunction && deleteFunction(e)
-                }}><Trans i18nKey={langKeys.delete} /></MenuItem>
+                {deleteFunction &&
+                    <MenuItem onClick={(e) => {
+                        e.stopPropagation();
+                        setAnchorEl(null);
+                        deleteFunction && deleteFunction(e)
+                    }}>
+                        <ListItemIcon color="inherit">
+                            <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                        </ListItemIcon>
+                        <Trans i18nKey={langKeys.delete} />
+                    </MenuItem>
+                }
+                {extraOption &&
+                    <MenuItem onClick={(e) => {
+                        e.stopPropagation();
+                        setAnchorEl(null)
+                        extraFunction && extraFunction(e)
+                    }}>
+                        {ExtraICon &&
+                            <ListItemIcon color="inherit">
+                                <ExtraICon />
+                            </ListItemIcon>
+                        }
+                        {extraOption}
+                    </MenuItem>
+                }
             </Menu>
         </div>
     )
@@ -116,14 +150,14 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, dele
 
 interface TemplateBreadcrumbsProps {
     breadcrumbs: Array<{ id: string, name: string }>;
-    handleClick?: (param: any) => void;
+    handleClick?: (id: string) => void;
 }
 
 export const TemplateBreadcrumbs: React.FC<TemplateBreadcrumbsProps> = ({ breadcrumbs, handleClick }) => {
 
     const handleClickBreadcrumb = (event: any, id: string) => {
         event.preventDefault();
-        handleClick && handleClick(id)
+        handleClick?.(id)
     }
 
     return (
@@ -139,8 +173,13 @@ export const TemplateBreadcrumbs: React.FC<TemplateBreadcrumbsProps> = ({ breadc
     );
 }
 
-export const TitleDetail: React.FC<{ title: string }> = ({ title }) => (
-    <Typography style={{ fontSize: 32 }} color="textPrimary">{title}</Typography>
+interface TitleDetailProps {
+    title: React.ReactNode;
+    variant?: TypographyVariant;
+}
+
+export const TitleDetail: React.FC<TitleDetailProps> = ({ title, variant }) => (
+    <Typography variant={variant} style={{ fontSize: 32 }} color="textPrimary">{title}</Typography>
 )
 
 export const Title: React.FC = ({ children }) => {
@@ -148,55 +187,77 @@ export const Title: React.FC = ({ children }) => {
     const style: React.CSSProperties = {
         fontSize: '22px',
         fontWeight: 'bold',
-        lineHeight: '48px',
-        height: '48px',
         color: theme.palette.text.primary,
     };
     return <label style={style}>{children}</label>;
 }
 
-export const FieldView: React.FC<{ label: string, value?: string, className?: any }> = ({ label, value, className }) => (
+export const FieldView: React.FC<{ label: string, value?: string, className?: any, styles?: CSSProperties, tooltip?: string, onclick?: (param: any) => void }> = ({ label, value, className, styles, tooltip, onclick }) => (
     <div className={className}>
-        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
-        <Box lineHeight="20px" fontSize={15} color="textPrimary">{value || ""}</Box>
+        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+            {label}
+            {!!tooltip && <Tooltip title={tooltip} placement="top-start">
+                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
+            </Tooltip>}
+        </Box>
+        <Box onClick={onclick} lineHeight="20px" fontSize={15} color="textPrimary" style={styles}>{value || ""}</Box>
     </div>
 )
 
 interface TemplateDialogProps {
     open: boolean;
-    buttonText2?: string;
+    buttonText0?: string;
     buttonText1?: string;
+    buttonText2?: string;
     buttonText3?: string;
-    handleClickButton2?: (param: any) => void;
+    zIndex?: number;
+    handleClickButton0?: (param: any) => void;
     handleClickButton1?: (param: any) => void;
+    handleClickButton2?: (param: any) => void;
     handleClickButton3?: (param: any) => void;
     title: string;
-    button2Type?: "button" | "submit" | "reset";
+    button0Type?: "button" | "submit" | "reset";
     button1Type?: "button" | "submit" | "reset";
+    button2Type?: "button" | "submit" | "reset";
     button3Type?: "button" | "submit" | "reset";
     maxWidth?: false | "sm" | "xs" | "md" | "lg" | "xl" | undefined;
 }
 
-export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText1, buttonText2, handleClickButton2, handleClickButton1, title, maxWidth = "sm", button2Type = "button", button1Type = "button" }) => (
+export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText0, buttonText1, buttonText2, buttonText3, handleClickButton0, handleClickButton1, handleClickButton2, handleClickButton3, title, maxWidth = "sm", button1Type = "button", button2Type = "button", zIndex = 1300 }) => (
     <Dialog
         open={open}
         fullWidth
         maxWidth={maxWidth}
-        style={{ zIndex: 1300 }}>
-        <form onSubmit={(button1Type === "submit" ? handleClickButton1 : (button2Type === "submit" ? handleClickButton2 : () => { }))}>
-            {title && <DialogTitle>{title}</DialogTitle>}
+        style={{ zIndex }}>
+        <form onSubmit={(button1Type === "submit" ? handleClickButton1 : (button2Type === "submit" ? handleClickButton2 : undefined))}>
+            {title && (
+                <DialogTitle>
+                    <div style={{ overflow: 'hidden', wordBreak: 'break-word', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginRight: 120 }}>
+                        {title}
+                    </div>
+                </DialogTitle>
+            )}
             <DialogContent>
                 {children}
             </DialogContent>
             <DialogActions>
+                {!!buttonText0 &&
+                    <Button onClick={(handleClickButton0)}
+                    >
+                        {buttonText0}
+                    </Button>}
                 {!!buttonText1 &&
-                    <Button type={button1Type} onClick={(button1Type !== "submit" ? handleClickButton1 : () => { })}
+                    <Button type={button1Type} onClick={(button1Type !== "submit" ? handleClickButton1 : undefined)}
                     >
                         {buttonText1}
                     </Button>}
                 {!!buttonText2 &&
-                    <Button type={button2Type} onClick={(button2Type !== "submit" ? handleClickButton2 : () => { })} color="primary">
+                    <Button type={button2Type} onClick={(button2Type !== "submit" ? handleClickButton2 : undefined)} color="primary">
                         {buttonText2}
+                    </Button>}
+                {!!buttonText3 &&
+                    <Button onClick={(handleClickButton3)}>
+                        <p style={{ color: "red" }}>{buttonText3}</p>
                     </Button>}
             </DialogActions>
         </form>
@@ -264,6 +325,7 @@ interface InputProps {
     className?: any;
     valueDefault?: any;
     disabled?: boolean;
+
     onChange?: (param: any, param2?: any | null) => void;
     onBlur?: (param: any, param2?: any | null) => void;
     style?: any;
@@ -276,8 +338,9 @@ interface InputProps {
     prefixTranslation?: string;
     variant?: "standard" | "outlined" | "filled" | undefined;
     inputProps?: any;
-    InputProps?: any;
+    InputProps?: Partial<OutlinedInputProps>;
     size?: "small" | "medium" | undefined;
+    width?: number | "string";
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -286,9 +349,13 @@ interface TemplateAutocompleteProps extends InputProps {
     optionDesc: string;
     loading?: boolean;
     triggerOnChangeOnFirst?: boolean;
+    readOnly?: boolean;
+    limitTags?: number;
+    multiline?: boolean;
+    orderbylabel?: boolean;
 }
 
-export const FieldEdit: React.FC<InputProps> = ({ label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard" }) => {
+export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard", maxLength = 0 }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -297,11 +364,78 @@ export const FieldEdit: React.FC<InputProps> = ({ label, size, className, disabl
 
     return (
         <div className={className}>
-            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+            {variant === "standard" &&
+                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">{label}</Box>
+            }
             <TextField
                 {...fregister}
                 color="primary"
+                fullWidth={width === "100%"}
+                label={variant !== "standard" && label}
+                disabled={disabled}
+                type={type}
+                style={{ width: width }}
+                value={value}
+                variant={variant}
+                error={!!error}
+                helperText={error || null}
+                rows={rows}
+                size={size}
+                onChange={(e) => {
+                    if (maxLength === 0 || e.target.value.length <= maxLength) {
+                        setvalue(e.target.value);
+                        onChange && onChange(e.target.value);
+                    }
+                }}
+                onBlur={(e) => {
+                    onBlur && onBlur(e.target.value);
+                }}
+                inputProps={inputProps}
+                InputProps={InputProps}
+            />
+        </div>
+    )
+}
+
+interface ICurrencyFieldEdit extends Omit<InputProps, 'type'> {
+    type?: 'text';
+}
+
+export const CurrencyFieldEdit: FC<ICurrencyFieldEdit> = ({
+    label,
+    size,
+    className,
+    disabled = false,
+    valueDefault = "",
+    onChange,
+    error,
+    type = "text",
+    rows = 1,
+    fregister = {},
+    inputProps = {},
+    InputProps = {},
+    variant = "standard",
+}) => {
+    const [value, setvalue] = useState("");
+
+    useEffect(() => {
+        setvalue(valueDefault);
+    }, [valueDefault])
+
+    return (
+        <div className={className}>
+            {variant === "standard" &&
+                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+            }
+            <NumberFormat
+                customInput={TextField}
+                thousandSeparator
+                autoComplete="off"
+
+                {...fregister}
+                color="primary"
                 fullWidth
+                label={variant !== "standard" && label}
                 disabled={disabled}
                 type={type}
                 value={value}
@@ -310,23 +444,22 @@ export const FieldEdit: React.FC<InputProps> = ({ label, size, className, disabl
                 helperText={error || null}
                 rows={rows}
                 size={size}
-                onChange={(e) => {
-                    setvalue(e.target.value);
-                    onChange && onChange(e.target.value);
+                onValueChange={(values) => { // { formattedValue, value }
+                    setvalue(values.value);
+                    onChange && onChange(values.value);
                 }}
-                onBlur={(e) => {
-                    onBlur && onBlur(e.target.value);
-                }}
+                inputProps={inputProps}
                 InputProps={InputProps}
             />
         </div>
-    )
+    );
 }
-export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, inputProps = {} }) => {
+
+export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, inputProps = {}, variant = "standard" }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
-        setvalue(valueDefault);
+        setvalue(valueDefault || "");
     }, [valueDefault])
 
     return (
@@ -337,6 +470,7 @@ export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disable
                 color="primary"
                 fullWidth
                 disabled={disabled}
+                variant={variant}
                 type={type}
                 error={!!error}
                 value={value}
@@ -375,6 +509,8 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     if (channelType === "WEBM") return <WebMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "TELE") return <TelegramIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "INST") return <InstagramIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "INMS") return <InstagramIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "INDM") return <InstagramIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "ANDR") return <AndroidIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "APPL") return <AppleIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "CHATZ") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
@@ -383,15 +519,38 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     if (channelType === "YOUT") return <YoutubeIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "LINE") return <LineIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "SMS") return <SmsIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "SMSI") return <SmsIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "TWIT") return <TwitterIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "TWMS") return <TwitterIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    console.log(channelType)
+    if (channelType === "TEAM") return <TeamsIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "VOXI") return <PhoneIcon width={10} fill={color} stroke={color} height={height} style={{ color, width: 16, height: 16 }} />
+
     return <TelegramIcon style={{ color, width, height }} />
 }
 
-export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard" }) => {
+export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false }) => {
     const { t } = useTranslation();
     const [value, setValue] = useState<Dictionary | null>(null);
+    const [dataG, setDataG] = useState<Dictionary[]>([])
+
+    useEffect(() => {
+        if (orderbylabel) {
+            if (data.length > 0) {
+                if (uset) {
+                    const datatmp = data.sort((a, b) => t(prefixTranslation + a[optionDesc]?.toLowerCase()).toUpperCase().localeCompare(t(prefixTranslation + b[optionDesc]?.toLowerCase()).toUpperCase()));
+                    setDataG(datatmp);
+                    return;
+                }
+                else {
+                    const datatmp = data.sort((a, b) => (a[optionDesc] || '').localeCompare(b[optionDesc] || ''));
+                    setDataG(datatmp);
+                    return;
+                }
+            }
+        }
+        setDataG(data);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [data]);
 
     useEffect(() => {
         if (valueDefault && data.length > 0) {
@@ -405,7 +564,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
             setValue(null);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [data]);
+    }, [data, valueDefault]);
 
     return (
         <div className={className}>
@@ -416,22 +575,25 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                 filterSelectedOptions
                 style={style}
                 fullWidth
+                {...fregister}
                 disabled={disabled}
                 value={data?.length > 0 ? value : null}
                 onChange={(_, newValue) => {
+                    if (readOnly) return;
                     setValue(newValue);
                     onChange && onChange(newValue);
                 }}
                 getOptionLabel={option => option ? (uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')) : ''}
-                options={data}
+                options={dataG}
                 loading={loading}
                 size="small"
                 renderInput={(params) => (
                     <TextField
-                        {...fregister}
+
                         {...params}
                         label={variant !== "standard" && label}
                         variant={variant}
+                        multiline={multiline}
                         helperText={error || null}
                         error={!!error}
                         InputProps={{
@@ -442,6 +604,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                                     {params.InputProps.endAdornment}
                                 </React.Fragment>
                             ),
+                            readOnly,
                         }}
                     />
                 )}
@@ -453,8 +616,8 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard" }) => {
-
+export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard", uset = false, prefixTranslation = "", limitTags = -1 }) => {
+    const { t } = useTranslation();
     const [optionsSelected, setOptionsSelected] = useState<Dictionary[]>([]);
 
     useEffect(() => {
@@ -465,7 +628,7 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
             setOptionsSelected([]);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [valueDefault, data]);
+    }, [data]);
 
     return (
         <div className={className}>
@@ -474,12 +637,14 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
             }
             <Autocomplete
                 multiple
+                limitTags={limitTags}
                 filterSelectedOptions
                 style={style}
                 disabled={disabled}
+                disableCloseOnSelect
                 loading={loading}
                 value={optionsSelected}
-                renderOption={(item, { selected }: any) => (
+                renderOption={(option, { selected }: any) => (
                     <React.Fragment>
                         <Checkbox
                             icon={icon}
@@ -487,7 +652,7 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                             style={{ marginRight: 8 }}
                             checked={selected}
                         />
-                        {item[optionDesc]}
+                        {option ? (uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')) : ''}
                     </React.Fragment>
                 )}
                 onChange={(_, values, action, option) => {
@@ -495,13 +660,14 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                     onChange && onChange(values, { action, option });
                 }}
                 size="small"
-                getOptionLabel={option => option ? option[optionDesc] : ''}
+                getOptionLabel={option => option ? (uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')) : ''}
                 options={data}
                 renderInput={(params) => (
                     <TextField
                         {...params}
                         label={variant !== "standard" && label}
                         variant={variant}
+                        size="small"
                         InputProps={{
                             ...params.InputProps,
                             endAdornment: (
@@ -521,7 +687,154 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
     )
 }
 
-export const FieldMultiSelectFreeSolo: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard" }) => {
+// FieldMultiSelectVirtualized
+
+const LISTBOX_PADDING_MultiSelect = 8;
+
+const renderRowMultiSelect = (props: ListChildComponentProps) => {
+    const { data, index, style } = props;
+    return React.cloneElement(data[index], {
+      style: {
+        ...style,
+        top: (style.top as number) + LISTBOX_PADDING_MultiSelect,
+      },
+    });
+}
+
+const OuterElementContextMultiSelect = React.createContext({});
+
+const OuterElementTypeMultiSelect = React.forwardRef<HTMLDivElement>((props, ref) => {
+    const outerProps = React.useContext(OuterElementContextMultiSelect);
+    return <div ref={ref} {...props} {...outerProps} />;
+});
+
+const useResetCacheMultiSelect = (data: any) => {
+    const ref = React.useRef<VariableSizeList>(null);
+    React.useEffect(() => {
+      if (ref.current != null) {
+        ref.current.resetAfterIndex(0, true);
+      }
+    }, [data]);
+    return ref;
+}
+
+const ListboxComponentMultiSelect = React.forwardRef<HTMLDivElement>(function ListboxComponent(props, ref) {
+    const { children, ...other } = props;
+    const itemData = React.Children.toArray(children);
+    const itemCount = itemData.length;
+    const itemSize = 48;
+  
+    const getChildSize = (child: React.ReactNode) => {
+        if (React.isValidElement(child) && child.type === ListSubheader) {
+          return 48;
+        }
+    
+        return itemSize;
+    };
+    
+    const getHeight = () => {
+      if (itemCount > 8) {
+        return 8 * itemSize;
+      }
+      return itemData.map(getChildSize).reduce((a, b) => a + b, 0);
+    };
+  
+    const gridRef = useResetCacheMultiSelect(itemCount);
+  
+    return (
+      <div ref={ref}>
+        <OuterElementContextMultiSelect.Provider value={other}>
+          <VariableSizeList
+            itemData={itemData}
+            height={getHeight()}
+            width="100%"
+            ref={gridRef}
+            outerElementType={OuterElementTypeMultiSelect}
+            itemSize={(index) => getChildSize(itemData[index])}
+            overscanCount={5}
+            itemCount={itemCount}
+          >
+            {renderRowMultiSelect}
+          </VariableSizeList>
+        </OuterElementContextMultiSelect.Provider>
+      </div>
+    );
+});
+
+export const FieldMultiSelectVirtualized: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard", uset = false, prefixTranslation = "", limitTags = -1 }) => {
+    const { t } = useTranslation();
+    const [optionsSelected, setOptionsSelected] = useState<Dictionary[]>([]);
+
+    useEffect(() => {
+        if (valueDefault && data.length > 0) {
+            const optionsSelected = data.filter(o => valueDefault.split(",").indexOf(o[optionValue].toString()) > -1)
+            setOptionsSelected(optionsSelected);
+        } else {
+            setOptionsSelected([]);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [data]);
+
+    return (
+        <div className={className}>
+            {variant === "standard" &&
+                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+            }
+            <Autocomplete
+                multiple
+                disableListWrap
+                limitTags={limitTags}
+                filterSelectedOptions
+                style={style}
+                disabled={disabled}
+                disableCloseOnSelect
+                loading={loading}
+                value={optionsSelected}
+                ListboxComponent={ListboxComponentMultiSelect as React.ComponentType<React.HTMLAttributes<HTMLElement>>}
+                renderOption={(option, { selected }: any) => (
+                    <React.Fragment>
+                        <Checkbox
+                            icon={icon}
+                            checkedIcon={checkedIcon}
+                            style={{ marginRight: 8 }}
+                            checked={selected}
+                        />
+                        <Typography noWrap>{option ? (uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')) : ''}</Typography>
+                    </React.Fragment>
+                )}
+                onChange={(_, values, action, option) => {
+                    setOptionsSelected(values);
+                    onChange && onChange(values, { action, option });
+                }}
+                size="small"
+                getOptionLabel={option => option ? (uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')) : ''}
+                options={data}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        label={variant !== "standard" && label}
+                        variant={variant}
+                        size="small"
+                        InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                                <React.Fragment>
+                                    {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                    {params.InputProps.endAdornment}
+                                </React.Fragment>
+                            ),
+                        }}
+                        error={!!error}
+                        helperText={error || null}
+
+                    />
+                )}
+            />
+        </div>
+    )
+}
+
+export const FieldMultiSelectFreeSolo: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onBlur, onChange, disabled = false, loading, className = null, style = null, variant = "standard", readOnly = false }) => {
 
     const [optionsSelected, setOptionsSelected] = useState<any[]>([]);
 
@@ -555,18 +868,18 @@ export const FieldMultiSelectFreeSolo: React.FC<TemplateAutocompleteProps> = ({ 
                             checkedIcon={checkedIcon}
                             style={{ marginRight: 8 }}
                             checked={selected}
+                            readOnly={readOnly}
                         />
                         {item[optionDesc]}
                     </React.Fragment>
                 )}
                 onChange={(_, values, action, option) => {
-                    // console.log('values',values)
+                    if (readOnly) return;
                     setOptionsSelected(values);
                     onChange && onChange(values, { action, option });
                 }}
-                // onChange={onChange}
                 size="small"
-                getOptionLabel={option => option ? option[optionDesc] || option : ''}
+                getOptionLabel={option => String(option ? option[optionDesc] || option : '')}
                 options={data}
                 renderInput={(params) => (
                     <TextField
@@ -581,6 +894,10 @@ export const FieldMultiSelectFreeSolo: React.FC<TemplateAutocompleteProps> = ({ 
                                     {params.InputProps.endAdornment}
                                 </React.Fragment>
                             ),
+                            readOnly,
+                        }}
+                        onBlur={(e) => {
+                            onBlur && onBlur(e.target.value);
                         }}
                         error={!!error}
                         helperText={error || null}
@@ -591,10 +908,104 @@ export const FieldMultiSelectFreeSolo: React.FC<TemplateAutocompleteProps> = ({ 
         </div>
     )
 }
+export const FieldMultiSelectEmails: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onBlur, onChange, disabled = false, loading, className = null, style = null, variant = "standard", readOnly = false }) => {
+
+    const [optionsSelected, setOptionsSelected] = useState<any[]>([]);
+
+
+    useEffect(() => {
+        if (valueDefault && data.length > 0) {
+            const optionsSelected = data.filter(o => valueDefault.split(",").indexOf(o[optionValue].toString()) > -1)
+            setOptionsSelected(optionsSelected);
+        } else {
+            setOptionsSelected([]);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [valueDefault, data]);
+    const el = React.useRef<null | HTMLDivElement>(null);
+    const ke = new KeyboardEvent("keydown", { bubbles: true, cancelable: true, keyCode: 13 });
+
+    return (
+        <div className={className}>
+            {variant === "standard" &&
+                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+            }
+            <Autocomplete
+                multiple
+                freeSolo
+                filterSelectedOptions
+                style={style}
+                disabled={disabled}
+                loading={loading}
+                ref={el}
+                value={optionsSelected}
+                renderOption={(item, { selected }: any) => (
+                    <React.Fragment>
+                        <Checkbox
+                            icon={icon}
+                            checkedIcon={checkedIcon}
+                            style={{ marginRight: 8 }}
+                            checked={selected}
+                            readOnly={readOnly}
+                        />
+                        {item[optionDesc]}
+                    </React.Fragment>
+                )}
+                onInput={(e: any) => {
+                    if (e.target.value.indexOf(",") > -1) {
+                        const values = e.target.value.split(",");
+                        e.target.value = values[0]
+                        el?.current?.dispatchEvent(ke);
+                    }
+                }}
+                onChange={(_, values, action, option) => {
+                    if (readOnly) return;
+                    setOptionsSelected(values);
+                    onChange && onChange(values, { action, option });
+                }}
+                size="small"
+                getOptionLabel={option => String(option ? option[optionDesc] || option : '')}
+                options={data}
+                renderInput={(params) => {
+                    return (<TextField
+                        {...params}
+                        label={variant !== "standard" && label}
+                        variant={variant}
+                        InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                                <React.Fragment>
+                                    {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                    {params.InputProps.endAdornment}
+                                </React.Fragment>
+                            ),
+                            readOnly,
+                        }}
+                        onBlur={(e) => {
+                            el?.current?.dispatchEvent(ke);
+                        }}
+                        error={!!error}
+                        helperText={error || null}
+
+                    />)
+                }
+                }
+            />
+        </div>
+    )
+}
 
 interface TemplateSwitchProps extends InputProps {
     className?: any;
     label: string;
+}
+interface TemplateSwitchPropsYesNo extends InputProps {
+    className?: any;
+    label?: string;
+    textYes?: string;
+    textNo?: string;
+    labelPlacement?: "start" | "end" | "bottom" | "top" | undefined;
+    disabled?: boolean;
 }
 
 export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onChange, valueDefault, label, style }) => {
@@ -611,6 +1022,29 @@ export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onCha
                 setChecked(e.target.checked);
                 onChange && onChange(e.target.checked)
             }} />
+        </div>
+    );
+}
+export const TemplateSwitchYesNo: React.FC<TemplateSwitchPropsYesNo> = ({ className, onChange, valueDefault, label, style, textYes, textNo, labelPlacement = "end", disabled = false }) => {
+    const [checkedaux, setChecked] = useState(false);
+    const { t } = useTranslation();
+
+    useEffect(() => {
+        setChecked(!!valueDefault)
+    }, [valueDefault])
+
+    return (
+        <div className={className} style={{ ...style, paddingBottom: '3px' }}>
+            {label && <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{label}</Box>}
+            <FormControlLabel
+                labelPlacement={labelPlacement}
+                style={{ paddingLeft: 10 }}
+                control={<IOSSwitch checked={checkedaux} disabled={disabled} onChange={(e) => {
+                    setChecked(e.target.checked);
+                    onChange && onChange(e.target.checked)
+                }} />}
+                label={checkedaux ? (textYes || t(langKeys.yes)) : (textNo || "No")}
+            />
         </div>
     );
 }
@@ -713,7 +1147,7 @@ export const FieldCheckbox: React.FC<FieldCheckboxProps> = ({ className, onChang
     );
 }
 
-export const AntTab = withStyles((theme) => ({
+export const AntTab = withStyles((theme: any) => ({
     root: {
         textTransform: 'none',
         minWidth: 72,
@@ -730,8 +1164,28 @@ export const AntTab = withStyles((theme) => ({
             color: theme.palette.primary.main,
         },
     },
+    labelIcon: {
+        minHeight: 40,
+    },
+    wrapper: {
+        display: 'flex',
+        flexDirection: 'row-reverse',
+    },
     selected: {},
 }))((props: TabProps) => <Tab disableRipple {...props} />);
+
+interface AntTabPanelProps {
+    index: number;
+    currentIndex: number;
+}
+
+export const AntTabPanel: FC<AntTabPanelProps> = ({ index, currentIndex, children }) => {
+    return (
+        <div role="tabpanel" style={{ display: index === currentIndex ? 'block' : 'none' }}>
+            {children}
+        </div>
+    );
+}
 
 export const ListItemSkeleton: React.FC = () => (
     <ListItem style={{ display: 'flex', paddingLeft: 0, paddingRight: 0, paddingBottom: 8 }}>
@@ -759,6 +1213,14 @@ export const ListItemSkeleton: React.FC = () => (
     </ListItem>
 )
 
+interface EmojiPickerZyxProps {
+    emojisNoShow?: string[];
+    emojiFavorite?: string[];
+    onSelect: (e: any) => void;
+    style?: React.CSSProperties;
+    icon?: (onClick: () => void) => React.ReactNode;
+}
+
 const emojiPickerStyle = makeStyles({
     root: {
         cursor: 'pointer',
@@ -771,28 +1233,45 @@ const emojiPickerStyle = makeStyles({
 });
 
 
-export const EmojiPickerZyx: React.FC<{ emojisNoShow?: string[], onSelect: (e: any) => void, style?: any }> = ({ emojisNoShow, onSelect, style }) => {
+export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow = [], emojiFavorite = [], onSelect, style, icon }) => {
     const [open, setOpen] = React.useState(false);
     const classes = emojiPickerStyle();
     const handleClick = () => setOpen((prev) => !prev);
     const { t } = useTranslation();
     const handleClickAway = () => setOpen(false);
-
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
             <span style={style}>
-                <Tooltip title={t(langKeys.send_emoji) + ""} arrow placement="top">
+                {icon?.(handleClick) || <Tooltip title={t(langKeys.send_emoji) + ""} arrow placement="top">
                     <EmojiICon className={classes.root} onClick={handleClick} />
-                </Tooltip>
+                </Tooltip>}
                 {open && (
                     <div style={{
                         position: 'absolute',
-                        bottom: 50
+                        bottom: 50,
+                        zIndex: 1201
                     }}>
                         <Picker
                             onSelect={onSelect}
+                            native={true}
                             sheetSize={32}
-                            emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.indexOf(emoji.unified) === -1 : undefined}
+                            i18n={{
+                                search: t(langKeys.search),
+                                categories: {
+                                    search: t(langKeys.search_result),
+                                    recent: t(langKeys.favorites),
+                                    people: t(langKeys.emoticons),
+                                    nature: t(langKeys.animals),
+                                    foods: t(langKeys.food),
+                                    activity: t(langKeys.activities),
+                                    places: t(langKeys.travel),
+                                    objects: t(langKeys.objects),
+                                    symbols: t(langKeys.symbols),
+                                    flags: t(langKeys.flags),
+                                }
+                            }}
+                            recent={emojiFavorite.length > 0 ? emojiFavorite?.map(x => (EMOJISINDEXED as Dictionary)?.[x || ""]?.id || '') : undefined}
+                            emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.map(x => x.toUpperCase()).indexOf(emoji.unified.toUpperCase()) === -1 : undefined}
                         />
                     </div>
                 )}
@@ -846,6 +1325,7 @@ export const GifPickerZyx: React.FC<{ onSelect?: (e: any) => void, style?: any }
                         bottom: 50,
                         width: 342,
                         height: 400,
+                        zIndex: 1201,
                         backgroundColor: 'white',
                         padding: 4,
                         boxShadow: '0 1px 2px 0 rgb(16 35 47 / 15%)',
@@ -1010,19 +1490,26 @@ export const FieldEditArray: React.FC<InputProps> = ({ label, style = {}, classN
 }
 
 interface TemplateSwitchArrayProps extends InputProps {
-    defaultValue?: boolean;
+    defaultValue?: any;
     className?: any;
     label: string;
+    tooltip?: Dictionary;
 }
 
 
-export const TemplateSwitchArray: React.FC<TemplateSwitchArrayProps> = ({ className, onChange, defaultValue, label }) => {
+export const TemplateSwitchArray: React.FC<TemplateSwitchArrayProps> = ({ className, onChange, defaultValue, label, tooltip = {} }) => {
+    const { t } = useTranslation();
+    const [value, setValue] = useState([true,'1'].includes(defaultValue) ? true : false);
+
     return (
         <div className={className} style={{ paddingBottom: '3px' }}>
             {label && <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{label}</Box>}
-            <IOSSwitch defaultChecked={defaultValue} onChange={(e) => {
-                onChange && onChange(e.target.checked)
-            }} />
+            <Tooltip title={!!value ? t((langKeys as any)[tooltip?.true]) || '' : t((langKeys as any)[tooltip?.false]) || ''}>
+                <IOSSwitch defaultChecked={defaultValue} onChange={(e) => {
+                    onChange && onChange(e.target.checked)
+                    setValue(e.target.checked)
+                }} />
+            </Tooltip>
         </div>
     );
 }
@@ -1107,4 +1594,80 @@ export const FieldUploadImage: React.FC<InputProps> = ({ className, onChange, va
             }
         </div>
     )
+}
+
+const CssPhonemui = styled(MuiPhoneNumber)({
+    minHeight: 'unset',
+    '& .MuiInput-underline:after': {
+        borderBottomColor: '#7721ad',
+    },
+});
+
+interface PhoneFieldEditProps extends Omit<MaterialUiPhoneNumberProps, 'error'> {
+    error?: string;
+}
+
+export const PhoneFieldEdit: FC<PhoneFieldEditProps> = ({ label, error, className, ...props }) => {
+    return (
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }} className={className}>
+            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                {label}
+            </Box>
+            <CssPhonemui
+                variant="standard"
+                margin="none"
+                disableAreaCodes
+                error={!!error}
+                helperText={error || null}
+                {...props}
+            />
+        </div>
+    );
+}
+
+interface RadioGroudFieldEditProps<T = object> extends Omit<RadioGroupProps, 'onChange'> {
+    label: React.ReactNode;
+    data: T[];
+    optionDesc: keyof T;
+    optionValue: keyof T;
+    error?: string;
+    readOnly?: boolean;
+    disabled?: boolean;
+    onChange?: (value: T) => void;
+}
+
+export function RadioGroudFieldEdit<T>({
+    className,
+    onChange,
+    label,
+    data,
+    optionDesc,
+    optionValue,
+    error,
+    readOnly = false,
+    disabled = false,
+    ...props
+}: RadioGroudFieldEditProps<T>) {
+    return (
+        <div style={{ display: 'flex', flexDirection: 'column' }} className={className}>
+            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                {label}
+            </Box>
+            <RadioGroup {...props}>
+                {data.map((e, i) => {
+                    return (
+                        <FormControlLabel
+                            key={i}
+                            value={e[optionValue]}
+                            control={<Radio color="primary" />}
+                            label={e[optionDesc]}
+                            onChange={() => !readOnly && onChange?.(e)}
+                            disabled={disabled}
+                        />
+                    );
+                })}
+            </RadioGroup>
+            {error && error !== '' && <FormHelperText error>{error}</FormHelperText>}
+        </div>
+    );
 }

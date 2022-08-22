@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback } from 'react'
-import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomain, insConversationClassificationMassive, reassignMassiveTicket } from 'common/helpers';
-import { getCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetCollectionPaginated, execute } from 'store/main/actions';
+import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomainLight, insConversationClassificationMassive, reassignMassiveTicket, getUserSel, getHistoryStatusConversation, getCampaignLst, getPropertySelByName, exportExcel, templateMaker } from 'common/helpers';
+import { getCollectionPaginated, exportData, getMultiCollection, resetAllMain, execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
 import { useDispatch } from 'react-redux';
@@ -11,15 +11,19 @@ import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Box from '@material-ui/core/Box/Box';
-import { DialogZyx, FieldMultiSelect, FieldSelect, FieldEditMulti } from 'components';
-import clsx from 'clsx';
+import { DialogZyx, FieldMultiSelect, FieldSelect, FieldEditMulti, FieldMultiSelectVirtualized } from 'components';
+import TableZyx from 'components/fields/table-simple';
 import { DialogInteractions } from 'components';
 import { useForm } from 'react-hook-form';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import { massiveCloseTicket, getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, emitEvent } from 'store/inbox/actions';
+import { CloseTicketIcon, HistoryIcon, TipifyIcon, ReassignIcon, CallRecordIcon } from 'icons';
+import { massiveCloseTicket, getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, emitEvent, importTicket } from 'store/inbox/actions';
+import { Button, ListItemIcon, Tooltip } from '@material-ui/core';
+import PublishIcon from '@material-ui/icons/Publish';
+import { VoximplantService } from 'network';
 
 const selectionKey = 'conversationid';
 
@@ -33,7 +37,6 @@ const useStyles = makeStyles((theme) => ({
     title: {
         fontSize: '22px',
         fontWeight: 'bold',
-        marginBottom: theme.spacing(1),
         color: theme.palette.text.primary,
     },
 
@@ -45,8 +48,10 @@ const useStyles = makeStyles((theme) => ({
         flexWrap: 'wrap'
     },
     filterComponent: {
-        width: '300px',
-        backgroundColor: '#FFF'
+        width: '250px'
+    },
+    filterComponentVirtualized: {
+        width: '300px'
     },
     button: {
         padding: 12,
@@ -66,6 +71,9 @@ const useStyles = makeStyles((theme) => ({
     },
     filterStatusActive: {
         color: theme.palette.primary.main,
+    },
+    flex_1: {
+        flex: 1
     }
 }));
 
@@ -75,19 +83,19 @@ const DialogCloseticket: React.FC<{ fetchData: () => void, setOpenModal: (param:
     const [waitClose, setWaitClose] = useState(false);
     const multiData = useSelector(state => state.main.multiData);
     const closingRes = useSelector(state => state.inbox.triggerMassiveCloseTicket);
-    
+
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
 
     useEffect(() => {
         if (waitClose) {
             if (!closingRes.loading && !closingRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_close_ticket) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_close_ticket) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 fetchData()
                 setWaitClose(false);
             } else if (closingRes.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_unexpected_error) }))
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
             }
@@ -130,7 +138,7 @@ const DialogCloseticket: React.FC<{ fetchData: () => void, setOpenModal: (param:
             open={openModal}
             title={t(langKeys.close_ticket)}
             buttonText1={t(langKeys.cancel)}
-            buttonText2={t(langKeys.continue)}
+            buttonText2={t(langKeys.save)}
             handleClickButton1={() => setOpenModal(false)}
             handleClickButton2={onSubmit}
             button2Type="submit"
@@ -161,20 +169,23 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitReassign, setWaitReassign] = useState(false);
-
-    const [agentsConnected, setAgentsConnected] = useState<Dictionary[]>([]);
     const multiData = useSelector(state => state.main.multiData);
+    const userList = useSelector(state => state.main.mainAux);
     const reassigningRes = useSelector(state => state.inbox.triggerReassignTicket);
+    const [groupsList, setGroupsList] = useState<Dictionary[]>([]);
+    const user = useSelector(state => state.login.validateToken.user);
 
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<{
         newUserId: number;
         observation: string;
+        newUserGroup: string;
     }>();
 
     useEffect(() => {
         if (waitReassign) {
             if (!reassigningRes.loading && !reassigningRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_reasign_ticket) }))
+                const touserid = getValues('newUserGroup') !== "" && getValues('newUserId') === 0 ? 3 : getValues('newUserId');
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_reasign_ticket) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitReassign(false);
@@ -196,7 +207,7 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
                     userid: ticket.asesoridfinal,
                     status: "ASIGNADO",
                     countnewmessages: 0,
-                    channelicon: ticket.channelicon,
+                    // channelicon: ticket.channelicon,
                     coloricon: ticket.coloricon,
                     newConversation: true,
                     postexternalid: ticket.postexternalid,
@@ -208,11 +219,15 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
                     event: 'reassignTicket',
                     data: {
                         ...ticket,
-                        newuserid: getValues('newUserId'),
+                        wasanswered: true,
+                        newuserid: touserid,
+                        newUserGroup: getValues('newUserGroup'),
+                        lastmessage: `${user?.firstname} ${user?.lastname} reasignó este ticket ${touserid === 3 ? 'HOLDING(' + getValues('newUserGroup') + ")" : ''}`
                     }
                 })))
+                fetchData();
             } else if (reassigningRes.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_unexpected_error) }))
                 dispatch(showBackdrop(false));
                 setWaitReassign(false);
             }
@@ -220,25 +235,37 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
     }, [reassigningRes, waitReassign])
 
     useEffect(() => {
-        if (multiData && multiData?.data[1])
-            setAgentsConnected(multiData?.data[3].data)
-    }, [multiData])
-
-    useEffect(() => {
         if (openModal) {
             reset({
                 newUserId: 0,
-                observation: ''
+                observation: '',
+                newUserGroup: '',
             })
-            register('newUserId', { validate: (value) => ((value && value > 0) || (t(langKeys.field_required) + "")) });
+            register('newUserId');
             register('observation');
+            register('newUserGroup');
+
+            const groupsList = multiData?.data[6]?.data || [];
+            if (rowWithDataSelected.length === 1) {
+                const { ticketgroup } = rowWithDataSelected[0];
+                setGroupsList(ticketgroup ? groupsList.filter(group => group.domainvalue !== ticketgroup) : groupsList);
+            } else {
+                setGroupsList(groupsList);
+            }
+            dispatch(getCollectionAux(getListUsers()));
+        } else {
+            dispatch(resetMainAux());
         }
     }, [openModal])
 
     const onSubmit = handleSubmit((data) => {
+        if (data.newUserId === 0 && !data.newUserGroup) {
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.least_user_or_group) }))
+            return;
+        }
         const listConversation = rowWithDataSelected.map(x => x.conversationid).join();
 
-        dispatch(execute(reassignMassiveTicket(listConversation, data.newUserId, data.observation)));
+        dispatch(execute(reassignMassiveTicket(listConversation, data.newUserId, data.observation, data.newUserGroup)));
         dispatch(showBackdrop(true));
         setWaitReassign(true);
 
@@ -249,21 +276,32 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
             open={openModal}
             title={t(langKeys.reassign_ticket)}
             buttonText1={t(langKeys.cancel)}
-            buttonText2={t(langKeys.continue)}
+            buttonText2={t(langKeys.reassign)}
             handleClickButton1={() => setOpenModal(false)}
             handleClickButton2={onSubmit}
             button2Type="submit"
         >
             <div className="row-zyx">
                 <FieldSelect
-                    label={t(langKeys.user_plural)}
+                    label={t(langKeys.agent_plural)}
                     className="col-12"
                     valueDefault={"" + getValues('newUserId')}
                     onChange={(value) => setValue('newUserId', value ? value.userid : 0)}
                     error={errors?.newUserId?.message}
-                    data={agentsConnected}
+                    data={userList.data.filter(x => x.status === 'ACTIVO')}
+                    loading={userList.loading}
                     optionDesc="displayname"
                     optionValue="userid"
+                />
+                <FieldSelect
+                    label={t(langKeys.group_plural)}
+                    className="col-12"
+                    valueDefault={getValues('newUserGroup')}
+                    onChange={(value) => setValue('newUserGroup', value ? value.domainvalue : '')}
+                    error={errors?.newUserGroup?.message}
+                    data={groupsList}
+                    optionDesc="domaindesc"
+                    optionValue="domainvalue"
                 />
                 <FieldEditMulti
                     label={t(langKeys.observation)}
@@ -291,14 +329,14 @@ const DialogTipifications: React.FC<{ fetchData: () => void, setOpenModal: (para
     useEffect(() => {
         if (waitTipify) {
             if (!tipifyRes.loading && !tipifyRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_tipify_ticket) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_tipify_ticket) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitTipify(false);
                 fetchData()
             } else if (tipifyRes.error) {
                 const message = t(tipifyRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message }))
+                dispatch(showSnackbar({ show: true, severity: "error", message }))
                 dispatch(showBackdrop(false));
                 setWaitTipify(false);
             }
@@ -320,7 +358,7 @@ const DialogTipifications: React.FC<{ fetchData: () => void, setOpenModal: (para
             register('path1');
             register('classificationid1', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
             register('path2');
-            register('classificationid2', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+            register('classificationid2');
             register('path3');
             register('classificationid3');
 
@@ -359,7 +397,7 @@ const DialogTipifications: React.FC<{ fetchData: () => void, setOpenModal: (para
 
     const onSubmit = handleSubmit((data) => {
         dispatch(showBackdrop(true));
-        dispatch(execute(insConversationClassificationMassive(rowWithDataSelected.map(x => x.conversationid).join(), data.classificationid3 || data.classificationid2)))
+        dispatch(execute(insConversationClassificationMassive(rowWithDataSelected.map(x => x.conversationid).join(), data.classificationid3 || data.classificationid2 || data.classificationid1)))
         setWaitTipify(true)
     });
 
@@ -368,7 +406,7 @@ const DialogTipifications: React.FC<{ fetchData: () => void, setOpenModal: (para
             open={openModal}
             title={t(langKeys.tipify_ticket) + "s"}
             buttonText1={t(langKeys.cancel)}
-            buttonText2={t(langKeys.continue)}
+            buttonText2={t(langKeys.save)}
             handleClickButton1={() => setOpenModal(false)}
             handleClickButton2={onSubmit}
             button2Type="submit"
@@ -410,23 +448,319 @@ const DialogTipifications: React.FC<{ fetchData: () => void, setOpenModal: (para
         </DialogZyx>)
 }
 
+const IconOptions: React.FC<{
+    disabled?: boolean,
+    onHandlerReassign?: (e?: any) => void;
+    onHandlerClassify?: (e?: any) => void;
+    onHandlerClose?: (e?: any) => void;
+    onHandlerShowHistory?: (e?: any) => void;
+    onHandlerCallRecord?: (e?: any) => void;
+}> = ({ onHandlerReassign, onHandlerClassify, onHandlerClose, onHandlerShowHistory, onHandlerCallRecord, disabled }) => {
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const { t } = useTranslation();
+
+    const handleClose = () => setAnchorEl(null);
+    return (
+        <>
+            <IconButton
+                aria-label="more"
+                aria-controls="long-menu"
+                aria-haspopup="true"
+                size="small"
+                disabled={disabled}
+                onClick={(e) => setAnchorEl(e.currentTarget)}
+            >
+                <MoreVertIcon />
+            </IconButton>
+            <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                getContentAnchorEl={null}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+            >
+                {onHandlerReassign &&
+                    <MenuItem onClick={() => {
+                        setAnchorEl(null);
+                        onHandlerReassign();
+                    }}>
+                        <ListItemIcon color="inherit">
+                            <ReassignIcon width={18} style={{ fill: '#7721AD' }} />
+                        </ListItemIcon>
+                        {t(langKeys.reassign_ticket)}
+                    </MenuItem>
+                }
+                {onHandlerClassify &&
+                    <MenuItem onClick={() => {
+                        setAnchorEl(null);
+                        onHandlerClassify();
+                    }}>
+                        <ListItemIcon>
+                            <TipifyIcon width={18} style={{ fill: '#7721AD' }} />
+                        </ListItemIcon>
+                        {t(langKeys.tipify_ticket)}
+                    </MenuItem>
+                }
+                {onHandlerClose &&
+                    <MenuItem onClick={() => {
+                        setAnchorEl(null);
+                        onHandlerClose();
+                    }}>
+                        <ListItemIcon>
+                            <CloseTicketIcon width={18} style={{ fill: '#7721AD' }} />
+                        </ListItemIcon>
+                        {t(langKeys.close_ticket)}
+                    </MenuItem>
+                }
+                {onHandlerShowHistory &&
+                    <MenuItem onClick={() => {
+                        setAnchorEl(null);
+                        onHandlerShowHistory();
+                    }}>
+                        <ListItemIcon>
+                            <HistoryIcon width={22} style={{ fill: '#7721AD' }} />
+                        </ListItemIcon>
+                        {t(langKeys.status_history)}
+                    </MenuItem>
+                }
+            </Menu>
+        </>
+    )
+}
+
+const DialogHistoryStatus: React.FC<{ ticket: Dictionary | null, openModal: boolean, setOpenModal: (param: any) => void }> = ({ ticket, openModal, setOpenModal }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+
+    const resultHistory = useSelector(state => state.main.mainAux);
+
+    useEffect(() => {
+        if (openModal) {
+            if (ticket) {
+                dispatch(getCollectionAux(getHistoryStatusConversation(ticket.personid, ticket.conversationid, ticket.communicationchannelid)))
+            }
+        }
+    }, [ticket, openModal])
+
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.status),
+                accessor: 'status',
+            },
+            {
+                Header: t(langKeys.changeDate),
+                accessor: 'createdate',
+                type: 'date',
+                sortType: 'datetime',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return convertLocalDate(row.createdate).toLocaleString()
+                }
+            },
+            {
+                Header: t(langKeys.person_who_modified),
+                accessor: 'fullname',
+            },
+        ],
+        []
+    );
+
+    return (
+        <DialogZyx
+            open={openModal}
+            maxWidth="md"
+            title={`${t(langKeys.status_history)} ticket ${ticket?.numeroticket}`}
+            buttonText1={t(langKeys.cancel)}
+            handleClickButton1={() => setOpenModal(false)}
+        >
+            <TableZyx
+                columns={columns}
+                // titlemodule={t(langKeys.hi, { count: 2 })}
+                data={resultHistory.data}
+                filterGeneral={false}
+                download={false}
+                loading={resultHistory.loading}
+                register={false}
+            />
+        </DialogZyx>
+    )
+}
+
+const DialogLoadTickets: React.FC<{
+    setOpenModal: (param: any) => void,
+    openModal: boolean,
+    fetchData: () => void
+}> = ({ setOpenModal, openModal, fetchData }) => {
+    const classes = useStyles();
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const [waitUpload, setWaitUpload] = useState(false);
+    const mainResult = useSelector(state => state.main);
+    const importRes = useSelector(state => state.inbox.triggerImportTicket)
+
+    const [channelsite, setChannelsite] = useState<string>('');
+    const [fileList, setFileList] = useState<File[]>([])
+
+    const { handleSubmit } = useForm<{
+        filename: string;
+    }>();
+
+    useEffect(() => {
+        if (waitUpload) {
+            if (!importRes.loading && !importRes.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_import) }))
+                setOpenModal(false);
+                dispatch(showBackdrop(false));
+                setWaitUpload(false);
+                fetchData();
+            } else if (importRes.error) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(importRes.code || "error_unexpected_error") }))
+                dispatch(showBackdrop(false));
+                setWaitUpload(false);
+            }
+        }
+    }, [importRes, waitUpload])
+
+    useEffect(() => {
+        if (openModal) {
+            setChannelsite('');
+            setFileList([]);
+        }
+    }, [openModal])
+
+    const onSubmit = handleSubmit(async () => {
+        if (!!channelsite) {
+            if (!!fileList && fileList?.length > 0) {
+                const fd = new FormData();
+                fd.append('channelsite', channelsite);
+                for (let i = 0; i < fileList.length; i++) {
+                    fd.append(fileList[i].name, fileList[i], fileList[i].name);
+                }
+                dispatch(importTicket(fd));
+                dispatch(showBackdrop(true));
+                setWaitUpload(true);
+            }
+            else {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_files_selected) }))
+            }
+        }
+        else {
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_channel_selected) }))
+        }
+        
+    });
+    
+    const handleUpload = async (files: any) => {
+        if (Array.from<File>(files).length > 10) {
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.max_limit_file_per_upload, {n: 10}) }))
+        }
+        else {
+            setFileList(Array.from<File>(files));
+        }
+    }
+
+    const handleTemplate = () => {
+        const data = [
+            {},
+            {},
+            {},
+            {},
+            {'CLIENT': 'CLIENT', 'BOT': 'BOT'}
+        ];
+        const header = [
+            'date',
+            'personname',
+            'personphone',
+            'interactiontext',
+            'interactionfrom'
+        ];
+        exportExcel(`${t(langKeys.template)} ${t(langKeys.ticket)}`, templateMaker(data, header));
+    }
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.upload_conversation_plural)}
+            buttonText0={t(langKeys.template)}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.import)}
+            handleClickButton0={() => handleTemplate()}
+            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton2={onSubmit}
+            button2Type="submit"
+        >
+            <div
+                style={{
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    gap: '10px'
+                }}
+            >
+                <FieldSelect
+                    label={t(langKeys.channel)}
+                    className={classes.flex_1}
+                    valueDefault={channelsite}
+                    onChange={(value) => setChannelsite(value?.communicationchannelsite)}
+                    variant="outlined"
+                    data={mainResult?.multiData?.data[0]?.data.sort((a, b) => (a.communicationchanneldesc || "").localeCompare(b.communicationchanneldesc)) || []}
+                    optionDesc="communicationchanneldesc"
+                    optionValue="communicationchannelid"
+                />
+                <input
+                    name="file"
+                    accept="text/csv,.zip,.rar,.xls,.xlsx"
+                    id="laraigo-upload-csv-file"
+                    type="file"
+                    style={{ display: 'none' }}
+                    onChange={(e) => handleUpload(e.target.files)}
+                    multiple
+                />
+                <label htmlFor="laraigo-upload-csv-file">
+                    <Button
+                        className={classes.button}
+                        variant="contained"
+                        component="span"
+                        color="primary"
+                        style={{ backgroundColor: "#55BD84" }}
+                    >{t(langKeys.select)}
+                    </Button>
+                </label>
+            </div>
+            <div style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "5px",
+                marginTop: "10px"
+            }}>
+                {fileList && fileList?.map((x, i) => (
+                        <div>{i + 1}. {x.name}</div>
+                    )
+                )}
+            </div>
+        </DialogZyx>)
+}
+
 const Tickets = () => {
     const { t } = useTranslation();
     const classes = useStyles();
     const mainResult = useSelector(state => state.main);
     const dispatch = useDispatch();
 
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const handleClose = () => setAnchorEl(null);
-
-    const [allParameters, setAllParameters] = useState({});
-    //const format = (date: Date) => date.toISOString().split('T')[0];
-
-    const [filterStatus, setFilterStatus] = useState('')
-
+    const [allParameters, setAllParameters] = useState<Dictionary>({});
     const [openDialogTipify, setOpenDialogTipify] = useState(false);
     const [openDialogClose, setOpenDialogClose] = useState(false);
     const [openDialogReassign, setOpenDialogReassign] = useState(false);
+    const [openDialogShowHistory, setOpenDialogShowHistory] = useState(false);
 
     const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
     const [selectedRows, setSelectedRows] = useState<any>({});
@@ -434,10 +768,18 @@ const Tickets = () => {
     const [openModal, setOpenModal] = useState(false);
     const mainPaginated = useSelector(state => state.main.mainPaginated);
     const resExportData = useSelector(state => state.main.exportData);
-    const [pageCount, setPageCount] = useState(0);
+    const [rowToSend, setRowToSend] = useState<Dictionary[]>([]);
     const [waitSave, setWaitSave] = useState(false);
+    const [pageCount, setPageCount] = useState(0);
     const [totalrow, settotalrow] = useState(0);
+    const [userList, setUserList] = useState<Dictionary[]>([])
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+
+    const user = useSelector(state => state.login.validateToken.user);
+    const [openUploadTickets, setOpenUploadTickets] = useState(false);
+
+    const [waitDownloadRecord, setWaitDownloadRecord] = useState(false);
+    const getCallRecordRes = useSelector(state => state.voximplant.requestGetCallRecord);
 
     const setValue = (parameterName: any, value: any) => {
         setAllParameters({ ...allParameters, [parameterName]: value });
@@ -449,12 +791,99 @@ const Tickets = () => {
         }
     }, [selectedRows])
 
+    const downloadCallRecord = async (ticket: Dictionary) => {
+        // dispatch(getCallRecord({call_session_history_id: ticket.postexternalid}));
+        // setWaitDownloadRecord(true);
+        try {
+            const axios_result = await VoximplantService.getCallRecord({call_session_history_id: ticket.postexternalid});
+            if (axios_result.status === 200) {
+                let buff = Buffer.from(axios_result.data, 'base64');
+                const blob = new Blob([buff], {type: axios_result.headers['content-type'].split(';').find((x: string) => x.includes('audio'))});
+                const objectUrl = window.URL.createObjectURL(blob);
+                let a = document.createElement('a');
+                a.href = objectUrl;
+                a.download = ticket.numeroticket;
+                a.click();
+            }
+        }
+        catch (error: any) {
+            const errormessage = t(error?.response?.data?.code || "error_unexpected_error")
+            dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+        }
+    }
+
+    useEffect(() => {
+        if (waitDownloadRecord) {
+            if (!getCallRecordRes.loading && !getCallRecordRes.error ) {
+                if (getCallRecordRes.data) {
+                    window.open(getCallRecordRes.data)
+                }
+                setWaitDownloadRecord(false)
+            } else if (getCallRecordRes.error) {
+                const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.ticket_plural).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                setWaitDownloadRecord(false)
+            }
+        }
+    }, [getCallRecordRes, waitDownloadRecord])
+
     const columns = React.useMemo(
         () => [
             {
+                accessor: 'leadid',
+                isComponent: true,
+                minWidth: 60,
+                width: '1%',
+                Cell: (props: any) => {
+                    const ticket = props.cell.row.original;
+
+                    return (
+                        <IconOptions
+                            onHandlerReassign={ticket.estadoconversacion === "CERRADO" ? undefined : () => {
+                                setRowToSend([ticket]);
+                                setOpenDialogReassign(true);
+                            }}
+                            onHandlerClassify={ticket.estadoconversacion === "CERRADO" ? undefined : () => {
+                                setRowToSend([ticket]);
+                                setOpenDialogTipify(true);
+                            }}
+                            onHandlerClose={ticket.estadoconversacion === "CERRADO" ? undefined : () => {
+                                setRowToSend([ticket]);
+                                setOpenDialogClose(true);
+                            }}
+                            onHandlerShowHistory={() => {
+                                setOpenDialogShowHistory(true);
+                                setRowSelected(ticket);
+                                setRowToSend([ticket]);
+                            }}
+                        />
+                    )
+                }
+            },
+            {
+                accessor: 'voxiid',
+                isComponent: true,
+                minWidth: 60,
+                width: '1%',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        row.communicationchanneltype === 'VOXI'
+                        && row.postexternalid
+                        && row.callanswereddate ?
+                        <Tooltip title={t(langKeys.download_record) || ""}>
+                            <IconButton size="small" onClick={() => downloadCallRecord(row)}
+                            >
+                                <CallRecordIcon style={{ fill: '#7721AD' }} />
+                            </IconButton>
+                        </Tooltip>
+                        : null
+                    )
+                }
+            },
+            {
                 Header: t(langKeys.ticket_numeroticket),
                 accessor: 'numeroticket',
-                NoFilter: true,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
@@ -468,39 +897,34 @@ const Tickets = () => {
                 }
             },
             {
-                Header: t(langKeys.ticket_fecha),
-                NoFilter: true,
-                accessor: 'fecha'
-            },
-            {
-                Header: t(langKeys.ticket_firstusergroup),
-                NoFilter: true,
-                accessor: 'firstusergroup'
-            },
-            {
-                Header: t(langKeys.ticket_ticketgroup),
-                NoFilter: true,
-                accessor: 'ticketgroup'
-            },
-            {
                 Header: t(langKeys.ticket_communicationchanneldescription),
-                NoFilter: true,
                 accessor: 'communicationchanneldescription'
             },
             {
                 Header: t(langKeys.ticket_name),
-                NoFilter: true,
-                accessor: 'name'
+                accessor: 'name',
             },
             {
-                Header: t(langKeys.ticket_canalpersonareferencia),
-                NoFilter: true,
-                accessor: 'canalpersonareferencia'
+                Header: t(langKeys.origin),
+                accessor: 'origin'
+            },
+            {
+                Header: t(langKeys.ticket_firstusergroup),
+                accessor: 'firstusergroup'
+            },
+            {
+                Header: t(langKeys.ticket_ticketgroup),
+                accessor: 'ticketgroup'
+            },
+            {
+                Header: t(langKeys.ticket_phone),
+                accessor: 'phone'
             },
             {
                 Header: t(langKeys.ticket_fechainicio),
-                NoFilter: true,
                 accessor: 'fechainicio',
+                type: 'date',
+                sortType: 'datetime',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return convertLocalDate(row.fechainicio).toLocaleString()
@@ -508,174 +932,152 @@ const Tickets = () => {
             },
             {
                 Header: t(langKeys.ticket_fechafin),
-                NoFilter: true,
                 accessor: 'fechafin',
+                type: 'date',
+                sortType: 'datetime',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return row.fechafin ? convertLocalDate(row.fechafin).toLocaleString() : ''
                 }
             },
             {
-                Header: t(langKeys.ticket_fechaprimeraconversacion),
-                NoFilter: true,
-                accessor: 'fechaprimeraconversacion',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return row.fechaprimeraconversacion ? convertLocalDate(row.fechaprimeraconversacion).toLocaleString() : ''
-                }
+                Header: t(langKeys.status),
+                accessor: 'estadoconversacion'
             },
             {
-                Header: t(langKeys.ticket_fechaultimaconversacion),
-                NoFilter: true,
-                accessor: 'fechaultimaconversacion',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return row.fechaultimaconversacion ? convertLocalDate(row.fechaultimaconversacion).toLocaleString() : ''
-                }
+                Header: t(langKeys.ticket_tipocierre),
+                accessor: 'tipocierre',
+                helpText: t(langKeys.report_productivity_closetype_help)
+            },
+            {
+                Header: t(langKeys.ticket_duracionreal),
+                accessor: 'duracionreal',
+                helpText: t(langKeys.ticket_help_duracionreal),
+                type: 'time'
+            },
+            {
+                Header: t(langKeys.ticket_duracionpausa),
+                accessor: 'duracionpausa',
+                helpText: t(langKeys.ticket_duracionpausa_help),
+                type: 'time'
+            },
+            {
+                Header: t(langKeys.ticket_duraciontotal),
+                helpText: t(langKeys.ticket_duraciontotal_help),
+                accessor: 'duraciontotal',
+
+                type: 'time'
             },
             {
                 Header: t(langKeys.ticket_fechahandoff),
-                NoFilter: true,
+                helpText: t(langKeys.ticket_fechahandoff_help),
                 accessor: 'fechahandoff',
+                type: 'date',
+                sortType: 'datetime',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return row.fechahandoff ? convertLocalDate(row.fechahandoff).toLocaleString() : ''
                 }
             },
             {
+                Header: t(langKeys.ticket_fechaultimaconversacion),
+                helpText: t(langKeys.ticket_fechaultimaconversacion_help),
+                accessor: 'fechaultimaconversacion',
+                type: 'date',
+                sortType: 'datetime',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return row.fechaultimaconversacion ? convertLocalDate(row.fechaultimaconversacion).toLocaleString() : ''
+                }
+            },
+            {
                 Header: t(langKeys.ticket_asesorinicial),
-                NoFilter: true,
                 accessor: 'asesorinicial'
             },
             {
                 Header: t(langKeys.ticket_asesorfinal),
-                NoFilter: true,
                 accessor: 'asesorfinal'
             },
             {
                 Header: t(langKeys.ticket_supervisor),
-                NoFilter: true,
                 accessor: 'supervisor'
             },
             {
                 Header: t(langKeys.ticket_empresa),
-                NoFilter: true,
                 accessor: 'empresa'
             },
             {
-                Header: t(langKeys.ticket_attentiongroup),
-                NoFilter: true,
-                accessor: 'attentiongroup'
-            },
-            {
-                Header: t(langKeys.ticket_classification),
-                NoFilter: true,
-                accessor: 'classification'
-            },
-            {
-                Header: t(langKeys.ticket_tiempopromediorespuesta),
-                NoFilter: true,
-                accessor: 'tiempopromediorespuesta'
-            },
-            {
-                Header: t(langKeys.ticket_tiempoprimerarespuestaasesor),
-                NoFilter: true,
-                accessor: 'tiempoprimerarespuestaasesor'
-            },
-            {
-                Header: t(langKeys.ticket_tiempopromediorespuestaasesor),
-                NoFilter: true,
-                accessor: 'tiempopromediorespuestaasesor'
-            },
-            {
-                Header: t(langKeys.ticket_tiempopromediorespuestapersona),
-                NoFilter: true,
-                accessor: 'tiempopromediorespuestapersona'
-            },
-            {
-                Header: t(langKeys.ticket_duraciontotal),
-                NoFilter: true,
-                accessor: 'duraciontotal'
-            },
-            {
-                Header: t(langKeys.ticket_duracionreal),
-                NoFilter: true,
-                accessor: 'duracionreal'
-            },
-            {
-                Header: t(langKeys.ticket_duracionpausa),
-                NoFilter: true,
-                accessor: 'duracionpausa'
+                Header: t(langKeys.campaign),
+                accessor: 'campaign'
             },
             {
                 Header: t(langKeys.ticket_tmoasesor),
-                NoFilter: true,
-                accessor: 'tmoasesor'
+                helpText: t(langKeys.ticket_tmoasesor_help),
+                accessor: 'tmoasesor',
+                type: 'time'
+            },
+            {
+                Header: t(langKeys.ticket_tiempopromediorespuesta),
+                helpText: t(langKeys.ticket_tiempopromediorespuesta_help),
+                accessor: 'tiempopromediorespuesta',
+                type: 'time',
+            },
+            {
+                Header: t(langKeys.ticket_tiempopromediorespuestaasesor),
+                helpText: t(langKeys.ticket_tiempopromediorespuestaasesor_help),
+                accessor: 'tiempopromediorespuestaasesor',
+                type: 'time',
+            },
+            {
+                Header: t(langKeys.ticket_tiempoprimerarespuestaasesor),
+                helpText: t(langKeys.ticket_tiempoprimerarespuestaasesor_help),
+                accessor: 'tiempoprimerarespuestaasesor',
+                type: 'time'
+            },
+            {
+                Header: t(langKeys.ticket_tiempopromediorespuestapersona),
+                helpText: t(langKeys.ticket_tiempopromediorespuestapersona_help),
+                accessor: 'tiempopromediorespuestapersona',
+                type: 'time'
             },
             {
                 Header: t(langKeys.ticket_tiempoprimeraasignacion),
-                NoFilter: true,
-                accessor: 'tiempoprimeraasignacion'
+                helpText: t(langKeys.ticket_tiempoprimeraasignacion_help),
+                accessor: 'tiempoprimeraasignacion',
+                type: 'time'
             },
             {
-                Header: t(langKeys.ticket_estadoconversacion),
-                NoFilter: true,
-                accessor: 'estadoconversacion'
+                Header: t(langKeys.ticket_tdatime),
+                helpText: t(langKeys.ticket_tdatime_help),
+                accessor: 'tdatime',
+                type: 'time'
             },
             {
-                Header: t(langKeys.ticket_tipocierre),
-                NoFilter: true,
-                accessor: 'tipocierre'
-            },
-            {
-                Header: t(langKeys.ticket_tipification),
-                NoFilter: true,
+                Header: t(langKeys.ticket_classification),
+                helpText: t(langKeys.ticket_tipification_help),
                 accessor: 'tipification'
             },
-            {
-                Header: t(langKeys.ticket_firstname),
-                NoFilter: true,
-                accessor: 'firstname'
-            },
-            {
-                Header: t(langKeys.ticket_contact),
-                NoFilter: true,
-                accessor: 'contact'
-            },
-            {
-                Header: t(langKeys.ticket_lastname),
-                NoFilter: true,
-                accessor: 'lastname'
-            },
-            {
-                Header: t(langKeys.ticket_email),
-                NoFilter: true,
-                accessor: 'email'
-            },
-            {
-                Header: t(langKeys.ticket_phone),
-                NoFilter: true,
-                accessor: 'phone'
-            },
-            {
-                Header: t(langKeys.ticket_balancetimes),
-                NoFilter: true,
-                accessor: 'balancetimes'
-            },
+
             {
                 Header: t(langKeys.ticket_documenttype),
-                NoFilter: true,
                 accessor: 'documenttype'
-            }
-            ,
+            },
             {
-                Header: t(langKeys.ticket_dni),
-                NoFilter: true,
+                Header: t(langKeys.documentnumber),
                 accessor: 'dni'
             },
             {
+                Header: t(langKeys.ticket_email),
+                accessor: 'email'
+            },
+            {
+                Header: t(langKeys.ticket_balancetimes),
+                accessor: 'balancetimes',
+                type: 'number',
+                sortType: 'number',
+            },
+            {
                 Header: t(langKeys.ticket_abandoned),
-                NoFilter: true,
                 accessor: 'abandoned',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
@@ -683,20 +1085,10 @@ const Tickets = () => {
                 }
             },
             {
-                Header: t(langKeys.ticket_enquiries),
-                NoFilter: true,
-                accessor: 'enquiries'
-            },
-            {
                 Header: t(langKeys.ticket_labels),
-                NoFilter: true,
+                helpText: t(langKeys.ticket_labels_help),
                 accessor: 'labels'
             },
-            {
-                Header: t(langKeys.ticket_tdatime),
-                NoFilter: true,
-                accessor: 'tdatime'
-            }
         ],
         []
     );
@@ -707,13 +1099,19 @@ const Tickets = () => {
     }, [mainResult]);
 
     const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
+        const columnsExport = columns.filter(x => !x.isComponent).map(x => ({
+            key: x.accessor,
+            alias: x.Header
+        }))
         dispatch(exportData(getTicketExport({
-            filters,
+            filters: {
+                ...filters,
+            },
             sorts,
             startdate: daterange.startDate!,
             enddate: daterange.endDate!,
             ...allParameters
-        })));
+        }), "", "excel", false, columnsExport));
         dispatch(showBackdrop(true));
         setWaitSave(true);
     };
@@ -728,40 +1126,32 @@ const Tickets = () => {
             sorts: sorts,
             filters: {
                 ...filters,
-                ...(filterStatus ? {
-                    estadoconversacion: {
-                        value: filterStatus,
-                        operator: "equals"
-                    }
-                } : {})
             },
             ...allParameters
         })))
     };
 
     const fetchDataAux2 = () => {
-        fetchData(fetchDataAux);
-    };
-
-    useEffect(() => {
-        if (fetchDataAux.pageSize) {
+        if (fetchDataAux.daterange) {
             fetchData(fetchDataAux);
         }
-    }, [filterStatus])
+    };
 
     useEffect(() => {
         dispatch(getMultiCollection([
             getCommChannelLst(),
-            getValuesFromDomain("GRUPOS"),
-            getValuesFromDomain("MOTIVOCIERRE"),
+            getValuesFromDomainLight("GRUPOS"),
+            getValuesFromDomainLight("MOTIVOCIERRE"),
             getComunicationChannelDelegate(""),
             getClassificationLevel1("TIPIFICACION"),
-            getListUsers(),
+            getUserSel(0),
+            getValuesFromDomainLight("GRUPOS"),
+            getCampaignLst(),
+            getPropertySelByName('CARGARCONVERSACIONES')
         ]));
 
         return () => {
-            dispatch(resetCollectionPaginated());
-            dispatch(resetMultiMain());
+            dispatch(resetAllMain());
         };
     }, []);
 
@@ -777,126 +1167,68 @@ const Tickets = () => {
             if (!resExportData.loading && !resExportData.error) {
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
-                window.open(resExportData.url, '_blank');
+                resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
             } else if (resExportData.error) {
                 const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
         }
     }, [resExportData, waitSave])
 
+    useEffect(() => {
+        if (!mainResult?.multiData.loading && !mainResult?.multiData.error) {
+            setUserList(mainResult?.multiData?.data[5] ? mainResult?.multiData?.data[5].data.map(x => ({
+                ...x,
+                fullname: `${x.firstname} ${x.lastname}`
+            })).sort((a, b) => a.fullname.localeCompare(b.fullname)) : [])
+        }
+    }, [mainResult?.multiData])
+
     return (
         <div className={classes.container}>
             <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" style={{ gap: 8 }}>
-                <div>
-                    <div className={classes.title}>
-                        {t(langKeys.ticket_plural)}
-                    </div>
-                    <div style={{ display: 'flex', gap: 32 }}>
-                        <div
-                            className={clsx(classes.filterStatus, {
-                                [classes.filterStatusActive]: filterStatus === '',
-                            })}
-                            onClick={() => setFilterStatus('')}
-                        >{t(langKeys.all)}
-                        </div>
-                        <div
-                            className={clsx(classes.filterStatus, {
-                                [classes.filterStatusActive]: filterStatus === 'ASIGNADO',
-                            })}
-                            onClick={() => setFilterStatus('ASIGNADO')}
-                        >{t(langKeys.assigned)}
-                        </div>
-                        <div
-                            className={clsx(classes.filterStatus, {
-                                [classes.filterStatusActive]: filterStatus === 'CERRADO',
-                            })}
-                            onClick={() => setFilterStatus('CERRADO')}
-                        >{t(langKeys.closed)}
-                        </div>
-                        <div
-                            className={clsx(classes.filterStatus, {
-                                [classes.filterStatusActive]: filterStatus === 'PENDIENTE',
-                            })}
-                            onClick={() => setFilterStatus('PENDIENTE')}
-                        >{t(langKeys.pending)}
-                        </div>
-                    </div>
+                <div className={classes.title}>
+                    {t(langKeys.ticket_plural)}
                 </div>
-                <div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                        {mainResult?.multiData?.data[0]?.data &&
-                            <FieldMultiSelect
-                                label={t(langKeys.channel_plural)}
-                                className={classes.filterComponent}
-                                key="fieldMultiSelect_channel"
-                                onChange={(value) => setValue("channel", value ? value.map((o: Dictionary) => o.communicationchannelid).join() : '')}
-                                variant="outlined"
-                                data={mainResult?.multiData?.data[0]?.data}
-                                optionDesc="communicationchanneldesc"
-                                optionValue="communicationchannelid"
-                                disabled={mainPaginated.loading}
-                            />
-                        }
-
-                        {mainResult?.multiData?.data[1]?.data &&
-                            <FieldMultiSelect
-                                label={t(langKeys.group_plural)}
-                                className={classes.filterComponent}
-                                key="fieldMultiSelect_group"
-                                onChange={(value) => setValue("usergroup", value ? value.map((o: Dictionary) => o.domainvalue).join() : '')}
-                                variant="outlined"
-                                data={mainResult?.multiData?.data[1]?.data}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                                disabled={mainPaginated.loading}
-                            />
-                        }
-                        <IconButton
-                            aria-label="more"
-                            aria-controls="long-menu"
-                            aria-haspopup="true"
-                            size="small"
-                            disabled={rowWithDataSelected.length === 0}
-                            color="primary"
-                            onClick={(e) => setAnchorEl(e.currentTarget)}
-                        >
-                            <MoreVertIcon />
-                        </IconButton>
-                        <Menu
-                            id="menu-appbar"
-                            anchorEl={anchorEl}
-                            getContentAnchorEl={null}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'right',
-                            }}
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            open={Boolean(anchorEl)}
-                            onClose={handleClose}
-                        >
-                            <MenuItem onClick={(e) => {
-                                setAnchorEl(null)
-                                setOpenDialogReassign(true)
-                            }}>{t(langKeys.reassign_ticket)}
-                            </MenuItem>
-                            <MenuItem onClick={(e) => {
-                                setAnchorEl(null)
-                                setOpenDialogClose(true)
-                            }}>{t(langKeys.close_ticket)}
-                            </MenuItem>
-                            <MenuItem onClick={(e) => {
-                                setAnchorEl(null)
-                                setOpenDialogTipify(true)
-                            }}>{t(langKeys.tipify_ticket)}
-                            </MenuItem>
-                        </Menu>
-                    </div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                        startIcon={<ReassignIcon width={24} style={{ fill: '#FFF' }} />}
+                        onClick={() => {
+                            setRowToSend(rowWithDataSelected);
+                            setOpenDialogReassign(true);
+                        }}
+                    >
+                        {t(langKeys.reassign)}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                        startIcon={<TipifyIcon width={24} style={{ fill: '#FFF' }} />}
+                        onClick={() => {
+                            setRowToSend(rowWithDataSelected);
+                            setOpenDialogTipify(true);
+                        }}
+                    >
+                        {t(langKeys.ticket_typify)}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                        startIcon={<CloseTicketIcon width={24} style={{ fill: '#FFF' }} />}
+                        onClick={() => {
+                            setRowToSend(rowWithDataSelected);
+                            setOpenDialogClose(true);
+                        }}
+                    >
+                        {t(langKeys.close)}
+                    </Button>
                 </div>
             </Box>
             <TablePaginated
@@ -907,36 +1239,116 @@ const Tickets = () => {
                 pageCount={pageCount}
                 filterrange={true}
                 download={true}
+                ButtonsElement={() => (
+                    <>
+                        {
+                            ['SUPERADMIN','ADMINISTRADOR'].includes(user?.roledesc || '')
+                            && mainResult?.multiData?.data?.[8]?.data?.[0]?.propertyvalue === '1'
+                            && <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={mainPaginated.loading}
+                                onClick={() => setOpenUploadTickets(true)}
+                                startIcon={<PublishIcon />}
+                            >
+                                {t(langKeys.upload_conversation_plural)}
+                            </Button>
+                        }
+                    </>
+                )}
                 fetchData={fetchData}
                 exportPersonalized={triggerExportData}
                 useSelection={true}
                 selectionFilter={{ key: 'estadoconversacion', value: 'ASIGNADO' }}
                 selectionKey={selectionKey}
                 setSelectedRows={setSelectedRows}
+                filterRangeDate="today"
+                FiltersElement={React.useMemo(() => (
+                    <>
+                        <FieldMultiSelect
+                            label={t(langKeys.channel)}
+                            className={classes.filterComponent}
+                            key="fieldMultiSelect_channel"
+                            valueDefault={allParameters["channel"] || ""}
+                            onChange={(value) => setValue("channel", value ? value.map((o: Dictionary) => o.communicationchannelid).join() : '')}
+                            variant="outlined"
+                            data={mainResult?.multiData?.data[0]?.data.sort((a, b) => (a.communicationchanneldesc || "").localeCompare(b.communicationchanneldesc)) || []}
+                            optionDesc="communicationchanneldesc"
+                            optionValue="communicationchannelid"
+                            disabled={mainPaginated.loading}
+                        />
+                        <FieldMultiSelect
+                            label={t(langKeys.group)}
+                            className={classes.filterComponent}
+                            key="fieldMultiSelect_group"
+                            valueDefault={allParameters["usergroup"] || ""}
+                            onChange={(value) => setValue("usergroup", value ? value.map((o: Dictionary) => o.domainvalue).join() : '')}
+                            variant="outlined"
+                            data={mainResult?.multiData?.data[1]?.data || []}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                            disabled={mainPaginated.loading}
+                        />
+                        <FieldMultiSelect
+                            label={t(langKeys.agent)}
+                            className={classes.filterComponent}
+                            key="fieldMultiSelect_user"
+                            valueDefault={allParameters["lastuserid"] || ""}
+                            onChange={(value) => setValue("lastuserid", value ? value.map((o: Dictionary) => o.userid).join() : '')}
+                            variant="outlined"
+                            data={userList}
+                            optionDesc="fullname"
+                            optionValue="userid"
+                            disabled={mainPaginated.loading}
+                        />
+                        <FieldMultiSelectVirtualized
+                            label={t(langKeys.campaign)}
+                            className={classes.filterComponentVirtualized}
+                            key="fieldMultiSelect_campaign"
+                            valueDefault={allParameters["campaignid"] || ""}
+                            onChange={(value) => setValue("campaignid", value ? value.map((o: Dictionary) => o.id).join() : '')}
+                            variant="outlined"
+                            data={mainResult?.multiData?.data[7]?.data || []}
+                            optionDesc="title"
+                            optionValue="id"
+                            disabled={mainPaginated.loading}
+                        />
+                    </>
+                ), [allParameters, mainResult.multiData, mainPaginated, userList])}
             />
-
             <DialogInteractions
                 openModal={openModal}
                 setOpenModal={setOpenModal}
                 ticket={rowSelected}
             />
+            <DialogHistoryStatus
+                openModal={openDialogShowHistory}
+                setOpenModal={setOpenDialogShowHistory}
+                ticket={rowSelected}
+            />
             <DialogTipifications
                 fetchData={fetchDataAux2}
-                rowWithDataSelected={rowWithDataSelected}
+                rowWithDataSelected={rowToSend}
                 openModal={openDialogTipify}
                 setOpenModal={setOpenDialogTipify}
             />
             <DialogCloseticket
                 fetchData={fetchDataAux2}
-                rowWithDataSelected={rowWithDataSelected}
+                rowWithDataSelected={rowToSend}
                 openModal={openDialogClose}
                 setOpenModal={setOpenDialogClose}
             />
             <DialogReassignticket
                 fetchData={fetchDataAux2}
-                rowWithDataSelected={rowWithDataSelected}
+                rowWithDataSelected={rowToSend}
                 openModal={openDialogReassign}
                 setOpenModal={setOpenDialogReassign}
+            />
+            <DialogLoadTickets
+                fetchData={fetchDataAux2}
+                openModal={openUploadTickets}
+                setOpenModal={setOpenUploadTickets}
             />
         </div>
     )

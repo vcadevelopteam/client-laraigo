@@ -14,8 +14,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import { Range } from 'react-date-range';
 import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
-
-const format = (date: Date) => date.toISOString().split('T')[0];
+import { getDateCleaned, getFirstDayMonth, getLastDayMonth } from 'common/helpers';
 
 const DrawerFilter: React.FC<{ classes: any, drawerOpen: boolean, setDrawerOpen: (param: boolean) => void }> = ({ drawerOpen, setDrawerOpen, classes }) => {
     const { t } = useTranslation();
@@ -28,7 +27,7 @@ const DrawerFilter: React.FC<{ classes: any, drawerOpen: boolean, setDrawerOpen:
     const [filterCheckBox, setFilterCheckBox] = useState({
         ASIGNADO: false,
         CERRADO: false,
-        PAUSADO: false
+        SUSPENDIDO: false
     })
 
     const [filters, setFilters] = useState({
@@ -41,8 +40,8 @@ const DrawerFilter: React.FC<{ classes: any, drawerOpen: boolean, setDrawerOpen:
     })
 
     const [dateRange, setdateRange] = useState<Range>({
-        startDate: new Date(new Date().setDate(0)),
-        endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+        startDate: getFirstDayMonth(),
+        endDate: getLastDayMonth(),
         key: 'selection'
     });
 
@@ -50,7 +49,7 @@ const DrawerFilter: React.FC<{ classes: any, drawerOpen: boolean, setDrawerOpen:
         const conversationstatus = [
             ...(filterCheckBox.ASIGNADO ? ["ASIGNADO"] : []),
             ...(filterCheckBox.CERRADO ? ["CERRADO"] : []),
-            ...(filterCheckBox.PAUSADO ? ["PAUSADO"] : []),
+            ...(filterCheckBox.SUSPENDIDO ? ["SUSPENDIDO"] : []),
         ].join(',');
 
         setFilters({
@@ -76,8 +75,8 @@ const DrawerFilter: React.FC<{ classes: any, drawerOpen: boolean, setDrawerOpen:
         e.preventDefault()
         const filtersOK = {
             ...filters,
-            start_createticket: dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : null,
-            end_createticket: dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : null
+            start_createticket: dateRange.startDate ? getDateCleaned(dateRange.startDate) : null,
+            end_createticket: dateRange.endDate ? getDateCleaned(dateRange.endDate) : null
         }
         dispatch(filterTickets(
             filtersOK.lastmessage,
@@ -92,10 +91,15 @@ const DrawerFilter: React.FC<{ classes: any, drawerOpen: boolean, setDrawerOpen:
 
     const handleClean = () => {
         dispatch(setIsFiltering(false));
+        setdateRange({
+            startDate: getFirstDayMonth(),
+            endDate: getLastDayMonth(),
+            key: 'selection'
+        })
         setFilterCheckBox({
             ASIGNADO: false,
             CERRADO: false,
-            PAUSADO: false
+            SUSPENDIDO: false
         })
         setFilters({
             channels: '',
@@ -124,23 +128,41 @@ const DrawerFilter: React.FC<{ classes: any, drawerOpen: boolean, setDrawerOpen:
                             className={classes.itemFilter}
                             valueDefault={filters.channels}
                             onChange={(value) => setFilters(p => ({ ...p, channels: value.map((o: any) => o.communicationchannelid).join() }))}
-                            data={multiData?.data[6]?.data}
+                            data={multiData?.data[6]?.data || []}
                             optionDesc="communicationchanneldesc"
                             optionValue="communicationchannelid"
                         />
                         <div>
-                            <div style={{ fontWeight: 500 }}>{t(langKeys.conversation) + " " + t(langKeys.status)}</div>
+                            <div style={{ fontWeight: 500 }}>{t(langKeys.conversation_status)}</div>
                             <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <FormControlLabel
-                                    control={<Checkbox checked={filterCheckBox.ASIGNADO} onChange={(e) => setFilterCheckBox({ ...filterCheckBox, ASIGNADO: e.target.checked })} name="checkedA" />}
+                                    control={(
+                                        <Checkbox
+                                            checked={filterCheckBox.ASIGNADO}
+                                            color="primary"
+                                            onChange={(e) => setFilterCheckBox({ ...filterCheckBox, ASIGNADO: e.target.checked })}
+                                            name="checkedA" />
+                                    )}
                                     label={t(langKeys.assigned)}
                                 />
                                 <FormControlLabel
-                                    control={<Checkbox checked={filterCheckBox.CERRADO} onChange={(e) => setFilterCheckBox({ ...filterCheckBox, CERRADO: e.target.checked })} name="checkedA" />}
+                                    control={(
+                                        <Checkbox
+                                            checked={filterCheckBox.CERRADO}
+                                            color="primary"
+                                            onChange={(e) => setFilterCheckBox({ ...filterCheckBox, CERRADO: e.target.checked })}
+                                            name="checkedB" />
+                                    )}
                                     label={t(langKeys.closed)}
                                 />
                                 <FormControlLabel
-                                    control={<Checkbox checked={filterCheckBox.PAUSADO} onChange={(e) => setFilterCheckBox({ ...filterCheckBox, PAUSADO: e.target.checked })} name="checkedA" />}
+                                    control={(
+                                        <Checkbox
+                                            checked={filterCheckBox.SUSPENDIDO}
+                                            color="primary"
+                                            onChange={(e) => setFilterCheckBox({ ...filterCheckBox, SUSPENDIDO: e.target.checked })}
+                                            name="checkedC" />
+                                    )}
                                     label={t(langKeys.paused)}
                                 />
                             </div>
@@ -155,9 +177,9 @@ const DrawerFilter: React.FC<{ classes: any, drawerOpen: boolean, setDrawerOpen:
                         />
                         <FieldEdit
                             label={t(langKeys.phone)}
+                            valueDefault={filters.phone}
                             className="col-6"
                             onChange={(value) => setFilters(p => ({ ...p, phone: value }))}
-                            valueDefault=''
                             variant="outlined"
                             size="small"
                         />
@@ -175,7 +197,7 @@ const DrawerFilter: React.FC<{ classes: any, drawerOpen: boolean, setDrawerOpen:
                                     startIcon={<CalendarIcon />}
                                     onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
                                 >
-                                    {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
+                                    {getDateCleaned(dateRange.startDate!) + " - " + getDateCleaned(dateRange.endDate!)}
                                 </Button>
                             </DateRangePicker>
                         </div>
@@ -187,7 +209,6 @@ const DrawerFilter: React.FC<{ classes: any, drawerOpen: boolean, setDrawerOpen:
                             type="submit"
                             startIcon={<SearchIcon color="primary" />}
                             disabled={ticketFilteredList.loading}
-                        // onClick={() => handlerFilter()}
                         >
                             {t(langKeys.search)}
                         </Button>

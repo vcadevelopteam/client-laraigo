@@ -36,6 +36,7 @@ export interface ICampaign {
 	messagetemplatetype?: string,
 	messagetemplateheader?: Dictionary,
 	messagetemplatebuttons?: Dictionary[],
+	// messagetemplatefooter?: string,
 	executiontype?: string,
 	batchjson?: Dictionary[],
 	fields?: Dictionary,
@@ -44,7 +45,7 @@ export interface ICampaign {
     headers?: any[],
     jsonData?: any[],
     selectedColumns?: SelectedColumns,
-	selectedRows?: any[],
+	selectedRows?: any,
 	person?: any[],
 
 	subject?: string,
@@ -52,4 +53,14 @@ export interface ICampaign {
 	variablereplace?: string[],
 
 	sourcechanged?: boolean,
+}
+
+export interface ICampaignLst {
+	description: string;
+	enddate: string;
+	id: number;
+	startdate: string;
+	status: string;
+	title: string;
+	type: string;
 }

@@ -3,8 +3,8 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
-import { dictToArrayKV, exportExcel, getInappropriateWordsSel, getValuesFromDomain, insarrayInappropriateWords, insInappropriateWords, templateMaker, uploadExcel } from 'common/helpers';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect } from 'components';
+import { exportExcel, getInappropriateWordsSel, getValuesFromDomain, insarrayInappropriateWords, insInappropriateWords, templateMaker, uploadExcel } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -13,11 +13,13 @@ import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import {
-    getCollection, resetMain, getMultiCollection,
+    getCollection, resetAllMain, getMultiCollection,
     execute
 } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
+import { useHistory } from 'react-router-dom';
+import paths from 'common/constants/paths';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -31,12 +33,9 @@ interface DetailInappropriateWordsProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
-    fetchData: () => void
+    fetchData: () => void;
+    arrayBread: any;
 }
-const arrayBread = [
-    { id: "view-1", name: "Inappropriate words" },
-    { id: "view-2", name: "Inappropriate words detail" }
-];
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -52,14 +51,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const dataClassification: Dictionary = {
-    INSULTS: 'INSULTS',
-    ENTITIES: 'ENTITIES',
-    LINKS: 'LINKS',
-    EMOTIONS: 'EMOTIONS',
-};
-
-const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData,arrayBread }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
@@ -67,12 +59,12 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
     const { t } = useTranslation();
 
     const dataStatus = multiData[1] && multiData[1].success ? multiData[1].data : [];
-
+    const dataClassification = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
             id: row?.inappropriatewordsid|| 0,
-            classification: row?.classification||"",
+            classification: row?.classificationdata||"",
             description: row?.description || '',
             defaultanswer: row?.defaultanswer || '',
             status: row?.status || 'ACTIVO',
@@ -92,13 +84,13 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.inappropriatewords).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
@@ -118,14 +110,14 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
             callback
         }))
     });
-
+    
     return (
         <div style={{width: '100%'}}>
             <form onSubmit={onSubmit}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
+                            breadcrumbs={[...arrayBread,{ id: "view-2", name: `${t(langKeys.inappropriatewords)} ${t(langKeys.detail)}` }]}
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
@@ -156,56 +148,37 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldSelect
-                                uset={true}    
-                                label={t(langKeys.classification)}
-                                className="col-12"
-                                valueDefault={row ? (row.classification || "") : ""}
-                                onChange={(value) => setValue('classification', (value?.domainvalue||""))}
-                                error={errors?.classification?.message}
-                                data={dictToArrayKV(dataClassification)}
-                                optionDesc="value"
-                                optionValue="key"
-                            />
-                            : <FieldView
-                                label={t(langKeys.classification)}
-                                value={row?.classification || ""}
-                                className="col-12"
-                            />}
+                        <FieldSelect
+                            label={t(langKeys.classification)}
+                            className="col-12"
+                            valueDefault={row?.classificationdata || ""}
+                            onChange={(value) => setValue('classification', (value?.domainvalue||""))}
+                            error={errors?.classification?.message}
+                            uset={true}
+                            data={dataClassification}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
                     </div>
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.description)} 
-                                className="col-12"
-                                onChange={(value) => setValue('description', value)}
-                                valueDefault={row ? (row.description || "") : ""}
-                                error={errors?.description?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.description)}
-                                value={row ? (row.description || "") : ""}
-                                className="col-12"
-                            />}
+                        <FieldEdit
+                            label={t(langKeys.forbiddenWord)} 
+                            className="col-12"
+                            onChange={(value) => setValue('description', value)}
+                            valueDefault={row ? (row.description || "") : ""}
+                            error={errors?.description?.message}
+                        />
                     </div>
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.defaultanswer)} 
-                                className="col-12"
-                                onChange={(value) => setValue('defaultanswer', value)}
-                                valueDefault={row ? (row.defaultanswer || "") : ""}
-                                error={errors?.defaultanswer?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.defaultanswer)}
-                                value={row ? (row.defaultanswer || "") : ""}
-                                className="col-12"
-                            />}
+                        <FieldEdit
+                            label={t(langKeys.defaultanswer)} 
+                            className="col-12"
+                            onChange={(value) => setValue('defaultanswer', value)}
+                            valueDefault={row ? (row.defaultanswer || "") : ""}
+                            error={errors?.defaultanswer?.message}
+                        />
                     </div>
                     <div className="row-zyx">
-                        {edit ?
                         <FieldSelect
                             label={t(langKeys.status)}
                             className="col-12"
@@ -218,11 +191,6 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
                         />
-                        : <FieldView
-                            label={t(langKeys.status)}
-                            value={row ? (row.status || "") : ""}
-                            className="col-12"
-                        />}
                     </div>
                 </div>
             </form>
@@ -232,6 +200,7 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
 
 const InappropriateWords: FC = () => {
     // const history = useHistory();
+    const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
@@ -241,6 +210,19 @@ const InappropriateWords: FC = () => {
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
     const [waitImport, setWaitImport] = useState(false);
+    const [mainData, setMainData] = useState<any>([]);
+    
+    const arrayBread = [
+        { id: "view-0", name: t(langKeys.configuration_plural) },
+        { id: "view-1", name: t(langKeys.inappropriatewords) },
+    ];
+    function redirectFunc(view:string){
+        if(view ==="view-0"){
+            history.push(paths.CONFIGURATION)
+            return;
+        }
+        setViewSelected(view)
+    }
 
     const columns = React.useMemo(
         () => [
@@ -265,14 +247,9 @@ const InappropriateWords: FC = () => {
                 Header: t(langKeys.classification),
                 accessor: 'classification',
                 NoFilter: true,
-                prefixTranslation: '',
-                Cell: (props: any) => {
-                    const { classification } = props.cell.row.original;
-                    return (t(`${classification}`.toLowerCase()) || "").toUpperCase()
-                }
             },
             {
-                Header: t(langKeys.description),
+                Header: t(langKeys.forbiddenWord),
                 accessor: 'description',
                 NoFilter: true
             },
@@ -285,11 +262,6 @@ const InappropriateWords: FC = () => {
                 Header: t(langKeys.status),
                 accessor: 'status',
                 NoFilter: true,
-                prefixTranslation: 'status_',
-                Cell: (props: any) => {
-                    const { status } = props.cell.row.original;
-                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
-                }
             },
             
         ],
@@ -300,22 +272,26 @@ const InappropriateWords: FC = () => {
 
     useEffect(() => {
         fetchData();
-        dispatch(getMultiCollection([getValuesFromDomain("GRUPOS"), getValuesFromDomain("ESTADOGENERICO")]));
+        dispatch(getMultiCollection([
+            getValuesFromDomain("GRUPOS"), 
+            getValuesFromDomain("ESTADOGENERICO"),
+            getValuesFromDomain("CLASSINNAWORDS"),
+        ]));
         return () => {
-            dispatch(resetMain());
+            dispatch(resetAllMain());
         };
     }, []);
 
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.inappropriatewords).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
@@ -325,13 +301,13 @@ const InappropriateWords: FC = () => {
     useEffect(() => {
         if (waitImport) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_transaction) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.inappropriatewords).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
             }
@@ -371,7 +347,7 @@ const InappropriateWords: FC = () => {
         if (file) {
             const data: any = (await uploadExcel(file, undefined) as any[])
                 .filter((d: any) => !['', null, undefined].includes(d.description)
-                    && Object.keys(dataClassification).includes(d.classification)
+                    && (mainResult.multiData.data[2].data.filter((x:any)=>x.domainvalue===d.classification).length>0)
                 );
             if (data.length > 0) {
                 const validpk = Object.keys(data[0]).includes('description');
@@ -396,34 +372,69 @@ const InappropriateWords: FC = () => {
     }
 
     const handleTemplate = () => {
-        const data = [dataClassification, {}, {}, mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domainvalue}),{})];
+        const data = [
+            mainResult.multiData.data[2].data.reduce((a,d) => ({...a, [d.domainvalue]: t(`${d.domainvalue}`)}),{}), 
+            {},
+            {},
+            mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.domainvalue]: t(`${d.domainvalue}`)}),{})];
         const header = ['classification', 'description', 'defaultanswer', 'status'];
-        exportExcel(t(langKeys.template), templateMaker(data, header));
+        exportExcel(`${t(langKeys.template)} ${t(langKeys.inappropriatewords)}`, templateMaker(data, header));
     }
+
+    useEffect(() => {
+        setMainData(mainResult.mainData.data.map(x => ({
+            ...x,
+            classification: (t(`${x.classification}`.toLowerCase()) || "").toUpperCase(),
+            classificationdata: x.classification,
+            statusdesc: (t(`status_${x.status}`.toLowerCase()) || "").toUpperCase()
+        })))
+    }, [mainResult.mainData.data])
 
     if (viewSelected === "view-1") {
 
         return (
-            <TableZyx
-                columns={columns}
-                titlemodule={t(langKeys.inappropriatewords, { count: 2 })}
-                data={mainResult.mainData.data}
-                download={true}
-                loading={mainResult.mainData.loading}
-                register={true}
-                handleRegister={handleRegister}
-                importCSV={handleUpload}
-                handleTemplate={handleTemplate}
-            />
+            
+            <div style={{width:"100%"}}>
+                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={arrayBread}
+                        handleClick={redirectFunc}
+                    />
+                </div>
+                <TableZyx
+                    columns={columns}
+                    titlemodule={t(langKeys.inappropriatewords, { count: 2 })}
+                    data={mainData}
+                    ButtonsElement={() => (
+                        <Button
+                            disabled={mainResult.mainData.loading}
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => history.push(paths.CONFIGURATION)}
+                        >{t(langKeys.back)}</Button>
+                    )}
+                    download={true}
+                    onClickRow={handleEdit}
+                    loading={mainResult.mainData.loading}
+                    register={true}
+                    handleRegister={handleRegister}
+                    importCSV={handleUpload}
+                    handleTemplate={handleTemplate}
+                />
+            </div>
         )
     }
     else if (viewSelected === "view-2") {
         return (
             <DetailInappropriateWords
                 data={rowSelected}
-                setViewSelected={setViewSelected}
+                setViewSelected={redirectFunc}
                 multiData={mainResult.multiData.data}
                 fetchData={fetchData}
+                arrayBread={arrayBread}
             />
         )
     } else

@@ -4,13 +4,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Box, Button } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { useHistory, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { useDispatch } from 'react-redux';
 import { sendActivation } from 'store/activationuser/actions';
 import { useSelector } from 'hooks';
 import paths from 'common/constants/paths';
 import clsx from 'clsx';
-import { LangKeys } from '../lang/keys';
 
 const useStyles = makeStyles(theme => ({
     titlecards:{
@@ -48,14 +47,10 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const ActivateUser: FC = () => {
-    // const location = useLocation();
-    // const query = new URLSearchParams(location.search)
-    // const tk = query.get('t');
     const classes = useStyles();
     const { t } = useTranslation();
     const { token }: any = useParams();
     const dispatch = useDispatch();
-    const history = useHistory();
     const activationRes = useSelector(state => state.activationuser.activation);
     const [loading, setLoading] = useState<boolean>(true);
     const [valid, setValid] = useState<boolean | null>(null);
@@ -69,7 +64,7 @@ export const ActivateUser: FC = () => {
     useEffect(() => {
         if (!activationRes.error && activationRes.data) {
             setLoading(false);
-            if (activationRes.data?.sucess) {
+            if (activationRes.data?.success) {
                 setValid(true);
             }
             else {
@@ -113,6 +108,9 @@ export const ActivateUser: FC = () => {
         case true:
             return (
                 <div style={{ width: "100%",marginTop:25}}>
+                    <div className={classes.containerHead}>
+                        <img src="/Laraigo-vertical-logo-name.svg" style={{ height: 200}} alt="logo" />
+                    </div>
                     <div className={classes.titlecards}>{t(langKeys.message_account_activated)}</div>
                     <Box className={classes.boxstyles}>
                         <p>{t(langKeys.message_click_to_login)}</p>
@@ -122,7 +120,7 @@ export const ActivateUser: FC = () => {
                                 type="button"
                                 color="primary"
                                 style={{ backgroundColor: "#7721AD" }}
-                                onClick={() => history.push(paths.SIGNIN)}
+                                onClick={() => window.open(paths.SIGNIN, "_self")}
                             >{t(langKeys.continue)}</Button>
                         </div>
                     </Box>
@@ -131,6 +129,9 @@ export const ActivateUser: FC = () => {
         case false:
             return (
                 <div style={{ width: "100%",marginTop:25}}>
+                    <div className={classes.containerHead}>
+                        <img src="/Laraigo-vertical-logo-name.svg" style={{ height: 200}} alt="logo" />
+                    </div>
                     <div className={classes.titlecards}>{t(langKeys.message_account_already_activated)}</div>
                     <Box className={classes.boxstyles}>
                         <p>{t(langKeys.message_click_to_login)}</p>
@@ -140,7 +141,7 @@ export const ActivateUser: FC = () => {
                                 type="button"
                                 color="primary"
                                 style={{ backgroundColor: "#7721AD" }}
-                                onClick={() => history.push(paths.SIGNIN)}
+                                onClick={() => window.open(paths.SIGNIN, "_self")}
                             >{t(langKeys.continue)}</Button>
                         </div>
                     </Box>

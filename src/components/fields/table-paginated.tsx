@@ -10,11 +10,10 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Box from '@material-ui/core/Box';
 import Input from '@material-ui/core/Input';
-import Tooltip from '@material-ui/core/Tooltip';
-import Zoom from '@material-ui/core/Zoom';
 import { makeStyles } from '@material-ui/core/styles';
-import { TableConfig, Pagination } from '@types'
+import { TableConfig, Pagination, Dictionary, ITablePaginatedFilter } from '@types'
 import { Trans } from 'react-i18next';
+import Tooltip from '@material-ui/core/Tooltip';
 import Button from '@material-ui/core/Button';
 import { langKeys } from 'lang/keys';
 import { DownloadIcon, CalendarIcon } from 'icons';
@@ -31,7 +30,7 @@ import {
     ArrowUpward as ArrowUpwardIcon,
     MoreVert as MoreVertIcon,
 } from '@material-ui/icons';
-// import RefreshIcon from "@material-ui/icons/Refresh";
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import Menu from '@material-ui/core/Menu';
 
 import {
@@ -39,13 +38,21 @@ import {
     useFilters,
     useGlobalFilter,
     usePagination,
-    useRowSelect
+    useRowSelect,
 } from 'react-table'
 import { Range } from 'react-date-range';
 import { DateRangePicker } from 'components';
 import { Checkbox } from '@material-ui/core';
-import { BooleanOptionsMenuComponent, OptionsMenuComponent } from './table-simple';
+import { BooleanOptionsMenuComponent, DateOptionsMenuComponent, SelectFilterTmp, OptionsMenuComponent, TimeOptionsMenuComponent } from './table-simple';
+import { getDateToday, getFirstDayMonth, getLastDayMonth, getDateCleaned } from 'common/helpers';
 
+declare module "react-table" {
+    // eslint-disable-next-line
+    interface UseTableColumnProps<D extends object> {
+        listSelectFilter: Dictionary;
+        helpText?: string;
+    }
+}
 
 const useStyles = makeStyles((theme) => ({
     footerTable: {
@@ -98,6 +105,7 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'space-between',
         alignItems: 'center',
         flexWrap: 'wrap',
+        gap: 8
     },
     iconOrder: {
         width: 20,
@@ -107,16 +115,25 @@ const useStyles = makeStyles((theme) => ({
     containerHeader: {
         display: 'block',
         backgroundColor: '#FFF',
-        padding: theme.spacing(2),
+        padding: theme.spacing(1),
         [theme.breakpoints.up('sm')]: {
             display: 'flex',
         },
+    },
+    containerHeaderColumn: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    iconHelpText: {
+        width: 15,
+        height: 15,
+        cursor: 'pointer',
     }
 }));
 
-const format = (date: Date) => date.toISOString().split('T')[0];
 
-const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue }: any) => {
+const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilter }: any) => {
     const [value, setValue] = useState('');
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -124,7 +141,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue }: 
 
     useEffect(() => {
         switch (type) {
-            case "number": case "date": case "datetime-local":
+            case "number": case "number-centered": case "date": case "datetime-local": case "time": case "select":
                 setoperator("equals");
                 break;
             case "boolean":
@@ -138,10 +155,10 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue }: 
     }, [type])
 
     useEffect(() => {
-        if (!type && typeof firstvalue === "number")
+        if (['number','number-centered'].includes(type))
             setoperator("equals");
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [firstvalue])
+    }, [type])
 
     const keyPress = (e: any) => {
         if (e.keyCode === 13) {
@@ -167,56 +184,198 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue }: 
     const handleClickItemMenu = (op: any) => {
         setAnchorEl(null);
         setoperator(op)
+        if (type === 'boolean') {
+            setValue(op);
+            setFilters({
+                ...filters,
+                [header]: {
+                    value: op,
+                    operator: op
+                },
+            }, 0)
+        } else if (type === "select") {
+            setValue(op);
+            setFilters({
+                ...filters,
+                [header]: op === "_ALL" ? undefined : {
+                    value: op,
+                    operator: "equals"
+                },
+            }, 0)
+        } else if (type === "text" || !type) {
+            if (op === 'isempty' ||
+                op === 'isnotempty' ||
+                op === 'isnull' ||
+                op === 'isnotnull') {
+                setFilters({
+                    ...filters,
+                    [header]: {
+                        value: '',
+                        operator: op
+                    },
+                }, 0)
+            } else if (value) {
+                setFilters({
+                    ...filters,
+                    [header]: {
+                        value: value,
+                        operator: op
+                    },
+                }, 0)
+            }
+        } else if (['number','number-centered'].includes(type)) {
+            if (op === 'isempty' ||
+                op === 'isnotempty' ||
+                op === 'isnull' ||
+                op === 'isnotnull') {
+                setFilters({
+                    ...filters,
+                    [header]: {
+                        value: '',
+                        operator: op
+                    },
+                }, 0)
+            } else if (value) {
+                setFilters({
+                    ...filters,
+                    [header]: {
+                        value: value,
+                        operator: op
+                    },
+                }, 0)
+            }
+        } else {
+            if (op === 'isempty' ||
+                op === 'isnotempty' ||
+                op === 'isnull' ||
+                op === 'isnotnull') {
+                setFilters({
+                    ...filters,
+                    [header]: {
+                        value: '',
+                        operator: op
+                    },
+                }, 0)
+            } else if (value !== '') {
+                setFilters({
+                    ...filters,
+                    [header]: {
+                        value: value,
+                        operator: op
+                    },
+                }, 0)
+            }
+        }
     };
     const handleClickMenu = (event: any) => {
         setAnchorEl(event.currentTarget);
     };
+    const handleDate = (date: Date) => {
+        if (date === null || (date instanceof Date && !isNaN(date.valueOf()))) {
+            setValue(date?.toISOString() || '');
+            if (!!date || ['isnull', 'isnotnull'].includes(operator)) {
+                setFilters({
+                    ...filters,
+                    [header]: {
+                        value: date?.toISOString().split('T')[0] || '',
+                        operator
+                    },
+                }, 0)
+            }
+            else {
+                setFilters({
+                    ...filters,
+                    [header]: undefined,
+                }, 0)
+            }
+        }
+    }
+
+    const handleTime = (date: Date) => {
+        if (date === null || (date instanceof Date && !isNaN(date.valueOf()))) {
+            setValue(date?.toISOString() || '');
+            if (!!date || ['isnull', 'isnotnull'].includes(operator)) {
+                setFilters({
+                    ...filters,
+                    [header]: {
+                        value: date?.toLocaleTimeString(),
+                        operator
+                    },
+                }, 0)
+            }
+            else {
+                setFilters({
+                    ...filters,
+                    [header]: undefined,
+                }, 0)
+            }
+        }
+    }
 
     useEffect(() => {
         if (Object.keys(filters).length === 0) setValue('');
+        else if (header in filters) {
+            setValue(filters?.[header]?.value || '');
+            if (filters?.[header]) setoperator(filters[header].operator);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filters]);
 
     return (
         <div style={{ display: 'flex', alignItems: 'center' }}>
-            {type === 'boolean'
-                ? BooleanOptionsMenuComponent(value, handleClickItemMenu)
-                : <React.Fragment>
-                    <Input
-                        style={{ fontSize: '15px', minWidth: '100px' }}
-                        type={type ? type : (typeof firstvalue === "number" ? "number" : "text")}
-                        fullWidth
+            {type === 'boolean' ?
+                <BooleanOptionsMenuComponent
+                    value={value}
+                    handleClickItemMenu={handleClickItemMenu}
+                />
+                :
+                (type === "select" ?
+                    <SelectFilterTmp
                         value={value}
-                        onKeyDown={keyPress}
-                        onChange={e => setValue(e.target.value)}
-                    />
-                    <IconButton
-                        onClick={handleClickMenu}
-                        size="small"
-                    >
-                        <MoreVertIcon
-                            style={{ cursor: 'pointer' }}
-                            aria-label="more"
-                            aria-controls="long-menu"
-                            aria-haspopup="true"
-                            color="action"
-                            fontSize="small"
-                        />
-                    </IconButton>
-                    <Menu
-                        id="long-menu"
-                        anchorEl={anchorEl}
-                        open={open}
-                        onClose={handleCloseMenu}
-                        PaperProps={{
-                            style: {
-                                maxHeight: 48 * 4.5,
-                                width: '20ch',
-                            },
-                        }}
-                    >
-                        {OptionsMenuComponent(type ? type : typeof firstvalue, operator, handleClickItemMenu)}
-                    </Menu>
-                </React.Fragment>}
+                        handleClickItemMenu={handleClickItemMenu}
+                        data={listSelectFilter || []}
+                    /> :
+
+                    <React.Fragment>
+                        {type === 'date' && DateOptionsMenuComponent(value, handleDate)}
+                        {type === 'time' && TimeOptionsMenuComponent(value, handleTime)}
+                        {!['date', 'time'].includes(type) &&
+                            <Input
+                                style={{ fontSize: '15px', minWidth: '100px' }}
+                                type={['number','number-centered'].includes(type) ? "number" : "text"}
+                                fullWidth
+                                value={value}
+                                onKeyDown={keyPress}
+                                onChange={e => setValue(e.target.value)}
+                            />}
+                        <IconButton
+                            onClick={handleClickMenu}
+                            size="small"
+                        >
+                            <MoreVertIcon
+                                style={{ cursor: 'pointer' }}
+                                aria-label="more"
+                                aria-controls="long-menu"
+                                aria-haspopup="true"
+                                color="action"
+                                fontSize="small"
+                            />
+                        </IconButton>
+                        <Menu
+                            id="long-menu"
+                            anchorEl={anchorEl}
+                            open={open}
+                            onClose={handleCloseMenu}
+                            PaperProps={{
+                                style: {
+                                    maxHeight: 48 * 4.5,
+                                    width: '20ch',
+                                },
+                            }}
+                        >
+                            {OptionsMenuComponent(type || 'string', operator, handleClickItemMenu)}
+                        </Menu>
+                    </React.Fragment>)}
         </div>
     )
 }
@@ -238,16 +397,31 @@ const TableZyx = React.memo(({
     loading,
     importCSV,
     autotrigger = false,
+    autoRefresh,
     useSelection,
     selectionKey,
     selectionFilter,
     initialSelectedRows,
     setSelectedRows,
+    onClickRow,
+    FiltersElement,
+    filterRangeDate = "month",
+    onFilterChange,
+    initialEndDate = null,
+    initialStartDate = null,
+    initialFilters = {},
+    initialPageIndex = 0,
 }: TableConfig) => {
     const classes = useStyles();
-    const [pagination, setPagination] = useState<Pagination>({ sorts: {}, filters: {}, pageIndex: 0 });
+    const [pagination, setPagination] = useState<Pagination>({ sorts: {}, filters: initialFilters, pageIndex: initialPageIndex });
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
     const [triggerSearch, setTriggerSearch] = useState(autotrigger);
+    const [tFilters, setTFilters] = useState<ITablePaginatedFilter>({
+        startDate: initialStartDate,
+        endDate: initialEndDate,
+        page: initialPageIndex,
+        filters: initialFilters,
+    });
     const {
         getTableProps,
         getTableBodyProps,
@@ -264,7 +438,7 @@ const TableZyx = React.memo(({
         {
             columns,
             data,
-            initialState: { pageIndex: 0, pageSize: 20, selectedRowIds: initialSelectedRows || {} },
+            initialState: { pageIndex: initialPageIndex, pageSize: 20, selectedRowIds: initialSelectedRows || {} },
             manualPagination: true, // Tell the usePagination
             pageCount: controlledPageCount,
             useControlledState: (state: any) => {
@@ -291,16 +465,18 @@ const TableZyx = React.memo(({
                     Header: ({ getToggleAllPageRowsSelectedProps, filteredRows }: any) => (
                         !selectionFilter
                             ?
-                            <div>
+                            <div style={{ textAlign: 'right' }}>
                                 <Checkbox
-                                    style={{ padding: '0 24px 0 16px' }}
+                                    color="primary"
+                                    style={{ padding: 0 }}
                                     {...getToggleAllPageRowsSelectedProps()}
                                 />
                             </div>
                             :
-                            <div>
+                            <div style={{ textAlign: 'right' }}>
                                 <Checkbox
-                                    style={{ padding: '0 24px 0 16px' }}
+                                    color="primary"
+                                    style={{ padding: 0 }}
                                     checked={filteredRows
                                         .filter((p: any) => p.original[selectionFilter?.key] === selectionFilter?.value)
                                         .every((p: any) => p.isSelected)
@@ -317,9 +493,10 @@ const TableZyx = React.memo(({
                     ),
                     Cell: ({ row }: any) => (
                         !selectionFilter || row.original[selectionFilter?.key] === selectionFilter?.value
-                            ? <div>
+                            ? <div style={{ textAlign: 'right' }}>
                                 <Checkbox
-                                    style={{ padding: '0 24px 0 16px' }}
+                                    color="primary"
+                                    style={{ padding: 0 }}
                                     checked={row.isSelected}
                                     onChange={(e) => row.toggleRowSelected()}
                                 />
@@ -336,56 +513,103 @@ const TableZyx = React.memo(({
 
     const setFilters = (filters: any, page: number) => {
         setPagination(prev => {
-            const pageIndex = !page ? prev.pageIndex : page;
-            return { ...prev, filters, pageIndex: pageIndex }
+            // const pageIndex = !page ? prev.pageIndex : page;
+            return { ...prev, filters, pageIndex: 0, trigger: true }
         });
     };
     const setPageIndex = (page: number) => {
-        setPagination(prev => ({ ...prev, pageIndex: page }));
+        setPagination(prev => ({ ...prev, pageIndex: page, trigger: true }));
+        setTFilters(prev => ({ ...prev, page }));
     }
     const handleClickSort = (column: string) => {
-        const newsorts: any = {
-            ...pagination.sorts
+        let newsorts: any = {};
+        if (Object.keys(pagination.sorts).includes(column)) {
+            newsorts = {
+                ...pagination.sorts
+            }
         }
-
-        let currentsort = "";
 
         if (newsorts[column] === "desc") {
             delete newsorts[column]
-        } else {
-            if (newsorts[column] === "asc")
-                currentsort = "desc";
-            else
-                currentsort = "asc";
-            newsorts[column] = currentsort
+        }
+        else {
+            if (newsorts[column] === "asc") {
+                newsorts[column] = "desc";
+            }
+            else {
+                newsorts[column] = "asc";
+            }
         }
 
-        setPagination(prev => ({ ...prev, sorts: newsorts }))
+        setPagination(prev => ({ ...prev, sorts: newsorts, trigger: true }))
     }
 
     const [dateRange, setdateRange] = useState<Range>({
-        startDate: new Date(new Date().setDate(0)),
-        endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+        startDate: initialStartDate ? new Date(initialStartDate) : filterRangeDate === "month" ? getFirstDayMonth() : getDateToday(),
+        endDate: initialEndDate ? new Date(initialEndDate) : filterRangeDate === "month" ? getLastDayMonth() : getDateToday(),
         key: 'selection'
     });
-    const triggertmp = () => {
-        fetchData && fetchData({
-            ...pagination, pageSize, daterange: {
+
+    const triggertmp = (fromButton: boolean = false) => {
+        if (fromButton)
+            setPagination(prev => ({ ...prev, pageIndex: 0, trigger: false }));
+
+        if (!fetchData) return;
+        fetchData({
+            ...pagination,
+            pageSize,
+            pageIndex: fromButton ? 0 : pagination.pageIndex,
+            daterange: {
                 startDate: dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : null,
-                endDate: dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : null
+                endDate: dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : null,
             }
         });
+        setTFilters(prev => ({
+            ...prev,
+            page: fromButton ? 0 : pagination.pageIndex,
+            startDate: dateRange.startDate ? (new Date(dateRange.startDate.setHours(10))).getTime() : null,
+            endDate: dateRange.endDate ? (new Date(dateRange.endDate.setHours(10))).getTime() : null,
+        }));
     }
 
     useEffect(() => {
-        triggerSearch && triggertmp();
+        if (pagination?.trigger) {
+            triggertmp()
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pageSize, pagination, dateRange, triggerSearch])
+    }, [pagination, triggerSearch])
+
+    useEffect(() => {
+        if (triggerSearch) {
+            triggertmp()
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pageSize])
+
+    useEffect(() => {
+        if (triggerSearch) {
+            triggerSearch && triggertmp(true);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [triggerSearch])
+
+    useEffect(() => {
+        if (autoRefresh?.value) {
+            triggertmp();
+            autoRefresh?.callback(false);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [autoRefresh])
 
     useEffect(() => {
         setSelectedRows && setSelectedRows(selectedRowIds)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedRowIds]);
+
+    useEffect(() => {
+        onFilterChange?.(tFilters);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [tFilters]);
 
     const exportData = () => {
         exportPersonalized && exportPersonalized({
@@ -416,74 +640,77 @@ const TableZyx = React.memo(({
                                     startIcon={<CalendarIcon />}
                                     onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
                                 >
-                                    {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
-                                </Button>
-                                <Button
-                                    disabled={loading}
-                                    variant="contained"
-                                    color="primary"
-                                    startIcon={<SearchIcon style={{ color: 'white' }} />}
-                                    style={{ backgroundColor: '#55BD84', width: 120 }}
-                                    onClick={() => {
-                                        if (triggerSearch)
-                                            triggertmp()
-                                        setTriggerSearch(true)
-                                    }}
-                                >
-                                    <Trans i18nKey={langKeys.search} />
+                                    {getDateCleaned(dateRange.startDate!) + " - " + getDateCleaned(dateRange.endDate!)}
                                 </Button>
                             </DateRangePicker>
+                            {FiltersElement && FiltersElement}
+                            <Button
+                                disabled={loading}
+                                variant="contained"
+                                color="primary"
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                style={{ backgroundColor: '#55BD84', width: 120 }}
+                                onClick={() => {
+                                    if (triggerSearch)
+                                        triggertmp(true)
+                                    setTriggerSearch(true)
+                                }}
+                            >
+                                <Trans i18nKey={langKeys.search} />
+                            </Button>
                         </div>
                     )}
-                    {ButtonsElement && <ButtonsElement />}
-                    {importCSV && (
-                        <>
-                            <input
-                                name="file"
-                                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                                id="laraigo-upload-csv-file"
-                                type="file"
-                                style={{ display: 'none' }}
-                                onChange={(e) => importCSV(e.target.files)}
-                            />
-                            <label htmlFor="laraigo-upload-csv-file">
-                                <Button
-                                    className={classes.button}
-                                    variant="contained"
-                                    component="span"
-                                    color="primary"
-                                    disabled={loading}
-                                    startIcon={<BackupIcon color="secondary" />}
-                                    style={{ backgroundColor: "#55BD84" }}
-                                ><Trans i18nKey={langKeys.import} />
-                                </Button>
-                            </label>
-                        </>
-                    )}
-                    {register && (
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            disabled={loading}
-                            startIcon={<AddIcon color="secondary" />}
-                            onClick={handleRegister}
-                            style={{ backgroundColor: "#55BD84" }}
-                        ><Trans i18nKey={langKeys.register} />
-                        </Button>
-                    )}
-                    {download && (
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            disabled={loading}
-                            onClick={exportData}
-                            // exportPersonalized
-                            startIcon={<DownloadIcon />}
-                        ><Trans i18nKey={langKeys.download} />
-                        </Button>
-                    )}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                        {ButtonsElement && <ButtonsElement />}
+                        {importCSV && (
+                            <>
+                                <input
+                                    name="file"
+                                    accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                    id="laraigo-upload-csv-file"
+                                    type="file"
+                                    style={{ display: 'none' }}
+                                    onChange={(e) => importCSV(e.target.files)}
+                                />
+                                <label htmlFor="laraigo-upload-csv-file">
+                                    <Button
+                                        className={classes.button}
+                                        variant="contained"
+                                        component="span"
+                                        color="primary"
+                                        disabled={loading}
+                                        startIcon={<BackupIcon color="secondary" />}
+                                        style={{ backgroundColor: "#55BD84" }}
+                                    ><Trans i18nKey={langKeys.import} />
+                                    </Button>
+                                </label>
+                            </>
+                        )}
+                        {register && (
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={loading}
+                                startIcon={<AddIcon color="secondary" />}
+                                onClick={handleRegister}
+                                style={{ backgroundColor: "#55BD84" }}
+                            ><Trans i18nKey={langKeys.register} />
+                            </Button>
+                        )}
+                        {download && (
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={loading}
+                                onClick={exportData}
+                                // exportPersonalized
+                                startIcon={<DownloadIcon />}
+                            ><Trans i18nKey={langKeys.download} />
+                            </Button>
+                        )}
+                    </div>
                 </div>
             </Box>
 
@@ -505,31 +732,45 @@ const TableZyx = React.memo(({
                                                     column.render('Header')
                                                     :
                                                     (<>
-                                                        <Box
-                                                            component="div"
-                                                            {...column.getHeaderProps()}
-                                                            onClick={() => handleClickSort(column.id)}
-                                                            style={{
-                                                                whiteSpace: 'nowrap',
-                                                                wordWrap: 'break-word',
-                                                                cursor: 'pointer',
-                                                                alignItems: 'center',
-                                                            }}
-                                                        >
-                                                            {column.render('Header')}
-                                                            {pagination.sorts[column.id]
-                                                                && (pagination.sorts[column.id] === "asc"
-                                                                    ? <ArrowUpwardIcon className={classes.iconOrder} color="action" />
+                                                        <div className={classes.containerHeaderColumn}>
+                                                            <Box
+                                                                component="div"
+                                                                {...column.getHeaderProps()}
+                                                                onClick={() => !column.NoSort && handleClickSort(column.id)}
+                                                                style={{
+                                                                    whiteSpace: 'nowrap',
+                                                                    wordWrap: 'break-word',
+                                                                    display: 'flex',
+                                                                    cursor: 'pointer',
+                                                                    alignItems: 'center',
+                                                                }}
+                                                            >
+                                                                {column.render('Header')}
+                                                                {pagination.sorts[column.id] && (pagination.sorts[column.id] === "asc" ?
+                                                                    <ArrowUpwardIcon className={classes.iconOrder} color="action" />
                                                                     : <ArrowDownwardIcon className={classes.iconOrder} color="action" />)
-                                                            }
-                                                        </Box>
+                                                                }
+                                                            </Box>
+                                                            {!!column.helpText && (
+                                                                <Tooltip title={<div style={{ fontSize: 12,  whiteSpace: 'break-spaces' }}>{column.helpText}</div>} arrow placement="top" >
+                                                                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                                                </Tooltip>
+                                                            )}
+                                                        </div>
                                                         {!column.NoFilter &&
                                                             <DefaultColumnFilter
                                                                 header={column.id}
+                                                                listSelectFilter={column.listSelectFilter || []}
                                                                 type={column.type}
-                                                                firstvalue={data && data.length > 0 ? data[0][column.id] : null}
                                                                 filters={pagination.filters}
-                                                                setFilters={setFilters}
+                                                                setFilters={(filters: any, page: number) => {
+                                                                    setFilters(filters, page);
+                                                                    setTFilters(prev => ({
+                                                                        ...prev,
+                                                                        filters,
+                                                                        page,
+                                                                    }));
+                                                                }}
                                                             />
                                                         }
                                                     </>)
@@ -545,7 +786,11 @@ const TableZyx = React.memo(({
                                 page.map((row: any) => {
                                     prepareRow(row);
                                     return (
-                                        <TableRow {...row.getRowProps()} hover>
+                                        <TableRow
+                                            {...row.getRowProps()}
+                                            hover
+                                            style={{ cursor: onClickRow ? 'pointer' : 'default' }}
+                                        >
                                             {row.cells.map((cell: any, i: number) =>
                                                 <TableCell
                                                     {...cell.getCellProps({
@@ -555,22 +800,12 @@ const TableZyx = React.memo(({
                                                             overflow: 'hidden',
                                                             textOverflow: 'ellipsis',
                                                             whiteSpace: 'nowrap',
+                                                            textAlign: cell.column.type === "number" ? "right" : (cell.column.type?.includes('centered') ? "center" : "left"),
                                                         },
                                                     })}
+                                                    onClick={() => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original) : null}
                                                 >
-                                                    {headerGroups[0].headers[i].isComponent ?
-                                                        cell.render('Cell')
-                                                        :
-                                                        (cell.value?.length > 50 ?
-                                                            <Tooltip TransitionComponent={Zoom} title={cell.value}>
-                                                                <div style={{ width: 'inherit', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                                                    {cell.render('Cell')}
-                                                                </div>
-                                                            </Tooltip>
-                                                            :
-                                                            cell.render('Cell')
-                                                        )
-                                                    }
+                                                    {cell.render('Cell')}
                                                 </TableCell>
                                             )}
                                         </TableRow>
@@ -596,12 +831,19 @@ const TableZyx = React.memo(({
                             <LastPage />
                         </IconButton>
                         <Box component="span" fontSize={14}>
-                            Página <Box fontWeight="700" component="span">{pageIndex + 1}</Box> de <Box fontWeight="700" component="span">{pageOptions.length}</Box>
+                            <Trans
+                                i18nKey={langKeys.tablePageOf}
+                                values={{ currentPage: pageOptions.length === 0 ? 0 : pageIndex + 1, totalPages: pageOptions.length }}
+                                components={[<Box fontWeight="700" component="span"></Box>, <Box fontWeight="700" component="span"></Box>]}
+                            />
                         </Box >
 
                     </Box>
                     <Box>
-                        Mostrando {page.length} registros de {totalrow}
+                        <Trans
+                            i18nKey={langKeys.tableShowingRecordOf}
+                            values={{ itemCount: page.length, totalItems: totalrow }}
+                        />
                     </Box>
                     <Box>
                         <Select
@@ -619,7 +861,7 @@ const TableZyx = React.memo(({
                             ))}
                         </Select>
                         <Box fontSize={14} display="inline" style={{ marginRight: '1rem' }}>
-                            Registros por Página
+                            <Trans i18nKey={langKeys.recordPerPage} count={pageSize} />
                         </Box>
                     </Box>
                 </Box>
@@ -647,3 +889,71 @@ const LoadingSkeleton: React.FC<{ columns: number }> = ({ columns }) => {
         </>
     );
 };
+
+interface IQueryMap {
+    [key: string]: {
+        value: string;
+        operator: string;
+    }
+}
+
+interface IFilters {
+    startDate: number;
+    endDate: number;
+    page: number;
+    filters: IQueryMap;
+}
+
+interface IOptions {
+    ignore?: string[];
+}
+
+export function useQueryParams(query: URLSearchParams, options: IOptions = { ignore: [] }) {
+    return useMemo(() => {
+        const map: IFilters = {
+            endDate: Number(query.get('endDate')),
+            startDate: Number(query.get('startDate')),
+            page: Number(query.get('page')),
+            filters: {},
+        };
+        const { ignore } = options;
+
+        query.forEach((value, key) => {
+            if (key === "endDate" ||
+                key === "startDate" ||
+                key === "page" ||
+                key.includes('-operator') ||
+                (ignore || []).includes(key)) {
+                return;
+            }
+
+            const name = `${key}-operator`;
+            map.filters[key] = { value, operator: query.get(name)! };
+        });
+
+        return map;
+    }, [options, query]);
+}
+
+export function buildQueryFilters(
+    filters: ITablePaginatedFilter,
+    init?: string | string[][] | Record<string, string>,
+) {
+    const params = new URLSearchParams(init);
+
+    for (const key in filters) {
+        const value = (filters as any)[key];
+        if (key === 'filters' || value === undefined || value === null) continue;
+        params.set(key, String(value));
+    }
+
+    const colFilters = filters.filters;
+    for (const key in colFilters) {
+        if (typeof colFilters[key] === 'object' && 'value' in colFilters[key] && 'operator' in colFilters[key]) {
+            params.set(key, String(colFilters[key].value));
+            params.set(`${key}-operator`, String(colFilters[key].operator));
+        }
+    }
+
+    return params;
+}

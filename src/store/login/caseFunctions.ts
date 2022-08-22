@@ -1,6 +1,7 @@
-import { IAction } from "@types";
+import { IAction, IUser } from "@types";
 import { initialState, IState } from "./reducer";
 import { saveAuthorizationToken, removeAuthorizationToken } from "common/helpers";
+import { keys } from "common/constants";
 
 export const login = (state: IState): IState => ({
     ...state,
@@ -14,6 +15,7 @@ export const login = (state: IState): IState => ({
 
 export const loginSuccess = (state: IState, action: IAction): IState => {
     saveAuthorizationToken(action.payload.data.token);
+    localStorage.removeItem(keys.HIDE_LOGS)
     return {
         ...state,
         login: {
@@ -69,6 +71,7 @@ export const validateTokenSuccess = (state: IState, action: IAction): IState => 
             loading: false,
             error: false,
             user: action.payload.data,
+            notifications: action.payload.data.notifications
         }
     }
 };
@@ -92,7 +95,13 @@ export const validateTokenReset = (state: IState): IState => ({
 });
 
 
-
+export const newNotification = (state: IState, action: IAction): IState => ({
+    ...state,
+    validateToken: {
+        ...state.validateToken,
+        notifications: [...(state.validateToken?.notifications || []), action.payload]
+    }
+});
 
 
 
@@ -166,7 +175,8 @@ export const logoutSuccess = (state: IState, action: IAction): IState => {
             ...state.logout,
             loading: false,
             error: false,
-        }
+        },
+        validateToken: initialState.validateToken,
     }
 };
 
@@ -185,4 +195,16 @@ export const logoutFailure = (state: IState, action: IAction): IState => {
 export const logoutReset = (state: IState): IState => ({
     ...state,
     logout: initialState.logout,
+});
+
+export const changePwdFirstLogin = (state: IState, action: IAction): IState => ({
+    ...state,
+    validateToken: {
+        ...state.validateToken,
+        user: {
+            ...(state.validateToken.user || {} as IUser),
+            pwdchangefirstlogin: action.payload.value,
+        },
+    },
+    ignorePwdchangefirstloginValidation: action.payload.ignorePwdchangefirstloginValidation,
 });

@@ -4,10 +4,16 @@ interface IHandler<T> {
     [x: string]: (state: T, action: IAction) => any;
 }
 
-export function createReducer<T>(initialState: T, handlers: IHandler<T>) {
+interface Options {
+    log: boolean;
+}
+
+export function createReducer<T>(initialState: T, handlers: IHandler<T>, options: Options = { log: false }) {
     return (state = initialState, action: IAction): T => {
         if (action.type && handlers.hasOwnProperty(action.type)) {
-            return handlers[action.type](state, action);
+            const newState = handlers[action.type](state, action);
+            if (options.log) console.log('action:', action.type, 'state:', newState);
+            return newState;
         } else {
             return state;
         }
@@ -53,3 +59,5 @@ export const initialListState: IListState<any> = {
     error: false,
     message: undefined,
 };
+
+export const initialDisplayState: 'BOARD' | 'GRID' = 'BOARD';

@@ -1,16 +1,22 @@
 import clsx from 'clsx';
 import Drawer from '@material-ui/core/Drawer';
 import Divider from '@material-ui/core/Divider';
+import { useTranslation } from 'react-i18next';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useSelector } from 'hooks';
+import { useDispatch } from 'react-redux';
 
 import { RouteConfig } from '@types';
-import { Tooltip, Typography } from '@material-ui/core';
+import { IconButton, Tooltip, Typography } from '@material-ui/core';
 import { FC } from 'react';
+import { setModalCall } from 'store/voximplant/actions';
+import PhoneInTalkIcon from '@material-ui/icons/PhoneInTalk';
+import { langKeys } from 'lang/keys';
+import { WifiCalling } from 'icons';
 
 type IProps = {
     classes: any;
@@ -34,7 +40,8 @@ const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ co
         className = open ? classes.drawerItemInactive : classes.drawerCloseItemInactive;
     }
 
-    const onClick = () => {
+    const onClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.preventDefault();
         if (!config.subroute) {
             history.push(config.path!)
         } else {
@@ -53,7 +60,8 @@ const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ co
             key={config.path}
             onClick={onClick}
             className={clsx(className)}
-
+            component="a"
+            href={config.path}
         >
             <Tooltip title={config.tooltip}>
                 <ListItemIcon>{config.icon?.(className)}</ListItemIcon>
@@ -64,8 +72,15 @@ const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ co
 };
 
 const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
+    const { t } = useTranslation();
     const openDrawer = useSelector(state => state.popus.openDrawer);
     const applications = useSelector(state => state.login?.validateToken?.user?.menu);
+    const dispatch = useDispatch();
+    const showcall = useSelector(state => state.voximplant.showcall);
+    const statusCall = useSelector(state => state.voximplant.statusCall);
+    const voxiConnection = useSelector(state => state.voximplant.connection);    
+    const location = useLocation();
+    const userConnected = useSelector(state => state.inbox.userConnected);
 
     return (
         <Drawer
@@ -76,6 +91,7 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
             variant="permanent"
             anchor="left"
             open={openDrawer}
+            style={{}}
             classes={{
                 paper: clsx("scroll-style-go", {
                     [classes.drawerOpen]: openDrawer,
@@ -83,13 +99,50 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
                 }),
             }}
         >
-            <div style={{ height: headerHeight }} />
-            <Divider />
-            <div style={{ height: 8 }} />
-            <div style={{ overflowX: 'hidden' }}>
-            {routes.map((ele) => (applications && applications[ele.key] && applications[ele.key][0]) ? <LinkList classes={classes} config={ele} key={ele.key} open={openDrawer} /> : null)}
+            <div style={{ overflowX: 'hidden', borderRight: '1px solid #EBEAED', marginTop: headerHeight }}>
+                {routes.map((ele) => (applications && applications[ele.key] && applications[ele.key][0]) ? <LinkList classes={classes} config={ele} key={ele.key} open={openDrawer} /> : null)}
+                {(!voxiConnection.error && !voxiConnection.loading && !openDrawer&& location.pathname=== "/message_inbox" && userConnected) && (
+                    <ListItem
+                        button
+                        key={"phone-agent"}
+                        onClick={() => {
+                            console.log("click en el boton")
+                            // abrir el modal
+                        }}
+                        className={clsx(true ? classes.drawerItemActive : classes.drawerItemInactive)}
+                        component="div"
+                    >
+                        <Tooltip title={"Teléfono"}>
+                            <ListItemIcon
+                                onClick={() => dispatch(setModalCall(true))}
+                            >
+                                <PhoneInTalkIcon style={{ width: 22, height: 22, stroke: 'none' }} className={false ? classes.drawerCloseItemActive : classes.drawerCloseItemInactive} />
+                            </ListItemIcon>
+                        </Tooltip>
+                    </ListItem>
+                )}
             </div>
-            <div style={{ flexGrow: 1 }} />
+            {(!voxiConnection.error && !voxiConnection.loading && openDrawer && location.pathname=== "/message_inbox" && userConnected) && (
+                <>
+                    <div style={{ display: "flex", width: "100%", borderRight: '1px solid #EBEAED' }}>
+                        <IconButton 
+                            style={{ marginLeft: "auto", marginTop: 40, marginRight: "auto", width: 80, height: 80, borderRadius: "50%", backgroundColor: showcall ? "#7721ad" : "#bdbdbd" }}
+                            onClick={() => dispatch(setModalCall(true))}
+                            disabled={statusCall !== "DISCONNECTED"}
+                        >
+                            <WifiCalling style={{ color: "white", width: "80px", height: "80px" }} />
+                            <Typography gutterBottom variant="h6" component="div">
+                            </Typography>
+                        </IconButton>
+                    </div>
+                    <div style={{ textAlign: "center", cursor: "pointer", borderRight: '1px solid #EBEAED', marginTop:16, marginBottom: 10,  fontSize: 14}} onClick={() => { dispatch(setModalCall(true)) }}>
+                        {t(langKeys.phone)}
+                    </div>
+                </>
+            )}
+
+            <Divider />
+            <div style={{ flexGrow: 1, borderRight: '1px solid #EBEAED' }} />
         </Drawer>
     );
 };

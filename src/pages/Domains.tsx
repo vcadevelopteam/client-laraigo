@@ -18,8 +18,10 @@ import { Dictionary, MultiData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux, resetMainAux, resetMultiMain } from 'store/main/actions';
+import { getCollection, getMultiCollection, execute, getCollectionAux, resetMainAux, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
+import { useHistory } from 'react-router-dom';
+import paths from 'common/constants/paths';
 
 interface RowSelected {
     row: Dictionary | null;
@@ -32,6 +34,7 @@ interface DetailProps {
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
     fetchData?: () => void;
+    arrayBread: any;
 }
 
 interface ModalProps {
@@ -42,10 +45,6 @@ interface ModalProps {
     updateRecords?: (record: any) => void;
 }
 
-const arrayBread = [
-    { id: "view-1", name: "Domains" },
-    { id: "view-2", name: "Domain detail" }
-];
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -67,7 +66,7 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
     const { register, handleSubmit, setValue, formState: { errors }, reset, getValues } = useForm();
     const onSubmit = handleSubmit((data) => {
         if (!edit && dataDomain && dataDomain.some(d => d.domainvalue === data.domainvalue)) {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.code_duplicate) }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.code_duplicate) }))
         }
         else {
             if (edit)
@@ -114,7 +113,7 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
                         onChange={(value) => setValue('domainname', value)}
                     />
                 }
-                {
+                {false &&
                     <TemplateSwitch
                         label={t(langKeys.bydefault)}
                         className="col-6"
@@ -148,9 +147,12 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
     );
 }
 
-const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit }, setViewSelected, multiData, fetchData }) => {
+const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit }, setViewSelected, multiData, fetchData,arrayBread }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
+    const user = useSelector(state => state.login.validateToken.user);
+    const useradmin = user?.roledesc === "ADMINISTRADOR"
+    const newrow = row===null
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
@@ -160,7 +162,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
     const [openDialogDomain, setOpenDialogDomain] = useState(false);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, domainname: "", edit: false });
     const dataDomainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataDomainType = multiData[0] && multiData[1].success ? multiData[1].data : [];
+    const dataDomainType = multiData[0] && multiData[1].success ? (useradmin?multiData[1].data.filter(x=>x.domainvalue === "BOT"):multiData[1].data) : [];
 
     const columns = React.useMemo(
         () => [
@@ -193,7 +195,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                 accessor: 'domaindesc',
                 NoFilter: true
             },
-            {
+            /*{
                 Header: t(langKeys.bydefault),
                 accessor: 'bydefault',
                 NoFilter: true,
@@ -202,7 +204,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                     const val = (row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative))
                     return val;
                 }
-            },
+            },*/
             {
                 Header: t(langKeys.organization),
                 accessor: 'organization',
@@ -265,13 +267,13 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1");
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
@@ -302,21 +304,23 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
 
             setWaitSave(true);
         }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
+        if(!!dataDomain.length){
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_save),
+                callback
+            }))
+        }else{
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.errorneedvalues) }))
+        }
     });
-
     return (
-        <div>
+        <div style={{width: "100%"}}>
             <form onSubmit={onSubmit}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
+                            breadcrumbs={[...arrayBread,{ id: "view-2", name: `${t(langKeys.domain)} ${t(langKeys.detail)}` }]}
                             handleClick={setViewSelected}
                         />
                     </div>
@@ -384,7 +388,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                                         />}
                                 </div>
                                 <div className="row-zyx">
-                                    {edit ?
+                                    {(!useradmin||newrow) ?
                                         <FieldSelect
                                             label={t(langKeys.type)}
                                             className="col-6"
@@ -444,6 +448,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                                 columns={columns}
                                 data={dataDomain}
                                 download={false}
+                                onClickRow={handleEdit}
                                 loading={detailRes.loading}
                                 filterGeneral={false}
                                 register={true}
@@ -466,6 +471,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
 }
 
 const Domains: FC = () => {
+    const history = useHistory();
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const mainResult = useSelector(state => state.main);
@@ -473,7 +479,20 @@ const Domains: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, domainname: "", edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const user = useSelector(state => state.login.validateToken.user);
+    const superadmin = user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMINISTRADOR"
 
+    const arrayBread = [
+        { id: "view-0", name: t(langKeys.configuration_plural) },
+        { id: "view-1", name: t(langKeys.domain_plural) },
+    ];
+    function redirectFunc(view:string){
+        if(view ==="view-0"){
+            history.push(paths.CONFIGURATION)
+            return;
+        }
+        setViewSelected(view)
+    }
     const columns = React.useMemo(
         () => [
             {
@@ -542,21 +561,20 @@ const Domains: FC = () => {
         ]));
 
         return () => {
-            dispatch(resetMultiMain());
-            dispatch(resetMain());
+            dispatch(resetAllMain());
         };
     }, []);
 
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
@@ -599,24 +617,45 @@ const Domains: FC = () => {
         }
 
         return (
-            <TableZyx
-                columns={columns}
-                titlemodule={t(langKeys.domain_plural, { count: 2 })}
-                data={mainResult.mainData.data}
-                download={true}
-                loading={mainResult.mainData.loading}
-                register={true}
-                handleRegister={handleRegister}
+            <div style={{width:"100%"}}>
+                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={arrayBread}
+                        handleClick={redirectFunc}
+                    />
+                </div>
+                <TableZyx
+                    columns={columns}
+                    titlemodule={t(langKeys.domain_plural, { count: 2 })}
+                    data={mainResult.mainData.data}
+                    download={true}
+                    ButtonsElement={() => (
+                        <Button
+                            disabled={mainResult.mainData.loading}
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => history.push(paths.CONFIGURATION)}
+                        >{t(langKeys.back)}</Button>
+                    )}
+                    onClickRow={handleEdit}
+                    loading={mainResult.mainData.loading}
+                    register={superadmin}
+                    handleRegister={handleRegister}
             />
+            </div>
         )
     }
     else
         return (
             <DetailDomains
                 data={rowSelected}
-                setViewSelected={setViewSelected}
+                setViewSelected={redirectFunc}
                 multiData={mainResult.multiData.data}
                 fetchData={fetchData}
+                arrayBread={arrayBread}
             />
         )
 }

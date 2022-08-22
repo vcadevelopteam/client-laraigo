@@ -70,15 +70,47 @@ export const insertChannelFailure = (state: IState, action: IAction): IState => 
     ...state,
     insertChannel: {
         value: undefined,
+        code: action.payload?.code,
         loading: false,
         error: true,
-        message: action.payload?.message || "Ocurrio uun error al insertar el canal"
+        message: action.payload?.message
     },
 });
 
 export const insertChannelReset = (state: IState): IState => ({
     ...state,
     insertChannel: initialState.insertChannel,
+});
+
+export const valChannelsChannel = (state: IState): IState => ({
+    ...state,
+    valChannelsChannel: { ...state.valChannelsChannel, loading: true, error: false },
+});
+
+export const valChannelsChannelSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    valChannelsChannel: {
+        ...state.valChannelsChannel,
+        value: action.payload,
+        loading: false,
+        error: !(action.payload?.success||true),
+    },
+});
+
+export const valChannelsChannelFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    valChannelsChannel: {
+        value: action.payload,
+        code: action.payload?.code,
+        loading: false,
+        error: true,
+        message: action.payload?.message
+    },
+});
+
+export const valChannelsChannelReset = (state: IState): IState => ({
+    ...state,
+    valChannelsChannel: initialState.valChannelsChannel,
 });
 
 export const checkvalidity = (state: IState): IState => ({
@@ -97,7 +129,7 @@ export const checkvalidityFailure = (state: IState, action: IAction): IState => 
     ...state,
     loading: false,
     error: true,
-    message: action.payload?.message || "Ocurrio uun error al insertar el canal"
+    message: action.payload?.message || "Ocurrio un error al validar el canal"
 });
 export const checkvalidityReset = (state: IState): IState => ({
     ...state,
@@ -133,3 +165,62 @@ export const verifyPlanFailure = (state: IState, action: IAction): IState => {
         },
     }
 };
+
+export const getCurrency = (state: IState): IState => ({
+    ...state,
+    currencyList: { ...state.currencyList, loading: true, error: false },
+});
+
+export const getCurrencySuccess = (state: IState, action: IAction): IState => {
+    return{
+        ...state,
+        currencyList: {
+            data: action.payload.data || [],
+            count: action.payload.count,
+            loading: false,
+            error: false,
+        },
+        successinsert:true
+    }
+};
+
+export const getCurrencyFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    currencyList: {
+        ...state.currencyList,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'getCurrencyFailure:error',
+        message: action.payload.message || 'Error al obtener la lista de Monedas',
+    },
+    successinsert:false
+});
+export const getCountry = (state: IState): IState => ({
+    ...state,
+    countryList: { ...state.countryList, loading: true, error: false },
+});
+
+export const getCountrySuccess = (state: IState, action: IAction): IState => {
+    return{
+        ...state,
+        countryList: {
+            data: action.payload.data || [],
+            count: action.payload.count,
+            loading: false,
+            error: false,
+        },
+        successinsert:true
+    }
+};
+
+export const getCountryFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    countryList: {
+        ...state.countryList,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'getCurrencyFailure:error',
+        message: action.payload.message || 'Error al obtener la lista de Monedas',
+    },
+    successinsert:false
+});

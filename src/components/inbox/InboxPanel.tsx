@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, memo } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { ITicket } from "@types";
@@ -13,16 +13,17 @@ import ItemTicket from 'components/inbox/Ticket'
 import ChatPanel from 'components/inbox/ChatPanel'
 import InfoPanel from 'components/inbox/InfoPanel'
 import DrawerFilter from 'components/inbox/DrawerFilter'
-import { resetGetTickets, getTickets, selectTicket, getDataTicket, setIsFiltering } from 'store/inbox/actions';
+import { resetGetTickets, getTickets, selectTicket, getDataTicket, setIsFiltering, hideLogsOnTicket } from 'store/inbox/actions';
 import { useDispatch } from 'react-redux';
 import { ListItemSkeleton } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import Tooltip from '@material-ui/core/Tooltip';
-import { FixedSizeList } from 'react-window';
+import { FixedSizeList, areEqual } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import ClearIcon from '@material-ui/icons/Clear';
+import memoize from 'memoize-one';
 
 const useStyles = makeStyles((theme) => ({
     containerPanel: {
@@ -45,8 +46,8 @@ const useStyles = makeStyles((theme) => ({
         gap: 8
     },
     containerTickets: {
-        flex: '0 0 300px',
-        maxWidth: 300,
+        flex: '0 0 305px',
+        maxWidth: 305,
         backgroundColor: '#FFF',
         flexDirection: 'column',
         display: 'flex',
@@ -65,14 +66,6 @@ const useStyles = makeStyles((theme) => ({
         flex: 1,
         // overflowY: 'auto',
         // backgroundColor: '#e0e0e0',
-    },
-    containerQuickreply: {
-        whiteSpace: 'break-spaces',
-        flexWrap: 'wrap',
-        fontStyle: 'normal',
-        fontWeight: 'normal',
-        display: 'flex',
-        gap: theme.spacing(.5),
     },
     containerPostback: {
         width: 200,
@@ -253,12 +246,18 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         gap: theme.spacing(1),
         alignItems: 'center',
-        padding: `${theme.spacing(2)}px ${theme.spacing(1)}px`,
+        padding: theme.spacing(1),
         borderBottom: '1px solid #EBEAED',
         cursor: 'pointer',
         '&:hover': {
             backgroundColor: 'rgb(235, 234, 237, 0.18)'
         }
+    },
+    ticketWithCall: {
+        width: 180
+    },
+    ticketWithoutCall: {
+        flex: 1
     },
     containerNewMessages: {
         minWidth: '22px',
@@ -281,6 +280,12 @@ const useStyles = makeStyles((theme) => ({
         maxWidth: 200
     },
     containerQuickReply: {
+        whiteSpace: 'break-spaces',
+        flexWrap: 'wrap',
+        fontStyle: 'normal',
+        fontWeight: 'normal',
+        display: 'flex',
+        gap: theme.spacing(.5),
         boxShadow: '0px 3px 6px rgb(0 0 0 / 10%)',
         backgroundColor: '#FFF',
         width: 250,
@@ -333,20 +338,52 @@ const filterAboutStatusName = (data: ITicket[], page: number, searchName: string
     if (page === 0 && searchName !== "") {
         return data.filter(item => item.status === "ASIGNADO" && (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
     }
-    if (page === 1 && searchName === "") {
+    if (page === 2 && searchName === "") {
         return data
     }
-    if (page === 1 && searchName !== "") {
+    if (page === 2 && searchName !== "") {
         return data.filter(item => (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
     }
-    if (page === 2 && searchName === "") {
-        return data.filter(item => item.status === "PAUSADO");
+    if (page === 1 && searchName === "") {
+        return data.filter(item => item.status === "SUSPENDIDO");
     }
-    if (page === 2 && searchName !== "") {
-        return data.filter(item => item.status === "PAUSADO" && (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
+    if (page === 1 && searchName !== "") {
+        return data.filter(item => item.status === "SUSPENDIDO" && (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
     }
     return data;
 }
+
+const RenderRow = memo(
+    ({ data, index, style }: any) => {
+        const { items, setTicketSelected, classes } = data;
+        const item = items[index]
+        return (
+            <div style={style}>
+                <ItemTicket key={item.conversationid} classes={classes} item={item} setTicketSelected={setTicketSelected} />
+            </div>
+        )
+    },
+    areEqual
+)
+
+const RenderRowFilterd = memo(
+    ({ data, index, style }: any) => {
+        const { items, setTicketSelected, classes } = data;
+        const item = items[index]
+        return (
+            <div style={style}>
+                <ItemTicket key={item.conversationid} classes={classes} item={item} setTicketSelected={setTicketSelected} />
+            </div>
+        )
+    },
+    areEqual
+)
+
+const createItemData = memoize((items, setTicketSelected, classes) => ({
+    items,
+    setTicketSelected,
+    classes
+}));
 
 const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, userType }) => {
     const dispatch = useDispatch();
@@ -361,14 +398,32 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     const ticketFilteredList = useSelector(state => state.inbox.ticketFilteredList);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const isFiltering = useSelector(state => state.inbox.isFiltering);
+    const hideLogs = useSelector(state => state.login.validateToken.user?.properties.hide_log_conversation) || false;
+    const user = useSelector(state => state.login.validateToken.user);
+
+    const [counterTickets, setCounterTickets] = useState({
+        assigned: -0,
+        paused: -0,
+        all: -1
+    })
 
     const setTicketSelected = React.useCallback((ticket: ITicket) => {
         dispatch(selectTicket(ticket))
-        dispatch(getDataTicket(ticket))
+        dispatch(hideLogsOnTicket(hideLogs))
+        dispatch(getDataTicket(ticket, userType === "AGENT"))
     }, [dispatch]);
 
     useEffect(() => {
-        dispatch(getTickets(userType === "SUPERVISOR" ? agentSelected!.userid : null))
+        if (agentSelected) {
+            dispatch(getTickets(userType === "SUPERVISOR" ? agentSelected!.userid : (user?.userid || null)))
+            setPageSelected(0)
+            setCounterTickets({
+                assigned: -0,
+                paused: -0,
+                all: -0,
+            })
+        }
+
         return () => {
             dispatch(resetGetTickets())
         }
@@ -376,8 +431,12 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
 
     useEffect(() => {
         if (!ticketList.loading && !ticketList.error) {
-            setDataTickets(ticketList.data as ITicket[])
-            setTicketsToShow((ticketList.data as ITicket[]).filter(item => item.status === "ASIGNADO"));
+            setDataTickets(ticketList.data as ITicket[]);
+            setCounterTickets({
+                assigned: ticketList.data.filter(item => item.status === "ASIGNADO").length,
+                paused: ticketList.data.filter(item => item.status === "SUSPENDIDO").length,
+                all: ticketList.data.length
+            })
         }
     }, [ticketList])
 
@@ -388,31 +447,10 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     useEffect(() => {
         setTicketsToShow(filterAboutStatusName(dataTickets, pageSelected, search));
         return () => setTicketsToShow(dataTickets)
-    }, [pageSelected, search])
+    }, [pageSelected, search, dataTickets])
 
-    const RenderRow = React.useCallback(
-        ({ index, style }) => {
-            const item = ticketsToShow[index]
-            return (
-                <div style={style}>
-                    <ItemTicket key={item.conversationid} classes={classes} item={item} setTicketSelected={setTicketSelected} />
-                </div>
-            )
-        },
-        [ticketsToShow]
-    )
-
-    const RenderRowFilterd = React.useCallback(
-        ({ index, style }) => {
-            const item = ticketFilteredList.data[index]
-            return (
-                <div style={style}>
-                    <ItemTicket key={item.conversationid} classes={classes} item={item} setTicketSelected={setTicketSelected} />
-                </div>
-            )
-        },
-        [ticketFilteredList.data]
-    )
+    const ticketFilteredListData = createItemData(ticketFilteredList.data, setTicketSelected, classes);
+    const ticketsToShowData = createItemData(ticketsToShow, setTicketSelected, classes);
 
     return (
         <div className={classes.containerTickets}>
@@ -422,14 +460,15 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                         <Tabs
                             value={pageSelected}
                             indicatorColor="primary"
-                            variant="fullWidth"
+                            // variant="scrollable"
+                            scrollButtons="auto"
                             textColor="primary"
                             style={{ flex: 1 }}
                             onChange={(_, value) => setPageSelected(value)}
                         >
-                            <AntTab label={t(langKeys.assigned)} />
-                            <AntTab label={t(langKeys.all)} />
-                            <AntTab label={t(langKeys.paused)} />
+                            <AntTab label={`${t(langKeys.assigned)}${counterTickets.assigned < 0 ? '' : "(" + counterTickets.assigned + ")"}`} />
+                            <AntTab label={`${t(langKeys.paused)}${counterTickets.paused < 0 ? '' : "(" + counterTickets.paused + ")"}`} />
+                            <AntTab label={`${t(langKeys.all)}${counterTickets.all < 0 ? '' : "(" + counterTickets.all + ")"}`} />
                         </Tabs>
                         <div style={{ display: 'flex', alignItems: 'center', marginRight: 8 }}>
                             <IconButton size="small" onClick={() => setShowSearch(true)}>
@@ -500,7 +539,8 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                                                 width={width}
                                                 height={height}
                                                 itemCount={ticketFilteredList.data.length}
-                                                itemSize={97}
+                                                itemSize={82.584}
+                                                itemData={ticketFilteredListData}
                                             >
                                                 {RenderRowFilterd}
                                             </FixedSizeList>
@@ -517,7 +557,8 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                                         width={width}
                                         height={height}
                                         itemCount={ticketsToShow.length}
-                                        itemSize={97}
+                                        itemSize={82.584}
+                                        itemData={ticketsToShowData}
                                     >
                                         {RenderRow}
                                     </FixedSizeList>
@@ -525,9 +566,6 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                             </AutoSizer>
                         )
                 }
-                {/* {ticketList.loading ? <ListItemSkeleton /> :
-                    ticketsToShow.map((item) => <ItemTicket key={item.conversationid} classes={classes} item={item} setTicketSelected={setTicketSelected} />)
-                } */}
             </div>
             <DrawerFilter
                 drawerOpen={drawerOpen}

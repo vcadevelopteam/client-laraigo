@@ -1,4 +1,6 @@
 export { default as Users } from './Users';
+export { default as ReportScheduler } from './ReportScheduler';
+export { default as ProductCatalog } from './ProductCatalog';
 export { default as SignIn } from './SignIn';
 export { default as Properties } from './Properties';
 export { default as Quickreplies } from './Quickreplies';
@@ -14,6 +16,7 @@ export { default as Supervisor } from './Supervisor';
 export { default as MessageInbox } from './MessageInbox';
 export { default as MessageTemplates } from './MessageTemplates';
 export { default as Tipifications } from './Tipifications';
+export { default as InputValidation } from './InputValidation';
 export { default as IntegrationManager } from './IntegrationManager';
 export { default as VariableConfiguration } from './VariableConfiguration';
 export { default as ReportTemplate } from './ReportTemplate';
@@ -25,17 +28,26 @@ export { default as NotFound } from './NotFound';
 export { default as Forbidden } from './Forbidden';
 export { default as InternalServererror } from './InternalServerError';
 export { default as Corporations } from './Corporations';
+export { default as BillingSetups } from './BillingSetups';
 export { default as Organizations } from './Organizations';
 export { default as Tickets } from './Tickets';
 export { default as UserSettings } from './UserSettings';
+export { default as Invoice } from './Invoice';
+export { default as KPIManager } from './KPIManager';
+export { default as GetLocations } from './GetLocations';
+export { default as Calendar } from './Calendar';
+export { default as AutomatizationRules } from './AutomatizationRules';
 
 export * from './channels';
 export * from './signup';
 
 export { default as BotDesigner } from './BotDesigner';
-export { default as Dashboard } from './Dashboard';
+export * from './dashboard';
 
 export { default as Settings } from './Settings';
 export { default as Privacy } from './Privacy';
 export { default as ActivateUser } from './ActivateUser';
+export { default as RecoverPassword } from './RecoverPassword';
 export * from './crm';
+export { default as ChangePwdFirstLogin } from './ChangePwdFirstLogin';
+export { default as CalendarEvent } from './CalendarEvent';

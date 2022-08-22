@@ -179,10 +179,10 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
             if (!resExportData.loading && !resExportData.error) {
                 dispatch(showBackdrop(false));
                 setWaitExport(false);
-                window.open(resExportData.url, '_blank');
+                resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
             } else if (resExportData.error) {
                 const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.blacklist).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitExport(false);
             }
@@ -192,13 +192,13 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
     useEffect(() => {
         if (waitImport) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_transaction) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
                 fetchData(fetchDataAux);
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.blacklist).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
             }
@@ -213,7 +213,7 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
                 setWaitSave(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.blacklist).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
@@ -353,7 +353,7 @@ const ModalBlacklist: React.FC<ModalProps> = ({ openModal, setOpenModal, row, fe
                 setOpenModal(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.blacklist).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }

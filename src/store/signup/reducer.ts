@@ -5,8 +5,11 @@ import actionTypes from "./actionTypes";
 
 export interface IState {
     channelList: IListStatePaginated<Dictionary>;
+    currencyList: IListStatePaginated<Dictionary>;
+    countryList: IListStatePaginated<Dictionary>;
     successinsert: Boolean;
-    insertChannel: IObjectState<{ success : boolean, integrationid: string }>;
+    insertChannel: IObjectState<{ success: boolean, code: string, message:string }>;
+    valChannelsChannel: IObjectState<{ success: boolean, code: string, message:string }>;
     verifyPlan: IListStatePaginated<Dictionary>;
     isvalid: Boolean;
     loading: Boolean;
@@ -16,8 +19,11 @@ export interface IState {
 
 export const initialState: IState = {
     channelList: initialListPaginatedState,
+    currencyList: initialListPaginatedState,
+    countryList: initialListPaginatedState,
     successinsert: false,
     insertChannel: initialObjectState,
+    valChannelsChannel: initialObjectState,
     verifyPlan: initialListPaginatedState,
     isvalid: false,
     loading: false,
@@ -34,6 +40,10 @@ export default createReducer<IState>(initialState, {
     [actionTypes.SIGNUP_SUCCESS]: caseFUnctions.insertChannelSuccess,
     [actionTypes.SIGNUP_FAILURE]: caseFUnctions.insertChannelFailure,
     [actionTypes.SIGNUP_RESET]: caseFUnctions.insertChannelReset,
+    [actionTypes.VALCHANNELS]: caseFUnctions.valChannelsChannel,
+    [actionTypes.VALCHANNELS_FAILURE]: caseFUnctions.valChannelsChannelSuccess,
+    [actionTypes.VALCHANNELS_SUCCESS]: caseFUnctions.valChannelsChannelFailure,
+    [actionTypes.VALCHANNELS_RESET]: caseFUnctions.valChannelsChannelReset,
     [actionTypes.ISVALID]: caseFUnctions.checkvalidity,
     [actionTypes.ISVALID_SUCCESS]: caseFUnctions.checkvaliditySuccess,
     [actionTypes.ISVALID_FAILURE]: caseFUnctions.checkvalidityFailure,
@@ -42,4 +52,10 @@ export default createReducer<IState>(initialState, {
     [actionTypes.VERIFYPLAN]: caseFUnctions.verifyPlanFunc,
     [actionTypes.VERIFYPLAN_SUCCESS]: caseFUnctions.verifyPlanSuccess,
     [actionTypes.VERIFYPLAN_FAILURE]: caseFUnctions.verifyPlanFailure,
+    [actionTypes.CURRENCYLIST]: caseFUnctions.getCurrency,
+    [actionTypes.CURRENCYLIST_SUCCESS]: caseFUnctions.getCurrencySuccess,
+    [actionTypes.CURRENCYLIST_FAILURE]: caseFUnctions.getCurrencyFailure,
+    [actionTypes.COUNTRYLIST]: caseFUnctions.getCountry,
+    [actionTypes.COUNTRYLIST_SUCCESS]: caseFUnctions.getCountrySuccess,
+    [actionTypes.COUNTRYLIST_FAILURE]: caseFUnctions.getCountryFailure,
 });

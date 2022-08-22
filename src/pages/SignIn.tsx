@@ -1,5 +1,6 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from 'react'; // we need this to make JSX compile
+import React, { FC, useState, useEffect, Fragment } from 'react'; // we need this to make JSX compile
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -14,7 +15,7 @@ import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import { useSelector } from 'hooks';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
+import Popus from 'components/layout/Popus';
 import { useDispatch } from 'react-redux';
 import { login } from 'store/login/actions';
 import { getAccessToken } from 'common/helpers';
@@ -25,8 +26,15 @@ import FacebookLogin from 'react-facebook-login';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import GoogleLogin from 'react-google-login';
 import { connectAgentUI } from 'store/inbox/actions';
+import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
+import { useLocation } from "react-router-dom";
+import { apiUrls } from 'common/constants';
+import { LaraigoLogo } from 'icons';
+import { useForm } from 'react-hook-form';
+import { FieldEdit, DialogZyx } from 'components';
+import { recoverPassword } from 'store/subscription/actions';
 
-const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme) => ({
     paper: {
         display: 'flex',
         flexDirection: 'column',
@@ -64,20 +72,32 @@ const useStyles = makeStyles((theme) => ({
     childContainer: {
         display: 'flex',
         flexDirection: 'column',
+        width: '100%'
     },
     buttonGoogle: {
         '& button': {
             width: '100%',
             justifyContent: 'center',
         }
-    }
+    },
+
 }));
 
-function Copyright() {
+const openprivacypolicies = () => {
+    window.open("/privacy", '_blank');
+}
+
+export function Copyright() {
+    const { t } = useTranslation();
     return (
-        <Typography variant="body2" color="textPrimary" align="center">
-            {'Copyright © '} Laraigo {new Date().getFullYear()}
-        </Typography>
+        <Fragment>
+            <Typography variant="body2" color="textPrimary" align="center">
+                {'Copyright © '} Laraigo {new Date().getFullYear()}
+            </Typography>
+            <Typography variant="body2" color="textPrimary" align="center">
+                <a rel="noopener noreferrer" style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={openprivacypolicies}>{t(langKeys.privacypoliciestitle)}</a>
+            </Typography>
+        </Fragment>
     );
 }
 
@@ -87,18 +107,28 @@ type IAuth = {
 }
 
 const SignIn = () => {
-    const classes = useStyles();
     const { t } = useTranslation();
 
-    const history = useHistory();
-
     const dispatch = useDispatch();
+
+    const classes = useStyles();
+    const history = useHistory();
+    const location = useLocation();
     const resLogin = useSelector(state => state.login.login);
 
     const [dataAuth, setDataAuth] = useState<IAuth>({ username: '', password: '' });
+    const [openModal, setOpenModal] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
     const handleClickShowPassword = () => setShowPassword(!showPassword);
+
+    const handleSignUp = () => {
+        window.open("https://laraigo.com/en/#pricetable", "_self");
+    }
+
+    const handleRecover = () => {
+        setOpenModal(true);
+    }
 
     const handleMouseDownPassword = (event: any) => event.preventDefault();
 
@@ -119,123 +149,233 @@ const SignIn = () => {
         }
     }
 
-    const onGoogleLoginFailure = (r: any) => {
-        if (r && r.error) {
-            switch (r.error) {
+    const onGoogleLoginFailure = (event: any) => {
+        console.log('GOOGLE LOGIN FAILURE: ' + JSON.stringify(event));
+        if (event && event.error) {
+            switch (event.error) {
                 case 'idpiframe_initialization_failed':
                 case 'popup_closed_by_user':
                     break;
                 default:
-                    alert(r.error);
+                    alert(event.error);
                     break;
             }
         }
     }
 
+    const onModalSuccess = () => {
+        setOpenModal(false);
+    }
+
+    useEffect(() => {
+        const ff = location.state || {} as any;
+        if (!!ff?.showSnackbar) {
+            dispatch(showSnackbar({ show: true, severity: "success", message: ff?.message || "" }))
+        }
+    }, [location]);
+
     useEffect(() => {
         if (getAccessToken()) {
             history.push('/');
+        } else {
+            localStorage.removeItem("firstLoad")
         }
     }, [])
 
     useEffect(() => {
         if (!resLogin.error && resLogin.user && getAccessToken()) {
             dispatch(connectAgentUI(resLogin.user.automaticConnection!!))
-            history.push(resLogin.user.redirect ? resLogin.user.redirect : "/supervisor");
+            localStorage.setItem("firstLoad", "1") //para saber si lanzar el automatic connection cuando el get user haya terminado
+            window.open(resLogin.user.redirect ? resLogin.user.redirect : "/supervisor", "_self");
         }
     }, [resLogin]);
 
     return (
-        <Container component="main" maxWidth="xs" className={classes.containerLogin}>
-            <div className={classes.childContainer}>
-                <img src="./Laraigo-vertical-logo-name.svg" style={{ height: 200 }} alt="logo" />
-                <div className={classes.paper}>
-                    {resLogin.error && (
-                        <Alert className={classes.alertheader} variant="filled" severity="error">
-                            {t(resLogin.code || "error_unexpected_error")}
-                        </Alert>
-                    )}
-                    <form
-                        className={classes.form}
-                        onSubmit={onSubmitLogin}
-                    >
-                        <TextField
-                            variant="outlined"
-                            margin="normal"
-                            fullWidth
-                            value={dataAuth.username}
-                            onChange={e => setDataAuth(p => ({ ...p, username: e.target.value.trim() }))}
-                            label={t(langKeys.username)}
-                            name="usr"
+        <>
+            <meta name="google-signin-client_id" content={apiUrls.GOOGLECLIENTID_LOGIN} />
+            <script src="https://apis.google.com/js/platform.js" async defer></script>
+            <Container component="main" maxWidth="xs" className={classes.containerLogin}>
+                <div className={classes.childContainer}>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <LaraigoLogo style={{ height: 200 }} />
+                    </div>
+                    <div className={classes.paper}>
+                        <RecoverModal
+                            openModal={openModal}
+                            setOpenModal={setOpenModal}
+                            onTrigger={onModalSuccess}
                         />
-                        <TextField
-                            variant="outlined"
-                            margin="normal"
-                            fullWidth
-                            label={t(langKeys.password)}
-                            name="password"
-                            type={showPassword ? 'text' : 'password'}
-                            autoComplete="current-password"
-                            value={dataAuth.password}
-                            onChange={e => setDataAuth(p => ({ ...p, password: e.target.value.trim() }))}
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            aria-label="toggle password visibility"
-                                            onClick={handleClickShowPassword}
-                                            onMouseDown={handleMouseDownPassword}
-                                            edge="end"
-                                        >
-                                            {showPassword ? <Visibility /> : <VisibilityOff />}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-                        {!resLogin.loading ?
-                            <div style={{ alignItems: 'center' }}>
-                                <Button
-                                    type="submit"
-                                    fullWidth
-                                    variant="contained"
-                                    color="primary"
-                                    className={classes.submit}>
-                                    <Trans i18nKey={langKeys.logIn} />
-                                </Button>
-                                <FacebookLogin
-                                    appId="1094526090706564"
-                                    callback={onAuthWithFacebook}
-                                    buttonStyle={{ borderRadius: '3px', height: '48px', display: 'flex', alignItems: 'center', 'fontSize': '14px', fontStyle: 'normal', fontWeight: 600, textTransform: 'none', justifyContent: 'center', width: '100%', marginBottom: '16px' }}
-
-                                    textButton={t(langKeys.login_with_facebook)}
-                                    icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
-                                />
-                                <div className={classes.buttonGoogle}>
-                                    <GoogleLogin
-                                        clientId="792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com"
-                                        buttonText={t(langKeys.login_with_google)}
-                                        style={{ justifyContent: 'center', width: '100%' }}
-                                        onSuccess={onGoogleLoginSucess}
-                                        onFailure={onGoogleLoginFailure}
-                                        cookiePolicy={'single_host_origin'}
+                        {resLogin.error && (
+                            <Alert className={classes.alertheader} variant="filled" severity="error">
+                                {t(resLogin.code || "error_unexpected_error")}
+                            </Alert>
+                        )}
+                        <form
+                            className={classes.form}
+                            onSubmit={onSubmitLogin}
+                        >
+                            <TextField
+                                variant="outlined"
+                                margin="normal"
+                                fullWidth
+                                required
+                                value={dataAuth.username}
+                                onChange={e => setDataAuth(p => ({ ...p, username: e.target.value.trim() }))}
+                                label={t(langKeys.username)}
+                                name="usr"
+                            />
+                            <TextField
+                                variant="outlined"
+                                margin="normal"
+                                fullWidth
+                                required
+                                label={t(langKeys.password)}
+                                name="password"
+                                type={showPassword ? 'text' : 'password'}
+                                autoComplete="current-password"
+                                value={dataAuth.password}
+                                onChange={e => setDataAuth(p => ({ ...p, password: e.target.value.trim() }))}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={handleClickShowPassword}
+                                                onMouseDown={handleMouseDownPassword}
+                                                edge="end"
+                                            >
+                                                {showPassword ? <Visibility /> : <VisibilityOff />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                            {!resLogin.loading ?
+                                <div style={{ alignItems: 'center' }}>
+                                    <Button
+                                        type="submit"
+                                        fullWidth
+                                        variant="contained"
+                                        color="primary"
+                                        className={classes.submit}>
+                                        <Trans i18nKey={langKeys.logIn} />
+                                    </Button>
+                                    <FacebookLogin
+                                        appId={apiUrls.FACEBOOKAPP}
+                                        callback={onAuthWithFacebook}
+                                        buttonStyle={{ borderRadius: '3px', height: '48px', display: 'flex', alignItems: 'center', 'fontSize': '14px', fontStyle: 'normal', fontWeight: 600, textTransform: 'none', justifyContent: 'center', width: '100%', marginBottom: '16px' }}
+                                        textButton={t(langKeys.login_with_facebook)}
+                                        icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
+                                        disableMobileRedirect={true}
                                     />
-                                </div>
-                            </div> :
-                            <CircularProgress className={classes.progress} />
-                        }
-                        <Grid container>
-                            <Grid item>
-                                <p><Trans i18nKey={langKeys.newRegisterMessage} /></p>
+                                    <div className={classes.buttonGoogle}>
+                                        <GoogleLogin
+                                            clientId={apiUrls.GOOGLECLIENTID_LOGIN}
+                                            buttonText={t(langKeys.login_with_google)}
+                                            style={{ justifyContent: 'center', width: '100%' }}
+                                            onSuccess={onGoogleLoginSucess}
+                                            onFailure={onGoogleLoginFailure}
+                                            cookiePolicy={'single_host_origin'}
+                                            accessType='online'
+                                            autoLoad={false}
+                                        />
+                                    </div>
+                                </div> :
+                                <CircularProgress className={classes.progress} />
+                            }
+                            <Grid container>
+                                <Grid item>
+                                    <p>
+                                        <Trans i18nKey={langKeys.newRegisterMessage} />
+                                        <span style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={handleSignUp}>{t(langKeys.newRegisterMessage2)}</span>
+                                    </p>
+                                    <p>
+                                        <Trans i18nKey={langKeys.recoverpassword1} />
+                                        <span style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={handleRecover}>{t(langKeys.recoverpassword2)}</span>
+                                    </p>
+                                </Grid>
                             </Grid>
-                        </Grid>
-                    </form>
+                        </form>
+                    </div>
+                    <Box mt={8}>
+                        <Copyright />
+                    </Box>
                 </div>
-                <Box mt={8}>
-                    <Copyright />
-                </Box>
-            </div>
-        </Container>)
+                <Popus />
+            </Container>
+        </>
+    )
+}
+
+const RecoverModal: FC<{ openModal: boolean, setOpenModal: (param: any) => void, onTrigger: () => void }> = ({ openModal, setOpenModal, onTrigger }) => {
+    const dispatch = useDispatch();
+
+    const { t } = useTranslation();
+
+    const recoverResult = useSelector(state => state.subscription.requestRecoverPassword);
+
+    const [waitSave, setWaitSave] = useState(false);
+
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+        defaultValues: {
+            username: ''
+        }
+    });
+
+    React.useEffect(() => {
+        register('username', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+    }, [register]);
+
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!recoverResult.loading && !recoverResult.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(recoverResult.msg || "success") }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+                onTrigger();
+            }
+            else if (recoverResult.error) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(recoverResult.msg || "error_unexpected_db_error") }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [recoverResult, waitSave])
+
+    const onSubmit = handleSubmit((data) => {
+        const callback = () => {
+            dispatch(recoverPassword(data));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.recoverpasswordconfirmation),
+            callback
+        }))
+    });
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.recoverpasswordtitle)}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.recoverpasswordbutton)}
+            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton2={onSubmit}
+            button2Type="submit"
+        >
+            <FieldEdit
+                label={t(langKeys.billingusername)}
+                valueDefault={getValues('username')}
+                error={errors?.username?.message}
+                onChange={(value) => setValue('username', value)}
+                className="col-12"
+            />
+        </DialogZyx>
+    )
 }
 
 export default SignIn;

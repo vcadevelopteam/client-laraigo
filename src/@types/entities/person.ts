@@ -5,6 +5,7 @@ interface Dictionary {
 export interface IPerson {
     corpid: number;
     corpdesc: string;
+    observation?: string;
     orgid: number;
     orgdesc: string;
     personid: number;
@@ -58,6 +59,8 @@ export interface IPerson {
     changeby: string;
     changedate: string;
     personcommunicationchannel: string;
+    havelead: boolean;
+    haveclassification: boolean;
 }
 
 export interface IPersonCommunicationChannel {
@@ -131,6 +134,9 @@ export interface IPersonAdditionalInfo {
 }
 
 export interface IPersonConversation {
+    tme: string;
+    tmr: string;
+    tmo: string;
     asesorfinal: string;
     asesorinicial: string;
     closetype: string;
@@ -152,6 +158,8 @@ export interface IPersonConversation {
     totalpausaduration: string;
     firstreplytime: string;
     totalpauseduration: string;
+    channeldesc: string;
+    channeltype: string;
 }
 
 export interface IPersonLead {
@@ -160,7 +168,11 @@ export interface IPersonLead {
     columnid: number;
     corpid: number;
     createby: string;
+    date_deadline: string;
     createdate: string;
+    expected_revenue: string;
+    priority: string;
+    ticketnum: string;
     description: string;
     index: number;
     orgid: number;

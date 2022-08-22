@@ -4,10 +4,14 @@ export interface IAgent {
     countActive: number;
     countPaused: number;
     countClosed: number;
-    countAnwsered: number;
-    countNotAnwsered?: number;
+    countAnswered: number;
+    countNotAnswered?: number;
     countPending: number;
     status: string | null;
+    motivetype?: string | null;
+    userstatustype?: string | null;
+    groups: string | null;
+    image: string | null;
     channels: string[];
     isConnected?: boolean;
 }

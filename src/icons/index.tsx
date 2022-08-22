@@ -39,6 +39,18 @@ export const reportsImage = [
     {
       name: "reports_user_connections_report",
       image: user_connections
+    },
+    {
+      name: "reports_conversationwhatsapp_report",
+      image: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/whatsapp_PNG95151.png'
+    },
+    {
+      name: "reports_invoice_report",
+      image: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'
+    },
+    {
+      name: "reports_survey_report",
+      image: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'
     }
   ];
 
@@ -51,13 +63,15 @@ export { ReactComponent as MessageInboxIcon } from 'icons/chat-message-password-
 export { ReactComponent as SupervisorIcon } from 'icons/single-user-setting.svg';
 export { ReactComponent as OrganizationIcon } from 'icons/high-rise-building.svg';
 export { ReactComponent as ChannelIcon } from 'icons/chart-bar-bargraph.svg';
-export { ReactComponent as BillingSetupIcon } from 'icons/credit-Card.svg';
+export { ReactComponent as BillingSetupIcon } from 'icons/billingsetup.svg';
+export { ReactComponent as InvoiceIcon } from 'icons/credit-Card.svg';
 export { ReactComponent as ConfigurationIcon } from 'icons/settings.svg';
 export { ReactComponent as ExtrasIcon } from 'icons/grid-layout-menu-more.svg';
 export { ReactComponent as DownloadIcon } from 'icons/download2.svg';
 export { ReactComponent as SearchIcon } from './shearch.svg';
 export { ReactComponent as BellNotificationIcon } from './bell-notification.svg';
 export { ReactComponent as ArrowDropDownIcon } from './arrow-drop-down.svg';
+export { ReactComponent as VoiceChannelIcon } from './canal_de_voz.svg';
 export { ReactComponent as PhoneIcon } from './phone.svg';
 export { ReactComponent as PortfolioIcon } from './portfolio.svg';
 export { ReactComponent as PinLocationIcon } from './pin_location.svg';
@@ -97,6 +111,8 @@ export { ReactComponent as CloseTicketIcon } from './close-ticket.svg';
 export { ReactComponent as RichResponseIcon } from './rich-response.svg';
 
 export { ReactComponent as GenderIcon } from './gender.svg';
+export { ReactComponent as WifiCalling } from './wifi_calling.svg';
+export { ReactComponent as PhoneCalling } from './phone_callin_black.svg';
 export { ReactComponent as BuildingIcon } from './building-city-town.svg';
 export { ReactComponent as EditPencilIcon } from './edit-pencil.svg';
 export { ReactComponent as InfoRoundedIcon } from './info-rounded.svg';
@@ -133,6 +149,30 @@ export { ReactComponent as ClientIcon } from './clients.svg';
 export { ReactComponent as DocNumberIcon } from './docnumber.svg';
 export { ReactComponent as DocTypeIcon } from './doctype.svg';
 export { ReactComponent as TelephoneIcon } from './telephone.svg';
+export { ReactComponent as ZipIcon } from './zipicon.svg';
+
+export { ReactComponent as AndroidColor } from './android-color.svg';
+export { ReactComponent as EmailColor } from './email-color.svg';
+export { ReactComponent as FacebookColor } from './facebook-color.svg';
+export { ReactComponent as FacebookColor2 } from './facebook-color2.svg';
+export { ReactComponent as FacebookMessengerColor } from './facebook-messenger-color.svg';
+export { ReactComponent as FacebookMessengerColor2 } from './facebook-messenger-color2.svg';
+export { ReactComponent as InstagramColor } from './instagram-color.svg';
+export { ReactComponent as InstagramColor2 } from './instagram-color2.svg';
+export { ReactComponent as InstagramColor3 } from './instagram-color3.svg';
+export { ReactComponent as IosColor } from './ios-color.svg';
+export { ReactComponent as SmsColor } from './sms-color.svg';
+export { ReactComponent as TelegramColor } from './telegram-color.svg';
+export { ReactComponent as TelegramColor2 } from './telegram-color2.svg';
+export { ReactComponent as TwitterColor } from './twitter-color.svg';
+export { ReactComponent as WebMessengerColor } from './web-messenger-color.svg';
+export { ReactComponent as WhatsappColor } from './whatsapp-color.svg';
+export { ReactComponent as BloggerColor } from './blogger.svg';
+export { ReactComponent as VoiceColor } from './canal_de_voz.svg';
+export { ReactComponent as LinkedInColor } from './linkedin.svg';
+export { ReactComponent as TeamsColor } from './microsoft-teams.svg';
+export { ReactComponent as TikTokColor } from './tiktok.svg';
+export { ReactComponent as YouTubeColor } from './youtubechannel.svg';
 
 export { ReactComponent as LaraigoAnimalIcon } from './Laraigo-emojis_animal.svg';
 export { ReactComponent as LaraigoBanderaIcon } from './Laraigo-emojis_bandera.svg';
@@ -145,4 +185,23 @@ export { ReactComponent as LaraigoHashtagIcon } from './Laraigo-emojis_hashtag.s
 export { ReactComponent as LaraigoRecienteIcon } from './Laraigo-emojis_reciente.svg';
 export { ReactComponent as LaraigoBlockedIcon } from './Laraigo-emojis_blocked.svg';
 export { ReactComponent as CRMIcon } from './crm.svg';
-export { ReactComponent as LeadIcon } from './Laraigo-emojis_blocked.svg';
+export { ReactComponent as LeadIcon } from './lead.svg';
+export { ReactComponent as HistoryIcon } from './historyStatus.svg';
+
+export { ReactComponent as DocIcon } from './docIcon.svg';
+export { ReactComponent as FileIcon1 } from './fileIcon.svg';
+export { ReactComponent as PdfIcon } from './pdfIcon.svg';
+export { ReactComponent as PptIcon } from './pptIcon.svg';
+export { ReactComponent as TxtIcon } from './txtIcon.svg';
+export { ReactComponent as XlsIcon } from './xlsIcon.svg';
+export { ReactComponent as DuplicateIcon } from './duplicate.svg';
+
+export { ReactComponent as LaraigoLogo } from './Laraigo-logo.svg';
+export { ReactComponent as EnvioIcon } from './envioAuto-01.svg';
+export { ReactComponent as TeamsIcon } from './teams.svg';
+
+export { ReactComponent as KPIIcon } from './kpi.svg';
+export { ReactComponent as CalendaryIcon } from './calendary.svg';
+export { ReactComponent as RulesIcon } from './rules.svg';
+export { ReactComponent as ProductsIcon } from './products.svg';
+export { ReactComponent as CallRecordIcon } from './call-record.svg';

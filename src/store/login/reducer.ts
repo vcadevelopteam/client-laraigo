@@ -1,4 +1,4 @@
-import { IUser, ITemplate } from "@types";
+import { IUser, ITemplate, NotificationZyx } from "@types";
 import { createReducer, initialCommon } from "common/helpers";
 import * as caseFunctions from './caseFunctions';
 import actionTypes from "./actionTypes";
@@ -6,7 +6,7 @@ import actionTypes from "./actionTypes";
 
 export interface IUserTmp extends ITemplate {
     user: IUser | null;
-    
+    notifications?: NotificationZyx[]
 }
 
 export interface IState {
@@ -14,13 +14,15 @@ export interface IState {
     triggerChangeOrganization: ITemplate;
     validateToken: IUserTmp;
     logout: ITemplate;
+    ignorePwdchangefirstloginValidation: boolean;
 }
 
 export const initialState: IState = {
     login: { ...initialCommon, user: null },
     triggerChangeOrganization: initialCommon,
-    validateToken: { ...initialCommon, user: null, loading: true },
-    logout: initialCommon
+    validateToken: { ...initialCommon, user: null, loading: true, notifications: [] },
+    logout: initialCommon,
+    ignorePwdchangefirstloginValidation: false,
 };
 
 export default createReducer<IState>(initialState, {
@@ -44,4 +46,7 @@ export default createReducer<IState>(initialState, {
     [actionTypes.LOGOUT_SUCCESS]: caseFunctions.logoutSuccess,
     [actionTypes.LOGOUT_FAILURE]: caseFunctions.logoutFailure,
     [actionTypes.LOGOUT_RESET]: caseFunctions.logoutReset,
+
+    [actionTypes.CHANGE_PWD_FIRST_LOGIN]: caseFunctions.changePwdFirstLogin,
+    [actionTypes.NEW_NOTIFICATION]: caseFunctions.newNotification,
 });

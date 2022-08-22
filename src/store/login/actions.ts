@@ -52,3 +52,8 @@ export const logout = (): IActionCall => ({
     },
     type: null,
 });
+
+export const setPwdFirsLogin = (value: boolean, ignorePwdchangefirstloginValidation: boolean): IActionCall => ({
+    type: actionTypes.CHANGE_PWD_FIRST_LOGIN,
+    payload: { value, ignorePwdchangefirstloginValidation },
+});

@@ -2,11 +2,12 @@
 import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { TemplateBreadcrumbs, DateRangePicker, FieldMultiSelect, FieldSelect } from 'components';
+import { TemplateBreadcrumbs, DateRangePicker, FieldEdit, DialogZyx, FieldSelect } from 'components';
 import { Dictionary } from "@types";
 import TableZyx from 'components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
+import AssessmentIcon from '@material-ui/icons/Assessment';
 import Button from '@material-ui/core/Button';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -15,10 +16,13 @@ import { showSnackbar } from 'store/popus/actions';
 import { getCollectionDynamic, resetMainDynamic, exportDynamic, resetExportMainDynamic } from 'store/main/actions';
 import { Range } from 'react-date-range';
 import { getDateCleaned } from 'common/helpers/functions'
+import { useForm } from 'react-hook-form';
+import Graphic from 'components/fields/Graphic';
+import ListIcon from '@material-ui/icons/List';
+import { exportExcel } from 'common/helpers';
 
-
-const getArrayBread = (nametmp: string) => ([
-    { id: "view-1", name: "Reports" },
+const getArrayBread = (nametmp: string, nameView1: string) => ([
+    { id: "view-1", name: nameView1 || "Reports" },
     { id: "view-2", name: nametmp }
 ]);
 
@@ -31,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
         gap: theme.spacing(1),
         marginTop: theme.spacing(1),
         backgroundColor: '#FFF',
-        padding: theme.spacing(2),
+        padding: theme.spacing(1),
     },
     itemFilter: {
         flex: '0 0 220px',
@@ -50,65 +54,268 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-interface MultiData {
-    data: Dictionary[];
-    success: boolean;
+interface SummaryGraphicProps {
+    openModal: boolean;
+    setOpenModal: (value: boolean) => void;
+    setView: (value: string) => void;
+    columns: Dictionary[];
+    getCollection: () => void;
+}
+
+export interface IReport {
+    columns: Dictionary[];
+    filters: Dictionary[];
+    summaries: Dictionary[];
+    description: string;
 }
 
 interface DetailReportProps {
-    item: Dictionary;
+    item: IReport;
     setViewSelected: (view: string) => void;
-    multiData: MultiData[];
 }
 
 const initialRange = {
-    startDate: new Date(new Date().setDate(0)),
+    startDate: new Date(new Date().setDate(1)),
     endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
     key: 'selection'
 }
 
+const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal, setView, columns, getCollection }) => {
+    const { t } = useTranslation();
+
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm<any>({
+        defaultValues: {
+            graphictype: 'BAR',
+            column: '',
+            columntext: ''
+        }
+    });
+
+    useEffect(() => {
+        register('graphictype', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('column', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+    }, [register]);
+
+    const handleCancelModal = () => {
+        setOpenModal(false);
+    }
+
+    const handleAcceptModal = handleSubmit((data) => {
+        triggerGraphic(data);
+    });
+
+    const triggerGraphic = (data: any) => {
+        getCollection();
+        setView(`CHART-${data.graphictype}-${data.column}-${data.columntext}`);
+        setOpenModal(false);
+
+    }
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.graphic_configuration)}
+            button1Type="button"
+            buttonText1={t(langKeys.cancel)}
+            handleClickButton1={handleCancelModal}
+            button2Type="button"
+            buttonText2={t(langKeys.accept)}
+            handleClickButton2={handleAcceptModal}
+        >
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.graphic_type)}
+                    className="col-12"
+                    valueDefault={getValues('graphictype')}
+                    error={errors?.graphictype?.message}
+                    onChange={(value) => setValue('graphictype', value?.key)}
+                    data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }]}
+                    uset={true}
+                    prefixTranslation="graphic_"
+                    optionDesc="value"
+                    optionValue="key"
+                />
+            </div>
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.graphic_view_by)}
+                    className="col-12"
+                    valueDefault={getValues('column')}
+                    error={errors?.column?.message}
+                    onChange={(value) => {
+                        setValue('column', value?.accessor || '');
+                        setValue('columntext', value?.Header || '');
+                    }}
+                    data={columns}
+                    optionDesc="Header"
+                    optionValue="accessor"
+                />
+            </div>
+        </DialogZyx>
+    )
+}
+
 const format = (date: Date) => date.toISOString().split('T')[0];
 
-const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData, item: { columns, finishdate,
-    startdate, channels, tags, usergroup, description } }) => {
+const FilterDynamic: FC<{ filter: Dictionary, setFiltersDynamic: (param: any) => void }> = ({ filter, setFiltersDynamic }) => {
+    const [openDialogDate, setOpenDialogDate] = useState(false);
+    const [dateRange, setDateRange] = useState<Range>(initialRange);
+    const classes = useStyles();
+    const { t } = useTranslation();
+    const choosenwidth=filter.description.length*18
+    
+    useEffect(() => {
+        setFiltersDynamic((prev: any) => ({
+            ...prev,
+            [filter.columnname]: {
+                ...prev[filter.columnname],
+                start: getDateCleaned(dateRange.startDate!!),
+                end: getDateCleaned(dateRange.endDate!!)
+            }
+        }))
+    }, [dateRange])
+
+    if (filter.type === "timestamp without time zone" || filter.type === "date") {
+        return (
+            <div>
+                <DateRangePicker
+                    open={openDialogDate}
+                    setOpen={setOpenDialogDate}
+                    range={dateRange}
+                    onSelect={setDateRange}
+                >
+                    <Button
+                        className={classes.itemDate}
+                        startIcon={<CalendarIcon />}
+                        onClick={() => setOpenDialogDate(!openDialogDate)}
+                    >
+                        {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
+                    </Button>
+                </DateRangePicker>
+            </div>
+        )
+    } else {
+        return (
+            <FieldEdit
+                label={filter.type === "variable" ? filter.description : t(`personalizedreport_${filter.description}`)}
+                variant="outlined"
+                width={choosenwidth<250?250:choosenwidth}
+                disabled={filter.type_filter === "unique_value"}
+                size="small"
+                valueDefault={filter.type_filter === "unique_value" ? t(langKeys.filter_unique_value) : filter.filter || ""}
+                onChange={(value) => setFiltersDynamic((prev: any) => ({
+                    ...prev,
+                    [filter.columnname]: {
+                        ...prev[filter.columnname],
+                        value: value
+                    }
+                }))}
+            />
+        )
+    }
+}
+
+const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { columns, summaries, filters, description } }) => {
     const classes = useStyles()
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const [columnsDynamic, setcolumnsDynamic] = useState([])
-    const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
-    const [openDateRangeFinishDateModal, setOpenDateRangeFinishDateModal] = useState(false);
-    const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
-    const [dateRangeFinishDate, setDateRangeFinishDate] = useState<Range>(initialRange);
-    const [filters, setFilters] = useState({
-        usergroup: "",
-        communicationchannelid: "",
-        tag: ""
-    })
-
-    useEffect(() => {
-        dispatch(resetMainDynamic())
-        dispatch(resetExportMainDynamic())
-        setcolumnsDynamic(columns.map((x: Dictionary) => ({
-            Header: x.value,
-            accessor: x.key,
-        })))
-    }, [])
-
+    const [dataCleaned, setDataCleaned] = useState<Dictionary[]>([])
     const mainDynamic = useSelector(state => state.main.mainDynamic);
     const resExportDynamic = useSelector(state => state.main.exportDynamicData);
+    const [showDialogGraphic, setShowDialogGraphic] = useState(false);
+    const [dataFiltered, setDataFiltered] = useState<Dictionary[]>([]);
+    const [footer, setFooter] = useState<Dictionary | null>(null);
+    const [view, setView] = useState('GRID');
+    const [filtersDynamic, setFiltersDynamic] = useState<Dictionary>(filters.reduce((acc: Dictionary, item: Dictionary) => ({
+        ...acc,
+        [item.columnname]: {
+            ...item,
+            value: item.filter || "",
+            filter: undefined
+        }
+    }), {}));
 
-    const dataGroups = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const dataTags = multiData[2] && multiData[2].success ? multiData[2].data : [];
-    const dataChannels = multiData[3] && multiData[3].success ? multiData[3].data : [];
+    const columnsDynamic = React.useMemo(
+        () => columns.map((x: Dictionary) => ({
+            Header: x.alias,
+            accessor: x.columnname.replace(".", ""),
+            Footer: () => footer?.[x.columnname.replace(".", "")]
+        })), [columns, footer]
+    )
+
+    useEffect(() => {
+        dispatch(resetMainDynamic());
+        dispatch(resetExportMainDynamic());
+    }, [])
+
 
     useEffect(() => {
         if (!resExportDynamic.loading && !resExportDynamic.error && resExportDynamic.url) {
             window.open(resExportDynamic.url, '_blank');
         } else if (resExportDynamic.error) {
             const errormessage = t(resExportDynamic.code || "error_unexpected_error")
-            dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
         }
-    }, [resExportDynamic])
+    }, [resExportDynamic]);
+
+    const exportDataFiltered = () => {
+        exportExcel(description, dataFiltered, columnsDynamic)
+    }
+
+    useEffect(() => {
+        if (!mainDynamic.loading && !mainDynamic.error) {
+            let datato = mainDynamic.data;
+            if (summaries.length > 0) {
+                setFooter(datato[0]);
+                delete datato[0]
+            }
+            if (columns.some(x => x.columnname.replace(".", "") === "conversationclosetype")) {
+                datato = datato.map(x => {
+                    const cc = t(`type_close_${(x.conversationclosetype || "").toLowerCase().replace(/ /gi, "_")}`)
+                    return {
+                        ...x,
+                        conversationclosetype:  cc.includes("type_close") ? x.conversationclosetype : cc
+                    }
+                })
+            }
+            const columnsDate = columns.filter(x => ["timestamp without time zone", "date", "boolean"].includes(x.type));
+            if (columnsDate.length > 0) {
+                setDataCleaned(datato.map(x => {
+                    columnsDate.forEach(y => {
+                        const columnclean = y.columnname.replace(".", "");
+                        if (["timestamp without time zone", "date"].includes(y.type)) {
+                            if (!!x[columnclean]) {
+                                const date = new Date(x[columnclean]);
+                                if (!isNaN(date.getTime())) {
+                                    if (y.type === "timestamp without time zone")
+                                        x[columnclean] = date.toLocaleString();
+                                    else
+                                        x[columnclean] = date.toLocaleDateString();
+                                } else {
+                                    const regex = /[0-9]{4}-[0-9]{2}-[0-9]{2}\s[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{0,6}Z/gi
+                                    const resRegex = (x[columnclean] + "").matchAll(regex);
+                                    Array.from(resRegex).forEach(z => {
+                                        if (z) {
+                                            if (y.type === "timestamp without time zone")
+                                                x[columnclean] = x[columnclean].replace(z, new Date(z[0]).toLocaleString());
+                                            else
+                                                x[columnclean] = x[columnclean].replace(z, new Date(z[0]).toLocaleDateString());
+                                        }
+                                    })
+                                }
+                            }
+                        }
+                        if (["boolean"].includes(y.type)) {
+                            x[columnclean] = x[columnclean] ? t("yes") : t("no")
+                        }
+                    })
+                    return x;
+                }));
+            } else {
+                setDataCleaned(datato);
+            }
+        }
+    }, [mainDynamic])
 
     const onSearch = (isExport: Boolean = false) => {
         const body = {
@@ -116,143 +323,113 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData,
             parameters: {
                 offset: (new Date().getTimezoneOffset() / 60) * -1,
             },
-            filters: [
-                ...(startdate ? [{
-                    column: "startdate",
-                    start: getDateCleaned(dateRangeCreateDate.startDate!!),
-                    end: getDateCleaned(dateRangeCreateDate.endDate!!)
-                }] : []),
-                ...(finishdate ? [{
-                    column: "finishdate",
-                    start: getDateCleaned(dateRangeFinishDate.startDate!!),
-                    end: getDateCleaned(dateRangeFinishDate.endDate!!)
-                }] : []),
-                ...(usergroup ? [{
-                    column: "usergroup",
-                    value: filters.usergroup
-                }] : []),
-                ...(tags ? [{
-                    column: "tag",
-                    value: filters.tag
-                }] : []),
-                ...(channels ? [{
-                    column: "communicationchannelid",
-                    value: filters.communicationchannelid
-                }] : []),
-            ]
+            summaries,
+            filters: Object.values(filtersDynamic)
         }
         if (isExport)
-            dispatch(exportDynamic(body, description));
+            dispatch(exportDynamic(body, description, "excel", columnsDynamic.map(x => ({
+                key: x.accessor,
+                alias: x.Header
+            }))));
         else
             dispatch(getCollectionDynamic(body));
     }
 
     return (
-        <div style={{ width: '100%' }}>
-            <TemplateBreadcrumbs
-                breadcrumbs={getArrayBread(description)}
-                handleClick={setViewSelected}
-            />
-            <div className={classes.containerFilters}>
-                <div className={classes.itemFlex}>
-                    {startdate &&
-                        <DateRangePicker
-                            open={openDateRangeCreateDateModal}
-                            setOpen={setOpenDateRangeCreateDateModal}
-                            range={dateRangeCreateDate}
-                            onSelect={setDateRangeCreateDate}
+        <>
+            <div style={{ width: '100%' }}>
+                <TemplateBreadcrumbs
+                    breadcrumbs={getArrayBread(description, t(langKeys.report_plural))}
+                    handleClick={setViewSelected}
+                />
+                <div className={classes.containerFilters}>
+                    <div className={classes.itemFlex}>
+                        {Object.values(filters).map((filter: Dictionary) => (
+                            <FilterDynamic
+                                key={filter.columnname}
+                                filter={filter}
+                                setFiltersDynamic={setFiltersDynamic}
+                            />
+                        ))}
+                        <Button
+                            disabled={mainDynamic.loading}
+                            variant="contained"
+                            color="primary"
+                            startIcon={<SearchIcon style={{ color: 'white' }} />}
+                            style={{ backgroundColor: '#55BD84', width: 120 }}
+                            onClick={() => onSearch()}
                         >
-                            <Button
-                                className={classes.itemDate}
-                                startIcon={<CalendarIcon />}
-                                onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
-                            >
-                                {format(dateRangeCreateDate.startDate!) + " - " + format(dateRangeCreateDate.endDate!)}
-                            </Button>
-                        </DateRangePicker>
-                    }
-                    {finishdate &&
-                        <DateRangePicker
-                            open={openDateRangeFinishDateModal}
-                            setOpen={setOpenDateRangeFinishDateModal}
-                            range={dateRangeFinishDate}
-                            onSelect={setDateRangeFinishDate}
+                            {t(langKeys.search)}
+                        </Button>
+                    </div>
+                    <div className={classes.itemFlex}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            disabled={mainDynamic.loading || !(mainDynamic.data.length > 0)}
+                            onClick={() => setShowDialogGraphic(true)}
+                            startIcon={<AssessmentIcon />}
                         >
+                            {view === "GRID" ? t(langKeys.graphic_view) : t(langKeys.configuration)}
+                        </Button>
+                        {view === "GRID" && (
                             <Button
-                                disabled={mainDynamic.loading}
-                                className={classes.itemDate}
-                                startIcon={<CalendarIcon />}
-                                onClick={() => setOpenDateRangeFinishDateModal(!openDateRangeFinishDateModal)}
-                            >
-                                {format(dateRangeFinishDate.startDate!) + " - " + format(dateRangeFinishDate.endDate!)}
+                                variant="contained"
+                                color="primary"
+                                disabled={resExportDynamic.loading}
+                                onClick={exportDataFiltered}
+                                startIcon={<DownloadIcon />}
+                            >{t(langKeys.download)}
                             </Button>
-                        </DateRangePicker>
-                    }
-                    {tags &&
-                        <FieldSelect
-                            label={t(langKeys.tag)}
-                            className={classes.itemFilter}
-                            onChange={(value) => setFilters(p => ({ ...p, tag: value.tag }))}
-                            data={dataTags}
-                            optionDesc="tag"
-                            variant="outlined"
-                            optionValue="tag"
-                        />
-                    }
-                    {channels &&
-                        <FieldMultiSelect
-                            label={t(langKeys.channel_plural)}
-                            className={classes.itemFilter}
-                            variant="outlined"
-                            onChange={(value) => setFilters(p => ({ ...p, communicationchannelid: value.map((o: Dictionary) => o.communicationchannelid).join() }))}
-                            data={dataChannels}
-                            optionDesc="communicationchanneldesc"
-                            optionValue="communicationchannelid"
-                        />
-                    }
-                    {usergroup &&
-                        <FieldMultiSelect
-                            label={t(langKeys.group_plural)}
-                            className={classes.itemFilter}
-                            variant="outlined"
-                            onChange={(value) => setFilters(p => ({ ...p, usergroup: value.map((o: Dictionary) => o.domainvalue).join() }))}
-                            data={dataGroups}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                        />
-                    }
-                    <Button
-                        disabled={mainDynamic.loading}
-                        variant="contained"
-                        color="primary"
-                        startIcon={<SearchIcon style={{ color: 'white' }} />}
-                        style={{ backgroundColor: '#55BD84', width: 120 }}
-                        onClick={() => onSearch()}
-                    >
-                        {t(langKeys.search)}
-                    </Button>
+                        )}
+                        {view !== "GRID" && (
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={() => setView('GRID')}
+                                startIcon={<ListIcon />}
+                            >
+                                {t(langKeys.grid_view)}
+                            </Button>
+                        )}
+                    </div>
                 </div>
-                <div>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        disabled={resExportDynamic.loading}
-                        onClick={() => onSearch(true)}
-                        // onClick={() => exportExcel(String(titlemodule) + "Report", data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
-                        startIcon={<DownloadIcon />}
-                    >{t(langKeys.download)}
-                    </Button>
-                </div>
+                {view === "GRID" && (
+                    <TableZyx
+                        columns={columnsDynamic}
+                        filterGeneral={false}
+                        data={dataCleaned}
+                        setDataFiltered={setDataFiltered}
+                        download={false}
+                        loading={mainDynamic.loading}
+                        useFooter={!!footer}
+                    />
+                )}
+                {view !== "GRID" && (
+                    <Graphic
+                        graphicType={view.split("-")?.[1] || "BAR"}
+                        column={view.split("-")?.[2] || "summary"}
+                        openModal={showDialogGraphic}
+                        setOpenModal={setShowDialogGraphic}
+                        daterange={{}}
+                        setView={setView}
+                        withFilters={false}
+                        withButtons={false}
+                        data={dataCleaned}
+                        loading={mainDynamic.loading}
+                        handlerSearchGraphic={() => null}
+                        columnDesc={view.split("-")?.[3] || "summary"}
+                    />
+                )}
             </div>
-            <TableZyx
+            <SummaryGraphic
+                openModal={showDialogGraphic}
+                setOpenModal={setShowDialogGraphic}
+                setView={setView}
                 columns={columnsDynamic}
-                filterGeneral={false}
-                data={mainDynamic.data}
-                download={false}
-                loading={mainDynamic.loading}
-            // fetchData={fetchData}
+                getCollection={onSearch}
             />
-        </div >
+        </>
     )
 
 }

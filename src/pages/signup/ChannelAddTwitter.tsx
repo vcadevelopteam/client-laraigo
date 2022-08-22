@@ -1,14 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box, FormControlLabel, FormGroup } from '@material-ui/core';
-import Link from '@material-ui/core/Link';
+import { FC, useContext, useEffect, useState } from "react";
+import { makeStyles, Breadcrumbs, Button, Link, IconButton, Typography, InputAdornment } from '@material-ui/core';
+import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon, LinkOff as LinkOffIcon } from '@material-ui/icons';
 import { showBackdrop } from 'store/popus/actions';
 import { langKeys } from "lang/keys";
-import { useTranslation } from "react-i18next";
-import { FieldEdit, ColorInput, IOSSwitch } from "components";
+import { Trans, useTranslation } from "react-i18next";
+import { FieldEdit } from "components";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { TwitterIcon } from "icons";
+import { TwitterColor } from "icons";
+import { MainData, SubscriptionContext } from "./context";
+import { useFormContext } from "react-hook-form";
+import clsx from 'clsx';
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -20,49 +23,93 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ChannelAddTwitter: FC<{setrequestchannels:(param:any)=>void,setlistchannels:(param:any)=>void}> = ({setrequestchannels,setlistchannels}) => {
+export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
+    const {
+        commonClasses,
+        foreground,
+        submitObservable,
+        setForeground,
+        deleteChannel,
+    } = useContext(SubscriptionContext);
+    const { getValues, setValue, register, unregister, formState: { errors }, trigger } = useFormContext<MainData>();
+    const [hasFinished, setHasFinished] = useState(false);
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitSave, setWaitSave] = useState(false);
-    const [nextbutton, setNextbutton] = useState(true);
-    const [nextbutton2, setNextbutton2] = useState(true);
-    const [channelreg, setChannelreg] = useState(true);
-    const [enable, setenable] = useState(false);
-    const [coloricon, setcoloricon] = useState("#1D9BF0");
+    const [submitError, setSubmitError] = useState(false);
     const mainResult = useSelector(state => state.channel.channelList)
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
-    const [fields, setFields] = useState({
-        "method": "UFN_COMMUNICATIONCHANNEL_INS",
-        "parameters": {
-            "id": 0,
-            "description": "",
-            "type": "",
-            "communicationchannelsite": "",
-            "communicationchannelowner": "",
-            "chatflowenabled": false,
-            "integrationid": "",
-            "color": "",
-            "icons": "",
-            "other": "",
-            "form": "",
-            "apikey": "",
-            "coloricon": "#1D9BF0",
-        },
-        "type": "TWITTER",
-        "service": {
-            "consumerkey": "",
-            "consumersecret": "",
-            "accesstoken": "",
-            "accesssecret": "",
-            "devenvironment": ""
-        }
-    })
+    const [nextbutton2, setNextbutton2] = useState(true);
 
-    async function finishreg() {
-        setrequestchannels((p:any)=>([...p,fields]))
-        setlistchannels((p:any)=>({...p,twitter:false}))
-    }
+    useEffect(() => {
+        const cb = async () => {
+            const v1 = await trigger('channels.twitter.consumerkey');
+            const v2 = await trigger('channels.twitter.consumersecret');
+            const v3 = await trigger('channels.twitter.accesstoken');
+            const v4 = await trigger('channels.twitter.accesssecret');
+            setSubmitError(!v1 || !v2 || !v3 || !v4);
+        }
+
+        submitObservable.addListener(cb);
+        return () => {
+            submitObservable.removeListener(cb);
+        }
+    }, [submitObservable, trigger]);
+
+    useEffect(() => {
+        const strRequired = (value: string) => {
+            if (!value) {
+                return t(langKeys.field_required);
+            }
+        }
+
+        register('channels.twitter.description', { validate: strRequired, value: '' });
+        register('channels.twitter.consumerkey', { validate: strRequired, value: '' });
+        register('channels.twitter.consumersecret', { validate: strRequired, value: '' });
+        register('channels.twitter.accesstoken', { validate: strRequired, value: '' });
+        register('channels.twitter.accesssecret', { validate: strRequired, value: '' });
+        register('channels.twitter.devenvironment', { validate: strRequired, value: '' });
+        register('channels.twitter.communicationchannelowner', { value: '' });
+        register('channels.twitter.build', {
+            value: values => ({
+                "method": "UFN_COMMUNICATIONCHANNEL_INS",
+                "parameters": {
+                    "id": 0,
+                    "description": values.description,
+                    "type": "",
+                    "communicationchannelsite": "",
+                    "communicationchannelowner": values.communicationchannelowner,
+                    "chatflowenabled": true,
+                    "integrationid": "",
+                    "color": "",
+                    "icons": "",
+                    "other": "",
+                    "form": "",
+                    "apikey": "",
+                    "coloricon": "#1D9BF0",
+                },
+                "type": "TWITTER",
+                "service": {
+                    "consumerkey": values.consumerkey,
+                    "consumersecret": values.consumersecret,
+                    "accesstoken": values.accesstoken,
+                    "accesssecret": values.accesssecret,
+                    "devenvironment": values.devenvironment
+                }
+            })
+        });
+
+        return () => {
+            unregister('channels.twitter');
+        }
+    }, [register, unregister]);
+
+    useEffect(() => {
+        if (foreground !== 'twitter' && viewSelected !== "view1") {
+            setViewSelected("view1");
+        }
+    }, [foreground, viewSelected]);
 
     useEffect(() => {
         if (waitSave) {
@@ -71,194 +118,92 @@ export const ChannelAddTwitter: FC<{setrequestchannels:(param:any)=>void,setlist
         }
     }, [mainResult])
 
-    function setnameField(value: any) {
-        setChannelreg(value === "")
-        let partialf = fields;
-        partialf.parameters.description = value
-        setFields(partialf)
+    const setView = (option: "view1" | "view2") => {
+        if (option === "view1") {
+            setViewSelected(option);
+            setForeground(undefined);
+        } else {
+            setViewSelected(option);
+            setForeground('twitter');
+        }
     }
-    function setvalField(value: any) {
-        let partialf = fields;
-        partialf.parameters.chatflowenabled = value
-        setFields(partialf)
-    }
-    if(viewSelected==="view1"){
+
+    if (viewSelected === "view2") {
         return (
-            <div style={{ width: '100%' }}>
+            <div style={{ marginTop: "auto", marginBottom: "auto", maxHeight: "100%" }}>
+                <Breadcrumbs aria-label="breadcrumb">
+                    <Link
+                        color="textSecondary"
+                        href="/"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setView("view1");
+                        }}
+                    >
+                        {'<< '}<Trans i18nKey={langKeys.previoustext} />
+                    </Link>
+                </Breadcrumbs>
                 <div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.twittertitle)}</div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>{t(langKeys.twittertitle2)}</div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
-                            onChange={(value) => {
-                                setNextbutton(value==="" || fields.service.consumersecret===""||fields.service.accesstoken===""||fields.service.accesssecret==="")
-                                let partialf = fields;
-                                partialf.service.consumerkey= value
-                                setFields(partialf)
-                            }}
-                            valueDefault={fields.service.consumerkey}
+                            onChange={v => setValue('channels.twitter.consumerkey', v)}
+                            valueDefault={getValues('channels.twitter.consumerkey')}
                             label={t(langKeys.consumerapikey)}
                             className="col-6"
+                            error={errors.channels?.twitter?.consumerkey?.message}
                         />
                     </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
-                            onChange={(value) => {
-                                setNextbutton(value==="" || fields.service.consumerkey===""||fields.service.accesstoken===""||fields.service.accesssecret==="")
-                                let partialf = fields;
-                                partialf.service.consumersecret= value
-                                setFields(partialf)
-                            }}
-                            valueDefault={fields.service.consumersecret}
+                            onChange={v => setValue('channels.twitter.consumersecret', v)}
+                            valueDefault={getValues('channels.twitter.consumersecret')}
                             label={t(langKeys.consumerapisecret)}
                             className="col-6"
+                            error={errors.channels?.twitter?.consumersecret?.message}
                         />
                     </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
-                            onChange={(value) => {
-                                setNextbutton(value==="" || fields.service.consumerkey===""||fields.service.consumersecret===""||fields.service.accesssecret==="")
-                                let partialf = fields;
-                                partialf.service.accesstoken= value
-                                setFields(partialf)
-                            }}
-                            valueDefault={fields.service.accesstoken}
+                            onChange={v => setValue('channels.twitter.accesstoken', v)}
+                            valueDefault={getValues('channels.twitter.accesstoken')}
                             label={t(langKeys.authenticationtoken)}
                             className="col-6"
+                            error={errors.channels?.twitter?.accesstoken?.message}
                         />
                     </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
-                            onChange={(value) => {
-                                setNextbutton(value==="" || fields.service.consumerkey===""||fields.service.consumersecret===""||fields.service.accesstoken==="")
-                                let partialf = fields;
-                                partialf.service.accesssecret= value
-                                setFields(partialf)
-                            }}
-                            valueDefault={fields.service.accesssecret}
+                            onChange={v => setValue('channels.twitter.accesssecret', v)}
+                            valueDefault={getValues('channels.twitter.accesssecret')}
                             label={t(langKeys.authenticationsecret)}
                             className="col-6"
+                            error={errors.channels?.twitter?.accesssecret?.message}
                         />
                     </div>
 
                     <div style={{ paddingLeft: "80%" }}>
                         <Button
-                            disabled={nextbutton}
-                            onClick={() => { setViewSelected("view2") }}
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                        >{t(langKeys.next)}
-                        </Button>
-
-                    </div>
-
-                </div>
-            </div>
-        )
-    }else if(viewSelected==="view2"){
-        return (
-            <div style={{ width: '100%' }}>
-                <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view1") }}>
-                        {"<< Previous"}
-                    </Link>
-                </Breadcrumbs>
-                <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.twittertitle)}</div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>{t(langKeys.twittertitle2)}</div>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldEdit
-                            onChange={(value) => {
-                                setNextbutton2(value==="")
-                                let partialf = fields;
-                                partialf.parameters.communicationchannelowner = "";
-                                partialf.service.devenvironment= value;
-                                setFields(partialf)
+                            onClick={async () => {
+                                const v1 = await trigger('channels.twitter.consumerkey');
+                                const v2 = await trigger('channels.twitter.consumersecret');
+                                const v3 = await trigger('channels.twitter.accesstoken');
+                                const v4 = await trigger('channels.twitter.accesssecret');
+                                if (v1 && v2 && v3 && v4) {
+                                    setView("view1");
+                                    setHasFinished(true);
+                                }
                             }}
-                            valueDefault={fields.service.devenvironment}
-                            label={t(langKeys.devenvironment)}
-                            className="col-6"
-                        />
-                    </div>
-
-                    <div style={{ paddingLeft: "80%" }}>
-                        <Button
-                            disabled={nextbutton2}
-                            onClick={() => { setViewSelected("viewfinishreg") }}
                             className={classes.button}
                             variant="contained"
                             color="primary"
-                        >{t(langKeys.next)}
-                        </Button>
-
-                    </div>
-
-                </div>
-            </div>
-        )
-    }else{
-        return (
-            <div style={{ width: '100%' }}>
-                <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view2") }}>
-                        {"<< Previous"}
-                    </Link>
-                </Breadcrumbs>
-                <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.commchannelfinishreg)}</div>
-
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldEdit
-                            onChange={(value) => setnameField(value)}
-                            label={t(langKeys.givechannelname)}
-                            className="col-6"
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <div className="col-6">
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                            {t(langKeys.givechannelcolor)}
-                            </Box>
-                            <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
-                                <TwitterIcon style={{fill: `${coloricon}`, width: "100px" }}/>
-                                <ColorInput
-                                    hex={fields.parameters.coloricon}
-                                    onChange={e => {
-                                        setFields(prev => ({
-                                            ...prev,
-                                            parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
-                                        }));
-                                        setcoloricon(e.hex)
-                                    }}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <div className="col-6" style={{ paddingBottom: '3px' }}>
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.enablechatflow)}</Box>
-                            <FormGroup>
-                                <FormControlLabel control={<IOSSwitch onChange={(e) => {setvalField(e.target.checked);setenable(e.target.checked)}}/>} label={enable?t(langKeys.enable):t(langKeys.disabled)} />
-                            </FormGroup>
-                        </div>
-                    </div>
-                    <div style={{ paddingLeft: "80%" }}>
-                        <Button
-                            onClick={() => { finishreg() }}
-                            className={classes.button}
-                            disabled={channelreg}
-                            variant="contained"
-                            color="primary"
-                        >{t(langKeys.finishreg)}
+                        >
+                            <Trans i18nKey={langKeys.next} />
                         </Button>
 
                     </div>
@@ -267,4 +212,77 @@ export const ChannelAddTwitter: FC<{setrequestchannels:(param:any)=>void,setlist
             </div>
         )
     }
+
+    return (
+        <div className={clsx(commonClasses.root, submitError && commonClasses.rootError)}>
+            {!hasFinished && <TwitterColor className={commonClasses.leadingIcon} />}
+            {!hasFinished && <IconButton
+                color="primary"
+                className={commonClasses.trailingIcon}
+                onClick={() => {
+                    deleteChannel('twitter');
+                    // setrequestchannels(prev => prev.filter(x => x.type !== "TWITTER"));
+                }}
+            >
+                <DeleteOutlineIcon />
+            </IconButton>}
+            {!hasFinished && <Typography>
+                <Trans i18nKey={langKeys.subscription_genericconnect} />
+            </Typography>}
+            {hasFinished && <TwitterColor
+                style={{ width: 100, height: 100, alignSelf: 'center' }} />
+            }
+            {hasFinished && (
+                <div style={{ alignSelf: 'center' }}>
+                    <Typography
+                        color="primary"
+                        style={{ fontSize: '1.5vw', fontWeight: 'bold', textAlign: 'center' }}>
+                        {t(langKeys.subscription_congratulations)}
+                    </Typography>
+                    <Typography
+                        color="primary"
+                        style={{ fontSize: '1.2vw', fontWeight: 500 }}>
+                        {t(langKeys.subscription_message1)} {t(langKeys.channel_twitter)} {t(langKeys.subscription_message2)}
+                    </Typography>
+                </div>
+            )}
+            <FieldEdit
+                onChange={(value) => { setValue('channels.twitter.description', value); setNextbutton2(!value); }}
+                valueDefault={getValues('channels.twitter.description')}
+                label={t(langKeys.givechannelname)}
+                variant="outlined"
+                size="small"
+                error={errors.channels?.twitter?.description?.message}
+                InputProps={{
+                    endAdornment: (
+                        <InputAdornment position="end">
+                            {hasFinished ? <LinkIcon color="primary" /> : <LinkOffIcon />}
+                        </InputAdornment>
+                    )
+                }}
+            />
+            <FieldEdit
+                onChange={(value) => {
+                    setValue('channels.twitter.devenvironment', value);
+                    setValue('channels.twitter.communicationchannelowner', "");
+                }}
+                valueDefault={getValues('channels.twitter.devenvironment')}
+                label={t(langKeys.devenvironment)}
+                variant="outlined"
+                size="small"
+                error={errors.channels?.twitter?.devenvironment?.message}
+            />
+            {!hasFinished && (
+                <Button
+                    onClick={() => setView("view2")}
+                    className={commonClasses.button}
+                    variant="contained"
+                    color="primary"
+                    disabled={nextbutton2}
+                >
+                    <Trans i18nKey={langKeys.next} />
+                </Button>
+            )}
+        </div>
+    );
 }

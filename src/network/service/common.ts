@@ -1,5 +1,5 @@
 import { apiUrls } from '../../common/constants';
-import { IRequestBody, IRequestBodyPaginated, ITransaction, IRequestBodyDynamic } from '@types';
+import { IRequestBody, IRequestBodyPaginated, ITransaction, IRequestBodyDynamic, Dictionary } from '@types';
 import { APIManager, ExternalRequestManager } from '../manager';
 import { removeAuthorizationToken } from "common/helpers";
 
@@ -25,6 +25,9 @@ export function exportData(requestBody: IRequestBody) {
 export function validateToken() {
     return APIManager.get(apiUrls.LOGIN_URL, {}, true);
 }
+export function reeschedulecall(requestBody: Dictionary ) {
+    return APIManager.post(apiUrls.REESCHEDULECALL, { data: requestBody }, true);
+}
 
 export function changeOrganization(newcorpid: number, neworgid: number, corpdesc: string, orgdesc: string) {
     return APIManager.post(apiUrls.CHANGE_ORGANIZATION, { data: { parameters: { newcorpid, neworgid, corpdesc, orgdesc } } }, true);
@@ -48,6 +51,10 @@ export function mainPaginated(requestBody: IRequestBodyPaginated) {
     return APIManager.post(apiUrls.MAIN_PAGINATED, { data: requestBody }, true);
 }
 
+export function mainGraphic(requestBody: IRequestBody) {
+    return APIManager.post(apiUrls.MAIN_GRAPHIC, { data: requestBody }, true);
+}
+
 export function mainDynamic(requestBody: IRequestBodyDynamic) {
     return APIManager.post(apiUrls.MAIN_DYNAMIC, { data: requestBody }, true);
 }
@@ -56,9 +63,8 @@ export function mainDynamicExport(requestBody: IRequestBodyDynamic) {
     return APIManager.post(apiUrls.MAIN_DYNAMIC_EXPORT, { data: requestBody }, true);
 }
 
-export function getTickets(page: number, pageSize: number) {
-    const data = { page, pageSize, sort: 'DESC', query: [] };
-    return APIManager.post(apiUrls.TICKET_URL, { data }, false);
+export function mainEventBooking(requestBody: IRequestBody) {
+    return APIManager.post(apiUrls.MAIN_EVENT_BOOKING_URL, { data: requestBody }, false);
 }
 
 export function request_send(request: any) {

@@ -5,10 +5,17 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { getInteractions } from 'store/inbox/actions'
-import { Dictionary } from '@types';
+import { Dictionary, IGroupInteraction } from '@types';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import ItemGroupInteraction from './Interaction';
+import Button from '@material-ui/core/Button';
+import { Trans } from 'react-i18next';
+import { DownloadIcon } from 'icons';
+import DomToImage from 'dom-to-image';
+import jsPDF from 'jspdf';
+import IOSSwitch from "components/fields/IOSSwitch";
+import Tooltip from '@material-ui/core/Tooltip';
 
 const useStyles = makeStyles((theme) => ({
     containerPanel: {
@@ -113,7 +120,8 @@ const useStyles = makeStyles((theme) => ({
         position: 'relative',
         maxWidth: 480,
         backgroundColor: '#FFF',
-        boxShadow: '0 1px 2px 0 rgb(16 35 47 / 15%)'
+        border: '1px solid #EBEAED',
+        // boxShadow: '0 1px 2px 0 rgb(16 35 47 / 15%)'
     },
     interactionTextAgent: {
         borderBottomLeftRadius: 12,
@@ -157,7 +165,7 @@ const useStyles = makeStyles((theme) => ({
         flex: '1',
         flexDirection: 'column',
         display: 'flex',
-        
+
     },
     collapseInfo: {
         position: 'absolute',
@@ -220,7 +228,7 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     interactionFromPost: {
-        display: 'flex', 
+        display: 'flex',
         gap: 8
     },
     buttonIcon: {
@@ -245,7 +253,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         gap: theme.spacing(1),
         alignItems: 'center',
-        padding: `${theme.spacing(2)}px ${theme.spacing(1)}px`,
+        padding: theme.spacing(1),
         borderBottom: '1px solid #EBEAED',
         cursor: 'pointer',
         '&:hover': {
@@ -276,16 +284,15 @@ const useStyles = makeStyles((theme) => ({
         boxShadow: '0px 3px 6px rgb(0 0 0 / 10%)',
         backgroundColor: '#FFF',
         width: 250,
-        // padding: theme.spacing(1)
     },
     headerQuickReply: {
-        fontSize: 13, 
+        fontSize: 13,
         fontWeight: 500,
         padding: theme.spacing(1.5),
         borderBottom: '1px solid #EBEAED'
     },
     itemQuickReply: {
-        fontSize: 13, 
+        fontSize: 13,
         paddingTop: theme.spacing(.7),
         paddingBottom: theme.spacing(.7),
         paddingLeft: theme.spacing(1.5),
@@ -297,17 +304,83 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-
 const DialogInteractions: React.FC<{ ticket: Dictionary | null, openModal: boolean, setOpenModal: (param: any) => void }> = ({ ticket, openModal, setOpenModal }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
+    const [showAllInteraction, setShowAllInteraction] = React.useState(false)
     const interactionExtraList = useSelector(state => state.inbox.interactionExtraList);
+    const [interactionsToShow, setinteractionsToShow] = React.useState<IGroupInteraction[]>([])
+    const el = React.useRef<null | HTMLDivElement>(null);
 
     useEffect(() => {
-        if (ticket)
+        if (ticket && openModal)
             dispatch(getInteractions(ticket?.conversationid, false, 0));
     }, [ticket])
+
+    const GenericPdfDownloader: React.FC<{ downloadFileName: string }> = ({ downloadFileName }) => {
+        const downloadPdfDocument = () => {
+            if (el.current) {
+                const gg = document.createElement('div');
+                gg.style.display = 'flex';
+                gg.style.flexDirection = 'column';
+                gg.style.gap = '8px';
+                gg.style.width = '190mm';
+                gg.id = "newexportcontainer"
+                document.body.appendChild(gg);
+
+                gg.innerHTML = el.current.innerHTML;
+                document.body.appendChild(gg);
+                const pdf = new jsPDF('p', 'mm');
+                if (pdf) {
+                    DomToImage.toPng(gg)
+                        .then(imgData => {
+                            var imgWidth = 200;
+                            var pageHeight = 297;
+                            var imgHeight = Math.ceil(gg.scrollHeight * 0.2645833333);
+                            var heightLeft = imgHeight;
+                            var doc = new jsPDF('p', 'mm');
+                            var topPadding = 10;
+                            var position = topPadding; // give some top padding to first page
+
+                            doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                            heightLeft -= pageHeight;
+
+                            while (heightLeft >= 0) {
+                                debugger // 4806109
+                                position = heightLeft - imgHeight + topPadding; // top padding for other pages
+                                doc.addPage();
+                                doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                                heightLeft -= pageHeight;
+                            }
+                            doc.save(`ticket${ticket?.ticketnum}.pdf`);
+                            document.getElementById('newexportcontainer')?.remove();
+                        });
+                }
+            }
+        }
+        return (
+            <Button
+                variant="contained"
+                color="primary"
+                onClick={downloadPdfDocument}
+                startIcon={<DownloadIcon />}
+                style={{ position: 'absolute', right: 16, top: 16 }}
+            ><Trans i18nKey={langKeys.download} />
+            </Button>
+        )
+    }
+
+    useEffect(() => {
+        if (showAllInteraction) {
+            setinteractionsToShow(interactionExtraList.data)
+        } else {
+            setinteractionsToShow(interactionExtraList.data.map(x => ({
+                ...x,
+                interactions: x.interactions.filter(y => !y.isHide)
+            })))
+        }
+    }, [showAllInteraction, interactionExtraList.loading])
 
     return (
         <DialogZyx
@@ -316,9 +389,19 @@ const DialogInteractions: React.FC<{ ticket: Dictionary | null, openModal: boole
             buttonText1={t(langKeys.cancel)}
             handleClickButton1={() => setOpenModal(false)}
         >
+            <GenericPdfDownloader
+                downloadFileName={`ticket-` + ticket?.ticketnum}
+            />
+            <div style={{ position: 'absolute', left: 16, bottom: 16 }}>
+                <Tooltip title={t(langKeys.show_all) || ""} arrow >
+                    <div>
+                        <IOSSwitch checked={showAllInteraction} onChange={(e) => setShowAllInteraction(e.target.checked)} name="checkedB" />
+                    </div>
+                </Tooltip>
+            </div>
             {interactionExtraList.loading ? <SkeletonInteraction /> :
-                <div className="scroll-style-go" style={{ display: 'flex', flexDirection: 'column', gap: 8, height: '60vh' }}>
-                    {interactionExtraList.data.map((groupInteraction) => (
+                <div ref={el} className="scroll-style-go" style={{ display: 'flex', flexDirection: 'column', gap: 8, height: '60vh' }}>
+                    {interactionsToShow.map((groupInteraction) => (
                         <ItemGroupInteraction
                             imageClient={ticket?.imageurldef}
                             clientName={ticket?.displayname}

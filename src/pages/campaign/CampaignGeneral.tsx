@@ -1,8 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import IconButton from '@material-ui/core/IconButton';
-import Button from '@material-ui/core/Button';
-import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, DialogZyx, FieldEditArray } from 'components';
+import { FieldView, FieldEdit, FieldSelect, DialogZyx, FieldEditArray } from 'components';
 import { dictToArrayKV, filterIf, filterPipe } from 'common/helpers';
 import { Dictionary, ICampaign, MultiData, SelectedColumns } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
@@ -15,24 +14,21 @@ import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { resetMainAux } from 'store/main/actions';
 import { useDispatch } from 'react-redux';
+import { FrameProps } from './CampaignDetail';
 
 interface DetailProps {
     row: Dictionary | null,
     edit: boolean,
     auxdata: Dictionary;
     detaildata: ICampaign;
-    setDetailData: (data: ICampaign) => void;
-    setViewSelected: (view: string) => void;
-    step: string;
-    setStep: (step: string) => void;
+    setDetaildata: (data: ICampaign) => void;
     multiData: MultiData[];
-    fetchData: () => void
+    fetchData: () => void;
+    frameProps: FrameProps;
+    setFrameProps: (value: FrameProps) => void;
+    setPageSelected: (page: number) => void;
+    setSave: (value: any) => void;
 }
-
-const arrayBread = [
-    { id: "view-1", name: "Campaign" },
-    { id: "view-2", name: "Campaign detail" }
-];
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -65,6 +61,7 @@ const dataCampaignType = [
     { key: 'TEXTO', value: 'text'},
     { key: 'HSM', value: 'hsm', rif: 'startsWith', rifvalue: 'WHA' },
     { key: 'SMS', value: 'sms', rif: 'startsWith', rifvalue: 'SMS'},
+    { key: 'CALL', value: 'call', rif: 'starsWith', rifvalue: 'VOX' }
 ];
 
 type FormFields = {
@@ -90,6 +87,7 @@ type FormFields = {
     messagetemplatetype: string,
 	messagetemplateheader: Dictionary,
 	messagetemplatebuttons: Dictionary[],
+    // messagetemplatefooter: string,
 	executiontype: string,
 	batchjson: Dictionary[],
 	fields: SelectedColumns,
@@ -97,27 +95,27 @@ type FormFields = {
     sourcechanged: boolean
 }
 
-export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetailData, setViewSelected, step, setStep, multiData, fetchData }) => {
+export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetaildata, multiData, fetchData, frameProps, setFrameProps, setPageSelected, setSave }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
-    const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataChannel = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const dataGroup = multiData[2] && multiData[2].success ? multiData[2].data : [];
-    const dataMessageTemplate = multiData[3] && multiData[3].success ? multiData[3].data : [];
+    const dataStatus = [...multiData[0] && multiData[0].success ? multiData[0].data : []];
+    const dataChannel = [...multiData[1] && multiData[1].success ? multiData[1].data : []];
+    const dataGroup = [...multiData[2] && multiData[2].success ? multiData[2].data : []];
+    const dataMessageTemplate = [...multiData[3] && multiData[3].success ? multiData[3].data : []];
     
     const [openModal, setOpenModal] = useState(false);
     
-    const { register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm<FormFields>({
+    const { register, setValue, getValues, trigger, formState: { errors } } = useForm<FormFields>({
         defaultValues: {
             isnew: row ? false : true,
             id: row ? row.id : 0,
-            communicationchannelid: 0,
+            communicationchannelid: detaildata?.communicationchannelid || (auxdata?.length > 0 ? auxdata[0].communicationchannelid : 0),
             communicationchanneltype: '',
-            usergroup: '',
-            type: 'TEXTO',
-            status: 'ACTIVO',
+            usergroup: detaildata?.usergroup || (auxdata?.length > 0 ? auxdata[0].usergroup : ''),
+            type: detaildata?.type || (auxdata?.length > 0 ? auxdata[0].type : 'TEXTO'),
+            status: detaildata?.status || (auxdata?.length > 0 ? auxdata[0].status : 'ACTIVO'),
             title: '',
             description: '',
             subject: '',
@@ -126,14 +124,15 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             enddate: '',
             repeatable: false,
             frecuency: 0,
-            source: 'EXTERNAL',
-            messagetemplateid: 0,
+            source: detaildata?.source || (auxdata?.length > 0 ? auxdata[0].source : 'EXTERNAL'),
+            messagetemplateid: detaildata?.messagetemplateid || (auxdata?.length > 0 ? auxdata[0].messagetemplateid : 0),
             messagetemplatename: '',
             messagetemplatenamespace: '',
             messagetemplatetype: 'STANDARD',
             messagetemplateheader: {},
             messagetemplatebuttons: [],
-            executiontype: 'MANUAL',
+            // messagetemplatefooter: '',
+            executiontype: detaildata?.executiontype || (auxdata?.length > 0 ? auxdata[0].executiontype : 'MANUAL'),
             batchjson: [],
             fields: new SelectedColumns(),
             operation: row ? "UPDATE" : "INSERT",
@@ -181,6 +180,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const setStepData = (data: Dictionary) => {
         setValue('id', data.id);
         setValue('communicationchannelid', data.communicationchannelid);
+        setValue('communicationchanneltype', dataChannel.filter(d => d.communicationchannelid === data?.communicationchannelid)[0]?.type);
         setValue('usergroup', data.usergroup);
         setValue('type', data.type);
         setValue('status', data.status);
@@ -199,19 +199,31 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('messagetemplatetype', data.messagetemplatetype);
         setValue('messagetemplateheader', data.messagetemplateheader || {});
         setValue('messagetemplatebuttons', data.messagetemplatebuttons || []);
+        // setValue('messagetemplatefooter', data.messagetemplatefooter || '');
         setValue('executiontype', data.executiontype);
         setValue('batchjson', data.batchjson || []);
         setValue('fields', {...new SelectedColumns(), ...data.fields});
     }
 
-    const onSubmit = handleSubmit((data) => {
-        data.messagetemplateheader = data.messagetemplateheader || {};
-        data.messagetemplatebuttons = data.messagetemplatebuttons || [];
-        data.batchjson = data.batchjson || [];
-        data.fields = {...new SelectedColumns(), ...data.fields};
-        setDetailData({...detaildata, ...data});
-        setStep("step-2");
-    });
+    useEffect(() => {
+        if (frameProps.checkPage) {
+            trigger().then((valid: any) => {
+                let data = getValues();
+                data.messagetemplateheader = data.messagetemplateheader || {};
+                data.messagetemplatebuttons = data.messagetemplatebuttons || [];
+                data.batchjson = data.batchjson || [];
+                data.fields = {...new SelectedColumns(), ...data.fields};
+                setDetaildata({...detaildata, ...data});
+                setFrameProps({...frameProps, executeSave: false, checkPage: false, valid: {...frameProps.valid, 0: valid}});
+                if (valid) {
+                    setPageSelected(frameProps.page);
+                }
+                if (valid && frameProps.executeSave) {
+                    setSave('VALIDATION');
+                }
+            });
+        }
+    }, [frameProps.checkPage])
 
     const validateDate = (value: string): any => {
         return new Date(value) >= new Date(getValues('startdate'))
@@ -224,8 +236,20 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
     const onChangeChannel = async (data: Dictionary) => {
         setValue('communicationchannelid', data?.communicationchannelid || 0);
-        setValue('communicationchanneltype', dataChannel.filter(d => d.communicationchannelid === data?.communicationchannelid)[0]?.type);
-        setValue('type', 'TEXTO');
+        const channeltype = dataChannel.filter(d => d.communicationchannelid === data?.communicationchannelid)[0]?.type;
+        setValue('communicationchanneltype', channeltype);
+        if (channeltype?.startsWith('WHA')) {
+            onChangeType({key: 'HSM'});
+        }
+        else if (channeltype?.startsWith('SMS')) {
+            onChangeType({key: 'SMS'});
+        }
+        else if (channeltype?.startsWith('VOX')) {
+            onChangeType({key: 'CALL'});
+        }
+        else {
+            onChangeType({key: 'TEXTO'});
+        }
         await trigger(['communicationchannelid', 'communicationchanneltype', 'type']);
     }
 
@@ -244,14 +268,18 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const onChangeSource = (data: Dictionary) => {
         setValue('source', data?.key || '');
         setValue('sourcechanged', true);
+        setFrameProps({...frameProps, valid: {...frameProps.valid, 1: false}});
     }
 
     const filterDataCampaignType = () => {
         if (getValues('communicationchanneltype')?.startsWith('WHA')) {
-            return filterIf(dataCampaignType, 'startsWith', 'WHA');
+            return dataCampaignType.filter(t => t.key === 'HSM');
         }
         else if (getValues('communicationchanneltype')?.startsWith('SMS')) {
-            return filterIf(dataCampaignType, 'startsWith', 'SMS');
+            return dataCampaignType.filter(t => t.key === 'SMS');
+        }
+        else if (getValues('communicationchanneltype')?.startsWith('VOX')) {
+            return dataCampaignType.filter(t => t.key === 'CALL');
         }
         else {
             return filterIf(dataCampaignType);
@@ -267,6 +295,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('messagetemplatetype', 'STANDARD');
         setValue('messagetemplateheader', {});
         setValue('messagetemplatebuttons', []);
+        // setValue('messagetemplatefooter', '');
         await trigger('type');
     }
     
@@ -281,7 +310,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('messagetemplatename', messageTemplate?.name);
         setValue('messagetemplatenamespace', messageTemplate?.namespace);
         setValue('messagetemplatetype', messageTemplate?.templatetype);
-        if (data.type === 'HSM') {
+        if (data?.type === 'HSM') {
             if (messageTemplate.headerenabled)
                 setValue('messagetemplateheader', { type: messageTemplate?.headertype, value: messageTemplate?.header });
             else
@@ -290,43 +319,16 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 setValue('messagetemplatebuttons', messageTemplate?.buttons || []);
             else
                 setValue('messagetemplatebuttons', []);
+            // if (messageTemplate.footerenabled)
+            //     setValue('messagetemplatefooter', messageTemplate?.footer || '');
+            // else
+            //     setValue('messagetemplatefooter', '');
         }
         await trigger(['messagetemplateid', 'messagetemplatename', 'messagetemplatenamespace', 'messagetemplatetype']);
     }
 
     return (
         <React.Fragment>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <div>
-                    <TemplateBreadcrumbs
-                        breadcrumbs={arrayBread}
-                        handleClick={setViewSelected}
-                    />
-                    <TitleDetail
-                        title={row ? `${row.title}` : t(langKeys.newcampaign)}
-                    />
-                </div>
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                    <Button
-                        variant="contained"
-                        type="button"
-                        color="primary"
-                        style={{ backgroundColor: "#FB5F5F" }}
-                        onClick={() => setViewSelected("view-1")}
-                    >{t(langKeys.cancel)}</Button>
-                    {edit &&
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            type="button"
-                            style={{ backgroundColor: "#55BD84" }}
-                            onClick={() => onSubmit()}
-                        >{t(langKeys.next)}
-                        </Button>
-                    }
-                </div>
-            </div>
             <div className={classes.containerDetail}>
                 <div className="row-zyx">
                     {edit ?
@@ -619,7 +621,7 @@ const ModalCampaignSchedule: React.FC<ModalProps> = ({ openModal, setOpenModal, 
     }
 
     const onSubmit = handleSubmit((data) => {
-        parentSetValue('batchjson', data.batchjson);
+        parentSetValue('batchjson', data.batchjson.map((d: any, i: number) => ({...d, batchindex: i + 1})));
         setOpenModal(false);
     });
 

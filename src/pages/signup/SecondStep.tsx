@@ -1,17 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect, useState } from "react";
-import { makeStyles, Button, TextField} from '@material-ui/core';
+import React, { FC, useContext, useEffect, useState } from "react";
+import { makeStyles, Button, TextField, Breadcrumbs } from '@material-ui/core';
+import Link from '@material-ui/core/Link';
 import { langKeys } from "lang/keys";
-import { useTranslation } from "react-i18next";
-import { Dictionary } from "@types"
+import { Trans, useTranslation } from "react-i18next";
+import { IDomain } from "@types"
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { resetMain, getCollectionPublic } from 'store/main/actions';
 import MuiPhoneNumber from 'material-ui-phone-number';
 import { styled } from '@material-ui/core/styles';
-import { FieldMultiSelect } from "components";
+import { FieldMultiSelect, FieldSelect } from "components";
 import { getValuesFromDomain } from "common/helpers/requestBodies";
-
+import { getCountryList } from "store/signup/actions";
+import { MainData, SubscriptionContext } from "./context";
+import { Controller, useFormContext } from "react-hook-form";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -37,99 +40,200 @@ const CssPhonemui = styled(MuiPhoneNumber)({
     },
 });
 
-
-export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, setStep: (param: any) => void }> = ({ setMainData, mainData, setStep }) => {
-    
+const URL = "https://ipapi.co/json/";
+const SecondStep: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const dispatch = useDispatch();
-    const [errors, setErrors] = useState<Dictionary>({
-        firstandlastname: "",
-        companybusinessname: "",
-    });
-    const [disablebutton, setdisablebutton] = useState(true);
-    const mainResult = useSelector(state => state.main);
-    useEffect(() => {
-        setdisablebutton(!(mainData.firstandlastname !== "" && mainData.companybusinessname !== ""))
-    }, [mainData])
-    function maindataChange(field: string, value: any) {
-        setMainData((p: any) => ({ ...p, [field]: value }))
-        setErrors(p => ({ ...p, [field]: !value ? t(langKeys.field_required) : "" }))
-    }
+
+    const { getValues, setValue, control, trigger } = useFormContext<MainData>();
+    const { setStep } = useContext(SubscriptionContext);
+
+    const mainResult = useSelector(state => state.main.mainData);
+    const ressignup = useSelector(state => state.signup.countryList);
+
+    const [phoneCountry, setPhoneCountry] = useState('');
+
     const fetchData = () => dispatch(getCollectionPublic(getValuesFromDomain("REASONSSIGNUP")));
     useEffect(() => {
+        dispatch(getCountryList())
+        try {
+            fetch(URL, { method: "get" })
+                .then((response) => response.json())
+                .then((data) => {
+                    // PERU, PE, PEN
+                    const countryCode = data.country_code.toUpperCase();
+
+                    setPhoneCountry(countryCode);
+                    setValue('country', countryCode);
+                    setValue('doctype', countryCode === "PE" ? 1 : 0);
+                    setValue('countryname', data.country_name.toUpperCase());
+                    setValue('currency', data.currency);
+                })
+        }
+        catch (error) {
+            console.error("error");
+        }
         fetchData();
         return () => {
             dispatch(resetMain());
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [dispatch]);
+
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
+
     return (
-        <div >
-            <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad" }}>{t(langKeys.signupstep1title2)}</div>
+        <div style={{ marginTop: "auto", marginBottom: "auto", maxHeight: "100%" }}>
+            <Breadcrumbs aria-label="breadcrumb">
+                <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
+                    {'<< '}<Trans i18nKey={langKeys.previoustext} />
+                </Link>
+            </Breadcrumbs>
+            <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", marginTop: 15 }}>{t(langKeys.signupstep1title2)}</div>
             <div >
-                <TextField
-                    variant="outlined"
-                    margin="normal"
-                    fullWidth
-                    size="small"
-                    defaultValue={mainData.firstandlastname}
-                    label={t(langKeys.firstandlastname)}
+                <Controller
                     name="firstandlastname"
-                    error={!!errors.firstandlastname}
-                    helperText={errors.firstandlastname}
-                    onChange={(e) => maindataChange('firstandlastname', e.target.value)}
+                    control={control}
+                    rules={{
+                        validate: (value) => {
+                            if (value.length === 0) {
+                                return t(langKeys.field_required) as string;
+                            }
+                        }
+                    }}
+                    render={({ field, formState: { errors } }) => (
+                        <TextField
+                            {...field}
+                            variant="outlined"
+                            margin="normal"
+                            fullWidth
+                            size="small"
+                            label={t(langKeys.firstandlastname)}
+                            error={!!errors.firstandlastname}
+                            helperText={errors.firstandlastname?.message}
+                        />
+                    )}
                 />
-                <TextField
-                    variant="outlined"
-                    margin="normal"
-                    fullWidth
-                    size="small"
-                    label={t(langKeys.companybusinessname)}
+                <Controller
                     name="companybusinessname"
-                    defaultValue={mainData.companybusinessname}
-                    error={!!errors.companybusinessname}
-                    helperText={errors.companybusinessname}
-                    onChange={(e) => maindataChange('companybusinessname', e.target.value)}
+                    control={control}
+                    rules={{
+                        validate: (value) => {
+                            if (value.length === 0) {
+                                return t(langKeys.field_required) as string;
+                            }
+                        }
+                    }}
+                    render={({ field, formState: { errors } }) => (
+                        <TextField
+                            {...field}
+                            variant="outlined"
+                            margin="normal"
+                            fullWidth
+                            size="small"
+                            label={t(langKeys.companybusinessname)}
+                            error={!!errors.companybusinessname}
+                            helperText={errors.companybusinessname?.message}
+                        />
+                    )}
                 />
-                <CssPhonemui
-                    variant="outlined"
-                    margin="normal"
-                    size="small"
-                    disableAreaCodes={true}
-                    value={mainData.mobilephone}
-                    label={t(langKeys.mobilephoneoptional)}
+                <Controller
+                    name="country"
+                    control={control}
+                    rules={{
+                        validate: (value) => {
+                            if (value.length === 0) {
+                                return t(langKeys.field_required) as string;
+                            }
+                        }
+                    }}
+                    render={({ field: { onChange }, formState: { errors } }) => (
+                        <FieldSelect
+                            onChange={(data) => {
+                                onChange(data?.code || '');
+                                setValue('doctype', data?.code === "PE" ? 1 : 0);
+                                setPhoneCountry(data?.code || '');
+                            }}
+                            variant="outlined"
+                            style={{ marginTop: 8 }}
+                            label={t(langKeys.country)}
+                            valueDefault={getValues('country')}
+                            error={errors.country?.message}
+                            data={ressignup.data}
+                            optionDesc="description"
+                            optionValue="code"
+                        />
+                    )}
+                />
+                <Controller
                     name="mobilephone"
-                    fullWidth
-                    defaultCountry={'pe'}
-                    onChange={(e:any) => setMainData((p: any) => ({ ...p, mobilephone: e }))}
+                    control={control}
+                    rules={{
+                        validate: (value) => {
+                            if (value.length === 0) {
+                                return t(langKeys.field_required) as string;
+                            }else if(value.length<10){
+                                return t(langKeys.validationphone) as string;
+                            }
+                        }
+                    }}
+                    render={({ field, formState: { errors } }) => (
+                        <CssPhonemui
+                            {...field}
+                            variant="outlined"
+                            margin="normal"
+                            fullWidth
+                            size="small"
+                            defaultCountry={phoneCountry.toLowerCase()}
+                            label={t(langKeys.mobilephoneoptional)}
+                            error={!!errors.mobilephone}
+                            helperText={errors.mobilephone?.message}
+                        />
+                    )}
                 />
-                <div style={{ paddingTop: 20, fontWeight: "bold", color: "#381052" }}>{t(langKeys.laraigouse)}</div>
-                
-                <FieldMultiSelect
-                    uset={true}
-                    onChange={(value) => setMainData((p:any) => ({ ...p, join_reason: value.map((o: any) => o.domainvalue).join() }))}
-                    variant="outlined"
-                    className="col-6"
-                    style={{margin:"15px 0"}}
-                    valueDefault={mainData.join_reason}
-                    prefixTranslation="reason_"
-                    data={mainResult.mainData.data}
-                    optionDesc="domaindesc"
-                    optionValue="domainvalue"
+                <div style={{ paddingTop: 20, fontWeight: "bold", color: "#381052" }}>
+                    <Trans i18nKey={langKeys.laraigouse} />
+                    <span style={{ fontSize: 14, fontWeight: 500 }}>
+                        {` (${t(langKeys.optional).toLowerCase()})`}
+                    </span>
+                </div>
+                <Controller
+                    name="join_reason"
+                    control={control}
+                    render={({ field: { onChange }, formState: { errors } }) => (
+                        <FieldMultiSelect
+                            onChange={(data: IDomain[]) => {
+                                onChange(data?.map(x => x.domainvalue)?.join() || '');
+                            }}
+                            variant="outlined"
+                            error={errors.join_reason?.message}
+                            data={mainResult.data as IDomain[]}
+                            prefixTranslation="reason_"
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
+                    )}
                 />
                 <Button
-                    onClick={() => { setStep(3) }}
+                    onClick={async () => {
+                        const valid = await trigger();
+                        if (valid) {
+                            setStep(2.5);
+                        }
+                    }}
                     className={classes.button}
                     fullWidth
                     variant="contained"
                     color="primary"
-                    disabled={disablebutton}
-                >{t(langKeys.next)}
+                    style={{ marginTop: '0.43em' }}
+                    disabled={mainResult.loading || ressignup.loading}
+                >
+                    <Trans i18nKey={langKeys.next} />
                 </Button>
             </div>
 
         </div>
     )
 }
+
 export default SecondStep

@@ -8,6 +8,11 @@ import { useSelector } from 'hooks';
 import { CssBaseline } from '@material-ui/core';
 import { routes } from 'routes/routes';
 import Popus from 'components/layout/Popus';
+// import ManageCall from 'components/inbox/ManageCall';
+import MakeCall from 'components/inbox/MakeCall';
+import CloseTicketVoxi from 'components/inbox/CloseTicketVoxi';
+import { useTranslation } from 'react-i18next';
+import { langKeys } from 'lang/keys';
 
 const drawerWidth = 240;
 const drawerWidthCompressed = 73;
@@ -16,6 +21,7 @@ const headerHeight = 54;
 const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
+        position: "relative",
     },
     appBar: {
         zIndex: theme.zIndex.drawer + 1,
@@ -46,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
     menuButton: {
         marginRight: 36,
     },
-    
+
     drawer: {
         display: 'flex',
         width: drawerWidth,
@@ -200,7 +206,7 @@ const useStyles = makeStyles((theme) => ({
         maxWidth: `calc(100vw - ${drawerWidthCompressed}px)`,
     },
     mainContent: {
-        
+
     },
     mainContentBox: {
         flex: 1,
@@ -222,6 +228,8 @@ const Layout: FC<LayoutProps> = ({ children, mainClasses }) => {
     const classes = useStyles(theme);
     const dataRes = useSelector(state => state.login);
     const openDrawer = useSelector(state => state.popus.openDrawer);
+    const wsConnected = useSelector(state => state.inbox.wsConnected);
+    const { t } = useTranslation();
 
     return (
         <>
@@ -239,6 +247,11 @@ const Layout: FC<LayoutProps> = ({ children, mainClasses }) => {
                             theme={theme}
                             headerHeight={headerHeight}
                         />
+                        {!wsConnected && 
+                            <div style={{ position: "absolute", left: "calc(50% - 150px)", opacity: .7, top: 0, padding: 10, backgroundColor: '#b41a1a', color: 'white', zIndex: 9999 }}>
+                                {t(langKeys.notred)}
+                            </div>
+                        }
                         <main className={classes.content}>
                             <div className={classes.toolbar} />
                             <div className={clsx(classes.mainContent,
@@ -252,6 +265,9 @@ const Layout: FC<LayoutProps> = ({ children, mainClasses }) => {
                     </>
                 }
             </div>
+            {/* <ManageCall /> */}
+            <MakeCall />
+            <CloseTicketVoxi />
             <Popus />
         </>
     );

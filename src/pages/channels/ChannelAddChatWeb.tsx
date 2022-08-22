@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { AppBar, Box, Button, makeStyles, Link, Tab, Tabs, Typography, TextField, Grid, Select, IconButton, FormControl, MenuItem, Divider, Breadcrumbs, FormHelperText } from '@material-ui/core';
-import { ColorInput, FieldEdit, IOSSwitch, TemplateSwitch } from 'components';
+import { ColorInput, FieldEdit, IOSSwitch } from 'components';
 import { Trans, useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { langKeys } from 'lang/keys';
@@ -24,7 +24,7 @@ interface TabPanelProps {
 
 interface FieldTemplate {
     text: React.ReactNode;
-    node: (onClose: (key: string) => void, data: IChatWebAddFormField) => React.ReactNode;
+    node: (onClose: (key: string) => void, data: IChatWebAddFormField, form: UseFormReturn<IChatWebAdd>, index: number) => React.ReactNode;
     data: IChatWebAddFormField;
 }
 
@@ -494,16 +494,18 @@ const useTemplateStyles = makeStyles(theme => ({
 
 interface NameTemplateProps {
     onClose: () => void;
+    form: UseFormReturn<IChatWebAdd>;
     title: React.ReactNode;
     data: IChatWebAddFormField;
+    index: number;
 }
 
-const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title }) => {
+const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index }) => {
     const classes = useTemplateStyles();
     const { t } = useTranslation();
     const [required, setRequired] = useState(data.required);
 
-    const handleRequired = (checked: boolean) =>{
+    const handleRequired = (checked: boolean) => {
         setRequired(checked);
         data.required = checked;
     }
@@ -533,7 +535,7 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title }) => {
                                                 </label>
                                             </Grid>
                                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                                <IOSSwitch checked={required} onChange={(_, v) => handleRequired(v)} />
+                                                <IOSSwitch checked={required} onChange={(_, v) => { handleRequired(v); form.setValue(`form.${index}.required`, v) }} />
                                             </Grid>
                                         </Grid>
                                     </Box>
@@ -548,11 +550,14 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title }) => {
                                             </Grid>
                                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                                 <TextField
-                                                    placeholder={t(langKeys.name)}
+                                                    placeholder={t(langKeys.label)}
                                                     variant="outlined"
                                                     size="small"
                                                     fullWidth
-                                                    onChange={e => data.label = e.target.value}
+                                                    onChange={e => {
+                                                        form.setValue(`form.${index}.label`, e.target.value)
+                                                        data.label = e.target.value
+                                                    }}
                                                     defaultValue={data.label}
                                                 />
                                             </Grid>
@@ -571,11 +576,14 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title }) => {
                                             </Grid>
                                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                                 <TextField
-                                                    placeholder={t(langKeys.enterYourName)}
+                                                    placeholder="Placeholder"
                                                     variant="outlined"
                                                     size="small"
                                                     fullWidth
-                                                    onChange={e => data.placeholder = e.target.value}
+                                                    onChange={e => {
+                                                        form.setValue(`form.${index}.placeholder`, e.target.value)
+                                                        data.placeholder = e.target.value
+                                                    }}
                                                     defaultValue={data.placeholder}
                                                 />
                                             </Grid>
@@ -592,11 +600,14 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title }) => {
                                             </Grid>
                                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                                 <TextField
-                                                    placeholder={t(langKeys.pleaseEnterYourName)}
+                                                    placeholder={t(langKeys.errorText)}
                                                     variant="outlined"
                                                     size="small"
                                                     fullWidth
-                                                    onChange={e => data.validationtext = e.target.value}
+                                                    onChange={e => {
+                                                        form.setValue(`form.${index}.validationtext`, e.target.value)
+                                                        data.validationtext = e.target.value
+                                                    }}
                                                     defaultValue={data.validationtext}
                                                 />
                                             </Grid>
@@ -618,11 +629,14 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title }) => {
                             </Grid>
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={10}>
                                 <TextField
-                                    placeholder="regex"
+                                    placeholder={t(langKeys.inputValidation)}
                                     variant="outlined"
                                     size="small"
                                     fullWidth
-                                    onChange={e => data.inputvalidation = e.target.value}
+                                    onChange={e => {
+                                        form.setValue(`form.${index}.inputvalidation`, e.target.value)
+                                        data.inputvalidation = e.target.value
+                                    }}
                                     defaultValue={data.inputvalidation}
                                 />
                             </Grid>
@@ -639,11 +653,14 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title }) => {
                             </Grid>
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={10}>
                                 <TextField
-                                    placeholder="regex"
+                                    placeholder={t(langKeys.validationOnKeychange)}
                                     variant="outlined"
                                     size="small"
                                     fullWidth
-                                    onChange={e => data.keyvalidation = e.target.value}
+                                    onChange={e => {
+                                        form.setValue(`form.${index}.keyvalidation`, e.target.value)
+                                        data.keyvalidation = e.target.value
+                                    }}
                                     defaultValue={data.keyvalidation}
                                 />
                             </Grid>
@@ -669,13 +686,16 @@ const PHONE_FIELD = "PHONE_FIELD";
 const EMAIL_FIELD = "EMAIL_FIELD";
 const DOCUMENT_FIELD = "DOCUMENT_FIELD";
 const SUPPLYNUMBER_FIELD = "SUPPLYNUMBER_FIELD";
+const CONTACT = "CONTACT_FIELD";
 
 const templates: { [x: string]: FieldTemplate } = {
     [FIRSTNAME_FIELD]: {
         text: <Trans i18nKey={langKeys.name} />,
-        node: (onClose, data) => {
+        node: (onClose, data, form, index) => {
             return (
                 <NameTemplate
+                    form={form}
+                    index={index}
                     data={data}
                     onClose={() => onClose(FIRSTNAME_FIELD)}
                     key={FIRSTNAME_FIELD}
@@ -696,9 +716,11 @@ const templates: { [x: string]: FieldTemplate } = {
     },
     [LASTNAME_FIELD]: {
         text: <Trans i18nKey={langKeys.lastname} />,
-        node: (onClose, data) => {
+        node: (onClose, data, form, index) => {
             return (
                 <NameTemplate
+                    form={form}
+                    index={index}
                     data={data}
                     onClose={() => onClose(LASTNAME_FIELD)}
                     key={LASTNAME_FIELD}
@@ -719,9 +741,11 @@ const templates: { [x: string]: FieldTemplate } = {
     },
     [PHONE_FIELD]: {
         text: <Trans i18nKey={langKeys.phone} />,
-        node: (onClose, data) => {
+        node: (onClose, data, form, index) => {
             return (
                 <NameTemplate
+                    form={form}
+                    index={index}
                     data={data}
                     onClose={() => onClose(PHONE_FIELD)}
                     key={PHONE_FIELD}
@@ -742,9 +766,11 @@ const templates: { [x: string]: FieldTemplate } = {
     },
     [EMAIL_FIELD]: {
         text: <Trans i18nKey={langKeys.email} />,
-        node: (onClose, data) => {
+        node: (onClose, data, form, index) => {
             return (
                 <NameTemplate
+                    form={form}
+                    index={index}
                     data={data}
                     onClose={() => onClose(EMAIL_FIELD)}
                     key={EMAIL_FIELD}
@@ -765,9 +791,11 @@ const templates: { [x: string]: FieldTemplate } = {
     },
     [DOCUMENT_FIELD]: {
         text: <Trans i18nKey={langKeys.document} />,
-        node: (onClose, data) => {
+        node: (onClose, data, form, index) => {
             return (
                 <NameTemplate
+                    form={form}
+                    index={index}
                     data={data}
                     onClose={() => onClose(DOCUMENT_FIELD)}
                     key={DOCUMENT_FIELD}
@@ -787,14 +815,16 @@ const templates: { [x: string]: FieldTemplate } = {
         },
     },
     [SUPPLYNUMBER_FIELD]: {
-        text: "Supply Number",
-        node: (onClose, data) => {
+        text: <Trans i18nKey={langKeys.supplynumber} />,
+        node: (onClose, data, form, index) => {
             return (
                 <NameTemplate
+                    form={form}
+                    index={index}
                     data={data}
                     onClose={() => onClose(SUPPLYNUMBER_FIELD)}
                     key={SUPPLYNUMBER_FIELD}
-                    title={"Supply Number"}
+                    title={<Trans i18nKey={langKeys.supplynumber} />}
                 />
             );
         },
@@ -809,11 +839,35 @@ const templates: { [x: string]: FieldTemplate } = {
             keyvalidation: "",
         },
     },
+    [CONTACT]: {
+        text: <Trans i18nKey={langKeys.contact} />,
+        node: (onClose, data, form, index) => {
+            return (
+                <NameTemplate
+                    form={form}
+                    index={index}
+                    data={data}
+                    onClose={() => onClose(CONTACT)}
+                    key={CONTACT}
+                    title={<Trans i18nKey={langKeys.contact} />}
+                />
+            );
+        },
+        data: {
+            field: "CONTACT",
+            type: "text",
+            required: true,
+            label: "",
+            placeholder: "",
+            validationtext: "",
+            inputvalidation: "",
+            keyvalidation: "",
+        },
+    },
 };
 
 const TabPanelForm: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
     const classes = useTabFormStyles();
-
     const defFields = useRef<FieldTemplate[]>((form.getValues('form') || []).map(x => {
         return {
             ...templates[`${x.field}_FIELD`],
@@ -821,7 +875,7 @@ const TabPanelForm: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
         } as FieldTemplate;
     }));
 
-    const [enable, setEnable] = useState(true);
+    const [enable, setEnable] = useState(false);
     const [fieldTemplate, setFieldTemplate] = useState<string>("");
     const [fields, setFields] = useState<FieldTemplate[]>(defFields.current);
 
@@ -830,7 +884,7 @@ const TabPanelForm: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
     }, [fields, form]);
 
     const handleCloseTemplate = (key: string) => {
-        const newFields = fields.filter(e => e !== templates[key]);
+        const newFields = fields.filter(e => e.data.field !== templates[key].data.field)
         setFields(newFields);
     };
 
@@ -900,7 +954,7 @@ const TabPanelForm: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                     </Grid>
                 </Grid>
             </Grid>
-            {fields.map(e => e.node(handleCloseTemplate, e.data))}
+            {fields.map((e, i) => e.node(handleCloseTemplate, e.data, form, i))}
         </div>
     );
 }
@@ -985,7 +1039,7 @@ const TabPanelBubble: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                 <Box m={1} style={{ display: enable ? 'block' : 'none' }}>
                     <Grid container direction="row">
                         <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                            <label className={classes.text}>Texto</label>
+                            <label className={classes.text}>{t(langKeys.text)}</label>
                         </Grid>
                         <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
                             <TextField
@@ -1470,7 +1524,6 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
     }
 
     useEffect(() => {
-        console.log("ChannelAddChatWeb", channel, service);
         if (edit && !channel) {
             history.push(paths.CHANNELS);
         } else if (edit && channel && channel.servicecredentials.length === 0) {
@@ -1481,6 +1534,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
             dispatch(resetInsertChannel());
             dispatch(resetEditChannel());
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [history, dispatch]);
 
     useEffect(() => {
@@ -1489,16 +1543,16 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
             dispatch(showSnackbar({
                 message: insertChannel.message!,
                 show: true,
-                success: false,
+                severity: "error"
             }));
         } else if (insertChannel.value) {
             dispatch(showSnackbar({
-                message: "El canal se inserto con éxito",
+                message: t(langKeys.channelcreatesuccess),
                 show: true,
-                success: true,
+                severity: "success"
             }));
         }
-    }, [dispatch, insertChannel]);
+    }, [dispatch, insertChannel, t]);
 
     useEffect(() => {
         if (editChannel.loading) return;
@@ -1506,16 +1560,17 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
             dispatch(showSnackbar({
                 message: editChannel.message!,
                 show: true,
-                success: false,
+                severity: "error"
             }));
         } else if (editChannel.success) {
             dispatch(showSnackbar({
-                message: "El canal se edito con éxito",
+                message: t(langKeys.channeleditsuccess),
                 show: true,
-                success: true,
+                severity: "success"
             }));
             history.push(paths.CHANNELS);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dispatch, editChannel]);
 
     const form: UseFormReturn<IChatWebAdd> = useForm<IChatWebAdd>({
@@ -1581,12 +1636,11 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
     }, [form, t]);
 
     const handleNext = () => {
-        form.handleSubmit((_) => setShowFinalStep(true), e => console.log(e))();
+        form.handleSubmit((_) => setShowFinalStep(true))();
     }
 
     const handleSubmit = (name: string, auto: boolean, hexIconColor: string) => {
         const values = form.getValues();
-        console.log("handleSubmit:values", values);
         if (!channel) {
             const body = getInsertChatwebChannel(name, auto, hexIconColor, values);
             dispatch(insertChannel2(body));
@@ -1595,7 +1649,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
             const body = getEditChatWebChannel(id, channel, values, name, auto, hexIconColor);
             dispatch(getEditChannel(body, "CHAZ"));
         }
-        
+
     }
 
     const handleGoBack: React.MouseEventHandler = (e) => {
@@ -1612,7 +1666,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
             <div style={{ display: showFinalStep ? 'none' : 'flex', flexDirection: 'column' }}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="textSecondary" key="mainview" href="/" onClick={handleGoBack}>
-                        {"<< Previous"}
+                        {t(langKeys.previoustext)}
                     </Link>
                 </Breadcrumbs>
                 <h2 className={classes.title}>
@@ -1690,7 +1744,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
     const history = useHistory();
     const [name, setName] = useState(channel?.communicationchanneldesc || "");
     const [coloricon, setcoloricon] = useState("#7721ad");
-    const [auto, setAuto] = useState(channel?.chatflowenabled || false);
+    const [auto] = useState(true);
     const [hexIconColor, setHexIconColor] = useState(channel?.coloricon || "#7721ad");
 
     const handleGoBack = (e: React.MouseEvent) => {
@@ -1706,7 +1760,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
             <Breadcrumbs aria-label="breadcrumb">
                 <Link color="textSecondary" key="mainview" href="/" onClick={handleGoBack}>
-                    {"<< Previous"}
+                    {t(langKeys.previoustext)}
                 </Link>
             </Breadcrumbs>
             <div>
@@ -1729,21 +1783,11 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
                             {t(langKeys.givechannelcolor)}
                         </Box>
-                        <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
-                            <ZyxmeMessengerIcon style={{fill: `${coloricon}`, width: "100px" }}/>
-                            <ColorInput hex={hexIconColor} onChange={e => {setHexIconColor(e.hex);setcoloricon(e.hex)}} />
+                        <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
+                            <ZyxmeMessengerIcon style={{ fill: `${coloricon}`, width: "100px" }} />
+                            <ColorInput hex={hexIconColor} onChange={e => { setHexIconColor(e.hex); setcoloricon(e.hex) }} />
                         </div>
                     </div>
-                </div>
-                <div className="row-zyx">
-                    <div className="col-3"></div>
-                    <TemplateSwitch
-                        onChange={(value) => setAuto(value)}
-                        label={t(langKeys.enablechatflow)}
-                        className="col-6"
-                        disabled={loading || integrationId != null}
-                        valueDefault={channel?.chatflowenabled}
-                    />
                 </div>
                 <div style={{ paddingLeft: "80%" }}>
                     <Button
@@ -1761,11 +1805,11 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
             <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}>
                 {t(langKeys.chatwebstep)}
             </div>
-            <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word'}}><code>
+            <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word' }}><code>
                 {`<script src="https://zyxmelinux.zyxmeapp.com/zyxme/chat/src/chatwebclient.min.js" integrationid="${integrationId}"></script>`}
-                </code></pre><div style={{ height: 20 }} />
+            </code></pre><div style={{ height: 20 }} />
                 <Button variant="contained" color="primary" onClick={() => history.push(paths.CHANNELS)}>
-                    Terminar
+                    {t(langKeys.close)}
                 </Button>
             </div>
         </div>

@@ -1,147 +1,71 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { DateRangePicker, FieldSelect, ListPaginated, TemplateIcons, Title } from 'components';
-import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, getPersonExport, exportExcel, templateMaker, uploadExcel, insPersonBody, insPersonCommunicationChannel, array_trimmer } from 'common/helpers';
-import { Dictionary, IDomain, IObjectState, IPerson, IPersonChannel, IPersonCommunicationChannel, IPersonConversation, IPersonDomains, IPersonImport, IPersonLead, IPersonReferrer } from "@types";
-import { Avatar, Box, Divider, Grid, ListItem, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, CircularProgress, TextField, MenuItem } from '@material-ui/core';
+import { FieldEditMulti, FieldSelect, GetIcon, Title } from 'components';
+import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, getPersonExport, exportExcel, templateMaker, uploadExcel, insPersonBody, insPersonCommunicationChannel, array_trimmer, convertLocalDate, getColumnsSel, personcommunicationchannelUpdateLockedArrayIns } from 'common/helpers';
+import { Dictionary, IObjectState, IPerson, IPersonChannel, IPersonCommunicationChannel, IPersonConversation, IPersonDomains, IPersonImport, IFetchData } from "@types";
+import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, TextField, MenuItem, Paper, InputBase } from '@material-ui/core';
 import clsx from 'clsx';
-import { BuildingIcon, DocNumberIcon, DocTypeIcon, DownloadIcon, CalendarIcon, EMailInboxIcon, GenderIcon, PhoneIcon, PinLocationIcon, PortfolioIcon, TelephoneIcon } from 'icons';
+import { BuildingIcon, DocNumberIcon, DocTypeIcon, EMailInboxIcon, GenderIcon, TelephoneIcon, WhatsappIcon, SearchIcon } from 'icons';
+import PhoneIcon from '@material-ui/icons/Phone';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { Range } from 'react-date-range';
-import { Skeleton } from '@material-ui/lab';
 import { useHistory, useLocation } from 'react-router';
 import paths from 'common/constants/paths';
-import { ArrowDropDown, Add as AddIcon } from '@material-ui/icons';
+import { ArrowDropDown } from '@material-ui/icons';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import LockIcon from '@material-ui/icons/Lock';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import ListAltIcon from '@material-ui/icons/ListAlt';
-import BackupIcon from '@material-ui/icons/Backup';
 import { getChannelListByPerson, getPersonListPaginated, resetGetPersonListPaginated, resetGetChannelListByPerson, getTicketListByPerson, resetGetTicketListByPerson, getLeadsByPerson, resetGetLeadsByPerson, getDomainsByTypename, resetGetDomainsByTypename, resetEditPerson, editPerson, getReferrerListByPerson, resetGetReferrerListByPerson } from 'store/person/actions';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import { useForm, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
-import { execute, exportData } from 'store/main/actions';
-import { DialogInteractions } from 'components';
+import { useForm, UseFormGetValues, UseFormSetValue, useFieldArray } from 'react-hook-form';
+import { execute, resetAllMain, exportData } from 'store/main/actions';
+import { DialogInteractions, FieldMultiSelect, FieldEditArray, DialogZyx } from 'components';
+import Rating from '@material-ui/lab/Rating';
+import TablePaginated, { buildQueryFilters, useQueryParams } from 'components/fields/table-paginated';
+import TableZyx from '../components/fields/table-simple';
+import MailIcon from '@material-ui/icons/Mail';
+import SmsIcon from '@material-ui/icons/Sms';
+import { sendHSM } from 'store/inbox/actions';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import Menu from '@material-ui/core/Menu';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import { getLeadPhases, resetGetLeadPhases } from 'store/lead/actions';
+import { setModalCall, setPhoneNumber } from 'store/voximplant/actions';
+const urgencyLevels = [null, 'LOW', 'MEDIUM', 'HIGH']
 
-interface PersonItemProps {
-    person: IPerson;
-}
+// interface SelectFieldProps {
+//     defaultValue?: string;
+//     onChange: (value: string, desc: string) => void;
+//     data: IDomain[];
+//     loading: boolean;
+// }
 
-interface SelectFieldProps {
-    defaultValue?: string;
-    onChange: (value: string, desc: string) => void;
-    data: IDomain[];
-    loading: boolean;
-}
-
-const DomainSelectField: FC<SelectFieldProps> = ({ defaultValue, onChange, data, loading }) => {
-    return (
-        <TextField
-            select
-            defaultValue={defaultValue}
-            fullWidth
-            variant="standard"
-            disabled={loading}
-        >
-            {data.map((option) => (
-                <MenuItem
-                    key={option.domainid}
-                    value={option.domainvalue}
-                    onClick={() => onChange(option.domainvalue, option.domaindesc)}
-                >
-                    {option.domaindesc}
-                </MenuItem>
-            ))}
-        </TextField>
-    );
-}
-
-const useStyles = makeStyles((theme) => ({
-    containerDetail: {
-        marginTop: theme.spacing(2),
-        // maxWidth: '80%',
-        padding: theme.spacing(2),
-        background: '#fff',
-    },
-    mb2: {
-        marginBottom: theme.spacing(4),
-    },
-    personList: {
-        display: 'flex',
-        paddingLeft: theme.spacing(0),
-        paddingRight: theme.spacing(0),
-        paddingBottom: theme.spacing(1),
-    },
-    personItemRoot: {
-        padding: theme.spacing(2.5),
-        backgroundColor: 'white',
-        display: 'flex',
-        flexDirection: 'column',
-        flexGrow: 1,
-    },
-    itemRow: {
-        display: 'flex',
-        flexDirection: 'row',
-        flexGrow: 1,
-        flexBasis: 0,
-        flexShrink: 1,
-        alignItems: 'center',
-    },
-    gridRow: {
-        alignItems: 'center',
-        display: 'flex',
-        flexDirection: 'row',
-        flexWrap: 'nowrap',
-        height: '100%',
-    },
-    itemColumn: {
-        display: 'flex',
-        flexDirection: 'column',
-        flexGrow: 1,
-        alignSelf: 'flex-start',
-    },
-    itemTop: {
-        justifyContent: 'space-between',
-        minWidth: 480,
-        flexWrap: 'wrap',
-    },
-    spacing: {
-        padding: theme.spacing(1),
-    },
-    label: {
-        overflowWrap: 'anywhere',
-        fontWeight: 400,
-        fontSize: 12,
-        color: '#B6B4BA',
-    },
-    value: {
-        fontSize: 14,
-        fontWeight: 400,
-        color: '#2E2C34',
-    },
-    propIcon: {
-        stroke: '#8F92A1',
-        width: 24,
-        height: 24,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    btn: {
-        minWidth: 56,
-        minHeight: 26,
-        maxHeight: 26,
-        maxWidth: 56,
-        padding: 0,
-        backgroundColor: '#55BD84',
-        float: 'right',
-    },
-}));
+// const DomainSelectField: FC<SelectFieldProps> = ({ defaultValue, onChange, data, loading }) => {
+//     return (
+//         <TextField
+//             select
+//             defaultValue={defaultValue}
+//             fullWidth
+//             variant="standard"
+//             disabled={loading}
+//         >
+//             {data.map((option) => (
+//                 <MenuItem
+//                     key={option.domainid}
+//                     value={option.domainvalue}
+//                     onClick={() => onChange(option.domainvalue, option.domaindesc)}
+//                 >
+//                     {option.domaindesc}
+//                 </MenuItem>
+//             ))}
+//         </TextField>
+//     );
+// }
 
 const usePhotoClasses = makeStyles(theme => ({
     accountPhoto: {
@@ -166,215 +90,518 @@ const Photo: FC<PhotoProps> = ({ src, radius }) => {
     return <Avatar alt={src} src={src} className={classes.accountPhoto} style={{ width, height }} />;
 }
 
-const PersonItem: FC<PersonItemProps> = ({ person }) => {
-    const classes = useStyles();
-    const history = useHistory();
+const format = (datex: Date) => new Date(datex.setHours(10)).toISOString().substring(0, 10)
 
-    const goToPersonDetail = () => {
+const selectionKey = 'personid';
+
+const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'dateactivity', 'leadactivity', 'datenote', 'note', 'custom'].map(x => ({key: x}))
+
+interface DialogSendTemplateProps {
+    setOpenModal: (param: any) => void;
+    openModal: boolean;
+    persons: IPerson[];
+    type: "HSM" | "MAIL" | "SMS";
+}
+
+const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, openModal, persons, type }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const [waitClose, setWaitClose] = useState(false);
+    const sendingRes = useSelector(state => state.inbox.triggerSendHSM);
+    const [templatesList, setTemplatesList] = useState<Dictionary[]>([]);
+    const [channelList, setChannelList] = useState<Dictionary[]>([]);
+    const [bodyMessage, setBodyMessage] = useState('');
+    const [personWithData, setPersonWithData] = useState<IPerson[]>([])
+    const domains = useSelector(state => state.person.editableDomains);
+
+    const title = useMemo(() => {
+        switch (type) {
+            case "HSM": return t(langKeys.send_hsm);
+            case "SMS": return t(langKeys.send_sms);
+            case "MAIL": return t(langKeys.send_mail);
+            default: return '-';
+        }
+    }, [type]);
+
+    const { control, register, handleSubmit, setValue, getValues, trigger, reset, formState: { errors } } = useForm<any>({
+        defaultValues: {
+            hsmtemplateid: 0,
+            observation: '',
+            communicationchannelid: 0,
+            communicationchanneltype: '',
+            variables: []
+        }
+    });
+
+    const { fields } = useFieldArray({
+        control,
+        name: 'variables',
+    });
+
+    useEffect(() => {
+        if (waitClose) {
+            if (!sendingRes.loading && !sendingRes.error) {
+                const message = type === "HSM" ? t(langKeys.successful_send_hsm) : (type === "SMS" ? t(langKeys.successful_send_sms) : t(langKeys.successful_send_mail));
+                dispatch(showSnackbar({ show: true, severity: "success", message }))
+                setOpenModal(false);
+                dispatch(showBackdrop(false));
+                setWaitClose(false);
+            } else if (sendingRes.error) {
+
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(sendingRes.code || "error_unexpected_error") }))
+                dispatch(showBackdrop(false));
+                setWaitClose(false);
+            }
+        }
+    }, [sendingRes, waitClose])
+
+    useEffect(() => {
+        if (!domains.error && !domains.loading) {
+            setTemplatesList(domains?.value?.templates?.filter(x => x.type === type) || []);
+            setChannelList(domains?.value?.channels?.filter(x => x.type.includes(type === "HSM" ? "WHA" : type)) || []);
+        }
+    }, [domains, type])
+
+    useEffect(() => {
+        if (openModal) {
+            setBodyMessage('')
+            reset({
+                hsmtemplateid: 0,
+                hsmtemplatename: '',
+                variables: [],
+                communicationchannelid: 0,
+                communicationchanneltype: ''
+            })
+            register('hsmtemplateid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+
+            if (type === "HSM") {
+                register('communicationchannelid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+            } else {
+                register('communicationchannelid');
+            }
+
+            if (type === "MAIL") {
+                setPersonWithData(persons.filter(x => x.email && x.email.length > 0))
+            } else {
+                setPersonWithData(persons.filter(x => x.phone && x.phone.length > 0))
+            }
+        } else {
+            setWaitClose(false);
+        }
+    }, [openModal])
+
+    const onSelectTemplate = (value: Dictionary) => {
+        if (value) {
+            setBodyMessage(value.body);
+            setValue('hsmtemplateid', value ? value.id : 0);
+            setValue('hsmtemplatename', value ? value.name : '');
+            const variablesList = value.body.match(/({{)(.*?)(}})/g) || [];
+            const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
+            setValue('variables', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
+        } else {
+            setValue('hsmtemplatename', '');
+            setValue('variables', []);
+            setBodyMessage('');
+            setValue('hsmtemplateid', 0);
+        }
+    }
+    // console.log(personWithData)
+    const onSubmit = handleSubmit((data) => {
+        const messagedata = {
+            hsmtemplateid: data.hsmtemplateid,
+            hsmtemplatename: data.hsmtemplatename,
+            communicationchannelid: data.communicationchannelid,
+            communicationchanneltype: data.communicationchanneltype,
+            platformtype: data.communicationchanneltype,
+            type,
+            shippingreason: "PERSON",
+            listmembers: personWithData.map(person => ({
+                personid: person.personid,
+                phone: person.phone || "",
+                firstname: person.firstname || "",
+                email: person.email || "",
+                lastname: person.lastname,
+                parameters: data.variables.map((v: any) => ({
+                    type: "text",
+                    text: v.variable !== 'custom' ? (person as Dictionary)[v.variable] : v.text,
+                    name: v.name
+                }))
+            }))
+        }
+        dispatch(sendHSM(messagedata))
+        dispatch(showBackdrop(true));
+        setWaitClose(true)
+    });
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={title}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.continue)}
+            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton2={onSubmit}
+            button2Type="submit"
+        >
+            <div style={{ marginBottom: 8 }}>
+                {persons.length} {t(langKeys.persons_selected)}, {personWithData.length} {t(langKeys.with)} {type === "MAIL" ? t(langKeys.email).toLocaleLowerCase() : t(langKeys.phone).toLocaleLowerCase()}
+            </div>
+            {type === "HSM" && (
+                <div className="row-zyx">
+                    <FieldSelect
+                        label={t(langKeys.channel)}
+                        className="col-12"
+                        valueDefault={getValues('communicationchannelid')}
+                        onChange={value => {
+                            setValue('communicationchannelid', value?.communicationchannelid || 0);
+                            setValue('communicationchanneltype', value?.type || "");
+                        }}
+                        error={errors?.communicationchannelid?.message}
+                        data={channelList}
+                        optionDesc="communicationchanneldesc"
+                        optionValue="communicationchannelid"
+                    />
+                </div>
+            )}
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.template)}
+                    className="col-12"
+                    valueDefault={getValues('hsmtemplateid')}
+                    onChange={onSelectTemplate}
+                    error={errors?.hsmtemplateid?.message}
+                    data={templatesList}
+                    optionDesc="name"
+                    optionValue="id"
+                />
+            </div>
+            {type === 'MAIL' &&
+                <React.Fragment>
+                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.message)}</Box>
+                    <div dangerouslySetInnerHTML={{ __html: bodyMessage }} />
+                </React.Fragment>
+            }
+            {type !== 'MAIL' &&
+                <FieldEditMulti
+                    label={t(langKeys.message)}
+                    valueDefault={bodyMessage}
+                    disabled={true}
+                    rows={1}
+                />
+            }
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
+                {fields.map((item: Dictionary, i) => (
+                    <div key={item.id}>
+                        <FieldSelect
+                            key={"var_" + item.id}
+                            fregister={{
+                                ...register(`variables.${i}.variable`, {
+                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                })
+                            }}
+                            label={item.name}
+                            valueDefault={getValues(`variables.${i}.variable`)}
+                            onChange={(value) => {
+                                setValue(`variables.${i}.variable`, value.key)
+                                trigger(`variables.${i}.variable`)
+                            }}
+                            error={errors?.variables?.[i]?.text?.message}
+                            data={variables}
+                            uset={true}
+                            prefixTranslation=""
+                            optionDesc="key"
+                            optionValue="key"
+                        />
+                        {getValues(`variables.${i}.variable`) === 'custom' &&
+                            <FieldEditArray
+                                key={"custom_" + item.id}
+                                fregister={{
+                                    ...register(`variables.${i}.text`, {
+                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                    })
+                                }}
+                                valueDefault={item.value}
+                                error={errors?.variables?.[i]?.text?.message}
+                                onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
+                            />
+                        }
+                    </div>
+                ))}
+            </div>
+        </DialogZyx>)
+}
+
+const CountTicket: FC<{ label: string, count: string, color: string }> = ({ label, count, color }) => (
+    <div style={{ position: 'relative' }}>
+        <div style={{ color: color, padding: '3px 4px', whiteSpace: 'nowrap', fontSize: '12px' }}>{label}: <span style={{ fontWeight: 'bold' }}>{count}</span></div>
+        <div style={{ backgroundColor: color, width: '100%', height: '24px', opacity: '0.1', position: 'absolute', top: 0, left: 0 }}></div>
+    </div>
+)
+
+
+export const TemplateIcons: React.FC<{
+    sendHSM: (data: any) => void;
+    sendSMS: (data: any) => void;
+    sendMAIL: (data: any) => void;
+}> = ({ sendHSM, sendSMS, sendMAIL }) => {
+
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const handleClose = (e: any) => {
+        e.stopPropagation();
+        setAnchorEl(null);
+    };
+    const { t } = useTranslation();
+
+    return (
+        <div style={{ whiteSpace: 'nowrap', display: 'flex' }}>
+            <IconButton
+                aria-label="more"
+                aria-controls="long-menu"
+                aria-haspopup="true"
+                size="small"
+
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setAnchorEl(e.currentTarget);
+                }}
+            >
+                <MoreVertIcon style={{ color: '#B6B4BA' }} />
+            </IconButton>
+            <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                getContentAnchorEl={null}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+            >
+                <MenuItem onClick={sendHSM}>
+                    <ListItemIcon color="inherit">
+                        <WhatsappIcon width={22} style={{ fill: '#7721AD' }} />
+                    </ListItemIcon>
+                    {t(langKeys.send_hsm)}
+                </MenuItem>
+                <MenuItem onClick={sendSMS}>
+                    <ListItemIcon color="inherit">
+                        <SmsIcon width={18} style={{ fill: '#7721AD' }} />
+                    </ListItemIcon>
+                    {t(langKeys.send_sms)}
+                </MenuItem>
+                <MenuItem onClick={sendMAIL}>
+                    <ListItemIcon color="inherit">
+                        <MailIcon width={18} style={{ fill: '#7721AD' }} />
+                    </ListItemIcon>
+                    {t(langKeys.send_mail)}
+                </MenuItem>
+            </Menu>
+        </div>
+    )
+}
+
+
+export const Person: FC = () => {
+    const history = useHistory();
+    const { t } = useTranslation();
+    const location = useLocation();
+    const dispatch = useDispatch();
+    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+    const personList = useSelector(state => state.person.personList);
+    const domains = useSelector(state => state.person.editableDomains);
+    const [pageCount, setPageCount] = useState(0);
+    const [totalrow, settotalrow] = useState(0);
+    const resExportData = useSelector(state => state.main.exportData);
+    const executeResult = useSelector(state => state.main.execute);
+    const [waitExport, setWaitExport] = useState(false);
+    const [waitImport, setWaitImport] = useState(false);
+    const [openDialogTemplate, setOpenDialogTemplate] = useState(false)
+    const [selectedRows, setSelectedRows] = useState<Dictionary>({});
+    const [personsSelected, setPersonsSelected] = useState<IPerson[]>([]);
+    const [typeTemplate, setTypeTemplate] = useState<"HSM" | "SMS" | "MAIL">('MAIL');
+
+    const query = useMemo(() => new URLSearchParams(location.search), [location]);
+    const params = useQueryParams(query, { ignore: ['channelTypes'] });
+
+    const [filterChannelsType, setFilterChannelType] = useState(query.get('channelTypes') || '');
+
+    const goToPersonDetail = (person: IPerson) => {
         history.push({
             pathname: paths.PERSON_DETAIL.resolve(person.personid),
             state: person,
         });
     }
-
-    return (
-        <ListItem className={classes.personList}>
-            <Box className={classes.personItemRoot}>
-                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+    const columns = useMemo(() => ([
+        {
+            accessor: 'leadid',
+            isComponent: true,
+            minWidth: 60,
+            width: '1%',
+            Cell: (props: any) => {
+                const person = props.cell.row.original as IPerson;
+                return (
                     <TemplateIcons
-                        editFunction={goToPersonDetail}
+                        sendHSM={(e) => {
+                            e.stopPropagation();
+                            setPersonsSelected([person]);
+                            setOpenDialogTemplate(true);
+                            setTypeTemplate("HSM");
+                        }}
+                        sendSMS={(e) => {
+                            e.stopPropagation();
+                            setPersonsSelected([person]);
+                            setOpenDialogTemplate(true);
+                            setTypeTemplate("SMS");
+                        }}
+                        sendMAIL={(e) => {
+                            e.stopPropagation();
+                            setPersonsSelected([person]);
+                            setOpenDialogTemplate(true);
+                            setTypeTemplate("MAIL");
+                        }}
                     />
-                    <div style={{ width: 8 }} />
-                    <div style={{ flexGrow: 1, marginLeft: 8 }}>
-                        <Grid container direction="column">
-                            <Grid container direction="row" spacing={1}>
-                                <Grid item sm={3} xl={3} xs={3} md={3} lg={3}>
-                                    <Grid container direction="row" className={classes.gridRow}>
-                                        <Photo src={person.imageurldef} />
-                                        <div style={{ width: 8 }} />
-                                        <div className={classes.itemColumn}>
-                                            <label className={clsx(classes.label, classes.value)}>{person.name}</label>
-                                            <label className={classes.label}>{`ID# ${person.personid}`}</label>
-                                        </div>
-                                    </Grid>
-                                </Grid>
-                                <Grid item sm={2} xl={2} xs={2} md={2} lg={2}>
-                                    <Grid container direction="row" className={classes.gridRow}>
-                                        <div className={classes.propIcon}><EMailInboxIcon /></div>
-                                        <div style={{ width: 8 }} />
-                                        <div className={classes.itemColumn}>
-                                            <label className={classes.label}>
-                                                <Trans i18nKey={langKeys.email} />
-                                            </label>
-                                            <div style={{ height: 4 }} />
-                                            <label className={clsx(classes.label, classes.value)}>{person.email || "-"}</label>
-                                        </div>
-                                    </Grid>
-                                </Grid>
-                                <Grid item sm={2} xl={2} xs={2} md={2} lg={2}>
-                                    <Grid container direction="row" className={classes.gridRow}>
-                                        <div className={classes.propIcon}><PhoneIcon /></div>
-                                        <div style={{ width: 8 }} />
-                                        <div className={classes.itemColumn}>
-                                            <label className={classes.label}>
-                                                <Trans i18nKey={langKeys.phone} />
-                                            </label>
-                                            <div style={{ height: 4 }} />
-                                            <label className={clsx(classes.label, classes.value)}>{person.phone || "-"}</label>
-                                        </div>
-                                    </Grid>
-                                </Grid>
-                                <Grid item sm={2} xl={2} xs={2} md={2} lg={2}>
-                                    <Grid container direction="row" className={classes.gridRow}>
-                                        <div className={classes.propIcon}><PortfolioIcon /></div>
-                                        <div style={{ width: 8 }} />
-                                        <div className={classes.itemColumn}>
-                                            <label className={classes.label}>
-                                                <Trans i18nKey={langKeys.department} />
-                                            </label>
-                                            <div style={{ height: 4 }} />
-                                            <label className={clsx(classes.label, classes.value)}>{person.region || '-'}</label>
-                                        </div>
-                                    </Grid>
-                                </Grid>
-                                <Grid item sm={3} xl={3} xs={3} md={3} lg={3}>
-                                    <Grid container direction="row" className={classes.gridRow}>
-                                        <div className={classes.propIcon}><PinLocationIcon /></div>
-                                        <div style={{ width: 8 }} />
-                                        <div className={classes.itemColumn}>
-                                            <label className={classes.label}>
-                                                <Trans i18nKey={langKeys.address} />
-                                            </label>
-                                            <div style={{ height: 4 }} />
-                                            <label className={clsx(classes.label, classes.value)}>{person.address || '-'}</label>
-                                        </div>
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                            <Divider style={{ margin: '10px 0' }} />
-                            <Grid container direction="row" spacing={1}>
-                                <Grid item sm={3} xl={3} xs={3} md={3} lg={3}>
-                                    <Grid container direction="column">
-                                        <label><Trans i18nKey={langKeys.firstConnection} />:</label>
-                                        <div style={{ height: 4 }} />
-                                        <label>{person.firstcontact ? new Date(person.firstcontact).toLocaleString() : "-"}</label>
-                                    </Grid>
-                                </Grid>
-                                <Grid item sm={3} xl={3} xs={3} md={3} lg={3}>
-                                    <Grid container direction="column">
-                                        <label><Trans i18nKey={langKeys.lastConnection} />:</label>
-                                        <div style={{ height: 4 }} />
-                                        <label>{person.lastcontact ? new Date(person.lastcontact).toLocaleString() : "-"}</label>
-                                    </Grid>
-                                </Grid>
-                                <Grid item sm={4} xl={4} xs={4} md={4} lg={4} />
-                                <Grid item sm={2} xl={2} xs={2} md={2} lg={2}>
-                                    <Button className={classes.btn} variant="contained" color="primary" disableElevation>
-                                        <label style={{ fontSize: 10, fontWeight: 400 }}>
-                                            <Trans i18nKey={langKeys.active} />
-                                        </label>
-                                    </Button>
-                                </Grid>
-                            </Grid>
-                        </Grid>
+                )
+            }
+        },
+        {
+            Header: t(langKeys.name),
+            accessor: 'name',
+        },
+        {
+            Header: t(langKeys.phone),
+            accessor: 'phone',
+        },
+        {
+            Header: t(langKeys.email),
+            accessor: 'email',
+        },
+        {
+            Header: t(langKeys.lastContactDate),
+            accessor: 'lastcontact',
+            type: 'date',
+            sortType: 'datetime',
+            Cell: (props: any) => {
+                const row = props.cell.row.original;
+                return row.lastcontact ? convertLocalDate(row.lastcontact).toLocaleString() : ""
+            }
+        },
+        {
+            Header: t(langKeys.lastuser),
+            accessor: 'lastuser',
+        },
+        {
+            Header: t(langKeys.lead),
+            accessor: 'phasejson',
+            type: "select",
+            listSelectFilter: [
+                { key: t(langKeys.new), value: "0,New" },
+                { key: t(langKeys.qualified), value: "1,Qualified" },
+                { key: t(langKeys.proposition), value: "2,Proposition" },
+                { key: t(langKeys.won), value: "3,Won" },
+                { key: t(langKeys.lost), value: "4,Lost" },
+            ],
+            // listSelectFilter: phases.loading || phases.error ? [] : phases.data.map(x => ({
+            //     key: x.description,
+            //     value: `${x.index},${x.description}`,
+            // })),
+            Cell: (props: any) => {
+                const { phasejson } = props.cell.row.original;
+                if (!phasejson)
+                    return null;
+                return (
+                    <div style={{ display: 'flex', gap: 4, flexDirection: 'column' }}>
+                        {Object.entries(phasejson).sort(([aKey], [bKey]) => {
+                            const aIndex = Number(aKey.split(',')[0]);
+                            const bIndex = Number(bKey.split(',')[0]);
+                            return aIndex - bIndex;
+                        }).map(([key, value]) => (
+                            <CountTicket
+                                label={key.split(',')[1]}
+                                key={key}
+                                count={value + ""}
+                                color="#55BD84"
+                            />
+                        ))}
                     </div>
-                </div>
-            </Box>
-        </ListItem>
-    );
-}
-
-const PersonItemSkeleton: FC = () => {
-    const classes = useStyles();
-
-    return (
-        <ListItem className={classes.personList}>
-            <Box className={classes.personItemRoot}>
-                <Grid container direction="column">
-                    <Grid container direction="row" spacing={1}>
-                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
-                            <Skeleton />
-                        </Grid>
-                    </Grid>
-                    <Divider style={{ margin: '10px 0' }} />
-                    <Grid container direction="row" spacing={1}>
-                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
-                            <Skeleton />
-                        </Grid>
-                    </Grid>
-                </Grid>
-            </Box>
-        </ListItem>
-    );
-}
-
-export const Person: FC = () => {
-    const history = useHistory();
-    const endDate = new Date();
-    const startDate = new Date(endDate.getFullYear(), endDate.getMonth() - 2, 0);
-    const initialDateRange: Range = { startDate, endDate, key: 'selection' };
-
-    const { t } = useTranslation();
-    const dispatch = useDispatch();
-    const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
-    const [page, setPage] = useState(0);
-    const [pageSize, setPageSize] = useState(10);
-    const [dateRange, setDateRange] = useState<Range>(initialDateRange);
-    const [filters, setFilters] = useState<Dictionary>({});
-    const personList = useSelector(state => state.person.personList);
-    const domains = useSelector(state => state.person.editableDomains);
-
-    const resExportData = useSelector(state => state.main.exportData);
-    const executeResult = useSelector(state => state.main.execute);
-    const [waitExport, setWaitExport] = useState(false);
-    const [waitImport, setWaitImport] = useState(false);
-    const [importPath, setImportPath] = useState('');
-
-    const columns = [
-        { Header: t(langKeys.name), accessor: 'name' },
-        { Header: t(langKeys.email), accessor: 'email' },
-        { Header: t(langKeys.phone), accessor: 'phone' },
-        { Header: t(langKeys.department), accessor: 'region' },
-        { Header: t(langKeys.province), accessor: 'province' },
-        { Header: t(langKeys.firstConnection), accessor: 'firstcontact' },
-        { Header: t(langKeys.lastConnection), accessor: 'lastcontact' }
-    ]
+                )
+            }
+        },
+        {
+            Header: t(langKeys.status),
+            accessor: 'status',
+            prefixTranslation: 'status_',
+            Cell: (props: any) => {
+                const { status } = props.cell.row.original;
+                return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+            }
+        },
+        {
+            Header: t(langKeys.comments),
+            accessor: 'datenote',
+            Cell: (props: any) => {
+                const { datenote, note, dateactivity, leadactivity } = props.cell.row.original;
+                return (
+                    <div>
+                        {datenote && <div>{t(langKeys.lastnote)} ({convertLocalDate(datenote).toLocaleString()}) {note}</div>}
+                        {dateactivity && <div>{t(langKeys.nextprogramedactivity)} ({convertLocalDate(dateactivity).toLocaleString()}) {leadactivity}</div>}
+                    </div>
+                )
+            }
+        },
+    ]), [t]);
 
     useEffect(() => {
         dispatch(getDomainsByTypename());
+        dispatch(getLeadPhases(getColumnsSel(0, true)));
+
+        return () => {
+            dispatch(resetGetPersonListPaginated());
+            dispatch(resetGetLeadPhases());
+            dispatch(resetAllMain());
+        };
     }, [])
 
     useEffect(() => {
-        return () => {
-            dispatch(resetGetPersonListPaginated());
-        };
-    }, [dispatch]);
-    
-    const fetchData = () => {
+        if (!personList.loading && !personList.error) {
+            setPageCount(Math.ceil(personList.count / fetchDataAux.pageSize));
+            settotalrow(personList.count);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [personList]);
+
+    const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
+        setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
         dispatch(getPersonListPaginated(getPaginatedPerson({
-            startdate: format(dateRange.startDate!),
-            enddate: format(dateRange.endDate!),
-            skip: pageSize * page,
+            startdate: daterange?.startDate || format(new Date(new Date().setDate(1))),
+            enddate: daterange?.endDate || format(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)),
+            skip: pageSize * pageIndex,
             take: pageSize,
-            sorts: {},
+            sorts,
             filters: filters,
+            userids: '',
+            channeltypes: filterChannelsType
         })));
     }
 
-    useEffect(() => {
-        fetchData();
-    }, [dispatch, pageSize, page, dateRange, filters]);
-
-    const format = (date: Date) => date.toISOString().split('T')[0];
-
-    const triggerExportData = () => {
+    const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
+        const columnsExport = columns.filter(x => !x.isComponent).map(x => ({
+            key: x.accessor,
+            alias: x.Header,
+        }));
         dispatch(exportData(getPersonExport(
             {
-                startdate: format(dateRange.startDate!),
-                enddate: format(dateRange.endDate!),
-                sorts: {},
-                filters: filters
-            })));
+                startdate: daterange.startDate!,
+                enddate: daterange.endDate!,
+                sorts,
+                filters: filters,
+                userids: '',
+                personcommunicationchannels: filterChannelsType,
+            }), "", "excel", false, columnsExport));
         dispatch(showBackdrop(true));
         setWaitExport(true);
     };
@@ -384,10 +611,10 @@ export const Person: FC = () => {
             if (!resExportData.loading && !resExportData.error) {
                 dispatch(showBackdrop(false));
                 setWaitExport(false);
-                window.open(resExportData.url, '_blank');
+                resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
             } else if (resExportData.error) {
                 const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.person).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitExport(false);
             }
@@ -442,8 +669,8 @@ export const Person: FC = () => {
         exportExcel(t(langKeys.template), templateMaker(data, header));
     }
 
-    const handleUpload = async (e: any) => {
-        const file = e.target?.files?.item(0);
+    const handleUpload = async (files: any) => {
+        const file = files?.item(0);
         if (file) {
             let excel: any = await uploadExcel(file, undefined);
             let data: IPersonImport[] = array_trimmer(excel);
@@ -513,130 +740,179 @@ export const Person: FC = () => {
                 setWaitImport(true)
             }
             else {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.no_records_valid) }));
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) }));
             }
         }
-        setImportPath('');
+    }
+
+    const handleLock = (type: "LOCK" | "UNLOCK") => {
+        const callback = () => {
+            const data = personsSelected.map(p => ({
+                personid: p.personid,
+                personcommunicationchannel: p.personcommunicationchannel,
+                locked: type === "LOCK",
+            }));
+            dispatch(execute(personcommunicationchannelUpdateLockedArrayIns(data)));
+            dispatch(showBackdrop(true));
+            setWaitImport(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: type === "UNLOCK" ? t(langKeys.confirmation_person_unlock) : t(langKeys.confirmation_person_lock),
+            callback
+        }));
     }
 
     useEffect(() => {
         if (waitImport) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
-                fetchData();
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
+                fetchData(fetchDataAux);
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.quickreplies).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
             }
         }
     }, [executeResult, waitImport])
 
+    useEffect(() => {
+        if (!(Object.keys(selectedRows).length === 0 && personsSelected.length === 0)) {
+            setPersonsSelected(p => Object.keys(selectedRows).map(x => personList.data.find(y => y.personid === parseInt(x)) || p.find(y => y.personid === parseInt(x)) || {} as IPerson))
+        }
+    }, [selectedRows])
+
     return (
         <div style={{ height: '100%', width: 'inherit' }}>
-            <Grid container direction="row" justifyContent="space-between">
-                <Grid item>
+
+            <div style={{ display: 'flex', gap: 8, flexDirection: 'row', marginBottom: 12, marginTop: 4 }}>
+                <div style={{ flexGrow: 1 }} >
                     <Title><Trans i18nKey={langKeys.person} count={2} /></Title>
-                </Grid>
-                <Grid item>
-                    <Grid container direction="row-reverse" spacing={1}>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={personList.loading}
-                            startIcon={<DownloadIcon />}
-                            onClick={triggerExportData}
-                        >
-                            <Trans i18nKey={langKeys.download} />
-                        </Button>
-                        <div style={{ width: 9 }} />
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={personList.loading}
-                            startIcon={<AddIcon color="secondary" />}
-                            onClick={() => {
-                                history.push({
-                                    pathname: paths.PERSON_DETAIL.resolve(0),
-                                    state: {},
-                                });
-                            }}
-                            style={{ backgroundColor: "#55BD84" }}
-                        >
-                            <Trans i18nKey={langKeys.register} />
-                        </Button>
-                        <div style={{ width: 9 }} />
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={personList.loading}
-                            startIcon={<ListAltIcon color="secondary" />}
-                            onClick={handleTemplate}
-                            style={{ backgroundColor: "#55BD84" }}
-                        >
-                            <Trans i18nKey={langKeys.template} />
-                        </Button>
-                        <div style={{ width: 9 }} />
-                        <input
-                            name="file"
-                            accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
-                            id="laraigo-upload-csv-file"
-                            value={importPath}
-                            type="file"
-                            style={{ display: 'none' }}
-                            onChange={(e) => handleUpload(e)}
-                        />
-                        <label htmlFor="laraigo-upload-csv-file">
-                            <Button
-                                variant="contained"
-                                component="span"
-                                color="primary"
-                                disabled={personList.loading}
-                                startIcon={<BackupIcon color="secondary" />}
-                                style={{ backgroundColor: "#55BD84" }}
-                            >
-                                <Trans i18nKey={langKeys.import} />
-                            </Button>
-                        </label>
-                        <div style={{ width: 9 }} />
-                        <DateRangePicker
-                            open={openDateRangeModal}
-                            setOpen={setOpenDateRangeModal}
-                            range={dateRange}
-                            onSelect={(e) => {
-                                setPage(0);
-                                setDateRange(e);
-                            }}
-                        >
-                            <Button
-                                disabled={personList.loading}
-                                style={{ border: '1px solid #bfbfc0', borderRadius: 4, color: 'rgb(143, 146, 161)' }}
-                                startIcon={<CalendarIcon />}
-                                onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
-                            >
-                                {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
-                            </Button>
-                        </DateRangePicker>
-                    </Grid>
-                </Grid>
-            </Grid>
-            <div style={{ height: 30 }} />
-            <ListPaginated
-                dateRange={dateRange}
-                currentPage={page}
+                </div>
+                <Button
+                    variant="contained"
+                    type="button"
+                    color="primary"
+                    disabled={personList.loading || Object.keys(selectedRows).length === 0}
+                    startIcon={<LockIcon color="secondary" />}
+                    onClick={() => handleLock("LOCK")}
+                >
+                    <Trans i18nKey={langKeys.lock} />
+                </Button>
+                <Button
+                    variant="contained"
+                    type="button"
+                    color="primary"
+                    disabled={personList.loading || Object.keys(selectedRows).length === 0}
+                    startIcon={<LockOpenIcon color="secondary" />}
+                    onClick={() => handleLock("UNLOCK")}
+                >
+                    <Trans i18nKey={langKeys.unlock} />
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={personList.loading || Object.keys(selectedRows).length === 0}
+                    startIcon={<WhatsappIcon width={24} style={{ fill: '#FFF' }} />}
+                    onClick={() => {
+                        setOpenDialogTemplate(true);
+                        setTypeTemplate("HSM");
+                    }}
+                >
+                    <Trans i18nKey={langKeys.send_hsm} />
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={personList.loading || Object.keys(selectedRows).length === 0}
+                    startIcon={<MailIcon width={24} style={{ fill: '#FFF' }} />}
+                    onClick={() => {
+                        setOpenDialogTemplate(true);
+                        setTypeTemplate("MAIL");
+                    }}
+                >
+                    <Trans i18nKey={langKeys.send_mail} />
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={personList.loading || Object.keys(selectedRows).length === 0}
+                    startIcon={<SmsIcon width={24} style={{ fill: '#FFF' }} />}
+                    onClick={() => {
+                        setOpenDialogTemplate(true);
+                        setTypeTemplate("SMS");
+                    }}
+                >
+                    <Trans i18nKey={langKeys.send_sms} />
+                </Button>
+            </div>
+            <TablePaginated
                 columns={columns}
-                data={personList.data as IPerson[]}
-                onFilterChange={setFilters}
-                onPageChange={setPage}
-                pageSize={pageSize}
-                onPageSizeChange={setPageSize}
+                data={personList.data}
+                pageCount={pageCount}
+                totalrow={totalrow}
                 loading={personList.loading}
-                totalItems={personList.count}
-                builder={(e, i) => <PersonItem person={e} key={`person_item_${i}`} />}
-                skeleton={i => <PersonItemSkeleton key={`person_item_skeleton_${i}`} />}
+                filterrange={true}
+                download={true}
+                exportPersonalized={triggerExportData}
+                fetchData={fetchData}
+                useSelection={true}
+                selectionKey={selectionKey}
+                setSelectedRows={setSelectedRows}
+                onClickRow={goToPersonDetail}
+                register={true}
+                ButtonsElement={() => (
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={personList.loading}
+                        startIcon={<ListAltIcon color="secondary" />}
+                        onClick={handleTemplate}
+                        style={{ backgroundColor: "#55BD84" }}
+                    >
+                        <Trans i18nKey={langKeys.template} />
+                    </Button>
+                )}
+                importCSV={handleUpload}
+                handleRegister={() => history.push({
+                    pathname: paths.PERSON_DETAIL.resolve(0),
+                    state: {},
+                })}
+                onFilterChange={f => {
+                    // console.log('Persons::onFilterChange', f);
+                    const params = buildQueryFilters(f);
+                    if (filterChannelsType !== '') params.append('channelTypes', filterChannelsType);
+                    history.push({ search: params.toString() });
+                }}
+                initialEndDate={params.endDate}
+                initialStartDate={params.startDate}
+                initialFilters={params.filters}
+                initialPageIndex={params.page}
+                FiltersElement={useMemo(() => (
+                    <FieldMultiSelect
+                        onChange={(value) => setFilterChannelType(value.map((o: any) => o.type).join())}
+                        size="small"
+                        label={t(langKeys.channel)}
+                        style={{ maxWidth: 300, minWidth: 200 }}
+                        variant="outlined"
+                        loading={domains.loading}
+                        data={domains.value?.channels || []}
+                        optionValue="type"
+                        optionDesc="communicationchanneldesc"
+                        valueDefault={filterChannelsType}
+                    />
+                ), [filterChannelsType, domains, t])}
+                autotrigger={!(params.startDate === 0 && params.endDate === 0 && params.page === 0)}
+            />
+            <DialogSendTemplate
+                openModal={openDialogTemplate}
+                setOpenModal={setOpenDialogTemplate}
+                persons={personsSelected}
+                type={typeTemplate}
             />
         </div>
     );
@@ -717,9 +993,9 @@ interface PropertyProps extends Omit<BoxProps, 'title'> {
     isLink?: Boolean;
 }
 
-const Property: FC<PropertyProps> = ({ icon, title, subtitle, isLink=false,...boxProps}) => {
+const Property: FC<PropertyProps> = ({ icon, title, subtitle, isLink = false, ...boxProps }) => {
     const classes = usePropertyStyles();
-    
+
     return (
         <Box className={classes.propertyRoot} {...boxProps}>
             {icon && <div className={classes.leadingContainer}>{icon}</div>}
@@ -727,7 +1003,7 @@ const Property: FC<PropertyProps> = ({ icon, title, subtitle, isLink=false,...bo
             <div className={classes.contentContainer}>
                 <label className={classes.propTitle}>{title}</label>
                 <div style={{ height: 4 }} />
-                <div className={isLink?classes.propSubtitleTicket:classes.propSubtitle}>{subtitle || "-"}</div>
+                <div className={isLink ? classes.propSubtitleTicket : classes.propSubtitle}>{subtitle || "-"}</div>
             </div>
         </Box>
     );
@@ -773,7 +1049,7 @@ const usePersonDetailStyles = makeStyles(theme => ({
         color: theme.palette.text.primary,
         maxWidth: 343,
         width: 343,
-        minWidth: 180,
+        minWidth: 343,
         padding: theme.spacing(2),
         display: 'flex',
         flexDirection: 'column',
@@ -803,7 +1079,6 @@ export const PersonDetail: FC = () => {
 
 
     useEffect(() => {
-        console.log(person);
         if (!person) {
             history.push(paths.PERSON);
         } else {
@@ -853,7 +1128,7 @@ export const PersonDetail: FC = () => {
             dispatch(showSnackbar({
                 message: domains.message!,
                 show: true,
-                success: false,
+                severity: "error"
             }));
         }
     }, [domains, dispatch]);
@@ -866,14 +1141,14 @@ export const PersonDetail: FC = () => {
             dispatch(showSnackbar({
                 message: edit.message!,
                 show: true,
-                success: false,
+                severity: "error"
             }));
         } else if (edit.success) {
             dispatch(showBackdrop(false));
             dispatch(showSnackbar({
                 message: t(langKeys.successful_edit),
                 show: true,
-                success: true,
+                severity: "success"
             }));
             if (!person?.personid) {
                 history.push(paths.PERSON);
@@ -888,7 +1163,6 @@ export const PersonDetail: FC = () => {
             const values = getValues();
             const callback = () => {
                 const payload = editPersonBody(values);
-                console.log("handleEditPerson", payload);
 
                 dispatch(editPerson(payload.parameters.personid ? payload : {
                     header: editPersonBody({ ...person, ...values }),
@@ -936,12 +1210,12 @@ export const PersonDetail: FC = () => {
     useEffect(() => {
         if (waitLock) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_transaction) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
                 dispatch(showBackdrop(false));
                 setWaitLock(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.person).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitLock(false);
             }
@@ -961,7 +1235,8 @@ export const PersonDetail: FC = () => {
                     href="/"
                     onClick={(e) => {
                         e.preventDefault();
-                        history.push(paths.PERSON);
+                        // history.push(paths.PERSON);
+                        history.goBack();
                     }}
                 >
                     <Trans i18nKey={langKeys.person} count={2} />
@@ -999,7 +1274,8 @@ export const PersonDetail: FC = () => {
                         style={{ backgroundColor: "#FB5F5F" }}
                         onClick={(e) => {
                             e.preventDefault();
-                            history.push(paths.PERSON);
+                            // history.push(paths.PERSON);
+                            history.goBack();
                         }}
                     >
                         {t(langKeys.back)}
@@ -1030,33 +1306,33 @@ export const PersonDetail: FC = () => {
                                 label={<div><Trans i18nKey={langKeys.generalinformation} /></div>}
                                 value="0"
                             />
-                            {!!person.personid && 
-                                    <Tab
-                                        className={clsx(classes.tab, classes.label, tabIndex === "1" && classes.activetab)}
-                                        label={<div><Trans i18nKey={langKeys.communicationchannel} /></div>}
-                                        value="1"
-                                    />
+                            {!!person.personid &&
+                                <Tab
+                                    className={clsx(classes.tab, classes.label, tabIndex === "1" && classes.activetab)}
+                                    label={<div><Trans i18nKey={langKeys.communicationchannel} /></div>}
+                                    value="1"
+                                />
                             }
-                            {!!person.personid && 
-                            <Tab
-                                className={clsx(classes.tab, classes.label, tabIndex === "2" && classes.activetab)}
-                                label={<Trans i18nKey={langKeys.audit} />}
-                                value="2"
-                            />
+                            {!!person.personid &&
+                                <Tab
+                                    className={clsx(classes.tab, classes.label, tabIndex === "2" && classes.activetab)}
+                                    label={<Trans i18nKey={langKeys.conversation} count={2} />}
+                                    value="2"
+                                />
                             }
-                            {!!person.personid && 
-                            <Tab
-                                className={clsx(classes.tab, classes.label, tabIndex === "3" && classes.activetab)}
-                                label={<Trans i18nKey={langKeys.conversation} count={2} />}
-                                value="3"
-                            />
+                            {!!person.personid &&
+                                <Tab
+                                    className={clsx(classes.tab, classes.label, tabIndex === "3" && classes.activetab)}
+                                    label={<Trans i18nKey={langKeys.opportunity} count={2} />}
+                                    value="3"
+                                />
                             }
-                            {!!person.personid && 
-                            <Tab
-                                className={clsx(classes.tab, classes.label, tabIndex === "4" && classes.activetab)}
-                                label={<Trans i18nKey={langKeys.opportunity} count={2} />}
-                                value="4"
-                            />
+                            {!!person.personid &&
+                                <Tab
+                                    className={clsx(classes.tab, classes.label, tabIndex === "4" && classes.activetab)}
+                                    label={<Trans i18nKey={langKeys.audit} />}
+                                    value="4"
+                                />
                             }
                             {/* <Tab
                                 className={clsx(classes.tab, classes.label, tabIndex === "4" && classes.activetab)}
@@ -1083,13 +1359,13 @@ export const PersonDetail: FC = () => {
                         />
                     </TabPanel>
                     <TabPanel value="2" index={tabIndex}>
-                        <AuditTab person={person} />
-                    </TabPanel>
-                    <TabPanel value="3" index={tabIndex}>
                         <ConversationsTab person={person} />
                     </TabPanel>
-                    <TabPanel value="4" index={tabIndex}>
+                    <TabPanel value="3" index={tabIndex}>
                         <OpportunitiesTab person={person} />
+                    </TabPanel>
+                    <TabPanel value="4" index={tabIndex}>
+                        <AuditTab person={person} />
                     </TabPanel>
                     {/* <TabPanel value="4" index={tabIndex}>qqq</TabPanel> */}
                 </div>
@@ -1103,74 +1379,79 @@ export const PersonDetail: FC = () => {
                         <Property
                             icon={<TelephoneIcon fill="inherit" stroke="inherit" width={20} height={20} />}
                             title={<Trans i18nKey={langKeys.phone} />}
-                            subtitle={(
-                                <TextField
-                                    fullWidth
-                                    placeholder={t(langKeys.phone)}
-                                    defaultValue={person.phone}
-                                    onChange={e => setValue('phone', e.target.value)}
-                                />
-                            )}
+                            // subtitle={(
+                            //     <TextField
+                            //         fullWidth
+                            //         placeholder={t(langKeys.phone)}
+                            //         defaultValue={person.phone}
+                            //         onChange={e => setValue('phone', e.target.value)}
+                            //     />
+                            // )}
+                            subtitle={person.phone}
                             mt={1}
                             mb={1}
                         />
                         <Property
                             icon={<EMailInboxIcon />}
                             title={<Trans i18nKey={langKeys.email} />}
-                            subtitle={(
-                                <TextField
-                                    fullWidth
-                                    placeholder={t(langKeys.email)}
-                                    defaultValue={person.email}
-                                    onChange={e => setValue('email', e.target.value)}
-                                />
-                            )}
+                            // subtitle={(
+                            //     <TextField
+                            //         fullWidth
+                            //         placeholder={t(langKeys.email)}
+                            //         defaultValue={person.email}
+                            //         onChange={e => setValue('email', e.target.value)}
+                            //     />
+                            // )}
+                            subtitle={person.email}
                             mt={1}
                             mb={1} />
                         <Property
                             icon={<DocTypeIcon fill="inherit" stroke="inherit" width={20} height={20} />}
-                            title={<Trans i18nKey={langKeys.document} />}
-                            subtitle={(
-                                <DomainSelectField
-                                    defaultValue={person.documenttype}
-                                    onChange={(value) => {
-                                        setValue('documenttype', value);
-                                    }}
-                                    loading={domains.loading}
-                                    data={domains.value?.docTypes || []}
-                                />
-                            )}
+                            title={<Trans i18nKey={langKeys.documenttype} />}
+                            // subtitle={(
+                            //     <DomainSelectField
+                            //         defaultValue={person.documenttype}
+                            //         onChange={(value) => {
+                            //             setValue('documenttype', value);
+                            //         }}
+                            //         loading={domains.loading}
+                            //         data={domains.value?.docTypes || []}
+                            //     />
+                            // )}
+                            subtitle={person.documenttype}
                             mt={1}
                             mb={1}
                         />
                         <Property
                             icon={<DocNumberIcon fill="inherit" stroke="inherit" width={20} height={20} />}
                             title={<Trans i18nKey={langKeys.docNumber} />}
-                            subtitle={(
-                                <TextField
-                                    fullWidth
-                                    placeholder={t(langKeys.docNumber)}
-                                    defaultValue={person.documentnumber}
-                                    onChange={e => setValue('documentnumber', e.target.value)}
-                                />
-                            )}
+                            // subtitle={(
+                            //     <TextField
+                            //         fullWidth
+                            //         placeholder={t(langKeys.docNumber)}
+                            //         defaultValue={person.documentnumber}
+                            //         onChange={e => setValue('documentnumber', e.target.value)}
+                            //     />
+                            // )}
+                            subtitle={person.documentnumber}
                             mt={1}
                             mb={1}
                         />
                         <Property
                             icon={<GenderIcon />}
                             title={<Trans i18nKey={langKeys.gender} />}
-                            subtitle={(
-                                <DomainSelectField
-                                    defaultValue={person.gender}
-                                    onChange={(value, desc) => {
-                                        setValue('gender', value);
-                                        setValue('genderdesc', desc)
-                                    }}
-                                    loading={domains.loading}
-                                    data={domains.value?.genders || []}
-                                />
-                            )}
+                            // subtitle={(
+                            //     <DomainSelectField
+                            //         defaultValue={person.gender}
+                            //         onChange={(value, desc) => {
+                            //             setValue('gender', value);
+                            //             setValue('genderdesc', desc)
+                            //         }}
+                            //         loading={domains.loading}
+                            //         data={domains.value?.genders || []}
+                            //     />
+                            // )}
+                            subtitle={person.gender}
                             mt={1}
                             mb={1}
                         />
@@ -1188,67 +1469,67 @@ export const PersonDetail: FC = () => {
     );
 }
 
-const useReferrerItemStyles = makeStyles(theme => ({
-    root: {
-        border: '#EBEAED solid 1px',
-        borderRadius: 5,
-        padding: theme.spacing(2),
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(1),
-    },
-    item: {
-        display: 'flex',
-        flexDirection: 'column',
-    },
-    itemLabel: {
-        color: '#8F92A1',
-        fontSize: 14,
-        fontWeight: 400,
-        margin: 0,
-    },
-    itemText: {
-        color: theme.palette.text.primary,
-        fontSize: 15,
-        fontWeight: 400,
-        margin: '6px 0',
-    },
-}));
+// const useReferrerItemStyles = makeStyles(theme => ({
+//     root: {
+//         border: '#EBEAED solid 1px',
+//         borderRadius: 5,
+//         padding: theme.spacing(2),
+//         marginTop: theme.spacing(1),
+//         marginBottom: theme.spacing(1),
+//     },
+//     item: {
+//         display: 'flex',
+//         flexDirection: 'column',
+//     },
+//     itemLabel: {
+//         color: '#8F92A1',
+//         fontSize: 14,
+//         fontWeight: 400,
+//         margin: 0,
+//     },
+//     itemText: {
+//         color: theme.palette.text.primary,
+//         fontSize: 15,
+//         fontWeight: 400,
+//         margin: '6px 0',
+//     },
+// }));
 
-interface ReferrerItemProps {
-    referrer: IPersonReferrer;
-}
+// interface ReferrerItemProps {
+//     referrer: IPersonReferrer;
+// }
 
-const ReferrerItem: FC<ReferrerItemProps> = ({ referrer }) => {
-    const classes = useReferrerItemStyles();
+// const ReferrerItem: FC<ReferrerItemProps> = ({ referrer }) => {
+//     const classes = useReferrerItemStyles();
 
-    return (
-        <div className={classes.root}>
-            <Grid container direction="row">
-                <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
-                    <Property
-                        title={<Trans i18nKey={langKeys.name} />}
-                        subtitle={referrer.name}
-                        m={1}
-                    />
-                </Grid>
-                <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
-                    <Property
-                        title={<Trans i18nKey={langKeys.docType} />}
-                        subtitle={referrer.documenttype}
-                        m={1}
-                    />
-                </Grid>
-                <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
-                    <Property
-                        title={<Trans i18nKey={langKeys.docNumber} />}
-                        subtitle={referrer.documentnumber}
-                        m={1}
-                    />
-                </Grid>
-            </Grid>
-        </div>
-    );
-}
+//     return (
+//         <div className={classes.root}>
+//             <Grid container direction="row">
+//                 <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+//                     <Property
+//                         title={<Trans i18nKey={langKeys.name} />}
+//                         subtitle={referrer.name}
+//                         m={1}
+//                     />
+//                 </Grid>
+//                 <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+//                     <Property
+//                         title={<Trans i18nKey={langKeys.docType} />}
+//                         subtitle={referrer.documenttype}
+//                         m={1}
+//                     />
+//                 </Grid>
+//                 <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+//                     <Property
+//                         title={<Trans i18nKey={langKeys.docNumber} />}
+//                         subtitle={referrer.documentnumber}
+//                         m={1}
+//                     />
+//                 </Grid>
+//             </Grid>
+//         </div>
+//     );
+// }
 
 interface GeneralInformationTabProps {
     person: IPerson;
@@ -1261,7 +1542,7 @@ interface GeneralInformationTabProps {
 const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValues, setValue, domains, errors }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const referrerList = useSelector(state => state.person.personReferrerList);
+    // const referrerList = useSelector(state => state.person.personReferrerList);
 
     useEffect(() => {
         if (person.referringpersonid) {
@@ -1388,7 +1669,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                         </Grid>
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                             <Property
-                                title={<Trans i18nKey={langKeys.document} />}
+                                title={<Trans i18nKey={langKeys.documenttype} />}
                                 subtitle={(
                                     <FieldSelect
                                         uset={true}
@@ -1426,13 +1707,13 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 subtitle={(
                                     <FieldSelect
                                         uset={true}
-                                        valueDefault={person.persontype}
+                                        valueDefault={person.type}
                                         onChange={(value) => {
-                                            setValue('persontype', value?.domainvalue);
+                                            setValue('type', value?.domainvalue);
                                         }}
                                         loading={domains.loading}
-                                        data={domains.value?.personGenTypes || []}
-                                        prefixTranslation="type_persontype_"
+                                        data={domains.value?.personTypes || []}
+                                        prefixTranslation="type_personlevel_"
                                         optionValue="domainvalue"
                                         optionDesc="domaindesc"
                                     />
@@ -1446,13 +1727,13 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 subtitle={(
                                     <FieldSelect
                                         uset={true}
-                                        valueDefault={person.type}
+                                        valueDefault={person.persontype}
                                         onChange={(value) => {
-                                            setValue('type', value?.domainvalue);
+                                            setValue('persontype', value?.domainvalue);
                                         }}
                                         loading={domains.loading}
-                                        data={domains.value?.personTypes || []}
-                                        prefixTranslation="type_personlevel_"
+                                        data={domains.value?.personGenTypes || []}
+                                        prefixTranslation="type_persontype_"
                                         optionValue="domainvalue"
                                         optionDesc="domainvalue"
                                     />
@@ -1636,9 +1917,9 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                     </Grid>
                 </Grid>
             </Grid>
-            <div style={{ height: 12 }} />
+            {/* <div style={{ height: 12 }} />
             <label>{t(langKeys.referredBy)}</label>
-            {referrerList.data.map((e, i) => <ReferrerItem referrer={e} key={`referrer_item_${i}`} />)}
+            {referrerList.data.map((e, i) => <ReferrerItem referrer={e} key={`referrer_item_${i}`} />)} */}
         </div>
     );
 }
@@ -1650,6 +1931,18 @@ const useChannelItemStyles = makeStyles(theme => ({
         padding: theme.spacing(2),
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
+    },
+    contentContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+        flexGrow: 1,
+    },
+    propTitle: {
+        fontWeight: 400,
+        fontSize: 14,
+        color: '#8F92A1',
     },
     item: {
         display: 'flex',
@@ -1667,22 +1960,88 @@ const useChannelItemStyles = makeStyles(theme => ({
         fontWeight: 400,
         margin: '6px 0',
     },
+    subtitle: {
+        display: 'flex',
+        flexDirection: 'row',
+        gap: '0.5em',
+        alignItems: 'center',
+    },
+    propSubtitle: {
+        color: theme.palette.text.primary,
+        fontWeight: 400,
+        fontSize: 15,
+        margin: 0,
+        width: '100%',
+    },
+    buttonphone:{
+        padding: 0,
+        '&:hover': {
+            color: "#7721ad",
+        },
+    }
 }));
 
 interface ChannelItemProps {
     channel: IPersonChannel;
 }
 
+const nameschannel: { [x: string]: string } = {
+    "WHAT": "WHATSAPP",
+    "WHAD": "WHATSAPP",
+    "WHAP": "WHATSAPP",
+    "WHAC": "WHATSAPP",
+    "FBMS": "FACEBOOK MESSENGER",
+    "FBDM": "FACEBOOK MESSENGER",
+    "FBWA": "FACEBOOK MURO",
+    "WEBM": "WEB MESSENGER",
+    "TELE": "TELEGRAM",
+    "INST": "INSTAGRAM",
+    "INMS": "INSTAGRAM",
+    "INDM": "INSTAGRAM",
+    "ANDR": "ANDROID",
+    "APPL": "IOS",
+    "CHATZ": "WEB MESSENGER",
+    "CHAZ": "WEB MESSENGER",
+    "MAIL": "EMAIL",
+    "YOUT": "YOUTUBE",
+    "LINE": "LINE",
+    "SMS": "SMS",
+    "SMSI": "SMS",
+    "TWIT": "TWITTER",
+    "TWMS": "TWITTER",
+    "VOXI": "T_VOICECHANNEL",
+};
+
 const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
+    const { t } = useTranslation();
     const classes = useChannelItemStyles();
+    const dispatch = useDispatch();
+    const voxiConnection = useSelector(state => state.voximplant.connection);
+    const statusCall = useSelector(state => state.voximplant.statusCall);
+    const userConnected = useSelector(state => state.inbox.userConnected);
+    const personIdentifier = useMemo(() => {
+        if (!channel) return '';
+
+        const index = channel.personcommunicationchannel.lastIndexOf('_');
+        return channel.personcommunicationchannel.substring(0, index);
+    }, [channel]);
+    console.log(channel.type)
 
     return (
-        <div className={classes.root}>
+        <div className={classes.root} style={{display:"flex"}}>
             <Grid container direction="row">
-                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                <Grid item xs={11} sm={11} md={6} lg={6} xl={6}>
                     <Property
                         title={<Trans i18nKey={langKeys.communicationchannel} />}
-                        subtitle={channel.typedesc}
+                        subtitle={(
+                            <div className={classes.subtitle}>
+                                <span>{
+                                    nameschannel[channel.type].includes("T_")
+                                    ? t((langKeys as any)[nameschannel[channel.type]])
+                                    : nameschannel[channel.type]}</span>
+                                <GetIcon channelType={channel.type} color='black' />
+                            </div>
+                        )}
                         m={1}
                     />
                 </Grid>
@@ -1694,16 +2053,29 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                     />
                 </Grid>
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                    <Property
-                        title={<Trans i18nKey={langKeys.personIdentifier} />}
-                        subtitle={channel.personcommunicationchannel}
-                        m={1}
-                    />
+                    
+                    <Box>
+                        <div className={classes.contentContainer}>
+                            <label className={classes.propTitle}>{<Trans i18nKey={langKeys.personIdentifier} />}</label>
+                            <div style={{ height: 4 }} />
+                            <div style={{display:"flex"}}>
+                                {(!voxiConnection.error && !voxiConnection.loading && statusCall!=="CONNECTED" && userConnected && statusCall!=="CONNECTING" && (channel.type.includes("WHA")||channel.type.includes("VOXI"))) &&
+                                    <IconButton
+                                        className={classes.buttonphone}
+                                        onClick={() => {dispatch(setPhoneNumber(channel.personcommunicationchannelowner));dispatch(setModalCall(true))}}
+                                    >
+                                        <PhoneIcon style={{ width: "20px", height: "20px" }} />
+                                    </IconButton>
+                                }
+                                <div className={classes.propSubtitle}>{channel.personcommunicationchannelowner || "-"}</div>
+                            </div>
+                        </div>
+                    </Box>
                 </Grid>
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                     <Property
                         title={<Trans i18nKey={langKeys.internalIdentifier} />}
-                        subtitle={channel.personcommunicationchannelowner}
+                        subtitle={personIdentifier}
                         m={1}
                     />
                 </Grid>
@@ -1740,18 +2112,15 @@ interface ChannelTabProps {
     domains: IObjectState<IPersonDomains>;
 }
 
-const CommunicationChannelsTab: FC<ChannelTabProps> = ({ person, getValues, setValue, domains }) => {
+const CommunicationChannelsTab: FC<ChannelTabProps> = ({ person }) => {
     const dispatch = useDispatch();
     const channelList = useSelector(state => state.person.personChannelList);
-    // const additionalInfo = useSelector(state => state.person.personAdditionInfo);
 
     useEffect(() => {
         if (person.personid && person.personid !== 0) {
             dispatch(getChannelListByPerson(getChannelListByPersonBody(person.personid)));
-            // dispatch(getAdditionalInfoByPerson(getAdditionalInfoByPersonBody(person.personid)));
             return () => {
                 dispatch(resetGetChannelListByPerson());
-                // dispatch(resetgetAdditionalInfoByPerson());
             };
         }
     }, [dispatch, person]);
@@ -1775,22 +2144,8 @@ const AuditTab: FC<AuditTabProps> = ({ person }) => {
                 <Grid container direction="column">
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Property
-                            title={<Trans i18nKey={langKeys.firstContactDate} />}
-                            subtitle={new Date(person.firstcontact).toLocaleString()}
-                            m={1}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <Property
-                            title={<Trans i18nKey={langKeys.lastContactDate} />}
-                            subtitle={new Date(person.lastcontact).toLocaleString()}
-                            m={1}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <Property
-                            title={<Trans i18nKey={langKeys.lastCommunicationChannel} />}
-                            subtitle={`${person.communicationchannelname || ''} - ${person.lastcommunicationchannelid || ''}`}
+                            title={<Trans i18nKey={langKeys.communicationchannel} />}
+                            subtitle={`${person.communicationchannelname || ''}`}
                             m={1}
                         />
                     </Grid>
@@ -1801,14 +2156,28 @@ const AuditTab: FC<AuditTabProps> = ({ person }) => {
                             m={1}
                         />
                     </Grid>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <Property
+                            title={<Trans i18nKey={langKeys.creationDate} />}
+                            subtitle={new Date(person.createdate).toLocaleString()}
+                            m={1}
+                        />
+                    </Grid>
                 </Grid>
             </Grid>
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                 <Grid container direction="column">
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Property
-                            title={<Trans i18nKey={langKeys.creationDate} />}
-                            subtitle={new Date(person.createdate).toLocaleString()}
+                            title={<Trans i18nKey={langKeys.firstContactDate} />}
+                            subtitle={person.firstcontact ? new Date(person.firstcontact).toLocaleString() : ''}
+                            m={1}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <Property
+                            title={<Trans i18nKey={langKeys.lastContactDate} />}
+                            subtitle={person.lastcontact ? new Date(person.lastcontact).toLocaleString() : ''}
                             m={1}
                         />
                     </Grid>
@@ -1832,8 +2201,6 @@ const AuditTab: FC<AuditTabProps> = ({ person }) => {
     );
 }
 
-
-
 interface ConversationsTabProps {
     person: IPerson;
 }
@@ -1842,14 +2209,51 @@ const useConversationsTabStyles = makeStyles(theme => ({
     root: {
         height: '100%',
     },
+    root2: {
+        padding: '2px 4px',
+        display: 'flex',
+        alignItems: 'center',
+        height: 35,
+        border: '1px solid #EBEAED',
+        backgroundColor: '#F9F9FA',
+    },
+    containerFilterGeneral: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        backgroundColor: '#f9f9fa',
+        padding: `${theme.spacing(2)}px`,
+    },
+    containerSearch: {
+        width: '100%',
+        [theme.breakpoints.up('sm')]: {
+            width: '50%',
+        },
+    },
+    iconButton: {
+        padding: 4,
+    },
+    input: {
+        marginLeft: theme.spacing(1),
+        flex: 1,
+    },
+    inputPlaceholder: {
+        '&::placeholder': {
+            fontSize: 14,
+            fontWeight: 500,
+            color: '#84818A',
+        },
+    },
 }));
 
 const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
+    const { t } = useTranslation();
     const classes = useConversationsTabStyles();
     const dispatch = useDispatch();
     const firstCall = useRef(true);
     const [page, setPage] = useState(0);
+    const [searchFilter, setsearchFilter] = useState("");
     const [list, setList] = useState<IPersonConversation[]>([]);
+    const [filteredlist, setfilteredList] = useState<IPersonConversation[]>([]);
     const conversations = useSelector(state => state.person.personTicketList);
 
     const fetchTickets = useCallback(() => {
@@ -1878,7 +2282,6 @@ const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
                 if (!firstCall.current && list.length >= conversations.count) return;
                 if (conversations.loading) return;
                 if (myDiv.offsetHeight + myDiv.scrollTop + 1 >= myDiv.scrollHeight) {
-                    console.log("Scroll finalizó");
                     setPage(prevPage => prevPage + 1);
                 }
             };
@@ -1896,24 +2299,59 @@ const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
             dispatch(showSnackbar({
                 message: conversations.message || 'Error',
                 show: true,
-                success: false,
+                severity: "error"
             }));
         } else {
             setList(prevList => [...prevList, ...conversations.data]);
+            setfilteredList(prevList => [...prevList, ...conversations.data]);
         }
     }, [conversations, setList, dispatch]);
 
+    function filterList(e: any) {
+        setsearchFilter(e)
+        if (e === "") {
+            setfilteredList(list)
+        } else {
+
+            var newArray = list.filter(function (el) {
+                return el.ticketnum.includes(e) ||
+                    el.asesorfinal.toLowerCase().includes(e.toLowerCase()) ||
+                    el.channeldesc.toLowerCase().includes(e.toLowerCase()) ||
+                    new Date(el.fechainicio).toLocaleString().includes(e) ||
+                    new Date(el.fechafin).toLocaleString().includes(e)
+            });
+            setfilteredList(newArray)
+        }
+    }
     return (
         <div className={classes.root}>
-            {list.map((e, i) => {
-                if (list.length < conversations.count && i === list.length - 1) {
+            {list.length > 0 &&
+                <Box className={classes.containerFilterGeneral}>
+                    <span></span>
+                    <div className={classes.containerSearch}>
+                        <Paper component="div" className={classes.root2} elevation={0}>
+                            <IconButton type="button" className={classes.iconButton} aria-label="search" disabled>
+                                <SearchIcon />
+                            </IconButton>
+                            <InputBase
+                                className={classes.input}
+                                value={searchFilter}
+                                onChange={(e) => filterList(e.target.value)}
+                                placeholder={t(langKeys.search)}
+                                inputProps={{ className: classes.inputPlaceholder }}
+                            />
+                        </Paper>
+                    </div>
+                </Box>
+            }
+            {filteredlist.map((e, i) => {
+                if (filteredlist.length < conversations.count && i === filteredlist.length - 1) {
                     return [
-                        <ConversationItem conversation={e} key={`conversation_item_${i}` } person={person} />,
+                        <ConversationItem conversation={e} key={`conversation_item_${i}`} person={person} />,
                         <div
                             style={{ width: 'inherit', display: 'flex', justifyContent: 'center' }}
                             key={`conversation_item_${i}_loader`}
                         >
-                            <CircularProgress />
                         </div>
                     ];
                 }
@@ -1955,6 +2393,9 @@ const useConversationsItemStyles = makeStyles(theme => ({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    containerstyle: {
+        padding: "10px 0"
+    }
 }));
 
 interface ConversationItemProps {
@@ -1971,7 +2412,6 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
     const openDialogInteractions = useCallback((row: any) => {
         setOpenModal(true);
-        console.log(row)
         setRowSelected({ ...row, displayname: person.name, ticketnum: row.ticketnum })
     }, [mainResult]);
 
@@ -1984,18 +2424,23 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
             />
             <Grid container direction="row">
                 <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-                    <Property title="Ticket #" subtitle={conversation.ticketnum} isLink={true}   onClick={() => openDialogInteractions(conversation)}/>
+                    <Property title="Ticket #" subtitle={conversation.ticketnum} isLink={true} onClick={() => openDialogInteractions(conversation)} />
                 </Grid>
                 <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
                     <Property
-                        title={<Trans i18nKey={langKeys.advisor} />}
+                        title={<Trans i18nKey={langKeys.agent} />}
                         subtitle={conversation.asesorfinal}
                     />
                 </Grid>
                 <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
                     <Property
                         title={<Trans i18nKey={langKeys.channel} />}
-                        subtitle={conversation.personcommunicationchannel}
+                        subtitle={(
+                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '0.5em' }}>
+                                <span>{conversation.channeldesc}</span>
+                                <GetIcon channelType={conversation.channeltype} color='black' />
+                            </div>
+                        )}
                     />
                 </Grid>
                 <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
@@ -2020,103 +2465,110 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
             </Grid>
             <Collapse in={open}>
                 <div className={classes.collapseContainer}>
-                    <Divider orientation="horizontal" />
                     <h3><Trans i18nKey={langKeys.ticketInformation} /></h3>
                     <Grid container direction="column">
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <Grid container direction="row">
-                                <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                    <label className={classes.infoLabel}>
-                                        <Trans i18nKey={langKeys.firstTicketassignTime} />
-                                    </label>
+                        <Grid container direction="row">
+                            <Grid item xs={12} sm={12} md={6} lg={6} xl={6} className={classes.containerstyle}>
+                                <Grid container direction="row">
+                                    <Grid item xs={12} sm={6} md={6} lg={3} xl={2}>
+                                        <span className={classes.infoLabel}>
+                                            TMO
+                                        </span>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={6} lg={9} xl={10}>
+                                        <span>{conversation.tmo}</span>
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                    {conversation.fechainicio && new Date(conversation.fechainicio).toLocaleString()}
+                            </Grid>
+                            <Grid item xs={12} sm={12} md={6} lg={6} xl={6} className={classes.containerstyle}>
+                                <Grid container direction="row">
+                                    <Grid item xs={12} sm={6} md={6} lg={3} xl={2}>
+                                        <span className={classes.infoLabel}>
+                                            <Trans i18nKey={langKeys.status} />
+                                        </span>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={6} lg={9} xl={10}>
+                                        <span>{conversation.status}</span>
+                                    </Grid>
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <Grid container direction="row">
-                                <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                    <label className={classes.infoLabel}>
-                                        <Trans i18nKey={langKeys.firstReply} />
-                                    </label>
+                        <Grid container direction="row">
+                            <Grid item xs={12} sm={12} md={6} lg={6} xl={6} className={classes.containerstyle}>
+                                <Grid container direction="row">
+                                    <Grid item xs={12} sm={6} md={6} lg={3} xl={2}>
+                                        <span className={classes.infoLabel}>
+                                            <Trans i18nKey={langKeys.tmeAgent} />
+                                        </span>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={6} lg={9} xl={10}>
+                                        <span>{conversation.tme}</span>
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                    {conversation.firstreplytime}
+                            </Grid>
+                            <Grid item xs={12} sm={12} md={6} lg={6} xl={6} className={classes.containerstyle}>
+                                <Grid container direction="row">
+                                    <Grid item xs={12} sm={6} md={6} lg={3} xl={2}>
+                                        <span className={classes.infoLabel}>
+                                            <Trans i18nKey={langKeys.closetype} />
+                                        </span>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={6} lg={9} xl={10}>
+                                        <span>{conversation.closetype}</span>
+                                    </Grid>
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <Grid container direction="row">
-                                <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                    <label className={classes.infoLabel}>
-                                        <Trans i18nKey={langKeys.pauseTime} />
-                                    </label>
+                        <Grid container direction="row">
+                            <Grid item xs={12} sm={12} md={6} lg={6} xl={6} className={classes.containerstyle}>
+                                <Grid container direction="row">
+                                    <Grid item xs={12} sm={6} md={6} lg={3} xl={2}>
+                                        <span className={classes.infoLabel}>
+                                            <Trans i18nKey={langKeys.tmrAgent} />
+                                        </span>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={6} lg={9} xl={10}>
+                                        <span>{conversation.tmr}</span>
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                    {conversation.totalpauseduration}
+                            </Grid>
+                            <Grid item xs={12} sm={12} md={6} lg={6} xl={6} className={classes.containerstyle}>
+                                <Grid container direction="row">
+                                    <Grid item xs={12} sm={6} md={6} lg={3} xl={2}>
+                                        <span className={classes.infoLabel}>
+                                            <Trans i18nKey={langKeys.initialAgent} />
+                                        </span>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={6} lg={9} xl={10}>
+                                        <span>{conversation.asesorinicial}</span>
+                                    </Grid>
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <Grid container direction="row">
-                                <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                    <label className={classes.infoLabel}>
-                                        <Trans i18nKey={langKeys.avgResponseTimeOfAdvisor} />
-                                    </label>
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                    {conversation.tiempopromediorespuestaasesor}
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <Grid container direction="row">
-                                <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                    <label className={classes.infoLabel}>
-                                        <Trans i18nKey={langKeys.avgResponseTimeOfClient} />
-                                    </label>
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                    {conversation.tiempopromediorespuestapersona}
+                        <Grid container direction="row">
+                            <Grid item xs={12} sm={12} md={6} lg={6} xl={6} className={classes.containerstyle}>
+                                <Grid container direction="row">
+                                    <Grid item xs={12} sm={6} md={6} lg={3} xl={2}>
+                                        <span className={classes.infoLabel}>
+                                            {/* <Trans i18nKey={langKeys.avgResponseTimeOfClient} /> */}
+                                            <Trans i18nKey={langKeys.tmrClient} />
+                                        </span>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={6} lg={9} xl={10}>
+                                        <span>{conversation.tiempopromediorespuestapersona}</span>
+                                    </Grid>
                                 </Grid>
                             </Grid>
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <Grid container direction="row">
-                                <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                    <label className={classes.totalTime}>
-                                        <Trans i18nKey={langKeys.totalTime} />
-                                    </label>
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                    <label className={classes.totalTime}>{conversation.totalduration}</label>
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                        <Divider orientation="horizontal" />
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <Grid container direction="row">
-                                <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                    <label className={classes.infoLabel}>
-                                        <Trans i18nKey={langKeys.closetype} />
-                                    </label>
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                    {conversation.closetype}
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <Grid container direction="row">
-                                <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                    <label className={classes.infoLabel}>
-                                        <Trans i18nKey={langKeys.status} />
-                                    </label>
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                    {conversation.status}
+                            <Grid item xs={12} sm={12} md={6} lg={6} xl={6} className={classes.containerstyle}>
+                                <Grid container direction="row">
+                                    <Grid item xs={12} sm={6} md={6} lg={3} xl={2}>
+                                        <span className={classes.infoLabel}>
+                                            <Trans i18nKey={langKeys.finalAgent} />
+                                        </span>
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={6} lg={9} xl={10}>
+                                        <span>{conversation.asesorfinal}</span>
+                                    </Grid>
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -2134,6 +2586,112 @@ interface OpportunitiesTabProps {
 const OpportunitiesTab: FC<OpportunitiesTabProps> = ({ person }) => {
     const dispatch = useDispatch();
     const leads = useSelector(state => state.person.personLeadList);
+    const { t } = useTranslation();
+    // const history = useHistory();
+
+    // const goToLead = (lead: Dictionary) => {
+    //     history.push({ pathname: paths.CRM_EDIT_LEAD.resolve(lead.leadid), });
+    // }
+
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.opportunity),
+                accessor: 'description',
+            },
+            {
+                Header: t(langKeys.lastUpdate),
+                accessor: 'changedate',
+                type: 'date',
+                sortType: 'datetime',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return row.changedate ? convertLocalDate(row.changedate).toLocaleString() : ""
+                }
+            },
+            {
+                Header: t(langKeys.phase),
+                accessor: 'phase',
+            },
+            {
+                Header: t(langKeys.priority),
+                accessor: 'priority',
+                type: "select",
+                listSelectFilter: [{ key: t(langKeys.priority_low), value: "LOW" }, { key: t(langKeys.priority_medium), value: "MEDIUM" }, { key: t(langKeys.priority_high), value: "HIGH" }],
+                Cell: (props: any) => {
+                    const { priority } = props.cell.row.original;
+                    return (
+                        <Rating
+                            name="simple-controlled"
+                            max={3}
+                            value={urgencyLevels.findIndex(x => x === priority)}
+                            readOnly={true}
+                        />
+                    )
+                }
+            },
+            {
+                Header: t(langKeys.status),
+                accessor: 'status'
+            },
+            {
+                Header: t(langKeys.product, { count: 2 }),
+                accessor: 'leadproduct',
+                Cell: (props: any) => {
+                    const { leadproduct } = props.cell.row.original;
+                    if (!leadproduct) return null;
+                    return leadproduct.split(",").map((t: string, i: number) => (
+                        <span key={`leadproduct${i}`} style={{
+                            backgroundColor: '#7721AD',
+                            color: '#fff',
+                            borderRadius: '20px',
+                            padding: '2px 5px',
+                            margin: '2px'
+                        }}>{t}</span>
+                    ))
+                }
+            },
+            {
+                Header: t(langKeys.tags),
+                accessor: 'tags',
+                Cell: (props: any) => {
+                    const { tags } = props.cell.row.original;
+                    if (!tags)
+                        return null;
+                    return tags.split(",").map((t: string, i: number) => (
+                        <span key={`lead${i}`} style={{
+                            backgroundColor: '#7721AD',
+                            color: '#fff',
+                            borderRadius: '20px',
+                            padding: '2px 5px',
+                            margin: '2px'
+                        }}>{t}</span>
+                    ))
+                }
+            },
+            {
+                Header: t(langKeys.comments),
+                accessor: 'datenote',
+                NoFilter: true,
+                NoSort: true,
+                Cell: (props: any) => {
+                    const { datenote, leadnote, dateactivity, leadactivity } = props.cell.row.original;
+                    return (
+                        <div>
+                            {datenote &&
+                                <div>{t(langKeys.lastnote)} ({convertLocalDate(datenote).toLocaleString()}) {leadnote}</div>
+                            }
+                            {dateactivity &&
+                                <div>{t(langKeys.nextprogramedactivity)} ({convertLocalDate(dateactivity).toLocaleString()}) {leadactivity}</div>
+                            }
+                        </div>
+                    )
+                }
+            },
+        ],
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        []
+    );
 
     useEffect(() => {
         dispatch(getLeadsByPerson(getOpportunitiesByPersonBody(person.personid)));
@@ -2142,213 +2700,15 @@ const OpportunitiesTab: FC<OpportunitiesTabProps> = ({ person }) => {
         };
     }, [dispatch, person]);
 
-    useEffect(() => {
-        console.log(leads);
-    }, [leads]);
-
     return (
-        <div>
-            {leads.data.map((e, i) => <LeadItem lead={e} key={`leads_item_${i}`} />)}
-        </div>
-    );
-}
-const useLeadItemStyles = makeStyles(theme => ({
-    root: {
-        display: 'flex',
-        flexDirection: 'column',
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(1),
-        justifyContent: 'stretch',
-        width: 'inherit',
-    },
-    rootItem: {
-        border: '#EBEAED solid 1px',
-        borderRadius: 5,
-        padding: theme.spacing(2),
-    },
-    collapseRoot: {
-        display: 'flex',
-        flexDirection: 'column',
-    },
-    opportunityContainer: {
-        backgroundColor: '#381052',
-        border: '#381052 solid 1px',
-        borderRadius: 5,
-        padding: theme.spacing(1),
-    },
-    opportunitySubContainer: {
-        display: 'flex',
-        flexDirection: 'row',
-        fontWeight: 700,
-        fontSize: 14,
-        color: 'white',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    opportunityValue: {
-        fontSize: 32,
-    },
-    infoSubtitle: {
-        color: theme.palette.primary.main,
-        fontWeight: 700,
-        fontSize: 16,
-        marginRight: theme.spacing(1),
-        marginLeft: theme.spacing(1),
-        marginTop: 0,
-        marginBottom: 0,
-    },
-    infoTitle: {
-        fontSize: 18,
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(2),
-    },
-}));
-
-interface LeadItemProps {
-    lead: IPersonLead;
-}
-
-const LeadItem: FC<LeadItemProps> = ({ lead }) => {
-    const classes = useLeadItemStyles();
-    const [open, setOpen] = useState(false);
-
-    return (
-        <div className={classes.root}>
-            <div className={classes.rootItem}>
-                <Grid container direction="row">
-                    <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-                        <Property title="Ticket #" subtitle="#0000006" />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-                        <Property title={<Trans i18nKey={langKeys.opportunity} />} subtitle={lead.description} />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-                        <Property title={<Trans i18nKey={langKeys.creationDate} />} subtitle={new Date(lead.createdate).toLocaleString()} />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-                        <Property title={<Trans i18nKey={langKeys.salesperson} />} subtitle="William Sam" />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-                        <Property title={<Trans i18nKey={langKeys.lastUpdate} />} subtitle={lead.changedate} />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={1} lg={1} xl={1}>
-                        <Property title={<Trans i18nKey={langKeys.phase} />} subtitle="Won" />
-                    </Grid>
-                    {/* <Grid item xs={12} sm={12} md={1} lg={1} xl={1}>
-                        <IconButton onClick={() => setOpen(!open)}>
-                            <ArrowDropDown />
-                        </IconButton>
-                    </Grid> */}
-                </Grid>
-            </div>
-            <Collapse in={open}>
-                <div className={classes.collapseRoot}>
-                    <div style={{ height: 15 }} />
-                    <div className={classes.opportunityContainer}>
-                        <Grid container direction="row">
-                            <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-                                <Box className={classes.opportunitySubContainer} m={1}>
-                                    <label className={classes.opportunityValue}>$175</label>
-                                    <div style={{ width: '10%', minWidth: 4 }} />
-                                    <label><Trans i18nKey={langKeys.expectedRevenue} /></label>
-                                </Box>
-                            </Grid>
-                            <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-                                <Box className={classes.opportunitySubContainer} m={1}>
-                                    <label className={classes.opportunityValue}>55%</label>
-                                    <div style={{ width: '10%', minWidth: 4 }} />
-                                    <label><Trans i18nKey={langKeys.probability} /></label>
-                                </Box>
-                            </Grid>
-                            <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-                                <Box className={classes.opportunitySubContainer} m={1}>
-                                    <label className={classes.opportunityValue}>35:15</label>
-                                    <div style={{ width: '10%', minWidth: 4 }} />
-                                    <label><Trans i18nKey={langKeys.expectedClosing} /></label>
-                                </Box>
-                            </Grid>
-                            <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-                                <Box className={classes.opportunitySubContainer} m={1}>
-                                    <label className={classes.opportunityValue}>X</label>
-                                    <div style={{ width: '10%', minWidth: 4 }} />
-                                    <label><Trans i18nKey={langKeys.priority} /></label>
-                                </Box>
-                            </Grid>
-                        </Grid>
-                    </div>
-                    <div style={{ height: 15 }} />
-                    <div className={classes.rootItem}>
-                        <h3 className={clsx(classes.infoSubtitle, classes.infoTitle)}>
-                            <Trans i18nKey={langKeys.extraInformation} />
-                        </h3>
-                        <div style={{ height: 2 }} />
-                        <h4 className={classes.infoSubtitle}>
-                            <Trans i18nKey={langKeys.contactInformation} />
-                        </h4>
-                        <Grid container direction="row">
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                                <Grid container direction="column">
-                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                        <Property title="Company name" subtitle="NATURAL PRODUCTS" m={1} />
-                                    </Grid>
-                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                        <Property title="Language" subtitle="English" m={1} />
-                                    </Grid>
-                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                        <Property title="Mobile" subtitle="(456) 589 5621" m={1} />
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                                <Grid container direction="column">
-                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                        <Property title="Address" subtitle="45 1st St.Louisiana" m={1} />
-                                    </Grid>
-                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                        <Property title="Contact name" subtitle="Sam White" m={1} />
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                                <Grid container direction="column">
-                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                        <Property title="Website" subtitle="www.naturalproducts.net" m={1} />
-                                    </Grid>
-                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                        <Property title="Job position" subtitle="manager" m={1} />
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                        <div style={{ height: 2 }} />
-                        <h4 className={classes.infoSubtitle}>MARKETING</h4>
-                        <Grid container direction="row">
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                                <Property title="Campaign" subtitle="Promotion" m={1} />
-                            </Grid>
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                                <Property title="Medium" subtitle="Social media" m={1} />
-                            </Grid>
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                                <Property title="Source" subtitle="Facebook" m={1} />
-                            </Grid>
-                        </Grid>
-                        <div style={{ height: 2 }} />
-                        <h4 className={classes.infoSubtitle}>MISC</h4>
-                        <Grid container direction="row">
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                                <Property title="Days to assign" subtitle="0.00" m={1} />
-                            </Grid>
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                                <Property title="Days to close" subtitle="1.00" m={1} />
-                            </Grid>
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                                <Property title="Referred by" subtitle="Website" m={1} />
-                            </Grid>
-                        </Grid>
-                    </div>
-                </div>
-            </Collapse>
-        </div>
+        <TableZyx
+            columns={columns}
+            filterGeneral={false}
+            data={leads.data}
+            download={false}
+            loading={leads.loading}
+            // onClickRow={goToLead}
+            register={false}
+        />
     );
 }

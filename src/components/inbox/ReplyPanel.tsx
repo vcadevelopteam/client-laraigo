@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
 import InputAdornment from '@material-ui/core/InputAdornment';
-import { ImageIcon, QuickresponseIcon, SendIcon, RichResponseIcon } from 'icons';
+import { ImageIcon, QuickresponseIcon, RichResponseIcon, SendIcon } from 'icons';
 import { styled } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { Dictionary } from '@types';
@@ -11,7 +12,7 @@ import { uploadFile, resetUploadFile } from 'store/main/actions';
 import { manageConfirmation } from 'store/popus/actions';
 import InputBase from '@material-ui/core/InputBase';
 import clsx from 'clsx';
-import { EmojiPickerZyx, GifPickerZyx } from 'components'
+import { EmojiPickerZyx, GifPickerZyx, RichText } from 'components'
 import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
@@ -32,6 +33,10 @@ import ListItemText from '@material-ui/core/ListItemText';
 import TextField from '@material-ui/core/TextField';
 import { showSnackbar } from 'store/popus/actions';
 import { cleanedRichResponse, convertLocalDate, getSecondsUntelNow } from 'common/helpers/functions'
+import { Descendant } from 'slate';
+import { renderToString, toElement } from 'components/fields/RichText';
+import UndoIcon from '@material-ui/icons/Undo';
+import RedoIcon from '@material-ui/icons/Redo';
 
 const channelsWhatsapp = ["WHAT", "WHAD", "WHAP"];
 interface IFile {
@@ -41,7 +46,7 @@ interface IFile {
     error?: boolean;
 }
 
-const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (param: any) => void }> = ({ classes, setFiles, type }) => {
+const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (param: any) => void, initfile?: any, setfileimage?: (param: any) => void }> = ({ classes, setFiles, type, initfile, setfileimage }) => {
     const [valuefile, setvaluefile] = useState('')
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
@@ -49,6 +54,15 @@ const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (
     const uploadResult = useSelector(state => state.main.uploadFile);
     const [idUpload, setIdUpload] = useState('');
 
+    useEffect(() => {
+        if (initfile) {
+            onSelectImage(initfile)
+            if (setfileimage) {
+                setfileimage(null)
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [initfile])
     useEffect(() => {
         if (waitSave) {
             if (!uploadResult.loading && !uploadResult.error) {
@@ -58,7 +72,7 @@ const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (
             } else if (uploadResult.error) {
                 // const errormessage = uploadResult.code || "error_unexpected_error"
                 setFiles((x: IFile[]) => x.map(item => item.id === idUpload ? { ...item, url: uploadResult.url, error: true } : item))
-                // dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                // dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
             }
         }
@@ -104,7 +118,7 @@ const ItemFile: React.FC<{ item: IFile, setFiles: (param: any) => void }> = ({ i
         <div key={item.id} style={{ width: 70, height: 70, border: '1px solid #e1e1e1', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             {item.url ?
                 (item.type === 'image' ?
-                    <img alt="loaded" src={item.url} style={{ objectFit: 'cover', width: '100%' }} /> :
+                    <img alt="loaded" src={item.url} style={{ objectFit: 'cover', width: '100%', maxHeight: 70 }} /> :
                     <img width="30" height="30" alt="loaded" src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/1631292621392file-trans.png" />) :
                 <CircularProgress color="inherit" />
             }
@@ -167,7 +181,8 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
                 {open && (
                     <div style={{
                         position: 'absolute',
-                        bottom: 60
+                        bottom: 60,
+                        zIndex: 1201,
                     }}>
                         <div className={classes.containerQuickReply}>
                             <div>
@@ -263,7 +278,7 @@ const TmpRichResponseIcon: React.FC<{ classes: any, setText: (param: string) => 
             newUserGroup: '',
             observation: 'Reassigned from supervisor',
             newConversation: true,
-            wasanswered: true
+            wasanswered: ticketSelected?.isAnswered || false
         }));
         dispatch(emitEvent({
             event: 'reassignTicket',
@@ -280,7 +295,7 @@ const TmpRichResponseIcon: React.FC<{ classes: any, setText: (param: string) => 
         const listInteractions = cleanedRichResponse(block.cards, variablecontext)
 
         if (listInteractions.length === 0) {
-            dispatch(showSnackbar({ show: true, success: false, message: 'No hay cards' }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: 'No hay cards' }))
             return;
         }
 
@@ -323,7 +338,8 @@ const TmpRichResponseIcon: React.FC<{ classes: any, setText: (param: string) => 
                 {open && (
                     <div style={{
                         position: 'absolute',
-                        bottom: 60
+                        bottom: 60,
+                        zIndex: 1201,
                     }}>
                         <div className={classes.containerQuickReply}>
                             <div>
@@ -447,17 +463,33 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const richResponseList = useSelector(state => state.inbox.richResponseList);
     const userType = useSelector(state => state.inbox.userType);
     const [text, setText] = useState("");
+    const [previousTicket, setpreviousTicket] = useState<any>(null);
     const [files, setFiles] = useState<IFile[]>([]);
     const multiData = useSelector(state => state.main.multiData);
+    const groupInteractionList = useSelector(state => state.inbox.interactionList);
 
     const [typeHotKey, setTypeHotKey] = useState("")
     const [quickReplies, setquickReplies] = useState<Dictionary[]>([])
+    const [emojiNoShow, setemojiNoShow] = useState<string[]>([])
+    const [emojiFavorite, setemojiFavorite] = useState<string[]>([])
+    const [inappropiatewordsList, setinnappropiatewordsList] = useState<Dictionary[]>([])
+    // const [inappropiatewords, setinnappropiatewords] = useState<string[]>([])
     const [quickRepliesToShow, setquickRepliesToShow] = useState<Dictionary[]>([])
     const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([])
     const [showReply, setShowReply] = useState(true);
+    const [fileimage, setfileimage] = useState<any>(null);
+    const [bodyobject, setBodyobject] = useState<Descendant[]>([{ "type": "paragraph",  align:"left", "children": [{ "text": "" }] }])
+    const [refresh, setrefresh] = useState(1)
+    const [flagundo, setflagundo] = useState(false)
+    const [flagredo, setflagredo] = useState(false)
+    const [undotext, setundotext] = useState<any>([])
+    const [redotext, setredotext] = useState<any>([])
+
+
 
     useEffect(() => {
-        if (ticketSelected?.status === "CERRADO")
+        if((ticketSelected?.conversationid) !== (previousTicket?.conversationid)) setpreviousTicket(ticketSelected)
+        if (ticketSelected?.status !== "ASIGNADO")
             setShowReply(false);
         else if (channelsWhatsapp.includes(ticketSelected!!.communicationchanneltype)) {
             const hoursWaiting = getSecondsUntelNow(convertLocalDate(ticketSelected?.personlastreplydate)) / 3600;
@@ -466,8 +498,41 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             } else {
                 setShowReply(true);
             }
-        }
+        } else
+            setShowReply(true)
     }, [ticketSelected])
+    useEffect(() => {
+        if (ticketSelected?.communicationchanneltype === "MAIL") {
+            setBodyobject([{ "type": "paragraph", align:"left", "children": [{ "text": "" }] }])
+            setText(renderToString(toElement([{ "type": "paragraph", align:"left", "children": [{ "text": "" }] }])))
+            setrefresh(refresh * -1)
+        } else {
+            setText("")
+            setBodyobject([{ "type": "paragraph", align:"left", "children": [{ "text": "" }] }])
+        }
+    }, [previousTicket])
+
+    useEffect(() => {
+        if (!flagundo) {
+            if (!flagredo) {
+                setredotext([])
+            }
+            setundotext([...undotext, (bodyobject)])
+        }
+        if (ticketSelected?.communicationchanneltype === "MAIL") {
+            setText(renderToString(toElement(bodyobject)))
+        }
+    }, [bodyobject])
+    useEffect(() => {
+        if (flagundo) {
+            setflagundo(false)
+        }
+    }, [undotext])
+    useEffect(() => {
+        if (flagredo) {
+            setflagredo(false)
+        }
+    }, [redotext])
 
     const reasignTicket = React.useCallback(() => {
         dispatch(reassignTicket({
@@ -491,7 +556,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const triggerReplyMessage = () => {
         const callback = () => {
             let wasSend = false;
-            if (files.length > 0) {
+            if (files.length > 0 && ticketSelected?.communicationchanneltype !== "MAIL") {
                 const listMessages = files.map(x => ({
                     ...ticketSelected!!,
                     interactiontype: x.type,
@@ -511,6 +576,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                         userid: 0,
                         usertype: "agent",
                         ticketWasAnswered: !(ticketSelected!!.isAnswered || i > 0), //solo enviar el cambio en el primer mensaje
+                        isAnswered: !(ticketSelected!!.isAnswered || i > 0), //solo enviar el cambio en el primer mensaje
                     }
                     if (userType === "AGENT") {
                         dispatch(emitEvent({
@@ -522,33 +588,54 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                 setFiles([])
             }
             if (text) {
-                const textCleaned = text.trim();
+                let textCleaned = text;
+                if (ticketSelected?.communicationchanneltype === "MAIL" && groupInteractionList.data[0]?.interactiontext) {
+                    textCleaned = ("Re: " + (groupInteractionList.data[0].interactiontext).split("&%MAIL%&")[0] + "&%MAIL%&" + text).trim();
+
+                    let fileobj = files.reduce((acc, item,i) => ({ ...acc, [String(item.url.split('/').pop()==="tenor.gif"?"tenor"+i+".gif":item.url.split('/').pop())]: item.url }), {})
+                    console.log(fileobj)
+                    textCleaned = textCleaned + "&%MAIL%&" + JSON.stringify(fileobj)
+                    setFiles([])
+                }
+
+                const wordlist = textCleaned.split(" ").map(x => x.toLowerCase())
+
+                const errormessage = inappropiatewordsList.find(x => wordlist.includes(x.description.toLowerCase()))?.defaultanswer || "";
+
                 if (textCleaned) {
-                    wasSend = true
-                    const newInteractionSocket = {
-                        ...ticketSelected!!,
-                        interactionid: 0,
-                        typemessage: "text",
-                        typeinteraction: null,
-                        lastmessage: textCleaned,
-                        createdate: new Date().toISOString(),
-                        userid: 0,
-                        usertype: "agent",
-                        ticketWasAnswered: !ticketSelected!!.isAnswered,
-                    }
-                    if (userType === "AGENT") {
-                        dispatch(emitEvent({
-                            event: 'newMessageFromAgent',
-                            data: newInteractionSocket
+                    if (!errormessage) {
+                        wasSend = true
+                        const newInteractionSocket = {
+                            ...ticketSelected!!,
+                            interactionid: 0,
+                            typemessage: ticketSelected?.communicationchanneltype === "MAIL" ? "email" : "text",
+                            typeinteraction: null,
+                            lastmessage: textCleaned,
+                            createdate: new Date().toISOString(),
+                            userid: 0,
+                            usertype: "agent",
+                            ticketWasAnswered: !ticketSelected!!.isAnswered,
+                        }
+                        if (userType === "AGENT") {
+                            dispatch(emitEvent({
+                                event: 'newMessageFromAgent',
+                                data: newInteractionSocket
+                            }));
+                        }
+                        //send to answer with integration
+                        dispatch(replyTicket({
+                            ...ticketSelected!!,
+                            interactiontype: ticketSelected?.communicationchanneltype === "MAIL" ? "email" : "text",
+                            interactiontext: textCleaned,
+                            isAnswered: !ticketSelected!!.isAnswered,
                         }));
+                        setText("");
+                        setrefresh(refresh * -1)
+                        setBodyobject([{ "type": "paragraph", align:"left", "children": [{ "text": "" }] }]);
+
+                    } else {
+                        dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                     }
-                    //send to answer with integration
-                    dispatch(replyTicket({
-                        ...ticketSelected!!,
-                        interactiontype: "text",
-                        interactiontext: textCleaned,
-                    }));
-                    setText("");
                 }
             }
 
@@ -572,8 +659,12 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
 
     useEffect(() => {
         if (!multiData.loading && !multiData.error && multiData?.data[4]) {
-            setquickReplies(multiData?.data[4].data)
-            setquickRepliesToShow(multiData?.data[4].data.filter(x => !!x.favorite))
+            setquickReplies(multiData?.data?.[4]?.data || [])
+            setquickRepliesToShow(multiData?.data?.[4]?.data.filter(x => !!x.favorite) || [])
+            setemojiNoShow(multiData?.data?.[10]?.data.filter(x => (!!x.restricted)).map(x => x.emojihex) || [])
+            setemojiFavorite(multiData?.data?.[10]?.data.filter(x => (!!x.favorite)).map(x => x.emojihex) || [])
+            setinnappropiatewordsList(multiData?.data?.[11]?.data || [])
+            // setinnappropiatewords(multiData?.data[11].data.filter(x => (x.status === "ACTIVO")).map(y => (y.description)) || [])
         }
     }, [multiData])
 
@@ -612,7 +703,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             const listInteractions = cleanedRichResponse(block.cards, variablecontext)
 
             if (listInteractions.length === 0) {
-                dispatch(showSnackbar({ show: true, success: false, message: 'No hay cards' }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: 'No hay cards' }))
                 return;
             }
 
@@ -668,8 +759,132 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                 return triggerReplyMessage()
         }
     }
+    function onPasteTextbar(e: any) {
+        if (e.clipboardData.files.length) {
+            e.preventDefault()
+            if (e.clipboardData.files[0].type.includes("image")) {
+                setfileimage(e.clipboardData.files)
+            }
+        }
+    }
 
-    return (
+    if (ticketSelected?.communicationchanneltype === "MAIL") {
+        return (<div className={classes.containerResponse}>
+            {showReply ?
+                <div>
+                    {files.length > 0 &&
+                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', borderBottom: '1px solid #EBEAED', paddingBottom: 8 }}>
+                            {files.map((item: IFile) => <ItemFile key={item.id} item={item} setFiles={setFiles} />)}
+                        </div>
+                    }
+                    <div style={{ alignItems: "center" }}>
+                        <ClickAwayListener onClickAway={handleClickAway}>
+                            <div>
+                                <RichText
+                                    style={{ width: "100%" }}
+                                    value={bodyobject}
+                                    onChange={setBodyobject}
+                                    positionEditable="top"
+                                    spellCheck
+                                    onKeyPress={handleKeyPress}
+                                    quickReplies={multiData?.data[4]?.data || []}
+                                    refresh={refresh}
+                                    placeholder="Send your message..."
+                                    emojiNoShow={emojiNoShow}
+                                    emoji={true}
+                                    emojiFavorite={emojiFavorite}
+                                    endinput={
+                                        <div style={{ display: 'block' }}>
+                                            <div style={{ marginLeft: "auto", marginRight: 0 }} className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(renderToString(toElement(bodyobject)) !== `<div data-reactroot=""><p><span></span></p></div>` || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>
+                                                <SendIcon />
+                                            </div>
+                                        </div>
+                                    }
+                                >
+                                    <div style={{ display: 'block', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+                                            <IconButton disabled={undotext.length < 2} size="small" onClick={() => {
+                                                setflagundo(true)
+                                                setredotext([...redotext, bodyobject])
+                                                setBodyobject(undotext[undotext.length - 2])
+                                                setrefresh(refresh * -1)
+                                                setundotext(undotext.slice(0, undotext.length - 1))
+                                            }}>
+
+                                                <Tooltip title={t(langKeys.undo) + ""} arrow placement="top">
+                                                    <UndoIcon />
+                                                </Tooltip>
+                                            </IconButton>
+                                            <IconButton disabled={redotext.length < 1} size="small" onClick={() => {
+                                                setflagredo(true)
+                                                setBodyobject(redotext[redotext.length - 1])
+                                                setrefresh(refresh * -1)
+                                                setredotext(redotext.slice(0, redotext.length - 1))
+                                            }}>
+                                                <Tooltip title={t(langKeys.redo) + ""} arrow placement="top">
+                                                    <RedoIcon />
+                                                </Tooltip>
+                                            </IconButton>
+                                            <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage} />
+                                            <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
+                                            {/*
+                                                    <TmpRichResponseIcon classes={classes} setText={setText} /> final
+                                                */}
+                                            <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
+                                        </div>
+                                    </div>
+
+                                </RichText>
+                                {openDialogHotKey && (
+                                    <div style={{
+                                        position: 'absolute',
+                                        bottom: 100,
+                                        left: 15
+                                    }}>
+                                        <div className="scroll-style-go" style={{
+                                            maxHeight: 200,
+                                            display: 'flex',
+                                            gap: 4,
+                                            flexDirection: 'column',
+                                        }}>
+                                            {typeHotKey === "quickreply" ?
+                                                quickRepliesToShow.map((item) => (
+                                                    <div
+                                                        key={item.quickreplyid}
+                                                        className={classes.hotKeyQuickReply}
+                                                        onClick={() => selectQuickReply(item.quickreply)}
+                                                    >
+                                                        {item.description}
+                                                    </div>
+
+                                                )) :
+                                                richResponseToShow.map((item) => (
+                                                    <div
+                                                        key={item.id}
+                                                        className={classes.hotKeyQuickReply}
+                                                        onClick={() => selectRichResponse(item)}
+                                                    >
+                                                        {item.title}
+                                                    </div>
+
+                                                ))
+                                            }
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </ClickAwayListener>
+
+                    </div>
+                </div>
+                :
+                <div style={{ whiteSpace: 'break-spaces', color: 'rgb(251, 95, 95)', fontWeight: 500, textAlign: 'center' }}>
+                    {t(langKeys.no_reply_use_hsm)}
+                </div>
+            }
+            <BottomGoToUnder />
+        </div >)
+    } else return (
         <div className={classes.containerResponse}>
             {showReply ?
                 <>
@@ -689,6 +904,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                 rows={2}
                                 multiline
                                 inputProps={{ 'aria-label': 'naked' }}
+                                onPaste={onPasteTextbar}
                             />
                             {openDialogHotKey && (
                                 <div style={{
@@ -721,7 +937,6 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                                 >
                                                     {item.title}
                                                 </div>
-
                                             ))
                                         }
                                     </div>
@@ -733,10 +948,10 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                         <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
                             <QuickReplyIcon classes={classes} setText={setText} />
                             <TmpRichResponseIcon classes={classes} setText={setText} />
-                            <UploaderIcon type="image" classes={classes} setFiles={setFiles} />
-                            <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} />
-                            <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
                             <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
+                            <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
+                            <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite} />
+                            <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage} />
                         </div>
                         <div className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(text || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>
                             <SendIcon />

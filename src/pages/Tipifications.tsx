@@ -14,7 +14,7 @@ import { langKeys } from 'lang/keys';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
+import { getCollection, resetAllMain, getMultiCollection, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import AddIcon from '@material-ui/icons/Add';
@@ -22,6 +22,8 @@ import { IconButton } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import { TreeItem, TreeView } from '@material-ui/lab';
+import { useHistory } from 'react-router-dom';
+import paths from 'common/constants/paths';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -36,11 +38,8 @@ interface DetailTipificationProps {
     externalType?: string;
     externalSaveHandler?: ({...param}?: any) => void;
     externalCancelHandler?: ({...param}?: any) => void;
+    arrayBread?:any;
 }
-const arrayBread = [
-    { id: "view-1", name: "Tipifications" },
-    { id: "view-2", name: "Tipification detail" }
-];
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -134,7 +133,7 @@ const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary}> = ({ dataClassT
     )
 };
 
-export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, externalUse = false, externalType, externalSaveHandler, externalCancelHandler }) => {
+export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, externalUse = false, externalType, externalSaveHandler, externalCancelHandler,arrayBread }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [showAddAction, setShowAddAction] = useState(!!row?.jobplan || false);
@@ -147,7 +146,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
     const { t } = useTranslation();
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataParent = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataParent = multiData[3] && multiData[3].success ? multiData[3].data : [];
 
     const datachannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
     
@@ -155,7 +154,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
         defaultValues: {
             type: externalUse ? externalType : (row ? row?.type : 'TIPIFICACION'),
             id: row?.classificationid || 0,
-            description: row?.description || '',
+            description: edit? (row?.description) : '',
             title: row?.title || '',
             parent: row?.parentid || 0,
             communicationchannel: row?.communicationchannel || '',
@@ -182,19 +181,19 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
                 if (externalUse) {
-                    dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                     dispatch(showBackdrop(false));
                     externalSaveHandler && externalSaveHandler();
                 }
                 else {
-                    dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                     fetchData();
                     dispatch(showBackdrop(false));
                     setViewSelected("view-1")
                 }
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.classification).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
@@ -231,7 +230,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                     {!externalUse ?
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
+                            breadcrumbs={[...arrayBread,{ id: "view-2", name: `${t(langKeys.tipification)} ${t(langKeys.detail)}` }]}
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
@@ -304,7 +303,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                                 onChange={(value) => setValue('parent', value ? value.classificationid : 0)}
                                 error={errors?.parent?.message}
                                 data={dataParent}
-                                optionDesc="title"
+                                optionDesc="description"
                                 optionValue="classificationid"
                             />
                             : <FieldView
@@ -477,7 +476,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
 }
 
 const Tipifications: FC = () => {
-    // const history = useHistory();
+    const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
@@ -488,6 +487,17 @@ const Tipifications: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const arrayBread = [
+        { id: "view-0", name: t(langKeys.configuration_plural) },
+        { id: "view-1", name: t(langKeys.classification_plural) },
+    ];
+    function redirectFunc(view:string){
+        if(view ==="view-0"){
+            history.push(paths.CONFIGURATION)
+            return;
+        }
+        setViewSelected(view)
+    }
 
     const columns = React.useMemo(
         () => [
@@ -548,32 +558,35 @@ const Tipifications: FC = () => {
         ],
         []
     );
-    const fetchData = () => dispatch(getCollection(getClassificationSel(0)));
-
-    useEffect(() => {
-        fetchData();
+    const fetchData = () => {
+        dispatch(getCollection(getClassificationSel(0)));
         dispatch(getMultiCollection([
             getValuesFromDomain("ESTADOGENERICO"),
             getParentSel(),
             getValuesFromDomain("TIPOCANAL"),
-            getValuesForTree()
+            getValuesForTree("TIPIFICACION")
         ]));
+    };
+
+    useEffect(() => {
+        fetchData();
+        
         return () => {
-            dispatch(resetMain());
+            dispatch(resetAllMain());
         };
     }, []);
 
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(insertexcel?langKeys.successful_edit: langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(insertexcel?langKeys.successful_edit: langKeys.successful_delete) }))
                 setinsertexcel(false)
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
@@ -647,7 +660,7 @@ const Tipifications: FC = () => {
             {},
             mainResult.multiData.data[2].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domaindesc}), {}),
             {},
-            mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.title}), {0: ''}),
+            mainResult.multiData.data[3].data.reduce((a,d) => ({...a, [d.classificationid]: d.description}), {0: ''}),
             mainResult.multiData.data[0].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domainvalue}), {})
         ];
         const header = ['classification', 'description', 'channels', 'tag', 'parent', 'status'];
@@ -661,59 +674,80 @@ const Tipifications: FC = () => {
         }
 
         return (
-            <Fragment>
-                <TableZyx
-                    columns={columns}
-                    titlemodule={t(langKeys.tipification, { count: 2 })}
-                    data={mainResult.mainData.data}
-                    loading={mainResult.mainData.loading}
-                    download={true}
-                    register={true}
-                    importCSV={importCSV}
-                    handleTemplate={handleTemplate}
-                    handleRegister={handleRegister}
-                    ButtonsElement={()=>
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            style={{ backgroundColor: "#7721ad" }}
-                            onClick={() => setOpenDialog(true)}
-                            startIcon={<AccountTreeIcon color="secondary" />}
-                        >{t(langKeys.opendrilldown)}
-                        </Button>
-                    }
-                />
-                <DialogZyx
-                    open={openDialog}
-                    title={t(langKeys.organizationclass)}
-                    buttonText1={t(langKeys.close)}
-                    //buttonText2={t(langKeys.select)}
-                    handleClickButton1={() => setOpenDialog(false)}
-                    handleClickButton2={() => setOpenDialog(false)}
-                >   
-                <TreeView
-                    className={classes.treeviewroot}
-                    defaultCollapseIcon={<ExpandMoreIcon />}
-                    defaultExpandIcon={<ChevronRightIcon />}
-                >
-                        <TreeItemsFromData
-                            dataClassTotal={mainResult.multiData.data[3] && mainResult.multiData.data[3].success ? mainResult.multiData.data[3].data : []}
-                        />
-                    </TreeView>
-                    <div className="row-zyx">
-                    </div>
-                </DialogZyx>
-            </Fragment>
+            
+            <div style={{width:"100%"}}>
+                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={arrayBread}
+                        handleClick={redirectFunc}
+                    />
+                </div>
+                <Fragment>
+                    <TableZyx
+                        columns={columns}
+                        titlemodule={t(langKeys.tipification, { count: 2 })}
+                        data={mainResult.mainData.data}
+                        loading={mainResult.mainData.loading}
+                        download={true}
+                        register={true}
+                        onClickRow={handleEdit}
+                        importCSV={importCSV}
+                        handleTemplate={handleTemplate}
+                        handleRegister={handleRegister}
+                        ButtonsElement={()=>
+                            <>
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    startIcon={<ClearIcon color="secondary" />}
+                                    style={{ backgroundColor: "#FB5F5F" }}
+                                    onClick={() => history.push(paths.CONFIGURATION)}
+                                >{t(langKeys.back)}</Button>
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    style={{ backgroundColor: "#7721ad" }}
+                                    onClick={() => setOpenDialog(true)}
+                                    startIcon={<AccountTreeIcon color="secondary" />}
+                                >{t(langKeys.opendrilldown)}
+                                </Button>
+                            </>
+                        }
+                    />
+                    <DialogZyx
+                        open={openDialog}
+                        title={t(langKeys.organizationclass)}
+                        buttonText1={t(langKeys.close)}
+                        //buttonText2={t(langKeys.select)}
+                        handleClickButton1={() => setOpenDialog(false)}
+                        handleClickButton2={() => setOpenDialog(false)}
+                    >   
+                    <TreeView
+                        className={classes.treeviewroot}
+                        defaultCollapseIcon={<ExpandMoreIcon />}
+                        defaultExpandIcon={<ChevronRightIcon />}
+                    >
+                            <TreeItemsFromData
+                                dataClassTotal={mainResult.multiData.data[3] && mainResult.multiData.data[3].success ? mainResult.multiData.data[3].data : []}
+                            />
+                        </TreeView>
+                        <div className="row-zyx">
+                        </div>
+                    </DialogZyx>
+                </Fragment>
+            </div>
         )
     }
     else if (viewSelected === "view-2") {
         return (
             <DetailTipification
                 data={rowSelected}
-                setViewSelected={setViewSelected}
+                setViewSelected={redirectFunc}
                 multiData={mainResult.multiData.data}
                 fetchData={fetchData}
+                arrayBread={arrayBread}
             />
         )
     } else

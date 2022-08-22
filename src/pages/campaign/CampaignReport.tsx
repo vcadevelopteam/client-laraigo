@@ -2,20 +2,24 @@
 import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { convertLocalDate, dictToArrayKV, getCampaignReportExport, getCampaignReportPaginated, getCampaignReportProactiveExport } from 'common/helpers';
+import { convertLocalDate, dictToArrayKV, getCampaignReportExport, getCampaignReportPaginated, getCampaignReportProactiveExport, getDateCleaned } from 'common/helpers';
 import { Dictionary, IFetchData } from "@types";
 import { exportData, getCollectionAux, getCollectionPaginated, resetCollectionPaginated, resetMainAux } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { TemplateBreadcrumbs, TitleDetail, DialogZyx, FieldSelect } from 'components';
+import { TemplateBreadcrumbs, TitleDetail, DialogZyx, FieldSelect, DateRangePicker } from 'components';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Button } from '@material-ui/core';
 import TablePaginated from 'components/fields/table-paginated';
 import TableZyx from 'components/fields/table-simple';
+import { Range } from 'react-date-range';
+import { CalendarIcon } from 'icons';
+import { Search as SearchIcon } from '@material-ui/icons';
 
 interface DetailProps {
-    setViewSelected: (view: string) => void;
+    setViewSelected?: (view: string) => void;
+    externalUse?: boolean;
 }
 
 const arrayBread = [
@@ -40,7 +44,14 @@ const useStyles = makeStyles((theme) => ({
     },
     flexgrow1: {
         flexGrow: 1
-    }
+    },
+    itemDate: {
+        minHeight: 40,
+        height: 40,
+        border: '1px solid #bfbfc0',
+        borderRadius: 4,
+        color: 'rgb(143, 146, 161)'
+    },
 }));
 
 const dataReportType = {
@@ -50,7 +61,13 @@ const dataReportType = {
 
 const selectionKey = 'id';
 
-export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
+const initialRange = {
+    startDate: new Date(new Date().setDate(1)),
+    endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+    key: 'selection'
+}
+
+export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externalUse }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -66,6 +83,9 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
     
     const [selectedRows, setSelectedRows] = useState<any>({});
     const [reportType, setReportType] = useState<string>('default');
+
+    const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
+    const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
     
     const cell = (props: any) => {
         const column = props.cell.column;
@@ -75,7 +95,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
                 setSelectedRow(row);
                 setOpenModal(true);
             }}>
-                {column.sortType === "datetime"
+                {column.sortType === "datetime" && !!row[column.id]
                 ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
                     year: "numeric",
                     month: "2-digit",
@@ -104,6 +124,11 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
             {
                 Header: t(langKeys.templatetype),
                 accessor: 'templatetype',
+                Cell: cell
+            },
+            {
+                Header: t(langKeys.templatename),
+                accessor: 'templatename',
                 Cell: cell
             },
             {
@@ -179,9 +204,12 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
     );
 
     const fetchData = ({ pageSize, pageIndex, filters, sorts }: IFetchData) => {
+        dispatch(showBackdrop(true))
         setfetchDataAux({...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts }});
         dispatch(getCollectionPaginated(getCampaignReportPaginated(
             {
+                startdate: dateRangeCreateDate.startDate,
+                enddate: dateRangeCreateDate.endDate,
                 sorts: sorts,
                 filters: filters,
                 take: pageSize,
@@ -192,11 +220,11 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
 
     const triggerExportData = () => {
         if (Object.keys(selectedRows).length === 0) {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.no_record_selected)}));
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_record_selected)}));
             return null;
         }
         if (!reportType) {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.no_type_selected)}));
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_type_selected)}));
             return null;
         }
         if (reportType === dataReportType.default) {
@@ -210,7 +238,30 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
                 }, [])),
                 `${t(langKeys.report)}`,
                 'excel',
-                true
+                true,
+                [
+                    {key: 'templatetype', alias: t(langKeys.templatetype)},
+                    {key: 'date', alias: t(langKeys.date)},
+                    {key: 'campaign', alias: t(langKeys.campaign)},
+                    {key: 'description', alias: t(langKeys.description)},
+                    {key: 'ticketnum', alias: t(langKeys.ticket)},
+                    {key: 'group', alias: t(langKeys.group)},
+                    {key: 'userid', alias: t(langKeys.userid)},
+                    {key: 'agent', alias: t(langKeys.agent)},
+                    {key: 'contact', alias: t(langKeys.contact)},
+                    {key: 'template', alias: t(langKeys.templatename)},
+                    {key: 'rundate', alias: t(langKeys.rundate)},
+                    {key: 'runtime', alias: t(langKeys.runtime)},
+                    {key: 'firstreplydate', alias: t(langKeys.firstreplydate)},
+                    {key: 'firstreplytime', alias: t(langKeys.firstreplytime)},
+                    {key: 'finishdate', alias: t(langKeys.finishconversationdate)},
+                    {key: 'finishtime', alias: t(langKeys.finishconversationtime)},
+                    {key: 'realduration', alias: t(langKeys.realduration)},
+                    {key: 'classification', alias: t(langKeys.classification)},
+                    {key: 'conversationid', alias: t(langKeys.conversationid)},
+                    {key: 'status', alias: t(langKeys.status)},
+                    {key: 'log', alias: t(langKeys.log)},
+                ]
             ));
             dispatch(showBackdrop(true));
             setWaitExport(true);
@@ -226,7 +277,28 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
                 }, [])),
                 `${t(langKeys.report)}`,
                 'excel',
-                true
+                true,
+                [
+                    {key: 'templatetype', alias: t(langKeys.templatetype)},
+                    {key: 'campaign', alias: t(langKeys.campaign)},
+                    {key: 'description', alias: t(langKeys.description)},
+                    {key: 'template', alias: t(langKeys.template)},
+                    {key: 'ticketnum', alias: t(langKeys.ticket)},
+                    {key: 'year', alias: t(langKeys.year)},
+                    {key: 'month', alias: t(langKeys.month)},
+                    {key: 'ticketdate', alias: t(langKeys.ticketdate)},
+                    {key: 'tickettime', alias: t(langKeys.tickettime)},
+                    {key: 'contact', alias: t(langKeys.contact)},
+                    {key: 'client', alias: t(langKeys.client)},
+                    {key: 'channel', alias: t(langKeys.channel)},
+                    {key: 'group', alias: t(langKeys.group)},
+                    {key: 'firstagent', alias: t(langKeys.firstagent)},
+                    {key: 'message', alias: t(langKeys.message)},
+                    {key: 'classification', alias: t(langKeys.classification)},
+                    {key: 'lastagent', alias: t(langKeys.lastagent)},
+                    {key: 'status', alias: t(langKeys.status)},
+                    {key: 'log', alias: t(langKeys.log)},
+                ]
             ));
             dispatch(showBackdrop(true));
             setWaitExport(true);
@@ -246,10 +318,10 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
             if (!resExportData.loading && !resExportData.error) {
                 dispatch(showBackdrop(false));
                 setWaitExport(false);
-                window.open(resExportData.url, '_blank');
+                resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
             } else if (resExportData.error) {
                 const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.blacklist).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitExport(false);
             }
@@ -260,27 +332,54 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
         if (!mainPaginated.loading && !mainPaginated.error) {
             setPageCount(Math.ceil(mainPaginated.count / fetchDataAux.pageSize));
             settotalrow(mainPaginated.count);
+            dispatch(showBackdrop(false));
         }
     }, [mainPaginated]);
 
     const ButtonsElement = () => {
         return (
-            <FieldSelect
-                uset={true}
-                label={t(langKeys.reporttype)}
-                className={classes.select}
-                valueDefault={reportType}
-                onChange={(value) => setReportType(value?.key)}
-                data={dictToArrayKV(dataReportType)}
-                optionDesc="value"
-                optionValue="key"
-            />
+            <div style={{display: 'flex', gap: '8px'}}>
+                <DateRangePicker
+                    open={openDateRangeCreateDateModal}
+                    setOpen={setOpenDateRangeCreateDateModal}
+                    range={dateRangeCreateDate}
+                    onSelect={setDateRangeCreateDate}
+                >
+                    <Button
+                        className={classes.itemDate}
+                        startIcon={<CalendarIcon />}
+                        onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+                    >
+                        {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
+                    </Button>
+                </DateRangePicker>
+                <Button
+                    disabled={mainPaginated.loading}
+                    variant="contained"
+                    color="primary"
+                    startIcon={<SearchIcon style={{ color: 'white' }} />}
+                    style={{ width: 120, backgroundColor: "#55BD84" }}
+                    onClick={() => fetchData(fetchDataAux)}
+                >{t(langKeys.search)}
+                </Button>
+                <FieldSelect
+                    uset={true}
+                    variant="outlined"
+                    label={t(langKeys.reporttype)}
+                    className={classes.select}
+                    valueDefault={reportType}
+                    onChange={(value) => setReportType(value?.key)}
+                    data={dictToArrayKV(dataReportType)}
+                    optionDesc="value"
+                    optionValue="key"
+                />
+            </div>
         )
     }
 
     return (
         <div style={{ width: '100%' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            {!externalUse && <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div>
                     <TemplateBreadcrumbs
                         breadcrumbs={arrayBread}
@@ -296,11 +395,12 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
                         type="button"
                         color="primary"
                         style={{ backgroundColor: "#FB5F5F" }}
-                        onClick={() => setViewSelected("view-1")}
+                        onClick={() => setViewSelected && setViewSelected("view-1")}
                     >{t(langKeys.back)}</Button>
                 </div>
-            </div>
-            <div className={classes.containerDetail}>
+            </div>}
+            {externalUse && <div style={{ height: 10 }}></div>}
+            <div className={externalUse ? '' : classes.containerDetail}>
                 <TablePaginated
                     columns={columns}
                     data={mainPaginated.data}
@@ -311,7 +411,6 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
                     fetchData={fetchData}
                     ButtonsElement={ButtonsElement}
                     exportPersonalized={triggerExportData}
-                    autotrigger={true}
                     useSelection={true}
                     selectionKey={selectionKey}
                     setSelectedRows={setSelectedRows}
@@ -342,8 +441,8 @@ const ModalReport: React.FC<ModalProps> = ({ openModal, setOpenModal, row }) => 
     const columns = React.useMemo(
         () => [
             {
-                Header: t(langKeys.phone),
-                accessor: 'phone',
+                Header: t(langKeys.contact),
+                accessor: 'contact',
             },
             {
                 Header: t(langKeys.status),

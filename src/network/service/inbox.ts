@@ -41,6 +41,10 @@ export function sendHSM(data: ISendHSM) {
     return APIManager.post(apiUrls.SEND_HSM, { data: { data } }, true);
 }
 
+export function importTicket(data: FormData) {
+    return APIManager.post(apiUrls.IMPORT_TICKET, { data }, true);
+}
+
 export function replyTicket(params: IReplyTicketParams | IReplyTicketParams[], isList: boolean = false) {
     if (params instanceof Array) {
         const data = params.map(item => {
@@ -85,14 +89,14 @@ export function replyTicket(params: IReplyTicketParams | IReplyTicketParams[], i
 }
 
 export function reassignTicket(paramtmp: IReassignicketParams) {
-    const { newUserId, newUserGroup, observation } = paramtmp
+    const { newUserId, newUserGroup, observation, wasanswered } = paramtmp
     const data = {
         ...paramtmp,
         comment: observation,
         newuserid: newUserId,
         usergroup: newUserGroup,
         newConversation: true,
-        isanswered: true,
+        isanswered: wasanswered,
     }
     return APIManager.post(apiUrls.REASSIGN_TICKET, { data: { data } }, true);
 }

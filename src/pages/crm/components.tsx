@@ -1,30 +1,33 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
-import { Avatar, Box, BoxProps, Button, IconButton, makeStyles, Popover, TextField } from '@material-ui/core';
-import { Add, MoreVert as MoreVertIcon, AccessTime as AccessTimeIcon } from '@material-ui/icons';
+import { Box, BoxProps, Button, IconButton, makeStyles, Popover, TextField } from '@material-ui/core';
+import { Add, MoreVert as MoreVertIcon } from '@material-ui/icons';
+import CloseIcon from '@material-ui/icons/Close';
 import { DraggableProvided, DraggableStateSnapshot, DroppableStateSnapshot } from 'react-beautiful-dnd';
 import { langKeys } from 'lang/keys';
-import { Trans } from 'react-i18next';
-import { Rating, Skeleton } from '@material-ui/lab';
+import { Trans, useTranslation } from 'react-i18next';
+import { Rating } from '@material-ui/lab';
 import { useHistory } from 'react-router';
 import paths from 'common/constants/paths';
+import { ICrmLead } from '@types';
+import { FieldEdit, FieldSelect } from 'components';
 
 const columnWidth = 275;
 const columnMinHeight = 500;
 const cardBorderRadius = 12;
 const inputTitleHeight = 50;
 
-interface LeadCardContentProps extends BoxProps {
-    lead: any;
+interface LeadCardContentProps extends Omit<BoxProps, 'onClick'> {
+    lead: ICrmLead;
     snapshot: DraggableStateSnapshot;
-    onDelete?: (value: string) => void;
-    onClick?: (lead: any) => void;
+    onDelete?: (value: ICrmLead) => void;
+    onClick?: (lead: ICrmLead) => void;
+    onCloseLead?: (lead: ICrmLead) => void;
 }
 
 const useLeadCardStyles = makeStyles(theme => ({
     root: {
         padding: 16,
-        // margin: '0 0 8px 0',
         minHeight: '50px',
         backgroundColor: 'white',
         color: theme.palette.text.primary,
@@ -81,6 +84,11 @@ const useLeadCardStyles = makeStyles(theme => ({
         height: 8,
         borderRadius: 4,
     },
+    tagBox: {
+        width: 8,
+        height: 8,
+        borderRadius: 1,
+    },
     tagtext: {
         fontSize: 12,
         fontWeight: 400,
@@ -97,12 +105,13 @@ const useLeadCardStyles = makeStyles(theme => ({
     },
 }));
 
-export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snapshot, onDelete, onClick, ...boxProps }) => {
+export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snapshot, onDelete, onClick, onCloseLead, ...boxProps }) => {
     const classes = useLeadCardStyles();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-    const tags = (lead.tags) ? lead.tags.split(',') : []
-    const urgencyLevels = [null,'LOW','MEDIUM','HIGH']
-    const colors = ['', 'cyan', 'red', 'violet', 'blue', 'blueviolet']
+    const tags = lead.tags?.split(',')?.filter(e => e !== '') || [];
+    const products = (lead.leadproduct || null)?.split(',') || [];
+    const urgencyLevels = [null,'LOW','MEDIUM','HIGH'];
+    const colors = ['', 'cyan', 'red', 'violet', 'blue', 'blueviolet'];
     const history = useHistory();
 
     const handleMoreVertClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -117,7 +126,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
         history.push({
             pathname: paths.CRM_EDIT_LEAD.resolve(lead.leadid),
         });
-    }, [lead]);
+    }, [lead, history]);
 
     const handleDelete = () => {
         setAnchorEl(null);
@@ -131,12 +140,27 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
         <Box {...boxProps} style={{ position: 'relative' }} pb={1}>
             <div className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)} onClick={handleClick}>
                 <span className={classes.title}>{lead.description}</span>
-                <span className={classes.info}>S/ {lead.expected_revenue}</span>
+                {lead.campaign && <span className={classes.info}>
+                    <Trans i18nKey={langKeys.campaign} />
+                    {': '}
+                    {lead.campaign}
+                </span>}
+                <span className={classes.info}>S/ {Number(lead.expected_revenue).toLocaleString('en-US')}</span>
                 <span className={classes.info}>{lead.displayname}</span>
                 <div className={classes.tagsRow}>
-                    {tags.map((tag: String, index:number) =>
+                    {tags.map((tag: String, index: number) =>
                         <div className={classes.tag} key={index}>
                             <div className={classes.tagCircle} style={{ backgroundColor: colors[1] }} />
+                            <div style={{ width: 6 }} />
+                            <div className={classes.tagtext}>{tag}</div>
+                        </div>
+                    )}
+                </div>
+                {products.length !== 0 && <div style={{ height: '0.25em' }} />}
+                <div className={classes.tagsRow}>
+                    {products.map((tag: String, index: number) =>
+                        <div className={classes.tag} key={index}>
+                            <div className={classes.tagCircle} style={{ backgroundColor: colors[2] }} />
                             <div style={{ width: 6 }} />
                             <div className={classes.tagtext}>{tag}</div>
                         </div>
@@ -145,22 +169,11 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                 <div className={classes.footer}>
                     <Rating
                         name="hover-feedback"
-                        defaultValue={urgencyLevels.findIndex(x => x === lead.priority)}
+                        value={urgencyLevels.findIndex(x => x === lead.priority)}
                         max={3}
                         readOnly
                     />
-                    <div style={{ width: 8 }} />
-                    {(lead.date_deadline) && (
-                        <AccessTimeIcon
-                            style={{
-                                height: 18,
-                                width: 'auto',
-                                fill: (Math.floor(Math.random() * 6) + 1) % 2 ? 'rgba(0, 0, 0, 0.26)' : 'red',
-                            }}
-                        />
-                    )}
                     <div style={{ flexGrow: 1 }} />
-                    <Avatar style={{ height: 22, width: 22 }} src="" />
                 </div>
             </div>
             <div className={classes.floatingMenuIcon}>
@@ -180,6 +193,16 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                         className: classes.popoverPaper,
                     }}
                 >
+                    {/* <Button
+                        variant="text"
+                        color="inherit"
+                        fullWidth
+                        type="button"
+                        onClick={handleCloseLead}
+                        style={{ fontWeight: "normal", textTransform: "uppercase" }}
+                    >
+                        <Trans i18nKey={langKeys.close} />
+                    </Button> */}
                     <Button
                         variant="text"
                         color="inherit"
@@ -250,7 +273,7 @@ const InputTitle : FC<InputTitleProps> = ({ defaultValue, edit: enableEdit, onCh
             <div className={classes.root}>
                 <h2
                     className={classes.title}
-                    onClick={() => setEdit(true)}
+                    // onClick={() => setEdit(true)}
                 >
                     {value}
                 </h2>
@@ -285,9 +308,10 @@ interface LeadColumnProps extends Omit<BoxProps, 'title'> {
     titleOnChange?: (value: string) => void;
     onDelete?: (value: string) => void;
     onAddCard?: () => void;
-    provided: DraggableProvided;
+    provided?: DraggableProvided;
     columnid: string;
     total_revenue: number;
+    deletable: boolean;
 }
 
 const useLeadColumnStyles = makeStyles(theme => ({
@@ -326,6 +350,7 @@ const useLeadColumnStyles = makeStyles(theme => ({
     },
     currency: {
         marginBottom: '0.63em',
+        fontWeight: 'bold',
     },
 }));
 
@@ -338,89 +363,38 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
     titleOnChange,
     onDelete,
     onAddCard,
+    deletable,
     ...boxProps
 }) => {
     const classes = useLeadColumnStyles();
     const edit = useRef(false);
-    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
     const handleOnBlur = useCallback((value: string) => {
         edit.current = false;
         titleOnChange?.(value);
     }, [titleOnChange]);
 
-    const handleEdit = useCallback(() => {
-        edit.current = true;
-        setAnchorEl(null);
-    }, []);
-
     const handleDelete = useCallback(() => {
-        setAnchorEl(null);
         onDelete?.(columnid);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
-    const open = Boolean(anchorEl);
-    const id = open ? `lead-column-popover-${title}` : undefined;
+    
 
     return (
         <Box {...boxProps}>
             <div className={classes.root}>
-                <div className={classes.header} {...provided.dragHandleProps}>
+                <div className={classes.header} {...(provided?.dragHandleProps || {})}>
                     <InputTitle
                         defaultValue={title}
                         edit={edit.current}
                         onBlur={handleOnBlur}
                     />
-                    <IconButton size="small" aria-describedby={id} onClick={handleClick}>
-                        <MoreVertIcon style={{ height: 22, width: 22 }} />
-                    </IconButton>
-                    <Popover
-                        id={id}
-                        open={open}
-                        anchorEl={anchorEl}
-                        onClose={handleClose}
-                        anchorOrigin={{
-                            vertical: 'bottom',
-                            horizontal: 'left',
-                        }}
-                        PaperProps={{
-                            className: classes.popoverPaper,
-                        }}
-                    >
-                        <Button
-                            variant="text"
-                            color="inherit"
-                            fullWidth
-                            type="button"
-                            onClick={handleEdit}
-                            style={{ fontWeight: "normal", textTransform: "uppercase" }}
-                        >
-                            <Trans i18nKey={langKeys.edit} />
-                        </Button>
-                        <Button
-                            variant="text"
-                            color="inherit"
-                            fullWidth
-                            type="button"
-                            onClick={handleDelete}
-                            style={{ fontWeight: "normal", textTransform: "uppercase" }}
-                        >
-                            <Trans i18nKey={langKeys.delete} />
-                        </Button>
-                    </Popover>
-                    <IconButton size="small" onClick={onAddCard}>
-                        <Add style={{ height: 22, width: 22 }} />
-                    </IconButton>
+                    {deletable && <IconButton size="small" onClick={handleDelete}>
+                        <CloseIcon style={{ height: 22, width: 22 }} />
+                    </IconButton>}
                 </div>
-                <span className={classes.currency}>S/ {total_revenue ? total_revenue : 0}</span>
+                <span className={classes.currency}>S/ {total_revenue?.toLocaleString('en-US') || 0}</span>
                 {children}
             </div>
         </Box>
@@ -457,7 +431,7 @@ export const DroppableLeadColumnList: FC<LeadColumnListProps> = ({ children, sna
 }
 
 interface AddColumnTemplatePops extends Omit<BoxProps, 'onSubmit'> {
-    onSubmit: (title: string) => void;
+    onSubmit: (data: any) => void;
 }
 
 const useAddColumnTemplateStyles = makeStyles(theme => ({
@@ -499,6 +473,7 @@ const useAddColumnTemplateStyles = makeStyles(theme => ({
 export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, ...boxProps }) => {
     const classes = useAddColumnTemplateStyles();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+    const { t } = useTranslation();
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -511,13 +486,13 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, ...boxP
     const open = Boolean(anchorEl);
     const id = open ? 'crm-add-new-column-popover' : undefined;
 
-    const handleSubmit = (title: string) => {
-        onSubmit(title);
+    const handleSubmit = (data: any) => {
+        onSubmit(data);
         handleClose();
     };
 
     return (
-        <Box {...boxProps}>
+        <Box>
             <div className={classes.root}>
                 <Button
                     color="primary"
@@ -529,7 +504,7 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, ...boxP
                         <Add style={{ height: '75%', width: 'auto' }} color="secondary" />
                     </div>
                     <div style={{ width: 12 }} />
-                    <span>Add a column</span>
+                    <span>{t(langKeys.addacolumn)}</span>
                 </Button>
                 <Popover
                     id={id}
@@ -540,9 +515,6 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, ...boxP
                         vertical: 'top',
                         horizontal: 'left',
                     }}
-                    PaperProps={{
-                        className: classes.popoverRoot,
-                    }}
                 >
                     <ColumnTemplate onSubmit={handleSubmit} />
                 </Popover>
@@ -552,7 +524,7 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, ...boxP
 }
 
 interface ColumnTemplateProps {
-    onSubmit: (title: string) => void;
+    onSubmit: (title: any) => void;
 }
 
 const useColumnTemplateStyles = makeStyles(theme => ({
@@ -565,60 +537,60 @@ const useColumnTemplateStyles = makeStyles(theme => ({
         padding: theme.spacing(2),
     },
     titleSection: {
-        display: 'flex',
-        flexDirection: 'row',
         width: 'inherit',
     },
     btn: {
-        minWidth: 'unset',
-    },
-    input: {
-        flexGrow: 1,
+        width: "100%"
     },
 }));
 
 const ColumnTemplate: FC<ColumnTemplateProps> = ({ onSubmit }) => {
     const classes = useColumnTemplateStyles();
-    const inputClasses = useInputTitleStyles();
     const [title, setTitle] = useState("");
+    const [type, settype] = useState("");
+    const [disabled, setdisabled] = useState(true);
+    const { t } = useTranslation();
 
     return (
         <div className={classes.root}>
             <div className={classes.titleSection}>
-                <TextField
-                    value={title}
-                    size="small"
-                    placeholder="Column title"
-                    className={classes.input}
-                    InputProps={{
-                        classes: {
-                            input: inputClasses.titleInput,
-                        },
-                    }}
-                    onChange={e => setTitle(e.target.value)}
-                />
-                <div style={{ width: 12 }} />
-                <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    className={classes.btn}
-                    onClick={() => onSubmit(title)}
-                    disabled={title.trim().length === 0}
-                >
-                    <Trans i18nKey={langKeys.add} />
-                </Button>
+                <div  style={{padding: "10px 0"}}>
+                    <FieldEdit
+                        label={t(langKeys.columntitle)}
+                        valueDefault={title}
+                        onChange={value =>{setdisabled(value.trim().length === 0 || !type);setTitle(value)}}
+                    />
+                </div>
+                
+                <div  style={{padding: "10px 0"}}>
+                    <FieldSelect
+                        label={`${t(langKeys.type)}`}
+                        size="small"
+                        valueDefault={type}
+                        onChange={e =>{ setdisabled(!(e?.type) || title.trim().length === 0); settype(e?.type||"")}}
+                        data={[
+                            {type: "QUALIFIED", desc: t(langKeys.qualified)},
+                            {type: "PROPOSITION", desc: t(langKeys.proposition)},
+                            {type: "WON", desc: t(langKeys.won)},
+                        ]}
+                        optionDesc="desc"
+                        optionValue="type"
+                    />
+                </div>
+                
+                <div  style={{padding: "10px 0", width: "100%"}}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        className={classes.btn}
+                        onClick={() => onSubmit({title: title, type:type})}
+                        disabled={disabled}
+                    >
+                        <Trans i18nKey={langKeys.add} />
+                    </Button>
+                </div>
             </div>
-            <div style={{ height: 24 }} />
-            <Skeleton variant="rect" width="100%" height={150} />
-            <div style={{ height: 12 }} />
-            <Skeleton variant="rect" width="100%" height={150} />
-            <div style={{ height: 12 }} />
-            <Skeleton variant="rect" width="100%" height={150} />
-            <div style={{ height: 12 }} />
-            <Skeleton variant="rect" width="100%" height={150} />
-            <div style={{ height: 12 }} />
-            <Skeleton variant="rect" width="100%" height={150} />
         </div>
     );
 }

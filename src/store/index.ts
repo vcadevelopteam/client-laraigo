@@ -1,8 +1,8 @@
 import callAPIMiddleware from 'middlewares/apiMiddleware';
 import callWSMiddleware from 'middlewares/wsMiddleware';
+import voximplantMiddleware from 'middlewares/voximplantMiddleware';
 import { applyMiddleware, compose, createStore, combineReducers, Middleware } from 'redux';
 import thunk from 'redux-thunk';
-import ticketReducer, { IState as ITicketState } from './ticket/reducer';
 import channelReducer, { IState as IChannelState } from './channel/reducer';
 import loginReducer, { IState as ILogin } from './login/reducer';
 import mainReducer, { IState as IMain } from './main/reducer';
@@ -15,9 +15,14 @@ import personReducer, { IState as IPerson } from './person/reducer';
 import settingReducer, { IState as ISetting } from './setting/reducer';
 import activationUserReducer, { IState as IActivationUser } from './activationuser/reducer';
 import leadReducer, { IState as ILead } from './lead/reducer';
+import culqiReducer, { IState as ICulqi } from './culqi/reducer';
+import dashboardReducer, { IState as IDashboard } from './dashboard/reducer';
+import getlocationsReducer, { IState as IGetLocations } from './getlocations/reducer';
+import subscriptionReducer, { IState as ISubscription } from './subscription/reducer';
+import voximplantReducer, { IState as IVoximplant } from './voximplant/reducer';
+import googleReducer, { IState as IGoogle } from './google/reducer';
 
 export interface IRootState {
-    ticket: ITicketState;
     login: ILogin,
     main: IMain;
     popus: IPopus;
@@ -30,6 +35,12 @@ export interface IRootState {
     setting: ISetting;
     activationuser: IActivationUser;
     lead: ILead;
+    culqi: ICulqi;
+    dashboard: IDashboard;
+    getlocations: IGetLocations;
+    subscription: ISubscription;
+    voximplant: IVoximplant;
+    google: IGoogle;
 }
 
 declare global {
@@ -39,7 +50,6 @@ declare global {
 }   
 
 const rootReducer = combineReducers<IRootState>({
-    ticket: ticketReducer,
     login: loginReducer,
     main: mainReducer,
     popus: popusReducer,
@@ -52,10 +62,16 @@ const rootReducer = combineReducers<IRootState>({
     setting: settingReducer,
     activationuser: activationUserReducer,
     lead: leadReducer,
+    culqi: culqiReducer,
+    dashboard: dashboardReducer,
+    getlocations: getlocationsReducer,
+    subscription: subscriptionReducer,
+    voximplant: voximplantReducer,
+    google: googleReducer,
 });
 
 export default function configureStore(preloadedState?: IRootState) {
-    const middleware: Middleware[] = [callAPIMiddleware, callWSMiddleware];
+    const middleware: Middleware[] = [callAPIMiddleware, callWSMiddleware, voximplantMiddleware];
 
     const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 

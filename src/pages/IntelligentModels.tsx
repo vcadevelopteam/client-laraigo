@@ -12,7 +12,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetMain, execute, getMultiCollection, resetMultiMain } from 'store/main/actions';
+import { getCollection, resetAllMain, execute, getMultiCollection } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 
@@ -85,19 +85,19 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.intelligentmodels).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
         }
     }, [executeRes, waitSave])
-    
+
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(execute(insIntelligentModels(data)));
@@ -113,7 +113,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
     });
 
     return (
-        <div style={{width: '100%'}}>
+        <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
@@ -124,8 +124,8 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                         <TitleDetail
                             title={row ? `${row.endpoint}` : t(langKeys.newintelligentmodel)}
                         />
-                    </div>            
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center'}}>
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                         <Button
                             variant="contained"
                             type="button"
@@ -135,15 +135,15 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                             onClick={() => setViewSelected("view-1")}
                         >{t(langKeys.back)}</Button>
                         {edit &&
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            type="submit"
-                            startIcon={<SaveIcon color="secondary" />}
-                            style={{ backgroundColor: "#55BD84" }}
-                        >{t(langKeys.save)}
-                        </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                                startIcon={<SaveIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >{t(langKeys.save)}
+                            </Button>
                         }
                     </div>
                 </div>
@@ -151,7 +151,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                     <div className="row-zyx">
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.endpoint)} 
+                                label={t(langKeys.endpoint)}
                                 className="col-6"
                                 onChange={(value) => setValue('endpoint', value)}
                                 valueDefault={row ? (row.endpoint || "") : ""}
@@ -164,7 +164,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                             />}
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.modelid)} 
+                                label={t(langKeys.modelid)}
                                 className="col-6"
                                 onChange={(value) => setValue('modelid', value)}
                                 valueDefault={row ? (row.modelid || "") : ""}
@@ -179,7 +179,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                     <div className="row-zyx">
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.apikey)} 
+                                label={t(langKeys.apikey)}
                                 className="col-6"
                                 onChange={(value) => setValue('apikey', value)}
                                 valueDefault={row ? (row.apikey || "") : ""}
@@ -192,7 +192,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                             />}
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.description)} 
+                                label={t(langKeys.description)}
                                 className="col-6"
                                 onChange={(value) => setValue('description', value)}
                                 valueDefault={row ? (row.description || "") : ""}
@@ -207,7 +207,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                     <div className="row-zyx">
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.provider)} 
+                                label={t(langKeys.provider)}
                                 className="col-6"
                                 onChange={(value) => setValue('provider', value)}
                                 valueDefault={row ? (row.provider || "") : ""}
@@ -220,7 +220,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                             />}
                         {edit ?
                             <FieldSelect
-                                label={t(langKeys.type)} 
+                                label={t(langKeys.type)}
                                 className="col-6"
                                 valueDefault={row ? (row.type || "") : ""}
                                 onChange={(value) => setValue('type', value ? value.domainvalue : 0)}
@@ -324,21 +324,20 @@ const IntelligentModels: FC = () => {
         ]));
 
         return () => {
-            dispatch(resetMultiMain());
-            dispatch(resetMain());
+            dispatch(resetAllMain());
         };
     }, []);
 
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.intelligentmodels).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
@@ -378,6 +377,7 @@ const IntelligentModels: FC = () => {
 
         return (
             <TableZyx
+                onClickRow={handleEdit}
                 columns={columns}
                 titlemodule={t(langKeys.intelligentmodels, { count: 2 })}
                 data={mainResult.mainData.data}

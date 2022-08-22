@@ -19,18 +19,27 @@ export interface IMassiveCloseTicketsParams {
     observation: string;
 }
 
+export interface IImportTicket {
+    data: Dictionary[];
+}
+
 interface IMember {
+    personid: number;
     phone: string;
+    email?: string;
     firstname?: string | undefined;
     lastname?: string | undefined;
     parameters: Dictionary[];
 }
 export interface ISendHSM {
     hsmtemplateid: number;
+    hsmtemplatename: number;
     communicationchannelid: number;
     platformtype: string;
     communicationchanneltype: string;
-    listmembers: IMember[]
+    listmembers: IMember[];
+    type?: string;
+    shippingreason: string;
 }
 
 export interface IReplyTicketParams extends ITicket {
@@ -61,14 +70,17 @@ export interface IDeleteTicketParams {
     conversationid: number;
     ticketnum: string;
     status: string;
+    usergroup: string;
     orgid: number;
     isanswered: boolean;
     userid: number;
+    closedTicket?: boolean;
 }
 
 export interface IConnectAgentParams {
     isconnected: boolean;
     userid: number;
+    motive?: string | null;
 }
 
 export interface IConnectAgentUIParams {

@@ -1,29 +1,33 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC } from "react";
+import React, { FC, useCallback } from "react";
 import Layout from 'components/layout/Layout';
 import Popus from 'components/layout/Popus';
 import {
-	Users, SignIn, SignUp, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
+	Users, SignIn, SignUp, Properties, Quickreplies, Groupconfig, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
 	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger, ChannelAddInstagram, ChannelAddWhatsapp, ChannelAddTelegram,
-	Reports, Tickets, MessageInbox, BotDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail, Iaservices,UserSettings,
-	Corporations, Settings, Dashboard, ChannelEdit, ChannelAddIos, ChannelAddAndroid, ChannelAddInstagramDM , Privacy, CRM, ActivateUser, LeadForm
+	Reports, Tickets, MessageInbox, BotDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail, Iaservices, UserSettings,
+	Corporations, Settings, Dashboard, ChannelEdit, ChannelAddIos, ChannelAddAndroid, ChannelAddInstagramDM, Privacy, CRM, ActivateUser, RecoverPassword, LeadForm, ChangePwdFirstLogin, BillingSetups, DashboardAdd,
+	InputValidation, DashboardLayout, Invoice, KPIManager, GetLocations, ReportScheduler, ProductCatalog, Calendar, CalendarEvent, ChannelAddEmail, ChannelAddSMS, Whitelist, ChannelAddPhone, ChannelAddBlogger, ChannelAddLinkedIn, ChannelAddTeams, ChannelAddYouTube, ChannelAddTikTok
 } from 'pages';
 
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
 import paths from "common/constants/paths";
 import { makeStyles } from "@material-ui/core";
-import { useSelector } from 'hooks';
+import { useForcedDisconnection, useSelector } from 'hooks';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { wsConnect } from "store/inbox/actions";
+import { setDataUser, wsConnect } from "store/inbox/actions";
+import { voximplantConnect } from "store/voximplant/actions";
 import { getAccessToken } from 'common/helpers';
 import { Redirect } from 'react-router-dom';
-import { validateToken } from 'store/login/actions';
+import { logout, validateToken } from 'store/login/actions';
 import { useDispatch } from 'react-redux';
+import AutomatizationRules from "pages/AutomatizationRules";
 
 const useStyles = makeStyles((theme) => ({
 	main: {
 		padding: theme.spacing(2),
+		paddingTop: theme.spacing(1),
 		width: '100%'
 	},
 }));
@@ -39,6 +43,7 @@ interface PrivateRouteProps extends Omit<RouteProps, "component"> {
 
 const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, ...rest }) => {
 	const resValidateToken = useSelector(state => state.login.validateToken);
+	const ignorePwdchangefirstloginValidation = useSelector(state => state.login.ignorePwdchangefirstloginValidation);
 	const resLogin = useSelector(state => state.login.login);
 
 	const applications = resValidateToken?.user?.menu;
@@ -54,11 +59,28 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 
 	React.useEffect(() => {
 		if (!resValidateToken.error && !resValidateToken.loading) {
-			const automaticConnection = resLogin.user?.automaticConnection || false;
-			const { userid, orgid } = resValidateToken.user!!
-			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM', automaticConnection  }));
+			// const automaticConnection = resLogin.user?.automaticConnection || false;
+			const automaticConnection = localStorage.getItem("firstLoad") === "1";
+			if (automaticConnection) {
+				localStorage.removeItem("firstLoad")
+			}
+			dispatch(setDataUser({
+				holdingBySupervisor: resValidateToken.user?.properties.holding_by_supervisor || "CANAL",
+				userGroup: resValidateToken.user?.groups || "",
+				role: resValidateToken.user?.roledesc || "",
+			}))
+			const fromLogin = !!resLogin.user;
+			const { userid, orgid, roledesc, ownervoxi, sitevoxi } = resValidateToken.user!!
+			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM', automaticConnection, fromLogin, roledesc }));
+			if (sitevoxi && ownervoxi) {
+				dispatch(voximplantConnect({
+					automaticConnection: automaticConnection || !!localStorage.getItem("agentConnected") || false,
+					user: `user${userid}.${orgid}`,
+					application: ownervoxi
+				}));
+			}
 		}
-	}, [resValidateToken])
+	}, [resValidateToken.loading])
 
 	if (!existToken) {
 		return <Redirect to={{ pathname: paths.SIGNIN }} />;
@@ -72,7 +94,9 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 		);
 	} else if (resValidateToken.error) {
 		return <Redirect to={{ pathname: paths.SIGNIN }} />;
-	} else if (!applications?.[location.pathname]?.[0] && !location.pathname.includes('channels') && !location.pathname.includes('person') && !location.pathname.includes('crm')) {
+	} else if (!ignorePwdchangefirstloginValidation && resValidateToken.user!.pwdchangefirstlogin === true) {
+		return <Redirect to={{ pathname: paths.CHNAGE_PWD_FIRST_LOGIN }} />;
+	} else if (location.pathname !== "/" && !applications?.[location.pathname]?.[0] && !location.pathname.includes('channels') && !location.pathname.includes('person') && !location.pathname.includes('crm') && !location.pathname.includes('dashboard')) {
 		return <Redirect to={{ pathname: "/403" }} />;
 	} else if (Component) {
 		return <Route {...rest} render={props => <Component {...props} />} />;
@@ -84,6 +108,11 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 
 const RouterApp: FC = () => {
 	const classes = useStyles();
+	const dispatch = useDispatch();
+
+	useForcedDisconnection(useCallback(() => {
+		dispatch(logout());
+	}, [dispatch]));
 
 	return (
 		<Router basename={process.env.PUBLIC_URL}>
@@ -91,12 +120,25 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path="/" />
 				<Route exact path={paths.SIGNIN} component={SignIn} />
 				<Route exact path={paths.SIGNUP.path} component={SignUp} />
+				<Route exact path={paths.LOCATION.path} component={GetLocations} />
+				<Route exact path={paths.CALENDAR_EVENT.path} component={CalendarEvent} />
 				<Route exact path={paths.PRIVACY} component={Privacy} />
 				<Route exact path={paths.ACTIVATE_USER.path} component={ActivateUser} />
+				<Route exact path={paths.RECOVER_PASSWORD.path} component={RecoverPassword} />
 
+				<ProtectRoute exact path={paths.PRODUCTCATALOG}>
+					<Layout mainClasses={classes.main}>
+						<ProductCatalog />
+					</Layout>
+				</ProtectRoute>
 				<ProtectRoute exact path={paths.REPORTS}>
 					<Layout mainClasses={classes.main}>
 						<Reports />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.REPORTSCHEDULER}>
+					<Layout mainClasses={classes.main}>
+						<ReportScheduler />
 					</Layout>
 				</ProtectRoute>
 				{/* <ProtectRoute exact path={paths.REPORTDESIGNER}>
@@ -146,7 +188,7 @@ const RouterApp: FC = () => {
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CHANNELS_ADD_WHATSAPP.path}>
 					<Layout mainClasses={classes.main}>
-						<ChannelAddWhatsapp />
+						<ChannelAddWhatsapp edit={false} />
 					</Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CHANNELS_ADD_TELEGRAM.path}>
@@ -164,6 +206,21 @@ const RouterApp: FC = () => {
 						<ChannelAddTwitterDM />
 					</Layout>
 				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_ADD_PHONE.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddPhone />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_ADD_SMS.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddSMS />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_ADD_EMAIL.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddEmail />
+					</Layout>
+				</ProtectRoute>
 				<ProtectRoute exact path={paths.CHANNELS_ADD_IOS.path}>
 					<Layout mainClasses={classes.main}>
 						<ChannelAddIos />
@@ -174,6 +231,31 @@ const RouterApp: FC = () => {
 						<ChannelAddAndroid />
 					</Layout>
 				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_ADD_TIKTOK.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddTikTok />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_ADD_YOUTUBE.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddYouTube />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_ADD_LINKEDIN.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddLinkedIn />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_ADD_TEAMS.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddTeams />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_ADD_BLOGGER.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddBlogger />
+					</Layout>
+				</ProtectRoute>
 				<ProtectRoute exact path={paths.CHANNELS_EDIT.path}>
 					<Layout mainClasses={classes.main}>
 						<ChannelEdit />
@@ -182,6 +264,11 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path={paths.CHANNELS_EDIT_CHATWEB.path}>
 					<Layout mainClasses={classes.main}>
 						<ChannelAddChatWeb edit />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_EDIT_WHATSAPP.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddWhatsapp edit />
 					</Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CORPORATIONS}>
@@ -204,6 +291,16 @@ const RouterApp: FC = () => {
 						<Supervisor />
 					</Layout>
 				</ProtectRoute>
+				<ProtectRoute exact path={paths.BILLING_SETUPS}>
+					<Layout mainClasses={classes.main}>
+						<BillingSetups />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.INVOICE}>
+					<Layout mainClasses={classes.main}>
+						<Invoice />
+					</Layout>
+				</ProtectRoute>
 				<ProtectRoute exact path={paths.MESSAGE_INBOX}>
 					<Layout>
 						<MessageInbox />
@@ -221,9 +318,6 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path={paths.GROUPCONFIG}>
 					<Layout mainClasses={classes.main}><Groupconfig /></Layout>
 				</ProtectRoute>
-				<ProtectRoute exact path={paths.WHITELIST}>
-					<Layout mainClasses={classes.main}><Whitelist /></Layout>
-				</ProtectRoute>
 				<ProtectRoute exact path={paths.USERSETTINGS}>
 					<Layout mainClasses={classes.main}><UserSettings /></Layout>
 				</ProtectRoute>
@@ -239,8 +333,14 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path={paths.TIPIFICATIONS}>
 					<Layout mainClasses={classes.main}><Tipifications /></Layout>
 				</ProtectRoute>
+				<ProtectRoute exact path={paths.INPUTVALIDATION}>
+					<Layout mainClasses={classes.main}><InputValidation /></Layout>
+				</ProtectRoute>
 				<ProtectRoute exact path={paths.DOMAINS}>
 					<Layout mainClasses={classes.main}><Domains /></Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.WHITELIST}>
+					<Layout mainClasses={classes.main}><Whitelist /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.PERSON}>
 					<Layout mainClasses={classes.main}><Person /></Layout>
@@ -271,18 +371,53 @@ const RouterApp: FC = () => {
 						<Dashboard />
 					</Layout>
 				</ProtectRoute>
+				<ProtectRoute exact path={paths.DASHBOARD_ADD}>
+					<Layout mainClasses={classes.main}>
+						<DashboardAdd />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.DASHBOARD_EDIT.path}>
+					<Layout mainClasses={classes.main}>
+						<DashboardAdd edit />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.DASHBOARD_COPY}>
+					<Layout mainClasses={classes.main}>
+						<DashboardAdd edit />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.DASHBOARD_LAYOUT.path}>
+					<Layout mainClasses={classes.main}>
+						<DashboardLayout />
+					</Layout>
+				</ProtectRoute>
 				<ProtectRoute exact path={paths.CONFIGURATION}>
 					<Layout mainClasses={classes.main}><Settings /></Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.AUTOMATIZATIONRULES}>
+					<Layout mainClasses={classes.main}><AutomatizationRules /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CRM}>
 					<Layout mainClasses={classes.main}><CRM /></Layout>
 				</ProtectRoute>
-				<ProtectRoute exact path={paths.CRM_ADD_LEAD.path}>
+				<ProtectRoute exact path={paths.AUTOMATIZATIONRULES}>
+					<Layout mainClasses={classes.main}><AutomatizationRules /></Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CRM_ADD_LEAD}>
 					<Layout mainClasses={classes.main}><LeadForm /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CRM_EDIT_LEAD.path}>
 					<Layout mainClasses={classes.main}><LeadForm edit /></Layout>
 				</ProtectRoute>
+				<ProtectRoute exact path={paths.KPIMANAGER}>
+					<Layout mainClasses={classes.main}><KPIManager /></Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CALENDAR}>
+					<Layout mainClasses={classes.main}><Calendar /></Layout>
+				</ProtectRoute>
+				<Route exact path={paths.CHNAGE_PWD_FIRST_LOGIN}>
+					<ChangePwdFirstLogin />
+				</Route>
 				<Route exact path="/403">
 					<Forbidden />
 				</Route>

@@ -1,5 +1,6 @@
 export interface ISetting {
     corpid: number;
+    num_corp: number|null;
     num_channels: number | null;
     num_classification: number | null;
     num_domain: number | null;
@@ -12,4 +13,6 @@ export interface ISetting {
     num_sla: number | null;
     num_integrations: number | null;
     num_whitelist: number | null;
+    num_inputvalidation: number | null;
+    num_property: number | null;
 }

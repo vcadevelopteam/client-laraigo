@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useState, useEffect } from 'react'; // we need this to make JSX compile
+import React, { FC, useState, useEffect, memo } from 'react'; // we need this to make JSX compile
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
@@ -8,12 +8,11 @@ import Avatar from '@material-ui/core/Avatar';
 import Tabs from '@material-ui/core/Tabs';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import { GetIcon } from 'components'
-import { getAgents, selectAgent, emitEvent } from 'store/inbox/actions';
-import { getMultiCollection } from 'store/main/actions';
-import { getValuesFromDomain, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getMessageTemplateSel } from 'common/helpers';
+import { getAgents, selectAgent, emitEvent, cleanAlerts, cleanInboxSupervisor, setAgentsToReassign, selectTicket } from 'store/inbox/actions';
+import { getMultiCollection, resetAllMain } from 'store/main/actions';
+import { getValuesFromDomainLight, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getMessageTemplateLst, getEmojiAllSel, getInappropriateWordsLst, getPropertySelByName, getUserChannelSel } from 'common/helpers';
 import { setOpenDrawer } from 'store/popus/actions';
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
@@ -21,25 +20,32 @@ import { AntTab, BadgeGo, ListItemSkeleton } from 'components';
 import { SearchIcon } from 'icons';
 import { IAgent } from "@types";
 import clsx from 'clsx';
+import IconButton from '@material-ui/core/IconButton';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import { FixedSizeList, areEqual } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import memoize from 'memoize-one';
 
-const filterAboutStatusName = (data: IAgent[], page: number, searchName: string): IAgent[] => {
-    if (page === 0 && searchName === "") {
+const filterAboutStatusName = (data: IAgent[], page: number, textToSearch: string, filterBy: string): IAgent[] => {
+    if (page === 0 && textToSearch === "") {
         return data;
     }
-    if (page === 0 && searchName !== "") {
-        return data.filter(item => item.name.toLowerCase().includes(searchName.toLowerCase()));
+    if (page === 0 && textToSearch !== "") {
+        return data.filter(item => (filterBy === "user" ? item.name : (item.groups || "")).toLowerCase().includes(textToSearch.toLowerCase()));
     }
-    if (page === 1 && searchName === "") {
+    if (page === 1 && textToSearch === "") {
         return data.filter(item => item.status === "ACTIVO");
     }
-    if (page === 1 && searchName !== "") {
-        return data.filter(item => item.status === "ACTIVO" && item.name.toLowerCase().includes(searchName.toLowerCase()));
+    if (page === 1 && textToSearch !== "") {
+        return data.filter(item => item.status === "ACTIVO" && (filterBy === "user" ? item.name : (item.groups || "")).toLowerCase().includes(textToSearch.toLowerCase()));
     }
-    if (page === 2 && searchName === "") {
+    if (page === 2 && textToSearch === "") {
         return data.filter(item => item.status !== "ACTIVO");
     }
-    if (page === 2 && searchName !== "") {
-        return data.filter(item => item.status !== "ACTIVO" && item.name.toLowerCase().includes(searchName.toLowerCase()));
+    if (page === 2 && textToSearch !== "") {
+        return data.filter(item => item.status !== "ACTIVO" && (filterBy === "user" ? item.name : (item.groups || "")).toLowerCase().includes(textToSearch.toLowerCase()));
     }
     return data;
 }
@@ -50,7 +56,8 @@ const useStyles = makeStyles((theme) => ({
         width: '100%'
     },
     containerAgents: {
-        flex: '0 0 300px',
+        flex: '0 0 310px',
+        width: '310px',
         display: 'flex',
         flexDirection: 'column',
         backgroundColor: 'white',
@@ -63,7 +70,11 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 500,
         fontSize: '16px',
         lineHeight: '22px',
-        wordBreak: 'break-word'
+        wordBreak: 'break-word',
+        overflow: 'hidden',
+        maxWidth: 215,
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
     },
     agentUp: {
         display: 'flex',
@@ -82,7 +93,9 @@ const useStyles = makeStyles((theme) => ({
         cursor: 'pointer',
         '&:hover': {
             backgroundColor: 'rgb(235, 234, 237, 0.18)'
-        }
+        },
+        height: '129.328px',
+        minHeight: '129.328px',
     },
     itemSelected: {
         backgroundColor: 'rgb(235, 234, 237, 0.50)'
@@ -93,6 +106,17 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 'bold',
         height: '48px',
         color: theme.palette.text.primary,
+    },
+    tooManyChannels: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#adadad',
+        color: 'white',
+        borderRadius: 9,
+        height: 16,
+        width: 16,
+        fontSize: 12,
     }
 }));
 
@@ -103,6 +127,10 @@ const CountTicket: FC<{ label: string, count: number, color: string }> = ({ labe
     </div>
 )
 
+const createItemData = memoize((items) => ({
+    items
+}));
+
 const ChannelTicket: FC<{ channelName: string, channelType: string, color: string }> = ({ channelName, channelType, color }) => (
     <div style={{ display: 'flex', alignItems: 'center' }}>
         <Tooltip title={channelName}>
@@ -111,7 +139,21 @@ const ChannelTicket: FC<{ channelName: string, channelType: string, color: strin
     </div>
 )
 
-const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agent: { name, userid, isConnected, countPaused, countClosed, countNotAnwsered, countPending, countAnwsered, channels } }) => {
+const RenderRow = memo(
+    ({ data, index, style }: any) => {
+        const { items } = data;
+        const item = items[index]
+
+        return (
+            <div style={style}>
+                <ItemAgent key={item.userid} agent={item} />
+            </div>
+        )
+    },
+    areEqual
+)
+
+const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agent: { name, motivetype, userid, image, isConnected, countPaused, countClosed, countNotAnswered, status, userstatustype, countAnswered, channels } }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -123,31 +165,39 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
             <div className={classes.agentUp}>
                 <BadgeGo
                     overlap="circular"
-                    colortmp={isConnected ? "#44b700" : "#b41a1a"}
+                    colortmp={(userstatustype === "INBOX" && status === "DESCONECTADO" && !!motivetype) ? "#e89647" : (isConnected ? "#44b700" : "#b41a1a")}
                     anchorOrigin={{
                         vertical: 'top',
                         horizontal: 'right',
                     }}
                     variant="dot"
                 >
-                    <Avatar>{name?.split(" ").reduce((acc, item) => acc + (acc.length < 2 ? item.substring(0, 1).toUpperCase() : ""), "")}</Avatar>
+                    <Tooltip title={motivetype || ""}>
+                        <Avatar src={image || undefined} >{name?.split(" ").reduce((acc, item) => acc + (acc.length < 2 ? item.substring(0, 1).toUpperCase() : ""), "")}</Avatar>
+                    </Tooltip>
                 </BadgeGo>
                 <div>
-                    <div className={classes.agentName}>{name}</div>
+                    <div className={classes.agentName} title={name}>{name}</div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                        {channels.map((channel, index) => {
+                        {channels.slice(0, 10).map((channel, index) => {
                             const [channelType, color, channelName] = channel.split('#');
                             return <ChannelTicket key={index} channelName={channelName} channelType={channelType} color={color} />
                         })}
+                        {channels.length > 10 && (
+                            <Tooltip title={<div style={{ whiteSpace: 'pre-wrap' }}>{channels.slice(10, channels.length).reduce((acc, channel) => acc + "\n• " + channel.split('#')[2], "")}</div>}>
+                                <div className={classes.tooManyChannels}>
+                                    <span>{channels.length - 10 < 10 ? channels.length - 10 : "+9"}</span>
+                                </div>
+                            </Tooltip>
+                        )}
                     </div>
                 </div>
             </div>
             <div className={classes.counterCount}>
-
                 {(userid === 2 || userid === 3) &&
                     <CountTicket
                         label={t(langKeys.active) + "s"}
-                        count={countAnwsered + (countNotAnwsered || 0)}
+                        count={countAnswered + (countNotAnswered || 0)}
                         color="#55BD84"
                     />
                 }
@@ -155,12 +205,12 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
                     <>
                         <CountTicket
                             label={t(langKeys.attending)}
-                            count={countAnwsered}
+                            count={countAnswered}
                             color="#55BD84"
                         />
                         <CountTicket
                             label={t(langKeys.pending)}
-                            count={countNotAnwsered || 0}
+                            count={countNotAnswered || 0}
                             color="#FB5F5F"
                         />
                     </>
@@ -180,29 +230,86 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
     )
 }
 
-const HeaderAgentPanel: FC<{ classes: any, onSearch: (pageSelected: number, search: string) => void }> = ({ classes, onSearch }) => {
+const HeaderAgentPanel: FC<{
+    classes: any,
+    onSearch: (pageSelected: number, search: string, filterBy: string) => void,
+    countAll: number,
+    countConnected: number,
+    countDisconnected: number,
+}> = ({ classes, onSearch, countAll, countConnected, countDisconnected }) => {
+
     const [pageSelected, setPageSelected] = useState(0);
     const [showSearch, setShowSearch] = useState(false);
     const [search, setSearch] = useState("");
     const { t } = useTranslation();
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [filterBy, setFilterBy] = useState('user')
+    const agentList = useSelector(state => state.inbox.agentList);
 
     const onChangeSearchAgent = (e: any) => setSearch(e.target.value);
 
+    const handleClose = () => setAnchorEl(null);
+
     useEffect(() => {
-        onSearch(pageSelected, search);
-    }, [pageSelected, search])
+        onSearch(pageSelected, search, filterBy);
+    }, [pageSelected, search, filterBy])
 
     return (
         <>
-            <div style={{ paddingRight: '16px', paddingLeft: '16px' }}>
+            <div style={{ paddingRight: 8, paddingLeft: 16 }}>
                 {!showSearch ?
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <div className={classes.title}>
                             Supervisor
                         </div>
-                        <IconButton onClick={() => setShowSearch(true)} edge="end">
-                            <SearchIcon />
-                        </IconButton>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <IconButton size='small' onClick={() => setShowSearch(true)} edge="end">
+                                <SearchIcon />
+                            </IconButton>
+                            <IconButton
+                                size='small'
+                                aria-label="more"
+                                aria-controls="long-menu"
+                                aria-haspopup="true"
+                                onClick={(e) => setAnchorEl(e.currentTarget)}
+                            >
+                                <MoreVertIcon />
+                            </IconButton>
+                            <Menu
+                                id="menu-appbar"
+                                anchorEl={anchorEl}
+                                getContentAnchorEl={null}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'right',
+                                }}
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                open={Boolean(anchorEl)}
+                                onClose={handleClose}
+                            >
+                                <MenuItem
+                                    selected={filterBy === 'user'}
+                                    onClick={() => {
+                                        setAnchorEl(null);
+                                        setFilterBy('user');
+                                    }}
+                                >
+                                    {t(langKeys.filter_by_user)}
+                                </MenuItem>
+                                <MenuItem
+                                    selected={filterBy === 'group'}
+                                    onClick={() => {
+                                        setAnchorEl(null);
+                                        setFilterBy('group');
+                                    }}
+                                >
+                                    {t(langKeys.filter_by_group)}
+                                </MenuItem>
+                            </Menu>
+                        </div>
                     </div> :
                     <TextField
                         color="primary"
@@ -214,7 +321,7 @@ const HeaderAgentPanel: FC<{ classes: any, onSearch: (pageSelected: number, sear
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
-                                    <IconButton edge="end">
+                                    <IconButton size="small" edge="end">
                                         <SearchIcon />
                                     </IconButton>
                                 </InputAdornment>)
@@ -230,42 +337,61 @@ const HeaderAgentPanel: FC<{ classes: any, onSearch: (pageSelected: number, sear
                 textColor="primary"
                 onChange={(_, value) => setPageSelected(value)}
             >
-                <AntTab label={t(langKeys.all_adivisers)} />
-                <AntTab label={t(langKeys.conected)} />
-                <AntTab label={t(langKeys.disconected)} />
+                <AntTab label={`${t(langKeys.all_adivisers)}(${pageSelected === 0 ? countAll : agentList.data.length})`} />
+                <AntTab label={`${t(langKeys.conected)}(${pageSelected === 1 ? countConnected : agentList.data.filter(x => x.isConnected).length})`} />
+                <AntTab label={`${t(langKeys.disconected)}(${pageSelected === 2 ? countDisconnected : agentList.data.filter(x => !x.isConnected).length})`} />
             </Tabs>
         </>
     )
 }
 
 const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
-    const dispatch = useDispatch();
     const agentList = useSelector(state => state.inbox.agentList);
-
-    useEffect(() => {
-        dispatch(getAgents())
-    }, [])
-
-    const onSearch = (pageSelected: number, search: string) => {
-        setAgentsToShow(filterAboutStatusName(dataAgents, pageSelected, search));
-    }
-
     const [agentsToShow, setAgentsToShow] = useState<IAgent[]>([]);
     const [dataAgents, setDataAgents] = useState<IAgent[]>([]);
+    const firstLoad = React.useRef(true);
+
+    const onSearch = (pageSelected: number, search: string, filterBy: string) => {
+        setAgentsToShow(filterAboutStatusName(dataAgents, pageSelected, search, filterBy))
+    }
 
     useEffect(() => {
         if (!agentList.loading && !agentList.error) {
             setDataAgents(agentList.data as IAgent[])
-            setAgentsToShow(agentList.data as IAgent[])
+            if (firstLoad.current && agentList.data.length > 0) {
+                setAgentsToShow(agentList.data as IAgent[])
+                firstLoad.current = false
+            } else {
+                setAgentsToShow(agentList.data.filter(y => agentsToShow.map(x => x.userid).includes(y.userid)))
+            }
         }
     }, [agentList])
 
     return (
         <div className={classes.containerAgents}>
-            <HeaderAgentPanel classes={classes} onSearch={onSearch} />
+            <HeaderAgentPanel 
+                classes={classes} 
+                onSearch={onSearch} 
+                countAll={agentsToShow.length}
+                countConnected={agentsToShow.filter(x => x.isConnected).length}
+                countDisconnected={agentsToShow.filter(x => !x.isConnected).length}
+            />
             {agentList.loading ? <ListItemSkeleton /> :
-                <div className="scroll-style-go">
-                    {agentsToShow.map((agent) => (<ItemAgent key={agent.userid} agent={agent} />))}
+                <div className="scroll-style-go" style={{ height: '100%' }}>
+                    <AutoSizer>
+                        {({ height, width }: any) => (
+                            <FixedSizeList
+                                width={width}
+                                height={height}
+                                itemCount={agentsToShow.length}
+                                itemSize={129}
+                                itemData={createItemData(agentsToShow)}
+                            >
+                                {RenderRow}
+                            </FixedSizeList>
+                        )}
+                    </AutoSizer>
+                    {/* {agentsToShow.map((agent) => (<ItemAgent key={agent.userid} agent={agent} />))} */}
                 </div>
             }
         </div>
@@ -277,33 +403,63 @@ const Supervisor: FC = () => {
     const dispatch = useDispatch();
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const wsConnected = useSelector(state => state.inbox.wsConnected);
+    const multiData = useSelector(state => state.main.multiData);
+    const [initial, setInitial] = useState(true)
+    const firstLoad = React.useRef(true);
 
     useEffect(() => {
+        if (multiData?.data[1])
+            dispatch(setAgentsToReassign(multiData?.data?.[1].data || []))
+    }, [multiData])
+
+    useEffect(() => {
+        setInitial(false)
         dispatch(setOpenDrawer(false));
+        dispatch(getAgents())
         dispatch(getMultiCollection([
-            getValuesFromDomain("MOTIVOCIERRE"),
+            getValuesFromDomainLight("MOTIVOCIERRE"),
             getListUsers(),
             getClassificationLevel1("TIPIFICACION"),
-            getValuesFromDomain("GRUPOS"),
+            getValuesFromDomainLight("GRUPOS"),
             getListQuickReply(),
-            getMessageTemplateSel(0),
+            getMessageTemplateLst(),
             getCommChannelLst(),
+            getValuesFromDomainLight("OPORTUNIDADPRODUCTOS"),
+            getValuesFromDomainLight("MOTIVOSUSPENSION"),
+            getValuesFromDomainLight("OPORTUNIDADETIQUETAS"),
+            getEmojiAllSel(),
+            getInappropriateWordsLst(),
+            getPropertySelByName("TIPIFICACION"),
+            getUserChannelSel(),
         ]))
+        return () => {
+            dispatch(resetAllMain());
+            dispatch(cleanAlerts());
+            dispatch(cleanInboxSupervisor());
+        };
     }, [])
 
     useEffect(() => {
         if (wsConnected) {
-            dispatch(emitEvent({
-                event: 'connectChat',
-                data: { usertype: 'SUPERVISOR' }
-            }));
+            if (firstLoad.current) {
+                firstLoad.current = false;
+
+                dispatch(emitEvent({
+                    event: 'connectChat',
+                    data: { usertype: 'SUPERVISOR' }
+                }));   
+            } else {
+                dispatch(getAgents())
+                dispatch(selectAgent(null))
+                dispatch(selectTicket(null))
+            }
         }
     }, [wsConnected])
 
     return (
         <div className={classes.container}>
             <AgentPanel classes={classes} />
-            {agentSelected &&
+            {(agentSelected && !initial) &&
                 <InboxPanel userType="SUPERVISOR" />
             }
         </div>

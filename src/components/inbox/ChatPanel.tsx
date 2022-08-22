@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
-import { ITicket, ICloseTicketsParams, Dictionary, IReassignicketParams, ILead } from "@types";
+import { ICloseTicketsParams, Dictionary, IReassignicketParams, ILead } from "@types";
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { CloseTicketIcon, HSMIcon, TipifyIcon, ReassignIcon, LeadIcon } from 'icons';
@@ -9,11 +9,11 @@ import Tooltip from '@material-ui/core/Tooltip';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM } from 'store/inbox/actions';
+import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM, updatePerson, hideLogInteractions, updateClassificationPerson } from 'store/inbox/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { insertClassificationConversation, insLeadPerson } from 'common/helpers';
-import { execute } from 'store/main/actions';
-import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView } from 'components'
+import { changeStatus, getConversationClassification2, insertClassificationConversation, insLeadPerson } from 'common/helpers';
+import { execute, getCollectionAux2 } from 'store/main/actions';
+import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView, FieldMultiSelect, FieldMultiSelectFreeSolo } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -21,7 +21,20 @@ import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Rating from '@material-ui/lab/Rating';
-import { Box } from '@material-ui/core';
+import { Box, InputBase } from '@material-ui/core';
+import StarIcon from '@material-ui/icons/Star';
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import PauseIcon from '@material-ui/icons/Pause';
+import SearchIcon from '@material-ui/icons/Search';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import CloseIcon from '@material-ui/icons/Close';
+import PhoneIcon from '@material-ui/icons/Phone';
+import IOSSwitch from "components/fields/IOSSwitch";
+import { setModalCall } from 'store/voximplant/actions';
+import { useLocation } from 'react-router-dom';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 
 const dataPriority = [
     { option: 'HIGH' },
@@ -29,6 +42,8 @@ const dataPriority = [
     { option: 'MEDIUM' },
     { option: 'HIGH' },
 ]
+
+const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'custom'].map(x => ({ key: x }))
 
 const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
     const { t } = useTranslation();
@@ -39,12 +54,15 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
     const person = useSelector(state => state.inbox.person);
     const sendingRes = useSelector(state => state.inbox.triggerSendHSM);
     const [templatesList, setTemplatesList] = useState<Dictionary[]>([]);
+    const [channelsList, setchannelsList] = useState<Dictionary[]>([]);
     const [bodyMessage, setBodyMessage] = useState('');
     const [bodyCleaned, setBodyCleaned] = useState('');
 
-    const { control, register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<any>({
+
+    const { control, register, handleSubmit, setValue, getValues, reset, trigger, formState: { errors } } = useForm<any>({
         defaultValues: {
             hsmtemplateid: 0,
+            hsmtemplatename: '',
             observation: '',
             variables: []
         }
@@ -58,7 +76,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
     useEffect(() => {
         if (waitClose) {
             if (!sendingRes.loading && !sendingRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_send_hsm) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_send_hsm) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
 
@@ -81,7 +99,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
                 setWaitClose(false);
             } else if (sendingRes.error) {
 
-                dispatch(showSnackbar({ show: true, success: false, message: t(sendingRes.code || "error_unexpected_error") }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(sendingRes.code || "error_unexpected_error") }))
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
             }
@@ -89,33 +107,48 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
     }, [sendingRes, waitClose])
 
     useEffect(() => {
-        setTemplatesList(multiData?.data[5] && multiData?.data[5].data.filter(x => x.type === "HSM"))
-    }, [])
+        setTemplatesList(multiData?.data?.[5] && multiData?.data[5].data.filter(x => x.type === "HSM"))
+        setchannelsList(multiData?.data?.[13]?.data?.filter(e => e.type.includes("WHA")) || [])
+    }, [multiData.data])
 
     useEffect(() => {
         if (openModal) {
             setBodyMessage('')
             reset({
                 hsmtemplateid: 0,
+                hsmtemplatename: '',
                 variables: []
             })
             register('hsmtemplateid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+            register('communicationchannelid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+            register('communicationchanneltype', { validate: (value) => ((value && value.length > 0) || t(langKeys.field_required)) });
+            register('platformtype', { validate: (value) => ((value && value.length > 0) || t(langKeys.field_required)) });
+            if (ticketSelected?.communicationchanneltype?.includes('WHA') || ticketSelected?.communicationchanneltype?.includes('VOXI')) {
+                let value = channelsList[0]
+                setValue('communicationchannelid', value?.communicationchannelid || 0);
+                setValue('communicationchanneltype', value?.type || "");
+                setValue('platformtype', value?.communicationchannelsite || "");
+            }
         }
     }, [openModal])
 
     const onSelectTemplate = (value: Dictionary) => {
-        if (value) {
+        if (ticketSelected?.communicationchanneltype?.includes('WHA')) {
 
+            setValue('communicationchannelid', ticketSelected?.communicationchannelid!!);
+            setValue('communicationchanneltype', ticketSelected?.communicationchanneltype!!);
+            setValue('platformtype', ticketSelected?.communicationchannelsite!!);
+        }
+        if (value) {
             setBodyMessage(value.body);
             setValue('hsmtemplateid', value ? value.id : 0);
-
-            const wordList = value.body?.split(" ");
+            setValue('hsmtemplatename', value ? value.name : '');
             setBodyCleaned(value.body);
-            const variablesList = wordList.filter((x: string) => x.substring(0, 2) === "{{" && x.substring(x.length - 2) === "}}")
+            const variablesList = value.body.match(/({{)(.*?)(}})/g) || [];
             const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
-
             setValue('variables', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
         } else {
+            setValue('hsmtemplatename', '');
             setValue('variables', []);
             setBodyMessage('');
             setValue('hsmtemplateid', 0);
@@ -125,20 +158,28 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
     const onSubmit = handleSubmit((data) => {
         setBodyCleaned(body => {
             data.variables.forEach((x: Dictionary) => {
-                body = body.replace(`{{${x.name}}}`, x.text)
+                body = body.replace(`{{${x.name}}}`, x.variable !== 'custom' ? (person.data as Dictionary)[x.variable] : x.text)
             })
             return body
         })
         const bb = {
             hsmtemplateid: data.hsmtemplateid,
-            communicationchannelid: ticketSelected?.communicationchannelid!!,
-            platformtype: ticketSelected?.communicationchannelsite!!,
-            communicationchanneltype: ticketSelected?.communicationchanneltype!!,
+            hsmtemplatename: data.hsmtemplatename,
+            communicationchannelid: data.communicationchannelid,
+            communicationchanneltype: data.communicationchanneltype,
+            platformtype: data.platformtype,
+            type: 'HSM',
+            shippingreason: "INBOX",
             listmembers: [{
+                personid: person.data?.personid || 0,
                 phone: person.data?.phone!! + "",
                 firstname: person.data?.firstname + "",
                 lastname: person.data?.lastname + "",
-                parameters: data.variables
+                parameters: data.variables.map((v: any) => ({
+                    type: "text",
+                    text: v.variable !== 'custom' ? (person.data as Dictionary)[v.variable] : v.text,
+                    name: v.name
+                }))
             }]
         }
         dispatch(sendHSM(bb))
@@ -151,11 +192,30 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
             open={openModal}
             title={t(langKeys.send_hsm)}
             buttonText1={t(langKeys.cancel)}
-            buttonText2={t(langKeys.continue)}
+            buttonText2={t(langKeys.send)}
             handleClickButton1={() => setOpenModal(false)}
             handleClickButton2={onSubmit}
             button2Type="submit"
         >
+            <div className="row-zyx">
+
+                {!ticketSelected?.communicationchanneltype?.includes('WHA') &&
+                    <FieldSelect
+                        label={t(langKeys.channel)}
+                        className="col-12"
+                        valueDefault={getValues('communicationchannelid')}
+                        onChange={(value) => {
+                            setValue('communicationchannelid', value?.communicationchannelid || 0);
+                            setValue('communicationchanneltype', value?.type || "");
+                            setValue('platformtype', value?.communicationchannelsite || "");
+                        }}
+                        error={errors?.communicationchannelid?.message}
+                        data={channelsList}
+                        optionDesc="description"
+                        optionValue="communicationchannelid"
+                    />
+                }
+            </div>
             <div className="row-zyx">
                 <FieldSelect
                     label={t(langKeys.hsm_template)}
@@ -174,27 +234,57 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
             />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
                 {fields.map((item: Dictionary, i) => (
-                    <FieldEditArray
-                        key={item.id}
-                        label={item.name}
-                        fregister={{
-                            ...register(`variables.${i}.text`, {
-                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                            })
-                        }}
-                        valueDefault={item.value}
-                        error={errors?.variables?.[i]?.text?.message}
-                        onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
-                    />
+                    <div key={item.id}>
+                        <FieldSelect
+                            key={"var_" + item.id}
+                            fregister={{
+                                ...register(`variables.${i}.variable`, {
+                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                })
+                            }}
+                            label={item.name}
+                            valueDefault={getValues(`variables.${i}.variable`)}
+                            onChange={(value) => {
+                                setValue(`variables.${i}.variable`, value.key)
+                                trigger(`variables.${i}.variable`)
+                            }}
+                            error={errors?.variables?.[i]?.text?.message}
+                            data={variables}
+                            uset={true}
+                            prefixTranslation=""
+                            optionDesc="key"
+                            optionValue="key"
+                        />
+                        {getValues(`variables.${i}.variable`) === 'custom' &&
+                            <FieldEditArray
+                                key={"custom_" + item.id}
+                                fregister={{
+                                    ...register(`variables.${i}.text`, {
+                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                    })
+                                }}
+                                valueDefault={item.value}
+                                error={errors?.variables?.[i]?.text?.message}
+                                onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
+                            />
+                        }
+                    </div>
                 ))}
             </div>
         </DialogZyx>)
 }
 
-const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
+const DialogCloseticket: React.FC<{
+    setOpenModal: (param: any) => void;
+    openModal: boolean;
+    status?: string;
+}> = ({ setOpenModal, openModal, status = "CERRADO" }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitClose, setWaitClose] = useState(false);
+    const [waitOther, setWaitOther] = useState(false);
+    const changeStatusRes = useSelector(state => state.main.execute);
+    const [motives, setMotives] = useState<{ closed: Dictionary[], suspend: Dictionary[], selected: Dictionary[] }>({ closed: [], suspend: [], selected: [] });
     const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const userType = useSelector(state => state.inbox.userType);
@@ -205,7 +295,7 @@ const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModa
     useEffect(() => {
         if (waitClose) {
             if (!closingRes.loading && !closingRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_close_ticket) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_close_ticket) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 dispatch(emitEvent({
@@ -215,13 +305,14 @@ const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModa
                         ticketnum: ticketSelected?.ticketnum,
                         status: ticketSelected?.status,
                         isanswered: ticketSelected?.isAnswered,
+                        usergroup: ticketSelected?.usergroup,
                         userid: userType === "AGENT" ? 0 : agentSelected?.userid,
                         getToken: userType === "SUPERVISOR"
                     }
                 }));
                 setWaitClose(false);
             } else if (closingRes.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(closingRes.code || "error_unexpected_error") }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(closingRes.code || "error_unexpected_error") }))
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
             }
@@ -229,7 +320,60 @@ const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModa
     }, [closingRes, waitClose])
 
     useEffect(() => {
+        if (!multiData.error && !multiData.loading) {
+            const indexClosed = multiData.data.findIndex((x => x.key === `UFN_DOMAIN_LST_VALUES_ONLY_DATA_MOTIVOCIERRE`));
+            const indexSuspend = multiData.data.findIndex((x => x.key === `UFN_DOMAIN_LST_VALUES_ONLY_DATA_MOTIVOSUSPENSION`));
+
+            if (indexClosed > -1) {
+                setMotives({
+                    closed: multiData.data[indexClosed].data,
+                    suspend: multiData.data[indexSuspend].data,
+                    selected: []
+                })
+            }
+        }
+    }, [multiData])
+
+    useEffect(() => {
+        if (waitOther) {
+            if (!changeStatusRes.loading && !changeStatusRes.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: status === "SUSPENDIDO" ? t(langKeys.successful_suspend_ticket) : t(langKeys.successful_reactivate_ticket) }))
+
+                dispatch(emitEvent({
+                    event: 'changeStatusTicket',
+                    data: {
+                        conversationid: ticketSelected?.conversationid,
+                        status: status,
+                        isanswered: ticketSelected?.isAnswered,
+                        userid: userType === "AGENT" ? 0 : agentSelected?.userid,
+                    }
+                }));
+
+                setOpenModal(false);
+                dispatch(showBackdrop(false));
+                setWaitOther(false);
+            } else if (changeStatusRes.error) {
+                const message = t(changeStatusRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message }))
+                dispatch(showBackdrop(false));
+                setWaitOther(false);
+            }
+        }
+    }, [changeStatusRes, waitOther])
+
+    useEffect(() => {
         if (openModal) {
+            if (status === "CERRADO") {
+                setMotives({
+                    ...motives,
+                    selected: motives.closed
+                })
+            } else {
+                setMotives({
+                    ...motives,
+                    selected: motives.suspend
+                })
+            }
             reset({
                 motive: '',
                 observation: ''
@@ -240,40 +384,51 @@ const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModa
     }, [openModal])
 
     const onSubmit = handleSubmit((data) => {
-        const dd: ICloseTicketsParams = {
-            conversationid: ticketSelected?.conversationid!!,
-            motive: data.motive,
-            observation: data.observation,
-            ticketnum: ticketSelected?.ticketnum!!,
-            personcommunicationchannel: ticketSelected?.personcommunicationchannel!!,
-            communicationchannelsite: ticketSelected?.communicationchannelsite!!,
-            communicationchanneltype: ticketSelected?.communicationchanneltype!!,
-            status: 'CERRADO',
-            isAnswered: false,
+        if (status === "CERRADO") {
+            const dd: ICloseTicketsParams = {
+                conversationid: ticketSelected?.conversationid!!,
+                motive: data.motive,
+                observation: data.observation,
+                ticketnum: ticketSelected?.ticketnum!!,
+                personcommunicationchannel: ticketSelected?.personcommunicationchannel!!,
+                communicationchannelsite: ticketSelected?.communicationchannelsite!!,
+                communicationchanneltype: ticketSelected?.communicationchanneltype!!,
+                status: 'CERRADO',
+                isAnswered: false,
+            }
+            dispatch(showBackdrop(true));
+            dispatch(closeTicket(dd));
+            setWaitClose(true)
+        } else {
+            dispatch(showBackdrop(true));
+            dispatch(execute(changeStatus({
+                conversationid: ticketSelected?.conversationid!!,
+                status,
+                obs: data.observation,
+                motive: data.motive
+            })))
+            setWaitOther(true)
         }
-        dispatch(showBackdrop(true));
-        dispatch(closeTicket(dd));
-        setWaitClose(true)
     });
 
     return (
         <DialogZyx
             open={openModal}
-            title={t(langKeys.close_ticket)}
+            title={status === "CERRADO" ? t(langKeys.close_ticket) : (status === 'ASIGNADO' ? t(langKeys.activate_ticket) : t(langKeys.suspend_ticket))}
             buttonText1={t(langKeys.cancel)}
-            buttonText2={t(langKeys.continue)}
+            buttonText2={t(langKeys.save)}
             handleClickButton1={() => setOpenModal(false)}
             handleClickButton2={onSubmit}
             button2Type="submit"
         >
             <div className="row-zyx">
                 <FieldSelect
-                    label={t(langKeys.closing_reason)}
+                    label={t(langKeys.ticket_reason)}
                     className="col-12"
                     valueDefault={getValues('motive')}
                     onChange={(value) => setValue('motive', value ? value.domainvalue : '')}
                     error={errors?.motive?.message}
-                    data={multiData?.data[0] && multiData?.data[0].data}
+                    data={motives.selected}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />
@@ -293,49 +448,55 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     const dispatch = useDispatch();
     const [waitReassign, setWaitReassign] = useState(false);
 
-    const [agentsConnected, setAgentsConnected] = useState<Dictionary[]>([]);
     const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const agentToReassignList = useSelector(state => state.inbox.agentToReassignList);
+    const user = useSelector(state => state.login.validateToken.user);
+    const groups = user?.groups?.split(",") || [];
+
+    const [userToReassign, setUserToReassign] = useState<Dictionary[]>([])
     const userType = useSelector(state => state.inbox.userType);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const reassigningRes = useSelector(state => state.inbox.triggerReassignTicket);
+    const interactionBaseList = useSelector(state => state.inbox.interactionBaseList);
 
-    const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<{
+    const { register, handleSubmit, setValue, getValues, trigger, reset, formState: { errors } } = useForm<{
         newUserId: number;
         newUserGroup: string;
         observation: string;
         token: string;
     }>();
 
+
     useEffect(() => {
         if (waitReassign) {
             if (!reassigningRes.loading && !reassigningRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_reasign_ticket) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_reasign_ticket) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitReassign(false);
+
+                const isAnsweredNew = interactionBaseList.some((x) => x.userid === (getValues('newUserId') || 3) && x.interactiontype !== "LOG");
 
                 dispatch(emitEvent({
                     event: 'reassignTicket',
                     data: {
                         ...ticketSelected,
+                        usergroup: getValues('newUserGroup'),
+                        isanswered: ticketSelected?.isAnswered,
+                        isAnsweredNew,
                         userid: userType === "AGENT" ? 0 : agentSelected?.userid,
                         newuserid: getValues('newUserId') || 3,
                     }
                 }));
 
             } else if (reassigningRes.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_unexpected_error) }))
                 dispatch(showBackdrop(false));
                 setWaitReassign(false);
             }
         }
     }, [reassigningRes, waitReassign])
-
-    useEffect(() => {
-        if (multiData?.data[1])
-            setAgentsConnected(multiData?.data[1].data)
-    }, [multiData])
 
     useEffect(() => {
         if (openModal) {
@@ -352,7 +513,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
 
     const onSubmit = handleSubmit((data) => {
         if (data.newUserId === 0 && !data.newUserGroup) {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.least_user_or_group) }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.least_user_or_group) }))
             return;
         }
         const dd: IReassignicketParams = {
@@ -360,7 +521,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
             ...data,
             newUserId: data.newUserId || 3,
             newConversation: true,
-            wasanswered: true
+            wasanswered: ticketSelected?.isAnswered || false
         }
         dispatch(reassignTicket(dd));
         dispatch(showBackdrop(true));
@@ -368,36 +529,53 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
 
     });
 
+    useEffect(() => {
+        if (user) {
+            const groups = user?.groups ? user?.groups.split(",") : [];
+            if (user.properties.limit_reassign_group) {
+                setUserToReassign((multiData?.data?.[3]?.data || []).filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true))
+            } else {
+                setUserToReassign((multiData?.data?.[3]?.data || []))
+            }
+        }
+    }, [user, multiData])
+
     return (
         <DialogZyx
             open={openModal}
             title={t(langKeys.reassign_ticket)}
             buttonText1={t(langKeys.cancel)}
-            buttonText2={t(langKeys.continue)}
+            buttonText2={t(langKeys.save)}
             handleClickButton1={() => setOpenModal(false)}
             handleClickButton2={onSubmit}
             button2Type="submit"
         >
             <div className="row-zyx">
                 <FieldSelect
-                    label={t(langKeys.user_plural)}
-                    className="col-12"
-                    valueDefault={"" + getValues('newUserId')}
-                    onChange={(value) => setValue('newUserId', value ? value.userid : 0)}
-                    error={errors?.newUserId?.message}
-                    data={agentsConnected}
-                    optionDesc="displayname"
-                    optionValue="userid"
-                />
-                <FieldSelect
                     label={t(langKeys.group_plural)}
                     className="col-12"
                     valueDefault={getValues('newUserGroup')}
-                    onChange={(value) => setValue('newUserGroup', value ? value.domainvalue : '')}
+                    onChange={(value) => {
+                        setValue('newUserGroup', value ? value.domainvalue : '');
+                        setValue('newUserId', 0);
+                        trigger('newUserId');
+                    }}
                     error={errors?.newUserGroup?.message}
-                    data={multiData?.data[3] && multiData?.data[3].data}
+                    data={userToReassign}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
+                />
+                <FieldSelect
+                    label={t(langKeys.advisor)}
+                    className="col-12"
+                    valueDefault={getValues('newUserId')}
+                    onChange={(value) => {
+                        setValue('newUserId', value ? value.userid : 0);
+                    }}
+                    error={errors?.newUserId?.message}
+                    data={agentToReassignList.filter(x => x.status === "ACTIVO" && x.userid !== user?.userid && (getValues('newUserGroup') ? (x.groups || "").split(",").includes(getValues('newUserGroup')) : (user?.properties.limit_reassign_group ? groups.some(y => (x.groups || "").split(",").includes(y)) : true) ) )}
+                    optionDesc="displayname"
+                    optionValue="userid"
                 />
                 <FieldEditMulti
                     label={t(langKeys.observation)}
@@ -414,10 +592,12 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitInsLead, setWaitInsLead] = useState(false);
-
+    const multiData = useSelector(state => state.main.multiData);
     const insLeadRes = useSelector(state => state.main.execute);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
-    const personSelected = useSelector(state => state.inbox.person);
+    const user = useSelector(state => state.login.validateToken.user);
+    const personSelected = useSelector(state => state.inbox.person.data);
+    const [tagsDomain, setTagsDomain] = useState<Dictionary[]>([]);
 
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<{
         description: string;
@@ -427,18 +607,27 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
         firstname: string;
         email: string;
         phone: string;
+        products: string;
+        tags: string;
     }>();
+
+    useEffect(() => {
+        if (!multiData.error && !multiData.loading) {
+            setTagsDomain(multiData?.data[7] ? multiData?.data[7]?.data : []);
+        }
+    }, [multiData])
 
     useEffect(() => {
         if (waitInsLead) {
             if (!insLeadRes.loading && !insLeadRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitInsLead(false);
+                dispatch(updatePerson({ ...personSelected!!, havelead: true }));
             } else if (insLeadRes.error) {
                 const message = t(insLeadRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message }))
+                dispatch(showSnackbar({ show: true, severity: "error", message }))
                 dispatch(showBackdrop(false));
                 setWaitInsLead(false);
             }
@@ -451,10 +640,12 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
                 description: '',
                 expected_revenue: '',
                 priority: 1,
-                firstname: personSelected.data?.firstname,
-                lastname: personSelected.data?.lastname,
-                email: personSelected.data?.email,
-                phone: personSelected.data?.phone,
+                firstname: personSelected?.firstname,
+                lastname: personSelected?.lastname,
+                email: personSelected?.email,
+                phone: personSelected?.phone,
+                products: '',
+                tags: ''
             })
             register('description', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
             register('expected_revenue', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
@@ -462,13 +653,12 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
 
             register('lastname');
             register('firstname', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
-            register('email', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
+            register('email');
             register('phone', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
         }
     }, [openModal])
 
     const onSubmit = handleSubmit((data) => {
-        console.log(data.priority)
         const newLead: ILead = {
             leadid: 0,
             description: data.description,
@@ -476,17 +666,19 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
             status: 'ACTIVO',
             expected_revenue: parseFloat(data.expected_revenue),
             date_deadline: null,
-            tags: '',
             personcommunicationchannel: ticketSelected?.personcommunicationchannel!!,
             priority: dataPriority[data.priority].option,
             conversationid: ticketSelected?.conversationid!!,
             columnid: 0,
             index: 0,
+            userid: user?.userid || 0,
+            products: data.products,
+            tags: data.tags
         }
 
         const { firstname = "", lastname = "", email = "", phone = "" } = data;
         dispatch(showBackdrop(true));
-        dispatch(execute(insLeadPerson(newLead, firstname, lastname, email, phone, personSelected.data?.personid!!)))
+        dispatch(execute(insLeadPerson(newLead, firstname, lastname, email, phone, personSelected?.personid!!)))
         setWaitInsLead(true)
     });
 
@@ -495,7 +687,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
             open={openModal}
             title={t(langKeys.newlead)}
             buttonText1={t(langKeys.cancel)}
-            buttonText2={t(langKeys.continue)}
+            buttonText2={t(langKeys.create)}
             handleClickButton1={() => setOpenModal(false)}
             handleClickButton2={onSubmit}
             button2Type="submit"
@@ -539,6 +731,30 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
                     error={errors?.description?.message}
                     onChange={(value) => setValue('description', value)}
                 />
+                <FieldMultiSelectFreeSolo
+                    label={t(langKeys.tags)}
+                    className="col-12"
+                    valueDefault={getValues('tags')}
+                    onChange={(value: ({ domaindesc: string } | string)[]) => {
+                        const tags = value.map((o: any) => o.domaindesc || o).join();
+                        setValue('tags', tags);
+                    }}
+                    error={errors?.tags?.message}
+                    loading={false}
+                    data={tagsDomain.concat((getValues('tags') || '').split(',').filter((i: any) => i !== '' && (tagsDomain.findIndex(x => x.domaindesc === i)) < 0).map((domaindesc: any) => ({ domaindesc })))}
+                    optionDesc="domaindesc"
+                    optionValue="domaindesc"
+                />
+                <FieldMultiSelect
+                    label={t(langKeys.product_plural)}
+                    className="col-12"
+                    valueDefault={getValues('products')}
+                    onChange={(value) => setValue('products', value.map((o: Dictionary) => o.domainvalue).join())}
+                    error={errors?.products?.message}
+                    data={multiData?.data[7] && multiData?.data[7]?.data}
+                    optionDesc="domaindesc"
+                    optionValue="domainvalue"
+                />
                 <div style={{ display: 'flex', gap: 16 }}>
                     <FieldEdit
                         label={t(langKeys.expected_revenue)}
@@ -547,12 +763,19 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
                         error={errors?.expected_revenue?.message}
                         type="number"
                         onChange={(value) => setValue('expected_revenue', value)}
+
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    {user?.currencysymbol}
+                                </InputAdornment>
+                            )
+                        }}
                     />
                     <div style={{ flex: 1 }}>
                         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">Prioridad</Box>
                         <Rating
-                            name="simple-controlled"
-                            // defaultValue={2}
+                            name="priority-start"
                             max={3}
                             value={getValues('priority')}
                             onChange={(event, newValue) => setValue('priority', newValue || 0, { shouldValidate: true })}
@@ -579,14 +802,15 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
     useEffect(() => {
         if (waitTipify) {
             if (!tipifyRes.loading && !tipifyRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_tipify_ticket) }))
+                dispatch(updateClassificationPerson(true))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_tipify_ticket) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitTipify(false);
             } else if (tipifyRes.error) {
                 const message = t(tipifyRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
 
-                dispatch(showSnackbar({ show: true, success: false, message }))
+                dispatch(showSnackbar({ show: true, severity: "error", message }))
                 dispatch(showBackdrop(false));
                 setWaitTipify(false);
             }
@@ -608,8 +832,7 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
             register('path1');
             register('classificationid1', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
             register('path2');
-            register('classificationid2', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
-            register('path3');
+            register('classificationid2');
             register('classificationid3');
 
         }
@@ -647,7 +870,7 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
 
     const onSubmit = handleSubmit((data) => {
         dispatch(showBackdrop(true));
-        dispatch(execute(insertClassificationConversation(ticketSelected?.conversationid!!, data.classificationid3 || data.classificationid2, '', 'INSERT')))
+        dispatch(execute(insertClassificationConversation(ticketSelected?.conversationid!!, data.classificationid3 || data.classificationid2 || data.classificationid1, '', 'INSERT')))
         setWaitTipify(true)
     });
 
@@ -656,7 +879,7 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
             open={openModal}
             title={t(langKeys.tipify_ticket)}
             buttonText1={t(langKeys.cancel)}
-            buttonText2={t(langKeys.continue)}
+            buttonText2={t(langKeys.save)}
             handleClickButton1={() => setOpenModal(false)}
             handleClickButton2={onSubmit}
             button2Type="submit"
@@ -698,25 +921,107 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
         </DialogZyx>)
 }
 
-const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any) => void }> = ({ classes, setShowSearcher }) => {
     const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const handleClose = () => setAnchorEl(null);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const hideLogs = useSelector(state => state.inbox.hideLogsOnTicket);
     const [openModalCloseticket, setOpenModalCloseticket] = useState(false);
     const [openModalReassignticket, setOpenModalReassignticket] = useState(false);
     const [openModalTipification, setOpenModalTipification] = useState(false);
+    const [typeStatus, setTypeStatus] = useState('');
     const [openModalLead, setOpenModalLead] = useState(false);
+    const voxiConnection = useSelector(state => state.voximplant.connection);
     const [openModalHSM, setOpenModalHSM] = useState(false);
-    const closeTicket = () => setOpenModalCloseticket(true);
+    const multiData = useSelector(state => state.main.multiData);
+    const person = useSelector(state => state.inbox.person);
+    const statusCall = useSelector(state => state.voximplant.statusCall);
+    const [checkTipification, setCheckTipification] = useState(false);
+    const mainAux2 = useSelector(state => state.main.mainAux2);
+    const location = useLocation();
+    const userConnected = useSelector(state => state.inbox.userConnected);
+
+    const closeTicket = (newstatus: string) => {
+        if (newstatus === "CERRADO") {
+            let tipificationproperty = (multiData?.data?.[12]?.data || [{ propertyvalue: "0" }])[0];
+            if (tipificationproperty?.propertyvalue === "1") {
+                setCheckTipification(true);
+                dispatch(getCollectionAux2(getConversationClassification2(ticketSelected?.conversationid!!)))
+            }
+            else {
+                setOpenModalCloseticket(true);
+                setTypeStatus(newstatus);
+            }
+        } else {
+            setOpenModalCloseticket(true);
+            setTypeStatus(newstatus);
+        }
+    };
+
+
+    const handlerShowLogs = (e: any) => {
+        // setShowLogs(e.target.checked);
+        dispatch(hideLogInteractions(e.target.checked))
+    }
+
+    useEffect(() => {
+        if (checkTipification) {
+            if (!mainAux2.loading) {
+                if (mainAux2.data?.length > 0) {
+                    setCheckTipification(true);
+                    setOpenModalCloseticket(true);
+                    // setTypeStatus(newstatus);
+                    setTypeStatus("CERRADO");
+                }
+                else {
+                    setCheckTipification(false);
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.tipify_ticket) }))
+                }
+            }
+        }
+    }, [mainAux2])
 
     return (
         <>
             <div className={classes.containerButtonsChat}>
-                {ticketSelected?.status !== 'CERRADO' &&
+                {(!voxiConnection.error && !voxiConnection.loading && statusCall !== "CONNECTED" && userConnected && statusCall !== "CONNECTING" &&
+                    ticketSelected?.communicationchanneltype !== "VOXI" && location.pathname === "/message_inbox") &&
+                    <Tooltip title={t(langKeys.make_call) + ""} arrow placement="top">
+                        <IconButton onClick={() => { dispatch(setModalCall(true)) }}>
+                            <PhoneIcon width={24} height={24} fill="#8F92A1" />
+                        </IconButton>
+                    </Tooltip>
+                }
+                <Tooltip title={t(!hideLogs ? langKeys.hide_logs : langKeys.show_logs) || ""} arrow placement="top">
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <IOSSwitch checked={hideLogs} onChange={handlerShowLogs} name="checkedB" />
+                    </div>
+                </Tooltip>
+                <Tooltip title={t(langKeys.search_ticket) + ""} arrow placement="top">
+                    <IconButton onClick={() => setShowSearcher(true)}>
+                        <SearchIcon width={24} height={24} fill="#8F92A1" />
+                    </IconButton>
+                </Tooltip>
+                {(ticketSelected?.status !== 'CERRADO' && ticketSelected?.communicationchanneltype !== "VOXI") &&
                     <Tooltip title={t(langKeys.close_ticket) + ""} arrow placement="top">
-                        <IconButton onClick={closeTicket}>
-                            <CloseTicketIcon width={24} height={24} fill="#8F92A1" />
+                        <IconButton onClick={() => closeTicket("CERRADO")}>
+                            <CloseTicketIcon width={24} height={24} fill={person.data?.haveclassification ? "#b41a1a" : "#8F92A1"} />
+                        </IconButton>
+                    </Tooltip>
+                }
+                {(ticketSelected?.status === 'SUSPENDIDO' && ticketSelected?.communicationchanneltype !== "VOXI") &&
+                    <Tooltip title={t(langKeys.activate_ticket) + ""} arrow placement="top">
+                        <IconButton onClick={() => closeTicket("ASIGNADO")}>
+                            <PlayArrowIcon width={24} height={24} fill="#8F92A1" />
+                        </IconButton>
+                    </Tooltip>
+                }
+                {(ticketSelected?.status === 'ASIGNADO' && ticketSelected?.communicationchanneltype !== "VOXI") &&
+                    <Tooltip title={t(langKeys.suspend_ticket) + ""} arrow placement="top">
+                        <IconButton onClick={() => closeTicket("SUSPENDIDO")}>
+                            <PauseIcon width={24} height={24} fill="#8F92A1" />
                         </IconButton>
                     </Tooltip>
                 }
@@ -739,7 +1044,7 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                {ticketSelected?.status !== 'CERRADO' &&
+                {(ticketSelected?.status !== 'CERRADO' && ticketSelected?.communicationchanneltype !== "VOXI") &&
                     <MenuItem onClick={() => {
                         setOpenModalReassignticket(true)
                         setAnchorEl(null)
@@ -761,7 +1066,7 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                         {t(langKeys.typify)}
                     </MenuItem>
                 }
-                {ticketSelected?.communicationchanneltype.includes('WHA') &&
+                {(ticketSelected?.communicationchanneltype?.includes('WHA') || multiData?.data?.[13]?.data?.filter(e => e.type.includes("WHA")).length > 0) &&
                     <MenuItem onClick={() => {
                         setAnchorEl(null)
                         setOpenModalHSM(true)
@@ -787,6 +1092,7 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
             <DialogCloseticket
                 openModal={openModalCloseticket}
                 setOpenModal={setOpenModalCloseticket}
+                status={typeStatus}
             />
             <DialogReassignticket
                 openModal={openModalReassignticket}
@@ -808,11 +1114,108 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     )
 }
 
+const typeText = ["text", "post-text", "reply-text", "quickreply", "carousel", "LOG", "email"]
+
+const applySearch = (list: Dictionary[], index: number) => {
+    const inthtml = document.getElementById(`interaction-${list[index].interactionid}`)
+    if (inthtml) {
+        inthtml.scrollIntoView({ block: "center" });
+        inthtml.classList.add('item-result-searcher');
+        setTimeout(() => {
+            inthtml.classList.remove('item-result-searcher');
+        }, 500);
+    }
+}
+
+const SearchOnInteraction: React.FC<{ setShowSearcher: (param: any) => void }> = ({ setShowSearcher }) => {
+    const [value, setvalue] = useState('');
+    const timeOut = React.useRef<NodeJS.Timeout | null>(null);
+    const { t } = useTranslation();
+
+    const interactionList = useSelector(state => state.inbox.interactionBaseList);
+    const [indexSearch, setIndexSearch] = useState(0);
+    const [triggerSearch, setTriggerSearch] = useState(false);
+    const [listFound, setListFound] = useState<Dictionary[]>([]);
+
+    const handleChange = (e: any) => {
+        const text = e.target.value.toLocaleLowerCase().trim();
+        if (text) {
+            const inttfound = interactionList.filter(x => x.interactiontext.toLocaleLowerCase().includes(text) && typeText.includes(x.interactiontype))
+            setListFound(inttfound);
+
+            if (inttfound.length > 0) {
+                setIndexSearch(0);
+                setTriggerSearch(!triggerSearch);
+            }
+        }
+    }
+
+    useEffect(() => {
+        if (listFound.length > 0) {
+            applySearch(listFound, indexSearch);
+        }
+    }, [triggerSearch])
+
+    const handlerManageFilter = (type: string) => {
+        if (type === "down") {
+            const neworden = indexSearch - 1 < 0 ? listFound.length - 1 : indexSearch - 1;
+            setIndexSearch(neworden);
+        } else {
+            const neworden = indexSearch + 1 > listFound.length - 1 ? 0 : indexSearch + 1;
+            setIndexSearch(neworden);
+        }
+        setTriggerSearch(!triggerSearch);
+    }
+
+    const onChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+        setvalue(event.target.value);
+
+        if (timeOut.current) clearTimeout(timeOut.current);
+
+        timeOut.current = setTimeout(() => {
+            handleChange(event);
+            if (timeOut.current) {
+                clearTimeout(timeOut.current);
+                timeOut.current = null;
+            }
+        }, 300);;
+    };
+
+    return (
+        <div style={{ backgroundColor: 'white', border: '1px solid #e1e1e1', borderRadius: 16, paddingLeft: 4, paddingRight: 4, display: 'flex', alignItems: 'center' }}>
+            <IconButton size="small" onClick={() => setShowSearcher(false)}>
+                <CloseIcon style={{ color: '#8F92A1' }} />
+            </IconButton>
+            <InputBase
+                color="primary"
+                fullWidth
+                autoFocus
+                value={value}
+                onChange={onChange}
+                placeholder={t(langKeys.search)}
+                style={{ marginTop: 2, marginBottom: 2 }}
+            />
+            <div style={{ display: 'inline', color: '#8F92A1' }}>
+                {indexSearch + 1}/{listFound.length}
+            </div>
+            <IconButton size="small" onClick={() => handlerManageFilter('up')}>
+                <KeyboardArrowDownIcon style={{ color: '#8F92A1' }} />
+            </IconButton>
+            <IconButton size="small" onClick={() => handlerManageFilter('down')}>
+                <KeyboardArrowUpIcon style={{ color: '#8F92A1' }} />
+            </IconButton>
+
+        </div>
+    )
+}
+
 const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
     const dispatch = useDispatch();
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
-    console.log(ticketSelected!!.displayname)
+    const person = useSelector(state => state.inbox.person.data);
+    const [showSearcher, setShowSearcher] = useState(false);
     const showInfoPanelTrigger = () => dispatch(showInfoPanel())
+    const { t } = useTranslation();
 
     return (
         <div style={{ position: 'relative' }}>
@@ -821,29 +1224,51 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                     <Avatar src={ticketSelected!!.imageurldef || ""} />
                     <div className={classes.titleTicketChat}>
-                        <div>{ticketSelected!!.displayname}</div>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            {person?.havelead && <StarIcon fontSize="small" style={{ color: '#ffb400' }} />}
+                            {ticketSelected!!.displayname}
+                        </div>
                         <div style={{ fontSize: 14, fontWeight: 400 }}>
-                            Ticket #{ticketSelected!!.ticketnum}
+                            Ticket {ticketSelected!!.ticketnum}
+                            <Tooltip style={{ padding: 0, paddingLeft: 5 }} title={t(langKeys.copyticketnum) + ""} arrow placement="top">
+                                <IconButton onClick={() => {
+                                    navigator.clipboard.writeText(ticketSelected!!.ticketnum)
+                                }}>
+                                    <FileCopyIcon style={{ width: 15, height: 15 }} fill="#8F92A1" />
+                                </IconButton>
+                            </Tooltip>
                         </div>
                     </div>
                 </div>
-                <ButtonsManageTicket classes={classes} />
+                <ButtonsManageTicket classes={classes} setShowSearcher={setShowSearcher} />
             </div>
+            {showSearcher &&
+                <div style={{ position: 'absolute', zIndex: 1, right: 16, marginTop: 8 }}>
+                    <SearchOnInteraction setShowSearcher={setShowSearcher} />
+                </div>
+            }
         </div>
     )
 }
 
-const ChatPanel: React.FC<{ classes: any }> = React.memo(({ classes }) => (
-    <div className={classes.containerChat}>
-        <HeadChat
-            classes={classes}
-        />
-        <InteractionsPanel
-            classes={classes}
-        />
-        <ReplyPanel
-            classes={classes} />
-    </div>
-))
+const ChatPanel: React.FC<{ classes: any }> = React.memo(({ classes }) => {
+    const call = useSelector(state => state.voximplant.call);
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+
+    return (
+        <div className={classes.containerChat}>
+            <HeadChat
+                classes={classes}
+            />
+            <InteractionsPanel
+                classes={classes}
+            />
+            {(!(ticketSelected?.conversationid === call.data?.conversationid && !!call?.call)) && (
+                <ReplyPanel
+                    classes={classes} />
+            )}
+        </div>
+    )
+})
 
 export default ChatPanel;

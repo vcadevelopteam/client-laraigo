@@ -1,4 +1,4 @@
-import { IAction, IDomain } from "@types";
+import { Dictionary, IAction, IDomain } from "@types";
 import { IState, initialState } from './reducer';
 
 export const getPerson = (state: IState): IState => ({
@@ -228,6 +228,15 @@ export const getDomainsByTypenameSuccess = (state: IState, action: IAction): ISt
     const groups = (action.payload.data as any[])[6].data as IDomain[] | null;
     const personGenTypes = (action.payload.data as any[])[7].data as IDomain[] | null;
     const channelTypes = (action.payload.data as any[])[8].data as IDomain[] | null;
+    const agents = (action.payload.data as any[])[9].data as Dictionary[] | null;
+    const templates = (action.payload.data as any[])[10].data as Dictionary[] | null;
+    const channels = (action.payload.data as any[])[11].data as Dictionary[] | null;
+    const company = (action.payload.data as any[])[12].data as Dictionary[] | null;
+    const billinggroups = (action.payload.data as any[])[13].data as Dictionary[] | null;
+    const genericstatus = (action.payload.data as any[])[14].data as Dictionary[] | null;
+    const userstatus = (action.payload.data as any[])[15].data as Dictionary[] | null;
+    const roles = (action.payload.data as any[])[16].data as Dictionary[] | null;
+    const usergroup = (action.payload.data as any[])[17].data as Dictionary[] | null;
 
     return {
         ...state,
@@ -242,7 +251,16 @@ export const getDomainsByTypenameSuccess = (state: IState, action: IAction): ISt
                 personTypes: personTypes || [],
                 groups: groups || [],
                 personGenTypes: personGenTypes || [],
-                channelTypes: channelTypes || []
+                channelTypes: channelTypes || [],
+                templates: templates || [],
+                agents: agents || [],
+                channels: channels || [],
+                company: company || [],
+                billinggroups: billinggroups || [],
+                genericstatus: genericstatus || [],
+                userstatus: userstatus || [],
+                roles: roles || [],
+                usergroup: usergroup || [],
             },
             loading: false,
             error: false,

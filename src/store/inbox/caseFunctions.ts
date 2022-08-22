@@ -1,14 +1,14 @@
-import { IAction, IInteraction, IGroupInteraction, ITicket, INewMessageParams, IDeleteTicketParams, IConnectAgentParams } from "@types";
+import { IAction, IInteraction, IGroupInteraction, ITicket, INewMessageParams, IDeleteTicketParams, IConnectAgentParams, Dictionary } from "@types";
 import { initialState, IState } from "./reducer";
 import { toTime24HR, convertLocalDate } from 'common/helpers';
+import { keys } from 'common/constants';
 
-
-const getGroupInteractions = (interactions: IInteraction[]): IGroupInteraction[] => {
+const getGroupInteractions = (interactions: IInteraction[], hideLogs: boolean = false, returnHidden: boolean = false): IGroupInteraction[] => {
 
     const listImages = interactions.filter(x => x.interactiontype.includes("image")).map(x => x.interactiontext)
     let indexImage = 0;
 
-    return interactions.reduce((acc: any, item: IInteraction) => {
+    return (hideLogs ? interactions.filter(x => x.interactiontype !== "LOG") : cleanLogsReassignedTask(interactions, returnHidden)).reduce((acc: any, item: IInteraction) => {
         item.indexImage = indexImage;
         item.listImage = listImages;
         item.onlyTime = toTime24HR(convertLocalDate(item.createdate, false).toLocaleTimeString())
@@ -60,9 +60,8 @@ const AddNewInteraction = (groupsInteraction: IGroupInteraction[], interaction: 
     return groupsInteraction;
 }
 
-const cleanLogsReassignedTask = (interactions: IInteraction[]) => {
+const cleanLogsReassignedTask = (interactions: IInteraction[], returnHidden: boolean = false) => {
     let validatelog = true;
-    //#region HIDE LOGS, ONLY SHOW LAST LOG
     for (let i = 0; i < interactions.length; i++) {
         if (interactions[i].interactiontext.toLowerCase().includes("balanceo") && validatelog) {
             let countlogconsecutive = 0;
@@ -83,12 +82,12 @@ const cleanLogsReassignedTask = (interactions: IInteraction[]) => {
             validatelog = true;
     }
     //#endregion
-    //interactions = interactions.filter(i => i.interactiontype != "HIDE");
-    return interactions.filter(x => !x.isHide);
+    return returnHidden ? interactions : interactions.filter(x => !x.isHide);
 }
 
 export const getAgents = (state: IState): IState => ({
     ...initialState,
+    wsConnected: state.wsConnected,
     userConnected: state.userConnected,
     userType: "SUPERVISOR",
     agentList: { ...state.agentList, loading: true, error: false },
@@ -101,7 +100,7 @@ export const getAgentsSuccess = (state: IState, action: IAction): IState => ({
         data: action.payload.data ? action.payload.data.map((x: any) => ({
             ...x,
             channels: x.channels?.split(",") || [],
-            countNotAnwsered: x.countActive - x.countAnwsered,
+            countNotAnswered: x.countActive - x.countAnswered,
             isConnected: x.status === "ACTIVO"
         })).sort((a: any, b: any) => (a.isConnected === b.isConnected) ? 0 : a.isConnected ? -1 : 1) : [],
         count: action.payload.count,
@@ -122,7 +121,8 @@ export const getAgentsFailure = (state: IState, action: IAction): IState => ({
 });
 
 export const getAgentsReset = (state: IState): IState => ({
-    ...initialState
+    ...initialState,
+    wsConnected: state.wsConnected,
 });
 
 export const getPerson = (state: IState): IState => ({
@@ -236,7 +236,7 @@ export const setUserType = (state: IState, action: IAction): IState => ({
 export const selectTicket = (state: IState, action: IAction): IState => ({
     ...state,
     ticketSelected: action.payload,
-    showInfoPanel: false,
+    showInfoPanel: !action.payload ? false : state.showInfoPanel,
     tipificationsLevel2: initialState.tipificationsLevel2,
     tipificationsLevel3: initialState.tipificationsLevel3
 })
@@ -254,11 +254,24 @@ export const updatePerson = (state: IState, action: IAction): IState => ({
     }
 })
 
-
+export const updatePersonClassification = (state: IState, action: IAction): IState => ({
+    ...state,
+    person: {
+        ...state.person,
+        data: {
+            ...state.person.data!!,
+            haveclassification: action.payload
+        }
+    }
+})
 
 export const resetSelectTicket = (state: IState, action: IAction): IState => ({
     ...state,
     ticketSelected: null,
+    person: {
+        ...state.person,
+        data: null
+    }
 })
 
 export const selectAgent = (state: IState, action: IAction): IState => ({
@@ -290,6 +303,21 @@ export const modifyTicket = (state: IState, action: IAction): IState => ({
     ticketList: { ...state.ticketList, data: state.ticketList.data.map((x: ITicket) => x.conversationid === action.payload.conversationid ? action.payload : x) },
 })
 
+export const changeStatusTicket = (state: IState, action: IAction): IState => ({
+    ...state,
+    ticketSelected: {
+        ...state.ticketSelected!!,
+        status: action.payload.status
+    },
+    ticketList: {
+        ...state.ticketList,
+        data: state.ticketList.data.map((x: ITicket) => x.conversationid === action.payload.conversationid ? {
+            ...x,
+            status: action.payload.status
+        } : x)
+    },
+})
+
 
 export const getTickets = (state: IState): IState => ({
     ...state,
@@ -297,16 +325,22 @@ export const getTickets = (state: IState): IState => ({
     ticketSelected: null
 });
 
-export const getTicketsSuccess = (state: IState, action: IAction): IState => ({
-    ...state,
-    isOnBottom: null,
-    ticketList: {
-        data: action.payload.data || [],
-        count: action.payload.count,
-        loading: false,
-        error: false,
-    },
-});
+export const getTicketsSuccess = (state: IState, action: IAction): IState => {
+    if ((state.agentSelected?.userid + "") === action.payload.key.split("_")?.pop()) {
+        return {
+            ...state,
+            isOnBottom: null,
+            ticketList:  {
+                data: action.payload.data || [],
+                count: action.payload.count,
+                loading: false,
+                error: false,
+            },
+        }
+    } else {
+        return state
+    }
+};
 
 export const getTicketsFailure = (state: IState, action: IAction): IState => ({
     ...state,
@@ -331,17 +365,31 @@ export const connectAgentWS = (state: IState, action: IAction): IState => {
     const { userType } = state;
 
     if (userType === 'SUPERVISOR') {
-        newAgentList = newAgentList.map(x => x.userid === data.userid ? { ...x, isConnected: data.isconnected } : x).sort((a: any, b: any) => (a.isConnected === b.isConnected) ? 0 : a.isConnected ? -1 : 1)
+        newAgentList = newAgentList.map(x => x.userid === data.userid ? { 
+            ...x, 
+            isConnected: data.isconnected, 
+            status: data.isconnected ? "ACTIVO" : "DESCONECTADO",
+            motivetype: data.motive, 
+            userstatustype:  (data.isconnected ? "ACTIVO" : (data.motive ? "INBOX" : "LOGOUT") )
+        } : x).sort((a: any, b: any) => (a.isConnected === b.isConnected) ? 0 : a.isConnected ? -1 : 1)
     }
 
     return {
         ...state,
+        agentToReassignList: state.agentToReassignList.map(x => x.userid === data.userid ? { ...x, status: data.isconnected ? 'ACTIVO' : "DESCONECTADO" } : x),
         agentList: {
             data: newAgentList,
             count: action.payload.count,
             loading: false,
             error: false,
         },
+    };
+}
+
+export const setAgentsToReassign = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        agentToReassignList: state.userType === "AGENT" ? action.payload.filter((x: any) => x.userid !== state.agentSelected?.userid) : action.payload
     };
 }
 
@@ -374,60 +422,95 @@ export const setIsFiltering = (state: IState, action: IAction): IState => {
     };
 }
 
+export const resetInboxSupervisor = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        agentSelected: null
+    };
+}
+
+
 export const newMessageFromClient = (state: IState, action: IAction): IState => {
     const data: INewMessageParams = action.payload;
+    
+    if (state.role === "SUPERVISOR" && state.holdingBySupervisor === "GRUPO" && data.newConversation && data.userid === 3 && !!state.userGroup) {
+        if (!state.userGroup.split(",").includes(data.usergroup || "")) {
+            return state;
+        }
+    }
     let newticketList = [...state.ticketList.data];
     let newInteractionList = [...state.interactionList.data];
     let newTicketSelected = state.ticketSelected ? { ...state.ticketSelected } : null;
     let newAgentList = [...state.agentList.data];
-
+    let newInteraction = null;
     const { agentSelected, ticketSelected, userType } = state;
-
     if (userType === 'SUPERVISOR') {
         if (data.newConversation) {
             newAgentList = newAgentList.map(x => x.userid === data.userid ? {
                 ...x,
-                countAnwsered: x.countAnwsered + (data.userid === 2 ? 1 : 0),
-                countNotAnwsered: (x.countNotAnwsered || 0) + (data.userid === 2 ? 0 : 1),
+                countAnswered: (data.status === "ASIGNADO") ? (x.countAnswered + (data.userid === 2 ? 1 : (data.isAnswered ? 1 : 0))) : x.countAnswered,
+                countNotAnswered: (data.status === "ASIGNADO") ? ((x.countNotAnswered || 0) + (data.userid === 2 ? 0 : (data.isAnswered ? 0 : 1))) : x.countNotAnswered,
+
+                countPaused: (data.status === "SUSPENDIDO") ? x.countPaused + 1 : x.countPaused
             } : x)
         } else if (data.usertype === "agent" && data.ticketWasAnswered) {
             newAgentList = newAgentList.map(x => x.userid === data.userid ? {
                 ...x,
-                countAnwsered: (data.status === "ASIGNADO") ? x.countAnwsered + 1 : x.countAnwsered,
-                countNotAnwsered: (data.status === "ASIGNADO") ? (x.countNotAnwsered || 1) - 1 : x.countNotAnwsered,
+                countAnswered: (data.status === "ASIGNADO") ? x.countAnswered + 1 : x.countAnswered,
+                countNotAnswered: (data.status === "ASIGNADO") ? (x.countNotAnswered || 1) - 1 : x.countNotAnswered,
             } : x)
         }
     }
 
-    if (agentSelected?.userid === data.userid || userType === 'AGENT' || newticketList.some(x => x.conversationid === data.conversationid)) {
+    if (agentSelected?.userid === data.userid || newticketList.some(x => x.conversationid === data.conversationid)) {
         if (data.newConversation) {
             if (!newticketList.some(x => x.conversationid === data.conversationid)) { // a veces se cruza cuando esta cargando al data
-                newticketList = [...newticketList, { ...data, isAnswered: data.userid === 2 }]
+                newticketList = [
+                    {
+                        ...data,
+                        lastconversationdate: data.usertype === "client" ? (data.lastconversationdate || new Date().toISOString()) : null,
+                        personlastreplydate: data.usertype === "client" ? (data.personlastreplydate || new Date().toISOString()) : null,
+                        firstconversationdate: data.firstconversationdate || new Date().toISOString(),
+                        isAnswered: data.userid === 2
+                    },
+                    ...newticketList
+                ]
             }
         } else {
-            newticketList = newticketList.map((x: ITicket) => x.conversationid === data.conversationid ? ({
-                ...x,
-                personlastreplydate: data.usertype === "client" ? new Date().toISOString() : x.personlastreplydate,
-                countnewmessages: data.usertype === "agent" ? 0 : x.countnewmessages + 1,
-                lastmessage: data.typemessage === "text" ? data.lastmessage : data.typemessage.toUpperCase(),
-            }) : x)
+            const conversation = newticketList.find(x => x.conversationid === data.conversationid);
+            if (conversation) {
+                newticketList = [
+                    {
+                        ...conversation,
+                        lastconversationdate: data.usertype === "client" ? (conversation.lastconversationdate || new Date().toISOString()) : null,
+                        personlastreplydate: data.usertype === "client" ? (conversation.personlastreplydate || new Date().toISOString()) : conversation.personlastreplydate,
+                        lastreplyuser: data.usertype === "agent" ? new Date().toISOString() : conversation.lastreplyuser,
+                        countnewmessages: data.usertype === "agent" ? 0 : conversation.countnewmessages + 1,
+                        lastmessage: data.typemessage === "text" ? data.lastmessage : data.typemessage.toUpperCase(),
+                    },
+                    ...newticketList.filter(x => x.conversationid !== data.conversationid)
+                ]
+            }
         }
 
         if (ticketSelected?.conversationid === data.conversationid) {
-        
+
             if (data.usertype === "agent" && data.ticketWasAnswered) {
                 newTicketSelected!!.isAnswered = true;
             } else if (data.usertype === "client") {
-                newTicketSelected!!.personlastreplydate = new Date().toISOString();
+                newTicketSelected!!.lastconversationdate = new Date().toISOString();
+            }
+            if (data.usertype === "agent") {
+                newTicketSelected!!.lastreplyuser = new Date().toISOString();
             }
 
-            const newInteraction: IInteraction = {
+            newInteraction = {
                 interactionid: data.interactionid,
                 interactiontype: data.typemessage,
                 interactiontext: data.lastmessage,
                 createdate: new Date().toISOString(),
                 userid: data.usertype === "agent" ? data.userid : 0,
-                usertype: data.usertype === "agent" && data.userid === 2 ? "BOT" : data.usertype,
+                usertype: data?.usertype === "agent" && data.userid === 2 ? "BOT" : data?.usertype,
             }
             newInteractionList = AddNewInteraction(state.interactionList.data, newInteraction)
         }
@@ -435,11 +518,14 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
 
     return {
         ...state,
-        triggerNewMessageClient: !state.triggerNewMessageClient,
+        triggerNewMessageClient: state.ticketSelected?.conversationid === data.conversationid ? !state.triggerNewMessageClient : state.triggerNewMessageClient,
         ticketList: {
             ...state.ticketList,
             data: newticketList
         },
+        interactionBaseList: !!newInteraction ? [...state.interactionBaseList, newInteraction] : state.interactionBaseList,
+        aNewTicket: (data.newConversation && data.usertype !== "agent") ? !(state.aNewTicket || false) : state.aNewTicket,
+        aNewMessage: (!data.newConversation && data.usertype !== "agent") ? !(state.aNewMessage || false) : state.aNewMessage,
         agentList: {
             data: newAgentList,
             count: action.payload.count,
@@ -456,29 +542,95 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
     };
 }
 
+export const changeStatusTicketWS = (state: IState, action: IAction): IState => {
+    const { userid, status, isanswered }: Dictionary = action.payload;
+
+    let newAgentList = [...state.agentList.data];
+
+    const { agentList: { data }, userType } = state;
+
+    if (userType === 'SUPERVISOR') {
+
+        newAgentList = data.map(x => x.userid === userid ? {
+            ...x,
+            countPaused: status === "SUSPENDIDO" ? x.countPaused + 1 : x.countPaused - 1,
+            countAnswered: isanswered ? x.countAnswered + (status === "ASIGNADO" ? 1 : -1) : x.countAnswered,
+            countNotAnswered: !isanswered ? (x.countNotAnswered || 0) + (status === "ASIGNADO" ? 1 : -1) : x.countNotAnswered,
+        } : x)
+    }
+
+    return {
+        ...state,
+        ticketSelected: state.ticketSelected?.conversationid === action.payload.conversationid ? {
+            ...state.ticketSelected!!,
+            status: action.payload.status
+        } : state.ticketSelected,
+        ticketList: {
+            ...state.ticketList,
+            data: state.ticketList.data.map((x: ITicket) => x.conversationid === action.payload.conversationid ? {
+                ...x,
+                status: action.payload.status
+            } : x)
+        },
+        agentList: {
+            data: newAgentList,
+            count: newAgentList.length,
+            loading: false,
+            error: false,
+        },
+    };
+}
+
+
+export const newCallTicket = (state: IState, action: IAction): IState => ({
+    ...state,
+    ticketList: {
+        ...state.ticketList,
+        data: state.ticketList.data.some(x => x.conversationid === action.payload.conversationid) ? state.ticketList.data : state.userType === "AGENT" ? [action.payload, ...state.ticketList.data] : state.ticketList.data
+    },
+})
+
+export const resetShowModal = (state: IState, action: IAction): IState => ({
+    ...state,
+    showModalClose: 0,
+})
+
 export const deleteTicket = (state: IState, action: IAction): IState => {
     const data: IDeleteTicketParams = action.payload;
+    if (state.role === "SUPERVISOR" && state.holdingBySupervisor === "GRUPO" && data.userid === 3 && !!state.userGroup) {
+        if (!state.userGroup.split(",").includes(data.usergroup || "")) {
+            return state;
+        }
+    }
+
     let newticketList = [...state.ticketList.data];
     let newAgentList = [...state.agentList.data];
     let newTicketSelected = state.ticketSelected ? { ...state.ticketSelected } : null;
-
+    let showModalClose = state.showModalClose;
     const { agentSelected, userType } = state;
 
     if (userType === 'SUPERVISOR') {
         newAgentList = newAgentList.map(x => x.userid === data.userid ? {
             ...x,
-            countClosed: x.countClosed + 1,
-            countAnwsered: ((data.status === "ASIGNADO" && data.isanswered) || data.userid === 2) ? x.countAnwsered - 1 : x.countAnwsered,
-            countNotAnwsered: (data.status === "ASIGNADO" && !data.isanswered && data.userid !== 2) ? (x.countNotAnwsered || 1) - 1 : x.countNotAnwsered,
-            countPaused: (data.status === "PAUSED") ? x.countPaused - 1 : x.countPaused
+            countClosed: data.closedTicket ? x.countClosed + 1 : x.countClosed,
+            countAnswered: ((data.isanswered || data.userid === 2) && data.status === "ASIGNADO") ? x.countAnswered - 1 : x.countAnswered,
+            countNotAnswered: ((!data.isanswered && data.userid !== 2) && data.status === "ASIGNADO") ? (x.countNotAnswered || 1) - 1 : x.countNotAnswered,
+            countPaused: (data.status === "SUSPENDIDO") ? x.countPaused - 1 : x.countPaused
         } : x)
     }
 
-    if (agentSelected?.userid === data.userid || userType === 'AGENT' || newticketList.some(x => x.conversationid === data.conversationid)) {
-        if (newTicketSelected?.conversationid === data.conversationid) {
-            newTicketSelected = null;
+
+    if ((userType === 'AGENT') || (userType === 'SUPERVISOR' && agentSelected?.userid === data.userid)) {
+        const ticket = newticketList.find(x => x.conversationid === data.conversationid);
+        if (ticket) {
+            if (newTicketSelected?.conversationid === data.conversationid) {
+                newTicketSelected = null;
+            }
+            if (ticket.communicationchanneltype === "VOXI" && userType === 'AGENT' && data.closedTicket) {
+                showModalClose++;
+            }
+            newticketList = newticketList.filter((x: ITicket) => x.conversationid !== data.conversationid);
         }
-        newticketList = newticketList.filter((x: ITicket) => x.conversationid !== data.conversationid);
     }
 
     return {
@@ -488,6 +640,11 @@ export const deleteTicket = (state: IState, action: IAction): IState => {
             ...state.ticketList,
             data: newticketList
         },
+        person: {
+            ...state.person,
+            data: newTicketSelected ? state.person.data : null
+        },
+        showModalClose: showModalClose,
         agentList: {
             data: newAgentList,
             count: action.payload.count,
@@ -496,6 +653,14 @@ export const deleteTicket = (state: IState, action: IAction): IState => {
         },
     };
 }
+
+// CLEAN_ALERT
+export const cleanAlerts = (state: IState): IState => ({
+    ...state,
+    aNewTicket: null,
+    aNewMessage: null,
+})
+
 export const personSawChat = (state: IState, action: IAction): IState => {
     const data: IDeleteTicketParams = action.payload;
     let newticketList = [...state.ticketList.data];
@@ -524,38 +689,71 @@ export const personSawChat = (state: IState, action: IAction): IState => {
 
 export const getDataTicket = (state: IState): IState => ({
     ...state,
-    interactionList: { ...state.interactionList, loading: true, error: false },
+    interactionList: { ...state.interactionList, data: [], loading: true, error: false },
+    interactionBaseList: [],
     person: { ...state.person, loading: true, error: false },
 });
 
-export const getDataTicketSuccess = (state: IState, action: IAction): IState => ({
-    ...state,
-    ticketSelected: { ...state.ticketSelected!!, isAnswered: action.payload.data[0].data.some((x: IInteraction) => x.userid === state.agentSelected?.userid && x.interactiontype !== "LOG") },
-    interactionList: {
-        data: getGroupInteractions(cleanLogsReassignedTask(action.payload.data[0].data)),
-        count: action.payload.count,
-        loading: false,
-        error: false,
-    },
-    isOnBottom: null,
-    configurationVariables: {
-        data: action.payload.data[2].data.filter((x: any) => !!x.visible).sort((a: any, b: any) => (a.priority < b.priority) ? 1 : ((b.priority < a.priority) ? -1 : 0)) || [],
-        count: action.payload.count,
-        loading: false,
-        error: false,
-    },
-    richResponseList: {
-        data: action.payload.data[3].data.map((x: any) => JSON.parse(x.block)) || [],
-        count: action.payload.count,
-        loading: false,
-        error: false,
-    },
-    person: {
-        data: action.payload.data[1].data && action.payload.data[1].data.length > 0 ? action.payload.data[1].data[0] : null,
-        loading: false,
-        error: false,
-    },
-});
+export const getDataTicketSuccess = (state: IState, action: IAction): IState => {
+    if (action.payload.data[0].key === `UFN_CONVERSATION_SEL_INTERACTION_${state.ticketSelected?.conversationid}`) {
+        return {
+            ...state,
+            ticketSelected: { ...state.ticketSelected!!, isAnswered: action.payload.data[0].data.some((x: IInteraction) => x.userid === state.agentSelected?.userid && x.interactiontype !== "LOG") },
+            interactionBaseList: action.payload.data?.[0]?.data || [],
+            interactionList: {
+                data: getGroupInteractions(action.payload.data[0].data, state.hideLogsOnTicket),
+                count: action.payload.count,
+                loading: false,
+                error: false,
+            },
+            isOnBottom: null,
+            configurationVariables: {
+                data: action.payload.data[2].data.filter((x: any) => !!x.visible) || [],
+                count: action.payload.count,
+                loading: false,
+                error: false,
+            },
+            richResponseList: {
+                data: action.payload.data[3].data.map((x: any) => JSON.parse(x.block)) || [],
+                count: action.payload.count,
+                loading: false,
+                error: false,
+            },
+            person: {
+                data: action.payload.data[1].data && action.payload.data[1].data.length > 0 ? action.payload.data[1].data[0] : null,
+                loading: false,
+                error: false,
+            },
+        }
+    } else {
+        return state;
+    }
+};
+
+
+export const hideLogInteractions = (state: IState, action: IAction): IState => {
+    localStorage.setItem(keys.HIDE_LOGS, action.payload ? "1" : "0");
+    // const interactions = state.interactionList.data.reduce((acc: IInteraction[], item: IGroupInteraction) => [...acc, ...item.interactions], [])
+    return {
+        ...state,
+        hideLogsOnTicket: action.payload,
+        interactionList: {
+            data: getGroupInteractions(state.interactionBaseList, action.payload),
+            count: action.payload.count,
+            loading: false,
+            error: false,
+        },
+    }
+};
+
+export const setHideLogsOnTicket = (state: IState, action: IAction): IState => {
+    const localHideLogs = localStorage.getItem(keys.HIDE_LOGS);
+    return {
+        ...state,
+        hideLogsOnTicket: !!localHideLogs ? localHideLogs === "1" : action.payload
+    }
+};
+
 
 
 export const getDataTicketFailure = (state: IState, action: IAction): IState => ({
@@ -590,7 +788,7 @@ export const getInteractionsExtra = (state: IState): IState => ({
 export const getInteractionsExtraSuccess = (state: IState, action: IAction): IState => ({
     ...state,
     interactionExtraList: {
-        data: getGroupInteractions(cleanLogsReassignedTask(action.payload.data || [])),
+        data: getGroupInteractions(cleanLogsReassignedTask(action.payload.data || [], true), false, true),
         count: action.payload.count,
         loading: false,
         error: false,
@@ -612,13 +810,6 @@ export const getInteractionsExtraReset = (state: IState): IState => ({
     ...state,
     interactionExtraList: initialState.interactionExtraList,
 });
-
-
-
-
-
-
-
 
 export const closeTicket = (state: IState): IState => ({
     ...state,
@@ -746,9 +937,6 @@ export const connectAgentUItmpReset = (state: IState): IState => ({
     triggerConnectAgentGo: initialState.triggerConnectAgentGo,
 });
 
-
-
-
 export const replyTicket = (state: IState): IState => ({
     ...state,
     triggerReplyTicket: { ...state.triggerReplyTicket, loading: true, error: false },
@@ -777,11 +965,6 @@ export const replyTicketReset = (state: IState): IState => ({
     ...state,
     triggerReplyTicket: initialState.triggerReplyTicket,
 });
-
-
-
-
-
 
 export const sendHSM = (state: IState): IState => ({
     ...state,
@@ -813,6 +996,77 @@ export const sendHSMReset = (state: IState): IState => ({
 });
 
 
+
+export const importTicket = (state: IState): IState => ({
+    ...state,
+    triggerImportTicket: { ...state.triggerImportTicket, loading: true, error: false },
+});
+
+export const importTicketSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    triggerImportTicket: {
+        loading: false,
+        error: false,
+    },
+});
+
+export const importTicketFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    triggerImportTicket: {
+        ...state.triggerImportTicket,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    },
+});
+
+export const importTicketReset = (state: IState): IState => ({
+    ...state,
+    triggerImportTicket: initialState.triggerImportTicket,
+});
+
+
+
+
+export const getDataForOutbound = (state: IState): IState => ({
+    ...state,
+    outboundData: { ...state.outboundData, loading: true },
+});
+
+export const getDataForOutboundSuccess = (state: IState, action: IAction): IState => {
+    const channels = (action.payload.data as any[])[0].data as Dictionary[] | null;
+    const templates = (action.payload.data as any[])[1].data as Dictionary[] | null;
+
+    return {
+        ...state,
+        outboundData: {
+            ...state.outboundData,
+            value: {
+                channels: channels || [],
+                templates: templates || [],
+            },
+            loading: false,
+            error: false,
+        },
+    };
+};
+
+export const getDataForOutboundFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    outboundData: {
+        ...state.outboundData,
+        error: true,
+        loading: false,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    },
+});
+
+export const getDataForOutboundReset = (state: IState): IState => ({
+    ...state,
+    outboundData: initialState.outboundData,
+});
 
 
 
@@ -885,4 +1139,35 @@ export const getTipificationLevel3Reset = (state: IState): IState => ({
 export const wsConnect = (state: IState, action: IAction): IState => ({
     ...state,
     wsConnected: action.payload
+});
+
+export const forceddesconection = (state: IState, action: IAction): IState => ({
+    ...state,
+    showModalClose: 0,
+    forceddisconnect: {
+        error: false,
+        loading: false,
+        code: action.payload.code,
+        message: action.payload.code,
+        value: action.payload,
+    },
+});
+export const callConnected = (state: IState, action: IAction): IState => ({
+    ...state,
+    ticketList: {
+        ...state.ticketList,
+        data: state.ticketList.data.map(x => x.conversationid === action.payload ? { ...x, callanswereddate: new Date().toISOString() } : x)
+    }
+});
+
+export const resetForceddesconection = (state: IState, action: IAction): IState => ({
+    ...state,
+    forceddisconnect: initialState.forceddisconnect,
+});
+
+export const setDataUser = (state: IState, action: IAction): IState => ({
+    ...state,
+    holdingBySupervisor: action.payload.holdingBySupervisor,
+    userGroup: action.payload.userGroup,
+    role: action.payload.role
 });

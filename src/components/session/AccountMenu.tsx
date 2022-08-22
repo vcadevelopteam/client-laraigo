@@ -11,6 +11,8 @@ import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import { ManageOrganization, BadgeGo, StatusConnection } from 'components';
+import { connectAgentAPI, connectAgentUI, disconnectSocket, emitEvent } from "store/inbox/actions";
+import { disconnectVoxi } from "store/voximplant/actions";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -60,6 +62,12 @@ const useStyles = makeStyles((theme: Theme) =>
             fontWeight: 'normal',
             lineHeight: 'normal',
         },
+        statusConnection: {
+            display: 'none',
+            [theme.breakpoints.down('xs')]: {
+                display: 'block',
+            },
+        }
     }),
 );
 
@@ -67,10 +75,11 @@ const AccountMenu: FC = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const history = useHistory();
+    const voxiConnection = useSelector(state => state.voximplant.connection);    
 
     const user = useSelector(state => state.login.validateToken.user);
     const userConnected = useSelector(state => state.inbox.userConnected);
-    
+
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
     const handleClose = () => {
@@ -78,11 +87,28 @@ const AccountMenu: FC = () => {
     };
 
     const signOut = () => {
+        dispatch(connectAgentUI(false))
+        if (!voxiConnection.error) {
+            dispatch(disconnectVoxi())
+        }
+        dispatch(emitEvent({
+            event: 'connectAgent',
+            data: {
+                isconnected: false,
+                userid: 0,
+                orgid: 0
+            }
+        }));
         dispatch(logout());
+        dispatch(disconnectSocket());
         history.push('/sign-in');
     }
     const gotoSettings = () => {
+        setAnchorEl(null);
         history.push('/usersettings');
+    }
+    const openprivacypolicies = () => {
+        window.open("/privacy", '_blank');
     }
 
     const open = Boolean(anchorEl);
@@ -137,16 +163,27 @@ const AccountMenu: FC = () => {
                     <div className={classes.textNotPass}>
                         {user?.email}
                     </div>
-                    <StatusConnection />
+                    <div className={classes.statusConnection}>
+                        <StatusConnection />
+                    </div>
                     <ManageOrganization />
                     <Button
                         onClick={gotoSettings}
                         variant="outlined"
                         color="primary"
                         fullWidth
-                        style={{ fontWeight: "normal", textTransform: "uppercase" }}
+                        style={{ fontWeight: "normal" }}
                     >
-                        <Trans i18nKey={langKeys.personalsettings} />
+                        <Trans i18nKey={langKeys.accountsettings} />
+                    </Button>
+                    <Button
+                        onClick={openprivacypolicies}
+                        variant="outlined"
+                        color="primary"
+                        fullWidth
+                        style={{ fontWeight: "normal" }}
+                    >
+                        <Trans i18nKey={langKeys.privacypoliciestitle} />
                     </Button>
                     <Button
                         variant="outlined"

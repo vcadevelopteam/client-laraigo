@@ -31,9 +31,10 @@ const Popus: React.FC = () => {
     const { t } = useTranslation();
 
     const popus = useSelector(state => state.popus);
+    const snackbar = useSelector(state => state.popus.snackbar);
     const lightbox = useSelector(state => state.popus.lightbox);
 
-    const handleCloseSnackbar = () => dispatch(showSnackbar({ ...popus.snackbar, show: false }));
+    const handleCloseSnackbar = () => dispatch(showSnackbar({ ...snackbar, show: false }));
 
     const manageConfirmationTmp = () => dispatch(manageConfirmation({ ...popus.question, visible: false }));
 
@@ -42,14 +43,23 @@ const Popus: React.FC = () => {
     return (
         <>
             <Snackbar
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                anchorOrigin={{ vertical: snackbar.vertical || "top", horizontal: snackbar.horizontal || 'right' }}
                 color="white"
-                open={popus.snackbar.show}
+                autoHideDuration={6000}
+                open={snackbar.show}
                 onClose={handleCloseSnackbar}
                 key={'topright'}
             >
-                <MuiAlert className={classes.cookieAlert} elevation={6} variant="filled" onClose={handleCloseSnackbar} severity={popus.snackbar.success ? "success" : "error"}>
-                    {popus.snackbar.message}
+                <MuiAlert
+                    className={classes.cookieAlert}
+                    elevation={6}
+                    variant="filled"
+                    onClose={handleCloseSnackbar}
+                    action={snackbar.action}
+                    severity={snackbar.severity || "info"}>
+                    <div style={{ whiteSpace: 'pre-wrap' }}>
+                        {snackbar.message}
+                    </div>
                 </MuiAlert>
             </Snackbar>
 
@@ -68,7 +78,9 @@ const Popus: React.FC = () => {
                 <DialogTitle>{t(langKeys.confirmation)}</DialogTitle>
                 <DialogContent>
                     <DialogContentText color="textPrimary">
-                        {popus.question.question}
+                        <div style={{ whiteSpace: "pre-wrap" }}>
+                            {popus.question.question}
+                        </div>
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
@@ -80,7 +92,7 @@ const Popus: React.FC = () => {
                             popus.question.callbackcancel && popus.question.callbackcancel()
                             manageConfirmationTmp()
                         }}>
-                        {t(langKeys.cancel)}
+                        {popus.question.textCancel || t(langKeys.cancel)}
                     </Button>
                     <Button
                         variant="contained"
@@ -90,7 +102,7 @@ const Popus: React.FC = () => {
                             manageConfirmationTmp()
                         }}
                         color="primary">
-                        {t(langKeys.continue)}
+                        {popus.question.textConfirm || t(langKeys.continue)}
                     </Button>
                 </DialogActions>
             </Dialog>

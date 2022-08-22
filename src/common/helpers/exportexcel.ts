@@ -7,17 +7,21 @@ type ColumnTmp = {
     Header: string;
     accessor: string;
     prefixTranslation?: string;
+    type?:string
 }
 
 export function exportExcel(filename: string, csvData: Dictionary[], columnsexport?: ColumnTmp[]): void {
     const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
     const fileExtension = '.xlsx';
-
     let datafromtable = csvData;
     if(columnsexport) {
-        datafromtable = csvData.map((x: any) => {
+        datafromtable = csvData.map((x: any,i:any) => {
             const newx: Dictionary = {};
-            columnsexport.forEach((y: ColumnTmp) => newx[y.Header] = y.prefixTranslation !== undefined ? i18n.t(`${y.prefixTranslation}${x[y.accessor]?.toLowerCase()}`).toUpperCase() : x[y.accessor]);
+            columnsexport.forEach((y: ColumnTmp) => {
+                newx[y.Header] = y.prefixTranslation !== undefined ? i18n.t(`${y.prefixTranslation}${x[y.accessor]?.toLowerCase()}`).toUpperCase() : (
+                    y.type ==="porcentage"? `${(Number(x[y.accessor])*100).toFixed(0)}%`:
+                    x[y.accessor])
+            });
             return newx;
         });
     }
