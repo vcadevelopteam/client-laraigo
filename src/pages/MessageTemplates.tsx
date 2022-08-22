@@ -207,7 +207,7 @@ const MessageTemplates: FC = () => {
                 NoFilter: true,
                 Cell: (props: any) => {
                     const { externalstatus } = props.cell.row.original;
-                    return (externalstatus ? t(externalstatus) : t(langKeys.none)).toUpperCase();
+                    return (externalstatus ? t(`TEMPLATE_${externalstatus}`) : t(langKeys.none)).toUpperCase();
                 }
             },
         ],
@@ -448,7 +448,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
         { value: "DELETED", description: t(langKeys.TEMPLATE_DELETED) },
         { value: "DISABLED", description: t(langKeys.TEMPLATE_DISABLED) },
         { value: "LOCKED", description: t(langKeys.TEMPLATE_LOCKED) },
-        { value: "PAUSED", description: t(langKeys.TEMPLATE_PAUSED) }
+        { value: "PAUSED", description: t(langKeys.TEMPLATE_PAUSED) },
+        { value: "SUBMITTED", description: t(langKeys.TEMPLATE_SUBMITTED) },
     ];
 
     const dataExternalLanguage = [
