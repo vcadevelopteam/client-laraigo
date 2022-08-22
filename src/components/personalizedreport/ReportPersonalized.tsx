@@ -19,6 +19,7 @@ import { getDateCleaned } from 'common/helpers/functions'
 import { useForm } from 'react-hook-form';
 import Graphic from 'components/fields/Graphic';
 import ListIcon from '@material-ui/icons/List';
+import { exportExcel } from 'common/helpers';
 
 const getArrayBread = (nametmp: string, nameView1: string) => ([
     { id: "view-1", name: nameView1 || "Reports" },
@@ -222,8 +223,9 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
     const mainDynamic = useSelector(state => state.main.mainDynamic);
     const resExportDynamic = useSelector(state => state.main.exportDynamicData);
     const [showDialogGraphic, setShowDialogGraphic] = useState(false);
-    const [footer, setFooter] = useState<Dictionary | null>(null)
-    const [view, setView] = useState('GRID')
+    const [dataFiltered, setDataFiltered] = useState<Dictionary[]>([]);
+    const [footer, setFooter] = useState<Dictionary | null>(null);
+    const [view, setView] = useState('GRID');
     const [filtersDynamic, setFiltersDynamic] = useState<Dictionary>(filters.reduce((acc: Dictionary, item: Dictionary) => ({
         ...acc,
         [item.columnname]: {
@@ -255,6 +257,10 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
             dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
         }
     }, [resExportDynamic]);
+
+    const exportDataFiltered = () => {
+        exportExcel(description, dataFiltered, columnsDynamic)
+    }
 
     useEffect(() => {
         if (!mainDynamic.loading && !mainDynamic.error) {
@@ -300,7 +306,7 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
                             }
                         }
                         if (["boolean"].includes(y.type)) {
-                            x[columnclean] = `${x[columnclean]}`
+                            x[columnclean] = x[columnclean] ? t("yes") : t("no")
                         }
                     })
                     return x;
@@ -371,7 +377,7 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
                                 variant="contained"
                                 color="primary"
                                 disabled={resExportDynamic.loading}
-                                onClick={() => onSearch(true)}
+                                onClick={exportDataFiltered}
                                 startIcon={<DownloadIcon />}
                             >{t(langKeys.download)}
                             </Button>
@@ -393,6 +399,7 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
                         columns={columnsDynamic}
                         filterGeneral={false}
                         data={dataCleaned}
+                        setDataFiltered={setDataFiltered}
                         download={false}
                         loading={mainDynamic.loading}
                         useFooter={!!footer}

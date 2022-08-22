@@ -60,24 +60,36 @@ const ManageCallInfoTicket: React.FC = () => {
     }, [statusCall])
 
     React.useEffect(() => {
+        let interval: NodeJS.Timeout | null = null;
         if (statusCall === "CONNECTED") {
-            setTimeout(() => {
+            interval = setTimeout(() => {
                 settime(getSecondsUntelNow(convertLocalDate(date)));
             }, 1000)
         } else {
             settime(0)
         }
+        return () => {
+            if (interval) {
+                clearTimeout(interval)
+            }
+        };
     }, [time, statusCall, date]);
 
     React.useEffect(() => {
+        let interval: NodeJS.Timeout | null = null;
         if (statusCall === "CONNECTED" && !hold) {
-            setTimeout(() => {
+            interval = setTimeout(() => {
                 settimehold(getSecondsUntelNow(convertLocalDate(onholdstatedate)));
             }, 1000)
         } else {
             settimehold(0)
         }
-    }, [timehold, hold,statusCall]);
+        return () => {
+            if (interval) {
+                clearTimeout(interval)
+            }
+        };
+    }, [timehold, hold, statusCall]);
 
     React.useEffect(() => {
         if (phoneinbox) {
@@ -151,7 +163,9 @@ const ManageCallInfoTicket: React.FC = () => {
                                 <>
                                     <IconButton //answercall
                                         style={{ marginLeft: "10px", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#55bd84' }}
-                                        onClick={() => dispatch(answerCall({ call: call.call!!, conversationid: ticketSelected?.conversationid!! }))}
+                                        onClick={() => {
+                                            dispatch(answerCall({ call: call.call!!, conversationid: ticketSelected?.conversationid!! }))
+                                        }}
                                     >
                                         <PhoneIcon style={{ color: "white", width: "35px", height: "35px" }} />
                                     </IconButton>
@@ -165,7 +179,7 @@ const ManageCallInfoTicket: React.FC = () => {
                             )}
                             {statusCall === "CONNECTED" && (
                                 <div style={{ display: "grid", width: "100%", gridTemplateColumns: 'auto [col1] 50px 50px [col2] 50px 50px [col4] 50px auto', }}>
-                                    {(mute||!hold) ? (
+                                    {(mute || !hold) ? (
                                         <IconButton //unmuteself
                                             style={{ gridColumnStart: "col1", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#7721ad' }}
                                             onClick={() => { dispatch(unmuteCall(call.call)); setmute(false) }}>

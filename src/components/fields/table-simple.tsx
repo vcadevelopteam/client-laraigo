@@ -335,6 +335,7 @@ const TableZyx = React.memo(({
     helperText = "",
     initialStateFilter,
     registertext,
+    setDataFiltered,
     useFooter = false
 }: TableConfig) => {
     const classes = useStyles();
@@ -669,6 +670,12 @@ const TableZyx = React.memo(({
             ])
         }
     )
+
+    useEffect(() => {
+        setDataFiltered && setDataFiltered(globalFilteredRows.map(x => x.original));
+    }, [globalFilteredRows])
+
+
     useEffect(() => {
         if (initialStateFilter) {
             if (initial) {

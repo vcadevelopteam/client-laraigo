@@ -15,7 +15,15 @@ export const getAgents = (): IActionCall => ({
 
 export const resetGetAgents = (): IActionCall => ({ type: actionTypes.GET_AGENTS_RESET });
 
-
+export const checkPaymentPlan = (requestBody: Dictionary): IActionCall => ({
+    callAPI: () => CommonService.reeschedulecall(requestBody),
+    types: {
+        loading: actionTypes.REESCHEDULE_CALL,
+        success: actionTypes.REESCHEDULE_CALL_SUCCESS,
+        failure: actionTypes.REESCHEDULE_CALL_FAILURE,
+    },
+    type: null,
+});
 
 export const filterTickets = (lastmessage: string, start_createticket: string, end_createticket: string, channels: string, conversationstatus: string, displayname: string, phone: string): IActionCall => ({
     callAPI: () => CommonService.main(getTicketsByFilter(
@@ -107,7 +115,7 @@ export const getDataTicket = (ticket: ITicket, lock: boolean): IActionCall => ({
 
 export const resetGetDataTicket = (): IActionCall => ({ type: actionTypes.GET_INTERACTIONS_EXTRA_RESET });
 
-export const selectTicket = (ticket: ITicket): IActionCall => ({ type: actionTypes.SELECT_TICKET, payload: ticket });
+export const selectTicket = (ticket: ITicket | null): IActionCall => ({ type: actionTypes.SELECT_TICKET, payload: ticket });
 
 export const updatePerson = (person: IPerson): IActionCall => ({ type: actionTypes.UPDATE_PERSON, payload: person });
 
@@ -299,3 +307,7 @@ export const resetForcedDisconnection = (): IActionCall => ({ type: actionTypes.
 export const disconnectSocket = (): IActionCall => ({ type: actionTypes.WS_DISCONNECT });
 
 export const newTicketCall = (payload: any): IActionCall => ({ type: actionTypes.NEW_TICKET_CALL, payload });
+
+export const setDataUser = (payload: { holdingBySupervisor: "CANAL" | "GRUPO", userGroup: string, role: string }): IActionCall => ({ type: actionTypes.SET_DATA_USER, payload });
+
+export const updateClassificationPerson = (payload: boolean): IActionCall => ({ type: actionTypes.UPDATE_CLASSIFICATION_PERSON, payload });

@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import Tabs from '@material-ui/core/Tabs';
 import Avatar from '@material-ui/core/Avatar';
 import { EMailInboxIcon, PhoneIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon } from 'icons';
-import { getTicketsPerson, showInfoPanel, updatePerson } from 'store/inbox/actions';
+import { getTicketsPerson, showInfoPanel, updateClassificationPerson, updatePerson } from 'store/inbox/actions';
 import { GetIcon, FieldEdit, FieldSelect, DialogInteractions, AntTab, FieldEditMulti } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
@@ -549,6 +549,7 @@ const Classifications: React.FC = () => {
     useEffect(() => {
         dispatch(getCollectionAux2(getConversationClassification2(ticketSelected?.conversationid!!)))
     }, [])
+
     useEffect(() => {
         if (!tipifyRes.loading && !tipifyRes.error) {
             fetchData()
@@ -556,7 +557,10 @@ const Classifications: React.FC = () => {
     }, [tipifyRes])
 
     useEffect(() => {
-        setClassifications(mainAux2?.data?.reverse() || [])
+        if (!mainAux2.loading && !mainAux2.error) {
+            dispatch(updateClassificationPerson(mainAux2.data.length > 0))
+            setClassifications(mainAux2?.data?.reverse() || [])
+        }
     }, [mainAux2])
 
     useEffect(() => {
@@ -568,9 +572,6 @@ const Classifications: React.FC = () => {
     }, [waitSave])
 
     const handleDelete = (row: Dictionary) => {
-        console.log(row)
-        console.log(ticketSelected)
-
         const callback = () => {
             dispatch(execute(insertClassificationConversation(ticketSelected?.conversationid || 0, row.classificationid, row.jobplan, 'DELETE')));
             dispatch(showBackdrop(true));
@@ -584,23 +585,37 @@ const Classifications: React.FC = () => {
         }))
     }
 
-    return (
-        <>
-            <div style={{ overflowY: 'auto' }} className="scroll-style-go">
-                <div className={classes.containerInfoClient} style={{ paddingTop: 0, backgroundColor: 'transparent' }}>
-                    {classifications.map((x, i) => {
-                        return (
-                            <div className={classes.containerPreviewTicket} style={{ flexDirection: "initial", alignItems: "center" }} key={x.classificationid}>
-                                <div style={{ flex: 1 }}>
-                                    <div>- {x.path.replace("/", " / ")}</div>
-                                </div>
-                                <DeleteIcon style={{ color: "#B6B4BA" }} onClick={() => { handleDelete(x) }} />
-                            </div>
-                        )
-                    })}
-                </div>
+    if (mainAux2.loading) {
+        return (
+            <div style={{ flex: 1, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <CircularProgress />
             </div>
-        </>
+        )
+    }
+
+    if (classifications.length === 0) {
+        return (
+            <div className={classes.label} style={{ padding: 8, flex: 1 }}>
+                {t(langKeys.without_result)}
+            </div>
+        )
+    }
+
+    return (
+        <div style={{ overflowY: 'auto' }} className="scroll-style-go">
+            <div className={classes.containerInfoClient} style={{ paddingTop: 0, backgroundColor: 'transparent' }}>
+                {classifications.map((x, i) => {
+                    return (
+                        <div className={classes.containerPreviewTicket} style={{ flexDirection: "initial", alignItems: "center" }} key={x.classificationid}>
+                            <div style={{ flex: 1 }}>
+                                <div>- {x.path.replace("/", " / ")}</div>
+                            </div>
+                            <DeleteIcon style={{ color: "#B6B4BA" }} onClick={() => { handleDelete(x) }} />
+                        </div>
+                    )
+                })}
+            </div>
+        </div>
     )
 }
 
@@ -625,12 +640,10 @@ const PreviewTickets: React.FC<{ order: number }> = ({ order }) => {
     };
 
     useEffect(() => {
-        // setTimeout(() => {
         if (order === 1)
             el1.current?.scrollIntoView();
         else
             el?.current?.scrollIntoView();
-        // }, 1000);
     }, [order])
 
     if (previewTicketList.loading) {
@@ -690,11 +703,9 @@ const Attachments: React.FC = () => {
     const [listFiles, setListFiles] = useState<Dictionary[]>([]);
     const interactionList = useSelector(state => state.inbox.interactionList);
     const { t } = useTranslation();
-    console.log(interactionList)
-
+    
     useEffect(() => {
         if (interactionList.data[0].interactiontype === "email") {
-            console.log(interactionList)
             let interactions = interactionList.data.reduce<Dictionary[]>((acc, item) => [
                 ...acc,
                 ...(item.interactions || [])
@@ -781,8 +792,20 @@ const InfoPanel: React.FC = () => {
     const [pageSelected, setPageSelected] = useState(0);
     const [order, setOrder] = useState(-1)
     const { t } = useTranslation();
+    const loading = useSelector(state => state.inbox.person.loading);
+
+    if (loading) {
+        return (
+            <div className={classes.containerInfo}>
+                <div style={{ flex: 1, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <CircularProgress />
+                </div>
+            </div>
+        )
+    }
     return (
         <div className={classes.containerInfo}>
+
             <InfoClient />
             <Tabs
                 value={pageSelected}

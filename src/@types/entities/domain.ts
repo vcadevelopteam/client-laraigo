@@ -25,4 +25,5 @@ export interface IPersonDomains {
     genericstatus?: Dictionary[];
     userstatus?: Dictionary[];
     roles?: Dictionary[];
+    usergroup?: Dictionary[];
 }

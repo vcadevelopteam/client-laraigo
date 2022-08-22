@@ -213,7 +213,7 @@ footer a {
     display: none;
 }
 .scroll-style-go {
-    overflow-y: overlay!important;
+    overflow-y: auto!important;
     
 }
 .scroll-style-go::-webkit-scrollbar-track
@@ -228,7 +228,7 @@ footer a {
 }
 .scroll-style-go::-webkit-scrollbar
 {
-	width: 5px;
+	width: 10px;
 	background-color: transparent;
 }
 .scroll-style-go:hover:-webkit-scrollbar
@@ -239,7 +239,7 @@ footer a {
 .scroll-style-go::-webkit-scrollbar-thumb
 {
 	border-radius: 10px;
-	background-color: rgba(0, 0, 0, 0);
+	background-color: rgba(0, 0, 0, .2);
     -webkit-transition: .2s ease-in-out;
     transition: .2s ease-in-out
 }

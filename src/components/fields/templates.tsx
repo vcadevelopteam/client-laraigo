@@ -27,6 +27,7 @@ import Tab, { TabProps } from '@material-ui/core/Tab';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { FormControlLabel, FormHelperText, OutlinedInputProps, Radio, RadioGroup, RadioGroupProps, useTheme, TypographyVariant } from '@material-ui/core';
 import { Divider, Grid, ListItem, ListItemText, styled } from '@material-ui/core';
+import ListSubheader from '@material-ui/core/ListSubheader';
 import { Skeleton } from '@material-ui/lab';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { EmojiICon, GifIcon } from 'icons';
@@ -54,7 +55,7 @@ import {
     TelegramIcon,
     TeamsIcon,
 } from 'icons';
-import { FixedSizeList, ListChildComponentProps } from 'react-window';
+import { VariableSizeList, FixedSizeList, ListChildComponentProps } from 'react-window';
 import MuiPhoneNumber, { MaterialUiPhoneNumberProps } from 'material-ui-phone-number';
 import NumberFormat from 'react-number-format';
 import InfoIcon from '@material-ui/icons/Info';
@@ -443,17 +444,10 @@ export const CurrencyFieldEdit: FC<ICurrencyFieldEdit> = ({
                 helperText={error || null}
                 rows={rows}
                 size={size}
-                // onChange={(e) => {
-                //     setvalue(e.target.value);
-                //     onChange && onChange(e.target.value);
-                // }}
                 onValueChange={(values) => { // { formattedValue, value }
                     setvalue(values.value);
                     onChange && onChange(values.value);
                 }}
-                // onBlur={(e) => {
-                //     onBlur && onBlur(e.target.value);
-                // }}
                 inputProps={inputProps}
                 InputProps={InputProps}
             />
@@ -465,7 +459,7 @@ export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disable
     const [value, setvalue] = useState("");
 
     useEffect(() => {
-        setvalue(valueDefault);
+        setvalue(valueDefault || "");
     }, [valueDefault])
 
     return (
@@ -647,6 +641,7 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                 filterSelectedOptions
                 style={style}
                 disabled={disabled}
+                disableCloseOnSelect
                 loading={loading}
                 value={optionsSelected}
                 renderOption={(option, { selected }: any) => (
@@ -658,6 +653,153 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                             checked={selected}
                         />
                         {option ? (uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')) : ''}
+                    </React.Fragment>
+                )}
+                onChange={(_, values, action, option) => {
+                    setOptionsSelected(values);
+                    onChange && onChange(values, { action, option });
+                }}
+                size="small"
+                getOptionLabel={option => option ? (uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')) : ''}
+                options={data}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        label={variant !== "standard" && label}
+                        variant={variant}
+                        size="small"
+                        InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                                <React.Fragment>
+                                    {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                    {params.InputProps.endAdornment}
+                                </React.Fragment>
+                            ),
+                        }}
+                        error={!!error}
+                        helperText={error || null}
+
+                    />
+                )}
+            />
+        </div>
+    )
+}
+
+// FieldMultiSelectVirtualized
+
+const LISTBOX_PADDING_MultiSelect = 8;
+
+const renderRowMultiSelect = (props: ListChildComponentProps) => {
+    const { data, index, style } = props;
+    return React.cloneElement(data[index], {
+      style: {
+        ...style,
+        top: (style.top as number) + LISTBOX_PADDING_MultiSelect,
+      },
+    });
+}
+
+const OuterElementContextMultiSelect = React.createContext({});
+
+const OuterElementTypeMultiSelect = React.forwardRef<HTMLDivElement>((props, ref) => {
+    const outerProps = React.useContext(OuterElementContextMultiSelect);
+    return <div ref={ref} {...props} {...outerProps} />;
+});
+
+const useResetCacheMultiSelect = (data: any) => {
+    const ref = React.useRef<VariableSizeList>(null);
+    React.useEffect(() => {
+      if (ref.current != null) {
+        ref.current.resetAfterIndex(0, true);
+      }
+    }, [data]);
+    return ref;
+}
+
+const ListboxComponentMultiSelect = React.forwardRef<HTMLDivElement>(function ListboxComponent(props, ref) {
+    const { children, ...other } = props;
+    const itemData = React.Children.toArray(children);
+    const itemCount = itemData.length;
+    const itemSize = 48;
+  
+    const getChildSize = (child: React.ReactNode) => {
+        if (React.isValidElement(child) && child.type === ListSubheader) {
+          return 48;
+        }
+    
+        return itemSize;
+    };
+    
+    const getHeight = () => {
+      if (itemCount > 8) {
+        return 8 * itemSize;
+      }
+      return itemData.map(getChildSize).reduce((a, b) => a + b, 0);
+    };
+  
+    const gridRef = useResetCacheMultiSelect(itemCount);
+  
+    return (
+      <div ref={ref}>
+        <OuterElementContextMultiSelect.Provider value={other}>
+          <VariableSizeList
+            itemData={itemData}
+            height={getHeight()}
+            width="100%"
+            ref={gridRef}
+            outerElementType={OuterElementTypeMultiSelect}
+            itemSize={(index) => getChildSize(itemData[index])}
+            overscanCount={5}
+            itemCount={itemCount}
+          >
+            {renderRowMultiSelect}
+          </VariableSizeList>
+        </OuterElementContextMultiSelect.Provider>
+      </div>
+    );
+});
+
+export const FieldMultiSelectVirtualized: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard", uset = false, prefixTranslation = "", limitTags = -1 }) => {
+    const { t } = useTranslation();
+    const [optionsSelected, setOptionsSelected] = useState<Dictionary[]>([]);
+
+    useEffect(() => {
+        if (valueDefault && data.length > 0) {
+            const optionsSelected = data.filter(o => valueDefault.split(",").indexOf(o[optionValue].toString()) > -1)
+            setOptionsSelected(optionsSelected);
+        } else {
+            setOptionsSelected([]);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [data]);
+
+    return (
+        <div className={className}>
+            {variant === "standard" &&
+                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+            }
+            <Autocomplete
+                multiple
+                disableListWrap
+                limitTags={limitTags}
+                filterSelectedOptions
+                style={style}
+                disabled={disabled}
+                disableCloseOnSelect
+                loading={loading}
+                value={optionsSelected}
+                ListboxComponent={ListboxComponentMultiSelect as React.ComponentType<React.HTMLAttributes<HTMLElement>>}
+                renderOption={(option, { selected }: any) => (
+                    <React.Fragment>
+                        <Checkbox
+                            icon={icon}
+                            checkedIcon={checkedIcon}
+                            style={{ marginRight: 8 }}
+                            checked={selected}
+                        />
+                        <Typography noWrap>{option ? (uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')) : ''}</Typography>
                     </React.Fragment>
                 )}
                 onChange={(_, values, action, option) => {
@@ -1106,7 +1248,8 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow = [
                 {open && (
                     <div style={{
                         position: 'absolute',
-                        bottom: 50
+                        bottom: 50,
+                        zIndex: 1201
                     }}>
                         <Picker
                             onSelect={onSelect}
@@ -1182,6 +1325,7 @@ export const GifPickerZyx: React.FC<{ onSelect?: (e: any) => void, style?: any }
                         bottom: 50,
                         width: 342,
                         height: 400,
+                        zIndex: 1201,
                         backgroundColor: 'white',
                         padding: 4,
                         boxShadow: '0 1px 2px 0 rgb(16 35 47 / 15%)',

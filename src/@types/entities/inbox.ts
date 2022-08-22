@@ -70,6 +70,7 @@ export interface IDeleteTicketParams {
     conversationid: number;
     ticketnum: string;
     status: string;
+    usergroup: string;
     orgid: number;
     isanswered: boolean;
     userid: number;
@@ -79,6 +80,7 @@ export interface IDeleteTicketParams {
 export interface IConnectAgentParams {
     isconnected: boolean;
     userid: number;
+    motive?: string | null;
 }
 
 export interface IConnectAgentUIParams {
