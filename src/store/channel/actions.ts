@@ -11,6 +11,7 @@ export const getChannelsList = (accessToken: String, appId: String): IActionCall
     },
     type: null,
 });
+
 export const getChannelsListSub = (accessToken: String, appId: String): IActionCall => ({
     callAPI: () => ChannelsService.getPagelistSub(accessToken, appId),
     types: {
@@ -20,6 +21,7 @@ export const getChannelsListSub = (accessToken: String, appId: String): IActionC
     },
     type: null,
 });
+
 export const insertChannel = (requestBody: IRequestBody): IActionCall => ({
     callAPI: () => ChannelsService.insertchnl(requestBody),
     types: {
@@ -29,6 +31,7 @@ export const insertChannel = (requestBody: IRequestBody): IActionCall => ({
     },
     type: null,
 });
+
 export const activateChannel = (requestBody: IRequestBody): IActionCall => ({
     callAPI: () => ChannelsService.activateChannel(requestBody),
     types: {
@@ -38,6 +41,7 @@ export const activateChannel = (requestBody: IRequestBody): IActionCall => ({
     },
     type: null,
 });
+
 export const deleteChannel = (requestBody: IRequestBody): IActionCall => ({
     callAPI: () => ChannelsService.deletechnl(requestBody),
     types: {
@@ -58,9 +62,9 @@ export const checkPaymentPlan = (requestBody: IRequestBody): IActionCall => ({
     type: null,
 });
 
-export const resetGetChannelsList = (): IActionCall => ({type: actionTypes.CHANNELS_RESET});
+export const resetGetChannelsList = (): IActionCall => ({ type: actionTypes.CHANNELS_RESET });
 
-export const resetChannelInsert = (): IActionCall => ({type: actionTypes.CHANNELS_INSERTSUCCESS_RESET});
+export const resetChannelInsert = (): IActionCall => ({ type: actionTypes.CHANNELS_INSERTSUCCESS_RESET });
 
 export const insertChannel2 = (payload: IRequestBody<IChatWebAdd>): IActionCall => ({
     callAPI: async () => {
@@ -113,7 +117,7 @@ export const insertChannel2 = (payload: IRequestBody<IChatWebAdd>): IActionCall 
     type: null,
 });
 
-export const resetInsertChannel = () => ({type: actionTypes.INSERT_CHANNEL_RESET });
+export const resetInsertChannel = () => ({ type: actionTypes.INSERT_CHANNEL_RESET });
 
 export const editChannel = (payload: IRequestBody<IChannel | IChatWebAdd>, channelType?: string): IActionCall => ({
     callAPI: async () => {
@@ -165,7 +169,7 @@ export const editChannel = (payload: IRequestBody<IChannel | IChatWebAdd>, chann
     type: null,
 });
 
-export const resetEditChannel = () => ({type: actionTypes.EDIT_CHANNEL_RESET });
+export const resetEditChannel = () => ({ type: actionTypes.EDIT_CHANNEL_RESET });
 
 export const getFacebookPages = (accessToken: String, appId: String): IActionCall => ({
     callAPI: () => ChannelsService.getPagelistSub(accessToken, appId),
@@ -177,7 +181,7 @@ export const getFacebookPages = (accessToken: String, appId: String): IActionCal
     type: null,
 });
 
-export const resetGetFacebookPages = () => ({type: actionTypes.FACEBOOK_PAGES_RESET });
+export const resetGetFacebookPages = () => ({ type: actionTypes.FACEBOOK_PAGES_RESET });
 
 export const getMessengerPages = (accessToken: String, appId: String): IActionCall => ({
     callAPI: () => ChannelsService.getPagelistSub(accessToken, appId),
@@ -189,7 +193,7 @@ export const getMessengerPages = (accessToken: String, appId: String): IActionCa
     type: null,
 });
 
-export const resetGetMessengerPages = () => ({type: actionTypes.MESSENGER_PAGES_RESET });
+export const resetGetMessengerPages = () => ({ type: actionTypes.MESSENGER_PAGES_RESET });
 
 export const getInstagramPages = (accessToken: String, appId: String): IActionCall => ({
     callAPI: () => ChannelsService.getPagelistSub(accessToken, appId),
@@ -201,7 +205,7 @@ export const getInstagramPages = (accessToken: String, appId: String): IActionCa
     type: null,
 });
 
-export const resetGetInstagramPages = () => ({type: actionTypes.INSTAGRAM_PAGES_RESET });
+export const resetGetInstagramPages = () => ({ type: actionTypes.INSTAGRAM_PAGES_RESET });
 
 export const getInstagramDMPages = (accessToken: String, appId: String): IActionCall => ({
     callAPI: () => ChannelsService.getPagelistSub(accessToken, appId),
@@ -213,4 +217,40 @@ export const getInstagramDMPages = (accessToken: String, appId: String): IAction
     type: null,
 });
 
-export const resetGetInstagramDMPages = () => ({type: actionTypes.INSTAGRAMDM_PAGES_RESET });
+export const resetGetInstagramDMPages = () => ({ type: actionTypes.INSTAGRAMDM_PAGES_RESET });
+
+export const synchronizeTemplate = (request: any): IActionCall => ({
+    callAPI: () => ChannelsService.synchronizeTemplate(request),
+    types: {
+        failure: actionTypes.SYNCHRONIZE_TEMPLATE_FAILURE,
+        loading: actionTypes.SYNCHRONIZE_TEMPLATE,
+        success: actionTypes.SYNCHRONIZE_TEMPLATE_SUCCESS,
+    },
+    type: null,
+});
+
+export const resetSynchronizeTemplate = (): IActionCall => ({ type: actionTypes.SYNCHRONIZE_TEMPLATE_RESET });
+
+export const addTemplate = (request: any): IActionCall => ({
+    callAPI: () => ChannelsService.addTemplate(request),
+    types: {
+        failure: actionTypes.ADD_TEMPLATE_FAILURE,
+        loading: actionTypes.ADD_TEMPLATE,
+        success: actionTypes.ADD_TEMPLATE_SUCCESS,
+    },
+    type: null,
+});
+
+export const resetAddTemplate = (): IActionCall => ({ type: actionTypes.ADD_TEMPLATE_RESET });
+
+export const deleteTemplate = (request: any): IActionCall => ({
+    callAPI: () => ChannelsService.deleteTemplate(request),
+    types: {
+        failure: actionTypes.DELETE_TEMPLATE_FAILURE,
+        loading: actionTypes.DELETE_TEMPLATE,
+        success: actionTypes.DELETE_TEMPLATE_SUCCESS,
+    },
+    type: null,
+});
+
+export const resetDeleteTemplate = (): IActionCall => ({ type: actionTypes.DELETE_TEMPLATE_RESET });

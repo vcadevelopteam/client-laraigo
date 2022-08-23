@@ -54,6 +54,7 @@ const InteractionPanel: React.FC<{ classes: any }> = React.memo(({ classes }) =>
             backgroundColor: '#f2f0f7',
             backgroundRepeat: 'repeat',
             backgroundSize: '210px',
+            zIndex: 1200
         }}>
             {(ticketSelected?.conversationid === call.data?.conversationid && !!call?.call && ticketSelected?.status === "ASIGNADO") && (
                 <ManageCallInfoTicket />

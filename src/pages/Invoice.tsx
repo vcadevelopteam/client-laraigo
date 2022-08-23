@@ -3113,7 +3113,7 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
 
-                    if (row.hasreport === false && row.invoicestatus !== "INVOICED" && row.paymentstatus !== 'PAID') {
+                    if ((row.hasreport === false || row.hasreport === true) && row.invoicestatus !== "INVOICED" && row.paymentstatus !== 'PAID') {
                         return (
                             <TemplateIcons
                                 deleteFunction={() => handleDelete(row)}
@@ -4484,6 +4484,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
 
     const classes = useStyles();
     const culqiResult = useSelector(state => state.culqi.requestCreateInvoice);
+    const executeRes = useSelector(state => state.main.execute);
     const invoicehasreport = data?.row?.hasreport || false;
     const multiResult = useSelector(state => state.main.multiDataAux);
     const user = useSelector(state => state.login.validateToken.user);
@@ -4499,9 +4500,12 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     const [waitLoad, setWaitLoad] = useState(false);
     const [waitOrgLoad, setWaitOrgLoad] = useState(false);
     const [waitOrg, setWaitOrg] = useState(false);
+    const [showInsertMessage, setShowInsertMessage] = useState(false);
     const [pageSelected, setPageSelected] = useState(0);
     const [amountTax, setAmountTax] = useState(0);
     const [amountTotal, setAmountTotal] = useState(0);
+    const [showUpdateButton, setShowUpdateButton] = useState(false);
+    const [waitRefresh, setWaitRefresh] = useState(false);
 
     const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
 
@@ -4523,6 +4527,10 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     useEffect(() => {
         if (waitLoad) {
             if (data?.row) {
+                if (data?.row.invoicestatus !== "INVOICED" && data?.row.paymentstatus !== "PAID" && invoicehasreport && user?.roledesc === "SUPERADMIN") {
+                    setShowUpdateButton(true);
+                }
+
                 dispatch(getMultiCollectionAux([getInvoiceDetail(data?.row.corpid, data?.row.orgid, data?.row.invoiceid)]));
 
                 setValue('invoicecurrency', data?.row.currency);
@@ -4773,6 +4781,18 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         }
     }
 
+    const getDocumentResult = (country: string, documenttype: string) => {
+        if ((country === 'PE' && documenttype === '6') || (country !== 'PE' && documenttype === '0')) {
+            return 'emissorinvoice';
+        }
+
+        if ((country === 'PE') && (documenttype === '1' || documenttype === '4' || documenttype === '7')) {
+            return 'emissorticket';
+        }
+
+        return '';
+    }
+
     const getInvoiceType = (invoicetype: string) => {
         switch (invoicetype) {
             case '01':
@@ -4879,10 +4899,40 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
 
         dispatch(manageConfirmation({
             visible: true,
-            question: t(langKeys.confirmation_save),
+            question: showInsertMessage ? t(langKeys.confirmation_save) : `${t(langKeys.invoiceconfirmation01)}\n\n${t(langKeys.invoiceconfirmation02)}${getValues('clientdocnumber')}\n${t(langKeys.invoiceconfirmation03)}${getValues('clientbusinessname')}\n${t(langKeys.invoiceconfirmation04)}${getValues('year')}\n${t(langKeys.invoiceconfirmation05)}${getValues('month')}\n${t(langKeys.invoiceconfirmation06)}${t(getDocumentResult(getValues('clientcountry') || '', getValues('clientdoctype') || ''))}\n${t(langKeys.invoiceconfirmation07)}${t(getValues('clientcredittype'))}\n${t(langKeys.invoiceconfirmation08)}${getValues('invoicecurrency')}\n${t(langKeys.invoiceconfirmation09)}${formatNumber(getValues('invoicetotalamount') || 0)}\n${t(langKeys.invoiceconfirmation10)}${formatNumber(amountTax || 0)}\n${t(langKeys.invoiceconfirmation11)}${formatNumber(amountTotal || 0)}\n\n${t(langKeys.invoiceconfirmation12)}`,
             callback
         }))
     });
+
+    const refreshInvoice = (data: any) => {
+        const callback = () => {
+            dispatch(execute(invoiceRefresh(data)));
+            dispatch(showBackdrop(true));
+            setWaitRefresh(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_invoicerefresh),
+            callback
+        }))
+    }
+
+    useEffect(() => {
+        if (waitRefresh) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }))
+                dispatch(showBackdrop(false));
+                fetchData && fetchData();
+                setViewSelected("view-1");
+                setWaitRefresh(false);
+            } else if (executeRes.error) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() }) }))
+                dispatch(showBackdrop(false));
+                setWaitRefresh(false);
+            }
+        }
+    }, [executeRes, waitRefresh])
 
     useEffect(() => {
         if (waitSave) {
@@ -4930,17 +4980,26 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             variant="contained"
                             color="primary"
                             type='submit'
-                            onClick={() => setValue('onlyinsert', true)}
+                            onClick={() => { setValue('onlyinsert', true); setShowInsertMessage(true); }}
                             startIcon={<SaveIcon color="secondary" />}
                             style={{ backgroundColor: "#55BD84" }}
                         >{t(langKeys.saveasdraft)}
+                        </Button>}
+                        {(invoicehasreport && showUpdateButton) && <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            onClick={() => { refreshInvoice(data?.row || null) }}
+                            startIcon={<RefreshIcon style={{ color: 'white' }} />}
+                            style={{ backgroundColor: "#55BD84" }}
+                        >{t(langKeys.refresh)}
                         </Button>}
                         <Button
                             className={classes.button}
                             variant="contained"
                             color="primary"
                             type='submit'
-                            onClick={() => setValue('onlyinsert', false)}
+                            onClick={() => { setValue('onlyinsert', false); setShowInsertMessage(false); }}
                             startIcon={<PaymentIcon color="secondary" />}
                             style={{ backgroundColor: "#55BD84" }}
                         >{t(langKeys.emitinvoice)}

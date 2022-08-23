@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react'
 import { useSelector } from 'hooks';
 import Avatar from '@material-ui/core/Avatar';
 import { styled, makeStyles } from '@material-ui/core/styles';
-import { ITicket } from "@types";
+import { Dictionary, ITicket } from "@types";
 import { GetIcon } from 'components'
 import clsx from 'clsx';
 import Badge from '@material-ui/core/Badge';
 import { useDispatch } from 'react-redux';
 import Tooltip from '@material-ui/core/Tooltip';
-import { convertLocalDate, secondsToTime, getSecondsUntelNow } from 'common/helpers';
+import { convertLocalDate, secondsToTime, getSecondsUntelNow, callUpdateToken } from 'common/helpers';
 import { answerCall, hangupCall } from 'store/voximplant/actions';
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
@@ -19,6 +19,7 @@ import CallEndIcon from '@material-ui/icons/CallEnd';
 import { PhoneCalling } from 'icons';
 import { showSnackbar } from 'store/popus/actions';
 import Button from '@material-ui/core/Button';
+import { getCollectionAux } from 'store/main/actions';
 
 const useStyles = makeStyles((theme) => ({
     label: {
@@ -116,17 +117,23 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
     const userType = useSelector(state => state.inbox.userType);
     const multiData = useSelector(state => state.main.multiData);
     const [dateToClose, setDateToClose] = useState<Date | null>(null)
+    const data14 = React.useRef<Dictionary[] | null>(null)
+    
+    // const refreshToken = React.useRef<number>(-1)
+    const [refreshToken, setRefreshToken] = useState(-1)
+
     const dictAutoClose = useSelector(state => state.login.validateToken.user?.properties?.auto_close);
+    const secondsToAnwserCall = useSelector(state => state.login.validateToken.user?.properties?.seconds_to_answer_call);
     const statusCall = useSelector(state => state.voximplant?.statusCall);
     const dictAutoCloseHolding = useSelector(state => state.login.validateToken.user?.properties?.auto_close_holding);
     const waitingcustomermessage = useSelector(state => state.login.validateToken.user?.properties?.waiting_customer_message);
     const callVoxiTmp = useSelector(state => state.voximplant.call);
-
     const [callVoxi, setCallVoxi] = useState<Call | null>(null);
     const dispatch = useDispatch();
-
     const [iconColor, setIconColor] = useState('#7721AD');
     const { t } = useTranslation();
+    const [timeWaiting, setTimeWaiting] = useState(-1);
+    const [waitingDate, setWaitingDate] = useState<string | null>(null);
 
     useEffect(() => {
         if (callVoxiTmp && callVoxiTmp.call && callVoxiTmp.data?.conversationid === conversationid && item.status === "ASIGNADO") {
@@ -138,18 +145,17 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
     }, [callVoxiTmp]);
 
     React.useEffect(() => {
-        if (!multiData.error && !multiData.loading && multiData?.data[6] && multiData.data[6].success) {
-            const channelSelected = multiData.data[6].data.find(x => x.communicationchannelid === communicationchannelid);
-            setIconColor(channelSelected?.coloricon || '#7721AD');
+        if (!multiData.error && !multiData.loading) {
+            if (multiData?.data[6] && multiData.data[6].success) {
+                const channelSelected = multiData.data[6].data.find(x => x.communicationchannelid === communicationchannelid);
+                setIconColor(channelSelected?.coloricon || '#7721AD');
+            } else if (multiData?.data[14] && multiData.data[14].success) {
+                data14.current = multiData.data[14].data;
+            }
         }
     }, [multiData, communicationchannelid]);
 
     useEffect(() => {
-        console.log("teaaa", {
-            countnewmessages,
-            personlastreplydate,
-            lastreplyuser
-        })
         if (countnewmessages === 0 && personlastreplydate && lastreplyuser) {
             const timeClose = (userType === "AGENT" || agentSelected?.userid !== 3) ? (dictAutoClose?.[communicationchannelid] || 0) : (dictAutoCloseHolding?.[communicationchannelid] || 0);
             if (timeClose === 0) {
@@ -164,12 +170,24 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dictAutoClose, dictAutoCloseHolding, countnewmessages, userType, agentSelected?.userid, communicationchannelid, lastreplyuser])
+    
+    useEffect(() => {
+        let timer = null;
+        if (statusCall === "CONNECTED") {
+            timer = setTimeout(() => {
+                setRefreshToken(refreshToken * -1)
+                dispatch(getCollectionAux(callUpdateToken()))
+            }, 30000)
+        } else {
+            timer && clearTimeout(timer);
+        }
+    }, [dispatch, statusCall, refreshToken])
 
-    const validateTime = (time: number) => {
+    const validateTime = React.useCallback((time: number) => {
         if (userType === "AGENT" && (countnewmessages || 0) > 0) {
-            if (multiData.data?.[14]?.data) {
+            if (data14.current) {
 
-                const pAlerts = multiData.data?.[14]?.data;
+                const pAlerts = data14.current;
 
                 const alert = pAlerts.find(x => x.groupname === item.usergroup && !!x.propertyvalue && x.propertyvalue !== "0");
                 if (alert) {
@@ -178,9 +196,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                     if (!Number.isNaN(minutesAlert)) {
                         const secondsAlert = minutesAlert * 60;
                         if (time % secondsAlert === 0) {
-                            console.log(2)
                             const minuteswaiting = time / 60;
-                            console.log(minuteswaiting)
                             if (minuteswaiting >= 1) {
                                 const messagetoshow = `Ticket ${ticketnum}: ` + (waitingcustomermessage || "Tu cliente está esperando {{minutos}} minutos por tu respuesta.").replace("{{minutos}}", minuteswaiting + "")
                                 dispatch(showSnackbar({
@@ -200,7 +216,35 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                 }
             }
         }
-    }
+    }, [countnewmessages, dispatch, item, setTicketSelected, t, ticketnum, userType, waitingcustomermessage])
+
+    React.useEffect(() => {
+        if (callVoxiTmp.type === "INBOUND" && statusCall === "CONNECTING") {
+            setWaitingDate(new Date().toISOString())
+            setTimeWaiting(0);
+        }
+    }, [callVoxiTmp, statusCall])
+
+    React.useEffect(() => {
+        if (timeWaiting >= 0 && (secondsToAnwserCall || 0) > 0) {
+
+            if (timeWaiting >= (secondsToAnwserCall || 0) && (callVoxiTmp.type === "INBOUND" && statusCall === "CONNECTING")) {
+                dispatch(answerCall({ call: callVoxi!!, conversationid }));
+                setWaitingDate(null);
+                setTimeWaiting(-1);
+                return;
+            }
+            if (callVoxiTmp.type === "INBOUND" && statusCall === "CONNECTING") {
+                setTimeout(() => {
+                    setTimeWaiting(getSecondsUntelNow(convertLocalDate(waitingDate)));
+                }, 1000)
+            } else {
+                setTimeWaiting(-1);
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [timeWaiting]);
+
 
     return (
         <div
@@ -241,7 +285,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                         dateGo={firstconversationdate || new Date().toISOString()}
                         color="#465a6ed9"
                     />
-                    {(countnewmessages || 0) > 0 &&
+                    {(communicationchanneltype !== "VOXI" && (countnewmessages || 0) > 0) &&
                         <LabelGo
                             isTimer={true}
                             tooltip={t(langKeys.waiting_person_time)}
@@ -261,7 +305,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                         />
                     }
                     {communicationchanneltype !== "VOXI" &&
-                        <LabelGo 
+                        <LabelGo
                             isTimer={false}
                             color={origin === "OUTBOUND" ? "#ffbf00" : "#0000ff"}
                             label={origin || "INBOUND"}

@@ -42,6 +42,7 @@ export const ChannelAddSMS: FC<{ setOpenWarning: (param: any) => void }> = ({ se
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
     const [nextbutton, setNextbutton] = useState(true);
+    const [nextbutton2, setNextbutton2] = useState(true);
 
     useEffect(() => {
         const cb = async () => {
@@ -241,7 +242,7 @@ export const ChannelAddSMS: FC<{ setOpenWarning: (param: any) => void }> = ({ se
                 </div>
             )}
             <FieldEdit
-                onChange={(value) => setValue('channels.sms.description', value)}
+                onChange={(value) => { setValue('channels.sms.description', value); setNextbutton2(!value); }}
                 valueDefault={getValues('channels.sms.description')}
                 label={t(langKeys.givechannelname)}
                 variant="outlined"
@@ -261,6 +262,7 @@ export const ChannelAddSMS: FC<{ setOpenWarning: (param: any) => void }> = ({ se
                     className={commonClasses.button}
                     variant="contained"
                     color="primary"
+                    disabled={nextbutton2}
                 >
                     <Trans i18nKey={langKeys.next} />
                 </Button>

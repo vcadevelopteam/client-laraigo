@@ -182,6 +182,8 @@ const DashboardProductivity: FC = () => {
     const mainResult = useSelector(state => state.main);
     const remultiaux = useSelector(state => state.main.multiDataAux);
     const resaux = useSelector(state => state.main.mainAux);
+    const user = useSelector(state => state.login.validateToken.user);
+    const groups = user?.groups?.split(",").filter(x=>!!x) || [];
     const [downloaddatafile,setdownloaddatafile]=useState(false)
     const [section, setSection] = useState('')
     const [titlefile, settitlefile] = useState('');
@@ -351,7 +353,7 @@ const DashboardProductivity: FC = () => {
     useEffect(() => {
         if (mainResult.multiData.data.length !== 0) {
             let multiData = mainResult.multiData.data;
-            setdataqueue(multiData[0] && multiData[0].success ? multiData[0].data : []);
+            setdataqueue(multiData[0] && multiData[0].success ? multiData[0].data.filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true) : []);
             setdataprovider(multiData[1] && multiData[1].success ? multiData[1].data : []);
             setdatachannels(multiData[2] && multiData[2].success ? multiData[2].data : []);
             setdatasupervisors(multiData[3] && multiData[3].success ? multiData[3].data : []);
@@ -1708,7 +1710,7 @@ const DashboardProductivity: FC = () => {
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.pollssent, { survey: 'NPS' })}</div>
-                                <div className={classes.datafield}>{dataEncuesta.npspollssent}</div>
+                                <div className={classes.datafield}>{dataEncuesta.npspollsanswered}</div>
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.pollsanswered, { survey: 'NPS' })}</div>
@@ -1791,7 +1793,7 @@ const DashboardProductivity: FC = () => {
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.pollssent, { survey: 'CSAT' })}</div>
-                                <div className={classes.datafield}>{dataEncuesta.csatpollssent}</div>
+                                <div className={classes.datafield}>{dataEncuesta.csatpollsanswered}</div>
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.pollsanswered, { survey: 'CSAT' })}</div>
@@ -1876,7 +1878,7 @@ const DashboardProductivity: FC = () => {
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.pollssent, { survey: 'FCR' })}</div>
-                                <div className={classes.datafield}>{dataEncuesta.fcrpollssent}</div>
+                                <div className={classes.datafield}>{dataEncuesta.fcrpollsanswered}</div>
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.pollsanswered, { survey: 'FCR' })}</div>
@@ -1955,7 +1957,7 @@ const DashboardProductivity: FC = () => {
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.pollssent, { survey: 'FIX' })}</div>
-                                <div className={classes.datafield}>{dataEncuesta.fixpollssent}</div>
+                                <div className={classes.datafield}>{dataEncuesta.fixpollsanswered}</div>
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.pollsanswered, { survey: 'FIX' })}</div>

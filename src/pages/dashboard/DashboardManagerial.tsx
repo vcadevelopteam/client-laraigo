@@ -183,6 +183,8 @@ const initialRange = {
 
 const DashboardManagerial: FC = () => {
     const classes = useStyles();
+    const user = useSelector(state => state.login.validateToken.user);
+    const groups = user?.groups?.split(",").filter(x=>!!x) || [];
     const mainResultMulti = useSelector(state => state.main.multiData);
     const remultiaux = useSelector(state => state.main.multiDataAux);
     const resaux = useSelector(state => state.main.mainAux);
@@ -368,7 +370,8 @@ const DashboardManagerial: FC = () => {
         if(bringdataFilters){
             if (mainResultMulti.data.length !== 0) {
                 let multiData = mainResultMulti.data;
-                setdataqueue(multiData[0] && multiData[0].success ? multiData[0].data : []);
+                console.log(groups)
+                setdataqueue(multiData[0] && multiData[0].success ? multiData[0].data.filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true) : []);
                 setdataprovider(multiData[1] && multiData[1].success ? multiData[1].data : []);
                 setdatachannels(multiData[2] && multiData[2].success ? multiData[2].data : []);
                 setbringdataFilters(false)
@@ -1016,6 +1019,7 @@ const DashboardManagerial: FC = () => {
                         return { hora: i, asesoresconectados: "0", avgasesoresconectados: "0" }
                 })
                 setResAsesoreconectadosbar(arrayconbar)
+                console.log(arrayconbar)
                 let avg= arrayconbar.reduce((acc, x) => acc + Number(x.asesoresconectados),0)/24
                 setDataAsesoreconectadosbar({
                     avgasesoresconectados: avg.toFixed(2)
@@ -1679,7 +1683,7 @@ const DashboardManagerial: FC = () => {
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.pollssent, { survey: 'NPS' })}</div>
-                                <div className={classes.datafield}>{dataEncuesta.npspollssent}</div>
+                                <div className={classes.datafield}>{dataEncuesta.npspollsanswered}</div>
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.pollsanswered, { survey: 'NPS' })}</div>
@@ -1763,7 +1767,7 @@ const DashboardManagerial: FC = () => {
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.pollssent, { survey: 'CSAT' })}</div>
-                                <div className={classes.datafield}>{dataEncuesta.csatpollssent}</div>
+                                <div className={classes.datafield}>{dataEncuesta.csatpollsanswered}</div>
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.pollsanswered, { survey: 'CSAT' })}</div>
@@ -1849,7 +1853,7 @@ const DashboardManagerial: FC = () => {
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.pollssent, { survey: 'FCR' })}</div>
-                                <div className={classes.datafield}>{dataEncuesta.fcrpollssent}</div>
+                                <div className={classes.datafield}>{dataEncuesta.fcrpollsanswered}</div>
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.pollsanswered, { survey: 'FCR' })}</div>
@@ -1929,7 +1933,7 @@ const DashboardManagerial: FC = () => {
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.pollssent, { survey: 'FIX' })}</div>
-                                <div className={classes.datafield}>{dataEncuesta.fixpollssent}</div>
+                                <div className={classes.datafield}>{dataEncuesta.fixpollsanswered}</div>
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.pollsanswered, { survey: 'FIX' })}</div>
@@ -2099,7 +2103,7 @@ const DashboardManagerial: FC = () => {
                                     <Line type="monotone" dataKey="asesoresconectados" stroke="#8884d8" strokeWidth={2} />
                                     <CartesianGrid stroke="#ccc" />
                                     <XAxis domain={["",""]} type="category" dataKey="hora"><Label value={` ${t(langKeys.timeofday)} `} offset={-5} position="insideBottom" /></XAxis>
-                                    <YAxis><Label value={` ${t(langKeys.assesor_plural)} `} angle={-90} offset={0} position="insideLeft" /></YAxis>
+                                    <YAxis domain={[0, (auto:any) => Math.floor(auto * 1.3)]}><Label value={` ${t(langKeys.assesor_plural)} `} angle={-90} offset={0} position="insideLeft" /></YAxis>
                                     <RechartsTooltip />
                                 </LineChart>
                             </ResponsiveContainer>

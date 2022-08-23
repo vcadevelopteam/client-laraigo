@@ -262,6 +262,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         setValue('roleid', value ? value.roleid : 0);
         setValue('roledesc', value ? value.roldesc : 0);
         setValue('type', value ? value.type : 0);
+        setValue('redirect', ''); 
+        updatefield('redirect', '');
 
         updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
             p[index] = { ...p[index], roleid: value?.roleid || 0, roledesc: value?.roldesc || 0, type: value?.type || 0 }
@@ -357,7 +359,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                             <FieldSelect
                                 label={t(langKeys.default_application)}
                                 className={classes.mb2}
-                                valueDefault={row?.redirect || ""}
+                                valueDefault={getValues("redirect")}
                                 onChange={(value) => { setValue('redirect', value?.path || ''); updatefield('redirect', value?.path || '') }}
                                 error={errors?.redirect?.message}
                                 data={dataApplications.data}
@@ -1070,11 +1072,18 @@ const Users: FC = () => {
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
                 }
             },
+            {
+                Header: t(langKeys.billingGroup),
+                accessor: 'billinggroup',
+                NoFilter: true
+            },
 
         ],
         []
     );
     const handleTemplate = () => {
+        console.log(domains)
+        debugger
         const data = [
             {},
             {},
@@ -1092,6 +1101,7 @@ const Users: FC = () => {
             { 'true': 'true', 'false': 'false' },
             domains.value?.roles?.reduce((a, d) => ({ ...a, [d.roleid]: d.roldesc }), {}),
             dataChannelsTemp.reduce((a, d) => ({ ...a, [d.communicationchannelid]: d.description }), {}),
+            domains.value?.usergroup?.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
         ];
         const header = [
             'firstname',
@@ -1109,7 +1119,8 @@ const Users: FC = () => {
             'password',
             'pwdchangefirstlogin',
             'role',
-            'channels'
+            'channels',
+            'groups'
         ];
         exportExcel(`${t(langKeys.template)} ${t(langKeys.import)}`, templateMaker(data, header));
     }
@@ -1249,6 +1260,7 @@ const Users: FC = () => {
                     && (f.role === undefined || Object.keys(domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.roleid]: `${d.roleid}` }), {})).includes('' + f.role))
             });
 
+            debugger
             const messageerrors = datainit.filter((f: any) => {
                 return !(f.company === undefined || Object.keys(domains.value?.company?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.company))
                     || !(f.doctype === undefined || Object.keys(domains.value?.docTypes?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.doctype))
@@ -1293,10 +1305,10 @@ const Users: FC = () => {
                                 orgid: user?.orgid,
                                 bydefault: true,
                                 labels: "",
-                                groups: "",
+                                groups: d.groups || "",
                                 channels: d.channels || "",
-                                status: d.status,
-                                type: "NINGUNO",
+                                status: "DESCONECTADO",
+                                type: domains?.value?.roles?.filter(x=>x.roleid===d.role)?.[0]?.roldesc||"",
                                 supervisor: "",
                                 operation: "INSERT",
                                 redirect: "/usersettings"

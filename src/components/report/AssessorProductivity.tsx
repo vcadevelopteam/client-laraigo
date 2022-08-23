@@ -112,6 +112,8 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
+    const user = useSelector(state => state.login.validateToken.user);
+    const groups = user?.groups?.split(",").filter(x=>!!x) || [];
     const mainAux = useSelector(state => state.main.mainAux);
     const [allParameters, setAllParameters] = useState({});
     const [dateRange, setdateRange] = useState<Range>({ startDate: new Date(new Date().setDate(1)), endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0), key: 'selection' });
@@ -388,7 +390,9 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                 key={filtro.values[0].isListDomains ? filtro.values[0].filter + "_" + filtro.values[0].domainname : filtro.values[0].filter}
                                 onChange={(value) => setValue(filtro.values[0].parameterName, value ? value.map((o: Dictionary) => o[filtro.values[0].optionValue]).join() : '')}
                                 variant="outlined"
-                                data={multiData[multiData.findIndex(x => x.key === (filtro.values[0].isListDomains ? filtro.values[0].filter + "_" + filtro.values[0].domainname : filtro.values[0].filter))].data}
+                                data={filtro.values[0].label==="group"?
+                                    multiData[multiData.findIndex(x => x.key === (filtro.values[0].isListDomains ? filtro.values[0].filter + "_" + filtro.values[0].domainname : filtro.values[0].filter))].data.filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true):
+                                    multiData[multiData.findIndex(x => x.key === (filtro.values[0].isListDomains ? filtro.values[0].filter + "_" + filtro.values[0].domainname : filtro.values[0].filter))].data}
                                 optionDesc={filtro.values[0].optionDesc}
                                 optionValue={filtro.values[0].optionValue}
                             />

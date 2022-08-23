@@ -41,6 +41,7 @@ import { Search as SearchIcon } from '@material-ui/icons';
 import ReportInvoice from 'components/report/ReportInvoice';
 import TicketvsAdviser from 'components/report/TicketvsAdviser';
 import HSMHistoryReport from './HSMHistoryReport';
+import { CampaignReport } from './campaign';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -956,7 +957,7 @@ const Reports: FC = () => {
                                     component="img"
                                     height="140"
                                     className={classes.media}
-                                    image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/02reportehsm.png"
+                                    image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/PROCESOSYCONSULTORIA/5740f300-9107-4c2f-b7eb-eee27652acab/Historial%20HSM.png"
                                     title={t(langKeys.hsmhistory)}
                                 />
                                 <CardContent>
@@ -1012,7 +1013,7 @@ const Reports: FC = () => {
                 )
             case 'TICKETVSADVISER':
                 return (
-                    superadmin && <Grid item key={"report_ticketvsasesor"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                    <Grid item key={"report_ticketvsasesor"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                         <Card >
                             <CardActionArea onClick={() => handleSelectedString("report_ticketvsasesor")}>
                                 <CardMedia
@@ -1025,6 +1026,27 @@ const Reports: FC = () => {
                                 <CardContent>
                                     <Typography gutterBottom variant="h6" component="div">
                                         {t(langKeys.report_ticketvsasesor)}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                )
+            case 'CAMPAIGN':
+                return (
+                    <Grid item key={"campaign"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                        <Card >
+                            <CardActionArea onClick={() => handleSelectedString("campaign")}>
+                                <CardMedia
+                                    component="img"
+                                    height="140"
+                                    className={classes.media}
+                                    image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/02reportehsm.png"
+                                    title={t(langKeys.campaign)}
+                                />
+                                <CardContent>
+                                    <Typography gutterBottom variant="h6" component="div">
+                                        {t(langKeys.campaign)}
                                     </Typography>
                                 </CardContent>
                             </CardActionArea>
@@ -1269,6 +1291,20 @@ const Reports: FC = () => {
                         handleClick={handleSelectedString}
                     />
                     <TicketvsAdviser />
+                </div>
+            </>
+        )
+    } else if (viewSelected === "campaign") {
+        return (
+            <>
+                <div style={{ width: '100%' }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={getArrayBread(t('report_campaign'), t(langKeys.report_plural))}
+                        handleClick={handleSelectedString}
+                    />
+                    <CampaignReport
+                        externalUse={true}
+                    />
                 </div>
             </>
         )

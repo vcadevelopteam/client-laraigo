@@ -1,6 +1,6 @@
 import { Box, Button, createStyles, makeStyles, Theme } from "@material-ui/core";
 import { Dictionary } from "@types";
-import { getDisconnectionTimes, getDateCleaned, getUserAsesorByOrgID, getValuesFromDomain, timetoseconds, formattime} from "common/helpers";
+import { getDisconnectionTimes, getDateCleaned, getUserAsesorByOrgID, getValuesFromDomain, timetoseconds, formattime, exportExcel} from "common/helpers";
 import { DateRangePicker, DialogZyx, FieldSelect } from "components";
 import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
@@ -12,6 +12,7 @@ import { useDispatch } from "react-redux";
 import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis, Pie, PieChart, Legend } from "recharts";
 import { getMultiCollection, getMultiCollectionAux, resetMainAux, resetMultiMainAux } from "store/main/actions";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
 const COLORS = ["#0087e0", "#ff0000", "#296680", "#fc3617", "#e8187a", "#7cfa57", "#cfbace", "#4cd45f", "#fd5055", "#7e1be4", "#bf1490", "#66c6cf", "#011c3d", "#1a9595", "#4ae2c7", "#515496", "#a2aa65", "#df909c", "#3aa343", "#e0606e"];
 
@@ -248,6 +249,21 @@ const DashboardDisconnections: FC = () => {
             </text>
         );
     }
+
+    function downloaddata(data:any,title:string) {
+        console.log(data)
+        debugger
+        if (data.length !== 0) {
+            let seteddata = data.map((x:any)=>{return {...x,time:formattime(x.time)}})
+            exportExcel(title, seteddata, Object.keys(seteddata[0]).reduce((ac: any[], c: any) => (
+                [
+                    ...ac,
+                    { Header: t((langKeys as any)[`dashboard_operationalpush_disconnections_${c}`]), accessor: c }
+                ]),
+                []
+            ))
+        }
+    }
     return (
         <Fragment>
             <DialogZyx
@@ -277,7 +293,7 @@ const DashboardDisconnections: FC = () => {
                         label={t(langKeys.user)}
                         className={classes.fieldsfilter}
                         variant="outlined"
-                        onChange={(value) => setusersearch(value.userid||0)}
+                        onChange={(value) => setusersearch(value?.userid||0)}
                         valueDefault={usersearch}
                         data={dataasesors}
                         optionDesc="userdesc"
@@ -302,6 +318,9 @@ const DashboardDisconnections: FC = () => {
                         className={classes.itemCard}
                         style={{width:"100%"}}
                     >
+                        <div className={classes.downloadiconcontainer}>                            
+                            <CloudDownloadIcon onClick={()=>downloaddata(datatotaltime,t(langKeys.totaltimeduetodisconnectionreasons))} className={classes.styleicon}/>
+                        </div>
                         <div style={{width: "100%"}}> 
                             <div style={{display: "flex"}}>
                                 <div style={{fontWeight: "bold",fontSize: "1.6em",}}> {t(langKeys.totaltimeduetodisconnectionreasons)} </div>
@@ -312,7 +331,7 @@ const DashboardDisconnections: FC = () => {
                                 <ResponsiveContainer width="100%" aspect={5.0 / 2.0}>
                                     <BarChart data={datatotaltime}>
                                         <XAxis domain={["",""]} angle={-40} interval={0} textAnchor="end"  type="category" dataKey="type" height={95}/>
-                                        <YAxis tickFormatter={v=>formattime(v)} />
+                                        <YAxis tickFormatter={v=>formattime(v)} width={100}/>
                                         <RechartsTooltip formatter={(value: any, name: any) => [formattime(value), t(name)]} />
                                         <Bar dataKey="time" fill="#8884d8" > </Bar>
                                     </BarChart>
@@ -329,6 +348,9 @@ const DashboardDisconnections: FC = () => {
                         className={classes.itemCard}
                         style={{width:"100%"}}
                     >
+                        <div className={classes.downloadiconcontainer}>                            
+                            <CloudDownloadIcon onClick={()=>downloaddata(tcovstdc,t(langKeys.timeconnectedvstimeoff))} className={classes.styleicon}/>
+                        </div>
                         <div style={{width: "100%"}}> 
                             <div style={{display: "flex"}}>
                                 <div style={{fontWeight: "bold",fontSize: "1.6em",}}> {t(langKeys.timeconnectedvstimeoff)} </div>

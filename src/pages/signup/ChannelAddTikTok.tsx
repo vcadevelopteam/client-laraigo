@@ -41,6 +41,7 @@ export const ChannelAddTikTok: FC<{ setOpenWarning: (param: any) => void }> = ({
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
     const [nextbutton, setNextbutton] = useState(true);
+    const [nextbutton2, setNextbutton2] = useState(true);
 
     useEffect(() => {
         const cb = async () => {
@@ -225,7 +226,7 @@ export const ChannelAddTikTok: FC<{ setOpenWarning: (param: any) => void }> = ({
                 </div>
             )}
             <FieldEdit
-                onChange={(value) => setValue('channels.tiktok.description', value)}
+                onChange={(value) => { setValue('channels.tiktok.description', value); setNextbutton2(!value); }}
                 valueDefault={getValues('channels.tiktok.description')}
                 label={t(langKeys.givechannelname)}
                 variant="outlined"
@@ -245,6 +246,7 @@ export const ChannelAddTikTok: FC<{ setOpenWarning: (param: any) => void }> = ({
                     className={commonClasses.button}
                     variant="contained"
                     color="primary"
+                    disabled={nextbutton2}
                 >
                     <Trans i18nKey={langKeys.next} />
                 </Button>
