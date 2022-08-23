@@ -7,7 +7,7 @@ import { styled } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { Dictionary } from '@types';
 import { useDispatch } from 'react-redux';
-import { emitEvent, replyTicket, goToBottom, showGoToBottom, reassignTicket } from 'store/inbox/actions';
+import { emitEvent, replyTicket, goToBottom, showGoToBottom, reassignTicket, triggerBlock } from 'store/inbox/actions';
 import { uploadFile, resetUploadFile } from 'store/main/actions';
 import { manageConfirmation } from 'store/popus/actions';
 import InputBase from '@material-ui/core/InputBase';
@@ -253,7 +253,6 @@ const TmpRichResponseIcon: React.FC<{ classes: any, setText: (param: string) => 
     const userType = useSelector(state => state.inbox.userType);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const richResponseList = useSelector(state => state.inbox.richResponseList.data);
-    const variablecontext = useSelector(state => state.inbox.person.data?.variablecontext);
 
     const handleClickAway = () => setOpen(false);
 
@@ -292,38 +291,50 @@ const TmpRichResponseIcon: React.FC<{ classes: any, setText: (param: string) => 
 
     const handlerClickItem = (block: Dictionary) => {
         setOpen(false);
-        const listInteractions = cleanedRichResponse(block.cards, variablecontext)
-
-        if (listInteractions.length === 0) {
-            dispatch(showSnackbar({ show: true, severity: "error", message: 'No hay cards' }))
-            return;
+        const parameters = {
+            fullid: `${block.chatblockid}_${block.blockid}`,
+            p_communicationchannelid: ticketSelected?.communicationchannelid,
+            p_conversationid: ticketSelected?.conversationid,
+            p_personid: ticketSelected?.personid,
+            p_communicationchanneltype: ticketSelected?.communicationchanneltype,
+            p_personcommunicationchannel: ticketSelected?.personcommunicationchannel,
+            p_messagesourcekey1: ticketSelected?.personcommunicationchannel,
+            p_communicationchannelsite: ticketSelected?.communicationchannelsite,
+            p_ticketnum: ticketSelected?.ticketnum,
         }
+        dispatch(triggerBlock(parameters))
+        // const listInteractions = cleanedRichResponse(block.cards, variablecontext)
 
-        dispatch(replyTicket(listInteractions.map(x => ({
-            ...ticketSelected!!,
-            interactiontype: x.type,
-            interactiontext: x.content
-        })), true));
+        // if (listInteractions.length === 0) {
+        //     dispatch(showSnackbar({ show: true, severity: "error", message: 'No hay cards' }))
+        //     return;
+        // }
 
-        listInteractions.forEach((x: Dictionary, i: number) => {
-            const newInteractionSocket = {
-                ...ticketSelected!!,
-                interactionid: 0,
-                typemessage: x.type,
-                typeinteraction: null,
-                lastmessage: x.content,
-                createdate: new Date().toISOString(),
-                userid: 0,
-                usertype: "agent",
-                ticketWasAnswered: !(ticketSelected!!.isAnswered || i > 0), //solo enviar el cambio en el primer mensaje
-            }
-            if (userType === "AGENT") {
-                dispatch(emitEvent({
-                    event: 'newMessageFromAgent',
-                    data: newInteractionSocket
-                }));
-            }
-        })
+        // dispatch(replyTicket(listInteractions.map(x => ({
+        //     ...ticketSelected!!,
+        //     interactiontype: x.type,
+        //     interactiontext: x.content
+        // })), true));
+
+        // listInteractions.forEach((x: Dictionary, i: number) => {
+        //     const newInteractionSocket = {
+        //         ...ticketSelected!!,
+        //         interactionid: 0,
+        //         typemessage: x.type,
+        //         typeinteraction: null,
+        //         lastmessage: x.content,
+        //         createdate: new Date().toISOString(),
+        //         userid: 0,
+        //         usertype: "agent",
+        //         ticketWasAnswered: !(ticketSelected!!.isAnswered || i > 0), //solo enviar el cambio en el primer mensaje
+        //     }
+        //     if (userType === "AGENT") {
+        //         dispatch(emitEvent({
+        //             event: 'newMessageFromAgent',
+        //             data: newInteractionSocket
+        //         }));
+        //     }
+        // })
 
         if (userType === "SUPERVISOR")
             reasignTicket()
@@ -376,14 +387,14 @@ const TmpRichResponseIcon: React.FC<{ classes: any, setText: (param: string) => 
                                 }
                             </div>
                             <Divider />
-                            <List component="nav" disablePadding style={{ maxHeight: 200, overflowY: 'overlay' as any }}>
+                            <List component="nav" disablePadding style={{ maxHeight: 200, width: '100%', overflowY: 'overlay' as any }}>
                                 {richResponseToShow.map((item) => (
                                     <ListItem
                                         button
-                                        key={item.id}
+                                        key={item.blockid}
                                         onClick={() => handlerClickItem(item)}
                                     >
-                                        <ListItemText primary={item.title} />
+                                        <ListItemText primary={item.blocktitle} />
                                     </ListItem>
                                 ))}
                             </List>
@@ -478,7 +489,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([])
     const [showReply, setShowReply] = useState(true);
     const [fileimage, setfileimage] = useState<any>(null);
-    const [bodyobject, setBodyobject] = useState<Descendant[]>([{ "type": "paragraph",  align:"left", "children": [{ "text": "" }] }])
+    const [bodyobject, setBodyobject] = useState<Descendant[]>([{ "type": "paragraph", align: "left", "children": [{ "text": "" }] }])
     const [refresh, setrefresh] = useState(1)
     const [flagundo, setflagundo] = useState(false)
     const [flagredo, setflagredo] = useState(false)
@@ -488,7 +499,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
 
 
     useEffect(() => {
-        if((ticketSelected?.conversationid) !== (previousTicket?.conversationid)) setpreviousTicket(ticketSelected)
+        if ((ticketSelected?.conversationid) !== (previousTicket?.conversationid)) setpreviousTicket(ticketSelected)
         if (ticketSelected?.status !== "ASIGNADO")
             setShowReply(false);
         else if (channelsWhatsapp.includes(ticketSelected!!.communicationchanneltype)) {
@@ -503,12 +514,12 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     }, [ticketSelected])
     useEffect(() => {
         if (ticketSelected?.communicationchanneltype === "MAIL") {
-            setBodyobject([{ "type": "paragraph", align:"left", "children": [{ "text": "" }] }])
-            setText(renderToString(toElement([{ "type": "paragraph", align:"left", "children": [{ "text": "" }] }])))
+            setBodyobject([{ "type": "paragraph", align: "left", "children": [{ "text": "" }] }])
+            setText(renderToString(toElement([{ "type": "paragraph", align: "left", "children": [{ "text": "" }] }])))
             setrefresh(refresh * -1)
         } else {
             setText("")
-            setBodyobject([{ "type": "paragraph", align:"left", "children": [{ "text": "" }] }])
+            setBodyobject([{ "type": "paragraph", align: "left", "children": [{ "text": "" }] }])
         }
     }, [previousTicket])
 
@@ -592,7 +603,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                 if (ticketSelected?.communicationchanneltype === "MAIL" && groupInteractionList.data[0]?.interactiontext) {
                     textCleaned = ("Re: " + (groupInteractionList.data[0].interactiontext).split("&%MAIL%&")[0] + "&%MAIL%&" + text).trim();
 
-                    let fileobj = files.reduce((acc, item,i) => ({ ...acc, [String(item.url.split('/').pop()==="tenor.gif"?"tenor"+i+".gif":item.url.split('/').pop())]: item.url }), {})
+                    let fileobj = files.reduce((acc, item, i) => ({ ...acc, [String(item.url.split('/').pop() === "tenor.gif" ? "tenor" + i + ".gif" : item.url.split('/').pop())]: item.url }), {})
                     console.log(fileobj)
                     textCleaned = textCleaned + "&%MAIL%&" + JSON.stringify(fileobj)
                     setFiles([])
@@ -631,7 +642,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                         }));
                         setText("");
                         setrefresh(refresh * -1)
-                        setBodyobject([{ "type": "paragraph", align:"left", "children": [{ "text": "" }] }]);
+                        setBodyobject([{ "type": "paragraph", align: "left", "children": [{ "text": "" }] }]);
 
                     } else {
                         dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))

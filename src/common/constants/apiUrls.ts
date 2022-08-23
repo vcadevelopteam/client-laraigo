@@ -1,4 +1,4 @@
-const ENV = "CLARO";
+const ENV = "DEVELOP";
 
 const APIS_URL = {
     DEVELOP: {
@@ -47,7 +47,7 @@ const APIS_URL = {
         //API: 'https://apix.laraigo.com/api',
         // WS: 'http://localhost:7070',
         WS: 'https://socket.laraigo.com',
-        CHATFLOW: 'https://localhost:4200',
+        CHATFLOW: 'https://zyxmelinux.zyxmeapp.com/zyxme/chatflow',
         FACEBOOKAPP: '367176075182579',
         INSTAGRAMAPP: '1924971937716955',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -102,6 +102,7 @@ export const apiUrls = {
     DEL_USER: `${BASE_URL}/user/delete`,
     GETGEOCODE: `${BASE_URL}/gmaps/geocode`,
     GETLOCATION: `${BASE_URL}/flow/location`,
+    TRIGGERBLOCK: `${BASE_URL}/flow/triggerblock`,
 
 
     INTEGRATION_URL: `${BASE_URL}/load`,
