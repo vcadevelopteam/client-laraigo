@@ -4,14 +4,14 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { DateRangePicker} from 'components';
-import { getDateCleaned, getHSMHistoryList, getHSMHistoryReport } from 'common/helpers';
+import { getDateCleaned, getHSMHistoryList, getHSMHistoryReport, getHSMHistoryReportExport } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { getMultiCollection, getMultiCollectionAux2, resetMultiMain } from 'store/main/actions';
-import { showBackdrop } from 'store/popus/actions';
+import { cleanMemoryTable, setMemoryTable, exportData, getMultiCollection, getMultiCollectionAux2, resetMultiMain } from 'store/main/actions';
+import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { CalendarIcon } from 'icons';
 import { Range } from 'react-date-range';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -93,8 +93,40 @@ const DetailHSMHistoryReport: React.FC<DetailHSMHistoryReportProps> = ({ data: {
                 accessor: 'lastname',
             },
             {
+                Header: t(langKeys.ticket_number),
+                accessor: 'ticketnum',
+            },
+            {
+                Header: t(langKeys.rundate),
+                accessor: 'rundate',
+            },
+            {
+                Header: t(langKeys.runtime),
+                accessor: 'runtime',
+            },
+            {
+                Header: t(langKeys.finishconversationdate),
+                accessor: 'finishdate',
+            },
+            {
+                Header: t(langKeys.firstreplydate),
+                accessor: 'firstreplydate',
+            },
+            {
+                Header: t(langKeys.firstreplytime),
+                accessor: 'firstreplytime',
+            },
+            {
                 Header: `${t(langKeys.contact)}`,
                 accessor: 'contact',
+            },
+            {
+                Header: t(langKeys.channel),
+                accessor: 'channel',
+            },
+            {
+                Header: t(langKeys.origin),
+                accessor: 'origin',
             },
             {
                 Header: t(langKeys.status),
@@ -106,20 +138,16 @@ const DetailHSMHistoryReport: React.FC<DetailHSMHistoryReportProps> = ({ data: {
                 }
             },
             {
-                Header: t(langKeys.channel),
-                accessor: 'channel',
-            },
-            {
-                Header: t(langKeys.origin),
-                accessor: 'origin',
-            },
-            {
                 Header: `N° ${t(langKeys.transaction)}`,
                 accessor: 'transactionid',
             },
             {
                 Header: t(langKeys.group),
-                accessor: 'usergroup',
+                accessor: 'group',
+            },
+            {
+                Header: t(langKeys.agent),
+                accessor: 'agent',
             },
             {
                 Header: t(langKeys.success),
@@ -132,6 +160,14 @@ const DetailHSMHistoryReport: React.FC<DetailHSMHistoryReportProps> = ({ data: {
                     const { success } = props.cell.row.original;
                     return success ? t(langKeys.yes) : "No"
                 }
+            },
+            {
+                Header: t(langKeys.realduration),
+                accessor: 'realduration',
+            },
+            {
+                Header: t(langKeys.classification),
+                accessor: 'classification',
             },
             {
                 Header: t(langKeys.log),
@@ -170,12 +206,15 @@ const DetailHSMHistoryReport: React.FC<DetailHSMHistoryReportProps> = ({ data: {
                     loading={multiDataAux2.loading}
                     register={false}
                     filterGeneral={false}
-                // fetchData={fetchData}
+                    // fetchData={fetchData}
                 />
             </div>
         </div>
     );
 }
+
+const selectionKey = 'id';
+const IDHSMHISTORY = 'IDHSMHISTORY';
 
 const HSMHistoryReport: FC = () => {
     const dispatch = useDispatch();
@@ -188,6 +227,13 @@ const HSMHistoryReport: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [gridData, setGridData] = useState<any[]>([]);
+
+    const memoryTable = useSelector(state => state.main.memoryTable);
+
+    const [selectedRows, setSelectedRows] = useState<any>({});
+    const [triggerExportPersonalized, setTriggerExportPersonalized] = useState<boolean>(false);
+    const [waitExport, setWaitExport] = useState(false);
+    const resExportData = useSelector(state => state.main.exportData);
     
     const columns = React.useMemo(
         () => [
@@ -232,7 +278,84 @@ const HSMHistoryReport: FC = () => {
         ],
         [t]
     );
-    
+
+    useEffect(() => {
+        dispatch(setMemoryTable({
+            id: IDHSMHISTORY
+        }))
+        return () => {
+            dispatch(cleanMemoryTable());
+        };
+    }, []);
+
+    const triggerExportData = () => {
+        if (Object.keys(selectedRows).length === 0) {
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_record_selected)}));
+            return null;
+        }
+        dispatch(exportData(getHSMHistoryReportExport(
+            Object.keys(selectedRows).reduce((ad: any[], d: any) => {
+                ad.push({
+                    campaignname: d.split('_')[0],
+                    ddate: d.split('_')[1]
+                })
+                return ad;
+            }, [])),
+            `${t(langKeys.report)}`,
+            'excel',
+            true,
+            [
+                {key: 'campaign', alias: t(langKeys.campaign)},
+                {key: 'firstname', alias: t(langKeys.firstname)},
+                {key: 'lastname', alias: t(langKeys.lastname)},
+                {key: 'ticketnum', alias: t(langKeys.ticket)},
+                {key: 'rundate', alias: t(langKeys.rundate)},
+                {key: 'runtime', alias: t(langKeys.runtime)},
+                {key: 'finishdate', alias: t(langKeys.finishconversationdate)},
+                {key: 'firstreplydate', alias: t(langKeys.firstreplydate)},
+                {key: 'firstreplytime', alias: t(langKeys.firstreplytime)},
+                {key: 'contact', alias: t(langKeys.contact)},
+                {key: 'channel', alias: t(langKeys.channel)},
+                {key: 'origin', alias: t(langKeys.origin)},
+                {key: 'status', alias: t(langKeys.status)},
+                {key: 'transactionid', alias: t(langKeys.transaction)},
+                {key: 'group', alias: t(langKeys.group)},
+                {key: 'agent', alias: t(langKeys.agent)},
+                {key: 'success', alias: t(langKeys.success)},
+                {key: 'realduration', alias: t(langKeys.realduration)},
+                {key: 'classification', alias: t(langKeys.classification)},
+                {key: 'log', alias: t(langKeys.log)},
+                {key: 'body', alias: t(langKeys.body)},
+                {key: 'parameters', alias: t(langKeys.parameters)},
+            ]
+        ));
+        dispatch(showBackdrop(true));
+        setWaitExport(true);
+    };
+
+    useEffect(() => {
+        if (Object.keys(selectedRows).length === 0) {
+            setTriggerExportPersonalized(false)
+        }
+        else {
+            setTriggerExportPersonalized(true)
+        }
+    }, [selectedRows])
+
+    useEffect(() => {
+        if (waitExport) {
+            if (!resExportData.loading && !resExportData.error) {
+                dispatch(showBackdrop(false));
+                setWaitExport(false);
+                resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
+            } else if (resExportData.error) {
+                const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.blacklist).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitExport(false);
+            }
+        }
+    }, [resExportData, waitExport]);
     
     function search(){
         dispatch(showBackdrop(true))
@@ -309,6 +432,14 @@ const HSMHistoryReport: FC = () => {
                         filterGeneral={false}
                         loading={multiData.loading}
                         register={false}
+                        triggerExportPersonalized={triggerExportPersonalized}
+                        exportPersonalized={triggerExportData}
+                        useSelection={true}
+                        selectionKey={selectionKey}
+                        setSelectedRows={setSelectedRows}
+                        pageSizeDefault={IDHSMHISTORY === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                        initialPageIndex={IDHSMHISTORY === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                        initialStateFilter={IDHSMHISTORY === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
                     />
             </React.Fragment>
         )

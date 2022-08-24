@@ -318,6 +318,8 @@ const TableZyx = React.memo(({
     handleCalculate,
     HeadComponent,
     ButtonsElement,
+    triggerExportPersonalized,
+    exportPersonalized,
     pageSizeDefault = 20,
     importCSV,
     handleTemplate,
@@ -718,6 +720,7 @@ const TableZyx = React.memo(({
                 <TableRow
                     {...row.getRowProps({ style })}
                     hover
+                    style={{ cursor: onClickRow ? 'pointer' : 'default' }}
                 >
                     {row.cells.map((cell, _) =>
                         <TableCell
@@ -732,6 +735,7 @@ const TableZyx = React.memo(({
                                     textAlign: cell.column.type === "number" ? "right" : (cell.column.type?.includes('centered') ? "center" : "left"),
                                 },
                             })}
+                            onClick={() => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original, cell?.column?.id) : null}
                         >
                             {cell.render('Cell')}
                         </TableCell>
@@ -837,7 +841,7 @@ const TableZyx = React.memo(({
                             variant="contained"
                             color="primary"
                             disabled={loading}
-                            onClick={() => exportExcel(String(titlemodule || '') + "Report", globalFilteredRows.map(x => x.original), columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
+                            onClick={() => triggerExportPersonalized ? exportPersonalized && exportPersonalized() : exportExcel(String(titlemodule || '') + "Report", globalFilteredRows.map(x => x.original), columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
                             startIcon={<DownloadIcon />}
                         ><Trans i18nKey={langKeys.download} />
                         </Button>

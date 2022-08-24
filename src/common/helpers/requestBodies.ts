@@ -3147,6 +3147,16 @@ export const getHSMHistoryReport = ({ campaign = "", date }: Dictionary): IReque
     }
 })
 
+export const getHSMHistoryReportExport = (table: Dictionary[]): IRequestBody => ({
+    method: "UFN_HSMHISTORY_REPORT_EXPORT",
+    key: "UFN_HSMHISTORY_REPORT_EXPORT",
+    parameters: {
+        origin: "hsmreport",
+        table: JSON.stringify(table),
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+})
+
 export const getPropertiesIncludingName = (propertyname: string): IRequestBody => ({
     method: "UFN_PROPERTY_SEL_BY_INCLUDE_NAME",
     key: "UFN_PROPERTY_SEL_BY_INCLUDE_NAME",
