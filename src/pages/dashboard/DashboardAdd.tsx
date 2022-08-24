@@ -896,14 +896,11 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                             </div>
                         })}
                     </>
-                    <>{tagsdata.length <5 &&
-                        <Button style={{float:"right"}} onClick={()=>{
-                            let initTags=getValues(`${key}.tags`)||[];
-                            settagsdata([...initTags,{value:"",title:""}])
-                            setValue(`${key}.tags`,[...initTags,{value:"",title:""}])
-                        }}><AddIcon/> {t(langKeys.add)} {t(langKeys.level)}</Button>
-                    }                    
-                    </>
+                    <Button style={{float:"right"}} onClick={()=>{
+                        let initTags=getValues(`${key}.tags`)||[];
+                        settagsdata([...initTags,{value:"",title:""}])
+                        setValue(`${key}.tags`,[...initTags,{value:"",title:""}])
+                    }}><AddIcon/> {t(langKeys.add)} {t(langKeys.level)}</Button> 
                 </>
             )}
         </div>
