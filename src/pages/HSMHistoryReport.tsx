@@ -240,40 +240,47 @@ const HSMHistoryReport: FC = () => {
             {
                 Header: t(langKeys.campaign),
                 accessor: 'campaign',
+                width: 'auto',
             },
             {
                 Header: t(langKeys.date),
                 accessor: 'date',
+                width: 'auto',
             },
             {
                 Header: t(langKeys.total),
                 accessor: 'total',
                 type: 'number',
                 sortType: 'number',
+                width: 'auto',
             },
             {
                 Header: t(langKeys.success),
                 accessor: 'success',
                 type: 'number',
                 sortType: 'number',
+                width: 'auto',
             },
             {
                 Header: t(langKeys.failed),
                 accessor: 'failed',
                 type: 'number',
                 sortType: 'number',
+                width: 'auto',
             },
             {
                 Header: t(langKeys.success_percent),
                 accessor: 'successp',
                 type: 'number',
                 sortType: 'number',
+                width: 'auto',
             },
             {
                 Header: t(langKeys.failed_percent),
                 accessor: 'failedp',
                 type: 'number',
                 sortType: 'number',
+                width: 'auto',
             },
         ],
         [t]

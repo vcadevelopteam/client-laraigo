@@ -713,22 +713,25 @@ const TableZyx = React.memo(({
 
     const RenderRow = React.useCallback(
         ({ index, style }) => {
-            style = { ...style, display: 'flex', alignItems: 'flex-end' }
+            style = { ...style, display: 'flex', alignItems: 'flex-end', cursor: onClickRow ? 'pointer' : 'default' }
             const row = page[index]
             prepareRow(row);
             return (
                 <TableRow
                     {...row.getRowProps({ style })}
                     hover
-                    style={{ cursor: onClickRow ? 'pointer' : 'default' }}
                 >
                     {row.cells.map((cell, _) =>
                         <TableCell
                             {...cell.getCellProps({
                                 style: {
-                                    minWidth: cell.column.minWidth,
-                                    width: cell.column.width,
-                                    maxWidth: cell.column.maxWidth,
+                                    ...(cell.column.width === 'auto' ? {
+                                        flex: 1,
+                                    } : {
+                                        minWidth: cell.column.minWidth,
+                                        width: cell.column.width,
+                                        maxWidth: cell.column.maxWidth,
+                                    }),
                                     overflow: 'hidden',
                                     textOverflow: 'ellipsis',
                                     whiteSpace: 'nowrap',
@@ -867,13 +870,20 @@ const TableZyx = React.memo(({
             <TableContainer style={{ position: "relative" }}>
                 <Box overflow="auto" >
                     <Table size="small" {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
-                        <TableHead style={{ display: useSelection ? 'flex' : 'table-header-group' }}>
+                        <TableHead style={{ display: 'table-header-group' }}>
                             {headerGroups.map((headerGroup) => (
-                                <TableRow  {...headerGroup.getHeaderGroupProps()}>
+                                <TableRow  {...headerGroup.getHeaderGroupProps()} style={useSelection ? { display: 'flex' } : {}}>
                                     {headerGroup.headers.map((column, ii) => (
                                         column.activeOnHover ?
                                             <th style={{ width: "0px" }} key="header-floating"></th> :
-                                            <TableCell key={ii} style={useSelection ? { minWidth: `${column.width}px`, maxWidth: `${column.width}px` } : {}}>
+                                            <TableCell key={ii} style={useSelection ? {
+                                                ...(column.width == 'auto' ? {
+                                                    flex: 1,
+                                                } : {
+                                                    minWidth: column.minWidth,
+                                                    width: column.width,
+                                                    maxWidth: column.maxWidth,
+                                                })} : {}}>
                                                 {column.isComponent ?
                                                     column.render('Header') :
                                                     (<>
