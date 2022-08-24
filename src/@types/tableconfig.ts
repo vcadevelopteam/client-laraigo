@@ -20,6 +20,7 @@ export interface TableConfig {
     pageCount?: number;
     titlemodule?: string;
     methodexport?: string;
+    triggerExportPersonalized?: boolean;
     exportPersonalized?(param?: any): void;
     importCSV?: (param?: any) => void
     handleTemplate?: (param?: any) => void

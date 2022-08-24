@@ -996,6 +996,7 @@ export const langKeys = {
 
     status_sent: 'status_sent',
     'status_not sent': 'status_not sent',
+    status_attended: 'status_attended',
 
     graphic_view: 'graphic_view',
     graphic_configuration: 'graphic_configuration',
