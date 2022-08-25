@@ -3964,6 +3964,9 @@ export const langKeys = {
     TEMPLATE_UZ: "TEMPLATE_UZ",
     TEMPLATE_VI: "TEMPLATE_VI",
     TEMPLATE_ZU: "TEMPLATE_ZU",
+    nametemplate_validation: "nametemplate_validation",
+    messagetemplate_phonenumber: 'messagetemplate_phonenumber',
+    TEMPLATE_NONE: "TEMPLATE_NONE",
 };
 
 export type LangKeys = typeof langKeys;
