@@ -1176,6 +1176,7 @@ const LayoutFunnel: FC<LayoutFunnelProps> = ({ data,title,...props }) => {
                         content={(props2:any)=>{
                             const { value, y, height } = props2;
                             const { x, width } = props2.parentViewBox;
+                            console.log(props2.parentViewBox)
                             if(Number(dataFunnel[props2.index].value) !==0){
                                 return <g>
                                     <text x={x+width/2} y={y+height/2} textAnchor="middle" dominantBaseline="middle">
