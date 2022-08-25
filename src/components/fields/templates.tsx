@@ -501,6 +501,7 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
 
     if (channelType === "WHAT") return <WhatsappIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "WHAD") return <WhatsappIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "WHAG") return <WhatsappIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "WHAP") return <WhatsappIcon color={color} width={width} fill={color} stroke={color} height={height} />
     if (channelType === "WHAC") return <WhatsappIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "FBMS") return <FacebookMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
