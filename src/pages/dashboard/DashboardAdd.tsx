@@ -871,7 +871,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                                             settagsdata(newtagdata)
                                             setValue(`${key}.tags`,initTags)
                                         }}
-                                        error={errors[key]?.tags?.[i]?.value.message}
+                                        error={errors[key]?.tags?.[i]?.value?.message}
                                     />
                                     <FieldEdit
                                         fregister={{
@@ -890,7 +890,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                                             settagsdata(newtagdata)
                                             setValue(`${key}.tags`,initTags)
                                         }}
-                                        error={errors[key]?.tags?.[i]?.title.message}
+                                        error={errors[key]?.tags?.[i]?.title?.message}
                                     />
                                 </div>
                             </div>
