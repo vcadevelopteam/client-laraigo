@@ -601,26 +601,6 @@ const Settings: FC = () => {
                             </Grid>
                         </Grid> 
                     </Grid> 
-
-                    <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
-                        <Grid container direction="column">
-                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                <ItemTile
-                                    title={<Trans i18nKey={langKeys.classification} count={2} />}
-                                    subtitle={<SubtitleText value={value?.num_classification} i18nKey={langKeys.classification} />}
-                                    icon={<ClassificationIcon fill="inherit" stroke="inherit" />}
-                                    helpText={
-                                        <HelpText
-                                            i18nKey={langKeys.manageClassification}
-                                            count={2}
-                                            onClick={() => history.push(paths.TIPIFICATIONS)}
-                                        />
-                                    }
-                                    m={2}
-                                />
-                            </Grid>  
-                        </Grid> 
-                    </Grid>
                     
                     {(user.properties.environment!=="CLARO") &&
                     <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
