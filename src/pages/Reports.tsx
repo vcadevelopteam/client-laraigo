@@ -147,6 +147,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
 
     // const columns = React.useMemo(() => [{ Header: 'null', accessor: 'null', type: 'null' }] as any, []);
     const columns = React.useMemo(() => reportColumns.map(x => {
+        console.log(row?.origin)
         switch (x.proargtype) {
             case "bigint":
                 if (x.proargnames.includes('year') || x.proargnames.includes('month') || x.proargnames.includes('week') || x.proargnames.includes('day') || x.proargnames.includes('hour')) {
@@ -245,6 +246,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                 }
                         }
                     case "interaction":
+                    case "inputretry":
                         switch (x.proargnames) {
                             case "interactiontext":
                                 return {
@@ -255,6 +257,18 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                     Cell: (props: any) => {
                                         const { interactiontext } = props.cell.row.original;
                                         let texttoshow = interactiontext.length<40? interactiontext: interactiontext.substring(0, 40) + "... "
+                                        return texttoshow
+                                    }
+                                }
+                            case "question":
+                                return {
+                                    Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                                    accessor: x.proargnames,
+                                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help")? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
+                                    type: "string",
+                                    Cell: (props: any) => {
+                                        const { question } = props.cell.row.original;
+                                        let texttoshow = question.length<40? question: question.substring(0, 40) + "... "
                                         return texttoshow
                                     }
                                 }
