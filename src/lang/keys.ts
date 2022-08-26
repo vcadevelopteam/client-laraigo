@@ -81,6 +81,8 @@ export const langKeys = {
     tagrankingtooltip: "tagrankingtooltip",
     next: "next",
     reportscheduler: "reportscheduler",
+    defaultreports: "defaultreports",
+    customreports: "customreports",
     reportscheduler_singular: "reportscheduler_singular",
     automatizationrule: "automatizationrule",
     reportschedulerdetail1: "reportschedulerdetail1",
@@ -1999,6 +2001,17 @@ export const langKeys = {
     report_survey_comment2: 'report_survey_comment2',
     report_survey_answer3: 'report_survey_answer3',
     report_survey_comment3: 'report_survey_comment3',
+
+    
+    report_voicecall: "report_voicecall",
+    report_voicecall_ticketdate: "report_voicecall_ticketdate",
+    report_voicecall_tickettime: "report_voicecall_tickettime",
+    report_voicecall_agent: "report_voicecall_agent",
+    report_voicecall_phone: "report_voicecall_phone",
+    report_voicecall_name: "report_voicecall_name",
+    report_voicecall_origin: "report_voicecall_origin",
+    report_voicecall_closetype: "report_voicecall_closetype",
+    report_voicecall_holdingtime: "report_voicecall_holdingtime",
 
     report_campaign: 'report_campaign',
 
