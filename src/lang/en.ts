@@ -1924,6 +1924,16 @@ const translation: LangKeys = {
     report_survey_comment2: 'Comment 2',
     report_survey_answer3: 'Answer 3',
     report_survey_comment3: 'Comment 3',
+    
+    report_voicecall: "Voice Call Report",
+    report_voicecall_ticketdate: "Date",
+    report_voicecall_tickettime: "Time",
+    report_voicecall_agent: "Name of last agent",
+    report_voicecall_phone: "Phone",
+    report_voicecall_name: "Person",
+    report_voicecall_origin: "Origin",
+    report_voicecall_closetype: "Close type",
+    report_voicecall_holdingtime: "Holding time",
 
     tmeexpected: "Target TME",
     tmoexpected: "Target TMO",
@@ -3346,6 +3356,8 @@ const translation: LangKeys = {
     dashboard_chartType_line: 'Line chart',
     enterDashboardDescription: 'Enter dashboard description',
     moreOptions: 'View more',
+    defaultreports: "Default reports",
+    customreports: "Custom reports",
 
     reportfreeconversations: 'WhatsApp free conversations',
     userinitiatedconversations: 'WhatsApp user-initiated conversations',

@@ -795,14 +795,18 @@ const Reports: FC = () => {
             if (searchValue === null || searchValue.trim().length === 0) {
                 if (allReports.length === 0 || !waitSave) {
                     const rr = [
-                        ...reportsResult.mainData.data,
+                        ...reportsResult.mainData.data.map(x => ({
+                            ...x,
+                            reporttype: "default"
+                        })),
                         ...reportsResult.mainAux.data.map(x => ({
                             ...x,
                             columns: x.columnjson ? JSON.parse(x.columnjson) : [],
                             filters: x.filterjson ? JSON.parse(x.filterjson) : [],
                             summaries: x.summaryjson ? JSON.parse(x.summaryjson) : [],
+                            reporttype: "custom"
                         }))
-                    ].filter(x => superadmin ? true : !['invoice'].includes(x.origin));
+                    ].filter((y:any) => superadmin ? true : !['invoice'].includes(y?.origin));
                     setAllReports(rr);
                     setallReportsToShow(rr);
                 }
@@ -813,7 +817,11 @@ const Reports: FC = () => {
 
     useEffect(() => {
         if (searchValue.length >= 3 || searchValue.length === 0) {
-            let temparray = allReports.filter((el: any) => (t((langKeys as any)[`report_${el.origin}`]) + "").toLowerCase().includes(searchValue.toLowerCase()))
+            let temparray = allReports.filter((el: any) => {
+                if(el.reporttype === "default")
+                    return (t((langKeys as any)[`report_${el.origin}`]) + "").toLowerCase().includes(searchValue.toLowerCase())
+                return el.description.toLowerCase().includes(searchValue.toLowerCase())
+                })
             setallReportsToShow(temparray)
         }
     }, [searchValue]);
@@ -908,7 +916,7 @@ const Reports: FC = () => {
         switch (report.reportname) {
             case 'HEATMAP':
                 return (
-                    <Grid item key={"heatmap"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                    <Grid item key={"heatmap"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
                         <Card >
                             <CardActionArea onClick={() => handleSelectedString("heatmap")}>
                                 <CardMedia
@@ -929,7 +937,7 @@ const Reports: FC = () => {
                 )
             case 'RECORDHSMREPORT':
                 return (
-                    <Grid item key={"recordhsmreport"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                    <Grid item key={"recordhsmreport"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
                         <Card >
                             <CardActionArea onClick={() => handleSelectedString("recordhsmreport")}>
                                 <CardMedia
@@ -950,7 +958,7 @@ const Reports: FC = () => {
                 )
             case 'HYSTORYHSM':
                 return (
-                    <Grid item key={"hsmhistory"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                    <Grid item key={"hsmhistory"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
                         <Card >
                             <CardActionArea onClick={() => handleSelectedString("hsmhistory")}>
                                 <CardMedia
@@ -971,7 +979,7 @@ const Reports: FC = () => {
                 )
             case 'CONVERSATIONWHATSAPP':
                 return (
-                    <Grid item key={"reportconversationwhatsapp"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                    <Grid item key={"reportconversationwhatsapp"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
                         <Card >
                             <CardActionArea onClick={() => handleSelectedString("reportconversationwhatsapp")}>
                                 <CardMedia
@@ -992,7 +1000,7 @@ const Reports: FC = () => {
                 )
             case 'INVOICE':
                 return (
-                    superadmin && <Grid item key={"invoice"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                    superadmin && <Grid item key={"invoice"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
                         <Card >
                             <CardActionArea onClick={() => handleSelectedString("reportinvoice")}>
                                 <CardMedia
@@ -1013,7 +1021,7 @@ const Reports: FC = () => {
                 )
             case 'TICKETVSADVISER':
                 return (
-                    <Grid item key={"report_ticketvsasesor"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                    <Grid item key={"report_ticketvsasesor"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
                         <Card >
                             <CardActionArea onClick={() => handleSelectedString("report_ticketvsasesor")}>
                                 <CardMedia
@@ -1034,7 +1042,7 @@ const Reports: FC = () => {
                 )
             case 'CAMPAIGN':
                 return (
-                    <Grid item key={"campaign"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                    <Grid item key={"campaign"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
                         <Card >
                             <CardActionArea onClick={() => handleSelectedString("campaign")}>
                                 <CardMedia
@@ -1055,7 +1063,7 @@ const Reports: FC = () => {
                 )
             default:
                 return (
-                    <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                    <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
                         <Card >
                             <CardActionArea onClick={() => handleSelected(report, report.filters)}>
                                 <CardMedia
@@ -1080,14 +1088,7 @@ const Reports: FC = () => {
     if (viewSelected === "view-1") {
         return (
             <div className={classes.container}>
-                <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" style={{ marginBottom: 8 }}>
-                    <span className={classes.title}>
-                        {t(langKeys.report_plural)} ({allReportsToShow.length})
-                    </span>
-                </Box>
-                {(reportsResult.mainData.loading || reportsResult.mainAux.loading) ? (
-                    <SkeletonReportCard />
-                ) : (
+                {(!reportsResult.mainData.loading && !reportsResult.mainAux.loading) && 
                     <>
                         <Box className={classes.containerFilterGeneral}>
                             <span></span>
@@ -1114,13 +1115,116 @@ const Reports: FC = () => {
                                 </Button>
                             </div>
                         </Box>
+                    </>
+                }
+                <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" style={{ marginBottom: 8 }}>
+                    <span className={classes.title}>
+                        {t(langKeys.defaultreports)} ({allReportsToShow.filter(x=>x.reporttype === "default").length})
+                    </span>
+                </Box>
+                {(reportsResult.mainData.loading || reportsResult.mainAux.loading) ? (
+                    <SkeletonReportCard />
+                ) : (
+                    <>
                         <div className={classes.containerDetails}>
                             <Grid container spacing={3} >
-                                {allReportsToShow.filter(x => !!x.image).map((report, index) => (
+                                {allReportsToShow.filter(x=>x.reporttype === "default").filter(x => !!x.image).map((report, index) => (
                                     reportSwitch(report, index)
                                 ))}
-                                {allReportsToShow.filter(x => !x.image).map((report, index) => (
-                                    <Grid item key={"report_" + report.reporttemplateid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                                {allReportsToShow.filter(x=>x.reporttype === "default").filter(x => !x.image).map((report, index) => (
+                                    <Grid item key={"report_" + report.reporttemplateid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
+                                        <Card style={{ position: 'relative' }}>
+                                            <CardActionArea
+                                                onClick={() => {
+                                                    setViewSelected("view-4");
+                                                    setRowReportSelected({ row: report, edit: true });
+                                                }}
+                                            >
+                                                <CardMedia
+                                                    component="img"
+                                                    height="140"
+                                                    className={classes.media}
+                                                    image='https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'
+                                                    title={report.description}
+                                                />
+
+                                                <CardContent>
+                                                    <Typography gutterBottom variant="h6" component="div">
+                                                        {report.description}
+                                                    </Typography>
+                                                </CardContent>
+                                            </CardActionArea>
+                                            <IconButton
+                                                aria-label="settings"
+                                                aria-describedby={`${report?.reporttemplateid}reporttemplate`}
+                                                aria-haspopup="true"
+                                                style={{ position: 'absolute', right: 0, top: 0 }}
+                                                onClick={(e) => {
+                                                    setRowReportSelected({ row: report, edit: true });
+                                                    setAnchorEl(e.currentTarget)
+                                                }}
+                                            >
+                                                <MoreVertIcon />
+                                            </IconButton>
+                                        </Card>
+                                    </Grid>
+                                ))}
+                                <Menu
+                                    anchorEl={anchorEl}
+                                    getContentAnchorEl={null}
+                                    anchorOrigin={{
+                                        vertical: 'bottom',
+                                        horizontal: 'right',
+                                    }}
+                                    transformOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    open={Boolean(anchorEl)}
+                                    onClose={() => setAnchorEl(null)}
+                                >
+                                    <MenuItem
+                                        onClick={() => {
+                                            setAnchorEl(null)
+                                            setViewSelected("view-3");
+                                        }}
+                                    >
+                                        {t(langKeys.edit)}
+                                    </MenuItem>
+                                    <MenuItem
+                                        onClick={() => {
+                                            setAnchorEl(null)
+                                            setViewSelected("view-5");
+                                        }}
+                                    >
+                                        {t(langKeys.duplicate)}
+                                    </MenuItem>
+                                    <MenuItem
+                                        onClick={() => handleDelete(rowReportSelected?.row)}>
+                                        {t(langKeys.delete)}
+                                    </MenuItem>
+                                </Menu>
+                            </Grid>
+                        </div>
+                    </>
+                )}
+
+                <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" style={{ marginBottom: 8, marginTop: 16 }}>
+                    <span className={classes.title}>
+                        {t(langKeys.customreports)} ({allReportsToShow.filter(x=>x.reporttype !== "default").length})
+                    </span>
+                </Box>
+                {(reportsResult.mainData.loading || reportsResult.mainAux.loading) ? (
+                    <SkeletonReportCard />
+                ) : (
+                    <>
+                        <div className={classes.containerDetails}>
+                            <Grid container spacing={3} >
+                                {allReportsToShow.filter(x=>x.reporttype !== "default").filter(x => !!x.image).map((report, index) => (
+                                    reportSwitch(report, index)
+                                ))}
+                                {allReportsToShow.filter(x=>x.reporttype !== "default").filter(x => !x.image).map((report, index) => (
+                                    <Grid item key={"report_" + report.reporttemplateid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
                                         <Card style={{ position: 'relative' }}>
                                             <CardActionArea
                                                 onClick={() => {
