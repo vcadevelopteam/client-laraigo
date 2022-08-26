@@ -1150,8 +1150,12 @@ const LayoutFunnel: FC<LayoutFunnelProps> = ({ data,title,...props }) => {
             {total!==0 && <CloudDownloadIcon onClick={exportexcel} className={classes.styleicon}/>}
         </div>
         <ResponsiveContainer {...props}>
-            <FunnelChart margin={{ top: 10, right: 20, bottom: 5, left: 10 }}>
-                <ChartTooltip />
+            <FunnelChart margin={{ top: 10, right: (6+Math.max(...truedata.map((x:any)=>x.value))?.toString().length)*5, bottom: 5, left: 10 }}>
+                <ChartTooltip 
+                    formatter={(value:any, name:any, props:any)=>{
+                        return [`${truedata[truedata.length-parseInt(String(props?.value))]?.value} - ${total!==0?((Number(truedata[truedata.length-parseInt(String(props?.value))]?.value)/total)*100).toFixed(1):100}%`,name]
+                    }}
+                />
                 <Funnel
                     isAnimationActive={false}
                     dataKey="value"
@@ -1163,7 +1167,7 @@ const LayoutFunnel: FC<LayoutFunnelProps> = ({ data,title,...props }) => {
                             const { x, width } = props2.parentViewBox;
                             if(Number(dataFunnel[props2.index].value) !==0){
                                 return <g>
-                                    <text x={x+width-50} y={y+height/2}>
+                                    <text x={x+width-(6+truedata[props2.index].value?.toString().length)*5} y={y+height/2}>
                                         {truedata[props2.index].value} - {total!==0?((Number(truedata[props2.index].value)/total)*100).toFixed(1):100}%
                                     </text>
                                 </g>
@@ -1176,7 +1180,6 @@ const LayoutFunnel: FC<LayoutFunnelProps> = ({ data,title,...props }) => {
                         content={(props2:any)=>{
                             const { value, y, height } = props2;
                             const { x, width } = props2.parentViewBox;
-                            console.log(props2.parentViewBox)
                             if(Number(dataFunnel[props2.index].value) !==0){
                                 return <g>
                                     <text x={x+width/2} y={y+height/2} textAnchor="middle" dominantBaseline="middle">
