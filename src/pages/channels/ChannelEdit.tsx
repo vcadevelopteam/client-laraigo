@@ -6,12 +6,15 @@ import { editChannel, resetEditChannel } from 'store/channel/actions';
 import { getEditChannel } from 'common/helpers';
 import { useHistory, useLocation } from 'react-router';
 import { IChannel } from '@types';
-import { Box, Breadcrumbs, Button, Link, makeStyles } from '@material-ui/core';
+import { Box, Breadcrumbs, Button, IconButton, Link, makeStyles } from '@material-ui/core';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { ColorInput, FieldEdit, FieldView } from 'components';
 import { formatNumber } from 'common/helpers';
+import PublishIcon from '@material-ui/icons/Publish';
+import Tooltip from '@material-ui/core/Tooltip';
 
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import paths from 'common/constants/paths';
 
 const useFinalStepStyles = makeStyles(theme => ({
@@ -47,6 +50,8 @@ const ChannelEdit: FC = () => {
 
     const [name, setName] = useState("");
     const [auto, setAuto] = useState(false);
+    const [welcometone, setwelcometone] = useState<any>(null);
+    const [holdingtone, setholdingtone] = useState<any>(null);
     const [hexIconColor, setHexIconColor] = useState("");
     const [serviceCredentials, setServiceCredentials] = useState<any>({});
 
@@ -173,7 +178,79 @@ const ChannelEdit: FC = () => {
                             className="col-6"
                             value={`$${formatNumber(parseFloat(serviceCredentials?.costvca || 0))}`}
                         />
-                    </div>}
+                    </div>
+                    }
+                    <div className="row-zyx">
+                        <div className="col-3"></div>
+                        
+                        <div className="col-6">
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">
+                                {t(langKeys.welcometone)}
+                                <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.tonestooltip)}</div>} arrow placement="top" >
+                                    <InfoRoundedIcon color="action" style={{width: 15, height: 15, cursor: 'pointer'}} />
+                                </Tooltip>
+                            </Box>
+                            
+                            <div className="row-zyx">
+                                <div className="col-11">
+                                    <FieldEdit
+                                        className="col-6"
+                                        valueDefault={welcometone?.split("\\")[welcometone?.split("\\").length-1]}
+                                        disabled={true}
+                                    />
+                                </div>                            
+                                <div className="col-1">
+                                    <input
+                                        accept=".mp3,audio/*"
+                                        id="contained-button-file"
+                                        type="file"
+                                        style={{display:"none"}}
+                                        onChange={(e)=>{setwelcometone(e.target.value)}}
+                                    />
+                                    <label htmlFor="contained-button-file">
+                                        <IconButton color="primary" aria-label="upload picture" component="span">
+                                            <PublishIcon />
+                                        </IconButton>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row-zyx">
+                        <div className="col-3"></div>
+                        <div className="col-6">
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">
+                                {t(langKeys.standbytone)}
+                                <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.tonestooltip)}</div>} arrow placement="top" >
+                                    <InfoRoundedIcon color="action" style={{width: 15, height: 15, cursor: 'pointer'}} />
+                                </Tooltip>
+                            </Box>
+                            
+                            <div className="row-zyx">
+                                <div className="col-11">
+                                    <FieldEdit
+                                        className="col-6"
+                                        valueDefault={holdingtone?.split("\\")[holdingtone?.split("\\").length-1]}
+                                        disabled={true}
+                                    />
+                                </div>                            
+                                <div className="col-1">
+                                    <input
+                                        accept=".mp3,audio/*"
+                                        id="contained-button-file2"
+                                        type="file"
+                                        style={{display:"none"}}
+                                        onChange={(e)=>{setholdingtone(e.target.value)}}
+                                    />
+                                    <label htmlFor="contained-button-file2">
+                                        <IconButton color="primary" aria-label="upload picture" component="span">
+                                            <PublishIcon />
+                                        </IconButton>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </>}
                 {(channel?.type === "FBDM" || channel?.type === "FBWA") && <>
                     {serviceCredentials?.siteId && <div className="row-zyx">

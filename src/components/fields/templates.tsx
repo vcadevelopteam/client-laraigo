@@ -38,6 +38,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import Tooltip from '@material-ui/core/Tooltip';
 import { ListItemIcon } from '@material-ui/core';
 import PhoneIcon from '@material-ui/icons/Phone';
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import {
     WebMessengerIcon,
     ZyxmeMessengerIcon,
@@ -341,6 +342,7 @@ interface InputProps {
     InputProps?: Partial<OutlinedInputProps>;
     size?: "small" | "medium" | undefined;
     width?: number | "string";
+    helperText?: "string";
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -355,7 +357,7 @@ interface TemplateAutocompleteProps extends InputProps {
     orderbylabel?: boolean;
 }
 
-export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard", maxLength = 0 }) => {
+export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard", maxLength = 0, helperText="" }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -365,7 +367,12 @@ export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, c
     return (
         <div className={className}>
             {variant === "standard" &&
-                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">{label}</Box>
+                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">
+                    {label}
+                    {helperText !== "" ? <Tooltip title={<div style={{ fontSize: 12 }}>{helperText}</div>} arrow placement="top" >
+                        <InfoRoundedIcon color="action" style={{width: 15, height: 15, cursor: 'pointer'}} />
+                    </Tooltip> : ""}
+                </Box>
             }
             <TextField
                 {...fregister}
