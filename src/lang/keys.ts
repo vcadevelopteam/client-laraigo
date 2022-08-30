@@ -32,6 +32,7 @@ export const langKeys = {
     align: "align",
     font: "font",
     undo: "undo",
+    filetoolarge: "filetoolarge",
     warningnoquickreplies: "warningnoquickreplies",
     redo: "redo",
     make_call: "make_call",

@@ -14,8 +14,10 @@ import { formatNumber } from 'common/helpers';
 import PublishIcon from '@material-ui/icons/Publish';
 import Tooltip from '@material-ui/core/Tooltip';
 
+import { uploadFile } from 'store/main/actions';
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import paths from 'common/constants/paths';
+import { CircularProgress } from '@material-ui/core';
 
 const useFinalStepStyles = makeStyles(theme => ({
     title: {
@@ -50,10 +52,12 @@ const ChannelEdit: FC = () => {
 
     const [name, setName] = useState("");
     const [auto, setAuto] = useState(false);
-    const [welcometone, setwelcometone] = useState<any>(null);
-    const [holdingtone, setholdingtone] = useState<any>(null);
+    const [welcometoneurl, setwelcometoneurl] = useState("");
+    const [holdingtoneurl, setholdingtoneurl] = useState("");
     const [hexIconColor, setHexIconColor] = useState("");
     const [serviceCredentials, setServiceCredentials] = useState<any>({});
+    const [waitUploadFile, setWaitUploadFile] = useState("");
+    const uploadResult = useSelector(state => state.main.uploadFile);
 
     useEffect(() => {
         if (!channel) {
@@ -71,6 +75,19 @@ const ChannelEdit: FC = () => {
             dispatch(resetEditChannel());
         };
     }, [history, channel, dispatch]);
+
+    
+
+    useEffect(() => {
+        if (waitUploadFile!=="") {
+            if (!uploadResult.loading && !uploadResult.error) {
+                waitUploadFile==="welcome"? setwelcometoneurl(String(uploadResult.url)): setholdingtoneurl(String(uploadResult.url))
+                setWaitUploadFile("");
+            } else if (uploadResult.error) {
+                setWaitUploadFile("");
+            }
+        }
+    }, [waitUploadFile, uploadResult, dispatch])
 
     useEffect(() => {
         if (edit.loading) return;
@@ -94,9 +111,9 @@ const ChannelEdit: FC = () => {
     const handleSubmit = useCallback(() => {
         if (!channel) return;
         const id = channel!.communicationchannelid;
-        const body = getEditChannel(id, channel, name, auto, hexIconColor);
+        const body = getEditChannel(id, channel, name, auto, hexIconColor,welcometoneurl,holdingtoneurl);
         dispatch(editChannel(body));
-    }, [name, hexIconColor, auto, channel, dispatch]);
+    }, [name, hexIconColor, auto, channel,welcometoneurl,holdingtoneurl, dispatch]);
 
     const handleGoBack = useCallback((e: React.MouseEvent) => {
         e.preventDefault();
@@ -105,6 +122,19 @@ const ChannelEdit: FC = () => {
 
     if (!channel) {
         return <div />;
+    }
+
+    const onUploadFile = (files: any, type:string) => {
+        const selectedFile = files[0];
+        if(selectedFile.size<=(1024*1024*5)){
+            var fd = new FormData();
+            fd.append('file', selectedFile, selectedFile.name);
+            dispatch(uploadFile(fd));
+            setWaitUploadFile(type);
+        }else{
+            dispatch(showSnackbar({ show: true, severity: "warning", message: '' + (t(langKeys.filetoolarge)) + " Max: 5Mb" }))
+        }
+            
     }
 
     return (
@@ -193,11 +223,16 @@ const ChannelEdit: FC = () => {
                             
                             <div className="row-zyx">
                                 <div className="col-11">
-                                    <FieldEdit
-                                        className="col-6"
-                                        valueDefault={welcometone?.split("\\")[welcometone?.split("\\").length-1]}
-                                        disabled={true}
-                                    />
+                                    {(uploadResult.loading && waitUploadFile==="welcome")?
+                                        <div style={{ flex: 1, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <CircularProgress size={30}/>
+                                        </div>:
+                                        <FieldEdit
+                                            className="col-6"
+                                            valueDefault={welcometoneurl?.split("/")?.[welcometoneurl?.split("/")?.length-1]?.replaceAll("%20"," ")}
+                                            disabled={true}
+                                        />
+                                    }
                                 </div>                            
                                 <div className="col-1">
                                     <input
@@ -205,10 +240,10 @@ const ChannelEdit: FC = () => {
                                         id="contained-button-file"
                                         type="file"
                                         style={{display:"none"}}
-                                        onChange={(e)=>{setwelcometone(e.target.value)}}
+                                        onChange={(e)=>{onUploadFile(e.target.files,"welcome")}}
                                     />
                                     <label htmlFor="contained-button-file">
-                                        <IconButton color="primary" aria-label="upload picture" component="span">
+                                        <IconButton color="primary" aria-label="upload picture" component="span" disabled={uploadResult.loading}>
                                             <PublishIcon />
                                         </IconButton>
                                     </label>
@@ -228,11 +263,16 @@ const ChannelEdit: FC = () => {
                             
                             <div className="row-zyx">
                                 <div className="col-11">
-                                    <FieldEdit
-                                        className="col-6"
-                                        valueDefault={holdingtone?.split("\\")[holdingtone?.split("\\").length-1]}
-                                        disabled={true}
-                                    />
+                                    {(uploadResult.loading && waitUploadFile==="holding")?
+                                        <div style={{ flex: 1, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            <CircularProgress size={30}/>
+                                        </div>:
+                                        <FieldEdit
+                                            className="col-6"
+                                            valueDefault={holdingtoneurl?.split("/")?.[holdingtoneurl?.split("/")?.length-1]?.replaceAll("%20"," ")}
+                                            disabled={true}
+                                        />
+                                    }
                                 </div>                            
                                 <div className="col-1">
                                     <input
@@ -240,10 +280,10 @@ const ChannelEdit: FC = () => {
                                         id="contained-button-file2"
                                         type="file"
                                         style={{display:"none"}}
-                                        onChange={(e)=>{setholdingtone(e.target.value)}}
+                                        onChange={(e)=>{onUploadFile(e.target.files,"holding")}}
                                     />
                                     <label htmlFor="contained-button-file2">
-                                        <IconButton color="primary" aria-label="upload picture" component="span">
+                                        <IconButton color="primary" aria-label="upload picture" component="span"  disabled={uploadResult.loading}>
                                             <PublishIcon />
                                         </IconButton>
                                     </label>
@@ -277,7 +317,7 @@ const ChannelEdit: FC = () => {
                         className={classes.button}
                         variant="contained"
                         color="primary"
-                        disabled={edit.loading}
+                        disabled={edit.loading || uploadResult.loading}
                     >
                         <Trans i18nKey={langKeys.finishreg} />
                     </Button>

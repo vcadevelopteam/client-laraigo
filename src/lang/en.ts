@@ -1253,6 +1253,7 @@ const translation: LangKeys = {
     standbytone: "Standby tone",
     report_heatmap: "Heat map",
     tonestooltip: "mp3 files Max 1 min and 5mb",
+    filetoolarge: "The file is too large",
     heatmapaverageagentTME: "Average first advisor reply heat map",
     averageheatmapTMOdata: "Average TMO heat map",
     conversationheatmap: "Conversation heat map",

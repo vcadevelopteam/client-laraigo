@@ -269,6 +269,7 @@ const translation: LangKeys = {
     welcometone: "Tono de  bienvenida",
     standbytone: "Tono de  espera",
     tonestooltip: "Archivos mp3 Max de 1 min y 5mb",
+    filetoolarge: "El archivo es demasiado grande",
     closedbybottooltip: "Cantidad de HSM entregados al cliente, con o sin respuesta y cerrado por un bot.",
     conversationheatmaptooltip: "Muestra el total de conversaciones asignadas a un asesor o bot correspondiente a una fecha y hora.",
     averageheatmapTMOdatatooltip: "Muestra el promedio de TMO por asesor o bot correspondiente a una fecha y hora.",
