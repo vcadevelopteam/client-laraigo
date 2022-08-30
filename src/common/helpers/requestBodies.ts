@@ -1062,7 +1062,7 @@ export const getInsertChatwebChannel = (name: string, auto: boolean, iconColor: 
     service,
 });
 
-export const getEditChannel = (id: number, payload: IChannel, name: string, auto: boolean, iconColor: string): IRequestBody<IChannel> => ({
+export const getEditChannel = (id: number, payload: IChannel, name: string, auto: boolean, iconColor: string, welcometoneurl?:string, holdingtoneurl?:string): IRequestBody<IChannel> => ({
     method: "UFN_COMMUNICATIONCHANNEL_INS",
     parameters: {
         ...payload,
@@ -1078,6 +1078,8 @@ export const getEditChannel = (id: number, payload: IChannel, name: string, auto
         apikey: "",
         updintegration: null,
         motive: "Edited from API",
+        voximplantwelcometone: welcometoneurl||"",
+        voximplantholdtone: holdingtoneurl||"",
     },
 });
 
