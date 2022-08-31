@@ -31,6 +31,7 @@ export const langKeys = {
     error_invaliddata: "error_invaliddata",
     align: "align",
     font: "font",
+    nochannelvoiceassociated: "nochannelvoiceassociated",
     undo: "undo",
     filetoolarge: "filetoolarge",
     warningnoquickreplies: "warningnoquickreplies",

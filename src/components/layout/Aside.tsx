@@ -17,6 +17,7 @@ import { setModalCall } from 'store/voximplant/actions';
 import PhoneInTalkIcon from '@material-ui/icons/PhoneInTalk';
 import { langKeys } from 'lang/keys';
 import { WifiCalling } from 'icons';
+import { showSnackbar } from 'store/popus/actions';
 
 type IProps = {
     classes: any;
@@ -122,12 +123,12 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
                     </ListItem>
                 )}
             </div>
-            {(!voxiConnection.error && !voxiConnection.loading && openDrawer && location.pathname=== "/message_inbox" && userConnected) && (
+            {(!voxiConnection.loading && openDrawer && location.pathname=== "/message_inbox" && userConnected) && (
                 <>
                     <div style={{ display: "flex", width: "100%", borderRight: '1px solid #EBEAED' }}>
                         <IconButton 
                             style={{ marginLeft: "auto", marginTop: 40, marginRight: "auto", width: 80, height: 80, borderRadius: "50%", backgroundColor: showcall ? "#7721ad" : "#bdbdbd" }}
-                            onClick={() => dispatch(setModalCall(true))}
+                            onClick={() => voxiConnection.error? dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) })):dispatch(setModalCall(true))}
                             disabled={statusCall !== "DISCONNECTED"}
                         >
                             <WifiCalling style={{ color: "white", width: "80px", height: "80px" }} />
