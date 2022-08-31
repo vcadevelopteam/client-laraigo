@@ -76,12 +76,12 @@ const ChannelEdit: FC = () => {
         };
     }, [history, channel, dispatch]);
 
-    
+
 
     useEffect(() => {
-        if (waitUploadFile!=="") {
+        if (waitUploadFile !== "") {
             if (!uploadResult.loading && !uploadResult.error) {
-                waitUploadFile==="welcome"? setwelcometoneurl(String(uploadResult.url)): setholdingtoneurl(String(uploadResult.url))
+                waitUploadFile === "welcome" ? setwelcometoneurl(String(uploadResult.url)) : setholdingtoneurl(String(uploadResult.url))
                 setWaitUploadFile("");
             } else if (uploadResult.error) {
                 setWaitUploadFile("");
@@ -105,15 +105,15 @@ const ChannelEdit: FC = () => {
             }));
             history.push(paths.CHANNELS);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [edit, history, dispatch]);
 
     const handleSubmit = useCallback(() => {
         if (!channel) return;
         const id = channel!.communicationchannelid;
-        const body = getEditChannel(id, channel, name, auto, hexIconColor,welcometoneurl,holdingtoneurl);
+        const body = getEditChannel(id, channel, name, auto, hexIconColor, welcometoneurl, holdingtoneurl);
         dispatch(editChannel(body));
-    }, [name, hexIconColor, auto, channel,welcometoneurl,holdingtoneurl, dispatch]);
+    }, [name, hexIconColor, auto, channel, welcometoneurl, holdingtoneurl, dispatch]);
 
     const handleGoBack = useCallback((e: React.MouseEvent) => {
         e.preventDefault();
@@ -124,17 +124,17 @@ const ChannelEdit: FC = () => {
         return <div />;
     }
 
-    const onUploadFile = (files: any, type:string) => {
+    const onUploadFile = (files: any, type: string) => {
         const selectedFile = files[0];
-        if(selectedFile.size<=(1024*1024*5)){
+        if (selectedFile.size <= (1024 * 1024 * 5)) {
             var fd = new FormData();
             fd.append('file', selectedFile, selectedFile.name);
             dispatch(uploadFile(fd));
             setWaitUploadFile(type);
-        }else{
+        } else {
             dispatch(showSnackbar({ show: true, severity: "warning", message: '' + (t(langKeys.filetoolarge)) + " Max: 5Mb" }))
         }
-            
+
     }
 
     return (
@@ -144,174 +144,159 @@ const ChannelEdit: FC = () => {
                     {t(langKeys.previoustext)}
                 </Link>
             </Breadcrumbs>
-            <div>
+            <div style={{ width: "700px", marginLeft: 'auto', marginRight: 'auto', display: 'flex', flexDirection: 'column', flex: 'wrap' }}>
                 <div className={classes.title}>
                     {t(langKeys.communicationchannel_edit)}
                 </div>
-                <div className="row-zyx">
-                    <div className="col-3"></div>
-                    <FieldEdit
-                        onChange={(value) => setName(value)}
-                        label={t(langKeys.givechannelname)}
-                        className="col-6"
-                        disabled={edit.loading}
-                        valueDefault={channel!.communicationchanneldesc}
-                    />
-                </div>
-                {channel?.phone && <>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldView
-                            label={t(langKeys.phone)}
-                            className="col-6"
-                            value={channel!.phone}
+                <div style={{ display: 'flex', gap: 24 }}>
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                        <FieldEdit
+                            onChange={(value) => setName(value)}
+                            label={t(langKeys.givechannelname)}
+                            disabled={edit.loading}
+                            valueDefault={channel!.communicationchanneldesc}
                         />
+                        {channel?.phone && <>
+                            <div>
+                                <FieldView
+                                    label={t(langKeys.phone)}
+                                    value={channel!.phone}
+                                />
+                            </div>
+                        </>}
+                        {channel?.type === "VOXI" && <>
+                            {serviceCredentials?.countryname && <div>
+                                <FieldView
+                                    label={t(langKeys.country)}
+                                    value={serviceCredentials?.countryname}
+                                />
+                            </div>}
+                            {serviceCredentials?.categoryname && <div>
+                                <FieldView
+                                    label={t(langKeys.category)}
+                                    value={t(serviceCredentials?.categoryname)}
+                                />
+                            </div>}
+                            {serviceCredentials?.statename && <div>
+                                <FieldView
+                                    label={t(langKeys.voximplant_state)}
+                                    value={serviceCredentials?.statename}
+                                />
+                            </div>}
+                            {serviceCredentials?.regionname && <div>
+                                <FieldView
+                                    label={t(langKeys.voximplant_region)}
+                                    value={serviceCredentials?.regionname}
+                                />
+                            </div>}
+                            {serviceCredentials?.costvca && <div>
+                                <FieldView
+                                    label={t(langKeys.voximplant_pricealert)}
+                                    value={`$${formatNumber(parseFloat(serviceCredentials?.costvca || 0))}`}
+                                />
+                            </div>
+                            }
+                        </>}
+                        {(channel?.type === "FBDM" || channel?.type === "FBWA") && <>
+                            {serviceCredentials?.siteId && <div className="row-zyx">
+                                <FieldView
+                                    label={t(langKeys.url)}
+                                    className="col-6"
+                                    value={`https://www.facebook.com/${serviceCredentials?.siteId}`}
+                                />
+                            </div>}
+                        </>}
+                        <div>
+                            <div >
+                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                    {t(langKeys.givechannelcolor)}
+                                </Box>
+                                <ColorInput hex={hexIconColor} onChange={e => setHexIconColor(e.hex)} />
+                            </div>
+                        </div>
                     </div>
-                </>}
-                {channel?.type === "VOXI" && <>
-                    {serviceCredentials?.countryname && <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldView
-                            label={t(langKeys.country)}
-                            className="col-6"
-                            value={serviceCredentials?.countryname}
-                        />
-                    </div>}
-                    {serviceCredentials?.categoryname && <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldView
-                            label={t(langKeys.category)}
-                            className="col-6"
-                            value={t(serviceCredentials?.categoryname)}
-                        />
-                    </div>}
-                    {serviceCredentials?.statename && <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldView
-                            label={t(langKeys.voximplant_state)}
-                            className="col-6"
-                            value={serviceCredentials?.statename}
-                        />
-                    </div>}
-                    {serviceCredentials?.regionname && <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldView
-                            label={t(langKeys.voximplant_region)}
-                            className="col-6"
-                            value={serviceCredentials?.regionname}
-                        />
-                    </div>}
-                    {serviceCredentials?.costvca && <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldView
-                            label={t(langKeys.voximplant_pricealert)}
-                            className="col-6"
-                            value={`$${formatNumber(parseFloat(serviceCredentials?.costvca || 0))}`}
-                        />
-                    </div>
+                    {channel?.type === "VOXI" &&
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                            <div>
+                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: 'flex' }}>
+                                    {t(langKeys.welcometone)}
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.tonestooltip)}</div>} arrow placement="top" >
+                                            <InfoRoundedIcon color="action" style={{ width: 15, height: 15, cursor: 'pointer' }} />
+                                        </Tooltip>
+                                    </div>
+                                </Box>
+
+                                <div style={{ display: 'flex' }}>
+                                    <div style={{ flex: 1 }}>
+                                        {(uploadResult.loading && waitUploadFile === "welcome") ?
+                                            <div style={{ flex: 1, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                <CircularProgress size={30} />
+                                            </div> :
+                                            <FieldEdit
+                                                valueDefault={welcometoneurl?.split("/")?.[welcometoneurl?.split("/")?.length - 1]?.replaceAll("%20", " ")}
+                                                disabled={true}
+                                            />
+                                        }
+                                    </div>
+                                    <div>
+                                        <input
+                                            accept=".mp3,audio/*"
+                                            id="contained-button-file"
+                                            type="file"
+                                            style={{ display: "none" }}
+                                            onChange={(e) => { onUploadFile(e.target.files, "welcome") }}
+                                        />
+                                        <label htmlFor="contained-button-file" style={{ height: 0 }}>
+                                            <IconButton color="primary" aria-label="upload picture" size="small" component="span" disabled={uploadResult.loading}>
+                                                <PublishIcon />
+                                            </IconButton>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div >
+                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{ display: 'flex' }}>
+                                    {t(langKeys.standbytone)}
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.tonestooltip)}</div>} arrow placement="top" >
+                                            <InfoRoundedIcon color="action" style={{ width: 15, height: 15, cursor: 'pointer' }} />
+                                        </Tooltip>
+                                    </div>
+                                </Box>
+
+                                <div style={{ display: 'flex' }}>
+                                    <div style={{ flex: 1 }}>
+                                        {(uploadResult.loading && waitUploadFile === "holding") ?
+                                            <div style={{ flex: 1, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                <CircularProgress size={30} />
+                                            </div> :
+                                            <FieldEdit
+                                                valueDefault={holdingtoneurl?.split("/")?.[holdingtoneurl?.split("/")?.length - 1]?.replaceAll("%20", " ")}
+                                                disabled={true}
+                                            />
+                                        }
+                                    </div>
+                                    <div>
+                                        <input
+                                            accept=".mp3,audio/*"
+                                            id="contained-button-file2"
+                                            type="file"
+                                            style={{ display: "none" }}
+                                            onChange={(e) => { onUploadFile(e.target.files, "holding") }}
+                                        />
+                                        <label htmlFor="contained-button-file2">
+                                            <IconButton color="primary" size="small" aria-label="upload picture" component="span" disabled={uploadResult.loading}>
+                                                <PublishIcon />
+                                            </IconButton>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     }
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        
-                        <div className="col-6">
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">
-                                {t(langKeys.welcometone)}
-                                <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.tonestooltip)}</div>} arrow placement="top" >
-                                    <InfoRoundedIcon color="action" style={{width: 15, height: 15, cursor: 'pointer'}} />
-                                </Tooltip>
-                            </Box>
-                            
-                            <div className="row-zyx">
-                                <div className="col-11">
-                                    {(uploadResult.loading && waitUploadFile==="welcome")?
-                                        <div style={{ flex: 1, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            <CircularProgress size={30}/>
-                                        </div>:
-                                        <FieldEdit
-                                            className="col-6"
-                                            valueDefault={welcometoneurl?.split("/")?.[welcometoneurl?.split("/")?.length-1]?.replaceAll("%20"," ")}
-                                            disabled={true}
-                                        />
-                                    }
-                                </div>                            
-                                <div className="col-1">
-                                    <input
-                                        accept=".mp3,audio/*"
-                                        id="contained-button-file"
-                                        type="file"
-                                        style={{display:"none"}}
-                                        onChange={(e)=>{onUploadFile(e.target.files,"welcome")}}
-                                    />
-                                    <label htmlFor="contained-button-file">
-                                        <IconButton color="primary" aria-label="upload picture" component="span" disabled={uploadResult.loading}>
-                                            <PublishIcon />
-                                        </IconButton>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <div className="col-6">
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">
-                                {t(langKeys.standbytone)}
-                                <Tooltip title={<div style={{ fontSize: 12 }}>{t(langKeys.tonestooltip)}</div>} arrow placement="top" >
-                                    <InfoRoundedIcon color="action" style={{width: 15, height: 15, cursor: 'pointer'}} />
-                                </Tooltip>
-                            </Box>
-                            
-                            <div className="row-zyx">
-                                <div className="col-11">
-                                    {(uploadResult.loading && waitUploadFile==="holding")?
-                                        <div style={{ flex: 1, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                            <CircularProgress size={30}/>
-                                        </div>:
-                                        <FieldEdit
-                                            className="col-6"
-                                            valueDefault={holdingtoneurl?.split("/")?.[holdingtoneurl?.split("/")?.length-1]?.replaceAll("%20"," ")}
-                                            disabled={true}
-                                        />
-                                    }
-                                </div>                            
-                                <div className="col-1">
-                                    <input
-                                        accept=".mp3,audio/*"
-                                        id="contained-button-file2"
-                                        type="file"
-                                        style={{display:"none"}}
-                                        onChange={(e)=>{onUploadFile(e.target.files,"holding")}}
-                                    />
-                                    <label htmlFor="contained-button-file2">
-                                        <IconButton color="primary" aria-label="upload picture" component="span"  disabled={uploadResult.loading}>
-                                            <PublishIcon />
-                                        </IconButton>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </>}
-                {(channel?.type === "FBDM" || channel?.type === "FBWA") && <>
-                    {serviceCredentials?.siteId && <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldView
-                            label={t(langKeys.url)}
-                            className="col-6"
-                            value={`https://www.facebook.com/${serviceCredentials?.siteId}`}
-                        />
-                    </div>}
-                </>}
-                <div className="row-zyx">
-                    <div className="col-3"></div>
-                    <div className="col-6">
-                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                            {t(langKeys.givechannelcolor)}
-                        </Box>
-                        <ColorInput hex={hexIconColor} onChange={e => setHexIconColor(e.hex)} />
-                    </div>
                 </div>
-                <div style={{ paddingLeft: "80%" }}>
+                <div style={{ marginLeft: 'auto' }}>
                     <Button
                         onClick={handleSubmit}
                         className={classes.button}
