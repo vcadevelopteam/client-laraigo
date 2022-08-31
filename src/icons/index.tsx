@@ -51,6 +51,10 @@ export const reportsImage = [
     {
       name: "reports_survey_report",
       image: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'
+    },
+    {
+      name: "reports_voicecall_report",
+      image: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/3f392517-37c9-4a7e-99e1-9a9505eca6bf/canal_de_voz.svg'
     }
   ];
 
