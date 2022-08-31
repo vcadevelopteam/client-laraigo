@@ -303,8 +303,8 @@ const HSMHistoryReport: FC = () => {
         dispatch(exportData(getHSMHistoryReportExport(
             Object.keys(selectedRows).reduce((ad: any[], d: any) => {
                 ad.push({
-                    campaignname: d.split('_')[0],
-                    ddate: d.split('_')[1]
+                    ddate: d.split('_')[d.split('_').length - 1],
+                    campaignname: d.split(`_${d.split('_')[d.split('_').length - 1]}`)[0],
                 })
                 return ad;
             }, [])),
