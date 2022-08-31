@@ -296,7 +296,7 @@ const ChannelEdit: FC = () => {
                         </div>
                     }
                 </div>
-                <div style={{ marginLeft: 'auto' }}>
+                <div style={{ marginLeft: 'auto', marginTop: 16 }}>
                     <Button
                         onClick={handleSubmit}
                         className={classes.button}
