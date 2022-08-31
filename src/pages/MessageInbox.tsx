@@ -78,7 +78,7 @@ const MessageInbox: React.FC = () => {
             getClassificationLevel1("TIPIFICACION"),
             getValuesFromDomainLight("GRUPOS"),
             getListQuickReply(),
-            getMessageTemplateLst(),
+            getMessageTemplateLst(''),
             getCommChannelLst(),
             getValuesFromDomainLight("OPORTUNIDADPRODUCTOS"),
             getValuesFromDomainLight("MOTIVOSUSPENSION"),

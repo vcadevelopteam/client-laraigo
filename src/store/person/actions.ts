@@ -1,5 +1,5 @@
 import { IActionCall, IRequestBody, IRequestBodyPaginated, ITransaction } from "@types";
-import { getValuesFromDomain, adviserSel, getMessageTemplateSel, getCommChannelLst, getRolesByOrg } from "common/helpers";
+import { getValuesFromDomain, adviserSel, getMessageTemplateLst, getCommChannelLst, getRolesByOrg } from "common/helpers";
 import { CommonService, PersonService } from "network";
 import actionTypes from "./actionTypes";
 
@@ -13,7 +13,7 @@ export const getPerson = (payload: IRequestBody): IActionCall => ({
     type: null,
 });
 
-export const resetGetPerson = () => ({type: actionTypes.GET_PERSON_RESET });
+export const resetGetPerson = () => ({ type: actionTypes.GET_PERSON_RESET });
 
 export const getPersonListPaginated = (payload: IRequestBodyPaginated): IActionCall => ({
     callAPI: async () => CommonService.mainPaginated(payload),
@@ -25,7 +25,7 @@ export const getPersonListPaginated = (payload: IRequestBodyPaginated): IActionC
     type: null,
 });
 
-export const resetGetPersonListPaginated = () => ({type: actionTypes.GET_PERSON_LIST_RESET });
+export const resetGetPersonListPaginated = () => ({ type: actionTypes.GET_PERSON_LIST_RESET });
 
 export const getTicketListByPerson = (payload: IRequestBodyPaginated): IActionCall => ({
     callAPI: async () => CommonService.mainPaginated(payload),
@@ -37,7 +37,7 @@ export const getTicketListByPerson = (payload: IRequestBodyPaginated): IActionCa
     type: null,
 });
 
-export const resetGetTicketListByPerson = () => ({type: actionTypes.GET_TICKET_LIST_BY_PERSON_RESET });
+export const resetGetTicketListByPerson = () => ({ type: actionTypes.GET_TICKET_LIST_BY_PERSON_RESET });
 
 export const getReferrerListByPerson = (payload: IRequestBody): IActionCall => ({
     callAPI: async () => CommonService.main(payload),
@@ -49,7 +49,7 @@ export const getReferrerListByPerson = (payload: IRequestBody): IActionCall => (
     type: null,
 });
 
-export const resetGetReferrerListByPerson = () => ({type: actionTypes.GET_REFERRER_LIST_BY_PERSON_RESET });
+export const resetGetReferrerListByPerson = () => ({ type: actionTypes.GET_REFERRER_LIST_BY_PERSON_RESET });
 
 export const getChannelListByPerson = (payload: IRequestBody): IActionCall => ({
     callAPI: async () => CommonService.main(payload),
@@ -61,7 +61,7 @@ export const getChannelListByPerson = (payload: IRequestBody): IActionCall => ({
     type: null,
 });
 
-export const resetGetChannelListByPerson = () => ({type: actionTypes.GET_CHANNEL_LIST_BY_PERSON_RESET });
+export const resetGetChannelListByPerson = () => ({ type: actionTypes.GET_CHANNEL_LIST_BY_PERSON_RESET });
 
 export const getAdditionalInfoByPerson = (payload: IRequestBody): IActionCall => ({
     callAPI: async () => CommonService.main(payload),
@@ -73,7 +73,7 @@ export const getAdditionalInfoByPerson = (payload: IRequestBody): IActionCall =>
     type: null,
 });
 
-export const resetgetAdditionalInfoByPerson = () => ({type: actionTypes.GET_ADDITIONAL_INFO_BY_PERSON_RESET });
+export const resetgetAdditionalInfoByPerson = () => ({ type: actionTypes.GET_ADDITIONAL_INFO_BY_PERSON_RESET });
 
 export const getLeadsByPerson = (payload: IRequestBody): IActionCall => ({
     callAPI: async () => PersonService.getLeadsByPerson(payload),
@@ -85,7 +85,7 @@ export const getLeadsByPerson = (payload: IRequestBody): IActionCall => ({
     type: null,
 });
 
-export const resetGetLeadsByPerson = () => ({type: actionTypes.GET_LEAD_LIST_BY_PERSON_RESET });
+export const resetGetLeadsByPerson = () => ({ type: actionTypes.GET_LEAD_LIST_BY_PERSON_RESET });
 
 /**
  * Managed domain types
@@ -104,7 +104,7 @@ export const getDomainsByTypename = (): IActionCall => ({
         getValuesFromDomain("TIPOPERSONAGEN"),
         getValuesFromDomain("TIPOCANAL"),
         adviserSel(),
-        getMessageTemplateSel(0),
+        getMessageTemplateLst(''),
         getCommChannelLst(),
         getValuesFromDomain("EMPRESA"),
         getValuesFromDomain("GRUPOFACTURACION"),
@@ -121,7 +121,7 @@ export const getDomainsByTypename = (): IActionCall => ({
     type: null,
 });
 
-export const resetGetDomainsByTypename = () => ({type: actionTypes.GET_DOMAINS_BY_TYPENAME_RESET });
+export const resetGetDomainsByTypename = () => ({ type: actionTypes.GET_DOMAINS_BY_TYPENAME_RESET });
 
 // dispatch(execute({
 //     header: insPersonBody({ ...p }),
@@ -132,11 +132,11 @@ export const resetGetDomainsByTypename = () => ({type: actionTypes.GET_DOMAINS_B
 export const editPerson = (payload: IRequestBody | ITransaction, insert: boolean = false): IActionCall => {
     if (insert) {
         // dispatch(execute({
-//     header: insPersonBody({ ...p }),
-//     detail: [
-//         ...p.pcc.map((x: IPersonCommunicationChannel) => insPersonCommunicationChannel({ ...x })),
-//     ]
-// }, true));
+        //     header: insPersonBody({ ...p }),
+        //     detail: [
+        //         ...p.pcc.map((x: IPersonCommunicationChannel) => insPersonCommunicationChannel({ ...x })),
+        //     ]
+        // }, true));
     }
     return {
         callAPI: async () => CommonService.main(payload, insert),
@@ -149,4 +149,4 @@ export const editPerson = (payload: IRequestBody | ITransaction, insert: boolean
     }
 };
 
-export const resetEditPerson = () => ({type: actionTypes.EDIT_PERSON_RESET });
+export const resetEditPerson = () => ({ type: actionTypes.EDIT_PERSON_RESET });

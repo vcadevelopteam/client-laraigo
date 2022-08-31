@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { extractVariables, getCampaignMemberSel, getCampaignSel, getCommChannelLst, getMessageTemplateSel, getUserGroupsSel, getValuesFromDomain, insCampaign, insCampaignMember } from 'common/helpers';
+import { extractVariables, getCampaignMemberSel, getCampaignSel, getCommChannelLst, getMessageTemplateLst, getUserGroupsSel, getValuesFromDomain, insCampaign, insCampaignMember } from 'common/helpers';
 import { Dictionary, ICampaign, SelectedColumns } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { execute, getMultiCollection, resetMainAux } from 'store/main/actions';
@@ -63,9 +63,9 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
     const [campaignMembers, setCampaignMembers] = useState<any[]>([]);
 
     const [tablevariable, setTableVariable] = useState<any[]>([]);
-    
-    const [frameProps, setFrameProps] = useState<FrameProps>({executeSave: false, page: 0, checkPage: false, valid: {0: false, 1: false, 2: false}});
-    
+
+    const [frameProps, setFrameProps] = useState<FrameProps>({ executeSave: false, page: 0, checkPage: false, valid: { 0: false, 1: false, 2: false } });
+
 
     const arrayBread = [
         { id: "view-1", name: t(langKeys.campaign) },
@@ -78,7 +78,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 getValuesFromDomain("ESTADOGENERICO"),
                 getCommChannelLst(),
                 getUserGroupsSel(),
-                getMessageTemplateSel(0),
+                getMessageTemplateLst(''),
                 getCampaignSel(row?.id),
                 getCampaignMemberSel(row?.id)
             ]));
@@ -93,7 +93,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 getValuesFromDomain("ESTADOGENERICO"),
                 getCommChannelLst(),
                 getUserGroupsSel(),
-                getMessageTemplateSel(0),
+                getMessageTemplateLst(''),
             ]));
             setPageSelected(0);
         }
@@ -130,7 +130,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                         // messagetemplatefooter: data?.messagetemplatefooter || '',
                         executiontype: data?.executiontype,
                         batchjson: data?.batchjson || [],
-                        fields: {...new SelectedColumns(), ...data?.fields},
+                        fields: { ...new SelectedColumns(), ...data?.fields },
                         operation: 'UPDATE',
                         person: mainResult.multiData.data[5] && mainResult.multiData.data[5].success ? mainResult.multiData.data[5].data : []
                     });
@@ -166,18 +166,18 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
 
     const checkValidation = () => {
         if (!frameProps.valid[0]) {
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.required_fields_missing)}));
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.required_fields_missing) }));
         }
         else if (!frameProps.valid[1]) {
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.missing_people)}));
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.missing_people) }));
         }
         else {
             let valid = true;
             if (detaildata.messagetemplatetype === 'MULTIMEDIA'
-            && (detaildata?.messagetemplateheader?.type || '') !== ''
-            && detaildata.messagetemplateheader?.value === '') {
+                && (detaildata?.messagetemplateheader?.type || '') !== ''
+                && detaildata.messagetemplateheader?.value === '') {
                 valid = false;
-                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.missing_header)}));
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.missing_header) }));
             }
             let elemVariables: string[] = [];
             let errorIndex = null;
@@ -208,7 +208,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 }
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
-            setFrameProps({...frameProps, valid: {...frameProps.valid, 2: valid}});
+            setFrameProps({ ...frameProps, valid: { ...frameProps.valid, 2: valid } });
             if (valid) {
                 let newmessages = formatMessage();
                 setDetaildata({
@@ -216,7 +216,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     variablereplace: elemVariables,
                     batchjson: detaildata.executiontype === 'SCHEDULED' ? detaildata.batchjson : [],
                     subject: newmessages.subject,
-                    messagetemplateheader: {...detaildata.messagetemplateheader, value: newmessages.header},
+                    messagetemplateheader: { ...detaildata.messagetemplateheader, value: newmessages.header },
                     message: newmessages.message,
                 });
             }
@@ -322,7 +322,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         }
         if (detaildata.executiontype === 'SCHEDULED') {
             let batchjsontemp = [...(detaildata.batchjson || [])];
-            batchjsontemp = batchjsontemp.map((d: any, i: number) => ({...d, batchindex: i + 1}));
+            batchjsontemp = batchjsontemp.map((d: any, i: number) => ({ ...d, batchindex: i + 1 }));
             setDetaildata({
                 ...detaildata,
                 batchjson: batchjsontemp,
@@ -339,7 +339,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
     const saveCampaign = (data: any) => dispatch(execute(insCampaign(data)));
     const saveCampaignMembers = (data: any, campaignid: number) => dispatch(execute({
         header: null,
-        detail: [...data.map((x: any) => insCampaignMember({...x, campaignid: campaignid }))]
+        detail: [...data.map((x: any) => insCampaignMember({ ...x, campaignid: campaignid }))]
     }, true));
 
     const onSubmit = () => {
@@ -377,7 +377,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     dispatch(showBackdrop(false));
                     setSave('');
                 }
-    
+
             }
             else if (save === 'MEMBERS') {
                 if (!executeRes.loading && !executeRes.error) {
@@ -399,50 +399,50 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         if (pageSelected === 2) {
             if (detaildata.operation === 'INSERT' && detaildata.source === 'INTERNAL') {
                 setTableVariable([
-                    {description: "personcommunicationchannelowner", persistent: false },
-                    {description: "name", persistent: false },
-                    {description: "personcommunicationchannel", persistent: false },
-                    {description: "type", persistent: false },
-                    {description: "phone", persistent: false },
-                    {description: "email", persistent: false },
+                    { description: "personcommunicationchannelowner", persistent: false },
+                    { description: "name", persistent: false },
+                    { description: "personcommunicationchannel", persistent: false },
+                    { description: "type", persistent: false },
+                    { description: "phone", persistent: false },
+                    { description: "email", persistent: false },
                 ]);
             }
             else if (detaildata.source === 'EXTERNAL') {
                 setTableVariable(detaildata.selectedColumns?.columns.reduce((ac: any, c: string) => {
-                    ac.push({description: c, persistent: false})
+                    ac.push({ description: c, persistent: false })
                     return ac;
-                }, [{description: detaildata.selectedColumns.primarykey, persistent: false}]));
+                }, [{ description: detaildata.selectedColumns.primarykey, persistent: false }]));
             }
             else {
                 setTableVariable([
-                    {description:"corpid", persistent:true}, 
-                    {description:"orgid", persistent:true}, 
-                    {description:"campaignmemberid", persistent:true}, 
-                    {description:"campaignid", persistent:true}, 
-                    {description:"personid", persistent:true}, 
-                    {description:"status", persistent:true}, 
-                    {description:"globalid", persistent:true}, 
-                    {description:"personcommunicationchannel", persistent:true}, 
-                    {description:"type", persistent:true}, 
-                    {description:"displayname", persistent:true}, 
-                    {description:"personcommunicationchannelowner", persistent:true}, 
-                    {description:"field1", persistent:true}, 
-                    {description:"field2", persistent:true}, 
-                    {description:"field3", persistent:true}, 
-                    {description:"field4", persistent:true}, 
-                    {description:"field5", persistent:true}, 
-                    {description:"field6", persistent:true}, 
-                    {description:"field7", persistent:true}, 
-                    {description:"field8", persistent:true}, 
-                    {description:"field9", persistent:true}, 
-                    {description:"field10", persistent:true}, 
-                    {description:"field11", persistent:true}, 
-                    {description:"field12", persistent:true}, 
-                    {description:"field13", persistent:true}, 
-                    {description:"field14", persistent:true}, 
-                    {description:"field15", persistent:true}, 
-                    {description:"resultfromsend", persistent:true}, 
-                    {description:"batchindex", persistent:true}
+                    { description: "corpid", persistent: true },
+                    { description: "orgid", persistent: true },
+                    { description: "campaignmemberid", persistent: true },
+                    { description: "campaignid", persistent: true },
+                    { description: "personid", persistent: true },
+                    { description: "status", persistent: true },
+                    { description: "globalid", persistent: true },
+                    { description: "personcommunicationchannel", persistent: true },
+                    { description: "type", persistent: true },
+                    { description: "displayname", persistent: true },
+                    { description: "personcommunicationchannelowner", persistent: true },
+                    { description: "field1", persistent: true },
+                    { description: "field2", persistent: true },
+                    { description: "field3", persistent: true },
+                    { description: "field4", persistent: true },
+                    { description: "field5", persistent: true },
+                    { description: "field6", persistent: true },
+                    { description: "field7", persistent: true },
+                    { description: "field8", persistent: true },
+                    { description: "field9", persistent: true },
+                    { description: "field10", persistent: true },
+                    { description: "field11", persistent: true },
+                    { description: "field12", persistent: true },
+                    { description: "field13", persistent: true },
+                    { description: "field14", persistent: true },
+                    { description: "field15", persistent: true },
+                    { description: "resultfromsend", persistent: true },
+                    { description: "batchindex", persistent: true }
                 ]);
             }
         }
@@ -477,72 +477,72 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                             style={{ backgroundColor: "#55BD84" }}
                             disabled={!frameProps.valid[0] || !frameProps.valid[1]}
                             onClick={() => {
-                                setFrameProps({...frameProps, executeSave: true, checkPage: true});
+                                setFrameProps({ ...frameProps, executeSave: true, checkPage: true });
                             }}
                         >{t(langKeys.save)}
                         </Button>
                     }
                 </div>
             </div>
-            
+
             <Tabs
                 value={pageSelected}
                 indicatorColor="primary"
                 variant="fullWidth"
                 style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
                 textColor="primary"
-                onChange={(_, value) => setFrameProps({...frameProps, page: value, checkPage: true})}
+                onChange={(_, value) => setFrameProps({ ...frameProps, page: value, checkPage: true })}
             >
-                <AntTab label={t(langKeys.generalinformation)}/>
-                <AntTab label={t(langKeys.person_plural)}/>
-                <AntTab label={t(langKeys.message)}/>
+                <AntTab label={t(langKeys.generalinformation)} />
+                <AntTab label={t(langKeys.person_plural)} />
+                <AntTab label={t(langKeys.message)} />
             </Tabs>
             {pageSelected === 0 ?
-            <CampaignGeneral 
-                row={row}
-                edit={edit}
-                auxdata={auxData}
-                detaildata={detaildata}
-                setDetaildata={setDetaildata}
-                multiData={mainResult.multiData.data}
-                fetchData={fetchData}
-                frameProps={frameProps}
-                setFrameProps={setFrameProps}
-                setPageSelected={setPageSelected}
-                setSave={setSave}
-            />
-            : null}
+                <CampaignGeneral
+                    row={row}
+                    edit={edit}
+                    auxdata={auxData}
+                    detaildata={detaildata}
+                    setDetaildata={setDetaildata}
+                    multiData={mainResult.multiData.data}
+                    fetchData={fetchData}
+                    frameProps={frameProps}
+                    setFrameProps={setFrameProps}
+                    setPageSelected={setPageSelected}
+                    setSave={setSave}
+                />
+                : null}
             {pageSelected === 1 ?
-            <CampaignPerson 
-                row={row}
-                edit={edit}
-                auxdata={auxData}
-                detaildata={detaildata}
-                setDetaildata={setDetaildata}
-                multiData={mainResult.multiData.data}
-                fetchData={fetchData}
-                frameProps={frameProps}
-                setFrameProps={setFrameProps}
-                setPageSelected={setPageSelected}
-                setSave={setSave}
-            />
-            : null}
+                <CampaignPerson
+                    row={row}
+                    edit={edit}
+                    auxdata={auxData}
+                    detaildata={detaildata}
+                    setDetaildata={setDetaildata}
+                    multiData={mainResult.multiData.data}
+                    fetchData={fetchData}
+                    frameProps={frameProps}
+                    setFrameProps={setFrameProps}
+                    setPageSelected={setPageSelected}
+                    setSave={setSave}
+                />
+                : null}
             {pageSelected === 2 ?
-            <CampaignMessage
-                row={row}
-                edit={edit}
-                auxdata={auxData}
-                detaildata={detaildata}
-                setDetaildata={setDetaildata}
-                multiData={mainResult.multiData.data}
-                fetchData={fetchData}
-                tablevariable={tablevariable}
-                frameProps={frameProps}
-                setFrameProps={setFrameProps}
-                setPageSelected={setPageSelected}
-                setSave={setSave}
-            />
-            : null}
+                <CampaignMessage
+                    row={row}
+                    edit={edit}
+                    auxdata={auxData}
+                    detaildata={detaildata}
+                    setDetaildata={setDetaildata}
+                    multiData={mainResult.multiData.data}
+                    fetchData={fetchData}
+                    tablevariable={tablevariable}
+                    frameProps={frameProps}
+                    setFrameProps={setFrameProps}
+                    setPageSelected={setPageSelected}
+                    setSave={setSave}
+                />
+                : null}
         </div>
     )
 }
