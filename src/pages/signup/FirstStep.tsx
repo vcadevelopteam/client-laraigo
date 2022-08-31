@@ -150,6 +150,7 @@ const FirstStep: FC = () => {
             setValue('confirmpassword', '');
             setValue('email', '');
             setValue('googleid', r.googleId);
+            setValue('facebookid', '');
             dispatch(executeCheckNewUser(content))
         }
     }
@@ -182,7 +183,8 @@ const FirstStep: FC = () => {
             setValue('password', '');
             setValue('confirmpassword', '');
             setValue('email', '');
-            setValue('googleid', r.id);
+            setValue('googleid', '');
+            setValue('facebookid', r.id);
             dispatch(executeCheckNewUser(content))
         }
     }
