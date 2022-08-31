@@ -293,6 +293,7 @@ const MakeCall: React.FC = () => {
             setTimeWaiting(0);
             ringtone.current?.pause();
             if (ringtone.current) {
+                ringtone.current.volume = (user?.properties?.ringer_volume||100)/100
                 ringtone.current.currentTime = 0;
             }
             ringtone.current?.play();
@@ -301,6 +302,7 @@ const MakeCall: React.FC = () => {
             ringtone.current?.pause();
         }
     }, [call, statusCall])
+
 
     //reassign if the call overload time limit
     React.useEffect(() => {
