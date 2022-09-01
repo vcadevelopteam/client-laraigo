@@ -94,7 +94,7 @@ const format = (datex: Date) => new Date(datex.setHours(10)).toISOString().subst
 
 const selectionKey = 'personid';
 
-const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'dateactivity', 'leadactivity', 'datenote', 'note', 'custom'].map(x => ({key: x}))
+const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'dateactivity', 'leadactivity', 'datenote', 'note', 'custom'].map(x => ({ key: x }))
 
 interface DialogSendTemplateProps {
     setOpenModal: (param: any) => void;
@@ -157,7 +157,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
 
     useEffect(() => {
         if (!domains.error && !domains.loading) {
-            setTemplatesList(domains?.value?.templates?.filter(x => x.type === type) || []);
+            setTemplatesList(domains?.value?.templates?.filter(x => (type !== "MAIL" ? x.type === type : (x.type === type || x.type === "HTML"))) || []);
             setChannelList(domains?.value?.channels?.filter(x => x.type.includes(type === "HSM" ? "WHA" : type)) || []);
         }
     }, [domains, type])
@@ -276,10 +276,12 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
                 />
             </div>
             {type === 'MAIL' &&
-                <React.Fragment>
-                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.message)}</Box>
-                    <div dangerouslySetInnerHTML={{ __html: bodyMessage }} />
-                </React.Fragment>
+                <div style={{ overflow: 'scroll' }}>
+                    <React.Fragment>
+                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.message)}</Box>
+                        <div dangerouslySetInnerHTML={{ __html: bodyMessage }} />
+                    </React.Fragment>
+                </div>
             }
             {type !== 'MAIL' &&
                 <FieldEditMulti
@@ -1973,7 +1975,7 @@ const useChannelItemStyles = makeStyles(theme => ({
         margin: 0,
         width: '100%',
     },
-    buttonphone:{
+    buttonphone: {
         padding: 0,
         '&:hover': {
             color: "#7721ad",
@@ -2028,7 +2030,7 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
     console.log(channel.type)
 
     return (
-        <div className={classes.root} style={{display:"flex"}}>
+        <div className={classes.root} style={{ display: "flex" }}>
             <Grid container direction="row">
                 <Grid item xs={11} sm={11} md={6} lg={6} xl={6}>
                     <Property
@@ -2037,8 +2039,8 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                             <div className={classes.subtitle}>
                                 <span>{
                                     nameschannel[channel.type].includes("T_")
-                                    ? t((langKeys as any)[nameschannel[channel.type]])
-                                    : nameschannel[channel.type]}</span>
+                                        ? t((langKeys as any)[nameschannel[channel.type]])
+                                        : nameschannel[channel.type]}</span>
                                 <GetIcon channelType={channel.type} color='black' />
                             </div>
                         )}
@@ -2053,16 +2055,16 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                     />
                 </Grid>
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                    
+
                     <Box>
                         <div className={classes.contentContainer}>
                             <label className={classes.propTitle}>{<Trans i18nKey={langKeys.personIdentifier} />}</label>
                             <div style={{ height: 4 }} />
-                            <div style={{display:"flex"}}>
-                                {(!voxiConnection.error && !voxiConnection.loading && statusCall!=="CONNECTED" && userConnected && statusCall!=="CONNECTING" && (channel.type.includes("WHA")||channel.type.includes("VOXI"))) &&
+                            <div style={{ display: "flex" }}>
+                                {(!voxiConnection.error && !voxiConnection.loading && statusCall !== "CONNECTED" && userConnected && statusCall !== "CONNECTING" && (channel.type.includes("WHA") || channel.type.includes("VOXI"))) &&
                                     <IconButton
                                         className={classes.buttonphone}
-                                        onClick={() => {dispatch(setPhoneNumber(channel.personcommunicationchannelowner));dispatch(setModalCall(true))}}
+                                        onClick={() => { dispatch(setPhoneNumber(channel.personcommunicationchannelowner)); dispatch(setModalCall(true)) }}
                                     >
                                         <PhoneIcon style={{ width: "20px", height: "20px" }} />
                                     </IconButton>

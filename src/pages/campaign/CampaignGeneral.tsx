@@ -88,7 +88,8 @@ type FormFields = {
     messagetemplatetype: string,
     messagetemplateheader: Dictionary,
     messagetemplatebuttons: Dictionary[],
-    // messagetemplatefooter: string,
+    messagetemplatefooter: string,
+    messagetemplateattachment: string,
     executiontype: string,
     batchjson: Dictionary[],
     fields: SelectedColumns,
@@ -132,7 +133,8 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             messagetemplatetype: 'STANDARD',
             messagetemplateheader: {},
             messagetemplatebuttons: [],
-            // messagetemplatefooter: '',
+            messagetemplatefooter: '',
+            messagetemplateattachment: '',
             executiontype: detaildata?.executiontype || (auxdata?.length > 0 ? auxdata[0].executiontype : 'MANUAL'),
             batchjson: [],
             fields: new SelectedColumns(),
@@ -200,7 +202,8 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('messagetemplatetype', data.messagetemplatetype);
         setValue('messagetemplateheader', data.messagetemplateheader || {});
         setValue('messagetemplatebuttons', data.messagetemplatebuttons || []);
-        // setValue('messagetemplatefooter', data.messagetemplatefooter || '');
+        setValue('messagetemplatefooter', data.messagetemplatefooter || '');
+        setValue('messagetemplateattachment', data.messagetemplateattachment || '');
         setValue('executiontype', data.executiontype);
         setValue('batchjson', data.batchjson || []);
         setValue('fields', { ...new SelectedColumns(), ...data.fields });
@@ -302,7 +305,8 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('messagetemplatetype', 'STANDARD');
         setValue('messagetemplateheader', {});
         setValue('messagetemplatebuttons', []);
-        // setValue('messagetemplatefooter', '');
+        setValue('messagetemplatefooter', '');
+        setValue('messagetemplateattachment', '');
         await trigger('type');
     }
 
@@ -334,10 +338,20 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 setValue('messagetemplatebuttons', messageTemplate?.buttons || []);
             else
                 setValue('messagetemplatebuttons', []);
-            // if (messageTemplate.footerenabled)
-            //     setValue('messagetemplatefooter', messageTemplate?.footer || '');
-            // else
-            //     setValue('messagetemplatefooter', '');
+            if (messageTemplate.footerenabled)
+                setValue('messagetemplatefooter', messageTemplate?.footer || '');
+            else
+                setValue('messagetemplatefooter', '');
+        }
+        if (data?.type === 'MAIL' || data?.type === 'HTML') {
+            if (messageTemplate.header)
+                setValue('messagetemplateheader', { type: "TEXT", value: messageTemplate?.header });
+            else
+                setValue('messagetemplateheader', { type: '', value: '' });
+            if (messageTemplate.attachment)
+                setValue('messagetemplateattachment', messageTemplate?.attachment || '');
+            else
+                setValue('messagetemplateattachment', '');
         }
         await trigger(['messagetemplateid', 'messagetemplatename', 'messagetemplatenamespace', 'messagetemplatetype']);
     }
@@ -543,10 +557,15 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         />
                     }
                 </div>
-                {['HSM', 'SMS', 'MAIL'].includes(getValues('type')) ?
+                {['HSM'].includes(getValues('type')) ?
                     <div className="row-zyx">
                         {edit ?
                             <FieldSelect
+                                fregister={{
+                                    ...register(`messagetemplateid`, {
+                                        validate: (value: any) => (value) || t(langKeys.field_required)
+                                    })
+                                }}
                                 label={t(langKeys.messagetemplate)}
                                 className="col-6"
                                 valueDefault={getValues('messagetemplateid') as any}
@@ -583,6 +602,34 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 label={t(langKeys.namespace)}
                                 value={row?.messagetemplatenamespace || ""}
                                 className="col-4"
+                            />
+                        }
+                    </div>
+                    : null}
+                {['SMS', 'MAIL'].includes(getValues('type')) ?
+                    <div className="row-zyx">
+                        {edit ?
+                            <FieldSelect
+                                fregister={{
+                                    ...register(`messagetemplateid`, {
+                                        validate: (value: any) => (value) || t(langKeys.field_required)
+                                    })
+                                }}
+                                label={t(langKeys.messagetemplate)}
+                                className="col-6"
+                                valueDefault={getValues('messagetemplateid') as any}
+                                disabled={!getValues('isnew')}
+                                onChange={onChangeMessageTemplateId}
+                                error={errors?.messagetemplateid?.message}
+                                data={filterMessageTemplate()}
+                                optionDesc="name"
+                                optionValue="id"
+                            />
+                            :
+                            <FieldView
+                                label={t(langKeys.messagetemplate)}
+                                value={dataMessageTemplate.filter(d => d.id === row?.messagetemplateid)[0].name || ""}
+                                className="col-6"
                             />
                         }
                     </div>
