@@ -66,6 +66,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
 
     const [frameProps, setFrameProps] = useState<FrameProps>({ executeSave: false, page: 0, checkPage: false, valid: { 0: false, 1: false, 2: false } });
 
+    const [messageVariables, setMessageVariables] = useState<any[]>([]);
 
     const arrayBread = [
         { id: "view-1", name: t(langKeys.campaign) },
@@ -127,7 +128,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                         messagetemplatetype: data?.messagetemplatetype,
                         messagetemplateheader: data?.messagetemplateheader || {},
                         messagetemplatebuttons: data?.messagetemplatebuttons || [],
-                        // messagetemplatefooter: data?.messagetemplatefooter || '',
+                        messagetemplatefooter: data?.messagetemplatefooter || '',
+                        messagetemplateattachment: data?.messagetemplateattachment || '',
                         executiontype: data?.executiontype,
                         batchjson: data?.batchjson || [],
                         fields: { ...new SelectedColumns(), ...data?.fields },
@@ -181,7 +183,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             }
             let elemVariables: string[] = [];
             let errorIndex = null;
-            if (detaildata.communicationchanneltype === 'MAIL') {
+
+            if (detaildata.communicationchanneltype?.startsWith('MAI')) {
                 let vars = extractVariables(detaildata.subject || '');
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
                 if (errorIndex !== -1) {
@@ -191,20 +194,27 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
             if (detaildata.messagetemplatetype === 'MULTIMEDIA' && (detaildata.messagetemplateheader?.value || '') !== '') {
-                let vars = extractVariables(detaildata.messagetemplateheader?.value || '')
+                let vars = extractVariables(detaildata.messagetemplateheader?.value || '');
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
-                if (errorIndex !== -1) {
+                if (errorIndex !== -1 || (detaildata.messagetemplateheader?.value || '').includes('{{}}')) {
                     valid = false;
-                    dispatch(showSnackbar({ show: true, severity: "error", message: `${t(langKeys.invalid_parameter)} ${vars[errorIndex]}` }));
+                    dispatch(showSnackbar({ show: true, severity: "error", message: `${t(langKeys.invalid_parameter)} ${vars[errorIndex] || '{{}}'}` }));
                 }
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
             if ((detaildata.message || '') !== '') {
+                if (detaildata.communicationchanneltype?.startsWith('MAI')) {
+                    let splitMessage = (detaildata.message || '').split('{{');
+                    messageVariables.forEach((v, i) => {
+                        splitMessage[i + 1] = splitMessage[i + 1]?.replace(`${v.name}}}`, `${v.text}}}`);
+                    });
+                    detaildata.message = splitMessage.join('{{');
+                }
                 let vars = extractVariables(detaildata.message || '')
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
-                if (errorIndex !== -1) {
+                if (errorIndex !== -1 || (detaildata.message || '').includes('{{}}')) {
                     valid = false;
-                    dispatch(showSnackbar({ show: true, severity: "error", message: `${t(langKeys.invalid_parameter)} ${vars[errorIndex]}` }));
+                    dispatch(showSnackbar({ show: true, severity: "error", message: `${t(langKeys.invalid_parameter)} ${vars[errorIndex] || '{{}}'}` }));
                 }
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
@@ -541,6 +551,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     setFrameProps={setFrameProps}
                     setPageSelected={setPageSelected}
                     setSave={setSave}
+                    messageVariables={messageVariables}
+                    setMessageVariables={setMessageVariables}
                 />
                 : null}
         </div>

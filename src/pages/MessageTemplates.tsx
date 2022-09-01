@@ -1452,7 +1452,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                         </React.Fragment>}
                     </div>}
                     {(getValues('type') === 'MAIL' || getValues('type') === 'HTML') && <div className="row-zyx">
-                        <FieldView label={t(langKeys.files)} />
+                        <FieldView label={t(langKeys.messagetemplate_attachment)} />
                         <React.Fragment>
                             <input
                                 accept="file/*"

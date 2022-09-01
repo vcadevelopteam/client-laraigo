@@ -552,7 +552,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         :
                         <FieldView
                             label={t(langKeys.messagetype)}
-                            value={t(dataCampaignType.filter(d => d.key === row?.type)[0].value) || ""}
+                            value={t(filterDataCampaignType().filter(d => d.key === row?.type)[0]?.value) || ""}
                             className="col-4"
                         />
                     }
@@ -587,7 +587,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             <FieldEdit
                                 fregister={{
                                     ...register(`messagetemplatenamespace`, {
-                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                        validate: (value: any) => (getValues('type') !== 'HSM' ? true : value && value.length) || t(langKeys.field_required)
                                     })
                                 }}
                                 label={t(langKeys.namespace)}
