@@ -3009,6 +3009,14 @@ export const paymentCardInsert = ({ corpid, orgid, paymentcardid, cardnumber, ca
     },
 });
 
+export const conversationCallHold = ({ conversationid, holdtime }: Dictionary) => ({
+    method: "UFN_CONVERSATION_CALLHOLD",
+    parameters: {
+        conversationid,
+        holdtime
+    },
+});
+
 export const getInvoiceReportSummary = ({ year, currency = '' }: Dictionary): IRequestBody => ({
     method: "UFN_REPORT_INVOICE_SUMMARY_SEL",
     key: "UFN_REPORT_INVOICE_SUMMARY_SEL",
