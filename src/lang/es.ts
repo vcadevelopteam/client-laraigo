@@ -268,6 +268,7 @@ const translation: LangKeys = {
     closedbyadvisertooltip: "Cantidad de HSM entregados al cliente, con respuesta y cerrado por un asesor.",
     welcometone: "Tono de bienvenida",
     standbytone: "Tono de espera",
+    nochannelvoiceassociated: "Actualmente, no tiene asociado un canal de voz",
     tonestooltip: "Archivos mp3 Max de 1 min y 5mb",
     filetoolarge: "El archivo es demasiado grande",
     closedbybottooltip: "Cantidad de HSM entregados al cliente, con o sin respuesta y cerrado por un bot.",
