@@ -5,9 +5,9 @@ import { useDispatch } from 'react-redux';
 import { FieldEditMulti, FieldSelect, GetIcon, Title } from 'components';
 import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, getPersonExport, exportExcel, templateMaker, uploadExcel, insPersonBody, insPersonCommunicationChannel, array_trimmer, convertLocalDate, getColumnsSel, personcommunicationchannelUpdateLockedArrayIns } from 'common/helpers';
 import { Dictionary, IObjectState, IPerson, IPersonChannel, IPersonCommunicationChannel, IPersonConversation, IPersonDomains, IPersonImport, IFetchData } from "@types";
-import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, TextField, MenuItem, Paper, InputBase } from '@material-ui/core';
+import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, TextField, MenuItem, Paper, InputBase, Tooltip } from '@material-ui/core';
 import clsx from 'clsx';
-import { BuildingIcon, DocNumberIcon, DocTypeIcon, EMailInboxIcon, GenderIcon, TelephoneIcon, WhatsappIcon, SearchIcon } from 'icons';
+import { BuildingIcon, DocNumberIcon, DocTypeIcon, EMailInboxIcon, GenderIcon, TelephoneIcon, WhatsappIcon, SearchIcon, CallRecordIcon } from 'icons';
 import PhoneIcon from '@material-ui/icons/Phone';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { Trans, useTranslation } from 'react-i18next';
@@ -36,6 +36,7 @@ import Menu from '@material-ui/core/Menu';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import { getLeadPhases, resetGetLeadPhases } from 'store/lead/actions';
 import { setModalCall, setPhoneNumber } from 'store/voximplant/actions';
+import { VoximplantService } from 'network';
 const urgencyLevels = [null, 'LOW', 'MEDIUM', 'HIGH']
 
 // interface SelectFieldProps {
@@ -2406,6 +2407,7 @@ interface ConversationItemProps {
 }
 
 
+
 const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) => {
     const classes = useConversationsItemStyles();
     const [open, setOpen] = useState(false);
@@ -2416,6 +2418,29 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
         setOpenModal(true);
         setRowSelected({ ...row, displayname: person.name, ticketnum: row.ticketnum })
     }, [mainResult]);
+    console.log(conversation)
+    const dispatch = useDispatch();
+    const { t } = useTranslation();
+    const downloadCallRecord = async (ticket: Dictionary) => {
+        // dispatch(getCallRecord({call_session_history_id: ticket.postexternalid}));
+        // setWaitDownloadRecord(true);
+        try {
+            const axios_result = await VoximplantService.getCallRecord({call_session_history_id: ticket.postexternalid});
+            if (axios_result.status === 200) {
+                let buff = Buffer.from(axios_result.data, 'base64');
+                const blob = new Blob([buff], {type: axios_result.headers['content-type'].split(';').find((x: string) => x.includes('audio'))});
+                const objectUrl = window.URL.createObjectURL(blob);
+                let a = document.createElement('a');
+                a.href = objectUrl;
+                a.download = ticket.numeroticket;
+                a.click();
+            }
+        }
+        catch (error: any) {
+            const errormessage = t(error?.response?.data?.code || "error_unexpected_error")
+            dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+        }
+    }
 
     return (
         <div className={classes.root}>
@@ -2425,7 +2450,18 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
                 ticket={rowSelected}
             />
             <Grid container direction="row">
-                <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
+                
+                <Grid item xs={12} sm={12} md={1} lg={1} xl={1}>
+                {(conversation.channeltype==="VOXI" && conversation.postexternalid && conversation.callanswereddate ) && 
+                        <Tooltip title={t(langKeys.download_record) || ""}>
+                            <IconButton size="small" onClick={() => downloadCallRecord(conversation)} style={{paddingTop: 15, paddingLeft: 20}}
+                            >
+                                <CallRecordIcon style={{ fill: '#7721AD' }} />
+                            </IconButton>
+                        </Tooltip>
+                }
+                </Grid>
+                <Grid item xs={12} sm={12} md={1} lg={1} xl={1}>
                     <Property title="Ticket #" subtitle={conversation.ticketnum} isLink={true} onClick={() => openDialogInteractions(conversation)} />
                 </Grid>
                 <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>

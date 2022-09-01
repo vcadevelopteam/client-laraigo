@@ -107,9 +107,11 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
     }, [sendingRes, waitClose])
 
     useEffect(() => {
-        setTemplatesList(multiData?.data?.[5] && multiData?.data[5].data.filter(x => x.type === "HSM"))
-        setchannelsList(multiData?.data?.[13]?.data?.filter(e => e.type.includes("WHA")) || [])
-    }, [multiData.data])
+        if (!multiData.loading && !multiData.error) {
+            setTemplatesList((multiData?.data?.[5]?.data || []).filter(x => x.type === "HSM"))
+            setchannelsList((multiData?.data?.[13]?.data || []).filter(e => e.type.includes("WHA")) || [])
+        }
+    }, [multiData])
 
     useEffect(() => {
         if (openModal) {
@@ -986,10 +988,10 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     return (
         <>
             <div className={classes.containerButtonsChat}>
-                {(!voxiConnection.error && !voxiConnection.loading && statusCall !== "CONNECTED" && userConnected && statusCall !== "CONNECTING" &&
+                {(!voxiConnection.loading && statusCall !== "CONNECTED" && userConnected && statusCall !== "CONNECTING" &&
                     ticketSelected?.communicationchanneltype !== "VOXI" && location.pathname === "/message_inbox") &&
                     <Tooltip title={t(langKeys.make_call) + ""} arrow placement="top">
-                        <IconButton onClick={() => { dispatch(setModalCall(true)) }}>
+                        <IconButton onClick={() => voxiConnection.error? dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) })):dispatch(setModalCall(true))}>
                             <PhoneIcon width={24} height={24} fill="#8F92A1" />
                         </IconButton>
                     </Tooltip>
