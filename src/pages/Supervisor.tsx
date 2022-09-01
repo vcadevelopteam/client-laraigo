@@ -369,9 +369,9 @@ const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
 
     return (
         <div className={classes.containerAgents}>
-            <HeaderAgentPanel 
-                classes={classes} 
-                onSearch={onSearch} 
+            <HeaderAgentPanel
+                classes={classes}
+                onSearch={onSearch}
                 countAll={agentsToShow.length}
                 countConnected={agentsToShow.filter(x => x.isConnected).length}
                 countDisconnected={agentsToShow.filter(x => !x.isConnected).length}
@@ -422,7 +422,7 @@ const Supervisor: FC = () => {
             getClassificationLevel1("TIPIFICACION"),
             getValuesFromDomainLight("GRUPOS"),
             getListQuickReply(),
-            getMessageTemplateLst(),
+            getMessageTemplateLst(''),
             getCommChannelLst(),
             getValuesFromDomainLight("OPORTUNIDADPRODUCTOS"),
             getValuesFromDomainLight("MOTIVOSUSPENSION"),
@@ -447,7 +447,7 @@ const Supervisor: FC = () => {
                 dispatch(emitEvent({
                     event: 'connectChat',
                     data: { usertype: 'SUPERVISOR' }
-                }));   
+                }));
             } else {
                 dispatch(getAgents())
                 dispatch(selectAgent(null))

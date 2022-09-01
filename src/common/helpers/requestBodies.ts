@@ -748,9 +748,11 @@ export const getMessageTemplateSel = (id: number): IRequestBody => ({
     }
 });
 
-export const getMessageTemplateLst = (): IRequestBody => ({
+export const getMessageTemplateLst = (type: string): IRequestBody => ({
     method: "UFN_MESSAGETEMPLATE_LST",
-    parameters: {}
+    parameters: {
+        type: type,
+    }
 });
 
 export const insMessageTemplate = (
