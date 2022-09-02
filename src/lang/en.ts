@@ -3826,6 +3826,7 @@ const translation: LangKeys = {
     messagetemplate_video: 'Video',
     messagetemplate_url: 'URL',
     messagetemplate_quickreply: 'Quick Reply',
+    messagetemplate_quick_reply: 'Quick Reply',
     messagetemplate_low: 'Low',
     messagetemplate_medium: 'Medium',
     messagetemplate_high: 'High',
