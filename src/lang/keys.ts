@@ -3830,6 +3830,7 @@ export const langKeys = {
     messagetemplate_video: 'messagetemplate_video',
     messagetemplate_url: 'messagetemplate_url',
     messagetemplate_quickreply: 'messagetemplate_quickreply',
+    messagetemplate_quick_reply: 'messagetemplate_quick_reply',
     messagetemplate_low: 'messagetemplate_low',
     messagetemplate_medium: 'messagetemplate_medium',
     messagetemplate_high: 'messagetemplate_high',
