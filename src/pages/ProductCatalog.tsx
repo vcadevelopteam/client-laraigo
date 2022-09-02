@@ -560,6 +560,15 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
+                            label={t(langKeys.productcatalog_facebookcatalogname)}
+                            className="col-12"
+                            valueDefault={row?.facebookcatalogname || ""}
+                            onChange={(value) => setValue('facebookcatalogname', value)}
+                            error={errors?.facebookcatalogname?.message}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
                             label={t(langKeys.productcatalog_condition)}
                             className="col-6"
                             valueDefault={row?.condition || ""}
