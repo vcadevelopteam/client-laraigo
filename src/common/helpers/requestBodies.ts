@@ -748,9 +748,11 @@ export const getMessageTemplateSel = (id: number): IRequestBody => ({
     }
 });
 
-export const getMessageTemplateLst = (): IRequestBody => ({
+export const getMessageTemplateLst = (type: string): IRequestBody => ({
     method: "UFN_MESSAGETEMPLATE_LST",
-    parameters: {}
+    parameters: {
+        type: type,
+    }
 });
 
 export const insMessageTemplate = (
@@ -3002,6 +3004,14 @@ export const paymentCardInsert = ({ corpid, orgid, paymentcardid, cardnumber, ca
         type,
         username,
         operation: paymentcardid ? 'UPDATE' : 'INSERT',
+    },
+});
+
+export const conversationCallHold = ({ conversationid, holdtime }: Dictionary) => ({
+    method: "UFN_CONVERSATION_CALLHOLD",
+    parameters: {
+        conversationid,
+        holdtime
     },
 });
 

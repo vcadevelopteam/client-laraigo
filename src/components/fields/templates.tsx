@@ -1462,7 +1462,7 @@ export const FieldEditWithSelect: React.FC<EditWithSelectProps> = ({ label, clas
                                 height={200}
                                 width={280}
                                 itemSize={28}
-                                itemCount={data.length}
+                                itemCount={data?.length}
                             >
                                 {renderRow}
                             </FixedSizeList>

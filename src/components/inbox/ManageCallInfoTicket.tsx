@@ -14,9 +14,10 @@ import PauseIcon from '@material-ui/icons/Pause';
 import MicOffIcon from '@material-ui/icons/MicOff';
 import { FieldSelect } from 'components';
 import { Card, CardContent } from '@material-ui/core';
-import { convertLocalDate, secondsToTime, getSecondsUntelNow } from 'common/helpers';
+import { convertLocalDate, secondsToTime, getSecondsUntelNow, conversationCallHold } from 'common/helpers';
 import { langKeys } from 'lang/keys';
 import DialpadIcon from '@material-ui/icons/Dialpad';
+import { execute } from 'store/main/actions';
 
 const ManageCallInfoTicket: React.FC = () => {
     const { t } = useTranslation();
@@ -97,6 +98,19 @@ const ManageCallInfoTicket: React.FC = () => {
         }
     }, [phoneinbox])
 
+    const triggerHold = () => {
+        if (onholdstate) {
+            const timeToAdd = getSecondsUntelNow(convertLocalDate(onholdstatedate))
+            dispatch(execute(conversationCallHold({
+                holdtime: timeToAdd,
+                conversationid: ticketSelected?.conversationid
+            })))
+        }
+        dispatch(holdCall({ call: call.call, flag: !hold }));
+        sethold(!hold)
+        dispatch(setHold(hold))
+    }
+
     return (
         <div style={{ width: "100%" }}>
             <Card style={{ maxWidth: "500px" }}>
@@ -150,7 +164,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                 <IconButton //rejectcall
                                     style={{ marginLeft: "auto", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#fa6262' }}
                                     onClick={() => {
-                                        dispatch(holdCall({ call: call.call, flag: true }));
+                                        // dispatch(holdCall({ call: call.call, flag: true }));
                                         sethold(true)
                                         setmute(false)
                                         dispatch(hangupCall(call.call))
@@ -194,11 +208,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                     )}
                                     <IconButton //holdcall
                                         style={{ gridColumnStart: "col2", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: hold ? '#bdbdbd' : '#781baf' }}
-                                        onClick={() => {
-                                            dispatch(holdCall({ call: call.call, flag: !hold }));
-                                            sethold(!hold)
-                                            dispatch(setHold(hold))
-                                        }}
+                                        onClick={triggerHold}
                                     >
                                         <PauseIcon style={{ color: "white", width: "35px", height: "35px" }} />
                                     </IconButton>

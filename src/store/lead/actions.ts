@@ -13,7 +13,7 @@ export const getLead = (body: IRequestBody): IActionCall => ({
     type: null,
 });
 
-export const resetGetLead = (): IActionCall => ({type: actionTypes.GET_LEAD_RESET});
+export const resetGetLead = (): IActionCall => ({ type: actionTypes.GET_LEAD_RESET });
 
 export const saveLead = (body: IRequestBody | ITransaction | IRequestBody[], transaction: boolean = false): IActionCall => ({
     callAPI: () => {
@@ -57,7 +57,7 @@ export const saveLeadWithFiles = (
     };
 }
 
-export const resetSaveLead = (): IActionCall => ({type: actionTypes.SAVE_LEAD_RESET});
+export const resetSaveLead = (): IActionCall => ({ type: actionTypes.SAVE_LEAD_RESET });
 
 export const getAdvisers = (body: IRequestBody): IActionCall => ({
     callAPI: () => CommonService.main(body),
@@ -69,7 +69,7 @@ export const getAdvisers = (body: IRequestBody): IActionCall => ({
     type: null,
 });
 
-export const resetGetAdvisers = (): IActionCall => ({type: actionTypes.GET_ADVISERS_RESET});
+export const resetGetAdvisers = (): IActionCall => ({ type: actionTypes.GET_ADVISERS_RESET });
 
 export const getLeadLogNotes = (body: IRequestBody): IActionCall => ({
     callAPI: () => CommonService.main(body),
@@ -81,7 +81,7 @@ export const getLeadLogNotes = (body: IRequestBody): IActionCall => ({
     type: null,
 });
 
-export const resetGetLeadLogNotes = (): IActionCall => ({type: actionTypes.GET_LEADNOTES_RESET});
+export const resetGetLeadLogNotes = (): IActionCall => ({ type: actionTypes.GET_LEADNOTES_RESET });
 
 export const getLeadActivities = (body: IRequestBody): IActionCall => ({
     callAPI: () => CommonService.main(body),
@@ -93,7 +93,7 @@ export const getLeadActivities = (body: IRequestBody): IActionCall => ({
     type: null,
 });
 
-export const resetGetLeadActivities = (): IActionCall => ({type: actionTypes.GET_LEADACTIVITIES_RESET});
+export const resetGetLeadActivities = (): IActionCall => ({ type: actionTypes.GET_LEADACTIVITIES_RESET });
 
 export const saveLeadActivity = (body: IRequestBody): IActionCall => ({
     callAPI: () => CommonService.main(body),
@@ -105,7 +105,7 @@ export const saveLeadActivity = (body: IRequestBody): IActionCall => ({
     type: null,
 });
 
-export const resetSaveLeadActivity = (): IActionCall => ({type: actionTypes.SAVE_LEADACTIVITY_RESET});
+export const resetSaveLeadActivity = (): IActionCall => ({ type: actionTypes.SAVE_LEADACTIVITY_RESET });
 
 export const saveLeadLogNote = (body: IRequestBody): IActionCall => ({
     callAPI: async () => {
@@ -131,7 +131,7 @@ export const saveLeadLogNote = (body: IRequestBody): IActionCall => ({
     type: null,
 });
 
-export const resetSaveLeadLogNote = (): IActionCall => ({type: actionTypes.SAVE_LEADNOIE_RESET});
+export const resetSaveLeadLogNote = (): IActionCall => ({ type: actionTypes.SAVE_LEADNOIE_RESET });
 
 export const getLeadPhases = (body: IRequestBody): IActionCall => ({
     callAPI: () => CommonService.main(body),
@@ -143,14 +143,14 @@ export const getLeadPhases = (body: IRequestBody): IActionCall => ({
     type: null,
 });
 
-export const resetGetLeadPhases = (): IActionCall => ({type: actionTypes.GET_PHASES_RESET});
+export const resetGetLeadPhases = (): IActionCall => ({ type: actionTypes.GET_PHASES_RESET });
 
 export const setDisplay = (display: string): IActionCall => ({
     payload: display,
     type: actionTypes.DISPLAY_LEAD,
 });
 
-export const resetDisplay = (): IActionCall => ({type: actionTypes.DISPLAY_LEAD_RESET});
+export const resetDisplay = (): IActionCall => ({ type: actionTypes.DISPLAY_LEAD_RESET });
 
 /**Close lead -> (status = "CERRADO") */
 export const archiveLead = (body: IRequestBody): IActionCall => ({
@@ -163,7 +163,7 @@ export const archiveLead = (body: IRequestBody): IActionCall => ({
     type: null,
 });
 
-export const resetArchiveLead = (): IActionCall => ({type: actionTypes.ARCHIVE_LEAD_RESET});
+export const resetArchiveLead = (): IActionCall => ({ type: actionTypes.ARCHIVE_LEAD_RESET });
 
 /**Done lead -> (status = "REALIZADO") */
 export const markDoneActivity = (body: IRequestBody): IActionCall => ({
@@ -176,7 +176,7 @@ export const markDoneActivity = (body: IRequestBody): IActionCall => ({
     type: null,
 });
 
-export const resetMarkDoneActivity = (): IActionCall => ({type: actionTypes.MARK_DONE_ACTIVITY_RESET});
+export const resetMarkDoneActivity = (): IActionCall => ({ type: actionTypes.MARK_DONE_ACTIVITY_RESET });
 
 export const getLeadHistory = (body: IRequestBody): IActionCall => ({
     callAPI: () => CommonService.main(body),
@@ -188,7 +188,7 @@ export const getLeadHistory = (body: IRequestBody): IActionCall => ({
     type: null,
 });
 
-export const resetGetLeadHistory = (): IActionCall => ({type: actionTypes.GET_LEAD_HISTORY_RESET});
+export const resetGetLeadHistory = (): IActionCall => ({ type: actionTypes.GET_LEAD_HISTORY_RESET });
 
 export const updateLeadTags = (body: IRequestBody): IActionCall => ({
     callAPI: () => CommonService.main(body),
@@ -200,7 +200,7 @@ export const updateLeadTags = (body: IRequestBody): IActionCall => ({
     type: null,
 });
 
-export const resetUpdateLeadTags = (): IActionCall => ({type: actionTypes.UPDATE_LEAD_TAGS_RESET});
+export const resetUpdateLeadTags = (): IActionCall => ({ type: actionTypes.UPDATE_LEAD_TAGS_RESET });
 
 export const getLeadProductsDomain = (): IActionCall => ({
     callAPI: () => CommonService.main(getProductCatalogSel()),
@@ -212,7 +212,7 @@ export const getLeadProductsDomain = (): IActionCall => ({
     type: null,
 });
 
-export const resetGetLeadProductsDomain = (): IActionCall => ({type: actionTypes.GET_LEAD_PRODUCTS_DOMAIN_RESET});
+export const resetGetLeadProductsDomain = (): IActionCall => ({ type: actionTypes.GET_LEAD_PRODUCTS_DOMAIN_RESET });
 
 export const getLeadTagsDomain = (body: IRequestBody): IActionCall => ({
     callAPI: () => CommonService.main(body),
@@ -224,10 +224,10 @@ export const getLeadTagsDomain = (body: IRequestBody): IActionCall => ({
     type: null,
 });
 
-export const resetGetLeadTagsDomain = (): IActionCall => ({type: actionTypes.GET_LEAD_TAGS_DOMAIN_RESET});
+export const resetGetLeadTagsDomain = (): IActionCall => ({ type: actionTypes.GET_LEAD_TAGS_DOMAIN_RESET });
 
 export const getLeadTemplates = (): IActionCall => ({
-    callAPI: () => CommonService.main(getMessageTemplateLst()),
+    callAPI: () => CommonService.main(getMessageTemplateLst('')),
     types: {
         loading: actionTypes.GET_LEAD_TEMPLATES,
         success: actionTypes.GET_LEAD_TEMPLATES_SUCCESS,
@@ -236,7 +236,7 @@ export const getLeadTemplates = (): IActionCall => ({
     type: null,
 });
 
-export const resetGetLeadTemplates = (): IActionCall => ({type: actionTypes.GET_LEAD_TEMPLATES_RESET});
+export const resetGetLeadTemplates = (): IActionCall => ({ type: actionTypes.GET_LEAD_TEMPLATES_RESET });
 
 
 export const getLeadChannels = (): IActionCall => ({
@@ -249,4 +249,4 @@ export const getLeadChannels = (): IActionCall => ({
     type: null,
 });
 
-export const resetGetLeadChannels = (): IActionCall => ({type: actionTypes.GET_LEAD_CHANNELS_RESET});
+export const resetGetLeadChannels = (): IActionCall => ({ type: actionTypes.GET_LEAD_CHANNELS_RESET });
