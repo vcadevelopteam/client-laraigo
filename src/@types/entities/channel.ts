@@ -35,4 +35,6 @@ export interface IChannel {
     typedesc: string;
     updintegration: string;
     phone: string;
+    voximplantholdtone: string;
+    voximplantwelcometone: string;
 }

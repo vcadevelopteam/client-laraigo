@@ -68,6 +68,8 @@ const ChannelEdit: FC = () => {
             channel.coloricon && setHexIconColor(channel.coloricon);
             if (channel.servicecredentials) {
                 setServiceCredentials(JSON.parse(channel.servicecredentials));
+                setholdingtoneurl(channel?.voximplantholdtone||"")
+                setwelcometoneurl(channel?.voximplantwelcometone||"")
             }
         }
 
