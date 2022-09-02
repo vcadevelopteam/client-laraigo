@@ -344,10 +344,14 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 setValue('messagetemplatefooter', '');
         }
         if (data?.type === 'MAIL' || data?.type === 'HTML') {
-            if (messageTemplate.header)
+            if (messageTemplate.header) {
                 setValue('messagetemplateheader', { type: "TEXT", value: messageTemplate?.header });
-            else
+                setValue('subject', messageTemplate?.header);
+            }
+            else {
                 setValue('messagetemplateheader', { type: '', value: '' });
+                setValue('subject', '');
+            }
             if (messageTemplate.attachment)
                 setValue('messagetemplateattachment', messageTemplate?.attachment || '');
             else

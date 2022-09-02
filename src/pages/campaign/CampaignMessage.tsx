@@ -258,7 +258,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             }}
                         />
                     </div> : null}
-                {(detaildata.messagetemplatetype === 'MULTIMEDIA' && (detaildata?.messagetemplatebuttons !== [] || detaildata?.messagetemplatebuttons !== null)) && <div className="row-zyx">
+                {(detaildata.messagetemplatetype === 'MULTIMEDIA' && (detaildata?.messagetemplatebuttons || detaildata?.messagetemplatebuttons !== null)) && <div className="row-zyx">
                     <FieldView
                         label={t(langKeys.buttons)}
                         className="col-12"
