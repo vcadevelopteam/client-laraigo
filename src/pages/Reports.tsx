@@ -941,7 +941,7 @@ const Reports: FC = () => {
                                     title={t(langKeys.heatmap)}
                                 />
                                 <CardContent>
-                                    <Typography gutterBottom variant="h6" component="div">
+                                    <Typography gutterBottom variant="h6" component="div" style={{fontSize: "130%"}}>
                                         {t(langKeys.heatmap)}
                                     </Typography>
                                 </CardContent>
@@ -962,7 +962,7 @@ const Reports: FC = () => {
                                     title={t(langKeys.recordhsmreport)}
                                 />
                                 <CardContent>
-                                    <Typography gutterBottom variant="h6" component="div">
+                                    <Typography gutterBottom variant="h6" component="div" style={{fontSize: "130%"}}>
                                         {t(langKeys.recordhsmreport)}
                                     </Typography>
                                 </CardContent>
@@ -983,7 +983,7 @@ const Reports: FC = () => {
                                     title={t(langKeys.hsmhistory)}
                                 />
                                 <CardContent>
-                                    <Typography gutterBottom variant="h6" component="div">
+                                    <Typography gutterBottom variant="h6" component="div" style={{fontSize: "130%"}}>
                                         {t(langKeys.hsmhistory)}
                                     </Typography>
                                 </CardContent>
@@ -1004,7 +1004,7 @@ const Reports: FC = () => {
                                     title={t(langKeys.conversation_plural) + " Whatsapp"}
                                 />
                                 <CardContent>
-                                    <Typography gutterBottom variant="h6" component="div">
+                                    <Typography gutterBottom variant="h6" component="div" style={{fontSize: "130%"}}>
                                         {t(langKeys.conversation_plural) + " Whatsapp"}
                                     </Typography>
                                 </CardContent>
@@ -1025,7 +1025,7 @@ const Reports: FC = () => {
                                     title={t(langKeys.invoice)}
                                 />
                                 <CardContent>
-                                    <Typography gutterBottom variant="h6" component="div">
+                                    <Typography gutterBottom variant="h6" component="div" style={{fontSize: "130%"}}>
                                         {t(langKeys.invoice)}
                                     </Typography>
                                 </CardContent>
@@ -1046,7 +1046,7 @@ const Reports: FC = () => {
                                     title={t(langKeys.report_ticketvsasesor)}
                                 />
                                 <CardContent>
-                                    <Typography gutterBottom variant="h6" component="div">
+                                    <Typography gutterBottom variant="h6" component="div"  style={{fontSize: "130%"}}>
                                         {t(langKeys.report_ticketvsasesor)}
                                     </Typography>
                                 </CardContent>
@@ -1067,7 +1067,7 @@ const Reports: FC = () => {
                                     title={t(langKeys.campaign)}
                                 />
                                 <CardContent>
-                                    <Typography gutterBottom variant="h6" component="div">
+                                    <Typography gutterBottom variant="h6" component="div" style={{fontSize: "130%"}}>
                                         {t(langKeys.campaign)}
                                     </Typography>
                                 </CardContent>
@@ -1088,7 +1088,7 @@ const Reports: FC = () => {
                                     title={t('report_' + report?.origin)}
                                 />
                                 <CardContent>
-                                    <Typography gutterBottom variant="h6" component="div">
+                                    <Typography gutterBottom variant="h6" component="div" style={{fontSize: "130%"}}>
                                         {t('report_' + report?.origin)}
                                     </Typography>
                                 </CardContent>
@@ -1163,7 +1163,7 @@ const Reports: FC = () => {
                                                 />
 
                                                 <CardContent>
-                                                    <Typography gutterBottom variant="h6" component="div">
+                                                    <Typography gutterBottom variant="h6" component="div" style={{fontSize: "130%"}}>
                                                         {report.description}
                                                     </Typography>
                                                 </CardContent>
@@ -1255,7 +1255,7 @@ const Reports: FC = () => {
                                                 />
 
                                                 <CardContent>
-                                                    <Typography gutterBottom variant="h6" component="div">
+                                                    <Typography gutterBottom variant="h6" component="div" style={{fontSize: "130%"}}>
                                                         {report.description}
                                                     </Typography>
                                                 </CardContent>
