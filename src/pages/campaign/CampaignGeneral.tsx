@@ -90,6 +90,8 @@ type FormFields = {
     messagetemplatebuttons: Dictionary[],
     messagetemplatefooter: string,
     messagetemplateattachment: string,
+    messagetemplatelanguage: string,
+    messagetemplatepriority: string,
     executiontype: string,
     batchjson: Dictionary[],
     fields: SelectedColumns,
@@ -135,6 +137,8 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             messagetemplatebuttons: [],
             messagetemplatefooter: '',
             messagetemplateattachment: '',
+            messagetemplatelanguage: '',
+            messagetemplatepriority: '',
             executiontype: detaildata?.executiontype || (auxdata?.length > 0 ? auxdata[0].executiontype : 'MANUAL'),
             batchjson: [],
             fields: new SelectedColumns(),
@@ -204,6 +208,8 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('messagetemplatebuttons', data.messagetemplatebuttons || []);
         setValue('messagetemplatefooter', data.messagetemplatefooter || '');
         setValue('messagetemplateattachment', data.messagetemplateattachment || '');
+        setValue('messagetemplatelanguage', data.messagetemplatelanguage || '');
+        setValue('messagetemplatepriority', data.messagetemplatepriority || '');
         setValue('executiontype', data.executiontype);
         setValue('batchjson', data.batchjson || []);
         setValue('fields', { ...new SelectedColumns(), ...data.fields });
@@ -307,6 +313,8 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('messagetemplatebuttons', []);
         setValue('messagetemplatefooter', '');
         setValue('messagetemplateattachment', '');
+        setValue('messagetemplatelanguage', '');
+        setValue('messagetemplatepriority', '');
         await trigger('type');
     }
 
@@ -329,6 +337,8 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('messagetemplatename', messageTemplate?.name);
         setValue('messagetemplatenamespace', messageTemplate?.namespace);
         setValue('messagetemplatetype', messageTemplate?.templatetype);
+        setValue('messagetemplatelanguage', messageTemplate?.language);
+        setValue('messagetemplatepriority', messageTemplate?.priority);
         if (data?.type === 'HSM') {
             if (messageTemplate.headerenabled)
                 setValue('messagetemplateheader', { type: messageTemplate?.headertype, value: messageTemplate?.header });
