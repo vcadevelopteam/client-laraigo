@@ -38,6 +38,8 @@ export interface ICampaign {
 	messagetemplatebuttons?: Dictionary[],
 	messagetemplatefooter?: string,
 	messagetemplateattachment?: string,
+	messagetemplatelanguage?: string,
+	messagetemplatepriority?: string,
 	executiontype?: string,
 	batchjson?: Dictionary[],
 	fields?: Dictionary,
