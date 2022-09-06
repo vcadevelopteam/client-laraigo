@@ -279,6 +279,13 @@ export const subroutes: RouteConfig[] = [
         icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
     },
     {
+        key: paths.EXTRASLOCATION,
+        description: <Trans i18nKey={langKeys.location} count={2} />,
+        tooltip: "",
+        path: paths.EXTRASLOCATION,
+        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+    },
+    {
         key: paths.PERSON,
         description: <Trans i18nKey={langKeys.person_plural} count={2} />,
         tooltip: "",

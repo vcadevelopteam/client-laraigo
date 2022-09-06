@@ -3172,3 +3172,16 @@ export const selCommunicationChannelWhatsApp = (): IRequestBody => ({
     key: "UFN_COMMUNICATIONCHANNEL_SEL_WHATSAPP",
     parameters: {}
 })
+
+export const getPaginatedLocation = ({ skip, take, filters, sorts, locationid="" }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_LOCATION_SEL",
+    methodCount: "UFN_LOCATION_TOTALRECORDS",
+    parameters: {
+        skip,
+        take,
+        filters,
+        sorts,
+        origin: "location",
+        locationid,
+    }
+})
