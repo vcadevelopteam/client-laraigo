@@ -2788,6 +2788,7 @@ const translation: LangKeys = {
     app_person: "Person",
     app_systemlabel: "System label",
     app_home: "Home",
+    propertytiempobalanceollamada: "The value is from 0 to 30 seconds",
     app_dashboard: "Dashboard",
     app_reports: "Reports",
     app_tickets: "Tickets",
