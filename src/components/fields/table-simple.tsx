@@ -318,6 +318,8 @@ const TableZyx = React.memo(({
     handleCalculate,
     HeadComponent,
     ButtonsElement,
+    triggerExportPersonalized,
+    exportPersonalized,
     pageSizeDefault = 20,
     importCSV,
     handleTemplate,
@@ -711,7 +713,7 @@ const TableZyx = React.memo(({
 
     const RenderRow = React.useCallback(
         ({ index, style }) => {
-            style = { ...style, display: 'flex', alignItems: 'flex-end' }
+            style = { ...style, display: 'flex', alignItems: 'flex-end', cursor: onClickRow ? 'pointer' : 'default' }
             const row = page[index]
             prepareRow(row);
             return (
@@ -723,15 +725,20 @@ const TableZyx = React.memo(({
                         <TableCell
                             {...cell.getCellProps({
                                 style: {
-                                    minWidth: cell.column.minWidth,
-                                    width: cell.column.width,
-                                    maxWidth: cell.column.maxWidth,
+                                    ...(cell.column.width === 'auto' ? {
+                                        flex: 1,
+                                    } : {
+                                        minWidth: cell.column.minWidth,
+                                        width: cell.column.width,
+                                        maxWidth: cell.column.maxWidth,
+                                    }),
                                     overflow: 'hidden',
                                     textOverflow: 'ellipsis',
                                     whiteSpace: 'nowrap',
                                     textAlign: cell.column.type === "number" ? "right" : (cell.column.type?.includes('centered') ? "center" : "left"),
                                 },
                             })}
+                            onClick={() => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original, cell?.column?.id) : null}
                         >
                             {cell.render('Cell')}
                         </TableCell>
@@ -837,7 +844,7 @@ const TableZyx = React.memo(({
                             variant="contained"
                             color="primary"
                             disabled={loading}
-                            onClick={() => exportExcel(String(titlemodule || '') + "Report", globalFilteredRows.map(x => x.original), columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
+                            onClick={() => triggerExportPersonalized ? exportPersonalized && exportPersonalized() : exportExcel(String(titlemodule || '') + "Report", globalFilteredRows.map(x => x.original), columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
                             startIcon={<DownloadIcon />}
                         ><Trans i18nKey={langKeys.download} />
                         </Button>
@@ -863,13 +870,20 @@ const TableZyx = React.memo(({
             <TableContainer style={{ position: "relative" }}>
                 <Box overflow="auto" >
                     <Table size="small" {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
-                        <TableHead style={{ display: useSelection ? 'flex' : 'table-header-group' }}>
+                        <TableHead style={{ display: 'table-header-group' }}>
                             {headerGroups.map((headerGroup) => (
-                                <TableRow  {...headerGroup.getHeaderGroupProps()}>
+                                <TableRow  {...headerGroup.getHeaderGroupProps()} style={useSelection ? { display: 'flex' } : {}}>
                                     {headerGroup.headers.map((column, ii) => (
                                         column.activeOnHover ?
                                             <th style={{ width: "0px" }} key="header-floating"></th> :
-                                            <TableCell key={ii} style={useSelection ? { minWidth: `${column.width}px`, maxWidth: `${column.width}px` } : {}}>
+                                            <TableCell key={ii} style={useSelection ? {
+                                                ...(column.width == 'auto' ? {
+                                                    flex: 1,
+                                                } : {
+                                                    minWidth: column.minWidth,
+                                                    width: column.width,
+                                                    maxWidth: column.maxWidth,
+                                                })} : {}}>
                                                 {column.isComponent ?
                                                     column.render('Header') :
                                                     (<>

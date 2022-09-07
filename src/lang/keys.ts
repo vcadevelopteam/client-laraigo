@@ -996,6 +996,10 @@ export const langKeys = {
 
     status_sent: 'status_sent',
     'status_not sent': 'status_not sent',
+    status_attended: 'status_attended',
+    status_enviado: 'status_enviado',
+    'status_no enviado': 'status_no enviado',
+    status_atendido: 'status_atendido',
 
     graphic_view: 'graphic_view',
     graphic_configuration: 'graphic_configuration',

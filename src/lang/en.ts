@@ -404,6 +404,10 @@ const translation: LangKeys = {
 
     status_sent: 'sent',
     'status_not sent': 'not sent',
+    status_attended: 'attended',
+    status_enviado: 'sent',
+    'status_no enviado': 'not sent',
+    status_atendido: 'attended',
 
     status_activo: 'active',
     status_inactivo: 'inactive',
