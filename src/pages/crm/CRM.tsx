@@ -257,8 +257,6 @@ const CRM: FC = () => {
           ...unordeneddatacolumns.filter((x)=>x.type==="PROPOSITION"),
           ...unordeneddatacolumns.filter((x)=>x.type==="WON"),
         ];
-        console.log(unordeneddatacolumns)
-        console.log(ordereddata)
         setDataColumn(ordereddata)
       }
     }
@@ -619,7 +617,6 @@ const CRM: FC = () => {
         isComponent: true,
         Cell: (props: any) => {
           const row = props.cell.row.original;
-          console.log((!voxiConnection.error && !voxiConnection.loading && statusCall!=="CONNECTED" && userConnected && statusCall!=="CONNECTING" && !!row.phone))
           if (row.status === 'ACTIVO') {
             return (
               <React.Fragment>

@@ -370,7 +370,6 @@ const DashboardManagerial: FC = () => {
         if(bringdataFilters){
             if (mainResultMulti.data.length !== 0) {
                 let multiData = mainResultMulti.data;
-                console.log(groups)
                 setdataqueue(multiData[0] && multiData[0].success ? multiData[0].data.filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true) : []);
                 setdataprovider(multiData[1] && multiData[1].success ? multiData[1].data : []);
                 setdatachannels(multiData[2] && multiData[2].success ? multiData[2].data : []);
@@ -1019,7 +1018,6 @@ const DashboardManagerial: FC = () => {
                         return { hora: i, asesoresconectados: "0", avgasesoresconectados: "0" }
                 })
                 setResAsesoreconectadosbar(arrayconbar)
-                console.log(arrayconbar)
                 let avg= arrayconbar.reduce((acc, x) => acc + Number(x.asesoresconectados),0)/24
                 setDataAsesoreconectadosbar({
                     avgasesoresconectados: avg.toFixed(2)

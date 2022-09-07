@@ -31,7 +31,6 @@ const callWSMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async
         const loginData = { data: payload };
 
         if (socket.connected) {
-            // console.log("vamos a desconectar")
             socket.disconnect();
         }
         socket.auth = loginData;
@@ -40,7 +39,6 @@ const callWSMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async
             console.log("load eventsListeners")
             eventsListeners.forEach(({ event, type, extra = {} }) => {
                 socket.on(event, (datatmp) => {
-                    // console.log("voximplant: event ", event, datatmp)
                     dispatch({ type, payload: { ...datatmp, ...extra } })
                 });
             });
