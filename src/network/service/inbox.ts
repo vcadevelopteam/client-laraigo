@@ -37,6 +37,10 @@ export function massiveCloseTicket({ listTickets, motive, observation }: IMassiv
     return APIManager.post(apiUrls.MASSIVE_CLOSE_TICKET, { data: { data } }, true);
 }
 
+export function triggerBlock(parameters: Dictionary) {
+    return APIManager.post(apiUrls.TRIGGERBLOCK, { data: parameters }, true);
+}
+
 export function sendHSM(data: ISendHSM) {
     return APIManager.post(apiUrls.SEND_HSM, { data: { data } }, true);
 }

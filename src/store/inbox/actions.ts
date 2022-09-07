@@ -311,3 +311,13 @@ export const newTicketCall = (payload: any): IActionCall => ({ type: actionTypes
 export const setDataUser = (payload: { holdingBySupervisor: "CANAL" | "GRUPO", userGroup: string, role: string }): IActionCall => ({ type: actionTypes.SET_DATA_USER, payload });
 
 export const updateClassificationPerson = (payload: boolean): IActionCall => ({ type: actionTypes.UPDATE_CLASSIFICATION_PERSON, payload });
+
+export const triggerBlock = (parameters: Dictionary): IActionCall => ({
+    callAPI: () => InboxService.triggerBlock(parameters),
+    types: {
+        loading: actionTypes.SEND_BLOCK,
+        success: actionTypes.SEND_BLOCK_SUCCESS,
+        failure: actionTypes.SEND_BLOCK_FAILURE,
+    },
+    type: null,
+});

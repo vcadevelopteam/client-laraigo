@@ -687,6 +687,39 @@ export const personSawChat = (state: IState, action: IAction): IState => {
 }
 
 
+export const triggerBlock = (state: IState): IState => ({
+    ...state,
+    triggerBlock: { ...state.triggerBlock, loading: true, error: false }
+});
+
+export const triggerBlockSuccess = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        triggerBlock: {
+            loading: false,
+            error: false
+        }
+    }
+};
+
+export const triggerBlockFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    triggerBlock: {
+        ...state.triggerBlock,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    }
+});
+
+export const triggerBlockReset = (state: IState): IState => ({
+    ...state,
+    triggerBlock: initialState.triggerBlock,
+});
+
+
+
 export const getDataTicket = (state: IState): IState => ({
     ...state,
     interactionList: { ...state.interactionList, data: [], loading: true, error: false },
@@ -714,7 +747,7 @@ export const getDataTicketSuccess = (state: IState, action: IAction): IState => 
                 error: false,
             },
             richResponseList: {
-                data: action.payload.data[3].data.map((x: any) => JSON.parse(x.block)) || [],
+                data: action.payload.data[3].data,//action.payload.data[3].data.map((x: any) => JSON.parse(x.block)) || [],
                 count: action.payload.count,
                 loading: false,
                 error: false,
