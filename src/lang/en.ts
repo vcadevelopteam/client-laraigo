@@ -3910,6 +3910,7 @@ const translation: LangKeys = {
     TEMPLATE_DISABLED: "DISABLED",
     TEMPLATE_LOCKED: "LOCKED",
     TEMPLATE_PAUSED: "PAUSED",
+    TEMPLATE_SUBMITTED: "SUBMITTED",
     TEMPLATE_AF: "AFRIKAANS",
     TEMPLATE_SQ: "ALBANIAN",
     TEMPLATE_AR: "ARABIC",
@@ -3981,6 +3982,9 @@ const translation: LangKeys = {
     TEMPLATE_UZ: "UZBEK",
     TEMPLATE_VI: "VIETNAMESE",
     TEMPLATE_ZU: "ZULU",
+    nametemplate_validation: "Only lowercase letters, numbers and underscores are allowed",
+    messagetemplate_phonenumber: 'Phone Number',
+    TEMPLATE_NONE: "NONE",
 };
 
 const enResource: ResourceLanguage = {

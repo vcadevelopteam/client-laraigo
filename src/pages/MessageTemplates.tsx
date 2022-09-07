@@ -207,7 +207,7 @@ const MessageTemplates: FC = () => {
                 NoFilter: true,
                 Cell: (props: any) => {
                     const { externalstatus } = props.cell.row.original;
-                    return (externalstatus ? t(externalstatus) : t(langKeys.none)).toUpperCase();
+                    return (externalstatus ? t(`TEMPLATE_${externalstatus}`) : t(langKeys.none)).toUpperCase();
                 }
             },
         ],
@@ -415,7 +415,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
     const classes = useStyles();
     const dataCategory = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataLanguage = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const dataChannel = multiData[2] && multiData[2].success ? multiData[2].data : [];
+    const dataChannel = multiData[2] && multiData[2].success ? multiData[2].data.filter(x => x.type != "WHAG") : [];
     const addRequest = useSelector(state => state.channel.requestAddTemplate);
     const executeRes = useSelector(state => state.main.execute);
     const uploadResult = useSelector(state => state.main.uploadFile);
@@ -429,14 +429,26 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
     const [isNew, setIsNew] = useState(row?.id ? false : true);
     const [isProvider, setIsProvider] = useState(row?.fromprovider ? true : false);
     const [disableInput, setDisableInput] = useState(false);
+    const [disableNamespace, setDisableNamespace] = useState(row?.communicationchanneltype === "WHAT" ? false : true);
     const [waitSave, setWaitSave] = useState(false);
     const [waitAdd, setWaitAdd] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
 
     const dataExternalCategory = [
+        { value: "ACCOUNT_UPDATE", description: t(langKeys.TEMPLATE_ACCOUNT_UPDATE) },
+        { value: "PAYMENT_UPDATE", description: t(langKeys.TEMPLATE_PAYMENT_UPDATE) },
+        { value: "PERSONAL_FINANCE_UPDATE", description: t(langKeys.TEMPLATE_PERSONAL_FINANCE_UPDATE) },
+        { value: "SHIPPING_UPDATE", description: t(langKeys.TEMPLATE_SHIPPING_UPDATE) },
+        { value: "RESERVATION_UPDATE", description: t(langKeys.TEMPLATE_RESERVATION_UPDATE) },
+        { value: "ISSUE_RESOLUTION", description: t(langKeys.TEMPLATE_ISSUE_RESOLUTION) },
+        { value: "APPOINTMENT_UPDATE", description: t(langKeys.TEMPLATE_APPOINTMENT_UPDATE) },
+        { value: "TRANSPORTATION_UPDATE", description: t(langKeys.TEMPLATE_TRANSPORTATION_UPDATE) },
+        { value: "TICKET_UPDATE", description: t(langKeys.TEMPLATE_TICKET_UPDATE) },
+        { value: "ALERT_UPDATE", description: t(langKeys.TEMPLATE_ALERT_UPDATE) },
+        { value: "AUTO_REPLY", description: t(langKeys.TEMPLATE_AUTO_REPLY) },
         { value: "TRANSACTIONAL", description: t(langKeys.TEMPLATE_TRANSACTIONAL) },
         { value: "MARKETING", description: t(langKeys.TEMPLATE_MARKETING) },
-        { value: "OTP", description: t(langKeys.TEMPLATE_OTP) }
+        { value: "OTP", description: t(langKeys.TEMPLATE_OTP) },
     ];
 
     const dataExternalStatus = [
@@ -448,7 +460,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
         { value: "DELETED", description: t(langKeys.TEMPLATE_DELETED) },
         { value: "DISABLED", description: t(langKeys.TEMPLATE_DISABLED) },
         { value: "LOCKED", description: t(langKeys.TEMPLATE_LOCKED) },
-        { value: "PAUSED", description: t(langKeys.TEMPLATE_PAUSED) }
+        { value: "PAUSED", description: t(langKeys.TEMPLATE_PAUSED) },
+        { value: "SUBMITTED", description: t(langKeys.TEMPLATE_SUBMITTED) },
+        { value: "NONE", description: (t(langKeys.NONE) || "").toUpperCase() },
     ];
 
     const dataExternalLanguage = [
@@ -547,6 +561,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
     const dataButtonType = [
         { value: "url", text: t(langKeys.messagetemplate_url) },
         { value: "quick_reply", text: t(langKeys.messagetemplate_quickreply) },
+        { value: "phone_number", text: t(langKeys.messagetemplate_phonenumber) },
     ];
 
     const dataPriority = [
@@ -580,7 +595,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
             typeattachment: row?.typeattachment || '',
             fromprovider: row?.fromprovider || false,
             externalid: row?.externalid || '',
-            externalstatus: row?.externalstatus || 'PENDING',
+            externalstatus: row?.externalstatus || 'NONE',
             communicationchannelid: row?.communicationchannelid || 0,
             communicationchanneltype: row?.communicationchanneltype || '',
             servicecredentials: row?.communicationchannelservicecredentials || '',
@@ -601,7 +616,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
         register('body', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('category', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('language', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('name', { validate: (value) => (value && ((value || "").match("^[a-z0-9_]+$") !== null)) || t(langKeys.nametemplate_validation) });
         register('namespace', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('templatetype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -765,6 +780,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
             const type = row?.type || "HSM";
 
             if (type === "HSM") {
+                register('name', { validate: (value) => (value && ((value || "").match("^[a-z0-9_]+$") !== null)) || t(langKeys.nametemplate_validation) });
                 register('namespace', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
                 register('body', { validate: (value) => (value && (value || '').length <= 1024) || "" + t(langKeys.validationchar) });
                 register('header', { validate: (value) => true });
@@ -781,6 +797,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                 onChangeTemplateMedia();
             }
             else {
+                register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
                 register('namespace', { validate: (value) => true });
                 if (type === "SMS") {
                     register('header', { validate: (value) => true });
@@ -831,6 +848,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
             case 'HSM':
                 setValue('body', '');
 
+                register('name', { validate: (value) => (value && ((value || "").match("^[a-z0-9_]+$") !== null)) || t(langKeys.nametemplate_validation) });
                 register('namespace', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
                 register('body', { validate: (value) => (value && (value || '').length <= 1024) || "" + t(langKeys.validationchar) });
                 register('header', { validate: (value) => true });
@@ -853,6 +871,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                 setValue('body', '');
                 setValue('namespace', '');
 
+                register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
                 register('namespace', { validate: (value) => true });
                 register('header', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
                 register('body', { validate: (value) => true });
@@ -866,6 +885,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                 setValue('body', '');
                 setValue('namespace', '');
 
+                register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
                 register('namespace', { validate: (value) => true });
                 register('header', { validate: (value) => true });
                 register('body', { validate: (value) => (value && (value || '').length <= 160) || "" + t(langKeys.validationchar) });
@@ -1010,10 +1030,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
     }
 
     const changeProvider = async (value: any) => {
-        console.log(JSON.stringify(value));
-
-        setValue('category', '');
-        trigger('category');
+        if (value && isProvider) {
+        }
+        else {
+            setValue('category', '');
+        }
 
         if (value) {
             setIsProvider(true);
@@ -1027,13 +1048,21 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
             setValue('servicecredentials', value.servicecredentials);
             setValue('integrationid', value.integrationid);
             setValue('fromprovider', true);
+
+            if (value.type === "WHAT") {
+                setDisableNamespace(false);
+            }
+            else {
+                setDisableNamespace(true);
+                setValue('namespace', '-');
+            }
         }
         else {
             setIsProvider(false);
 
             setValue('fromprovider', false);
             setValue('externalid', '');
-            setValue('externalstatus', '');
+            setValue('externalstatus', 'NONE');
             setValue('communicationchannelid', 0);
             setValue('communicationchanneltype', '');
             setValue('exampleparameters', '');
@@ -1180,7 +1209,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                             optionDesc="communicationchanneldesc"
                             optionValue="communicationchannelid"
                             valueDefault={getValues('communicationchannelid')}
-                            disabled={disableInput}
+                            disabled={!isNew || disableInput}
                         />
                         <FieldSelect
                             className="col-6"
@@ -1200,6 +1229,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                             label={t(langKeys.namespace)}
                             onChange={(value) => setValue('namespace', value)}
                             valueDefault={getValues('namespace')}
+                            disabled={disableNamespace}
                         />
                     </div>}
                     <div className="row-zyx">
@@ -1272,6 +1302,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                 label={t(langKeys.header)}
                                 onChange={(value) => setValue('header', value)}
                                 valueDefault={getValues('header')}
+                                disabled={disableInput && getValues('header') === "text"}
                             />
                         </React.Fragment>
                     </div>}

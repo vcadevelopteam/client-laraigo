@@ -3901,6 +3901,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     TEMPLATE_DISABLED: "DESHABILITADO",
     TEMPLATE_LOCKED: "BLOQUEADA",
     TEMPLATE_PAUSED: "EN PAUSA",
+    TEMPLATE_SUBMITTED: "PRESENTADO",
     TEMPLATE_AF: "AFRIKAANS",
     TEMPLATE_SQ: "ALBANÉS",
     TEMPLATE_AR: "ÁRABE",
@@ -3972,6 +3973,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     TEMPLATE_UZ: "UZBEKO",
     TEMPLATE_VI: "VIETNAMITA",
     TEMPLATE_ZU: "ZULÚ",
+    nametemplate_validation: "Solo minúsculas, números y guion bajo son permitidos",
+    messagetemplate_phonenumber: 'Número Telefónico',
+    TEMPLATE_NONE: "NINGUNO",
 };
 
 const esResource: ResourceLanguage = {

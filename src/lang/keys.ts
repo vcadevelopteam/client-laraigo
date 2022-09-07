@@ -3892,6 +3892,7 @@ export const langKeys = {
     TEMPLATE_DISABLED: "TEMPLATE_DISABLED",
     TEMPLATE_LOCKED: "TEMPLATE_LOCKED",
     TEMPLATE_PAUSED: "TEMPLATE_PAUSED",
+    TEMPLATE_SUBMITTED: "TEMPLATE_SUBMITTED",
     TEMPLATE_AF: "TEMPLATE_AF",
     TEMPLATE_SQ: "TEMPLATE_SQ",
     TEMPLATE_AR: "TEMPLATE_AR",
@@ -3963,6 +3964,9 @@ export const langKeys = {
     TEMPLATE_UZ: "TEMPLATE_UZ",
     TEMPLATE_VI: "TEMPLATE_VI",
     TEMPLATE_ZU: "TEMPLATE_ZU",
+    nametemplate_validation: "nametemplate_validation",
+    messagetemplate_phonenumber: 'messagetemplate_phonenumber',
+    TEMPLATE_NONE: "TEMPLATE_NONE",
 };
 
 export type LangKeys = typeof langKeys;
