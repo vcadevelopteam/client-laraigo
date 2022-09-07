@@ -74,8 +74,52 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
     const [center, setcenter] = React.useState({
       lat: 0,
       lng: 0,
-      time: new Date(),
     });
+
+    
+    useEffect(() => {
+        getLocation();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+    function getLocation(){
+        if(navigator.geolocation){
+        navigator.geolocation.getCurrentPosition(showPosition)
+        }else{
+        console.error('Geolocation not supported by this browser')
+        }
+    }
+    async function showPosition(position:any) {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        
+        setMarker({
+        lat: lat,
+        lng: lng,
+        time: new Date(),
+        });
+
+        setcenter({
+        lat: lat,
+        lng: lng,
+        });
+
+        const urltosearch = `${apiUrls.GETGEOCODE}?lat=${lat}&lng=${lng}`;
+        const response = await fetch(urltosearch, {
+            method: 'GET',
+        });
+        if (response.ok) {
+            try {
+                const r = await response.json();
+                if (r.status === "OK" && r.results && r.results instanceof Array && r.results.length > 0) {
+                    cleanDataAddres(r.results[0].address_components);
+                    setDirectionData((prev)=>({...prev, 
+                    movedmarker: true,
+                    searchLocation: r.results[0].formatted_address
+                    }))
+                }
+            } catch (e) { }
+        }
+    }
     const [directionData, setDirectionData] = React.useState({
       department: "",
       province: "",
