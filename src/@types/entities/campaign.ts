@@ -1,25 +1,25 @@
 import { Dictionary } from "@types";
 
 export class SelectedColumns {
-    primarykey: string;
-    column: boolean[];
-    columns: string[];
-    firstname: string;
-    lastname: string;
-    constructor() {
-        this.primarykey = '';
-        this.column = [];
-        this.columns = [];
-        this.firstname = '';
-        this.lastname = '';
-    }
+	primarykey: string;
+	column: boolean[];
+	columns: string[];
+	firstname: string;
+	lastname: string;
+	constructor() {
+		this.primarykey = '';
+		this.column = [];
+		this.columns = [];
+		this.firstname = '';
+		this.lastname = '';
+	}
 }
 
 export interface ICampaign {
-    isnew?: boolean,
-    id?: number,
+	isnew?: boolean,
+	id?: number,
 	communicationchannelid?: number,
-    communicationchanneltype?: string,
+	communicationchanneltype?: string,
 	usergroup?: string,
 	type?: string,
 	status?: string,
@@ -29,22 +29,25 @@ export interface ICampaign {
 	enddate?: string,
 	repeatable?: boolean,
 	frecuency?: number,
-    source?: string,
+	source?: string,
 	messagetemplateid?: number,
 	messagetemplatename?: string,
 	messagetemplatenamespace?: string,
 	messagetemplatetype?: string,
 	messagetemplateheader?: Dictionary,
 	messagetemplatebuttons?: Dictionary[],
-	// messagetemplatefooter?: string,
+	messagetemplatefooter?: string,
+	messagetemplateattachment?: string,
+	messagetemplatelanguage?: string,
+	messagetemplatepriority?: string,
 	executiontype?: string,
 	batchjson?: Dictionary[],
 	fields?: Dictionary,
-    operation?: string,
+	operation?: string,
 
-    headers?: any[],
-    jsonData?: any[],
-    selectedColumns?: SelectedColumns,
+	headers?: any[],
+	jsonData?: any[],
+	selectedColumns?: SelectedColumns,
 	selectedRows?: any,
 	person?: any[],
 

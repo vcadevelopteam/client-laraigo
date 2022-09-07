@@ -58,39 +58,43 @@ const dataSource: Dictionary = {
 };
 
 const dataCampaignType = [
-    { key: 'TEXTO', value: 'text'},
+    { key: 'TEXTO', value: 'text' },
     { key: 'HSM', value: 'hsm', rif: 'startsWith', rifvalue: 'WHA' },
-    { key: 'SMS', value: 'sms', rif: 'startsWith', rifvalue: 'SMS'},
-    { key: 'CALL', value: 'call', rif: 'starsWith', rifvalue: 'VOX' }
+    { key: 'SMS', value: 'sms', rif: 'startsWith', rifvalue: 'SMS' },
+    { key: 'CALL', value: 'call', rif: 'starsWith', rifvalue: 'VOX' },
+    { key: 'MAIL', value: 'mail', rif: 'starsWith', rifvalue: 'MAI' },
 ];
 
 type FormFields = {
     isnew: boolean,
     id: number,
-	communicationchannelid: number,
+    communicationchannelid: number,
     communicationchanneltype: string,
-	usergroup: string,
-	type: string,
-	status: string,
-	title: string,
-	description: string,
-	subject: string,
-	message: string, 
-	startdate: string,
-	enddate: string,
-	repeatable: boolean,
-	frecuency: number,
+    usergroup: string,
+    type: string,
+    status: string,
+    title: string,
+    description: string,
+    subject: string,
+    message: string,
+    startdate: string,
+    enddate: string,
+    repeatable: boolean,
+    frecuency: number,
     source: string,
-	messagetemplateid: number,
-	messagetemplatename: string,
-	messagetemplatenamespace: string,
+    messagetemplateid: number,
+    messagetemplatename: string,
+    messagetemplatenamespace: string,
     messagetemplatetype: string,
-	messagetemplateheader: Dictionary,
-	messagetemplatebuttons: Dictionary[],
-    // messagetemplatefooter: string,
-	executiontype: string,
-	batchjson: Dictionary[],
-	fields: SelectedColumns,
+    messagetemplateheader: Dictionary,
+    messagetemplatebuttons: Dictionary[],
+    messagetemplatefooter: string,
+    messagetemplateattachment: string,
+    messagetemplatelanguage: string,
+    messagetemplatepriority: string,
+    executiontype: string,
+    batchjson: Dictionary[],
+    fields: SelectedColumns,
     operation: string,
     sourcechanged: boolean
 }
@@ -101,12 +105,12 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const { t } = useTranslation();
 
     const dataStatus = [...multiData[0] && multiData[0].success ? multiData[0].data : []];
-    const dataChannel = [...multiData[1] && multiData[1].success ? multiData[1].data : []];
+    const dataChannel = [...multiData[1] && multiData[1].success ? (multiData[1].data || []).filter(x => ((x.type || '').startsWith('WHA') || (x.type || '').startsWith('SMS') || (x.type || '').startsWith('MAI') || (x.type || '').startsWith('VOX'))) : []];
     const dataGroup = [...multiData[2] && multiData[2].success ? multiData[2].data : []];
     const dataMessageTemplate = [...multiData[3] && multiData[3].success ? multiData[3].data : []];
-    
+
     const [openModal, setOpenModal] = useState(false);
-    
+
     const { register, setValue, getValues, trigger, formState: { errors } } = useForm<FormFields>({
         defaultValues: {
             isnew: row ? false : true,
@@ -131,7 +135,10 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             messagetemplatetype: 'STANDARD',
             messagetemplateheader: {},
             messagetemplatebuttons: [],
-            // messagetemplatefooter: '',
+            messagetemplatefooter: '',
+            messagetemplateattachment: '',
+            messagetemplatelanguage: '',
+            messagetemplatepriority: '',
             executiontype: detaildata?.executiontype || (auxdata?.length > 0 ? auxdata[0].executiontype : 'MANUAL'),
             batchjson: [],
             fields: new SelectedColumns(),
@@ -144,7 +151,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         register('title', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('startdate', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-        register('enddate', { 
+        register('enddate', {
             validate: {
                 value: (value: any) => (value && value.length) || t(langKeys.field_required),
                 afterstart: (value: any) => validateDate(value) || t(langKeys.field_afterstart)
@@ -156,14 +163,14 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         register('source', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('type', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
-    
+
     useEffect(() => {
         if (row !== null && Object.keys(detaildata).length === 0) {
             if (auxdata.length > 0) {
                 let messageTemplateData = dataMessageTemplate.find(d => d.id === auxdata[0].messagetemplateid) || {};
                 setStepData({
                     ...auxdata[0],
-                    messagetemplatename: messageTemplateData.name || auxdata[0].messagetemplatename ||'',
+                    messagetemplatename: messageTemplateData.name || auxdata[0].messagetemplatename || '',
                     messagetemplatenamespace: messageTemplateData.namespace || auxdata[0].messagetemplatenamespace || '',
                     messagetemplatetype: messageTemplateData.templatetype || 'STANDARD',
                 });
@@ -199,10 +206,13 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('messagetemplatetype', data.messagetemplatetype);
         setValue('messagetemplateheader', data.messagetemplateheader || {});
         setValue('messagetemplatebuttons', data.messagetemplatebuttons || []);
-        // setValue('messagetemplatefooter', data.messagetemplatefooter || '');
+        setValue('messagetemplatefooter', data.messagetemplatefooter || '');
+        setValue('messagetemplateattachment', data.messagetemplateattachment || '');
+        setValue('messagetemplatelanguage', data.messagetemplatelanguage || '');
+        setValue('messagetemplatepriority', data.messagetemplatepriority || '');
         setValue('executiontype', data.executiontype);
         setValue('batchjson', data.batchjson || []);
-        setValue('fields', {...new SelectedColumns(), ...data.fields});
+        setValue('fields', { ...new SelectedColumns(), ...data.fields });
     }
 
     useEffect(() => {
@@ -212,9 +222,9 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 data.messagetemplateheader = data.messagetemplateheader || {};
                 data.messagetemplatebuttons = data.messagetemplatebuttons || [];
                 data.batchjson = data.batchjson || [];
-                data.fields = {...new SelectedColumns(), ...data.fields};
-                setDetaildata({...detaildata, ...data});
-                setFrameProps({...frameProps, executeSave: false, checkPage: false, valid: {...frameProps.valid, 0: valid}});
+                data.fields = { ...new SelectedColumns(), ...data.fields };
+                setDetaildata({ ...detaildata, ...data });
+                setFrameProps({ ...frameProps, executeSave: false, checkPage: false, valid: { ...frameProps.valid, 0: valid } });
                 if (valid) {
                     setPageSelected(frameProps.page);
                 }
@@ -239,16 +249,19 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         const channeltype = dataChannel.filter(d => d.communicationchannelid === data?.communicationchannelid)[0]?.type;
         setValue('communicationchanneltype', channeltype);
         if (channeltype?.startsWith('WHA')) {
-            onChangeType({key: 'HSM'});
+            onChangeType({ key: 'HSM' });
         }
         else if (channeltype?.startsWith('SMS')) {
-            onChangeType({key: 'SMS'});
+            onChangeType({ key: 'SMS' });
         }
         else if (channeltype?.startsWith('VOX')) {
-            onChangeType({key: 'CALL'});
+            onChangeType({ key: 'CALL' });
+        }
+        else if (channeltype?.startsWith('MAI')) {
+            onChangeType({ key: 'MAIL' });
         }
         else {
-            onChangeType({key: 'TEXTO'});
+            onChangeType({ key: 'TEXTO' });
         }
         await trigger(['communicationchannelid', 'communicationchanneltype', 'type']);
     }
@@ -268,7 +281,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const onChangeSource = (data: Dictionary) => {
         setValue('source', data?.key || '');
         setValue('sourcechanged', true);
-        setFrameProps({...frameProps, valid: {...frameProps.valid, 1: false}});
+        setFrameProps({ ...frameProps, valid: { ...frameProps.valid, 1: false } });
     }
 
     const filterDataCampaignType = () => {
@@ -280,6 +293,9 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
         else if (getValues('communicationchanneltype')?.startsWith('VOX')) {
             return dataCampaignType.filter(t => t.key === 'CALL');
+        }
+        else if (getValues('communicationchanneltype')?.startsWith('MAI')) {
+            return dataCampaignType.filter(t => t.key === 'MAIL');
         }
         else {
             return filterIf(dataCampaignType);
@@ -295,12 +311,23 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('messagetemplatetype', 'STANDARD');
         setValue('messagetemplateheader', {});
         setValue('messagetemplatebuttons', []);
-        // setValue('messagetemplatefooter', '');
+        setValue('messagetemplatefooter', '');
+        setValue('messagetemplateattachment', '');
+        setValue('messagetemplatelanguage', '');
+        setValue('messagetemplatepriority', '');
         await trigger('type');
     }
-    
+
     const filterMessageTemplate = () => {
-        return filterPipe(dataMessageTemplate, 'type', getValues('type'));
+        if (getValues('type') == "MAIL") {
+            var mailTemplate = filterPipe(dataMessageTemplate, 'type', getValues('type'));
+            var htmlTemplate = filterPipe(dataMessageTemplate, 'type', 'HTML');
+
+            return [...mailTemplate, ...htmlTemplate];
+        }
+        else {
+            return filterPipe(dataMessageTemplate, 'type', getValues('type'));
+        }
     }
 
     const onChangeMessageTemplateId = async (data: Dictionary) => {
@@ -310,6 +337,8 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('messagetemplatename', messageTemplate?.name);
         setValue('messagetemplatenamespace', messageTemplate?.namespace);
         setValue('messagetemplatetype', messageTemplate?.templatetype);
+        setValue('messagetemplatelanguage', messageTemplate?.language);
+        setValue('messagetemplatepriority', messageTemplate?.priority);
         if (data?.type === 'HSM') {
             if (messageTemplate.headerenabled)
                 setValue('messagetemplateheader', { type: messageTemplate?.headertype, value: messageTemplate?.header });
@@ -319,10 +348,24 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 setValue('messagetemplatebuttons', messageTemplate?.buttons || []);
             else
                 setValue('messagetemplatebuttons', []);
-            // if (messageTemplate.footerenabled)
-            //     setValue('messagetemplatefooter', messageTemplate?.footer || '');
-            // else
-            //     setValue('messagetemplatefooter', '');
+            if (messageTemplate.footerenabled)
+                setValue('messagetemplatefooter', messageTemplate?.footer || '');
+            else
+                setValue('messagetemplatefooter', '');
+        }
+        if (data?.type === 'MAIL' || data?.type === 'HTML') {
+            if (messageTemplate.header) {
+                setValue('messagetemplateheader', { type: "TEXT", value: messageTemplate?.header });
+                setValue('subject', messageTemplate?.header);
+            }
+            else {
+                setValue('messagetemplateheader', { type: '', value: '' });
+                setValue('subject', '');
+            }
+            if (messageTemplate.attachment)
+                setValue('messagetemplateattachment', messageTemplate?.attachment || '');
+            else
+                setValue('messagetemplateattachment', '');
         }
         await trigger(['messagetemplateid', 'messagetemplatename', 'messagetemplatenamespace', 'messagetemplatetype']);
     }
@@ -396,7 +439,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         />
                     }
                     {edit ?
-                        <div className="col-4" style={{display: 'flex'}}>
+                        <div className="col-4" style={{ display: 'flex' }}>
                             <FieldSelect
                                 uset={true}
                                 label={t(langKeys.executiontype)}
@@ -408,19 +451,19 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 optionDesc="value"
                                 optionValue="key"
                             />
-                            {getValues('executiontype') === 'SCHEDULED' ? 
-                            <IconButton
-                                style={{flexGrow: 0}}    
-                                aria-label="more"
-                                aria-controls="long-menu"
-                                aria-haspopup="true"
-                                size="small"
-                                onClick={(e) => setOpenModal(true)}
-                            >
-                                <EventIcon style={{ color: '#777777' }} />
-                            </IconButton>
-                            :
-                            null}
+                            {getValues('executiontype') === 'SCHEDULED' ?
+                                <IconButton
+                                    style={{ flexGrow: 0 }}
+                                    aria-label="more"
+                                    aria-controls="long-menu"
+                                    aria-haspopup="true"
+                                    size="small"
+                                    onClick={(e) => setOpenModal(true)}
+                                >
+                                    <EventIcon style={{ color: '#777777' }} />
+                                </IconButton>
+                                :
+                                null}
                         </div>
                         :
                         <FieldView
@@ -523,53 +566,88 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         :
                         <FieldView
                             label={t(langKeys.messagetype)}
-                            value={t(dataCampaignType.filter(d => d.key === row?.type)[0].value) || ""}
+                            value={t(filterDataCampaignType().filter(d => d.key === row?.type)[0]?.value) || ""}
                             className="col-4"
                         />
                     }
                 </div>
-                {['HSM','SMS'].includes(getValues('type')) ?
-                <div className="row-zyx">
-                    {edit ?
-                        <FieldSelect
-                            label={t(langKeys.messagetemplate)}
-                            className="col-6"
-                            valueDefault={getValues('messagetemplateid') as any}
-                            disabled={!getValues('isnew')}
-                            onChange={onChangeMessageTemplateId}
-                            error={errors?.messagetemplateid?.message}
-                            data={filterMessageTemplate()}
-                            optionDesc="name"
-                            optionValue="id"
-                        />
-                        :
-                        <FieldView
-                            label={t(langKeys.messagetemplate)}
-                            value={dataMessageTemplate.filter(d => d.id === row?.messagetemplateid)[0].name || ""}
-                            className="col-6"
-                        />
-                    }
-                    {edit ?
-                        <FieldEdit
-                            fregister={{...register(`messagetemplatenamespace`, {
-                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                            })}}    
-                            label={t(langKeys.namespace)}
-                            className="col-6"
-                            valueDefault={getValues('messagetemplatenamespace')}
-                            onChange={(value) => setValue('messagetemplatenamespace', value)}
-                            disabled={!getValues('isnew') || getValues('messagetemplateid') !== 0}
-                            error={errors?.messagetemplatenamespace?.message}
-                        />
-                        :
-                        <FieldView
-                            label={t(langKeys.namespace)}
-                            value={row?.messagetemplatenamespace || ""}
-                            className="col-4"
-                        />
-                    }
-                </div>
-                : null}
+                {['HSM'].includes(getValues('type')) ?
+                    <div className="row-zyx">
+                        {edit ?
+                            <FieldSelect
+                                fregister={{
+                                    ...register(`messagetemplateid`, {
+                                        validate: (value: any) => (value) || t(langKeys.field_required)
+                                    })
+                                }}
+                                label={t(langKeys.messagetemplate)}
+                                className="col-6"
+                                valueDefault={getValues('messagetemplateid') as any}
+                                disabled={!getValues('isnew')}
+                                onChange={onChangeMessageTemplateId}
+                                error={errors?.messagetemplateid?.message}
+                                data={filterMessageTemplate()}
+                                optionDesc="name"
+                                optionValue="id"
+                            />
+                            :
+                            <FieldView
+                                label={t(langKeys.messagetemplate)}
+                                value={dataMessageTemplate.filter(d => d.id === row?.messagetemplateid)[0].name || ""}
+                                className="col-6"
+                            />
+                        }
+                        {edit ?
+                            <FieldEdit
+                                fregister={{
+                                    ...register(`messagetemplatenamespace`, {
+                                        validate: (value: any) => (getValues('type') !== 'HSM' ? true : value && value.length) || t(langKeys.field_required)
+                                    })
+                                }}
+                                label={t(langKeys.namespace)}
+                                className="col-6"
+                                valueDefault={getValues('messagetemplatenamespace')}
+                                onChange={(value) => setValue('messagetemplatenamespace', value)}
+                                disabled={!getValues('isnew') || getValues('messagetemplateid') !== 0}
+                                error={errors?.messagetemplatenamespace?.message}
+                            />
+                            :
+                            <FieldView
+                                label={t(langKeys.namespace)}
+                                value={row?.messagetemplatenamespace || ""}
+                                className="col-4"
+                            />
+                        }
+                    </div>
+                    : null}
+                {['SMS', 'MAIL'].includes(getValues('type')) ?
+                    <div className="row-zyx">
+                        {edit ?
+                            <FieldSelect
+                                fregister={{
+                                    ...register(`messagetemplateid`, {
+                                        validate: (value: any) => (value) || t(langKeys.field_required)
+                                    })
+                                }}
+                                label={t(langKeys.messagetemplate)}
+                                className="col-6"
+                                valueDefault={getValues('messagetemplateid') as any}
+                                disabled={!getValues('isnew')}
+                                onChange={onChangeMessageTemplateId}
+                                error={errors?.messagetemplateid?.message}
+                                data={filterMessageTemplate()}
+                                optionDesc="name"
+                                optionValue="id"
+                            />
+                            :
+                            <FieldView
+                                label={t(langKeys.messagetemplate)}
+                                value={dataMessageTemplate.filter(d => d.id === row?.messagetemplateid)[0].name || ""}
+                                className="col-6"
+                            />
+                        }
+                    </div>
+                    : null}
             </div>
             <ModalCampaignSchedule
                 openModal={openModal}
@@ -621,7 +699,7 @@ const ModalCampaignSchedule: React.FC<ModalProps> = ({ openModal, setOpenModal, 
     }
 
     const onSubmit = handleSubmit((data) => {
-        parentSetValue('batchjson', data.batchjson.map((d: any, i: number) => ({...d, batchindex: i + 1})));
+        parentSetValue('batchjson', data.batchjson.map((d: any, i: number) => ({ ...d, batchindex: i + 1 })));
         setOpenModal(false);
     });
 
@@ -654,7 +732,7 @@ const ModalCampaignSchedule: React.FC<ModalProps> = ({ openModal, setOpenModal, 
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {schedule.map((item: any, i) => 
+                        {schedule.map((item: any, i) =>
                             <TableRow key={item.id}>
                                 <TableCell>
                                     <IconButton
@@ -665,10 +743,12 @@ const ModalCampaignSchedule: React.FC<ModalProps> = ({ openModal, setOpenModal, 
                                     </IconButton>
                                 </TableCell>
                                 <TableCell>
-                                    <FieldEditArray 
-                                        fregister={{...register(`batchjson.${i}.date`, {
-                                            validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                        })}}
+                                    <FieldEditArray
+                                        fregister={{
+                                            ...register(`batchjson.${i}.date`, {
+                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                            })
+                                        }}
                                         type="date"
                                         valueDefault={item.date}
                                         error={errors?.batchjson?.[i]?.date?.message}
@@ -676,10 +756,12 @@ const ModalCampaignSchedule: React.FC<ModalProps> = ({ openModal, setOpenModal, 
                                     />
                                 </TableCell>
                                 <TableCell>
-                                    <FieldEditArray 
-                                        fregister={{...register(`batchjson.${i}.time`, {
-                                            validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                        })}}
+                                    <FieldEditArray
+                                        fregister={{
+                                            ...register(`batchjson.${i}.time`, {
+                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                            })
+                                        }}
                                         type="time"
                                         valueDefault={item.time}
                                         error={errors?.batchjson?.[i]?.time?.message}
@@ -687,10 +769,12 @@ const ModalCampaignSchedule: React.FC<ModalProps> = ({ openModal, setOpenModal, 
                                     />
                                 </TableCell>
                                 <TableCell>
-                                    <FieldEditArray 
-                                        fregister={{...register(`batchjson.${i}.quantity`, {
-                                            validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
-                                        })}}
+                                    <FieldEditArray
+                                        fregister={{
+                                            ...register(`batchjson.${i}.quantity`, {
+                                                validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
+                                            })
+                                        }}
                                         type="number"
                                         valueDefault={item.quantity}
                                         error={errors?.batchjson?.[i]?.quantity?.message}

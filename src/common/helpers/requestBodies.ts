@@ -748,9 +748,11 @@ export const getMessageTemplateSel = (id: number): IRequestBody => ({
     }
 });
 
-export const getMessageTemplateLst = (): IRequestBody => ({
+export const getMessageTemplateLst = (type: string): IRequestBody => ({
     method: "UFN_MESSAGETEMPLATE_LST",
-    parameters: {}
+    parameters: {
+        type: type,
+    }
 });
 
 export const insMessageTemplate = (
@@ -1135,7 +1137,12 @@ export const insCampaign = ({
     messagetemplatenamespace,
     messagetemplateheader,
     messagetemplatebuttons,
-    // messagetemplatefooter,
+    messagetemplatefooter,
+    messagetemplatetype,
+    messagetemplateattachment,
+    source,
+    messagetemplatelanguage,
+    messagetemplatepriority,
     executiontype,
     batchjson,
     fields,
@@ -1162,7 +1169,12 @@ export const insCampaign = ({
         messagetemplatenamespace,
         messagetemplateheader: JSON.stringify(messagetemplateheader),
         messagetemplatebuttons: JSON.stringify(messagetemplatebuttons),
-        // messagetemplatefooter,
+        messagetemplatefooter: messagetemplatefooter || null,
+        messagetemplatetype: messagetemplatetype || null,
+        messagetemplateattachment: messagetemplateattachment || null,
+        source: source || null,
+        messagetemplatelanguage: messagetemplatelanguage || null,
+        messagetemplatepriority: messagetemplatepriority || null,
         executiontype,
         batchjson: JSON.stringify(batchjson),
         fields: JSON.stringify(selectedColumns || fields),
