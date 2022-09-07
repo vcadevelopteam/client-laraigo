@@ -57,7 +57,6 @@ const CloseTicketVoxi: React.FC = () => {
     useEffect(() => {
         if (waitClose) {
             if (!tipifyRes.loading && !tipifyRes.error) {
-                console.log("test1")
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_close_ticket) }))
                 setOpenModal(false);
                 dispatch(resetShowModal())
@@ -154,7 +153,6 @@ const CloseTicketVoxi: React.FC = () => {
             debugger
             if(data.reschedulingdate){
                 if(new Date(data.reschedulingdate).getTime() > new Date().getTime()){
-                    console.log("data",callVoxiTmp)
                     const dd: Dictionary = {
                         conversationid: callVoxiTmp?.data?.conversationid!!,
                         motive: data.motive,
@@ -184,7 +182,6 @@ const CloseTicketVoxi: React.FC = () => {
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.invalid_rescheduling_date) }))
             }
         }else{
-            console.log("data",callVoxiTmp)
             const dd: Dictionary = {
                 conversationid: callVoxiTmp?.data?.conversationid!!,
                 motive: data.motive,

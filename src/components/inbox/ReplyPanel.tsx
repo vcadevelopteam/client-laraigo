@@ -604,7 +604,6 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                     textCleaned = ("Re: " + (groupInteractionList.data[0].interactiontext).split("&%MAIL%&")[0] + "&%MAIL%&" + text).trim();
 
                     let fileobj = files.reduce((acc, item, i) => ({ ...acc, [String(item.url.split('/').pop() === "tenor.gif" ? "tenor" + i + ".gif" : item.url.split('/').pop())]: item.url }), {})
-                    console.log(fileobj)
                     textCleaned = textCleaned + "&%MAIL%&" + JSON.stringify(fileobj)
                     setFiles([])
                 }

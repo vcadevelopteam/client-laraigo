@@ -150,7 +150,7 @@ const SignIn = () => {
     }
 
     const onGoogleLoginFailure = (event: any) => {
-        console.log('GOOGLE LOGIN FAILURE: ' + JSON.stringify(event));
+        console.warn('GOOGLE LOGIN FAILURE: ' + JSON.stringify(event));
         if (event && event.error) {
             switch (event.error) {
                 case 'idpiframe_initialization_failed':

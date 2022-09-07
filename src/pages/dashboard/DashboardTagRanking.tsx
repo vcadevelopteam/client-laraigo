@@ -211,7 +211,6 @@ const DashboardTagRanking: FC = () => {
     useEffect(() => {
         if (waitSave) {
             if (!remultiaux.loading && !remultiaux.error) {
-                console.log(remultiaux.data[0].data)
                 setdataAppRank(remultiaux.data[0].data)
                 dispatch(showBackdrop(false));
                 setWaitSave(false);

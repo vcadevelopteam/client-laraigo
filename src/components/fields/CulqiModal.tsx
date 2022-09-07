@@ -123,7 +123,6 @@ const CulqiModal: FC<CulqiModalProps> = ({
     }
 
     const onToken = (token: any) => {
-        // console.log(token);
         switch (type) {
             case 'CHARGE':
                 createCharge(token);
@@ -140,7 +139,7 @@ const CulqiModal: FC<CulqiModalProps> = ({
     }
 
     const onError = (error: any) => {
-        console.log(error)
+        console.warn(error)
         dispatch(resetCharge());
     }
 
@@ -148,14 +147,12 @@ const CulqiModal: FC<CulqiModalProps> = ({
         if (!culqiSelector.loading && culqiSelector.data) {
             dispatch(showSnackbar({ show: true, severity: "success", message: '' + (successmessage ? successmessage : culqiSelector.message) }))
             dispatch(showBackdrop(false));
-            console.log(culqiSelector.data);
             dispatch(resetCharge());
             callbackOnSuccess && callbackOnSuccess()
         }
         else if (culqiSelector.error) {
             dispatch(showSnackbar({ show: true, severity: "error", message: '' + culqiSelector.message }))
             dispatch(showBackdrop(false));
-            console.log(culqiSelector.data);
             dispatch(resetCharge());
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps

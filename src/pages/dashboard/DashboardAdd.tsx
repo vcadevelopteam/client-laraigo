@@ -255,7 +255,7 @@ const DashboardAdd: FC<{ edit?: boolean }> = ({ edit = false }) => {
         } else {
             handleSubmit((data) => {
                 setOpenModal(true);
-            }, e => console.log('errores', e))();
+            }, e => console.warn('errores', e))();
         }
     }
 
@@ -619,8 +619,6 @@ export const LayoutItem: FC<LayoutItemProps> = ({
             function: x.function
         }})
         setColumns(summary.concat(columnas));
-        // console.log(summary.concat(columnas))
-        // console.log(getValues(`${key}.column`))
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedIndex, templates]);
 
@@ -787,7 +785,6 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                         optionValue="columnname"
                         valueDefault={`${getValues(`${key}.column`)}${getValues(`${key}.summarizationfunction`)|| ''}`}
                         onChange={(v: ColumnTemplate) => {
-                            console.log(v?.columnname?.slice(0,-(v?.function?.length||0)))
                             if(v?.function){
                                 setValue(`${key}.column`, v?.columnname?.slice(0,-(v?.function?.length||0)));
                             }

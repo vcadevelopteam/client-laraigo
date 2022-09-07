@@ -311,7 +311,6 @@ const Settings: FC = () => {
     const history = useHistory();
     const dispatch = useDispatch();
     const user = useSelector(state => state.login.validateToken.user);
-    console.log(user)
     const setting = useSelector(state => state.setting.setting);
     const propertySettings = useSelector(state => state.setting.propertySettings);
 

@@ -20,7 +20,7 @@ const handleError = (error: AxiosError, dispatch: Dispatch<IAction>, actionType:
     if (!response) {
         dispatch({ type: actionType, payload: { error: true, message: messages.GENERAL_ERROR, code: '500' } });
     } else if (response.data) {
-        console.log('Error Code:', response.status);
+        console.error('Error Code:', response.status);
         const { message, code, key } = response.data;
         dispatch({ type: actionType, payload: { message, code, key } }); 
     }
@@ -95,7 +95,7 @@ const callAPIMiddleware: Middleware = ({ dispatch, getState }) => {
                 dispatch<IAction>({ payload, type: types.failure });
             }
         } catch (error) {
-            console.log('On APIMiddleware error');
+            console.error('On APIMiddleware error');
             const axiosError = error as AxiosError;
             // if (axioserror.response && axioserror.response.data instanceof Blob)
             failureFunction?.(axiosError);
