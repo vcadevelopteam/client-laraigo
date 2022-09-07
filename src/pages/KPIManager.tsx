@@ -231,7 +231,6 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
     }, [executeRes, waitSave])
 
     const onSubmit = handleSubmit((data) => {
-        console.log(data)
         const callback = () => {
             dispatch(execute(insKPIManager(data)));
             dispatch(showBackdrop(true));

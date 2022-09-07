@@ -261,7 +261,6 @@ function Search({ panTo,setMarker,directionData, setDirectionData, cleanDataAddr
   }
   useEffect(() => {
     if(getlocationdata.getLocations.success){
-      console.log(getlocationdata)
       window.close();
     }
   }, [getlocationdata]);
@@ -283,7 +282,6 @@ function Search({ panTo,setMarker,directionData, setDirectionData, cleanDataAddr
   // https://developers.google.com/maps/documentation/javascript/reference/places-autocomplete-service#AutocompletionRequest
 
 	const handleInput = (e) => {
-    console.log(e.target.value)
 		setValue(e.target.value);
 	};
   useEffect(() => {
@@ -315,7 +313,7 @@ function Search({ panTo,setMarker,directionData, setDirectionData, cleanDataAddr
     });
 		panTo({ lat, lng });
 		} catch (error) {
-		console.log("😱 Error: ", error);
+		console.warn("😱 Error: ", error);
 		}
 	};
 

@@ -25,7 +25,6 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                 });
 
                 sdk.on(VoxImplant.Events.ACDStatusUpdated, (e) => {
-                    console.log("voximplant: status->", e);
                     if (e.status === "BANNED") {
                         dispatch(connectAgentAPI(false, "BANNED", "BANNED"));
                         dispatch(connectAgentUI(false))
@@ -41,7 +40,6 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                 })
 
                 sdk.on(VoxImplant.Events.IncomingCall, (e) => {
-                    console.log("llamada entrante!", e.call?.headers())
                     const headers = e.call?.headers();
                     const splitIdentifier = headers["X-identifier"].split("-");
 
@@ -108,11 +106,10 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                 alreadyLoad = true
             } catch (e) {
                 dispatch({ type: typeVoximplant.MANAGE_CONNECTION, payload: { error: true, message: "Connection failed!", loading: false } })
-                console.log("voximplant: Connection failed!");
+                console.warn("voximplant: Connection failed!");
                 return;
             }
             try {
-                console.log(`voximplant: ${payload.user}@${payload.application}`)
                 await sdk.login(`${payload.user}@${payload.application}`, "Laraigo2022$CDFD");
 
                 if (payload?.automaticConnection) {
@@ -125,12 +122,12 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                 return
             } catch (e) {
                 dispatch({ type: typeVoximplant.MANAGE_CONNECTION, payload: { error: true, message: "Login failure!", loading: false } })
-                console.log("voximplant: Login failure!");
+                console.warn("voximplant: Login failure!");
                 return;
             }
         } catch (e) {
             dispatch({ type: typeVoximplant.MANAGE_CONNECTION, payload: { error: true, message: "SDK init failure!", loading: false } })
-            console.log("voximplant: SDK init failure!");
+            console.warn("voximplant: SDK init failure!");
             return;
         }
     } else if (type === typeVoximplant.MAKE_CALL) {
@@ -207,7 +204,6 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         call?.unmuteMicrophone();
         return
     } else if (type === typeVoximplant.MANAGE_STATUS_VOX) {
-        console.log("change status!")
         try {
             if (payload) {
                 sdk.setOperatorACDStatus(VoxImplant.OperatorACDStatuses.Online).then(() => sdk.setOperatorACDStatus(VoxImplant.OperatorACDStatuses.Ready));

@@ -206,7 +206,6 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             setValue('hsmtemplateid', 0);
         }
     }
-    // console.log(personWithData)
     const onSubmit = handleSubmit((data) => {
         const messagedata = {
             hsmtemplateid: data.hsmtemplateid,
@@ -886,7 +885,6 @@ export const Person: FC = () => {
                     state: {},
                 })}
                 onFilterChange={f => {
-                    // console.log('Persons::onFilterChange', f);
                     const params = buildQueryFilters(f);
                     if (filterChannelsType !== '') params.append('channelTypes', filterChannelsType);
                     history.push({ search: params.toString() });
@@ -2030,7 +2028,6 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
         const index = channel.personcommunicationchannel.lastIndexOf('_');
         return channel.personcommunicationchannel.substring(0, index);
     }, [channel]);
-    console.log(channel.type)
 
     return (
         <div className={classes.root} style={{ display: "flex" }}>
@@ -2420,7 +2417,6 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
         setOpenModal(true);
         setRowSelected({ ...row, displayname: person.name, ticketnum: row.ticketnum })
     }, [mainResult]);
-    console.log(conversation)
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const downloadCallRecord = async (ticket: Dictionary) => {

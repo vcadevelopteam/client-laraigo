@@ -187,7 +187,6 @@ const DashboardDisconnections: FC = () => {
     useEffect(() => {
         if (waitSave) {
             if (!remultiaux.loading && !remultiaux.error) {
-                console.log(remultiaux)
                 let arraydisconnectiontimes =disconnectiontypes.map((x:any)=>0)
                 let userereasons = remultiaux?.data[0]?.data || []
                 let timestotal = [0,0]
@@ -251,8 +250,6 @@ const DashboardDisconnections: FC = () => {
     }
 
     function downloaddata(data:any,title:string) {
-        console.log(data)
-        debugger
         if (data.length !== 0) {
             let seteddata = data.map((x:any)=>{return {...x,time:formattime(x.time)}})
             exportExcel(title, seteddata, Object.keys(seteddata[0]).reduce((ac: any[], c: any) => (

@@ -240,7 +240,6 @@ const DialogDate: React.FC<{
     }, [day])
 
     const onHandlerChange = (p1: any, p2: any, p3: string) => {
-        console.log(p1)
         setDateSelected(p1)
     }
 
@@ -504,13 +503,11 @@ const ScheduleBase: FC<ScheduleInputProps> = ({ notPreviousDays = true, data, se
             const newScheduler = [...dates.filter(x => !datesDistinct.includes(x.date)), ...scheduler];
             setDates(newScheduler);
             setDaysToShow(makeData(dateCurrent.year, dateCurrent.month, newScheduler));
-            console.log(newScheduler)
             setData(newScheduler);
         } else {
             const newScheduler = [...dates.filter(x => x.dow !== daySelected?.dow), ...scheduler];
             setDates(newScheduler);
             setDaysToShow(makeData(dateCurrent.year, dateCurrent.month, newScheduler));
-            console.log(newScheduler)
             setData(newScheduler);
         }
     }
@@ -532,7 +529,6 @@ const ScheduleBase: FC<ScheduleInputProps> = ({ notPreviousDays = true, data, se
     }, [dateCurrent])
 
     const resetWeekly = () => {
-        console.log(daySelected?.dateString)
         const newScheduler = dates.filter(x => x.date !== daySelected?.dateString)
         setDates(newScheduler);
         setDaysToShow(makeData(dateCurrent.year, dateCurrent.month, newScheduler));

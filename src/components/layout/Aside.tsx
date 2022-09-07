@@ -107,7 +107,6 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
                         button
                         key={"phone-agent"}
                         onClick={() => {
-                            console.log("click en el boton")
                             // abrir el modal
                         }}
                         className={clsx(true ? classes.drawerItemActive : classes.drawerItemInactive)}

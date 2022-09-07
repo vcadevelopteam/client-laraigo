@@ -258,7 +258,7 @@ const DashboardLayout: FC = () => {
     //             detailjson: JSON.stringify(detail),
     //             layoutjson: JSON.stringify(layout.layout),
     //         })));
-    //     }, e => console.log('errores', e))();
+    //     }, e => {})();
     // }, [dashboardtemplate, layout, handleSubmit, match.params.id, dispatch]);
 
     const onDetailChange = useCallback((detail: Items, type: ChangeType, key: string) => {
@@ -577,8 +577,6 @@ const LayoutItem: FC<LayoutItemProps> = ({
             return data as KpiData;
         }
     }, [data, type, error]);
-    console.log("TIPO:",type)
-    console.log("data:",dataGraph)
     // const [graph, setGraph] = useState(type);
     const [openTableModal, setOpenTableModal] = useState(false);
 
@@ -794,7 +792,6 @@ const LayoutBar: FC<LayoutBarProps> = ({ data,alldata, tickFormatter, tooltipFor
                     let newlabel = x.label.replace("day","")
                     let month = newlabel.slice(0,newlabel.indexOf("-"))
                     newlabel = newlabel.replace(`${month}-`, `${t(months[Number(month)-1])} `)
-                    console.log(monthColor[Number(month)-1])
                     return ({...x,label:newlabel, color:monthColor[Number(month)-1]})
                 })
             }
@@ -962,7 +959,6 @@ const LayoutLine: FC<LayoutLineProps> = ({ data, alldata,tickFormatter, tooltipF
             })
         })
         let itemmodel = keys.reduce((acc,x)=>{return {...acc,[x]:0}},{})
-        console.log(alldata?.interval)
         if(alldata?.interval==="month"){
             
             modifieddata=data.map(x=>{
