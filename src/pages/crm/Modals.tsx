@@ -19,7 +19,7 @@ interface IModalProps {
     name: string;
     open: boolean;
     payload: Dictionary | null;
-  }
+}
 
 interface IFCModalProps {
     gridModalProps: IModalProps;
@@ -73,11 +73,11 @@ export const NewActivityModal: FC<IFCModalProps> = ({ gridModalProps, setGridMod
             dispatch(resetSaveLeadActivity());
         }
     }, [saveActivity])
-    
+
     const submitActivitiesModal = (data: any) => {
         dispatch(saveLeadActivity(leadActivityIns(data)));
     }
-    
+
     return (
         <SaveActivityModal
             onClose={() => setGridModal({ name: '', open: false, payload: null })}
@@ -125,7 +125,7 @@ export const NewNoteModal: FC<IFCModalProps> = ({ gridModalProps, setGridModal, 
     const submitNotesModal = (data: any) => {
         dispatch(saveLeadLogNote(leadLogNotesIns(data)));
     }
-    
+
     return (
         <Modal
             open={gridModalProps.name === 'NOTE' && gridModalProps.open}
@@ -147,7 +147,7 @@ export const NewNoteModal: FC<IFCModalProps> = ({ gridModalProps, setGridModal, 
                             <Button
                                 variant="contained"
                                 color="primary"
-                                style={{marginLeft: '5px'}}
+                                style={{ marginLeft: '5px' }}
                                 onClick={() => setGridModal({ name: '', open: false, payload: null })}
                             >
                                 {t(langKeys.cancel)}
@@ -170,7 +170,7 @@ const variables = [
     'notedescription',
     'asesorname',
     'custom'
-].map(x => ({key: x}));
+].map(x => ({ key: x }));
 
 export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, setGridModal }) => {
     const { t } = useTranslation();
@@ -252,7 +252,7 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
     useEffect(() => {
         if (!outboundData.error && !outboundData.loading) {
             setChannelList(outboundData?.value?.channels?.filter((x: Dictionary) => x.type.includes(messagetype === "HSM" ? "WHA" : messagetype)) || []);
-            setTemplatesList(outboundData?.value?.templates?.filter((x: Dictionary) => x.type === messagetype) || []);
+            setTemplatesList(outboundData?.value?.templates?.filter((x: Dictionary) => messagetype !== "MAIL" ? (x.type === messagetype) : (x.type === messagetype || x.type === "HTML")) || []);
         }
     }, [outboundData, messagetype])
 
@@ -327,14 +327,14 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
     return (
         <DialogZyx
             open={gridModalProps.name === 'MESSAGE' && gridModalProps.open}
-            title={t(langKeys.send_hsm).replace("HSM", messagetype)}
+            title={t(langKeys.send_hsm.replace("hsm", (messagetype || '').toLowerCase()))}
             buttonText1={t(langKeys.cancel)}
             buttonText2={t(langKeys.continue)}
             handleClickButton1={() => setGridModal({ name: '', open: false, payload: null })}
             handleClickButton2={onSubmit}
             button2Type="submit"
         >
-            <div style={{marginBottom: 8}}>
+            <div style={{ marginBottom: 8 }}>
                 {persons.length} {t(langKeys.persons_selected)}, {personsWithData.length} {t(langKeys.with)} {messagetype === "MAIL" ? t(langKeys.email).toLocaleLowerCase() : t(langKeys.phone).toLocaleLowerCase()}
             </div>
             {messagetype === 'HSM' && (
@@ -369,10 +369,12 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
                 />
             </div>
             {messagetype === 'MAIL' &&
-                <React.Fragment>
-                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.message)}</Box>
-                    <div dangerouslySetInnerHTML={{__html: bodyMessage}} />
-                </React.Fragment>
+                <div style={{ overflowX: 'scroll' }}>
+                    <React.Fragment>
+                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.message)}</Box>
+                        <div dangerouslySetInnerHTML={{ __html: bodyMessage }} />
+                    </React.Fragment>
+                </div>
             }
             {messagetype !== 'MAIL' &&
                 <FieldEditMulti
@@ -406,17 +408,17 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
                             optionValue="key"
                         />
                         {getValues(`variables.${i}.variable`) === 'custom' &&
-                        <FieldEditArray
-                            key={"custom_" + item.id}
-                            fregister={{
-                                ...register(`variables.${i}.text`, {
-                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                })
-                            }}
-                            valueDefault={item.value}
-                            error={errors?.variables?.[i]?.text?.message}
-                            onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
-                        />}
+                            <FieldEditArray
+                                key={"custom_" + item.id}
+                                fregister={{
+                                    ...register(`variables.${i}.text`, {
+                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                    })
+                                }}
+                                valueDefault={item.value}
+                                error={errors?.variables?.[i]?.text?.message}
+                                onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
+                            />}
                     </React.Fragment>
                 ))}
             </div>
