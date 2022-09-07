@@ -24,7 +24,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import { useHistory } from 'react-router-dom';
 import paths from 'common/constants/paths';
 import TablePaginated from 'components/fields/table-paginated';
-import { GoogleMap, Marker } from '@react-google-maps/api';
+import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import { apiUrls } from "common/constants";
 
 interface RowSelected {
@@ -63,6 +63,9 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
+    const { isLoaded } = useJsApiLoader({
+        googleMapsApiKey: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4" /*"AIzaSyCBij6DbsB8SQC_RRKm3-X07RLmvQEnP9w"*/,
+    });
     const [marker, setMarker] = React.useState({
         lat: 0,
         lng: 0,
@@ -363,28 +366,32 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
                             error={errors?.longitude?.message}
                         />
                     </div>
-                    <div className="row-zyx">
-                        <div>
-                            <div style={{ width: "300px" }}>
-                                <GoogleMap
-                                    mapContainerStyle={{
-                                        width: '100%',
-                                        height: "200px"
-                                    }}                            
-                                    center={center}
-                                    zoom={10}
-                                    onLoad={onMapLoad}
-                                    onClick={onMapClick}
-                                >
-                                    <Marker
-                                        key={`${marker.lat}-${marker.lng}`}
-                                        position={{ lat: marker.lat, lng: marker.lng }}
-                                    />
-                                </GoogleMap>
+                    {
+                        isLoaded && 
+
+                        <div className="row-zyx">
+                            <div>
+                                <div style={{ width: "300px" }}>
+                                    <GoogleMap
+                                        mapContainerStyle={{
+                                            width: '100%',
+                                            height: "200px"
+                                        }}                            
+                                        center={center}
+                                        zoom={10}
+                                        onLoad={onMapLoad}
+                                        onClick={onMapClick}
+                                    >
+                                        <Marker
+                                            key={`${marker.lat}-${marker.lng}`}
+                                            position={{ lat: marker.lat, lng: marker.lng }}
+                                        />
+                                    </GoogleMap>
+                                </div>
+                                <PickerInteraction userType={"client"} fill={"#eeffde"} />
                             </div>
-                            <PickerInteraction userType={"client"} fill={"#eeffde"} />
                         </div>
-                    </div>
+                    }
                 </div>
             </form>
         </div>
