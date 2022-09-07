@@ -172,6 +172,7 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
         }))
     });
     async function onMapClick(e:any){
+        debugger
         const urltosearch = `${apiUrls.GETGEOCODE}?lat=${e.latLng.lat()}&lng=${e.latLng.lng()}`;
         const response = await fetch(urltosearch, {
             method: 'GET',
