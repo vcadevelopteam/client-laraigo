@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateBreadcrumbs, TitleDetail, FieldEdit, Title, TemplateIcons } from 'components';
 import { array_trimmer, exportExcel, getLocationExport, getPaginatedLocation, locationIns, templateMaker, uploadExcel } from 'common/helpers';
-import { Dictionary, IFetchData, IPersonImport } from "@types";
+import { Dictionary, IFetchData } from "@types";
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
@@ -53,7 +53,28 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '14px',
         textTransform: 'initial'
     },
+    labellink: {
+        color: '#7721ad',
+        textDecoration: 'underline',
+        cursor: 'pointer'
+    },
 }));
+
+interface ILocation {
+    phone: string,
+    alternativephone: string,
+    email: string,
+    alternativeemail: string,
+    type: string,
+    name: string,
+    country: string,
+    city: string,
+    district: string,
+    address: string,
+    schedule: string,
+    latitude: number,
+    longitude: number,
+}
 
 const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData,arrayBread }) => {
     const classes = useStyles();
@@ -62,6 +83,7 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const user = useSelector(state => state.login.validateToken.user);
+    console.log(row)
     const [directionData, setDirectionData] = React.useState({
         country: row?.country||"",
         city: row?.city||"",
@@ -76,7 +98,7 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
 
-            operation: row && row.id ? "EDIT" : "INSERT",
+            operation: row && row.locationid ? "EDIT" : "INSERT",
             googleurl: row?.googleurl||"",
             id: row?.locationid|| 0,
             name: row?.name||"",
@@ -99,7 +121,6 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
     });
 
     React.useEffect(() => {
-        register('type');
         register('id');
         register('phone');
         register('alternativephone');
@@ -165,7 +186,7 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={row ? `${row.description}` : `${t(langKeys.new)} ${t(langKeys.location)}`}
+                            title={row ? `${row.name}` : `${t(langKeys.new)} ${t(langKeys.location)}`}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center'}}>
@@ -321,9 +342,9 @@ const Location: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const mainPaginated = useSelector(state => state.main.mainPaginated);
     const [pageCount, setPageCount] = useState(0);
+    const [waitSaveExport, setWaitSaveExport] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
     const [totalrow, settotalrow] = useState(0);
-    const domains = useSelector(state => state.person.editableDomains);
     const resExportData = useSelector(state => state.main.exportData);
     const [waitImport, setWaitImport] = useState(false);
     const executeResult = useSelector(state => state.main.execute);
@@ -331,6 +352,7 @@ const Location: FC = () => {
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
     const user = useSelector(state => state.login.validateToken.user);
     
+    const classes = useStyles();
 
     const arrayBread = [
         { id: "view-0", name: t(langKeys.configuration_plural) },
@@ -439,7 +461,18 @@ const Location: FC = () => {
             {
                 Header: "",
                 accessor: 'googleurl',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <label
+                            className={classes.labellink}
+                            onClick={() => {window.open(row.googleurl, '_blank')?.focus()}}
+                        >
+                            {t(langKeys.seeonthemap)}
+                        </label>
+                    )
+                }
             },
             {
                 Header: t(langKeys.status),
@@ -467,18 +500,33 @@ const Location: FC = () => {
     
     useEffect(() => {
         if (waitSave) {
-            if (!resExportData.loading && !resExportData.error) {
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 dispatch(showBackdrop(false));
+                fetchData(fetchDataAux)
                 setWaitSave(false);
-                resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
-            } else if (resExportData.error) {
-                const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
         }
-    }, [resExportData, waitSave])
+    }, [executeResult, waitSave])
+    useEffect(() => {
+        if (waitSaveExport) {
+            if (!resExportData.loading && !resExportData.error) {
+                dispatch(showBackdrop(false));
+                resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
+                setWaitSaveExport(false);
+            } else if (resExportData.error) {
+                const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitSaveExport(false);
+            }
+        }
+    }, [resExportData, waitSaveExport])
 
     useEffect(() => {
         if (waitImport) {
@@ -525,13 +573,11 @@ const Location: FC = () => {
             sorts,
         }), "", "excel", false, columnsExport));
         dispatch(showBackdrop(true));
-        setWaitSave(true);
+        setWaitSaveExport(true);
     };
 
     const handleTemplate = () => {
         const data = [
-            {},
-            {},
             {},
             {},
             {},
@@ -559,8 +605,6 @@ const Location: FC = () => {
             'alternativeemail',
             'latitude',
             'longitude',
-            'googleurl',
-            'description',
             'type',
         ];
         exportExcel(t(langKeys.template), templateMaker(data, header));
@@ -570,63 +614,45 @@ const Location: FC = () => {
         const file = files?.item(0);
         if (file) {
             let excel: any = await uploadExcel(file, undefined);
-            let data: IPersonImport[] = array_trimmer(excel);
-            data = data.filter((f: IPersonImport) =>
-                (f.documenttype === undefined || Object.keys(domains.value?.docTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.documenttype))
-                && (f.persontype === undefined || Object.keys(domains.value?.personGenTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.persontype))
-                && (f.type === undefined || Object.keys(domains.value?.personTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.type))
-                && (f.gender === undefined || Object.keys(domains.value?.genders.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.gender))
-                && (f.educationlevel === undefined || Object.keys(domains.value?.educationLevels.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.educationlevel))
-                && (f.civilstatus === undefined || Object.keys(domains.value?.civilStatuses.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.civilstatus))
-                && (f.occupation === undefined || Object.keys(domains.value?.occupations.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.occupation))
-                && (f.groups === undefined || Object.keys(domains.value?.groups.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.groups))
-                && (f.channeltype === undefined || Object.keys(domains.value?.channelTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.channeltype))
+            let data: ILocation[] = array_trimmer(excel);
+            data = data.filter((f: ILocation) =>
+                (f.type === undefined || f.type !== "") &&
+                (f.name === undefined || f.name !== "") &&
+                (f.country === undefined || f.country !== "") &&
+                (f.city === undefined || f.city !== "") &&
+                (f.district === undefined || f.district !== "") &&
+                (f.address === undefined || f.address !== "") &&
+                (f.schedule === undefined || f.schedule !== "") &&
+                (f.latitude === undefined || !isNaN(f.latitude)) &&
+                (f.longitude === undefined || !isNaN(f.longitude))
             );
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
-                let table: Dictionary = data.reduce((a: any, d: IPersonImport) => ({
+                let table: Dictionary = data.reduce((a: any, d: ILocation) => ({
                     ...a,
-                    [`${d.documenttype}_${d.documentnumber}`]: {
-                        id: 0,
-                        firstname: d.firstname || null,
-                        lastname: d.lastname || null,
-                        documenttype: d.documenttype,
-                        documentnumber: d.documentnumber,
-                        persontype: d.persontype || null,
+                    [`${d.name}_${d.latitude}_${d.longitude}`]: {
+                        id: 0, 
+                        name: d.name || '',
+                        address: d.address || '',
+                        district: d.district || '',
+                        city: d.city|| '',
+                        country: d.country || '',
+                        schedule: d.schedule || '',
+                        phone: d.phone || '',
+                        alternativephone: d.alternativephone || '',
+                        email: d.email || '',
+                        alternativeemail: d.alternativeemail || '',
                         type: d.type || '',
-                        phone: d.phone || null,
-                        alternativephone: d.alternativephone || null,
-                        email: d.email || null,
-                        alternativeemail: d.alternativeemail || null,
-                        birthday: d.birthday || null,
-                        gender: d.gender || null,
-                        educationlevel: d.educationlevel || null,
-                        civilstatus: d.civilstatus || null,
-                        occupation: d.occupation || null,
-                        groups: d.groups || null,
-                        status: 'ACTIVO',
-                        personstatus: 'ACTIVO',
-                        referringpersonid: 0,
-                        geographicalarea: null,
-                        age: null,
-                        sex: null,
+                        username: user?.usr,
+                        latitude: d.latitude || 0,
+                        longitude: d.longitude || 0,
+                        status: "ACTIVO",
+                        description: '',
+                        googleurl: `https://www.google.com/maps/@${d.latitude},${d.longitude},10z`,
                         operation: 'INSERT',
-                        pcc: data
-                            .filter((c: IPersonImport) => `${c.documenttype}_${c.documentnumber}` === `${d.documenttype}_${d.documentnumber}`
-                                && !['', null, undefined].includes(c.channeltype)
-                                && !['', null, undefined].includes(c.personcommunicationchannel)
-                            )
-                            .map((c: IPersonImport) => ({
-                                type: c.channeltype,
-                                personcommunicationchannel: c.personcommunicationchannel || null,
-                                personcommunicationchannelowner: c.personcommunicationchannelowner || null,
-                                displayname: c.displayname || null,
-                                status: 'ACTIVO',
-                                operation: 'INSERT'
-                            }))
                     }
                 }), {});
-                Object.values(table).forEach((p: IPersonImport) => {
+                Object.values(table).forEach((p: ILocation) => {
                     dispatch(execute({
                         header: locationIns({ ...p }),
                         detail: [ ]
@@ -667,7 +693,7 @@ const Location: FC = () => {
                 download={true}
                 exportPersonalized={triggerExportData}
                 fetchData={fetchData}
-                onClickRow={()=>setViewSelected("view-2")}
+                onClickRow={(row)=>{setRowSelected({ row: row, edit: false });setViewSelected("view-2")}}
                 register={true}
                 ButtonsElement={() => (
                     <Button

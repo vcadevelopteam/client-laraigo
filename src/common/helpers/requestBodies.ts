@@ -3194,6 +3194,7 @@ export const getLocationExport = ({ filters, sorts }: Dictionary): IRequestBody 
         origin: "location",
         filters,
         sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
 

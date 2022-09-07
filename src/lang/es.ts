@@ -2983,6 +2983,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     notificationcostdetail: "Detalle de Costo WhatsApp Basado en Notificaciones",
     supportplandetail: "Detalle de Plan de Soporte",
     costcommentary: "Lista de precios vigente a partir de febrero de 2022",
+    seeonthemap: "Ver en el mapa",
 
     confirmation_calculate: '¿Estas seguro que quieres calcular la data del mes actual?',
     successful_calculate: 'Se calculó satisfactoriamente',

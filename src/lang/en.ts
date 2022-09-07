@@ -2762,6 +2762,7 @@ const translation: LangKeys = {
     message_click_to_login: 'Click continue to go to login',
 
     app_whitelist: "Whitelist",
+    seeonthemap: "See on the map",
     app_inappropriatewords: "Inappropriate words",
     app_intelligentmodels: "Intelligent models",
     app_sla: "Service Level Agreement",
