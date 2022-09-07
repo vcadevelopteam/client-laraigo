@@ -871,7 +871,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                                             settagsdata(newtagdata)
                                             setValue(`${key}.tags`,initTags)
                                         }}
-                                        error={errors[key]?.tags?.[i]?.value.message}
+                                        error={errors[key]?.tags?.[i]?.value?.message}
                                     />
                                     <FieldEdit
                                         fregister={{
@@ -890,20 +890,17 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                                             settagsdata(newtagdata)
                                             setValue(`${key}.tags`,initTags)
                                         }}
-                                        error={errors[key]?.tags?.[i]?.title.message}
+                                        error={errors[key]?.tags?.[i]?.title?.message}
                                     />
                                 </div>
                             </div>
                         })}
                     </>
-                    <>{tagsdata.length <5 &&
-                        <Button style={{float:"right"}} onClick={()=>{
-                            let initTags=getValues(`${key}.tags`)||[];
-                            settagsdata([...initTags,{value:"",title:""}])
-                            setValue(`${key}.tags`,[...initTags,{value:"",title:""}])
-                        }}><AddIcon/> {t(langKeys.add)} {t(langKeys.level)}</Button>
-                    }                    
-                    </>
+                    <Button style={{float:"right"}} onClick={()=>{
+                        let initTags=getValues(`${key}.tags`)||[];
+                        settagsdata([...initTags,{value:"",title:""}])
+                        setValue(`${key}.tags`,[...initTags,{value:"",title:""}])
+                    }}><AddIcon/> {t(langKeys.add)} {t(langKeys.level)}</Button> 
                 </>
             )}
         </div>
