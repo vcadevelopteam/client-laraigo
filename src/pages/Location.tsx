@@ -3,16 +3,15 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, Title } from 'components';
-import { array_trimmer, exportExcel, getLocationExport, getPaginatedLocation, insInappropriateWords, locationIns, templateMaker, uploadExcel } from 'common/helpers';
-import { Dictionary, IFetchData, IPersonImport } from "@types";
+import { TemplateBreadcrumbs, TitleDetail, FieldEdit, Title, TemplateIcons } from 'components';
+import { array_trimmer, exportExcel, getLocationExport, getPaginatedLocation, locationIns, templateMaker, uploadExcel } from 'common/helpers';
+import { Dictionary, IFetchData } from "@types";
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import clsx from 'clsx';
 import {
     resetAllMain,
     execute,
@@ -24,8 +23,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import { useHistory } from 'react-router-dom';
 import paths from 'common/constants/paths';
 import TablePaginated from 'components/fields/table-paginated';
-import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
-import { apiUrls } from "common/constants";
+import Map from './MapLocation.js'
 
 interface RowSelected {
     row: Dictionary | null,
@@ -55,7 +53,28 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '14px',
         textTransform: 'initial'
     },
+    labellink: {
+        color: '#7721ad',
+        textDecoration: 'underline',
+        cursor: 'pointer'
+    },
 }));
+
+interface ILocation {
+    phone: string,
+    alternativephone: string,
+    email: string,
+    alternativeemail: string,
+    type: string,
+    name: string,
+    country: string,
+    city: string,
+    district: string,
+    address: string,
+    schedule: string,
+    latitude: number,
+    longitude: number,
+}
 
 const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData,arrayBread }) => {
     const classes = useStyles();
@@ -63,80 +82,24 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const { isLoaded } = useJsApiLoader({
-        googleMapsApiKey: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4" /*"AIzaSyCBij6DbsB8SQC_RRKm3-X07RLmvQEnP9w"*/,
-    });
-    const [marker, setMarker] = React.useState({
-        lat: 0,
-        lng: 0,
-        time: new Date(),
-    });
-    const [center, setcenter] = React.useState({
-      lat: 0,
-      lng: 0,
-    });
-
-    
-    useEffect(() => {
-        getLocation();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-    function getLocation(){
-        if(navigator.geolocation){
-        navigator.geolocation.getCurrentPosition(showPosition)
-        }else{
-        console.error('Geolocation not supported by this browser')
-        }
-    }
-    async function showPosition(position:any) {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-        
-        setMarker({
-        lat: lat,
-        lng: lng,
-        time: new Date(),
-        });
-
-        setcenter({
-        lat: lat,
-        lng: lng,
-        });
-
-        const urltosearch = `${apiUrls.GETGEOCODE}?lat=${lat}&lng=${lng}`;
-        const response = await fetch(urltosearch, {
-            method: 'GET',
-        });
-        if (response.ok) {
-            try {
-                const r = await response.json();
-                if (r.status === "OK" && r.results && r.results instanceof Array && r.results.length > 0) {
-                    cleanDataAddres(r.results[0].address_components);
-                    setDirectionData((prev)=>({...prev, 
-                    movedmarker: true,
-                    searchLocation: r.results[0].formatted_address
-                    }))
-                }
-            } catch (e) { }
-        }
-    }
+    const user = useSelector(state => state.login.validateToken.user);
+    console.log(row)
     const [directionData, setDirectionData] = React.useState({
-      department: "",
-      province: "",
-      district: "",
-      zone: "",
-      zipcode: "",
-      reference: "",
-      street: "",
-      streetNumber: "",
-      movedmarker: false,
-      searchLocation: "",
+        country: row?.country||"",
+        city: row?.city||"",
+        district: row?.district||"",
+        address: row?.address||"",
+        lat: row?.latitude||0,
+        lng: row?.longitude||0,
+        movedmarker: false,
+        searchLocation: "",
     });
 
-    const dataStatus = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const dataClassification = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
+
+            operation: row && row.locationid ? "EDIT" : "INSERT",
+            googleurl: row?.googleurl||"",
             id: row?.locationid|| 0,
             name: row?.name||"",
             country: row?.country||"",
@@ -144,40 +107,26 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
             district: row?.district||"",
             address: row?.address||"",
             phone: row?.phone||"",
-            alternativePhone: row?.alternativePhone||"",
+            alternativephone: row?.alternativephone||"",
             email: row?.email||"",
-            alternativeEmail: row?.alternativeEmail||"",
+            alternativeemail: row?.alternativeemail||"",
             type: row?.type||"",
+            description: "",
+            status: "ACTIVO",
             schedule: row?.schedule||"",
             latitude: row?.latitude||0,
             longitude: row?.longitude||0,
+            username: user?.usr||""
         }
     });
 
-    
-    const PickerInteraction: React.FC<{ userType: string, fill?: string }> = ({ userType, fill = '#FFF' }) => {
-        if (userType === 'client')
-            return (
-                <svg viewBox="0 0 11 20" width="11" height="20" style={{ position: 'absolute', bottom: -1, left: -9, fill }}>
-                    <svg id="message-tail-filled" viewBox="0 0 11 20"><g transform="translate(9 -14)" fill="inherit" fillRule="evenodd"><path d="M-6 16h6v17c-.193-2.84-.876-5.767-2.05-8.782-.904-2.325-2.446-4.485-4.625-6.48A1 1 0 01-6 16z" transform="matrix(1 0 0 -1 0 49)" id="corner-fill" fill="inherit"></path></g></svg>
-
-                </svg>
-            )
-        else
-            return (
-                <svg viewBox="0 0 11 20" width="11" height="20" style={{ position: 'absolute', bottom: 0, right: -9, transform: 'translateY(1px) scaleX(-1)', fill }}>
-                    <svg id="message-tail-filled" viewBox="0 0 11 20"><g transform="translate(9 -14)" fill="inherit" fillRule="evenodd"><path d="M-6 16h6v17c-.193-2.84-.876-5.767-2.05-8.782-.904-2.325-2.446-4.485-4.625-6.48A1 1 0 01-6 16z" transform="matrix(1 0 0 -1 0 49)" id="corner-fill" fill="inherit"></path></g></svg>
-                </svg>
-            )
-    }
-
     React.useEffect(() => {
-        register('type');
         register('id');
         register('phone');
-        register('alternativePhone');
+        register('alternativephone');
         register('email');
-        register('alternativeEmail');
+        register('alternativeemail');
+        register('googleurl');
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('country', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -193,7 +142,7 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
-                fetchData && fetchData({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null });
+                fetchData && fetchData({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null });
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
@@ -204,10 +153,19 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
             }
         }
     }, [executeRes, waitSave])
+    useEffect(() => {
+        setValue("latitude",directionData.lat)
+        setValue("longitude",directionData.lng)
+        setValue("country",directionData.country)
+        setValue("city",directionData.city)
+        setValue("district",directionData.district)
+        setValue("address",directionData.address)
+        setValue("googleurl",`https://www.google.com/maps/@${directionData.lat},${directionData.lng},10z`)
+    }, [directionData])
     
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            dispatch(execute(insInappropriateWords(data)));
+            dispatch(execute(locationIns(data)));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -218,53 +176,6 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
             callback
         }))
     });
-    async function onMapClick(e:any){
-        debugger
-        const urltosearch = `${apiUrls.GETGEOCODE}?lat=${e.latLng.lat()}&lng=${e.latLng.lng()}`;
-        const response = await fetch(urltosearch, {
-            method: 'GET',
-        });
-        if (response.ok) {
-            try {
-                const r = await response.json();
-                if (r.status === "OK" && r.results && r.results instanceof Array && r.results.length > 0) {
-                    cleanDataAddres(r.results[0].address_components);
-                    setDirectionData((prev)=>({...prev, 
-                      movedmarker: true,
-                      searchLocation: r.results[0].formatted_address
-                    }))
-                }
-            } catch (e) { }
-        }
-        setMarker({
-            lat: e.latLng.lat(),
-            lng: e.latLng.lng(),
-            time: new Date(),
-          });
-      }
-    function cleanDataAddres(r:any) {
-        const street_number = r.find((x:any) => x.types.includes("street_number"));
-        const postal_code = r.find((x:any) => x.types.includes("postal_code"));
-        const route = r.find((x:any) => x.types.includes("route"));
-        const administrative_area_level_1 = r.find((x:any) => x.types.includes("administrative_area_level_1"));
-        const administrative_area_level_2 = r.find((x:any) => x.types.includes("administrative_area_level_2"));
-        const locality = r.find((x:any) => x.types.includes("locality"));
-        const sublocality_level_1 = r.find((x:any) => x.types.includes("sublocality_level_1"));
-
-        setDirectionData((prev)=>({...prev, 
-            department: administrative_area_level_1 ? administrative_area_level_1.long_name : "", 
-            province: administrative_area_level_2 ? administrative_area_level_2.long_name : "", 
-            district: locality ? locality.long_name : "", 
-            zone: sublocality_level_1 ? sublocality_level_1.long_name : "", 
-            zipcode: postal_code ? postal_code.long_name : "",
-            street: route ? route.long_name : "", 
-            streetNumber: street_number ? street_number.long_name : "",
-        }))
-    }
-    const mapRef = React.useRef();
-    const onMapLoad = React.useCallback((map) => {
-        mapRef.current = map;
-    }, []);
     return (
         <div style={{width: '100%'}}>
             <form onSubmit={onSubmit}>
@@ -275,7 +186,7 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={row ? `${row.description}` : `${t(langKeys.new)} ${t(langKeys.location)}`}
+                            title={row ? `${row.name}` : `${t(langKeys.new)} ${t(langKeys.location)}`}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center'}}>
@@ -287,7 +198,6 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
                             style={{ backgroundColor: "#FB5F5F" }}
                             onClick={() => setViewSelected("view-1")}
                         >{t(langKeys.back)}</Button>
-                        {edit &&
                         <Button
                             className={classes.button}
                             variant="contained"
@@ -297,7 +207,6 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
                             style={{ backgroundColor: "#55BD84" }}
                         >{t(langKeys.save)}
                         </Button>
-                        }
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
@@ -312,8 +221,8 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
                         <FieldEdit
                             label={t(langKeys.country)} 
                             className="col-6"
-                            onChange={(value) => setValue('country', value)}
-                            valueDefault={row ? (row.country || "") : ""}
+                            onChange={(e) => setDirectionData((prev)=>({...prev, country: e}))}
+                            valueDefault={directionData.country}
                             error={errors?.country?.message}
                         />
                     </div>
@@ -321,15 +230,15 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
                         <FieldEdit
                             label={t(langKeys.city)} 
                             className="col-6"
-                            onChange={(value) => setValue('city', value)}
-                            valueDefault={row ? (row.city || "") : ""}
+                            onChange={(e) => setDirectionData((prev)=>({...prev, city: e}))}
+                            valueDefault={directionData.city}
                             error={errors?.city?.message}
                         />
                         <FieldEdit
                             label={t(langKeys.district)} 
                             className="col-6"
-                            onChange={(value) => setValue('district', value)}
-                            valueDefault={row ? (row.district || "") : ""}
+                            onChange={(e) => setDirectionData((prev)=>({...prev, district: e}))}
+                            valueDefault={directionData.district}
                             error={errors?.district?.message}
                         />
                     </div>
@@ -337,8 +246,8 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
                         <FieldEdit
                             label={t(langKeys.address)} 
                             className="col-6"
-                            onChange={(value) => setValue('address', value)}
-                            valueDefault={row ? (row.address || "") : ""}
+                            onChange={(e) => setDirectionData((prev)=>({...prev, address: e}))}
+                            valueDefault={directionData.address}
                             error={errors?.address?.message}
                         />
                         <FieldEdit
@@ -352,12 +261,12 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.alternativePhone)} 
+                            label={t(langKeys.alternativephone)} 
                             className="col-6"
                             type="number"
-                            onChange={(value) => setValue('alternativePhone', value)}
-                            valueDefault={row ? (row.alternativePhone || "") : ""}
-                            error={errors?.alternativePhone?.message}
+                            onChange={(value) => setValue('alternativephone', value)}
+                            valueDefault={row ? (row.alternativephone || "") : ""}
+                            error={errors?.alternativephone?.message}
                         />
                         <FieldEdit
                             label={t(langKeys.email)} 
@@ -371,9 +280,9 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
                         <FieldEdit
                             label={t(langKeys.alternativeEmail)} 
                             className="col-6"
-                            onChange={(value) => setValue('alternativeEmail', value)}
-                            valueDefault={row ? (row.alternativeEmail || "") : ""}
-                            error={errors?.alternativeEmail?.message}
+                            onChange={(value) => setValue('alternativeemail', value)}
+                            valueDefault={row ? (row.alternativeemail || "") : ""}
+                            error={errors?.alternativeemail?.message}
                         />
                         <FieldEdit
                             label={t(langKeys.type)} 
@@ -397,45 +306,26 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
                             label={t(langKeys.latitude)} 
                             className="col-6"
                             type="number"
-                            onChange={(value) => setValue('latitude', value)}
-                            valueDefault={row ? (row.latitude || "") : ""}
+                            onChange={(e) => setDirectionData((prev)=>({...prev, lat: e}))}
+                            valueDefault={directionData.lat}
                             error={errors?.latitude?.message}
                         />
                         <FieldEdit
                             label={t(langKeys.longitude)} 
                             className="col-6"
                             type="number"
-                            onChange={(value) => setValue('longitude', value)}
-                            valueDefault={row ? (row.longitude || "") : ""}
+                            onChange={(e) => setDirectionData((prev)=>({...prev, lng: e}))}
+                            valueDefault={directionData.lng}
                             error={errors?.longitude?.message}
                         />
                     </div>
-                    {
-                        isLoaded && 
-
-                        <div className="row-zyx">
-                            <div>
-                                <div style={{ width: "300px" }}>
-                                    <GoogleMap
-                                        mapContainerStyle={{
-                                            width: '100%',
-                                            height: "200px"
-                                        }}                            
-                                        center={center}
-                                        zoom={10}
-                                        onLoad={onMapLoad}
-                                        onClick={onMapClick}
-                                    >
-                                        <Marker
-                                            key={`${marker.lat}-${marker.lng}`}
-                                            position={{ lat: marker.lat, lng: marker.lng }}
-                                        />
-                                    </GoogleMap>
-                                </div>
-                                <PickerInteraction userType={"client"} fill={"#eeffde"} />
+                    <div className="row-zyx">
+                        <div>
+                            <div style={{ width: "100%" }}>
+                                <Map setDirectionData={setDirectionData}/>
                             </div>
                         </div>
-                    }
+                    </div>
                 </div>
             </form>
         </div>
@@ -452,15 +342,17 @@ const Location: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const mainPaginated = useSelector(state => state.main.mainPaginated);
     const [pageCount, setPageCount] = useState(0);
+    const [waitSaveExport, setWaitSaveExport] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
     const [totalrow, settotalrow] = useState(0);
-    const domains = useSelector(state => state.person.editableDomains);
     const resExportData = useSelector(state => state.main.exportData);
     const [waitImport, setWaitImport] = useState(false);
     const executeResult = useSelector(state => state.main.execute);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
-    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+    const user = useSelector(state => state.login.validateToken.user);
     
+    const classes = useStyles();
 
     const arrayBread = [
         { id: "view-0", name: t(langKeys.configuration_plural) },
@@ -473,13 +365,48 @@ const Location: FC = () => {
         }
         setViewSelected(view)
     }
+    const handleView = (row: Dictionary) => {
+        setViewSelected("view-2");
+        setRowSelected({ row, edit: false });
+    }
+
+    const handleEdit = (row: Dictionary) => {
+        setViewSelected("view-2");
+        setRowSelected({ row, edit: true });
+    }
+
+    const handleDelete = (row: Dictionary) => {
+        const callback = () => {
+            dispatch(execute(locationIns({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.locationid, username: user?.usr||"" })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete),
+            callback
+        }))
+    }
+
     const columns = React.useMemo(
         () => [
             {
                 accessor: 'locationid',
+                NoFilter: true,
                 isComponent: true,
                 minWidth: 60,
                 width: '1%',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <TemplateIcons
+                            viewFunction={() => handleView(row)}
+                            deleteFunction={() => handleDelete(row)}
+                            editFunction={() => handleEdit(row)}
+                        />
+                    )
+                }
             },
             {
                 Header: t(langKeys.name),
@@ -534,7 +461,18 @@ const Location: FC = () => {
             {
                 Header: "",
                 accessor: 'googleurl',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <label
+                            className={classes.labellink}
+                            onClick={() => {window.open(row.googleurl, '_blank')?.focus()}}
+                        >
+                            {t(langKeys.seeonthemap)}
+                        </label>
+                    )
+                }
             },
             {
                 Header: t(langKeys.status),
@@ -562,18 +500,33 @@ const Location: FC = () => {
     
     useEffect(() => {
         if (waitSave) {
-            if (!resExportData.loading && !resExportData.error) {
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 dispatch(showBackdrop(false));
+                fetchData(fetchDataAux)
                 setWaitSave(false);
-                resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
-            } else if (resExportData.error) {
-                const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
         }
-    }, [resExportData, waitSave])
+    }, [executeResult, waitSave])
+    useEffect(() => {
+        if (waitSaveExport) {
+            if (!resExportData.loading && !resExportData.error) {
+                dispatch(showBackdrop(false));
+                resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
+                setWaitSaveExport(false);
+            } else if (resExportData.error) {
+                const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitSaveExport(false);
+            }
+        }
+    }, [resExportData, waitSaveExport])
 
     useEffect(() => {
         if (waitImport) {
@@ -618,57 +571,41 @@ const Location: FC = () => {
                 ...filters,
             },
             sorts,
-            startdate: daterange.startDate!,
-            enddate: daterange.endDate!,
         }), "", "excel", false, columnsExport));
         dispatch(showBackdrop(true));
-        setWaitSave(true);
+        setWaitSaveExport(true);
     };
 
     const handleTemplate = () => {
         const data = [
             {},
             {},
-            domains.value?.docTypes.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_documenttype_${d.domainvalue?.toLowerCase()}`) }), {}),
-            {},
-            domains.value?.personGenTypes.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_persontype_${d.domaindesc?.toLowerCase()}`) }), {}),
-            domains.value?.personTypes.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_personlevel_${d.domainvalue?.toLowerCase()}`) }), {}),
             {},
             {},
             {},
             {},
             {},
-            domains.value?.genders.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_gender_${d.domainvalue?.toLowerCase()}`) }), {}),
-            domains.value?.educationLevels.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_educationlevel_${d.domainvalue?.toLowerCase()}`) }), {}),
-            domains.value?.civilStatuses.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_civilstatus_${d.domainvalue?.toLowerCase()}`) }), {}),
-            domains.value?.occupations.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_ocupation_${d.domainvalue?.toLowerCase()}`) }), {}),
-            domains.value?.groups.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
-            domains.value?.channelTypes.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
             {},
             {},
-            {}
+            {},
+            {},
+            {},
+            {},
         ];
         const header = [
-            'firstname',
-            'lastname',
-            'documenttype',
-            'documentnumber',
-            'persontype',
-            'type',
+            'name',
+            'address',
+            'district',
+            'city',
+            'country',
+            'schedule',
             'phone',
             'alternativephone',
             'email',
             'alternativeemail',
-            'birthday',
-            'gender',
-            'educationlevel',
-            'civilstatus',
-            'occupation',
-            'groups',
-            'channeltype',
-            'personcommunicationchannel',
-            'personcommunicationchannelowner',
-            'displayname'
+            'latitude',
+            'longitude',
+            'type',
         ];
         exportExcel(t(langKeys.template), templateMaker(data, header));
     }
@@ -677,63 +614,45 @@ const Location: FC = () => {
         const file = files?.item(0);
         if (file) {
             let excel: any = await uploadExcel(file, undefined);
-            let data: IPersonImport[] = array_trimmer(excel);
-            data = data.filter((f: IPersonImport) =>
-                (f.documenttype === undefined || Object.keys(domains.value?.docTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.documenttype))
-                && (f.persontype === undefined || Object.keys(domains.value?.personGenTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.persontype))
-                && (f.type === undefined || Object.keys(domains.value?.personTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.type))
-                && (f.gender === undefined || Object.keys(domains.value?.genders.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.gender))
-                && (f.educationlevel === undefined || Object.keys(domains.value?.educationLevels.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.educationlevel))
-                && (f.civilstatus === undefined || Object.keys(domains.value?.civilStatuses.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.civilstatus))
-                && (f.occupation === undefined || Object.keys(domains.value?.occupations.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.occupation))
-                && (f.groups === undefined || Object.keys(domains.value?.groups.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.groups))
-                && (f.channeltype === undefined || Object.keys(domains.value?.channelTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.channeltype))
+            let data: ILocation[] = array_trimmer(excel);
+            data = data.filter((f: ILocation) =>
+                (f.type === undefined || f.type !== "") &&
+                (f.name === undefined || f.name !== "") &&
+                (f.country === undefined || f.country !== "") &&
+                (f.city === undefined || f.city !== "") &&
+                (f.district === undefined || f.district !== "") &&
+                (f.address === undefined || f.address !== "") &&
+                (f.schedule === undefined || f.schedule !== "") &&
+                (f.latitude === undefined || !isNaN(f.latitude)) &&
+                (f.longitude === undefined || !isNaN(f.longitude))
             );
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
-                let table: Dictionary = data.reduce((a: any, d: IPersonImport) => ({
+                let table: Dictionary = data.reduce((a: any, d: ILocation) => ({
                     ...a,
-                    [`${d.documenttype}_${d.documentnumber}`]: {
-                        id: 0,
-                        firstname: d.firstname || null,
-                        lastname: d.lastname || null,
-                        documenttype: d.documenttype,
-                        documentnumber: d.documentnumber,
-                        persontype: d.persontype || null,
+                    [`${d.name}_${d.latitude}_${d.longitude}`]: {
+                        id: 0, 
+                        name: d.name || '',
+                        address: d.address || '',
+                        district: d.district || '',
+                        city: d.city|| '',
+                        country: d.country || '',
+                        schedule: d.schedule || '',
+                        phone: d.phone || '',
+                        alternativephone: d.alternativephone || '',
+                        email: d.email || '',
+                        alternativeemail: d.alternativeemail || '',
                         type: d.type || '',
-                        phone: d.phone || null,
-                        alternativephone: d.alternativephone || null,
-                        email: d.email || null,
-                        alternativeemail: d.alternativeemail || null,
-                        birthday: d.birthday || null,
-                        gender: d.gender || null,
-                        educationlevel: d.educationlevel || null,
-                        civilstatus: d.civilstatus || null,
-                        occupation: d.occupation || null,
-                        groups: d.groups || null,
-                        status: 'ACTIVO',
-                        personstatus: 'ACTIVO',
-                        referringpersonid: 0,
-                        geographicalarea: null,
-                        age: null,
-                        sex: null,
+                        username: user?.usr,
+                        latitude: d.latitude || 0,
+                        longitude: d.longitude || 0,
+                        status: "ACTIVO",
+                        description: '',
+                        googleurl: `https://www.google.com/maps/@${d.latitude},${d.longitude},10z`,
                         operation: 'INSERT',
-                        pcc: data
-                            .filter((c: IPersonImport) => `${c.documenttype}_${c.documentnumber}` === `${d.documenttype}_${d.documentnumber}`
-                                && !['', null, undefined].includes(c.channeltype)
-                                && !['', null, undefined].includes(c.personcommunicationchannel)
-                            )
-                            .map((c: IPersonImport) => ({
-                                type: c.channeltype,
-                                personcommunicationchannel: c.personcommunicationchannel || null,
-                                personcommunicationchannelowner: c.personcommunicationchannelowner || null,
-                                displayname: c.displayname || null,
-                                status: 'ACTIVO',
-                                operation: 'INSERT'
-                            }))
                     }
                 }), {});
-                Object.values(table).forEach((p: IPersonImport) => {
+                Object.values(table).forEach((p: ILocation) => {
                     dispatch(execute({
                         header: locationIns({ ...p }),
                         detail: [ ]
@@ -774,8 +693,7 @@ const Location: FC = () => {
                 download={true}
                 exportPersonalized={triggerExportData}
                 fetchData={fetchData}
-                useSelection={true}
-                onClickRow={()=>setViewSelected("view-2")}
+                onClickRow={(row)=>{setRowSelected({ row: row, edit: false });setViewSelected("view-2")}}
                 register={true}
                 ButtonsElement={() => (
                     <Button

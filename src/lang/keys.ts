@@ -20,6 +20,7 @@ export const langKeys = {
     unavailable: "unavailable",
     more_times: "more_times",
     select_date_time: "select_date_time",
+    seeonthemap: "seeonthemap",
     prepare_meeting: "prepare_meeting",
     backgroundColor: "backgroundColor",
     textcolor: "textcolor",
