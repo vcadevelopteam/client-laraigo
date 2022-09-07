@@ -1993,6 +1993,7 @@ const nameschannel: { [x: string]: string } = {
     "WHAD": "WHATSAPP",
     "WHAP": "WHATSAPP",
     "WHAC": "WHATSAPP",
+    "WHAG": "WHATSAPP",
     "FBMS": "FACEBOOK MESSENGER",
     "FBDM": "FACEBOOK MESSENGER",
     "FBWA": "FACEBOOK MURO",
@@ -2006,6 +2007,7 @@ const nameschannel: { [x: string]: string } = {
     "CHATZ": "WEB MESSENGER",
     "CHAZ": "WEB MESSENGER",
     "MAIL": "EMAIL",
+    "MAII": "EMAIL",
     "YOUT": "YOUTUBE",
     "LINE": "LINE",
     "SMS": "SMS",
@@ -2028,7 +2030,6 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
         const index = channel.personcommunicationchannel.lastIndexOf('_');
         return channel.personcommunicationchannel.substring(0, index);
     }, [channel]);
-    console.log(channel.type)
 
     return (
         <div className={classes.root} style={{ display: "flex" }}>
@@ -2039,7 +2040,7 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                         subtitle={(
                             <div className={classes.subtitle}>
                                 <span>{
-                                    nameschannel[channel.type].includes("T_")
+                                    (nameschannel[channel.type] || '').includes("T_")
                                         ? t((langKeys as any)[nameschannel[channel.type]])
                                         : nameschannel[channel.type]}</span>
                                 <GetIcon channelType={channel.type} color='black' />
@@ -2426,10 +2427,10 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
         // setWaitDownloadRecord(true);
         debugger
         try {
-            const axios_result = await VoximplantService.getCallRecord({call_session_history_id: ticket.postexternalid});
+            const axios_result = await VoximplantService.getCallRecord({ call_session_history_id: ticket.postexternalid });
             if (axios_result.status === 200) {
                 let buff = Buffer.from(axios_result.data, 'base64');
-                const blob = new Blob([buff], {type: axios_result.headers['content-type'].split(';').find((x: string) => x.includes('audio'))});
+                const blob = new Blob([buff], { type: axios_result.headers['content-type'].split(';').find((x: string) => x.includes('audio')) });
                 const objectUrl = window.URL.createObjectURL(blob);
                 let a = document.createElement('a');
                 a.href = objectUrl;
@@ -2451,16 +2452,16 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
                 ticket={rowSelected}
             />
             <Grid container direction="row">
-                
+
                 <Grid item xs={12} sm={12} md={1} lg={1} xl={1}>
-                {(conversation.channeltype==="VOXI" && conversation.postexternalid && conversation.callanswereddate ) && 
+                    {(conversation.channeltype === "VOXI" && conversation.postexternalid && conversation.callanswereddate) &&
                         <Tooltip title={t(langKeys.download_record) || ""}>
-                            <IconButton size="small" onClick={() => downloadCallRecord(conversation)} style={{paddingTop: 15, paddingLeft: 20}}
+                            <IconButton size="small" onClick={() => downloadCallRecord(conversation)} style={{ paddingTop: 15, paddingLeft: 20 }}
                             >
                                 <CallRecordIcon style={{ fill: '#7721AD' }} />
                             </IconButton>
                         </Tooltip>
-                }
+                    }
                 </Grid>
                 <Grid item xs={12} sm={12} md={1} lg={1} xl={1}>
                     <Property title="Ticket #" subtitle={conversation.ticketnum} isLink={true} onClick={() => openDialogInteractions(conversation)} />
