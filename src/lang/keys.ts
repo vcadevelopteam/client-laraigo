@@ -47,6 +47,7 @@ export const langKeys = {
     totaltimeduetodisconnectionreasons: "totaltimeduetodisconnectionreasons",
     timeconnectedvstimeoff: "timeconnectedvstimeoff",
     schedule_event: "schedule_event",
+    propertytiempobalanceollamada: "propertytiempobalanceollamada",
     time: "time",
     totaltimeconnected: "totaltimeconnected",
     totaltimeoffline: "totaltimeoffline",

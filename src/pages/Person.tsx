@@ -2426,6 +2426,7 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
     const downloadCallRecord = async (ticket: Dictionary) => {
         // dispatch(getCallRecord({call_session_history_id: ticket.postexternalid}));
         // setWaitDownloadRecord(true);
+        debugger
         try {
             const axios_result = await VoximplantService.getCallRecord({call_session_history_id: ticket.postexternalid});
             if (axios_result.status === 200) {
@@ -2434,7 +2435,7 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
                 const objectUrl = window.URL.createObjectURL(blob);
                 let a = document.createElement('a');
                 a.href = objectUrl;
-                a.download = ticket.numeroticket;
+                a.download = ticket.ticketnum;
                 a.click();
             }
         }

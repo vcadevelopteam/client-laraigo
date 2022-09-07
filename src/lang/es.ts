@@ -349,6 +349,7 @@ const translation: LangKeys = {
     firstDataLocation: "1. Escribe tu dirección completa",
     secondDataLocation: "2. Por favor completa lo que sea relevante para ti:",
     detail: 'Detalle',
+    propertytiempobalanceollamada: "El valor es de 0 a 30 segundos",
     district: "Distrito",
     postalcode: "Código postal",
     searchyourlocation: "Busca tu ubicación",
