@@ -3200,3 +3200,35 @@ export const selCommunicationChannelWhatsApp = (): IRequestBody => ({
     key: "UFN_COMMUNICATIONCHANNEL_SEL_WHATSAPP",
     parameters: {}
 })
+
+export const getPaginatedLocation = ({ skip, take, filters, sorts,locationid=""}: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_LOCATION_SEL",
+    methodCount: "UFN_LOCATION_TOTALRECORDS",
+    parameters: {
+        skip,
+        take,
+        filters,
+        sorts,
+        locationid,
+        origin: "location",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+
+export const getLocationExport = ({ filters, sorts }: Dictionary): IRequestBody => ({
+    method: "UFN_LOCATION_EXPORT",
+    key: "UFN_LOCATION_EXPORT",
+    parameters: {
+        origin: "location",
+        filters,
+        sorts,
+    }
+});
+
+export const locationIns = ({ id, operation, name, address, district, city, country, schedule, phone, alternativephone, email, alternativeemail, latitude, longitude, googleurl, description, status, type, username }: Dictionary): IRequestBody => ({
+    method: "UFN_LOCATION_INS",
+    key: "UFN_LOCATION_INS",
+    parameters: {
+        id, operation, name, address, district, city, country, schedule, phone, alternativephone, email, alternativeemail, latitude, longitude, googleurl, description, status, type, username
+    }
+});

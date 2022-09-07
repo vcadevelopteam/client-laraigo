@@ -466,8 +466,7 @@ const Settings: FC = () => {
                                         }
                                         m={2}
                                     />
-                                </Grid>                        
-                                
+                                </Grid>             
                             </Grid>
                         </Grid>
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
@@ -562,6 +561,21 @@ const Settings: FC = () => {
                                         m={2}
                                     />
                                 </Grid>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <ItemTile
+                                        title={<Trans i18nKey={langKeys.location} count={2} />}
+                                        subtitle={<SubtitleText value={value?.num_location} i18nKey={langKeys.location} />}
+                                        icon={<ClassificationIcon fill="inherit" stroke="inherit" />}
+                                        helpText={
+                                            <HelpText
+                                                i18nKey={langKeys.manageLocation}
+                                                count={2}
+                                                onClick={() => history.push(paths.EXTRASLOCATION)}
+                                            />
+                                        }
+                                        m={2}
+                                    />
+                                </Grid> 
                             </Grid>
                         </Grid>
                     </Grid>

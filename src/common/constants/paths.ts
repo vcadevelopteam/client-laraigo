@@ -136,6 +136,7 @@ const paths = {
     USERS: '/extras/users',
     GROUPCONFIG: '/extras/groupconfig',
     WHITELIST: '/extras/whitelist',
+    EXTRASLOCATION: '/extras/location',
     USERSETTINGS: '/usersettings',
     INAPPROPRIATEWORDS: '/extras/inappropriatewords',
     INTELLIGENTMODELS: '/extras/intelligentmodels',
