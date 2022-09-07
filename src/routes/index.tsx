@@ -59,7 +59,11 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 
 	React.useEffect(() => {
 		if (!resValidateToken.error && !resValidateToken.loading) {
-			const automaticConnection = resLogin.user?.automaticConnection || false;
+			// const automaticConnection = resLogin.user?.automaticConnection || false;
+			const automaticConnection = localStorage.getItem("firstLoad") === "1";
+			if (automaticConnection) {
+				localStorage.removeItem("firstLoad")
+			}
 			dispatch(setDataUser({
 				holdingBySupervisor: resValidateToken.user?.properties.holding_by_supervisor || "CANAL",
 				userGroup: resValidateToken.user?.groups || "",
