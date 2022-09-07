@@ -16,7 +16,7 @@ import PhoneForwardedIcon from '@material-ui/icons/PhoneForwarded';
 import PhoneIcon from '@material-ui/icons/Phone';
 import { AntTab, SearchField } from 'components';
 import { IconButton, Tabs } from '@material-ui/core';
-import { conversationOutboundIns, convertLocalDate, getSecondsUntelNow } from 'common/helpers';
+import { conversationOutboundIns, convertLocalDate, secondsToTime, getSecondsUntelNow, conversationCallHold } from 'common/helpers';
 import { langKeys } from 'lang/keys';
 import ContactPhoneIcon from '@material-ui/icons/ContactPhone';
 import PhoneCallbackIcon from '@material-ui/icons/PhoneCallback';
@@ -244,7 +244,9 @@ const MakeCall: React.FC = () => {
     const historial = useSelector(state => state.voximplant.requestGetHistory);
     const advisors = useSelector(state => state.voximplant.requestGetAdvisors);
     const [waiting2, setwaiting2] = useState(false)
-
+    const onholdstate = useSelector(state => state.voximplant.onhold);
+    const onholdstatedate = useSelector(state => state.voximplant.onholddate);
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const { corpid, orgid, sitevoxi, ccidvoxi, userid } = useSelector(state => state.login.validateToken?.user!!);
     const history = useHistory();
 
@@ -288,11 +290,20 @@ const MakeCall: React.FC = () => {
 
     //ring when the customer call
     React.useEffect(() => {
-        if (call.type === "INBOUND" && statusCall === "CONNECTING") {
+        if (statusCall === "DISCONNECTED" && !!ticketSelected) {
+            if (onholdstate) {
+                const timeToAdd = getSecondsUntelNow(convertLocalDate(onholdstatedate))
+                dispatch(execute(conversationCallHold({
+                    holdtime: timeToAdd,
+                    conversationid: ticketSelected?.conversationid
+                })))
+            }
+        } else if (call.type === "INBOUND" && statusCall === "CONNECTING") {
             setWaitingDate(new Date().toISOString())
             setTimeWaiting(0);
             ringtone.current?.pause();
             if (ringtone.current) {
+                ringtone.current.volume = (user?.properties?.ringer_volume||100)/100
                 ringtone.current.currentTime = 0;
             }
             ringtone.current?.play();
@@ -301,6 +312,7 @@ const MakeCall: React.FC = () => {
             ringtone.current?.pause();
         }
     }, [call, statusCall])
+
 
     //reassign if the call overload time limit
     React.useEffect(() => {

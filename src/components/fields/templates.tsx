@@ -38,6 +38,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import Tooltip from '@material-ui/core/Tooltip';
 import { ListItemIcon } from '@material-ui/core';
 import PhoneIcon from '@material-ui/icons/Phone';
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import {
     WebMessengerIcon,
     ZyxmeMessengerIcon,
@@ -341,6 +342,7 @@ interface InputProps {
     InputProps?: Partial<OutlinedInputProps>;
     size?: "small" | "medium" | undefined;
     width?: number | "string";
+    helperText?: "string";
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -355,7 +357,7 @@ interface TemplateAutocompleteProps extends InputProps {
     orderbylabel?: boolean;
 }
 
-export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard", maxLength = 0 }) => {
+export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard", maxLength = 0, helperText = "" }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -364,8 +366,17 @@ export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, c
 
     return (
         <div className={className}>
-            {variant === "standard" &&
-                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">{label}</Box>
+            {(variant === "standard" && !!label) &&
+                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">
+                    {label}
+                    {!!helperText &&
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <Tooltip title={<div style={{ fontSize: 12 }}>{helperText}</div>} arrow placement="top" >
+                                <InfoRoundedIcon color="action" style={{ width: 15, height: 15, cursor: 'pointer' }} />
+                            </Tooltip>
+                        </div>
+                    }
+                </Box>
             }
             <TextField
                 {...fregister}
@@ -695,10 +706,10 @@ const LISTBOX_PADDING_MultiSelect = 8;
 const renderRowMultiSelect = (props: ListChildComponentProps) => {
     const { data, index, style } = props;
     return React.cloneElement(data[index], {
-      style: {
-        ...style,
-        top: (style.top as number) + LISTBOX_PADDING_MultiSelect,
-      },
+        style: {
+            ...style,
+            top: (style.top as number) + LISTBOX_PADDING_MultiSelect,
+        },
     });
 }
 
@@ -712,9 +723,9 @@ const OuterElementTypeMultiSelect = React.forwardRef<HTMLDivElement>((props, ref
 const useResetCacheMultiSelect = (data: any) => {
     const ref = React.useRef<VariableSizeList>(null);
     React.useEffect(() => {
-      if (ref.current != null) {
-        ref.current.resetAfterIndex(0, true);
-      }
+        if (ref.current != null) {
+            ref.current.resetAfterIndex(0, true);
+        }
     }, [data]);
     return ref;
 }
@@ -724,41 +735,41 @@ const ListboxComponentMultiSelect = React.forwardRef<HTMLDivElement>(function Li
     const itemData = React.Children.toArray(children);
     const itemCount = itemData.length;
     const itemSize = 48;
-  
+
     const getChildSize = (child: React.ReactNode) => {
         if (React.isValidElement(child) && child.type === ListSubheader) {
-          return 48;
+            return 48;
         }
-    
+
         return itemSize;
     };
-    
+
     const getHeight = () => {
-      if (itemCount > 8) {
-        return 8 * itemSize;
-      }
-      return itemData.map(getChildSize).reduce((a, b) => a + b, 0);
+        if (itemCount > 8) {
+            return 8 * itemSize;
+        }
+        return itemData.map(getChildSize).reduce((a, b) => a + b, 0);
     };
-  
+
     const gridRef = useResetCacheMultiSelect(itemCount);
-  
+
     return (
-      <div ref={ref}>
-        <OuterElementContextMultiSelect.Provider value={other}>
-          <VariableSizeList
-            itemData={itemData}
-            height={getHeight()}
-            width="100%"
-            ref={gridRef}
-            outerElementType={OuterElementTypeMultiSelect}
-            itemSize={(index) => getChildSize(itemData[index])}
-            overscanCount={5}
-            itemCount={itemCount}
-          >
-            {renderRowMultiSelect}
-          </VariableSizeList>
-        </OuterElementContextMultiSelect.Provider>
-      </div>
+        <div ref={ref}>
+            <OuterElementContextMultiSelect.Provider value={other}>
+                <VariableSizeList
+                    itemData={itemData}
+                    height={getHeight()}
+                    width="100%"
+                    ref={gridRef}
+                    outerElementType={OuterElementTypeMultiSelect}
+                    itemSize={(index) => getChildSize(itemData[index])}
+                    overscanCount={5}
+                    itemCount={itemCount}
+                >
+                    {renderRowMultiSelect}
+                </VariableSizeList>
+            </OuterElementContextMultiSelect.Provider>
+        </div>
     );
 });
 
@@ -1500,7 +1511,7 @@ interface TemplateSwitchArrayProps extends InputProps {
 
 export const TemplateSwitchArray: React.FC<TemplateSwitchArrayProps> = ({ className, onChange, defaultValue, label, tooltip = {} }) => {
     const { t } = useTranslation();
-    const [value, setValue] = useState([true,'1'].includes(defaultValue) ? true : false);
+    const [value, setValue] = useState([true, '1'].includes(defaultValue) ? true : false);
 
     return (
         <div className={className} style={{ paddingBottom: '3px' }}>

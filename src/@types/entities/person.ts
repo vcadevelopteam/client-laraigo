@@ -134,6 +134,8 @@ export interface IPersonAdditionalInfo {
 }
 
 export interface IPersonConversation {
+    postexternalid?: string|null;
+    callanswereddate?: string | null;
     tme: string;
     tmr: string;
     tmo: string;

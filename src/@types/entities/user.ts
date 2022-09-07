@@ -32,6 +32,7 @@ interface Properties {
     waiting_customer_message: string | undefined;
     holding_by_supervisor: "CANAL" | "GRUPO" | undefined;
     environment: string;
+    ringer_volume: number;
 }
 
 interface Domains {
