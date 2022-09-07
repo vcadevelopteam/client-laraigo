@@ -90,13 +90,20 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
     const dataClassification = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
-            type: 'NINGUNO',
-            id: row?.inappropriatewordsid|| 0,
-            classification: row?.classificationdata||"",
-            description: row?.description || '',
-            defaultanswer: row?.defaultanswer || '',
-            status: row?.status || 'ACTIVO',
-            operation: row ? "EDIT" : "INSERT"
+            id: row?.locationid|| 0,
+            name: row?.name||"",
+            country: row?.country||"",
+            city: row?.city||"",
+            district: row?.district||"",
+            address: row?.address||"",
+            phone: row?.phone||"",
+            alternativePhone: row?.alternativePhone||"",
+            email: row?.email||"",
+            alternativeEmail: row?.alternativeEmail||"",
+            type: row?.type||"",
+            schedule: row?.schedule||"",
+            latitude: row?.latitude||0,
+            longitude: row?.longitude||0,
         }
     });
 
@@ -120,10 +127,19 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
     React.useEffect(() => {
         register('type');
         register('id');
-        register('defaultanswer');
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('classification', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('phone');
+        register('alternativePhone');
+        register('email');
+        register('alternativeEmail');
+        register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('country', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('city', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('district', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('address', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('schedule', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('latitude', { validate: (value) => (value && !isNaN(value)) || t(langKeys.field_required) });
+        register('longitude', { validate: (value) => (value && !isNaN(value)) || t(langKeys.field_required) });
     }, [edit, register]);
 
     useEffect(() => {
@@ -239,129 +255,111 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.forbiddenWord)} 
+                            label={t(langKeys.name)} 
                             className="col-6"
-                            onChange={(value) => setValue('description', value)}
-                            valueDefault={row ? (row.description || "") : ""}
-                            error={errors?.description?.message}
+                            onChange={(value) => setValue('name', value)}
+                            valueDefault={row ? (row.name || "") : ""}
+                            error={errors?.name?.message}
                         />
                         <FieldEdit
                             label={t(langKeys.country)} 
                             className="col-6"
-                            onChange={(value) => setValue('description', value)}
-                            valueDefault={row ? (row.description || "") : ""}
-                            error={errors?.description?.message}
+                            onChange={(value) => setValue('country', value)}
+                            valueDefault={row ? (row.country || "") : ""}
+                            error={errors?.country?.message}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.city)} 
                             className="col-6"
-                            onChange={(value) => setValue('description', value)}
-                            valueDefault={row ? (row.description || "") : ""}
-                            error={errors?.description?.message}
+                            onChange={(value) => setValue('city', value)}
+                            valueDefault={row ? (row.city || "") : ""}
+                            error={errors?.city?.message}
                         />
                         <FieldEdit
                             label={t(langKeys.district)} 
                             className="col-6"
-                            onChange={(value) => setValue('description', value)}
-                            valueDefault={row ? (row.description || "") : ""}
-                            error={errors?.description?.message}
+                            onChange={(value) => setValue('district', value)}
+                            valueDefault={row ? (row.district || "") : ""}
+                            error={errors?.district?.message}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.address)} 
                             className="col-6"
-                            onChange={(value) => setValue('description', value)}
-                            valueDefault={row ? (row.description || "") : ""}
-                            error={errors?.description?.message}
+                            onChange={(value) => setValue('address', value)}
+                            valueDefault={row ? (row.address || "") : ""}
+                            error={errors?.address?.message}
                         />
                         <FieldEdit
                             label={t(langKeys.phone)} 
                             className="col-6"
-                            onChange={(value) => setValue('description', value)}
-                            valueDefault={row ? (row.description || "") : ""}
-                            error={errors?.description?.message}
+                            type="number"
+                            onChange={(value) => setValue('phone', value)}
+                            valueDefault={row ? (row.phone || "") : ""}
+                            error={errors?.phone?.message}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.alternativePhone)} 
                             className="col-6"
-                            onChange={(value) => setValue('description', value)}
-                            valueDefault={row ? (row.description || "") : ""}
-                            error={errors?.description?.message}
+                            type="number"
+                            onChange={(value) => setValue('alternativePhone', value)}
+                            valueDefault={row ? (row.alternativePhone || "") : ""}
+                            error={errors?.alternativePhone?.message}
                         />
                         <FieldEdit
                             label={t(langKeys.email)} 
                             className="col-6"
-                            onChange={(value) => setValue('description', value)}
-                            valueDefault={row ? (row.description || "") : ""}
-                            error={errors?.description?.message}
+                            onChange={(value) => setValue('email', value)}
+                            valueDefault={row ? (row.email || "") : ""}
+                            error={errors?.email?.message}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.alternativeEmail)} 
                             className="col-6"
-                            onChange={(value) => setValue('description', value)}
-                            valueDefault={row ? (row.description || "") : ""}
-                            error={errors?.description?.message}
+                            onChange={(value) => setValue('alternativeEmail', value)}
+                            valueDefault={row ? (row.alternativeEmail || "") : ""}
+                            error={errors?.alternativeEmail?.message}
                         />
                         <FieldEdit
                             label={t(langKeys.type)} 
                             className="col-6"
-                            onChange={(value) => setValue('description', value)}
-                            valueDefault={row ? (row.description || "") : ""}
-                            error={errors?.description?.message}
+                            onChange={(value) => setValue('type', value)}
+                            valueDefault={row ? (row.type || "") : ""}
+                            error={errors?.type?.message}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.schedule)} 
                             className="col-12"
-                            onChange={(value) => setValue('description', value)}
-                            valueDefault={row ? (row.description || "") : ""}
-                            error={errors?.description?.message}
+                            onChange={(value) => setValue('schedule', value)}
+                            valueDefault={row ? (row.schedule || "") : ""}
+                            error={errors?.schedule?.message}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.latitude)} 
                             className="col-6"
-                            onChange={(value) => setValue('description', value)}
-                            valueDefault={row ? (row.description || "") : ""}
-                            error={errors?.description?.message}
+                            type="number"
+                            onChange={(value) => setValue('latitude', value)}
+                            valueDefault={row ? (row.latitude || "") : ""}
+                            error={errors?.latitude?.message}
                         />
                         <FieldEdit
                             label={t(langKeys.longitude)} 
                             className="col-6"
-                            onChange={(value) => setValue('description', value)}
-                            valueDefault={row ? (row.description || "") : ""}
-                            error={errors?.description?.message}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldSelect
-                            label={t(langKeys.name)}
-                            className="col-6"
-                            valueDefault={row?.classificationdata || ""}
-                            onChange={(value) => setValue('classification', (value?.domainvalue||""))}
-                            error={errors?.classification?.message}
-                            uset={true}
-                            data={dataClassification}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.defaultanswer)} 
-                            className="col-12"
-                            onChange={(value) => setValue('defaultanswer', value)}
-                            valueDefault={row ? (row.defaultanswer || "") : ""}
-                            error={errors?.defaultanswer?.message}
+                            type="number"
+                            onChange={(value) => setValue('longitude', value)}
+                            valueDefault={row ? (row.longitude || "") : ""}
+                            error={errors?.longitude?.message}
                         />
                     </div>
                     <div className="row-zyx">
