@@ -247,14 +247,14 @@ const CatalogProduct: React.FC<{ onlyTime?: string, interactiontext: string, cre
                 [classes.interactionTextAgent]: userType !== 'client',
             })}>
                 <div style={{ width: 300, display: 'flex', flexDirection: 'column' }}>
-                    <img width="100%" src={jsonIntt.Product.ImageReference} height="320px" alt="reference" />
+                    <img width="100%" src={jsonIntt?.Product?.ImageReference} height="320px" alt="reference" />
                     <div style={{ backgroundColor: "#f5f6f6", padding: 8 }}>
-                        <div>{jsonIntt.Product.Title}</div>
-                        <div style={{ color: '#dff3cc' }}>{jsonIntt.Product.Price} {jsonIntt.Product.Currency}</div>
+                        <div>{jsonIntt?.Product?.Title}</div>
+                        <div style={{ color: '#dff3cc' }}>{jsonIntt?.Product?.Price} {jsonIntt?.Product?.Currency}</div>
                     </div>
                     <div style={{ padding: 8 }}>
-                        <div style={{ fontWeight: 'bold' }}>{jsonIntt.Body}</div>
-                        <div style={{ color: '#8696a0' }}>{jsonIntt.Footer}</div>
+                        <div style={{ fontWeight: 'bold' }}>{jsonIntt?.Body}</div>
+                        <div style={{ color: '#8696a0' }}>{jsonIntt?.Footer}</div>
                     </div>
                 </div>
                 <TimerInteraction interactiontype="interactivelist" createdate={createdate} userType={userType} time={onlyTime || ""} />
