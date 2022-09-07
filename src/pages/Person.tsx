@@ -1993,6 +1993,7 @@ const nameschannel: { [x: string]: string } = {
     "WHAD": "WHATSAPP",
     "WHAP": "WHATSAPP",
     "WHAC": "WHATSAPP",
+    "WHAG": "WHATSAPP",
     "FBMS": "FACEBOOK MESSENGER",
     "FBDM": "FACEBOOK MESSENGER",
     "FBWA": "FACEBOOK MURO",
@@ -2006,6 +2007,7 @@ const nameschannel: { [x: string]: string } = {
     "CHATZ": "WEB MESSENGER",
     "CHAZ": "WEB MESSENGER",
     "MAIL": "EMAIL",
+    "MAII": "EMAIL",
     "YOUT": "YOUTUBE",
     "LINE": "LINE",
     "SMS": "SMS",
@@ -2039,7 +2041,7 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                         subtitle={(
                             <div className={classes.subtitle}>
                                 <span>{
-                                    nameschannel[channel.type].includes("T_")
+                                    (nameschannel[channel.type] || '').includes("T_")
                                         ? t((langKeys as any)[nameschannel[channel.type]])
                                         : nameschannel[channel.type]}</span>
                                 <GetIcon channelType={channel.type} color='black' />
