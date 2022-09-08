@@ -15,20 +15,20 @@ const options = {
   zoomControl: true,
 };
 
-export default function Map({setDirectionData}) {
+export default function Map({directionData,setDirectionData}) {
   
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4" /*"AIzaSyCBij6DbsB8SQC_RRKm3-X07RLmvQEnP9w"*/,
     libraries,
   });
   const [center, setcenter] = React.useState({
-    lat: 0,
-    lng: 0,
+    lat: directionData.lat,
+    lng: directionData.lng,
     time: new Date(),
   });
   const [marker, setMarker] = React.useState({
-    lat: 0,
-    lng: 0,
+    lat: directionData.lat,
+    lng: directionData.lng,
     time: new Date(),
   });
   
@@ -44,38 +44,40 @@ export default function Map({setDirectionData}) {
     }
   }
   async function showPosition(position) {
-    const lat = position.coords.latitude;
-    const lng = position.coords.longitude;
-    setDirectionData((prev)=>({...prev, 
-      lat: lat,
-      lng: lng,
-    }))
-    
-    setMarker({
-      lat: lat,
-      lng: lng,
-      time: new Date(),
-    });
-    setcenter({
-      lat: lat,
-      lng: lng,
-    });
-
-    const urltosearch = `${apiUrls.GETGEOCODE}?lat=${lat}&lng=${lng}`;
-    const response = await fetch(urltosearch, {
-        method: 'GET',
-    });
-    if (response.ok) {
-        try {
-            const r = await response.json();
-            if (r.status === "OK" && r.results && r.results instanceof Array && r.results.length > 0) {
-                cleanDataAddres(r.results[0].address_components);
-                setDirectionData((prev)=>({...prev, 
-                  movedmarker: true,
-                  searchLocation: r.results[0].formatted_address
-                }))
-            }
-        } catch (e) { }
+    if(directionData.lat === 0 && directionData.lng === 0){
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      setDirectionData((prev)=>({...prev, 
+        lat: lat,
+        lng: lng,
+      }))
+      
+      setMarker({
+        lat: lat,
+        lng: lng,
+        time: new Date(),
+      });
+      setcenter({
+        lat: lat,
+        lng: lng,
+      });
+  
+      const urltosearch = `${apiUrls.GETGEOCODE}?lat=${lat}&lng=${lng}`;
+      const response = await fetch(urltosearch, {
+          method: 'GET',
+      });
+      if (response.ok) {
+          try {
+              const r = await response.json();
+              if (r.status === "OK" && r.results && r.results instanceof Array && r.results.length > 0) {
+                  cleanDataAddres(r.results[0].address_components);
+                  setDirectionData((prev)=>({...prev, 
+                    movedmarker: true,
+                    searchLocation: r.results[0].formatted_address
+                  }))
+              }
+          } catch (e) { }
+      }
     }
   }
   
