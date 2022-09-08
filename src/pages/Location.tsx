@@ -83,7 +83,6 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const user = useSelector(state => state.login.validateToken.user);
-    console.log(row)
     const [directionData, setDirectionData] = React.useState({
         country: row?.country||"",
         city: row?.city||"",
@@ -160,7 +159,7 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
         setValue("city",directionData.city)
         setValue("district",directionData.district)
         setValue("address",directionData.address)
-        setValue("googleurl",`https://www.google.com/maps/@${directionData.lat},${directionData.lng},10z`)
+        setValue("googleurl",`https://www.google.com/maps?q=${directionData.lat},${directionData.lng}`)
     }, [directionData])
     
     const onSubmit = handleSubmit((data) => {
@@ -322,7 +321,7 @@ const DetailLocation: React.FC<DetailLocationProps> = ({ data: { row, edit }, se
                     <div className="row-zyx">
                         <div>
                             <div style={{ width: "100%" }}>
-                                <Map setDirectionData={setDirectionData}/>
+                                <Map directionData={directionData} setDirectionData={setDirectionData}/>
                             </div>
                         </div>
                     </div>
@@ -467,7 +466,7 @@ const Location: FC = () => {
                     return (
                         <label
                             className={classes.labellink}
-                            onClick={() => {window.open(row.googleurl, '_blank')?.focus()}}
+                            onClick={() => {window.open(`https://www.google.com/maps?q=${row.latitude},${row.longitude}`, '_blank')?.focus()}}
                         >
                             {t(langKeys.seeonthemap)}
                         </label>
@@ -612,7 +611,8 @@ const Location: FC = () => {
     
     const handleUpload = async (files: any) => {
         const file = files?.item(0);
-        if (file) {
+        if (file && file.name.split('.')[file.name.split('.').length-1]==="xlsx") {
+
             let excel: any = await uploadExcel(file, undefined);
             let data: ILocation[] = array_trimmer(excel);
             data = data.filter((f: ILocation) =>
@@ -630,7 +630,7 @@ const Location: FC = () => {
                 dispatch(showBackdrop(true));
                 let table: Dictionary = data.reduce((a: any, d: ILocation) => ({
                     ...a,
-                    [`${d.name}_${d.latitude}_${d.longitude}`]: {
+                    [`location_${d.latitude}_${d.longitude}`]: {
                         id: 0, 
                         name: d.name || '',
                         address: d.address || '',
@@ -648,10 +648,11 @@ const Location: FC = () => {
                         longitude: d.longitude || 0,
                         status: "ACTIVO",
                         description: '',
-                        googleurl: `https://www.google.com/maps/@${d.latitude},${d.longitude},10z`,
+                        googleurl: `https://www.google.com/maps?q=${d.latitude},${d.longitude}`,
                         operation: 'INSERT',
                     }
                 }), {});
+                debugger
                 Object.values(table).forEach((p: ILocation) => {
                     dispatch(execute({
                         header: locationIns({ ...p }),
@@ -663,6 +664,9 @@ const Location: FC = () => {
             else {
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) }));
             }
+        }
+        if(file.name.split('.')[file.name.split('.').length-1]!=="xlsx"){
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.invalidformat) }))
         }
     }
 

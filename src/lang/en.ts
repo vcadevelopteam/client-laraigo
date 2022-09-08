@@ -2788,6 +2788,7 @@ const translation: LangKeys = {
     app_domains: "Domains",
     "app_validación de inputs": "Input validation",
     "app_kpi manager": "KPI manager",
+    invalidformat: "Invalid format",
     app_person: "Person",
     app_systemlabel: "System label",
     app_home: "Home",

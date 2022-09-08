@@ -30,6 +30,7 @@ export const langKeys = {
     invitation_date: "invitation_date",
     add_classification: "add_classification",
     error_invaliddata: "error_invaliddata",
+    invalidformat: "invalidformat",
     locations: "locations",
     align: "align",
     font: "font",
