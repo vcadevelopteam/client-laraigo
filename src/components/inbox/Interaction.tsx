@@ -145,7 +145,7 @@ const ShoppingCart: React.FC<{ onlyTime?: string, interactiontext: string, creat
                     <h4 >Carrito enviado</h4>
                     <div>
                         <div style={{ fontWeight: 500 }}>{jsonIntt.Product_items.length} Items</div>
-                        <div style={{ color: '#8696a0' }}>{jsonIntt.Product_items.reduce((acc: number, item: Dictionary) => acc + parseFloat(item.Item_price), 0).toFixed(2)} {jsonIntt.Product_items[0].Currency}</div>
+                        <div style={{ color: '#8696a0' }}>{jsonIntt.Product_items.reduce((acc: number, item: Dictionary) => acc + parseFloat(item.Item_price)*item.Quantity, 0).toFixed(2)} {jsonIntt.Product_items[0].Currency}</div>
                         <div style={{ marginTop: 16 }}>
                         </div>
                     </div>
