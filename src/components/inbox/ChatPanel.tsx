@@ -328,8 +328,8 @@ const DialogCloseticket: React.FC<{
 
             if (indexClosed > -1) {
                 setMotives({
-                    closed: multiData.data[indexClosed].data,
-                    suspend: multiData.data[indexSuspend].data,
+                    closed: multiData.data[indexClosed]?.data || [],
+                    suspend: multiData.data[indexSuspend]?.data || [],
                     selected: []
                 })
             }
