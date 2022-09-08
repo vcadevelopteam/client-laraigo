@@ -1179,10 +1179,10 @@ const Tickets = () => {
 
     useEffect(() => {
         if (!mainResult?.multiData.loading && !mainResult?.multiData.error) {
-            setUserList(mainResult?.multiData?.data[5] ? mainResult?.multiData?.data[5].data.map(x => ({
+            setUserList((mainResult?.multiData?.data[5]?.data || []).map(x => ({
                 ...x,
                 fullname: `${x.firstname} ${x.lastname}`
-            })).sort((a, b) => a.fullname.localeCompare(b.fullname)) : [])
+            })).sort((a, b) => a.fullname.localeCompare(b.fullname)))
         }
     }, [mainResult?.multiData])
 
