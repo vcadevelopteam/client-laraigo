@@ -2016,7 +2016,7 @@ export const langKeys = {
     report_survey_answer3: 'report_survey_answer3',
     report_survey_comment3: 'report_survey_comment3',
 
-    
+
     report_voicecall: "report_voicecall",
     report_voicecall_ticketdate: "report_voicecall_ticketdate",
     report_voicecall_tickettime: "report_voicecall_tickettime",
@@ -3999,6 +3999,9 @@ export const langKeys = {
     nametemplate_validation: "nametemplate_validation",
     messagetemplate_phonenumber: 'messagetemplate_phonenumber',
     TEMPLATE_NONE: "TEMPLATE_NONE",
+    voximplant_organizationupdatescenario: "voximplant_organizationupdatescenario",
+    voximplant_organizationupdatescenarioalert: "voximplant_organizationupdatescenarioalert",
+    scenario: "scenario",
 };
 
 export type LangKeys = typeof langKeys;

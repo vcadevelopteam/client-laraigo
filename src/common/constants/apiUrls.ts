@@ -153,6 +153,8 @@ export const apiUrls = {
 
     VOXIMPLANT_GET_CALLRECORD: `${BASE_URL}/voximplant/getcallrecord`,
 
+    VOXIMPLANT_UPDATE_SCENARIO: `${BASE_URL}/voximplant/updatescenario`,
+
     GOOGLE_EXCHANGECODE: `${BASE_URL}/google/exchangecode`,
     GOOGLE_LISTBLOGGER: `${BASE_URL}/google/listblogger`,
     GOOGLE_LISTYOUTUBE: `${BASE_URL}/google/listyoutube`,

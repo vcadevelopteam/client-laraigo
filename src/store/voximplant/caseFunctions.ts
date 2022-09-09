@@ -381,3 +381,39 @@ export const getCallRecordReset = (state: IState): IState => ({
     ...state,
     requestGetCallRecord: initialState.requestGetCallRecord,
 })
+
+export const updateScenario = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestUpdateScenario: {
+        ...state.requestUpdateScenario,
+        error: false,
+        loading: true,
+    }
+})
+
+export const updateScenarioFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestUpdateScenario: {
+        ...state.requestUpdateScenario,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message || 'error_unexpected_error',
+    }
+})
+
+export const updateScenarioSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestUpdateScenario: {
+        ...state.requestUpdateScenario,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message,
+    }
+})
+
+export const updateScenarioReset = (state: IState): IState => ({
+    ...state,
+    requestUpdateScenario: initialState.requestUpdateScenario,
+})
