@@ -1933,7 +1933,7 @@ const translation: LangKeys = {
     report_survey_comment2: 'Comment 2',
     report_survey_answer3: 'Answer 3',
     report_survey_comment3: 'Comment 3',
-    
+
     report_voicecall: "Voice Call Report",
     report_voicecall_ticketdate: "Date",
     report_voicecall_tickettime: "Time",
@@ -4008,6 +4008,9 @@ const translation: LangKeys = {
     nametemplate_validation: "Only lowercase letters, numbers and underscores are allowed",
     messagetemplate_phonenumber: 'Phone Number',
     TEMPLATE_NONE: "NONE",
+    voximplant_organizationupdatescenario: "Update Scenario",
+    voximplant_organizationupdatescenarioalert: "An scenario defines the steps that inbound and outbound calls will follow when launched from one of our voice channels. Use the button in order to update the scenarios of all the organizations to the latest registered version in the database.",
+    scenario: "Scenario",
 };
 
 const enResource: ResourceLanguage = {

@@ -133,3 +133,15 @@ export const getCallRecord = (request: any): IActionCall => ({
 });
 
 export const resetGetCallRecord = (): IActionCall => ({ type: actionTypes.GET_CALLRECORD_RESET });
+
+export const updateScenario = (request: any): IActionCall => ({
+    callAPI: () => VoximplantService.updateScenario(request),
+    types: {
+        loading: actionTypes.UPDATE_SCENARIO,
+        success: actionTypes.UPDATE_SCENARIO_SUCCESS,
+        failure: actionTypes.UPDATE_SCENARIO_FAILURE,
+    },
+    type: null,
+});
+
+export const resetUpdateScenario = (): IActionCall => ({ type: actionTypes.UPDATE_SCENARIO_RESET });

@@ -3999,6 +3999,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     nametemplate_validation: "Solo minúsculas, números y guion bajo son permitidos",
     messagetemplate_phonenumber: 'Número Telefónico',
     TEMPLATE_NONE: "NINGUNO",
+    voximplant_organizationupdatescenario: "Actualizar Escenario",
+    voximplant_organizationupdatescenarioalert: "Un escenario define los pasos a seguir para las llamadas entrantes y salientes desde los canales de voz. Utilice el boton para actualizar los escenarios de todas las organizaciones a su ultima version registrada en la base de datos.",
+    scenario: "Escenario",
 };
 
 const esResource: ResourceLanguage = {
