@@ -24,7 +24,7 @@ interface DetailProps {
     fetchData?: () => void;
     setViewSelected: (view: string) => void;
 }
-
+const selectionKey = 'intentionid';
 const useStyles = makeStyles((theme) => ({
     labellink: {
         color: '#7721ad',
@@ -262,7 +262,7 @@ export const Intentions: FC = () => {
 
     const { t } = useTranslation();
     const classes = useStyles();
-    const [selectedRows, setSelectedRows] = useState<Dictionary>({});
+    const [selectedRows, setSelectedRows] = useState<any>({});
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
 
     const [viewSelected, setViewSelected] = useState("view-1");
@@ -328,8 +328,8 @@ export const Intentions: FC = () => {
                     data={[]}
                     filterGeneral={false}
                     useSelection={true}
-                    selectionKey={"invoiceid"}
-                    //setSelectedRows={setSelectedRows}
+                    selectionKey={selectionKey}
+                    setSelectedRows={setSelectedRows}
                     ButtonsElement={() => (
                         <div style={{display: "flex", justifyContent: "end", width: "100%"}}>
                             <Button

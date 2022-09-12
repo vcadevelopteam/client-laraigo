@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
-import {  FieldEdit, FieldEditArray, FieldMultiSelectFreeSolo, TitleDetail } from 'components';
+import {  FieldEdit, FieldEditArray, FieldMultiSelectFreeSolo } from 'components';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Button, IconButton, makeStyles, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
@@ -60,8 +60,6 @@ const useStyles = makeStyles((theme) => ({
 const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,setViewSelected }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
-    const [disableCreate, setDisableCreate] = useState(true);
-    const [newIntention, setnewIntention] = useState("");
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
