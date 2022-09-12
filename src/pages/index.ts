@@ -24,6 +24,7 @@ export { default as ReportTemplate } from './ReportTemplate';
 export { default as Emojis } from './Emojis';
 export { default as Iaservices } from './Iaservices';
 export * from './campaign';
+export * from './assistant';
 
 export { default as NotFound } from './NotFound';
 export { default as Forbidden } from './Forbidden';

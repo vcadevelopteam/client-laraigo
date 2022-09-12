@@ -23,6 +23,7 @@ const paths = {
     ORGANIZATIONS: '/organizations',
     SIGNIN: "/sign-in",
     SIGNUPBASIC: "/sign-up/BASIC",
+    ASSISTANT: "/assistant",
     SIGNUP: {
         path: "/sign-up/:token",
         resolve: (token: string) => `/sign-up/${token}`,
