@@ -18,6 +18,7 @@ import Button from '@material-ui/core/Button';
 import { langKeys } from 'lang/keys';
 import { DownloadIcon, CalendarIcon } from 'icons';
 import BackupIcon from '@material-ui/icons/Backup';
+import clsx from 'clsx';
 import { Skeleton } from '@material-ui/lab';
 import {
     FirstPage,
@@ -103,6 +104,14 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         width: '100%',
         justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: 8
+    },
+    containerButtonsNoFilters: {
+        display: 'flex',
+        width: '100%',
+        justifyContent: 'end',
         alignItems: 'center',
         flexWrap: 'wrap',
         gap: 8
@@ -625,7 +634,10 @@ const TableZyx = React.memo(({
         <Box width={1}>
             {titlemodule && <div className={classes.title}>{titlemodule}</div>}
             <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center">
-                <div className={classes.containerButtons}>
+                <div className={clsx({
+                        [classes.containerButtons]: !!FiltersElement,
+                        [classes.containerButtonsNoFilters]: !FiltersElement
+                    })}>
                     {filterrange && (
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                             <DateRangePicker
