@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, useEffect, useMemo, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
@@ -410,52 +410,42 @@ const Location: FC = () => {
             {
                 Header: t(langKeys.name),
                 accessor: 'name',
-                NoFilter: true,
             },
             {
                 Header: t(langKeys.phone),
                 accessor: 'phone',
-                NoFilter: true
             },
             {
                 Header: t(langKeys.alternativephone),
                 accessor: 'alternativephone',
-                NoFilter: true
             },
             {
                 Header: t(langKeys.address),
                 accessor: 'address',
-                NoFilter: true
             },
             {
                 Header: t(langKeys.city),
                 accessor: 'city',
-                NoFilter: true
             },
             {
                 Header: t(langKeys.country),
                 accessor: 'country',
-                NoFilter: true
             },
             {
                 Header: t(langKeys.latitude),
                 accessor: 'latitude',
-                NoFilter: true
             },
             {
                 Header: t(langKeys.longitude),
                 accessor: 'longitude',
-                NoFilter: true
             },
             {
                 Header: t(langKeys.type),
                 accessor: 'type',
-                NoFilter: true
             },
             {
                 Header: t(langKeys.schedule),
                 accessor: 'schedule',
-                NoFilter: true
             },
             {
                 Header: "",
@@ -693,6 +683,7 @@ const Location: FC = () => {
                 data={mainPaginated.data}
                 pageCount={pageCount}
                 totalrow={totalrow}
+                filterGeneral={true}
                 loading={mainPaginated.loading}
                 download={true}
                 exportPersonalized={triggerExportData}
@@ -706,7 +697,7 @@ const Location: FC = () => {
                         disabled={mainPaginated.loading}
                         startIcon={<ListAltIcon color="secondary" />}
                         onClick={handleTemplate}
-                        style={{ backgroundColor: "#55BD84" }}
+                        style={{ backgroundColor: "#55BD84", marginLeft: "auto" }}
                     >
                         <Trans i18nKey={langKeys.template} />
                     </Button>
