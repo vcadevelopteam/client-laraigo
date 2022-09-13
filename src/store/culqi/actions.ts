@@ -157,3 +157,15 @@ export const cardGet = (request: any): IActionCall => ({
 });
 
 export const resetCardGet = (): IActionCall => ({ type: actionTypes.CARD_GET_RESET });
+
+export const reportPdf = (request: any): IActionCall => ({
+    callAPI: () => CulqiService.reportPdf(request),
+    types: {
+        failure: actionTypes.DRAW_REPORTPDF_FAILURE,
+        loading: actionTypes.DRAW_REPORTPDF,
+        success: actionTypes.DRAW_REPORTPDF_SUCCESS,
+    },
+    type: null,
+});
+
+export const resetReportPdf = (): IActionCall => ({ type: actionTypes.DRAW_REPORTPDF_RESET });

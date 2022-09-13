@@ -1,4 +1,4 @@
-const ENV = "CLARO";
+const ENV = "LOCAL";
 
 const APIS_URL = {
     DEVELOP: {
@@ -159,4 +159,6 @@ export const apiUrls = {
     SYNCHRONIZE_TEMPLATE: `${BASE_URL}/channel/synchronizetemplate`,
     ADD_TEMPLATE: `${BASE_URL}/channel/addtemplate`,
     DELETE_TEMPLATE: `${BASE_URL}/channel/deletetemplate`,
+
+    BILLING_REPORTPDF: `${BASE_URL}/drawpdf`,
 };
