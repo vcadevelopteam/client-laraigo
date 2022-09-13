@@ -122,7 +122,7 @@ const ShoppingCart: React.FC<{ onlyTime?: string, interactiontext: string, creat
                     <div style={{ display: 'flex', alignItems: 'center', paddingLeft: 8 }}>
                         <div>
                             <div style={{ fontWeight: 'bold' }}>{jsonIntt.Product_items.length} Elementos</div>
-                            <div style={{ fontWeight: 'bold' }}>{jsonIntt.Product_items.reduce((acc: number, item: Dictionary) => acc + parseFloat(item.Item_price), 0).toFixed(2)} {jsonIntt.Product_items[0].Currency}</div>
+                            <div style={{ fontWeight: 'bold' }}>{jsonIntt.Product_items.reduce((acc: number, item: Dictionary) => acc + parseFloat(item.Item_price)*parseFloat(item.Quantity), 0).toFixed(2)} {jsonIntt.Product_items[0].Currency}</div>
                         </div>
                     </div>
                 </div>
