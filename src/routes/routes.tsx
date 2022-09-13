@@ -163,13 +163,13 @@ export const routes: RouteConfig[] = [
         path: paths.CAMPAIGN,
         icon: (className) => <OutboundIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
     },
-    /*{
+    {
         key: paths.BOTDESIGNER,
         description: <Trans i18nKey={langKeys.botdesigner} />,
         tooltip: <Trans i18nKey={langKeys.botdesigner} />,
         path: paths.BOTDESIGNER,
         icon: (className) => <BotDesignerIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
-    },*/
+    },
     {
         key: paths.ASSISTANT,
         description: <Trans i18nKey={langKeys.assistant} />,
