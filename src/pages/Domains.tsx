@@ -151,7 +151,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const user = useSelector(state => state.login.validateToken.user);
-    const useradmin = user?.roledesc === "ADMINISTRADOR"
+    const useradmin = ["ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '');
     const newrow = row===null
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
@@ -480,7 +480,7 @@ const Domains: FC = () => {
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, domainname: "", edit: false });
     const [waitSave, setWaitSave] = useState(false);
     const user = useSelector(state => state.login.validateToken.user);
-    const superadmin = user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMINISTRADOR"
+    const superadmin = ["SUPERADMIN","ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '');
 
     const arrayBread = [
         { id: "view-0", name: t(langKeys.configuration_plural) },

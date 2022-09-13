@@ -53,7 +53,7 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
     const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'custom'].map(x => ({ key: x, value: t(x) }))
     const dispatch = useDispatch();
     const user = useSelector(state => state.login.validateToken.user);
-    const useradmin = user?.roledesc === "ADMINISTRADOR"
+    const useradmin = ["ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '');
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
@@ -397,7 +397,7 @@ const AutomatizationRules: FC = () => {
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, domainname: "", edit: false });
     const [waitSave, setWaitSave] = useState(false);
     const user = useSelector(state => state.login.validateToken.user);
-    const superadmin = user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMINISTRADOR"
+    const superadmin = ["SUPERADMIN","ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '');
     const [dataGrid, setDataGrid] = useState<any[]>([]);
 
     const arrayBread = [

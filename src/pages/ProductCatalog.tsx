@@ -73,7 +73,7 @@ const ProductCatalog: FC = () => {
     const mainResult = useSelector(state => state.main);
     const memoryTable = useSelector(state => state.main.memoryTable);
     const user = useSelector(state => state.login.validateToken.user);
-    const superadmin = user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMINISTRADOR";
+    const superadmin = ["SUPERADMIN","ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '');
 
     const [dataCategory, setdataCategory] = useState<Dictionary[]>([]);
     const [dataMain, setdataMain] = useState({
