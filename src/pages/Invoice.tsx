@@ -5715,7 +5715,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
         setCorpList({ loading: true, data: [] });
         setOrgList({ loading: false, data: [] });
 
-        dispatch(getMultiCollectionAux([getCorpSel(["ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '') ? user?.corpid : 0), getBillingMessagingCurrent(new Date().getFullYear(), new Date().getMonth(), user?.countrycode || ''), listPaymentCard({ corpid: user?.corpid || 0, id: 0, orgid: 0 })]));
+        dispatch(getMultiCollectionAux([getCorpSel(["ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '') ? user?.corpid || 0 : 0), getBillingMessagingCurrent(new Date().getFullYear(), new Date().getMonth(), user?.countrycode || ''), listPaymentCard({ corpid: user?.corpid || 0, id: 0, orgid: 0 })]));
 
         if (data?.row === null) {
             dispatch(getCollection(getAppsettingInvoiceSel()));
