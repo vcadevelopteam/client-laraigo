@@ -4012,6 +4012,13 @@ export const langKeys = {
     voximplant_organizationupdatescenario: "voximplant_organizationupdatescenario",
     voximplant_organizationupdatescenarioalert: "voximplant_organizationupdatescenarioalert",
     scenario: "scenario",
+    billingreport_unique: "billingreport_unique",
+    billingreport_other: "billingreport_other",
+    billingreport_supervisor: "billingreport_supervisor",
+    billingreport_conversation: "billingreport_conversation",
+    billingreport_interaction: "billingreport_interaction",
+    billingreport_agent: "billingreport_agent",
+    billingreport_template: "billingreport_template",
 };
 
 export type LangKeys = typeof langKeys;

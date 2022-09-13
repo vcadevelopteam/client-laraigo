@@ -15,7 +15,7 @@ import { langKeys } from 'lang/keys';
 import { useForm, useFieldArray } from 'react-hook-form';
 import ClearIcon from '@material-ui/icons/Clear';
 import { getCollection, getMultiCollection, execute, exportData, getMultiCollectionAux } from 'store/main/actions';
-import { createInvoice, regularizeInvoice, createCreditNote, getExchangeRate, emitInvoice, cardDelete, cardCreate } from 'store/culqi/actions';
+import { createInvoice, regularizeInvoice, createCreditNote, getExchangeRate, emitInvoice, cardDelete, cardCreate, reportPdf } from 'store/culqi/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { CircularProgress, IconButton, Tabs, TextField, Box, FormControlLabel } from '@material-ui/core';
 import * as locale from "date-fns/locale";
@@ -1449,6 +1449,7 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
     const mainResult = useSelector(state => state.main);
     const resExportData = useSelector(state => state.main.exportData);
     const user = useSelector(state => state.login.validateToken.user);
+    const resultPdf = useSelector(state => state.culqi.requestReportPdf);
 
     const [dataMain, setdataMain] = useState({
         datetoshow: `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth() + 1).padStart(2, '0')}`,
@@ -1462,10 +1463,11 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
     const [canSearch, setCanSearch] = useState(false);
     const [disableOrg, setDisableOrg] = useState(false);
     const [datareport, setdatareport] = useState<any>([]);
-    const [requesttipe, setrequesttipe] = useState(2)
+    const [requestType, setRequestType] = useState(2);
     const [waitCalculate, setWaitCalculate] = useState(false);
     const [waitExport, setWaitExport] = useState(false);
     const [waitSearch, setWaitSearch] = useState(false);
+    const [waitPdf, setWaitPdf] = useState(false);
 
     const el = React.useRef<null | HTMLDivElement>(null);
 
@@ -1483,7 +1485,7 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
 
     function search() {
         dispatch(showBackdrop(true))
-        setrequesttipe(dataMain.totalize)
+        setRequestType(dataMain.totalize)
         if (dataMain.totalize === 2) {
             dispatch(getCollection(getBillingPeriodSummarySel(dataMain)))
         } else {
@@ -1543,7 +1545,7 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
     useEffect(() => {
         if (!mainResult.mainData.loading) {
             if (mainResult.mainData.data.length) {
-                setdatareport(mainResult.mainData.data[0])
+                setdatareport(mainResult.mainData.data[0]);
             }
             else {
                 setdatareport(null);
@@ -1606,6 +1608,176 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
         }))
     }
 
+    const handleReportPdf = () => {
+        if (datareport) {
+            var reportbody = {
+                method: "",
+                parameters: {
+                    generalinformationclient: (requestType === 2 ? datareport.orgdesc : datareport.corpdesc),
+                    generalinformationplan: (datareport.billingplan),
+                    generalinformationperiod: `${datareport.year}-${String(datareport.month).padStart(2, '0')}`,
+                    basecost1: "",
+                    basecost2: "",
+                    basecost3: datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.basicfee || 0) : formatNumber(datareport.basicfee),
+                    basecost4: datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.basicfee || 0) : "0.00",
+                    basecost5: datareport.basicfee ? formatNumber(datareport.basicfee || 0) : "0.00",
+                    agentcontracted1: formatNumberNoDecimals(datareport.userfreequantity || 0),
+                    agentcontracted2: "",
+                    agentcontracted3: "",
+                    agentcontracted4: "",
+                    agentcontracted5: "",
+                    agentadditional1: formatNumberNoDecimals(datareport.useradditionalquantity || 0),
+                    agentadditional2: formatNumberFourDecimals(datareport.useradditionalfee || 0),
+                    agentadditional3: datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.useradditionalcharge || 0) : formatNumber(datareport.useradditionalcharge),
+                    agentadditional4: datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.useradditionalcharge || 0) : "0.00",
+                    agentadditional5: formatNumber(datareport.useradditionalcharge || 0),
+                    channelcontracted1: formatNumberNoDecimals(datareport.channelfreequantity || 0),
+                    channelcontracted2: "",
+                    channelcontracted3: "",
+                    channelcontracted4: "",
+                    channelcontracted5: "",
+                    channelwhatsappfree1: formatNumberNoDecimals(datareport.freewhatsappchannel || 0),
+                    channelwhatsappfree2: "",
+                    channelwhatsappfree3: "",
+                    channelwhatsappfree4: "",
+                    channelwhatsappfree5: "",
+                    channelwhatsapptotal1: formatNumberNoDecimals(datareport.channelwhatsappquantity || 0),
+                    channelwhatsapptotal2: "",
+                    channelwhatsapptotal3: "",
+                    channelwhatsapptotal4: "",
+                    channelwhatsapptotal5: "",
+                    channelwhatsappadditional1: formatNumberNoDecimals(((datareport.channelwhatsappquantity - datareport.freewhatsappchannel) < 0 ? 0 : (datareport.channelwhatsappquantity - datareport.freewhatsappchannel)) || 0),
+                    channelwhatsappadditional2: formatNumberFourDecimals(datareport.channelwhatsappfee || 0),
+                    channelwhatsappadditional3: datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.channelwhatsappcharge || 0) : formatNumber(datareport.channelwhatsappcharge),
+                    channelwhatsappadditional4: datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.channelwhatsappcharge || 0) : "0.00",
+                    channelwhatsappadditional5: formatNumber(datareport.channelwhatsappcharge || 0),
+                    channelother1: formatNumberNoDecimals(datareport.channelotherquantity || 0),
+                    channelother2: formatNumberFourDecimals(datareport.channelotherfee || 0),
+                    channelother3: datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.channelothercharge || 0) : formatNumber(datareport.channelothercharge),
+                    channelother4: datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.channelothercharge || 0) : "0.00",
+                    channelother5: formatNumber(datareport.channelothercharge || 0),
+                    conversationwhatsappfree1: formatNumberNoDecimals((datareport.channelwhatsappquantity || 0) * (datareport.freewhatsappconversations || 0)),
+                    conversationwhatsappfree2: "",
+                    conversationwhatsappfree3: "",
+                    conversationwhatsappfree4: "",
+                    conversationwhatsappfree5: "",
+                    conversationwhatsappclient1: formatNumberNoDecimals(datareport.conversationclientwhatquantity || 0),
+                    conversationwhatsappclient2: "",
+                    conversationwhatsappclient3: datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.conversationclientwhatcharge || 0) : formatNumber(datareport.conversationclientwhatcharge),
+                    conversationwhatsappclient4: datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.conversationclientwhatcharge || 0) : "0.00",
+                    conversationwhatsappclient5: formatNumber(datareport.conversationclientwhatcharge || 0),
+                    conversationwhatsappbusiness1: formatNumberNoDecimals(datareport.conversationcompanywhatquantity || 0),
+                    conversationwhatsappbusiness2: "",
+                    conversationwhatsappbusiness3: datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.conversationcompanywhatcharge || 0) : formatNumber(datareport.conversationcompanywhatcharge),
+                    conversationwhatsappbusiness4: datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.conversationcompanywhatcharge || 0) : "0.00",
+                    conversationwhatsappbusiness5: formatNumber(datareport.conversationcompanywhatcharge || 0),
+                    messagingminimumsms1: formatNumberNoDecimals(datareport.minimumsmsquantity || 0),
+                    messagingminimumsms2: "",
+                    messagingminimumsms3: "",
+                    messagingminimumsms4: "",
+                    messagingminimumsms5: "",
+                    messagingsms1: formatNumberNoDecimals(datareport.smsquantity || 0),
+                    messagingsms2: formatNumberFourDecimals((datareport.unitpricepersms || 0) + (datareport.vcacomissionpersms || 0)),
+                    messagingsms3: datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.smscost || 0) : formatNumber(datareport.smscost),
+                    messagingsms4: datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.smscost || 0) : "0.00",
+                    messagingsms5: formatNumber(datareport.smscost || 0),
+                    messagingminimummail1: formatNumberNoDecimals(datareport.minimummailquantity || 0),
+                    messagingminimummail2: "",
+                    messagingminimummail3: "",
+                    messagingminimummail4: "",
+                    messagingminimummail5: "",
+                    messagingmail1: formatNumberNoDecimals(datareport.mailquantity || 0),
+                    messagingmail2: formatNumberFourDecimals((datareport.unitepricepermail || 0) + (datareport.vcacomissionpermail || 0)),
+                    messagingmail3: datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.mailcost || 0) : formatNumber(datareport.mailcost),
+                    messagingmail4: datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.mailcost || 0) : "0.00",
+                    messagingmail5: formatNumber(datareport.mailcost || 0),
+                    voicephone1: "",
+                    voicephone2: "",
+                    voicephone3: datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.callphonecost || 0) : formatNumber(datareport.callphonecost),
+                    voicephone4: datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.callphonecost || 0) : "0.00",
+                    voicephone5: formatNumber(datareport.callphonecost || 0),
+                    voicecall1: "",
+                    voicecall2: "",
+                    voicecall3: datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.callpubliccost || 0) : formatNumber(datareport.callpubliccost),
+                    voicecall4: datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.callpubliccost || 0) : "0.00",
+                    voicecall5: formatNumber(datareport.callpubliccost || 0),
+                    voicevoip1: "",
+                    voicevoip2: "",
+                    voicevoip3: datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.callvoipcost || 0) : formatNumber(datareport.callvoipcost),
+                    voicevoip4: datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.callvoipcost || 0) : "0.00",
+                    voicevoip5: formatNumber(datareport.callvoipcost || 0),
+                    voicerecording1: "",
+                    voicerecording2: "",
+                    voicerecording3: datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.callrecordingcost || 0) : formatNumber(datareport.callrecordingcost),
+                    voicerecording4: datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.callrecordingcost || 0) : "0.00",
+                    voicerecording5: formatNumber(datareport.callrecordingcost || 0),
+                    voiceothers1: "",
+                    voiceothers2: "",
+                    voiceothers3: datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.callothercost || 0) : formatNumber(datareport.callothercost),
+                    voiceothers4: datareport.taxrate !== 1 ? getIgv((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.callothercost || 0) : "0.00",
+                    voiceothers5: formatNumber(datareport.callothercost || 0),
+                    contactfree1: formatNumberNoDecimals(datareport.clientfreequantity || 0),
+                    contactfree2: "",
+                    contactfree3: "",
+                    contactfree4: "",
+                    contactfree5: "",
+                    contacttotal1: formatNumberNoDecimals(datareport.clientquantity || 0),
+                    contacttotal2: "",
+                    contacttotal3: "",
+                    contacttotal4: "",
+                    contacttotal5: "",
+                    contactadditional1: formatNumberNoDecimals(datareport.clientadditionalquantity || 0),
+                    contactadditional2: formatNumberFourDecimals(datareport.clientadditionalfee || 0),
+                    contactadditional3: datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.clientadditionalcharge || 0) : formatNumber(datareport.clientadditionalcharge),
+                    contactadditional4: datareport.taxrate !== 1 ? getIgv(datareport.igv, datareport.clientadditionalcharge) : "0.00",
+                    contactadditional5: formatNumber(datareport.clientadditionalcharge || 0),
+                    supportplan: datareport.supportplan,
+                    supportplan1: "",
+                    supportplan2: "",
+                    supportplan3: datareport.taxrate !== 1 ? getTaxableAmount(datareport.igv, datareport.supportbasicfee) : formatNumber(datareport.supportbasicfee),
+                    supportplan4: datareport.taxrate !== 1 ? getIgv(datareport.igv, datareport.supportbasicfee) : "0.00",
+                    supportplan5: formatNumber(datareport.supportbasicfee),
+                    additional01service: datareport.additionalservicefee1 ? datareport.additionalservicename1 : "",
+                    additional01service1: "",
+                    additional01service2: "",
+                    additional01service3: datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), ((datareport.additionalservicefee1 || 0) * datareport.taxrate)) : formatNumber((datareport.additionalservicefee1 || 0) * datareport.taxrate),
+                    additional01service4: datareport.taxrate !== 1 ? getIgv(datareport.igv, ((datareport.additionalservicefee1 || 0) * datareport.taxrate)) : "0.00",
+                    additional01service5: formatNumber((datareport.additionalservicefee1 || 0) * datareport.taxrate),
+                    additional02service: datareport.additionalservicefee2 ? datareport.additionalservicename2 : "",
+                    additional02service1: "",
+                    additional02service2: "",
+                    additional02service3: datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), ((datareport.additionalservicefee2 || 0) * datareport.taxrate)) : formatNumber((datareport.additionalservicefee2 || 0) * datareport.taxrate),
+                    additional02service4: datareport.taxrate !== 1 ? getIgv(datareport.igv, ((datareport.additionalservicefee2 || 0) * datareport.taxrate)) : "0.00",
+                    additional02service5: formatNumber((datareport.additionalservicefee2 || 0) * datareport.taxrate),
+                    additional03service: datareport.additionalservicefee2 ? datareport.additionalservicename2 : "",
+                    additional03service1: "",
+                    additional03service2: "",
+                    additional03service3: datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), ((datareport.additionalservicefee2 || 0) * datareport.taxrate)) : formatNumber((datareport.additionalservicefee2 || 0) * datareport.taxrate),
+                    additional03service4: datareport.taxrate !== 1 ? getIgv(datareport.igv, ((datareport.additionalservicefee2 || 0) * datareport.taxrate)) : "0.00",
+                    additional03service5: formatNumber((datareport.additionalservicefee2 || 0) * datareport.taxrate),
+                    totalamount1: "",
+                    totalamount2: "",
+                    totalamount3: datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.totalcharge || 0) : formatNumber(datareport.totalcharge),
+                    totalamount4: datareport.taxrate !== 1 ? getIgv(datareport.igv, datareport.totalcharge) : "0.00",
+                    totalamount5: formatNumber(datareport.totalcharge || 0),
+                    totalcontact: datareport.clientquantity,
+                    totalconversation: datareport.conversationquantity,
+                    totalinteraction: datareport.interactionquantity,
+                    totalagent: datareport.asesorquantity,
+                    totalsupervisor: datareport.supervisorquantity,
+                },
+                dataonparameters: true,
+                template: t(langKeys.billingreport_template),
+                reportname: "period-report",
+                key: "period-report",
+            }
+
+            dispatch(reportPdf(reportbody));
+            dispatch(showBackdrop(true));
+            setWaitPdf(true);
+        }
+    };
+
     useEffect(() => {
         if (waitExport) {
             if (!resExportData.loading && !resExportData.error) {
@@ -1621,58 +1793,22 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
         }
     }, [resExportData, waitExport]);
 
-    const GenericPdfDownloader: React.FC<{ downloadFileName: string }> = ({ downloadFileName }) => {
-
-        const downloadPdfDocument = () => {
-            if (el.current) {
-                const gg = document.createElement('div');
-                gg.style.display = 'flex';
-                gg.style.flexDirection = 'column';
-                gg.style.gap = '8px';
-                gg.id = "newexportcontainer"
-                document.body.appendChild(gg);
-
-                gg.innerHTML = el.current.innerHTML;
-                document.body.appendChild(gg);
-                const pdf = new jsPDF('p', 'mm');
-
-                if (pdf) {
-                    DomToImage.toPng(gg)
-                        .then(imgData => {
-                            var imgWidth = 210;
-                            var pageHeight = 295;
-                            var imgHeight = gg.scrollHeight * imgWidth / gg.offsetWidth;
-                            var heightLeft = imgHeight;
-                            var doc = new jsPDF('p', 'mm');
-                            var position = 10; // give some top padding to first page
-
-                            doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-                            heightLeft -= pageHeight;
-
-                            while (heightLeft >= 0) {
-                                position += heightLeft - imgHeight; // top padding for other pages
-                                doc.addPage();
-                                doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-                                heightLeft -= pageHeight;
-                            }
-                            doc.save(`${downloadFileName}.pdf`);
-                            document.getElementById('newexportcontainer')?.remove();
-                        });
+    useEffect(() => {
+        if (waitPdf) {
+            if (!resultPdf.loading && !resultPdf.error) {
+                dispatch(showBackdrop(false));
+                setWaitPdf(false);
+                if (resultPdf.datacard) {
+                    window.open(resultPdf.datacard, '_blank');
                 }
+            } else if (resultPdf.error) {
+                const errormessage = t(resultPdf.code || "error_unexpected_error", { module: t(langKeys.person).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitPdf(false);
             }
         }
-        return (
-            <Button
-                className={classes.button}
-                variant="contained"
-                color="primary"
-                disabled={resExportData.loading}
-                startIcon={<DownloadIcon />}
-                onClick={downloadPdfDocument}
-            ><Trans i18nKey={langKeys.download} />
-            </Button>
-        )
-    }
+    }, [resultPdf, waitPdf]);
 
     return (
         <Fragment>
@@ -1743,9 +1879,15 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                                 style={{ backgroundColor: "#55BD84" }}
                             >{`${t(langKeys.calculate)}`}
                             </Button>
-                            <GenericPdfDownloader
-                                downloadFileName={'periodreport-' + new Date().toTimeString()}
-                            />
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={resExportData.loading}
+                                onClick={() => handleReportPdf()}
+                                startIcon={<DownloadIcon />}
+                            >{t(langKeys.download)}
+                            </Button>
                             <Button
                                 className={classes.button}
                                 variant="contained"
@@ -1803,7 +1945,7 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                                 <FieldView
                                     className="col-6"
                                     label={t(langKeys.client)}
-                                    value={requesttipe === 2 ? datareport.orgdesc : datareport.corpdesc}
+                                    value={requestType === 2 ? datareport.orgdesc : datareport.corpdesc}
                                 />
                             </div>
                             <div className="row-zyx">
@@ -2148,34 +2290,34 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                                     </TableBody>
                                 </Table>
                             </TableContainer>
-                            <div style={{ paddingTop: 30, fontWeight: "bold", fontSize: "1.5em" }}>{t(langKeys.servicedata)}</div>
+                            <div style={{ paddingTop: 20, paddingBottom: 20, fontWeight: "bold", fontSize: "1.5em" }}>{t(langKeys.servicedata)}</div>
                             <TableContainer component={Paper} style={{ overflow: "hidden" }}>
                                 <Table aria-label="customized table">
                                     <TableHead>
                                         <TableRow>
                                             <StyledTableCell align="center">
                                                 <div>{datareport.clientwhatquantity}</div>
-                                                <div>{t(langKeys.uniquecontacts)} Whatsapp</div>
+                                                <div>{t(langKeys.billingreport_unique)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="center">
                                                 <div>{datareport.clientquantity - datareport.clientwhatquantity}</div>
-                                                <div>{t(langKeys.uniquecontacts)} {t(langKeys.others)}</div>
+                                                <div>{t(langKeys.billingreport_other)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="center">
                                                 <div>{datareport.conversationquantity}</div>
-                                                <div>{t(langKeys.conversation_plural)}</div>
+                                                <div>{t(langKeys.billingreport_conversation)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="center">
                                                 <div>{datareport.interactionquantity}</div>
-                                                <div>{t(langKeys.interaction_plural)}</div>
+                                                <div>{t(langKeys.billingreport_interaction)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="center">
                                                 <div>{datareport.supervisorquantity}</div>
-                                                <div>{t(langKeys.supervisor_plural)}</div>
+                                                <div>{t(langKeys.billingreport_supervisor)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="center">
                                                 <div>{datareport.asesorquantity}</div>
-                                                <div>{t(langKeys.assesor_plural)}</div>
+                                                <div>{t(langKeys.billingreport_agent)}</div>
                                             </StyledTableCell>
                                         </TableRow>
                                     </TableHead>

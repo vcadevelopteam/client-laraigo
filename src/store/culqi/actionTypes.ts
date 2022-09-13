@@ -63,6 +63,11 @@ const actionType = {
     CARD_GET_FAILURE: 'subscription/CARD_GET_FAILURE',
     CARD_GET_RESET: 'subscription/CARD_GET_RESET',
     CARD_GET_SUCCESS: 'subscription/CARD_GET_SUCCESS',
+
+    DRAW_REPORTPDF: 'subscription/DRAW_REPORTPDF',
+    DRAW_REPORTPDF_FAILURE: 'subscription/DRAW_REPORTPDF_FAILURE',
+    DRAW_REPORTPDF_RESET: 'subscription/DRAW_REPORTPDF_RESET',
+    DRAW_REPORTPDF_SUCCESS: 'subscription/DRAW_REPORTPDF_SUCCESS',
 };
 
 export default actionType;
