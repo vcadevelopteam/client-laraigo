@@ -8,10 +8,9 @@ import { getCollectionAux2, getMultiCollection, resetMultiMain } from "store/mai
 import { langKeys } from "lang/keys";
 import TableZyx from "components/fields/table-simple";
 import { Button, TextField, } from "@material-ui/core";
-import { getReportKpiOperativoSel, formatNumber, formatNumberNoDecimals, timetoseconds, secondsToDayTime, getValuesFromDomainLight } from 'common/helpers';
+import { getReportKpiOperativoSel, formatNumber, formatNumberNoDecimals, timetoseconds, secondsToDayTime, getUserGroupsSel } from 'common/helpers';
 import { Search as SearchIcon } from '@material-ui/icons';
 import { FieldSelect } from "components/fields/templates";
-import { Dictionary } from "@types";
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -79,6 +78,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const origin = 'kpioperativo';
 const ReportKpiOperativo: FC = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -93,6 +93,7 @@ const ReportKpiOperativo: FC = () => {
             {
                 Header: t(langKeys.report_kpioperativo_year),
                 accessor: 'year',
+                helpText: t(`report_${origin}_year_help`),
                 type: 'number',
                 NoFilter: true,
                 Footer: (props: any) => {
@@ -102,28 +103,33 @@ const ReportKpiOperativo: FC = () => {
             {
                 Header: t(langKeys.report_kpioperativo_month),
                 accessor: 'month',
+                helpText: t(`report_${origin}_month_help`),
                 type: 'number',
                 NoFilter: true,
             },
             {
                 Header: t(langKeys.report_kpioperativo_day),
                 accessor: 'day',
+                helpText: t(`report_${origin}_day_help`),
                 type: 'number',
                 NoFilter: true,
             },
             {
                 Header: t(langKeys.report_kpioperativo_groups),
                 accessor: 'groups',
+                helpText: t(`report_${origin}_groups_help`),
                 NoFilter: true,
             },
             {
                 Header: t(langKeys.report_kpioperativo_origin),
                 accessor: 'origin',
+                helpText: t(`report_${origin}_origin_help`),
                 NoFilter: true,
             },
             {
                 Header: t(langKeys.report_kpioperativo_tme),
                 accessor: 'tme',
+                helpText: t(`report_${origin}_tme_help`),
                 NoFilter: true,
                 Footer: (props: any) => {
                     const total = React.useMemo(
@@ -137,6 +143,7 @@ const ReportKpiOperativo: FC = () => {
             {
                 Header: t(langKeys.report_kpioperativo_tickets),
                 accessor: 'tickets',
+                helpText: t(`report_${origin}_tickets_help`),
                 type: 'number',
                 NoFilter: true,
                 Footer: (props: any) => {
@@ -149,8 +156,9 @@ const ReportKpiOperativo: FC = () => {
                 },
             },
             {
-                Header: t(langKeys.report_kpioperativo_eq_time_sum),
+                Header: t(langKeys.report_kpioperativo_eqtime),
                 accessor: 'eqtime',
+                helpText: t(`report_${origin}_eqtime_help`),
                 type: 'number',
                 NoFilter: true,
                 Footer: (props: any) => {
@@ -165,6 +173,7 @@ const ReportKpiOperativo: FC = () => {
             {
                 Header: t(langKeys.report_kpioperativo_onlinetime_tickets),
                 accessor: 'onlinetime_tickets',
+                helpText: t(`report_${origin}_onlinetime_tickets_help`),
                 type: 'number',
                 NoFilter: true,
                 Footer: (props: any) => {
@@ -179,6 +188,7 @@ const ReportKpiOperativo: FC = () => {
             {
                 Header: t(langKeys.report_kpioperativo_tickets_eqtime),
                 accessor: 'tickets_eqtime',
+                helpText: t(`report_${origin}_tickets_eqtime_help`),
                 type: 'number',
                 NoFilter: true,
                 Footer: (props: any) => {
@@ -193,6 +203,7 @@ const ReportKpiOperativo: FC = () => {
             {
                 Header: t(langKeys.report_kpioperativo_onlinetime_prod),
                 accessor: 'onlinetime_prod',
+                helpText: t(`report_${origin}_onlinetime_prod_help`),
                 type: 'number',
                 NoFilter: true,
                 Footer: (props: any) => {
@@ -207,6 +218,7 @@ const ReportKpiOperativo: FC = () => {
             {
                 Header: t(langKeys.report_kpioperativo_busytime),
                 accessor: 'busytime',
+                helpText: t(`report_${origin}_busytime_help`),
                 type: 'number',
                 NoFilter: true,
                 Footer: (props: any) => {
@@ -241,7 +253,7 @@ const ReportKpiOperativo: FC = () => {
 
     useEffect(() => {
         dispatch(getMultiCollection([
-            getValuesFromDomainLight("GRUPOS"),
+            getUserGroupsSel(),
         ]))
         return () => {
             dispatch(resetMultiMain());
