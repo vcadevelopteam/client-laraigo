@@ -292,16 +292,9 @@ export const Entities: FC = () => {
                 NoFilter: true,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    debugger
                     return (
-                        <label
-                            className={classes.labellink}
-                            onClick={() => {                        
-                                setViewSelected("view-2");
-                                setRowSelected({ row: row, edit: true })
-                            }}
-                        >
-                            {row.name}
+                        <label>
+                            {row.datajson.keywords.reduce((acc:string,item:any)=>acc + item.keyword + ",","").slice(0,-1)}
                         </label>
                     )
                 }
