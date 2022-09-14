@@ -70,7 +70,7 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
         defaultValues: {
             type: 'NINGUNO',
             id: row ? row.whitelistid : 0,
-            intentionname: row?.intentionname || '',
+            name: row?.name || '',
             sinonims: row?.sinonims || '',
             operation: row ? "EDIT" : "INSERT",
             keywords: row?.keywords || [],
@@ -88,7 +88,7 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
         register('status');
         register('operation');
         register('sinonims');
-        register('intentionname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
 
     useEffect(() => {
@@ -153,10 +153,10 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                             label={t(langKeys.newentity)} 
                             className="col-12"
                             onChange={(value) => {
-                                setValue('intentionname', value)
+                                setValue('name', value)
                             }}
-                            valueDefault={row?.intentionname || ""}
-                            error={errors?.intentionname?.message}
+                            valueDefault={row?.name || ""}
+                            error={errors?.name?.message}
                         />
                     </div>
                 </div>
@@ -252,12 +252,13 @@ export const Entities: FC = () => {
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
 
     const [viewSelected, setViewSelected] = useState("view-1");
+    const selectionKey= "name"
 
     const fetchData = () => {dispatch(getCollection(selEntities()))};
     
     useEffect(() => {
         fetchData();
-        
+
         return () => {
             dispatch(resetAllMain());
         };
@@ -267,7 +268,7 @@ export const Entities: FC = () => {
         () => [
             {
                 Header: t(langKeys.entities),
-                accessor: 'entintie',
+                accessor: 'name',
                 NoFilter: true,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
@@ -279,7 +280,7 @@ export const Entities: FC = () => {
                                 setRowSelected({ row: row, edit: true })
                             }}
                         >
-                            {row.intentionname}
+                            {row.name}
                         </label>
                     )
                 }
@@ -289,15 +290,30 @@ export const Entities: FC = () => {
                 Header: t(langKeys.value_plural),
                 accessor: 'description',
                 NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    debugger
+                    return (
+                        <label
+                            className={classes.labellink}
+                            onClick={() => {                        
+                                setViewSelected("view-2");
+                                setRowSelected({ row: row, edit: true })
+                            }}
+                        >
+                            {row.name}
+                        </label>
+                    )
+                }
             },
             {
                 Header: "ID",
-                accessor: 'intentionid',
+                accessor: 'id',
                 NoFilter: true,
             },
             {
                 Header: t(langKeys.lastUpdate),
-                accessor: 'lastupdate',
+                accessor: 'updatedate',
                 NoFilter: true,
             },
         ],
@@ -317,7 +333,7 @@ export const Entities: FC = () => {
                     data={mainResult.mainData.data}
                     filterGeneral={false}
                     useSelection={true}
-                    selectionKey={"invoiceid"}
+                    selectionKey={selectionKey}
                     setSelectedRows={setSelectedRows}
                     ButtonsElement={() => (
                         <div style={{display: "flex", justifyContent: "end", width: "100%"}}>

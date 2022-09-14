@@ -3222,3 +3222,15 @@ export const selEntities = (): IRequestBody => ({
     key: "UFN_WITAI_ENTITY_SEL",
     parameters: {}
 })
+
+export const insertutterance = ({intent, name, description, datajson, utterance_datajson, operation}:Dictionary): IRequestBody => ({
+    method: "UFN_WITAI_INTENT_UTTERANCE_INS",
+    key: "UFN_WITAI_INTENT_UTTERANCE_INS",
+    parameters: {intent, name, description, datajson, utterance_datajson, operation}
+})
+
+export const insertentity = ({name, datajson, operation}:Dictionary): IRequestBody => ({
+    method: "UFN_WITAI_ENTITY_INS",
+    key: "UFN_WITAI_ENTITY_INS",
+    parameters: {name, datajson, operation}
+})

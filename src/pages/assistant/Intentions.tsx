@@ -12,8 +12,8 @@ import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import { getCollection, resetAllMain } from 'store/main/actions';
-import { selIntent } from 'common/helpers/requestBodies';
+import { getCollection, getCollectionAux, resetAllMain } from 'store/main/actions';
+import { selIntent, selUtterance } from 'common/helpers/requestBodies';
 
 
 interface RowSelected {
@@ -26,7 +26,6 @@ interface DetailProps {
     fetchData?: () => void;
     setViewSelected: (view: string) => void;
 }
-const selectionKey = 'intentionid';
 const useStyles = makeStyles((theme) => ({
     labellink: {
         color: '#7721ad',
@@ -53,27 +52,45 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
     const [disableCreate, setDisableCreate] = useState(true);
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [newIntention, setnewIntention] = useState("");
+    const [examples, setexamples] = useState<any>([]);
+    const mainResult = useSelector(state => state.main.mainAux);
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
+    const selectionKey= "name"
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
-            id: row ? row.whitelistid : 0,
-            intentionname: row?.intentionname || '',
+            id: row ? row.id : 0,
+            name: row?.name || '',
             description: row?.description || '',
             operation: row ? "EDIT" : "INSERT",
             status: "ACTIVO",
         }
     });
 
+    const fetchutterance = () => {dispatch(getCollectionAux(selUtterance(row?.name||"")))};
+    
+    useEffect(() => {
+        if(row){
+            fetchutterance();
+        }
+    }, []);
+
+    useEffect(() => {
+        if(!mainResult.loading && !mainResult.error){
+            debugger
+            setexamples(mainResult.data);
+        }
+    }, [mainResult]);
+
     React.useEffect(() => {
         register('type');
         register('id');
         register('status');
         register('operation');
-        register('intentionname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
 
@@ -112,13 +129,13 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
         () => [
             {
                 Header: t(langKeys.userexample),
-                accessor: 'description',
+                accessor: 'name',
                 NoFilter: true,
                 width: "50%"
             },
             {
                 Header: t(langKeys.added),
-                accessor: 'examples',
+                accessor: 'updatedate',
                 NoFilter: true,
                 width: "50%"
             },
@@ -132,7 +149,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TitleDetail
-                            title={row ? `${row.intention}` : t(langKeys.newintention)}
+                            title={row ? `${row.name}` : t(langKeys.newintention)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center'  }}>
@@ -159,15 +176,15 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.intentionname)} 
+                            label={t(langKeys.name)} 
                             disabled={!disableSave}
                             className="col-12"
                             onChange={(value) => {
-                                setValue('intentionname', value)
+                                setValue('name', value)
                                 setDisableCreate(getValues("description")===""||value==="")
                             }}
-                            valueDefault={row?.intentionname || ""}
-                            error={errors?.intentionname?.message}
+                            valueDefault={row?.name || ""}
+                            error={errors?.name?.message}
                         />
                         <FieldEdit
                             label={t(langKeys.description)} 
@@ -175,7 +192,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                             className="col-12"
                             onChange={(value) => {
                                 setValue('description', value)
-                                setDisableCreate(getValues("intentionname")===""||value==="")
+                                setDisableCreate(getValues("name")===""||value==="")
                             }}
                             valueDefault={row?.description || ""}
                             error={errors?.description?.message}
@@ -209,7 +226,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                                 setnewIntention(value)
                             }}
                             valueDefault={newIntention}
-                            error={errors?.intentionname?.message}
+                            error={errors?.name?.message}
                         />
                         <div style={{paddingTop:"8px", paddingBottom:"8px"}}>{t(langKeys.uniqueexamplesuser)}</div>
                         <Button
@@ -219,19 +236,17 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                             disabled={newIntention===""}
                             color="primary"
                             style={{ backgroundColor: newIntention===""?"#dbdbdc":"#0078f6" }}
-                            onClick={() => {
-                                //agregar a la tabla de ejemplos
-                            }}
+                            //onClick={() => {setexamples([...examples,{name:newIntention}]);setnewIntention("")      }}
                         >{t(langKeys.add)}</Button>
                         
                         <div style={{ width: '100%' }}>
                             <TableZyx
                                 columns={columns}
-                                data={[]}
+                                data={examples}
                                 filterGeneral={false}
                                 useSelection={true}
-                                selectionKey={"exampleid"}
-                                //setSelectedRows={setSelectedRows}
+                                selectionKey={selectionKey}
+                                setSelectedRows={setSelectedRows}
                                 ButtonsElement={() => (
                                     <div style={{display: "flex", justifyContent: "end", width: "100%"}}>
                                         <Button
@@ -245,7 +260,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                                         >{t(langKeys.delete)}</Button>
                                     </div>
                                 )}
-                                loading={false}
+                                loading={mainResult.loading}
                                 register={false}
                                 download={false}
                                 pageSizeDefault={20}
@@ -266,13 +281,13 @@ export const Intentions: FC = () => {
     const { t } = useTranslation();
     const classes = useStyles();
     const mainResult = useSelector(state => state.main);
-    const multiData = useSelector(state => state.main.multiDataAux);
     const [selectedRows, setSelectedRows] = useState<any>({});
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
 
     const [viewSelected, setViewSelected] = useState("view-1");
 
     const fetchData = () => {dispatch(getCollection(selIntent()))};
+    const selectionKey = 'name';
     
     useEffect(() => {
         fetchData();
@@ -286,7 +301,7 @@ export const Intentions: FC = () => {
         () => [
             {
                 Header: t(langKeys.intentions),
-                accessor: 'intentionname',
+                accessor: 'name',
                 NoFilter: true,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
@@ -298,7 +313,7 @@ export const Intentions: FC = () => {
                                 setRowSelected({ row: row, edit: true })
                             }}
                         >
-                            {row.intentionname}
+                            {row.name}
                         </label>
                     )
                 }
@@ -311,17 +326,17 @@ export const Intentions: FC = () => {
             },
             {
                 Header: "ID",
-                accessor: 'intentionid',
+                accessor: 'id',
                 NoFilter: true,
             },
             {
                 Header: t(langKeys.examples),
-                accessor: 'examples',
+                accessor: 'utteranceqty',
                 NoFilter: true,
             },
             {
                 Header: t(langKeys.lastUpdate),
-                accessor: 'lastupdate',
+                accessor: 'updatedate',
                 NoFilter: true,
             },
         ],
@@ -336,33 +351,35 @@ export const Intentions: FC = () => {
         return (
             <React.Fragment>
                 <div style={{ height: 10 }}></div>
-                <TableZyx
-                    columns={columns}
-                    data={mainResult.mainData.data}
-                    filterGeneral={false}
-                    useSelection={true}
-                    selectionKey={selectionKey}
-                    setSelectedRows={setSelectedRows}
-                    ButtonsElement={() => (
-                        <div style={{display: "flex", justifyContent: "end", width: "100%"}}>
-                            <Button
-                                disabled={Object.keys(selectedRows).length===0}
-                                variant="contained"
-                                type="button"
-                                color="primary"
-                                startIcon={<ClearIcon color="secondary" />}
-                                style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
-                                onClick={() => {debugger}}
-                            >{t(langKeys.delete)}</Button>
-                        </div>
-                    )}
-                    loading={mainResult.mainData.loading}
-                    register={true}
-                    download={false}
-                    handleRegister={handleRegister}
-                    pageSizeDefault={20}
-                    initialPageIndex={0}
-                />
+                <div style={{ width: "100%" }}>
+                    <TableZyx
+                        columns={columns}
+                        data={mainResult.mainData.data}
+                        filterGeneral={false}
+                        useSelection={true}
+                        selectionKey={selectionKey}
+                        setSelectedRows={setSelectedRows}
+                        ButtonsElement={() => (
+                            <div style={{display: "flex", justifyContent: "end", width: "100%"}}>
+                                <Button
+                                    disabled={Object.keys(selectedRows).length===0}
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    startIcon={<ClearIcon color="secondary" />}
+                                    style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
+                                    onClick={() => {debugger}}
+                                >{t(langKeys.delete)}</Button>
+                            </div>
+                        )}
+                        loading={mainResult.mainData.loading}
+                        register={true}
+                        download={false}
+                        handleRegister={handleRegister}
+                        pageSizeDefault={20}
+                        initialPageIndex={0}
+                    />
+                </div>
             </React.Fragment>
             );
     }else if (viewSelected==="view-2"){
