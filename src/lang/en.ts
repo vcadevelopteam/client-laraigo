@@ -3819,6 +3819,12 @@ const translation: LangKeys = {
     channel_tiktoktitle: 'Connect TikTok',
     channel_linkedintitle: 'Connect LinkedIn',
 
+    elements: 'Elements',
+    show_shopping_cart: 'Show shopping cart',
+    cart_sent: 'Cart sent',
+    show_items: 'Show items',
+    options: 'Options',
+
     subscription_congratulations: 'Congratulations!',
     subscription_message1: 'You have connected',
     subscription_message2: 'successfully!',
