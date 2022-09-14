@@ -68,7 +68,18 @@ export function formatname(cc: any) {
     }
 }
 
-
+export function secondsToDayTime(sec_num: any) {
+    sec_num = parseInt(sec_num)
+    let days = Math.floor(sec_num / 86400);
+    let hours: any = Math.floor((sec_num - (days * 86400)) / 3600);
+    let minutes: any = Math.floor((sec_num - (days * 86400) - (hours * 3600)) / 60);
+    let seconds: any = sec_num - (days * 86400) - (hours * 3600) - (minutes * 60);
+    if (hours < 10) { hours = "0" + hours; }
+    if (minutes < 10) { minutes = "0" + minutes; }
+    if (seconds < 10) { seconds = "0" + seconds; }
+    const stringdays = days === 0 ? "" : (days > 1 ? days + " days " : days + " day ");
+    return stringdays + hours + ':' + minutes + ':' + seconds;
+}
 
 export function uuidv4(): string {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {

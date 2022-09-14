@@ -3233,3 +3233,15 @@ export const locationIns = ({ id, operation, name, address, district, city, coun
         id, operation, name, address, district, city, country, schedule, phone, alternativephone, email, alternativeemail, latitude, longitude, googleurl, description, status, type, username
     }
 });
+
+export const getReportKpiOperativoSel = ({ date, ...allParameters }: Dictionary): IRequestBody => ({
+    method: "UFN_REPORT_KPI_OPERATIVO_SEL",
+    key: "UFN_REPORT_KPI_OPERATIVO_SEL",
+    parameters: {
+        origin: "kpioperativo",
+        date,
+        ...allParameters,
+        usergroup: allParameters['usergroup'] ? allParameters['usergroup'] : "",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
