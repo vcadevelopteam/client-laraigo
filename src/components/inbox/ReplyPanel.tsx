@@ -219,7 +219,7 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
                                 }
                             </div>
                             <Divider />
-                            <List component="nav" disablePadding style={{ maxHeight: 200, overflowY: 'overlay' as any }}>
+                            <List component="nav" disablePadding style={{ maxHeight: 200, width: '100%', overflowY: 'overlay' as any }}>
                                 {quickRepliesToShow.map((item) => (
                                     <ListItem
                                         button
@@ -303,38 +303,6 @@ const TmpRichResponseIcon: React.FC<{ classes: any, setText: (param: string) => 
             p_ticketnum: ticketSelected?.ticketnum,
         }
         dispatch(triggerBlock(parameters))
-        // const listInteractions = cleanedRichResponse(block.cards, variablecontext)
-
-        // if (listInteractions.length === 0) {
-        //     dispatch(showSnackbar({ show: true, severity: "error", message: 'No hay cards' }))
-        //     return;
-        // }
-
-        // dispatch(replyTicket(listInteractions.map(x => ({
-        //     ...ticketSelected!!,
-        //     interactiontype: x.type,
-        //     interactiontext: x.content
-        // })), true));
-
-        // listInteractions.forEach((x: Dictionary, i: number) => {
-        //     const newInteractionSocket = {
-        //         ...ticketSelected!!,
-        //         interactionid: 0,
-        //         typemessage: x.type,
-        //         typeinteraction: null,
-        //         lastmessage: x.content,
-        //         createdate: new Date().toISOString(),
-        //         userid: 0,
-        //         usertype: "agent",
-        //         ticketWasAnswered: !(ticketSelected!!.isAnswered || i > 0), //solo enviar el cambio en el primer mensaje
-        //     }
-        //     if (userType === "AGENT") {
-        //         dispatch(emitEvent({
-        //             event: 'newMessageFromAgent',
-        //             data: newInteractionSocket
-        //         }));
-        //     }
-        // })
 
         if (userType === "SUPERVISOR")
             reasignTicket()
@@ -680,6 +648,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
 
     useEffect(() => {
         if (text.substring(0, 2).toLowerCase() === "\\q") {
+            console.log("text", text)
             setTypeHotKey("quickreply")
             setOpenDialogHotKey(true);
             const textToSearch = text.trim().split(text.trim().includes("\\q") ? "\\q" : "\\Q")[1];
@@ -849,7 +818,8 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                     <div style={{
                                         position: 'absolute',
                                         bottom: 100,
-                                        left: 15
+                                        left: 15,
+                                        zIndex: 1201
                                     }}>
                                         <div className="scroll-style-go" style={{
                                             maxHeight: 200,
@@ -920,7 +890,8 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                 <div style={{
                                     position: 'absolute',
                                     bottom: 100,
-                                    left: 15
+                                    left: 15,
+                                    zIndex: 1201
                                 }}>
                                     <div className="scroll-style-go" style={{
                                         maxHeight: 200,
