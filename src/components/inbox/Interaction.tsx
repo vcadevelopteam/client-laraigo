@@ -20,7 +20,6 @@ import DialogContent from '@material-ui/core/DialogContent';
 import Avatar from '@material-ui/core/Avatar';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
 
 const useStylesInteraction = makeStyles((theme) => ({
     containerCarousel: {
@@ -107,7 +106,6 @@ const ShoppingCart: React.FC<{ onlyTime?: string, interactiontext: string, creat
     const handleClose = () => setOpen(false);
 
     const jsonIntt = JSON.parse(interactiontext);
-    debugger
 
     // const firstimage = jsonIntt.SectionList?.[0]?.ProductList?.[0]?.ImageReference || "";
     // const totalitems = jsonIntt.SectionList.reduce((a: number, i: Dictionary) => a + i.ProductList.length, 0)
@@ -121,7 +119,7 @@ const ShoppingCart: React.FC<{ onlyTime?: string, interactiontext: string, creat
                     <img width="70px" height="70px" alt="reference" src={jsonIntt.Product_items[0].ImageReference} />
                     <div style={{ display: 'flex', alignItems: 'center', paddingLeft: 8 }}>
                         <div>
-                            <div style={{ fontWeight: 'bold' }}>{jsonIntt.Product_items.length} Elementos</div>
+                            <div style={{ fontWeight: 'bold' }}>{jsonIntt.Product_items.length} {t(langKeys.elements)}</div>
                             <div style={{ fontWeight: 'bold' }}>{jsonIntt.Product_items.reduce((acc: number, item: Dictionary) => acc + parseFloat(item.Item_price)*parseFloat(item.Quantity), 0).toFixed(2)} {jsonIntt.Product_items[0].Currency}</div>
                         </div>
                     </div>
@@ -133,7 +131,7 @@ const ShoppingCart: React.FC<{ onlyTime?: string, interactiontext: string, creat
                 <div
                     style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#00a5f4', cursor: 'pointer' }}
                     onClick={handleClickOpen}
-                >Show shopping cart</div>
+                >{t(langKeys.show_shopping_cart)}</div>
                 <TimerInteraction interactiontype="interactivelist" createdate={createdate} userType={userType} time={onlyTime || ""} />
             </div>
             <SwipeableDrawer
@@ -143,9 +141,9 @@ const ShoppingCart: React.FC<{ onlyTime?: string, interactiontext: string, creat
                 onOpen={handleClickOpen}
             >
                 <div style={{ width: 400, padding: 16 }}>
-                    <h4 >Carrito enviado</h4>
+                    <h4 >{t(langKeys.cart_sent)}</h4>
                     <div>
-                        <div style={{ fontWeight: 500 }}>{jsonIntt.Product_items.length} Items</div>
+                        <div style={{ fontWeight: 500 }}>{jsonIntt.Product_items.length} {t(langKeys.elements)}</div>
                         <div style={{ color: '#8696a0' }}>{jsonIntt.Product_items.reduce((acc: number, item: Dictionary) => acc + parseFloat(item.Item_price)*parseFloat(item.Quantity), 0).toFixed(2)} {jsonIntt.Product_items[0].Currency}</div>
                         <div style={{ marginTop: 16 }}>
                         </div>
@@ -173,9 +171,8 @@ const ShoppingCart: React.FC<{ onlyTime?: string, interactiontext: string, creat
 
 const CatalogProduct: React.FC<{ onlyTime?: string, interactiontext: string, createdate: string, classes: any, userType: string }> = ({ interactiontext, createdate, classes, userType, onlyTime }) => {
     const [open, setOpen] = React.useState(false);
-
+    const { t } = useTranslation();
     const handleClickOpen = () => setOpen(true);
-
     const handleClose = () => setOpen(false);
 
     const jsonIntt = JSON.parse(interactiontext);
@@ -193,7 +190,7 @@ const CatalogProduct: React.FC<{ onlyTime?: string, interactiontext: string, cre
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <div>
                             <div style={{ fontWeight: 500 }}>{jsonIntt.Body}</div>
-                            <div style={{ color: '#8696a0' }}>{totalitems} items</div>
+                            <div style={{ color: '#8696a0' }}>{totalitems} {t(langKeys.elements)}</div>
                         </div>
                     </div>
                 </div>
@@ -206,7 +203,7 @@ const CatalogProduct: React.FC<{ onlyTime?: string, interactiontext: string, cre
                     style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#00a5f4', cursor: 'pointer' }}
                     onClick={handleClickOpen}
                 >
-                    <InteractiveListIcon /> Show items
+                    <InteractiveListIcon /> {t(langKeys.show_items)}
                 </div>
                 <TimerInteraction interactiontype="interactivelist" createdate={createdate} userType={userType} time={onlyTime || ""} />
                 <SwipeableDrawer
@@ -266,7 +263,7 @@ const CatalogProduct: React.FC<{ onlyTime?: string, interactiontext: string, cre
 
 const InteractiveList: React.FC<{ onlyTime?: string, interactiontext: string, createdate: string, classes: any, userType: string }> = ({ interactiontext, createdate, classes, userType, onlyTime }) => {
     const [open, setOpen] = React.useState(false);
-
+    const { t } = useTranslation();
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -293,7 +290,7 @@ const InteractiveList: React.FC<{ onlyTime?: string, interactiontext: string, cr
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#00a5f4', cursor: 'pointer' }}
                 onClick={handleClickOpen}
             >
-                <InteractiveListIcon /> OPTIONS
+                <InteractiveListIcon />{t(langKeys.options)}
             </div>
             <TimerInteraction interactiontype="interactivelist" createdate={createdate} userType={userType} time={onlyTime || ""} />
             <Dialog
@@ -303,7 +300,7 @@ const InteractiveList: React.FC<{ onlyTime?: string, interactiontext: string, cr
                 fullWidth
                 maxWidth="xs"
             >
-                <DialogTitle>Options</DialogTitle>
+                <DialogTitle>{t(langKeys.options)}</DialogTitle>
                 <DialogContent>
                     {jsonIntt.sections[0].buttons.map((button: any, i: number) => (
                         <div
