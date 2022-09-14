@@ -390,8 +390,8 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                 key={filtro.values[0].isListDomains ? filtro.values[0].filter + "_" + filtro.values[0].domainname : filtro.values[0].filter}
                                 onChange={(value) => setValue(filtro.values[0].parameterName, value ? value.map((o: Dictionary) => o[filtro.values[0].optionValue]).join() : '')}
                                 variant="outlined"
-                                data={filtro.values[0].label==="group"?
-                                    multiData[multiData.findIndex(x => x.key === (filtro.values[0].isListDomains ? filtro.values[0].filter + "_" + filtro.values[0].domainname : filtro.values[0].filter))].data.filter(x => groups.length > 0 ? groups.includes(x.domainvalue) : true):
+                                data={filtro.values[0].label==="group" && groups.length === 0?
+                                    multiData[multiData.findIndex(x => x.key === (filtro.values[0].isListDomains ? filtro.values[0].filter + "_" + filtro.values[0].domainname : filtro.values[0].filter))].data.filter(x => groups.includes(x.domainvalue)):
                                     multiData[multiData.findIndex(x => x.key === (filtro.values[0].isListDomains ? filtro.values[0].filter + "_" + filtro.values[0].domainname : filtro.values[0].filter))].data}
                                 optionDesc={filtro.values[0].optionDesc}
                                 optionValue={filtro.values[0].optionValue}
