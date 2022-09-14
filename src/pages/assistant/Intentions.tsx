@@ -12,6 +12,8 @@ import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
+import { getCollection, resetAllMain } from 'store/main/actions';
+import { selIntent } from 'common/helpers/requestBodies';
 
 
 interface RowSelected {
@@ -259,16 +261,27 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
 }
 
 export const Intentions: FC = () => {
+    const dispatch = useDispatch();
 
     const { t } = useTranslation();
     const classes = useStyles();
+    const mainResult = useSelector(state => state.main);
+    const multiData = useSelector(state => state.main.multiDataAux);
     const [selectedRows, setSelectedRows] = useState<any>({});
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
 
     const [viewSelected, setViewSelected] = useState("view-1");
-    
 
-    const fetchData = () => {debugger;/*poner la funcion que trae las intentions*/};
+    const fetchData = () => {dispatch(getCollection(selIntent()))};
+    
+    useEffect(() => {
+        fetchData();
+        
+        return () => {
+            dispatch(resetAllMain());
+        };
+    }, []);
+
     const columns = React.useMemo(
         () => [
             {
@@ -325,7 +338,7 @@ export const Intentions: FC = () => {
                 <div style={{ height: 10 }}></div>
                 <TableZyx
                     columns={columns}
-                    data={[]}
+                    data={mainResult.mainData.data}
                     filterGeneral={false}
                     useSelection={true}
                     selectionKey={selectionKey}
@@ -343,7 +356,7 @@ export const Intentions: FC = () => {
                             >{t(langKeys.delete)}</Button>
                         </div>
                     )}
-                    loading={false}
+                    loading={mainResult.mainData.loading}
                     register={true}
                     download={false}
                     handleRegister={handleRegister}

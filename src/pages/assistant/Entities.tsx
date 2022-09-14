@@ -14,6 +14,8 @@ import AddIcon from '@material-ui/icons/Add';
 import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import DeleteIcon from '@material-ui/icons/Delete';
+import { getCollection, resetAllMain } from 'store/main/actions';
+import { selEntities } from 'common/helpers/requestBodies';
 
 
 interface RowSelected {
@@ -241,16 +243,26 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
 }
 
 export const Entities: FC = () => {
+    const dispatch = useDispatch();
 
     const { t } = useTranslation();
     const classes = useStyles();
+    const mainResult = useSelector(state => state.main);
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
 
     const [viewSelected, setViewSelected] = useState("view-1");
-    
 
-    const fetchData = () => {debugger;/*poner la funcion que trae las intentions*/};
+    const fetchData = () => {dispatch(getCollection(selEntities()))};
+    
+    useEffect(() => {
+        fetchData();
+        
+        return () => {
+            dispatch(resetAllMain());
+        };
+    }, []);
+
     const columns = React.useMemo(
         () => [
             {
@@ -302,11 +314,11 @@ export const Entities: FC = () => {
                 <div style={{ height: 10 }}></div>
                 <TableZyx
                     columns={columns}
-                    data={[]}
+                    data={mainResult.mainData.data}
                     filterGeneral={false}
                     useSelection={true}
                     selectionKey={"invoiceid"}
-                    //setSelectedRows={setSelectedRows}
+                    setSelectedRows={setSelectedRows}
                     ButtonsElement={() => (
                         <div style={{display: "flex", justifyContent: "end", width: "100%"}}>
                             <Button
@@ -320,7 +332,7 @@ export const Entities: FC = () => {
                             >{t(langKeys.delete)}</Button>
                         </div>
                     )}
-                    loading={false}
+                    loading={mainResult.mainData.loading}
                     register={true}
                     download={false}
                     handleRegister={handleRegister}

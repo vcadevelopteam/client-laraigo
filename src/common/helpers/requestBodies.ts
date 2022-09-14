@@ -3204,3 +3204,21 @@ export const selCommunicationChannelWhatsApp = (): IRequestBody => ({
     key: "UFN_COMMUNICATIONCHANNEL_SEL_WHATSAPP",
     parameters: {}
 })
+
+export const selIntent = (): IRequestBody => ({
+    method: "UFN_WITAI_INTENT_SEL",
+    key: "UFN_WITAI_INTENT_SEL",
+    parameters: {}
+})
+
+export const selUtterance = (intent: string): IRequestBody => ({
+    method: "UFN_WITAI_UTTERANCE_SEL",
+    key: "UFN_WITAI_UTTERANCE_SEL",
+    parameters: {intent}
+})
+
+export const selEntities = (): IRequestBody => ({
+    method: "UFN_WITAI_ENTITY_SEL",
+    key: "UFN_WITAI_ENTITY_SEL",
+    parameters: {}
+})
