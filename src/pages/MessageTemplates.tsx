@@ -429,7 +429,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
     const [isNew, setIsNew] = useState(row?.id ? false : true);
     const [isProvider, setIsProvider] = useState(row?.fromprovider ? true : false);
     const [disableInput, setDisableInput] = useState(false);
-    const [disableNamespace, setDisableNamespace] = useState(row?.communicationchanneltype === "WHAT" ? false : true);
+    const [disableNamespace, setDisableNamespace] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
     const [waitAdd, setWaitAdd] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
@@ -777,6 +777,14 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
 
     useEffect(() => {
         if (row) {
+            if (row.fromprovider && row.communicationchanneltype) {
+                setDisableNamespace(row.communicationchanneltype === "WHAT" ? false : true);
+            }
+            else {
+                setDisableNamespace(false);
+            }
+
+
             const type = row?.type || "HSM";
 
             if (type === "HSM") {
@@ -1069,6 +1077,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
             setValue('servicecredentials', '');
             setValue('integrationid', '');
             setValue('fromprovider', false);
+
+            setDisableNamespace(false);
         }
 
         trigger('fromprovider');
