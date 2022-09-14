@@ -1318,6 +1318,20 @@ const translation: LangKeys = {
     hasactionplan: 'Has action plan',
     error_already_exists_record: '23505: There is already the same {{module}} registered',
 
+    report_kpioperativo: "Operative KPI's",
+    report_kpioperativo_year: "Year",
+    report_kpioperativo_month: "Month",
+    report_kpioperativo_day: "Day",
+    report_kpioperativo_groups: "Group",
+    report_kpioperativo_origin: "Origin",
+    report_kpioperativo_tme: "TME Average",
+    report_kpioperativo_tickets: "Ticket Quantity",
+    report_kpioperativo_eq_time_sum: "Sum Eq Agent",
+    report_kpioperativo_onlinetime_tickets: "Min/Ticket",
+    report_kpioperativo_tickets_eqtime: "Sum Ticket/Eq Agent",
+    report_kpioperativo_onlinetime_prod: "Sum Field Min Prod",
+    report_kpioperativo_busytime: "Prom Horas Ocup",
+
     error_cos_unexpected: '5005: There was an error, contact the administrator',
     error_zero_records: '5005: Nothing to export',
 

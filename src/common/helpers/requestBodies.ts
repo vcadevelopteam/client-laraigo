@@ -3204,3 +3204,15 @@ export const selCommunicationChannelWhatsApp = (): IRequestBody => ({
     key: "UFN_COMMUNICATIONCHANNEL_SEL_WHATSAPP",
     parameters: {}
 })
+
+export const getReportKpiOperativoSel = ({ date, ...allParameters }: Dictionary): IRequestBody => ({
+    method: "UFN_REPORT_KPI_OPERATIVO_SEL",
+    key: "UFN_REPORT_KPI_OPERATIVO_SEL",
+    parameters: {
+        origin: "kpioperativo",
+        date,
+        ...allParameters,
+        usergroup: allParameters['usergroup'] ? allParameters['usergroup'] : "",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
