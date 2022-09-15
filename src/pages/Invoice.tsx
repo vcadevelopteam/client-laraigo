@@ -3,9 +3,9 @@ import React, { FC, useCallback, Fragment, useEffect, useState, useMemo } from '
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { cleanMemoryTable, setMemoryTable, uploadFile } from 'store/main/actions';
-import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray, TemplateIcons, IOSSwitch } from 'components';
-import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, billingReportConversationWhatsApp, billingReportHsmHistory, invoiceRefresh, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent, getBalanceSelSent, getCorpSelVariant, listPaymentCard, paymentCardInsert, uploadExcel, insInvoice, templateMaker, exportExcel } from 'common/helpers';
+import { cleanMemoryTable, getCollectionAux2, setMemoryTable, uploadFile } from 'store/main/actions';
+import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray, TemplateIcons, IOSSwitch, FieldEditMulti } from 'components';
+import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, billingReportConversationWhatsApp, billingReportHsmHistory, invoiceRefresh, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent, getBalanceSelSent, getCorpSelVariant, listPaymentCard, paymentCardInsert, uploadExcel, insInvoice, templateMaker, exportExcel, selInvoiceComment, insInvoiceComment, convertLocalDate } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -153,6 +153,12 @@ const useStyles = makeStyles((theme) => ({
     },
     button: {
         padding: 12,
+        fontWeight: 500,
+        fontSize: '14px',
+        textTransform: 'initial'
+    },
+    buttoncomments: {
+        padding: 6,
         fontWeight: 500,
         fontSize: '14px',
         textTransform: 'initial'
@@ -3151,7 +3157,6 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
     const multiResult = useSelector(state => state.main.multiData);
     const memoryTable = useSelector(state => state.main.memoryTable);
     const user = useSelector(state => state.login.validateToken.user);
-    const [insertexcel, setinsertexcel] = useState(false);
 
     const [dataMain, setdataMain] = useState({
         corpid: user?.corpid || 0,
@@ -3162,6 +3167,9 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
         currency: ""
     });
 
+    const [insertexcel, setinsertexcel] = useState(false);
+    const [openModal, setOpenModal] = useState(false);
+    const [openModalData, setOpenModalData] = useState<Dictionary | null>(null);
     const [dataInvoice, setDataInvoice] = useState<Dictionary[]>([]);
     const [disableSearch, setdisableSearch] = useState(false);
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
@@ -3214,17 +3222,19 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
     }, [dataMain])
 
     useEffect(() => {
-        if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.deleteinvoicesuccess) }))
-                fetchData && fetchData();
-                dispatch(showBackdrop(false));
-                setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
-                setWaitSave(false);
-                dispatch(showBackdrop(false));
+        if (!openModal) {
+            if (waitSave) {
+                if (!executeRes.loading && !executeRes.error) {
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.deleteinvoicesuccess) }))
+                    fetchData && fetchData();
+                    dispatch(showBackdrop(false));
+                    setViewSelected("view-1")
+                } else if (executeRes.error) {
+                    const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                    setWaitSave(false);
+                    dispatch(showBackdrop(false));
+                }
             }
         }
     }, [executeRes, waitSave])
@@ -3390,23 +3400,47 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
                     return formatNumber(totalamount || 0);
                 }
             },
+            {
+                Header: t(langKeys.comments),
+                accessor: 'commentcontent',
+                Cell: (props: any) => {
+                    const { commentcontent } = props.cell.row.original;
+                    const rowdata = props.cell.row.original;
+                    if (commentcontent) {
+                        return (<Fragment>
+                            <div style={{ display: 'inline-block' }}>
+                                {(commentcontent || '').substring(0, 20)}... <a onClick={(e) => { e.stopPropagation(); openInvoiceComment(rowdata); }} style={{ cursor: 'pointer', textDecoration: 'underline', color: 'blue' }} rel="noreferrer">{t(langKeys.seeMore)}</a>
+                            </div>
+                        </Fragment>)
+                    }
+                    else {
+                        return (<Fragment>
+                            <div style={{ display: 'inline-block' }}>
+                                <a onClick={(e) => { e.stopPropagation(); openInvoiceComment(rowdata); }} style={{ display: "block", cursor: 'pointer', textDecoration: 'underline', color: 'blue' }} rel="noreferrer">{t(langKeys.seeMore)}</a>
+                            </div>
+                        </Fragment>)
+                    }
+                }
+            },
         ],
         []
     );
 
     useEffect(() => {
-        if (waitSaveImport) {
-            if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(insertexcel ? langKeys.successful_import : langKeys.successful_delete) }))
-                setinsertexcel(false)
-                fetchData();
-                dispatch(showBackdrop(false));
-                setwaitSaveImport(false);
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
-                dispatch(showBackdrop(false));
-                setwaitSaveImport(false);
+        if (!openModal) {
+            if (waitSaveImport) {
+                if (!executeRes.loading && !executeRes.error) {
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(insertexcel ? langKeys.successful_import : langKeys.successful_delete) }))
+                    setinsertexcel(false)
+                    fetchData();
+                    dispatch(showBackdrop(false));
+                    setwaitSaveImport(false);
+                } else if (executeRes.error) {
+                    const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                    dispatch(showBackdrop(false));
+                    setwaitSaveImport(false);
+                }
             }
         }
     }, [executeRes, waitSaveImport])
@@ -3532,6 +3566,18 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
         }
     }
 
+    const openInvoiceComment = (row: Dictionary) => {
+        setViewSelected("view-1");
+        setOpenModalData(row);
+        setOpenModal(true);
+    }
+
+    const onModalSuccess = () => {
+        setOpenModal(false);
+        fetchData();
+        setViewSelected("view-1");
+    }
+
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
             dispatch(execute(deleteInvoice(row)));
@@ -3588,102 +3634,110 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
 
     if (viewSelected === "view-1") {
         return (
-            <TableZyx
-                onClickRow={handleView}
-                columns={columns}
-                ButtonsElement={() => (
-                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                        <FieldSelect
-                            label={t(langKeys.year)}
-                            style={{ width: 140 }}
-                            valueDefault={dataMain.year}
-                            variant="outlined"
-                            onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.value || 0 }))}
-                            data={dataYears}
-                            optionDesc="value"
-                            optionValue="value"
-                        />
-                        <FieldMultiSelect
-                            label={t(langKeys.month)}
-                            style={{ width: 214 }}
-                            valueDefault={dataMain.month}
-                            variant="outlined"
-                            onChange={(value) => setdataMain(prev => ({ ...prev, month: value.map((o: Dictionary) => o.val).join() }))}
-                            data={dataMonths}
-                            uset={true}
-                            prefixTranslation="month_"
-                            optionDesc="val"
-                            optionValue="val"
-                        />
-                        <FieldSelect
-                            label={t(langKeys.corporation)}
-                            className={classes.fieldsfilter}
-                            valueDefault={dataMain.corpid}
-                            variant="outlined"
-                            onChange={(value) => setdataMain(prev => ({ ...prev, corpid: value?.corpid || 0, orgid: 0 }))}
-                            data={dataCorp}
-                            optionDesc="description"
-                            optionValue="corpid"
-                            disabled={["ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '')}
-                            orderbylabel={true}
-                        />
-                        <FieldSelect
-                            label={t(langKeys.organization)}
-                            className={classes.fieldsfilter}
-                            valueDefault={dataMain.orgid}
-                            variant="outlined"
-                            onChange={(value) => setdataMain(prev => ({ ...prev, orgid: value?.orgid || 0 }))}
-                            data={dataOrg.filter((e: any) => { return e.corpid === dataMain.corpid })}
-                            optionDesc="orgdesc"
-                            optionValue="orgid"
-                            orderbylabel={true}
-                        />
-                        <FieldSelect
-                            label={t(langKeys.currency)}
-                            className={classes.fieldsfilter}
-                            valueDefault={dataMain.currency}
-                            variant="outlined"
-                            onChange={(value) => setdataMain(prev => ({ ...prev, currency: value?.value || '' }))}
-                            data={dataCurrency}
-                            optionDesc="description"
-                            optionValue="value"
-                            orderbylabel={true}
-                        />
-                        <FieldSelect
-                            label={t(langKeys.paymentstatus)}
-                            className={classes.fieldsfilter}
-                            valueDefault={dataMain.paymentstatus}
-                            variant="outlined"
-                            onChange={(value) => setdataMain(prev => ({ ...prev, paymentstatus: value?.value || '' }))}
-                            data={dataPayment}
-                            optionDesc="description"
-                            optionValue="value"
-                            orderbylabel={true}
-                        />
-                        <Button
-                            disabled={mainResult.loading || disableSearch}
-                            variant="contained"
-                            color="primary"
-                            style={{ width: 120, backgroundColor: "#55BD84" }}
-                            startIcon={<SearchIcon style={{ color: 'white' }} />}
-                            onClick={fetchData}
-                        >{t(langKeys.search)}
-                        </Button>
-                    </div>
-                )}
-                data={dataInvoice}
-                filterGeneral={false}
-                importCSV={importCSV}
-                handleTemplate={handleTemplate}
-                download={true}
-                loading={mainResult.loading || multiResult.loading}
-                register={true}
-                handleRegister={handleRegister}
-                registertext={langKeys.generateinvoice}
-                pageSizeDefault={IDBILLING === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
-                initialPageIndex={IDBILLING === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
-                initialStateFilter={IDBILLING === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
-            />
+            <div style={{ width: '100%' }}>
+                <InvoiceCommentModal
+                    data={openModalData}
+                    openModal={openModal}
+                    setOpenModal={setOpenModal}
+                    onTrigger={onModalSuccess}
+                />
+                <TableZyx
+                    onClickRow={handleView}
+                    columns={columns}
+                    ButtonsElement={() => (
+                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                            <FieldSelect
+                                label={t(langKeys.year)}
+                                style={{ width: 140 }}
+                                valueDefault={dataMain.year}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.value || 0 }))}
+                                data={dataYears}
+                                optionDesc="value"
+                                optionValue="value"
+                            />
+                            <FieldMultiSelect
+                                label={t(langKeys.month)}
+                                style={{ width: 214 }}
+                                valueDefault={dataMain.month}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev => ({ ...prev, month: value.map((o: Dictionary) => o.val).join() }))}
+                                data={dataMonths}
+                                uset={true}
+                                prefixTranslation="month_"
+                                optionDesc="val"
+                                optionValue="val"
+                            />
+                            <FieldSelect
+                                label={t(langKeys.corporation)}
+                                className={classes.fieldsfilter}
+                                valueDefault={dataMain.corpid}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev => ({ ...prev, corpid: value?.corpid || 0, orgid: 0 }))}
+                                data={dataCorp}
+                                optionDesc="description"
+                                optionValue="corpid"
+                                disabled={["ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '')}
+                                orderbylabel={true}
+                            />
+                            <FieldSelect
+                                label={t(langKeys.organization)}
+                                className={classes.fieldsfilter}
+                                valueDefault={dataMain.orgid}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev => ({ ...prev, orgid: value?.orgid || 0 }))}
+                                data={dataOrg.filter((e: any) => { return e.corpid === dataMain.corpid })}
+                                optionDesc="orgdesc"
+                                optionValue="orgid"
+                                orderbylabel={true}
+                            />
+                            <FieldSelect
+                                label={t(langKeys.currency)}
+                                className={classes.fieldsfilter}
+                                valueDefault={dataMain.currency}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev => ({ ...prev, currency: value?.value || '' }))}
+                                data={dataCurrency}
+                                optionDesc="description"
+                                optionValue="value"
+                                orderbylabel={true}
+                            />
+                            <FieldSelect
+                                label={t(langKeys.paymentstatus)}
+                                className={classes.fieldsfilter}
+                                valueDefault={dataMain.paymentstatus}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev => ({ ...prev, paymentstatus: value?.value || '' }))}
+                                data={dataPayment}
+                                optionDesc="description"
+                                optionValue="value"
+                                orderbylabel={true}
+                            />
+                            <Button
+                                disabled={mainResult.loading || disableSearch}
+                                variant="contained"
+                                color="primary"
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                onClick={fetchData}
+                            >{t(langKeys.search)}
+                            </Button>
+                        </div>
+                    )}
+                    data={dataInvoice}
+                    filterGeneral={false}
+                    importCSV={importCSV}
+                    handleTemplate={handleTemplate}
+                    download={true}
+                    loading={mainResult.loading || multiResult.loading}
+                    register={true}
+                    handleRegister={handleRegister}
+                    registertext={langKeys.generateinvoice}
+                    pageSizeDefault={IDBILLING === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                    initialPageIndex={IDBILLING === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                    initialStateFilter={IDBILLING === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
+                />
+            </div>
         )
     } else if (viewSelected === "view-2") {
         return (
@@ -3705,6 +3759,213 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
             />
         );
     }
+}
+
+const InvoiceCommentModal: FC<{ data: any, openModal: boolean, setOpenModal: (param: any) => void, onTrigger: () => void }> = ({ data, openModal, setOpenModal, onTrigger }) => {
+    const dispatch = useDispatch();
+
+    const { t } = useTranslation();
+
+    const classes = useStyles();
+    const mainResult = useSelector(state => state.main.mainAux2);
+    const executeResult = useSelector(state => state.main.execute);
+
+    const [dataInvoiceComment, setDataInvoiceComment] = useState<Dictionary[]>([]);
+    const [waitSave, setWaitSave] = useState(false);
+    const [waitLoad, setWaitLoad] = useState(false);
+    const [contentValidation, setContentValidation] = useState('');
+
+    const [fields, setFields] = useState({
+        "corpid": data?.corpid,
+        "orgid": data?.orgid,
+        "invoiceid": data?.invoiceid,
+        "invoicecommentid": 0,
+        "description": '',
+        "status": 'ACTIVO',
+        "type": '',
+        "commentcontent": '',
+        "commenttype": 'text',
+        "commentcaption": '',
+    })
+
+    const fetchData = () => {
+        dispatch(getCollectionAux2(selInvoiceComment({
+            corpid: data?.corpid,
+            orgid: data?.orgid,
+            invoiceid: data?.invoiceid,
+            invoicecommentid: 0,
+        })));
+        setWaitLoad(true);
+        dispatch(showBackdrop(true));
+    }
+
+    useEffect(() => {
+        if (openModal && data) {
+            setDataInvoiceComment([]);
+            setContentValidation('');
+
+            let partialFields = fields;
+            partialFields.corpid = data?.corpid;
+            partialFields.orgid = data?.orgid;
+            partialFields.invoiceid = data?.invoiceid;
+            partialFields.invoicecommentid = 0;
+            partialFields.description = '';
+            partialFields.status = 'ACTIVO';
+            partialFields.type = '';
+            partialFields.commentcontent = '';
+            partialFields.commenttype = 'text';
+            partialFields.commentcaption = '';
+            setFields(partialFields);
+
+            fetchData();
+        }
+    }, [data, openModal]);
+
+    useEffect(() => {
+        if (waitLoad) {
+            if (!mainResult.loading && !mainResult.error) {
+                setDataInvoiceComment(mainResult.data);
+                dispatch(showBackdrop(false));
+                setWaitLoad(false);
+            } else if (mainResult.error) {
+                setWaitLoad(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [mainResult, waitLoad])
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+
+                setDataInvoiceComment([]);
+
+                let partialFields = fields;
+                partialFields.commentcontent = '';
+                setFields(partialFields);
+
+                fetchData();
+            } else if (executeResult.error) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(executeResult.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() }) }));
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [executeResult, waitSave])
+
+    const handleCommentRegister = () => {
+        if (fields) {
+            if (fields.commentcontent) {
+                setContentValidation('');
+
+                const callback = () => {
+                    dispatch(execute(insInvoiceComment(fields)));
+                    dispatch(showBackdrop(true));
+                    setWaitSave(true);
+                }
+
+                dispatch(manageConfirmation({
+                    visible: true,
+                    question: t(langKeys.confirmation_save),
+                    callback
+                }))
+            }
+            else {
+                setContentValidation(t(langKeys.required_fields_missing));
+            }
+        }
+    }
+
+    const handleCommentDelete = (data: any) => {
+        if (fields && data) {
+            const callback = () => {
+                var fieldTemporal = fields;
+
+                fieldTemporal.corpid = data?.corpid;
+                fieldTemporal.orgid = data?.orgid;
+                fieldTemporal.invoiceid = data?.invoiceid;
+                fieldTemporal.invoicecommentid = data?.invoicecommentid;
+                fieldTemporal.description = data?.description;
+                fieldTemporal.status = 'ELIMINADO';
+                fieldTemporal.type = data?.type;
+                fieldTemporal.commentcontent = data?.commentcontent;
+                fieldTemporal.commenttype = data?.commenttype;
+                fieldTemporal.commentcaption = data?.commentcaption;
+
+                dispatch(execute(insInvoiceComment(fieldTemporal)));
+                dispatch(showBackdrop(true));
+                setWaitSave(true);
+            }
+
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_delete),
+                callback
+            }))
+        }
+    }
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.invoicecomments)}
+            buttonText1={t(langKeys.close)}
+            handleClickButton1={() => setOpenModal(false)}
+        >
+            <div style={{ overflowY: 'auto' }}>
+                {dataInvoiceComment.map((item, index) => (
+                    <div style={{ borderStyle: "solid", borderWidth: "1px", borderColor: "#762AA9", borderRadius: "4px", padding: "10px", margin: "10px" }}>
+                        <div style={{ display: 'flex' }}>
+                            <b style={{ width: '100%' }}>{item.createby} {t(langKeys.invoiceat)} {convertLocalDate(item.createdate || '').toLocaleString()}</b>
+                            <Button
+                                className={classes.buttoncomments}
+                                variant="contained"
+                                color="primary"
+                                type='button'
+                                style={{ backgroundColor: "#FB5F5F" }}
+                                onClick={() => handleCommentDelete(item)}
+                            >{t(langKeys.delete)}
+                            </Button>
+                        </div>
+                        <FieldEditMulti
+                            className="col-12"
+                            label={''}
+                            valueDefault={item.commentcontent}
+                            disabled={true}
+                        />
+                    </div>
+                ))}
+                <div style={{ padding: "10px", margin: "10px" }}>
+                    <div style={{ display: 'flex' }}>
+                        <b style={{ width: '100%' }}>{t(langKeys.new)} {t(langKeys.invoicecomment)}</b>
+                        <Button
+                            className={classes.buttoncomments}
+                            variant="contained"
+                            color="primary"
+                            type='button'
+                            style={{ backgroundColor: "#55BD84" }}
+                            onClick={() => handleCommentRegister()}
+                        >{t(langKeys.save)}
+                        </Button>
+                    </div>
+                    <FieldEditMulti
+                        className="col-12"
+                        label={''}
+                        valueDefault={fields.commentcontent}
+                        error={contentValidation}
+                        onChange={(value) => {
+                            let partialf = fields;
+                            partialf.commentcontent = value;
+                            setFields(partialf);
+                        }}
+                    />
+                </div>
+            </div>
+        </DialogZyx>
+    )
 }
 
 const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, operationName, setViewSelected, fetchData }) => {
@@ -4415,7 +4676,6 @@ const RegularizeModal: FC<{ data: any, openModal: boolean, setOpenModal: (param:
         register('invoicepaymentnote', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('invoicepaymentcommentary', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
     }, [register]);
-
 
     useEffect(() => {
         if (waitSave) {
