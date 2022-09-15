@@ -3991,6 +3991,9 @@ export const langKeys = {
     nametemplate_validation: "nametemplate_validation",
     messagetemplate_phonenumber: 'messagetemplate_phonenumber',
     TEMPLATE_NONE: "TEMPLATE_NONE",
+    invoicecomment: "invoicecomment",
+    invoicecomments: "invoicecomments",
+    invoiceat: "invoiceat",
 };
 
 export type LangKeys = typeof langKeys;

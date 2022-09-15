@@ -4008,6 +4008,9 @@ const translation: LangKeys = {
     nametemplate_validation: "Only lowercase letters, numbers and underscores are allowed",
     messagetemplate_phonenumber: 'Phone Number',
     TEMPLATE_NONE: "NONE",
+    invoicecomment: "Comment",
+    invoicecomments: "Invoice Comments",
+    invoiceat: "at",
 };
 
 const enResource: ResourceLanguage = {

@@ -3999,6 +3999,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     nametemplate_validation: "Solo minúsculas, números y guion bajo son permitidos",
     messagetemplate_phonenumber: 'Número Telefónico',
     TEMPLATE_NONE: "NINGUNO",
+    invoicecomment: "Comentario",
+    invoicecomments: "Comentarios de la Factura",
+    invoiceat: "el",
 };
 
 const esResource: ResourceLanguage = {
