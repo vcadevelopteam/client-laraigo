@@ -131,13 +131,13 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                 Header: t(langKeys.userexample),
                 accessor: 'name',
                 NoFilter: true,
-                width: "50%"
+                width: "auto",
             },
             {
                 Header: t(langKeys.added),
                 accessor: 'updatedate',
                 NoFilter: true,
-                width: "50%"
+                width: "auto",
             },
         ],
         []
@@ -302,6 +302,7 @@ export const Intentions: FC = () => {
             {
                 Header: t(langKeys.intentions),
                 accessor: 'name',
+                width: "auto",
                 NoFilter: true,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
@@ -322,21 +323,25 @@ export const Intentions: FC = () => {
             {
                 Header: t(langKeys.description),
                 accessor: 'description',
+                width: "auto",
                 NoFilter: true,
             },
             {
                 Header: "ID",
                 accessor: 'id',
+                width: "auto",
                 NoFilter: true,
             },
             {
                 Header: t(langKeys.examples),
                 accessor: 'utteranceqty',
+                width: "auto",
                 NoFilter: true,
             },
             {
                 Header: t(langKeys.lastUpdate),
                 accessor: 'updatedate',
+                width: "auto",
                 NoFilter: true,
             },
         ],

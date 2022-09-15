@@ -62,6 +62,7 @@ const useStyles = makeStyles((theme) => ({
 const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,setViewSelected }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
+    const [keywords, setkeywords] = useState<any>(row?.datajson?.keywords || []);
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -71,23 +72,16 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
             type: 'NINGUNO',
             id: row ? row.whitelistid : 0,
             name: row?.name || '',
-            sinonims: row?.sinonims || '',
             operation: row ? "EDIT" : "INSERT",
-            keywords: row?.keywords || [],
             status: "ACTIVO",
         }
     });
-
-    const { fields: fieldsKeywords, append: keywordsAppend, remove: keywordsRemove } = useFieldArray({
-        control,
-        name: 'keywords',
-    });
+    
     React.useEffect(() => {
         register('type');
         register('id');
         register('status');
         register('operation');
-        register('sinonims');
         register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
 
@@ -175,7 +169,7 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                                                     <IconButton
                                                         size="small"
                                                         onClick={async () => {
-                                                            keywordsAppend({ keyword: '' });
+                                                            setkeywords([...keywords,{ keyword: '', synonyms: [] }])
                                                         }}
                                                     >
                                                         <AddIcon />
@@ -185,13 +179,13 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                                             </TableRow>
                                         </TableHead>
                                         <TableBody style={{ marginTop: 5 }}>
-                                            {fieldsKeywords.map((item: any, i: number) =>
-                                                <TableRow key={item.id}>
+                                            {keywords.map((item: any, i: number) =>
+                                                <TableRow key={i}>
                                                     <TableCell width={30}>
                                                         <div style={{ display: 'flex' }}>
                                                             <IconButton
                                                                 size="small"
-                                                                onClick={() => { keywordsRemove(i) }}
+                                                                onClick={() => { setkeywords(keywords.splice(i,1)) }}
                                                             >
                                                                 <DeleteIcon style={{ color: '#777777' }} />
                                                             </IconButton>
@@ -199,12 +193,12 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                                                     </TableCell>
                                                     <TableCell style={{ width: 200 }}>
                                                         <FieldEditArray
-                                                            fregister={{
-                                                                ...register(`keywords.${i}.keyword`),
+                                                            valueDefault={keywords[i].keyword}
+                                                            onChange={(value) => {
+                                                                let tempkeywords = keywords
+                                                                tempkeywords[i].keyword = value
+                                                                setkeywords(tempkeywords)
                                                             }}
-                                                            valueDefault={getValues(`keywords.${i}.keyword`)}
-                                                            error={errors?.keywords?.[i]?.keyword?.message}
-                                                            onChange={(value) => setValue(`keywords.${i}.keyword`, value)}
                                                         />
                                                     </TableCell>
                                                 </TableRow>
@@ -220,19 +214,24 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                                 <div className={classes.title}>{t(langKeys.sinonims)}</div>
                             </div>
                             <div>
-                                <FieldMultiSelectFreeSolo
-                                    className={classes.field}
-                                    valueDefault={getValues('sinonims')}
-                                    onChange={(value) => {
-                                        const sinonims = value.join();
-                                        setValue('sinonims', sinonims);
-                                    }}
-                                    error={errors?.sinonims?.message}
-                                    loading={false}
-                                    data={getValues('sinonims').split(',').filter((i: any) => i !== '')}
-                                    optionDesc="domaindesc"
-                                    optionValue="domaindesc"
-                                />
+                                
+                                {keywords.map((item: any, i: number) =>
+                                
+                                    <FieldMultiSelectFreeSolo
+                                        valueDefault={keywords[i].synonyms.join()||""}
+                                        className={classes.field}
+                                        key={i}
+                                        onChange={(value) => {
+                                            let tempkeywords = keywords
+                                            tempkeywords[i].keyword = value
+                                            setkeywords(tempkeywords)
+                                        }}
+                                        loading={false}
+                                        data={keywords[i].synonyms}
+                                        optionDesc=""
+                                        optionValue=""
+                                    />
+                                )}
                             </div>
                         </div>
                     </div>
@@ -270,6 +269,7 @@ export const Entities: FC = () => {
                 Header: t(langKeys.entities),
                 accessor: 'name',
                 NoFilter: true,
+                width: "auto",
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
@@ -290,12 +290,12 @@ export const Entities: FC = () => {
                 Header: t(langKeys.value_plural),
                 accessor: 'description',
                 NoFilter: true,
+                width: "auto",
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    debugger
                     return (
                         <label>
-                            {row?.datajson?.keywords?.reduce((acc:string,item:any)=>acc + item.keyword + ",","").slice(0,-1)}
+                            {row?.datajson?.keywords?.reduce((acc:string,item:any)=>acc + item.keyword + ", ","").slice(0,-2)}
                         </label>
                     )
                 }
@@ -303,11 +303,13 @@ export const Entities: FC = () => {
             {
                 Header: "ID",
                 accessor: 'id',
+                width: "auto",
                 NoFilter: true,
             },
             {
                 Header: t(langKeys.lastUpdate),
                 accessor: 'updatedate',
+                width: "auto",
                 NoFilter: true,
             },
         ],
