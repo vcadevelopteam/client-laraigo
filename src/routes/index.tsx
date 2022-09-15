@@ -1,15 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useCallback } from "react";
+import React, { FC, useCallback, lazy, Suspense } from "react";
 import Layout from 'components/layout/Layout';
 import Popus from 'components/layout/Popus';
-import {
-	Users, SignIn, SignUp, Properties, Quickreplies, Groupconfig, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
-	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger, ChannelAddInstagram, ChannelAddWhatsapp, ChannelAddTelegram,
-	Reports, Tickets, MessageInbox, BotDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail, Iaservices, UserSettings,
-	Corporations, Settings, Dashboard, ChannelEdit, ChannelAddIos, ChannelAddAndroid, ChannelAddInstagramDM, Privacy, CRM, ActivateUser, RecoverPassword, LeadForm, ChangePwdFirstLogin, BillingSetups, DashboardAdd,
-	InputValidation, DashboardLayout, Invoice, KPIManager, GetLocations, ReportScheduler, ProductCatalog, Calendar, CalendarEvent, ChannelAddEmail, ChannelAddSMS, Whitelist, ChannelAddPhone, ChannelAddBlogger, ChannelAddLinkedIn, ChannelAddTeams, ChannelAddYouTube, ChannelAddTikTok
-} from 'pages';
-
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
 import paths from "common/constants/paths";
 import { makeStyles } from "@material-ui/core";
@@ -22,7 +14,81 @@ import { getAccessToken } from 'common/helpers';
 import { Redirect } from 'react-router-dom';
 import { logout, validateToken } from 'store/login/actions';
 import { useDispatch } from 'react-redux';
-import AutomatizationRules from "pages/AutomatizationRules";
+import { PersonDetail } from 'pages';
+
+const Users = lazy(() => import('pages/Users'));
+const ReportScheduler = lazy(() => import('pages/ReportScheduler'));
+const ProductCatalog = lazy(() => import('pages/ProductCatalog'));
+const SignIn = lazy(() => import('pages/SignIn'));
+const Properties = lazy(() => import('pages/Properties'));
+const Quickreplies = lazy(() => import('pages/Quickreplies'));
+const Groupconfig = lazy(() => import('pages/GroupConfig'));
+const Whitelist = lazy(() => import('pages/Whitelist'));
+const InappropriateWords = lazy(() => import('pages/InappropriateWords'));
+const IntelligentModels = lazy(() => import('pages/IntelligentModels'));
+const SLA = lazy(() => import('pages/SLA'));
+const Domains = lazy(() => import('pages/Domains'));
+const Reports = lazy(() => import('pages/Reports'));
+const Person = lazy(() => import('pages/Person'));
+const Supervisor = lazy(() => import('pages/Supervisor'));
+const MessageInbox = lazy(() => import('pages/MessageInbox'));
+const MessageTemplates = lazy(() => import('pages/MessageTemplates'));
+const Tipifications = lazy(() => import('pages/Tipifications'));
+const InputValidation = lazy(() => import('pages/InputValidation'));
+const IntegrationManager = lazy(() => import('pages/IntegrationManager'));
+const VariableConfiguration = lazy(() => import('pages/VariableConfiguration'));
+const ReportTemplate = lazy(() => import('pages/ReportTemplate'));
+const Emojis = lazy(() => import('pages/Emojis'));
+const Iaservices = lazy(() => import('pages/Iaservices'));
+const Campaign = lazy(() => import('pages/campaign/Campaign'));
+const NotFound = lazy(() => import('pages/NotFound'));
+const Forbidden = lazy(() => import('pages/Forbidden'));
+const InternalServererror = lazy(() => import('pages/InternalServerError'));
+const Corporations = lazy(() => import('pages/Corporations'));
+const BillingSetups = lazy(() => import('pages/BillingSetups'));
+const Organizations = lazy(() => import('pages/Organizations'));
+const Tickets = lazy(() => import('pages/Tickets'));
+const UserSettings = lazy(() => import('pages/UserSettings'));
+const Invoice = lazy(() => import('pages/Invoice'));
+const KPIManager = lazy(() => import('pages/KPIManager'));
+const GetLocations = lazy(() => import('pages/GetLocations'));
+const Calendar = lazy(() => import('pages/Calendar'));
+const AutomatizationRules = lazy(() => import('pages/AutomatizationRules'));
+const Channels = lazy(() => import('pages/channels/Channels'));
+const ChannelAdd = lazy(() => import('pages/channels/ChannelAdd'));
+const ChannelAddChatWeb = lazy(() => import('pages/channels/ChannelAddChatWeb'));
+const ChannelAddFacebook = lazy(() => import('pages/channels/ChannelAddFacebook'));
+const ChannelAddMessenger = lazy(() => import('pages/channels/ChannelAddMessenger'));
+const ChannelAddInstagram = lazy(() => import('pages/channels/ChannelAddInstagram'));
+const ChannelAddInstagramDM = lazy(() => import('pages/channels/ChannelAddInstagramDM'));
+const ChannelAddWhatsapp = lazy(() => import('pages/channels/ChannelAddWhatsapp'));
+const ChannelAddTelegram = lazy(() => import('pages/channels/ChannelAddTelegram'));
+const ChannelAddTwitter = lazy(() => import('pages/channels/ChannelAddTwitter'));
+const ChannelAddTwitterDM = lazy(() => import('pages/channels/ChannelAddTwitterDM'));
+const ChannelAddPhone = lazy(() => import('pages/channels/ChannelAddPhone'));
+const ChannelAddSMS = lazy(() => import('pages/channels/ChannelAddSMS'));
+const ChannelAddEmail = lazy(() => import('pages/channels/ChannelAddEmail'));
+const ChannelAddIos = lazy(() => import('pages/channels/ChannelAddIos'));
+const ChannelAddAndroid = lazy(() => import('pages/channels/ChannelAddAndroid'));
+const ChannelAddTikTok = lazy(() => import('pages/channels/ChannelAddTikTok'));
+const ChannelAddYouTube = lazy(() => import('pages/channels/ChannelAddYouTube'));
+const ChannelAddLinkedIn = lazy(() => import('pages/channels/ChannelAddLinkedIn'));
+const ChannelAddTeams = lazy(() => import('pages/channels/ChannelAddTeams'));
+const ChannelAddBlogger = lazy(() => import('pages/channels/ChannelAddBlogger'));
+const ChannelEdit = lazy(() => import('pages/channels/ChannelEdit'));
+const SignUp = lazy(() => import('pages/signup/SignUp'));
+const BotDesigner = lazy(() => import('pages/BotDesigner'));
+const Dashboard = lazy(() => import('pages/dashboard/Dashboard'))
+const DashboardAdd = lazy(() => import('pages/dashboard/DashboardAdd'))
+const DashboardLayout = lazy(() => import('pages/dashboard/DashboardLayout'))
+const Settings = lazy(() => import('pages/Settings'));
+const Privacy = lazy(() => import('pages/Privacy'));
+const ActivateUser = lazy(() => import('pages/ActivateUser'));
+const RecoverPassword = lazy(() => import('pages/RecoverPassword'));
+const CRM = lazy(() => import('pages/crm/CRM'));
+const LeadForm = lazy(() => import('pages/crm/LeadForm'));
+const ChangePwdFirstLogin = lazy(() => import('pages/ChangePwdFirstLogin'));
+const CalendarEvent = lazy(() => import('pages/CalendarEvent'));
 
 const useStyles = makeStyles((theme) => ({
 	main: {
@@ -33,7 +99,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface PrivateRouteProps extends Omit<RouteProps, "component"> {
-	component?: React.ElementType;
+	component: React.ElementType;
 }
 
 // view: 0
@@ -98,12 +164,11 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 		return <Redirect to={{ pathname: paths.CHNAGE_PWD_FIRST_LOGIN }} />;
 	} else if (location.pathname !== "/" && !applications?.[location.pathname]?.[0] && !location.pathname.includes('channels') && !location.pathname.includes('person') && !location.pathname.includes('crm') && !location.pathname.includes('dashboard')) {
 		return <Redirect to={{ pathname: "/403" }} />;
-	} else if (Component) {
-		return <Route {...rest} render={props => <Component {...props} />} />;
 	} else if (location.pathname === "/") {
 		return <Redirect to={{ pathname: resValidateToken.user?.redirect }} />
+	} else {
+		return <Route {...rest} render={props => <Component {...props} />} />;
 	}
-	return <Route {...rest}>{children}</Route>;
 }
 
 const RouterApp: FC = () => {
@@ -116,319 +181,99 @@ const RouterApp: FC = () => {
 
 	return (
 		<Router basename={process.env.PUBLIC_URL}>
-			<Switch>
-				<ProtectRoute exact path="/" />
-				<Route exact path={paths.SIGNIN} component={SignIn} />
-				<Route exact path={paths.SIGNUP.path} component={SignUp} />
-				<Route exact path={paths.LOCATION.path} component={GetLocations} />
-				<Route exact path={paths.CALENDAR_EVENT.path} component={CalendarEvent} />
-				<Route exact path={paths.PRIVACY} component={Privacy} />
-				<Route exact path={paths.ACTIVATE_USER.path} component={ActivateUser} />
-				<Route exact path={paths.RECOVER_PASSWORD.path} component={RecoverPassword} />
-
-				<ProtectRoute exact path={paths.PRODUCTCATALOG}>
-					<Layout mainClasses={classes.main}>
-						<ProductCatalog />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.REPORTS}>
-					<Layout mainClasses={classes.main}>
-						<Reports />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.REPORTSCHEDULER}>
-					<Layout mainClasses={classes.main}>
-						<ReportScheduler />
-					</Layout>
-				</ProtectRoute>
-				{/* <ProtectRoute exact path={paths.REPORTDESIGNER}>
-					<Layout mainClasses={classes.main}>
-						<ReportTemplate />
-					</Layout>
-				</ProtectRoute> */}
-				<ProtectRoute exact path={paths.TICKETS}>
-					<Layout mainClasses={classes.main}>
-						<Tickets />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CHANNELS}>
-					<Layout mainClasses={classes.main}>
-						<Channels />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CHANNELS_ADD}>
-					<Layout mainClasses={classes.main}>
-						<ChannelAdd />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CHANNELS_ADD_CHATWEB}>
-					<Layout mainClasses={classes.main}>
-						<ChannelAddChatWeb edit={false} />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CHANNELS_ADD_FACEBOOK.path}>
-					<Layout mainClasses={classes.main}>
-						<ChannelAddFacebook />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CHANNELS_ADD_MESSENGER.path}>
-					<Layout mainClasses={classes.main}>
-						<ChannelAddMessenger />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CHANNELS_ADD_INSTAGRAM.path}>
-					<Layout mainClasses={classes.main}>
-						<ChannelAddInstagram />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CHANNELS_ADD_INSTAGRAMDM.path}>
-					<Layout mainClasses={classes.main}>
-						<ChannelAddInstagramDM />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CHANNELS_ADD_WHATSAPP.path}>
-					<Layout mainClasses={classes.main}>
-						<ChannelAddWhatsapp edit={false} />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CHANNELS_ADD_TELEGRAM.path}>
-					<Layout mainClasses={classes.main}>
-						<ChannelAddTelegram />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CHANNELS_ADD_TWITTER.path}>
-					<Layout mainClasses={classes.main}>
-						<ChannelAddTwitter />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CHANNELS_ADD_TWITTERDM.path}>
-					<Layout mainClasses={classes.main}>
-						<ChannelAddTwitterDM />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CHANNELS_ADD_PHONE.path}>
-					<Layout mainClasses={classes.main}>
-						<ChannelAddPhone />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CHANNELS_ADD_SMS.path}>
-					<Layout mainClasses={classes.main}>
-						<ChannelAddSMS />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CHANNELS_ADD_EMAIL.path}>
-					<Layout mainClasses={classes.main}>
-						<ChannelAddEmail />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CHANNELS_ADD_IOS.path}>
-					<Layout mainClasses={classes.main}>
-						<ChannelAddIos />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CHANNELS_ADD_ANDROID.path}>
-					<Layout mainClasses={classes.main}>
-						<ChannelAddAndroid />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CHANNELS_ADD_TIKTOK.path}>
-					<Layout mainClasses={classes.main}>
-						<ChannelAddTikTok />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CHANNELS_ADD_YOUTUBE.path}>
-					<Layout mainClasses={classes.main}>
-						<ChannelAddYouTube />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CHANNELS_ADD_LINKEDIN.path}>
-					<Layout mainClasses={classes.main}>
-						<ChannelAddLinkedIn />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CHANNELS_ADD_TEAMS.path}>
-					<Layout mainClasses={classes.main}>
-						<ChannelAddTeams />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CHANNELS_ADD_BLOGGER.path}>
-					<Layout mainClasses={classes.main}>
-						<ChannelAddBlogger />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CHANNELS_EDIT.path}>
-					<Layout mainClasses={classes.main}>
-						<ChannelEdit />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CHANNELS_EDIT_CHATWEB.path}>
-					<Layout mainClasses={classes.main}>
-						<ChannelAddChatWeb edit />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CHANNELS_EDIT_WHATSAPP.path}>
-					<Layout mainClasses={classes.main}>
-						<ChannelAddWhatsapp edit />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CORPORATIONS}>
-					<Layout mainClasses={classes.main}>
-						<Corporations />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.ORGANIZATIONS}>
-					<Layout mainClasses={classes.main}>
-						<Organizations />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.IASERVICES}>
-					<Layout mainClasses={classes.main}>
-						<Iaservices />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.SUPERVISOR}>
-					<Layout >
-						<Supervisor />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.BILLING_SETUPS}>
-					<Layout mainClasses={classes.main}>
-						<BillingSetups />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.INVOICE}>
-					<Layout mainClasses={classes.main}>
-						<Invoice />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.MESSAGE_INBOX}>
-					<Layout>
-						<MessageInbox />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.PROPERTIES}>
-					<Layout mainClasses={classes.main}><Properties /></Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.USERS}>
-					<Layout mainClasses={classes.main}><Users /></Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.QUICKREPLIES}>
-					<Layout mainClasses={classes.main}><Quickreplies /></Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.GROUPCONFIG}>
-					<Layout mainClasses={classes.main}><Groupconfig /></Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.USERSETTINGS}>
-					<Layout mainClasses={classes.main}><UserSettings /></Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.INAPPROPRIATEWORDS}>
-					<Layout mainClasses={classes.main}><InappropriateWords /></Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.INTELLIGENTMODELS}>
-					<Layout mainClasses={classes.main}><IntelligentModels /></Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.SLA}>
-					<Layout mainClasses={classes.main}><SLA /></Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.TIPIFICATIONS}>
-					<Layout mainClasses={classes.main}><Tipifications /></Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.INPUTVALIDATION}>
-					<Layout mainClasses={classes.main}><InputValidation /></Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.DOMAINS}>
-					<Layout mainClasses={classes.main}><Domains /></Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.WHITELIST}>
-					<Layout mainClasses={classes.main}><Whitelist /></Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.PERSON}>
-					<Layout mainClasses={classes.main}><Person /></Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.PERSON_DETAIL.path}>
-					<Layout mainClasses={classes.main}><PersonDetail /></Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.MESSAGETEMPLATE}>
-					<Layout mainClasses={classes.main}><MessageTemplates /></Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.INTEGRATIONMANAGER}>
-					<Layout mainClasses={classes.main}><IntegrationManager /></Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CAMPAIGN}>
-					<Layout mainClasses={classes.main}><Campaign /></Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.BOTDESIGNER}>
-					<Layout mainClasses={classes.main}><BotDesigner /></Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.VARIABLECONFIGURATION}>
-					<Layout mainClasses={classes.main}><VariableConfiguration /></Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.EMOJIS}>
-					<Layout mainClasses={classes.main}><Emojis /></Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.DASHBOARD}>
-					<Layout mainClasses={classes.main}>
-						<Dashboard />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.DASHBOARD_ADD}>
-					<Layout mainClasses={classes.main}>
-						<DashboardAdd />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.DASHBOARD_EDIT.path}>
-					<Layout mainClasses={classes.main}>
-						<DashboardAdd edit />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.DASHBOARD_COPY}>
-					<Layout mainClasses={classes.main}>
-						<DashboardAdd edit />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.DASHBOARD_LAYOUT.path}>
-					<Layout mainClasses={classes.main}>
-						<DashboardLayout />
-					</Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CONFIGURATION}>
-					<Layout mainClasses={classes.main}><Settings /></Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.AUTOMATIZATIONRULES}>
-					<Layout mainClasses={classes.main}><AutomatizationRules /></Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CRM}>
-					<Layout mainClasses={classes.main}><CRM /></Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.AUTOMATIZATIONRULES}>
-					<Layout mainClasses={classes.main}><AutomatizationRules /></Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CRM_ADD_LEAD}>
-					<Layout mainClasses={classes.main}><LeadForm /></Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CRM_EDIT_LEAD.path}>
-					<Layout mainClasses={classes.main}><LeadForm edit /></Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.KPIMANAGER}>
-					<Layout mainClasses={classes.main}><KPIManager /></Layout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.CALENDAR}>
-					<Layout mainClasses={classes.main}><Calendar /></Layout>
-				</ProtectRoute>
-				<Route exact path={paths.CHNAGE_PWD_FIRST_LOGIN}>
-					<ChangePwdFirstLogin />
-				</Route>
-				<Route exact path="/403">
-					<Forbidden />
-				</Route>
-				<Route exact path="/500">
-					<InternalServererror />
-				</Route>
-				<Route>
-					<NotFound />
-				</Route>
-				<Popus />
-			</Switch >
+			<React.Suspense fallback={<span>Loading!!!!</span>}>
+				<Switch>
+					<ProtectRoute exact path="/" component={() => <span>x</span>}/>
+					<Route exact path={paths.SIGNIN} render={() => <SignIn />} />
+					<Route exact path={paths.SIGNUP.path} render={() => <SignUp />} />
+					<Route exact path={paths.LOCATION.path} render={() => <GetLocations />} />
+					<Route exact path={paths.CALENDAR_EVENT.path} render={() => <CalendarEvent />} />
+					<Route exact path={paths.PRIVACY} render={() => <Privacy />} />
+					<Route exact path={paths.ACTIVATE_USER.path} render={() => <ActivateUser />} />
+					<Route exact path={paths.RECOVER_PASSWORD.path} render={() => <RecoverPassword />} />
+					<ProtectRoute exact path={paths.PRODUCTCATALOG} component={() => (<Layout mainClasses={classes.main}><ProductCatalog /></Layout>)} />
+					<ProtectRoute exact path={paths.REPORTS} component={() => (<Layout mainClasses={classes.main}><Reports /></Layout>)} />
+					<ProtectRoute exact path={paths.REPORTSCHEDULER} component={() => (<Layout mainClasses={classes.main}><ReportScheduler /></Layout>)} />
+					<ProtectRoute exact path={paths.TICKETS} component={() => (<Layout mainClasses={classes.main}><Tickets /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS} component={() => (<Layout mainClasses={classes.main}><Channels /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD} component={() => (<Layout mainClasses={classes.main}><ChannelAdd /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_CHATWEB} component={() => (<Layout mainClasses={classes.main}><ChannelAddChatWeb edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_FACEBOOK.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddFacebook /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_MESSENGER.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddMessenger /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_INSTAGRAM.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddInstagram /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_INSTAGRAMDM.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddInstagramDM /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_WHATSAPP.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddWhatsapp edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_TELEGRAM.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddTelegram /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_TWITTER.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddTwitter /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_TWITTERDM.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddTwitterDM /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_PHONE.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddPhone /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_SMS.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddSMS /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_EMAIL.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddEmail /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_IOS.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddIos /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_ANDROID.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddAndroid /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_TIKTOK.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddTikTok /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_YOUTUBE.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddYouTube /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_LINKEDIN.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddLinkedIn /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_TEAMS.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddTeams /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_BLOGGER.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddBlogger /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT.path} component={() => (<Layout mainClasses={classes.main}><ChannelEdit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_CHATWEB.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddChatWeb edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_WHATSAPP.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddWhatsapp edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CORPORATIONS} component={() => (<Layout mainClasses={classes.main}><Corporations /></Layout>)} />
+					<ProtectRoute exact path={paths.ORGANIZATIONS} component={() => (<Layout mainClasses={classes.main}><Organizations /></Layout>)} />
+					<ProtectRoute exact path={paths.IASERVICES} component={() => (<Layout mainClasses={classes.main}><Iaservices /></Layout>)} />
+					<ProtectRoute exact path={paths.SUPERVISOR} component={() => (<Layout ><Supervisor /></Layout>)} />
+					<ProtectRoute exact path={paths.BILLING_SETUPS} component={() => (<Layout mainClasses={classes.main}><BillingSetups /></Layout>)} />
+					<ProtectRoute exact path={paths.INVOICE} component={() => (<Layout mainClasses={classes.main}><Invoice /></Layout>)} />
+					<ProtectRoute exact path={paths.MESSAGE_INBOX} component={() => (<Layout><MessageInbox /></Layout>)} />
+					<ProtectRoute exact path={paths.PROPERTIES} component={() => <Layout mainClasses={classes.main}><Properties /></Layout>} />
+					<ProtectRoute exact path={paths.USERS} component={() => <Layout mainClasses={classes.main}><Users /></Layout>} />
+					<ProtectRoute exact path={paths.QUICKREPLIES} component={() => <Layout mainClasses={classes.main}><Quickreplies /></Layout>} />
+					<ProtectRoute exact path={paths.GROUPCONFIG} component={() => <Layout mainClasses={classes.main}><Groupconfig /></Layout>} />
+					<ProtectRoute exact path={paths.USERSETTINGS} component={() => <Layout mainClasses={classes.main}><UserSettings /></Layout>} />
+					<ProtectRoute exact path={paths.INAPPROPRIATEWORDS} component={() => <Layout mainClasses={classes.main}><InappropriateWords /></Layout>} />
+					<ProtectRoute exact path={paths.INTELLIGENTMODELS} component={() => <Layout mainClasses={classes.main}><IntelligentModels /></Layout>} />
+					<ProtectRoute exact path={paths.SLA} component={() => <Layout mainClasses={classes.main}><SLA /></Layout>} />
+					<ProtectRoute exact path={paths.TIPIFICATIONS} component={() => <Layout mainClasses={classes.main}><Tipifications /></Layout>} />
+					<ProtectRoute exact path={paths.INPUTVALIDATION} component={() => <Layout mainClasses={classes.main}><InputValidation /></Layout>} />
+					<ProtectRoute exact path={paths.DOMAINS} component={() => <Layout mainClasses={classes.main}><Domains /></Layout>} />
+					<ProtectRoute exact path={paths.WHITELIST} component={() => <Layout mainClasses={classes.main}><Whitelist /></Layout>} />
+					<ProtectRoute exact path={paths.PERSON} component={() => <Layout mainClasses={classes.main}><Person /></Layout>} />
+					<ProtectRoute exact path={paths.PERSON_DETAIL.path} component={() => <Layout mainClasses={classes.main}><PersonDetail /></Layout>} />
+					<ProtectRoute exact path={paths.MESSAGETEMPLATE} component={() => <Layout mainClasses={classes.main}><MessageTemplates /></Layout>} />
+					<ProtectRoute exact path={paths.INTEGRATIONMANAGER} component={() => <Layout mainClasses={classes.main}><IntegrationManager /></Layout>} />
+					<ProtectRoute exact path={paths.CAMPAIGN} component={() => <Layout mainClasses={classes.main}><Campaign /></Layout>} />
+					<ProtectRoute exact path={paths.BOTDESIGNER} component={() => <Layout mainClasses={classes.main}><BotDesigner /></Layout>} />
+					<ProtectRoute exact path={paths.VARIABLECONFIGURATION} component={() => <Layout mainClasses={classes.main}><VariableConfiguration /></Layout>} />
+					<ProtectRoute exact path={paths.EMOJIS} component={() => <Layout mainClasses={classes.main}><Emojis /></Layout>} />
+					<ProtectRoute exact path={paths.DASHBOARD} component={() => <Layout mainClasses={classes.main}><Dashboard /></Layout>} />
+					<ProtectRoute exact path={paths.DASHBOARD_ADD} component={() => <Layout mainClasses={classes.main}><DashboardAdd /></Layout>} />
+					<ProtectRoute exact path={paths.DASHBOARD_EDIT.path} component={() => <Layout mainClasses={classes.main}><DashboardAdd edit /></Layout>} />
+					<ProtectRoute exact path={paths.DASHBOARD_COPY} component={() => <Layout mainClasses={classes.main}><DashboardAdd edit /></Layout>} />
+					<ProtectRoute exact path={paths.DASHBOARD_LAYOUT.path} component={() => <Layout mainClasses={classes.main}><DashboardLayout /></Layout>} />
+					<ProtectRoute exact path={paths.CONFIGURATION} component={() => <Layout mainClasses={classes.main}><Settings /></Layout>} />
+					<ProtectRoute exact path={paths.AUTOMATIZATIONRULES} component={() => <Layout mainClasses={classes.main}><AutomatizationRules /></Layout>} />
+					<ProtectRoute exact path={paths.CRM} component={() => <Layout mainClasses={classes.main}><CRM /></Layout>} />
+					<ProtectRoute exact path={paths.AUTOMATIZATIONRULES} component={() => <Layout mainClasses={classes.main}><AutomatizationRules /></Layout>} />
+					<ProtectRoute exact path={paths.CRM_ADD_LEAD} component={() => <Layout mainClasses={classes.main}><LeadForm /></Layout>} />
+					<ProtectRoute exact path={paths.CRM_EDIT_LEAD.path} component={() => <Layout mainClasses={classes.main}><LeadForm edit /></Layout>} />
+					<ProtectRoute exact path={paths.KPIMANAGER} component={() => <Layout mainClasses={classes.main}><KPIManager /></Layout>} />
+					<ProtectRoute exact path={paths.CALENDAR} component={() => <Layout mainClasses={classes.main}><Calendar /></Layout>} />
+					<Route exact path={paths.CHNAGE_PWD_FIRST_LOGIN}>
+						<ChangePwdFirstLogin />
+					</Route>
+					<Route exact path="/403">
+						<Forbidden />
+					</Route>
+					<Route exact path="/500">
+						<InternalServererror />
+					</Route>
+					<Route>
+						<NotFound />
+					</Route>
+					<Popus />
+				</Switch >
+			</React.Suspense>
 		</Router >
 	);
 };

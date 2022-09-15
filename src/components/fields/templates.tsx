@@ -58,7 +58,6 @@ import {
 } from 'icons';
 import { VariableSizeList, FixedSizeList, ListChildComponentProps } from 'react-window';
 import MuiPhoneNumber, { MaterialUiPhoneNumberProps } from 'material-ui-phone-number';
-import NumberFormat from 'react-number-format';
 import InfoIcon from '@material-ui/icons/Info';
 
 const EMOJISINDEXED = emojis.reduce((acc, item) => ({ ...acc, [item.emojihex]: item }), {});
@@ -406,64 +405,6 @@ export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, c
             />
         </div>
     )
-}
-
-interface ICurrencyFieldEdit extends Omit<InputProps, 'type'> {
-    type?: 'text';
-}
-
-export const CurrencyFieldEdit: FC<ICurrencyFieldEdit> = ({
-    label,
-    size,
-    className,
-    disabled = false,
-    valueDefault = "",
-    onChange,
-    error,
-    type = "text",
-    rows = 1,
-    fregister = {},
-    inputProps = {},
-    InputProps = {},
-    variant = "standard",
-}) => {
-    const [value, setvalue] = useState("");
-
-    useEffect(() => {
-        setvalue(valueDefault);
-    }, [valueDefault])
-
-    return (
-        <div className={className}>
-            {variant === "standard" &&
-                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
-            }
-            <NumberFormat
-                customInput={TextField}
-                thousandSeparator
-                autoComplete="off"
-
-                {...fregister}
-                color="primary"
-                fullWidth
-                label={variant !== "standard" && label}
-                disabled={disabled}
-                type={type}
-                value={value}
-                variant={variant}
-                error={!!error}
-                helperText={error || null}
-                rows={rows}
-                size={size}
-                onValueChange={(values) => { // { formattedValue, value }
-                    setvalue(values.value);
-                    onChange && onChange(values.value);
-                }}
-                inputProps={inputProps}
-                InputProps={InputProps}
-            />
-        </div>
-    );
 }
 
 export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, inputProps = {}, variant = "standard" }) => {

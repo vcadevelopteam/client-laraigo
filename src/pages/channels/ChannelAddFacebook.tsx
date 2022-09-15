@@ -263,3 +263,5 @@ export const ChannelAddFacebook: FC = () => {
         )
     }
 }
+
+export default ChannelAddFacebook;

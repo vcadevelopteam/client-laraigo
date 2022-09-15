@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, IconButton, Checkbox, Tabs, Avatar, Paper, InputAdornment } from '@material-ui/core';
-import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, RadioGroudFieldEdit, TitleDetail, AntTabPanel, FieldMultiSelect, RichText, CurrencyFieldEdit, FieldEditArray } from 'components';
+import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, RadioGroudFieldEdit, TitleDetail, AntTabPanel, FieldMultiSelect, RichText, FieldEditArray } from 'components';
 import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
@@ -16,7 +16,7 @@ import { useSelector } from 'hooks';
 import {
     archiveLead, getAdvisers, getLead, getLeadActivities, getLeadHistory, getLeadLogNotes, getLeadPhases, markDoneActivity, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadHistory,
     resetGetLeadLogNotes, resetGetLeadPhases, resetMarkDoneActivity, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLeadActivity, saveLeadLogNote, saveLeadWithFiles, saveLead as saveLeadAction,
-    resetGetLeadProductsDomain, getLeadProductsDomain, getLeadTagsDomain,resetGetLeadTagsDomain, getLeadTemplates, getLeadChannels, resetGetLeadChannels
+    resetGetLeadProductsDomain, getLeadProductsDomain, getLeadTagsDomain, resetGetLeadTagsDomain, getLeadTemplates, getLeadChannels, resetGetLeadChannels
 } from 'store/lead/actions';
 import { Dictionary, ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadHistory, ICrmLeadHistoryIns, ICrmLeadNote, ICrmLeadNoteSave, IDomain, IFetchData, IPerson } from '@types';
 import { manageConfirmation, showSnackbar } from 'store/popus/actions';
@@ -632,8 +632,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
 
         return false;
     }, [lead, phases]);
-    function getOrderindex(type:string) {
-        switch (type){
+    function getOrderindex(type: string) {
+        switch (type) {
             case "NEW":
                 return 0;
             case "QUALIFIED":
@@ -771,19 +771,24 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                         readOnly: isStatusClosed() || iSProcessLoading(),
                                     }}
                                 />
-                                <CurrencyFieldEdit
+                                <FieldEdit
                                     label={t(langKeys.expected_revenue)}
-                                    className={classes.field}
-                                    onChange={(value) => setValue('expected_revenue', value)}
-                                    valueDefault={String(getValues('expected_revenue'))}
+                                    className="flex-1"
+                                    valueDefault={getValues('expected_revenue')}
                                     error={errors?.expected_revenue?.message}
+                                    type="number"
+                                    onChange={(value) => setValue('expected_revenue', value)}
                                     InputProps={{
                                         startAdornment: !user ? null : (
                                             <InputAdornment position="start">
                                                 {user!.currencysymbol}
                                             </InputAdornment>
                                         ),
+                                        style: { textAlign: 'right' },
                                         readOnly: isStatusClosed() || iSProcessLoading(),
+                                    }}
+                                    inputProps={{
+                                        style: { textAlign: 'right' },
                                     }}
                                 />
                                 <FieldMultiSelectFreeSolo
@@ -934,8 +939,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     data={phasemenu}
                                     // data={phases.data}
                                     onChange={(e) => {
-                                        setValue('column_uuid', e?.column_uuid||"");
-                                        setValue('columnid', Number(e?.columnid||"0"));
+                                        setValue('column_uuid', e?.column_uuid || "");
+                                        setValue('columnid', Number(e?.columnid || "0"));
                                         setValues(prev => ({ ...prev })); // refrescar
                                     }}
                                     label={<Trans i18nKey={langKeys.phase} />}
@@ -1588,7 +1593,7 @@ const useSaveActivityModalStyles = makeStyles(theme => ({
     },
 }));
 
-const initialValue: Descendant[] = [{ type: "paragraph", children: [{ text: "" }], align:"left" }];
+const initialValue: Descendant[] = [{ type: "paragraph", children: [{ text: "" }], align: "left" }];
 
 export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity, leadid, userid, onSubmit }) => {
     const modalClasses = useSelectPersonModalStyles();
@@ -1626,7 +1631,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                     domainvalue: 'automatedsms'
                 },
             ]
-                )
+            )
         }
     }, [domains])
 
@@ -1738,7 +1743,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
 
     useEffect(() => {
         setDetail(activity?.detailjson ? JSON.parse(activity?.detailjson) : initialValue);
-        
+
         const template = templates.data.find(x => x.id === (activity?.hsmtemplateid || 0));
 
         reset({
@@ -1772,7 +1777,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
         }
 
         if (activity?.type.includes("automated")) {
-            register('hsmtemplateid', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
+            register('hsmtemplateid', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.field_required)) });
             register('communicationchannelid', { validate: (value) => (template?.hsmtemplatetype !== "HSM") || (value && value > 0 ? undefined : t(langKeys.field_required) + "") })
         } else {
             register('communicationchannelid', { validate: (v) => true })
@@ -1780,7 +1785,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             register('communicationchannelid', { validate: (value) => true })
             register('communicationchannelid', { validate: (value) => true })
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activity, reset, register]);
 
     useEffect(() => {
@@ -1792,7 +1797,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             setValue('assigneduser', userid);
             refresh(prev => !prev);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open, userid, leadid, advisers, setValue]);
 
     const handleSave = useCallback((status: "PROGRAMADO" | "REALIZADO" | "ELIMINADO") => {
@@ -1929,7 +1934,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                                 setValue('hsmtemplateid', 0);
                                                 trigger('type');
                                                 if ((v?.domainvalue || "") === "automated") {
-                                                    register('hsmtemplateid', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) })
+                                                    register('hsmtemplateid', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.field_required)) })
                                                 } else {
                                                     register('hsmtemplateid', { validate: () => true })
                                                     register('communicationchannelid', { validate: (v) => true })
@@ -1973,7 +1978,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                                 valueDefault={getValues('hsmtemplateid')}
                                                 onChange={onSelectTemplate}
                                                 error={errors?.hsmtemplateid?.message}
-                                                data={templates.data.filter(x=>x.type === getValues("type").replace("automated","").toUpperCase())}
+                                                data={templates.data.filter(x => x.type === getValues("type").replace("automated", "").toUpperCase())}
                                                 optionDesc="name"
                                                 optionValue="id"
                                             />
@@ -2523,10 +2528,11 @@ interface Options {
     withTime?: boolean;
 }
 
-const formatDate = (strDate: string, options: Options = { withTime: true }) => {
+const formatDate = (strDate: string = "", options: Options = { withTime: true }) => {
     if (!strDate || strDate === '') return '';
+    console.log("strDate", strDate)
 
-    const date = new Date(strDate.replace("Z", ""));
+    const date = new Date(typeof strDate === "number" ? strDate : strDate.replace("Z", ""));
     // date.setHours(date.getHours() + 5);
     const day = date.toLocaleDateString("en-US", { day: '2-digit' });
     const month = date.toLocaleDateString("en-US", { month: '2-digit' });

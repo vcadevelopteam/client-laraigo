@@ -205,3 +205,5 @@ export const ChannelAddTelegram: FC = () => {
         )
     }
 }
+
+export default ChannelAddTelegram

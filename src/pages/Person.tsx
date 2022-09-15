@@ -2749,3 +2749,5 @@ const OpportunitiesTab: FC<OpportunitiesTabProps> = ({ person }) => {
         />
     );
 }
+
+export default Person

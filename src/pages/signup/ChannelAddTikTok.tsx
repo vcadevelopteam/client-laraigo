@@ -254,3 +254,5 @@ export const ChannelAddTikTok: FC<{ setOpenWarning: (param: any) => void }> = ({
         </div>
     );
 }
+
+export default ChannelAddTikTok

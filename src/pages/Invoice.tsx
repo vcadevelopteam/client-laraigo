@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { cleanMemoryTable, setMemoryTable, uploadFile } from 'store/main/actions';
 import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray, TemplateIcons, IOSSwitch } from 'components';
-import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, billingReportConversationWhatsApp, billingReportHsmHistory, invoiceRefresh, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent, getBalanceSelSent, getCorpSelVariant, listPaymentCard, paymentCardInsert, uploadExcel, insInvoice, templateMaker, exportExcel } from 'common/helpers';
+import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, billingReportConversationWhatsApp, billingReportHsmHistory, invoiceRefresh, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent, getBalanceSelSent, getCorpSelVariant, listPaymentCard, paymentCardInsert, uploadExcel, insInvoice, templateMaker, exportExcel, localesLaraigo } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -18,7 +18,6 @@ import { getCollection, getMultiCollection, execute, exportData, getMultiCollect
 import { createInvoice, regularizeInvoice, createCreditNote, getExchangeRate, emitInvoice, cardDelete, cardCreate } from 'store/culqi/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { CircularProgress, IconButton, Tabs, TextField, Box, FormControlLabel } from '@material-ui/core';
-import * as locale from "date-fns/locale";
 import { DownloadIcon } from 'icons';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import { dataYears, dataMonths } from 'common/helpers';
@@ -116,7 +115,7 @@ function toISOLocalString(date: { getTimezoneOffset: () => number; getTime: () =
 
 export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: any) => void) => {
     return (
-        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(locale as any)[navigator.language.split('-')[0]]} >
+        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(localesLaraigo())[navigator.language.split('-')[0]]} >
             <KeyboardDatePicker
                 format={getLocaleDateString()}
                 value={value === '' ? null : value}

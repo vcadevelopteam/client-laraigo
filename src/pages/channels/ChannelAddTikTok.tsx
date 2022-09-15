@@ -212,3 +212,5 @@ export const ChannelAddTikTok: FC = () => {
         )
     }
 }
+
+export default ChannelAddTikTok

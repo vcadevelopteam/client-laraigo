@@ -458,3 +458,5 @@ export const Campaign: FC = () => {
         return null
     }
 }
+
+export default Campaign
