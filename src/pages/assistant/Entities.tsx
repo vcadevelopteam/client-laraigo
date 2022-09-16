@@ -14,8 +14,8 @@ import AddIcon from '@material-ui/icons/Add';
 import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { getCollection, resetAllMain } from 'store/main/actions';
-import { selEntities } from 'common/helpers/requestBodies';
+import { execute, getCollection, resetAllMain } from 'store/main/actions';
+import { insertentity, selEntities } from 'common/helpers/requestBodies';
 
 
 interface RowSelected {
@@ -47,8 +47,7 @@ const useStyles = makeStyles((theme) => ({
         background: '#fff',
     },
     field: {
-        margin: theme.spacing(1),
-        minHeight: 58,
+        minHeight: 38,
     },
     title: {
         fontSize: '22px',
@@ -67,10 +66,10 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
-    const { control,register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
-            id: row ? row.whitelistid : 0,
+            id: row ? row.id : 0,
             name: row?.name || '',
             operation: row ? "EDIT" : "INSERT",
             status: "ACTIVO",
@@ -103,7 +102,13 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
     
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            //dispatch(execute(insWhitelist(data)));
+            debugger
+            dispatch(execute(insertentity({...data, datajson:JSON.stringify({...row?.datajson,
+                keywords:keywords,
+                lookups: ["keywords"],
+                name:data.name,
+                roles: [row?.datajson?.roles? (row?.datajson?.roles[0]):data.name]
+            })})));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -210,7 +215,7 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                         </div>
 
                         <div style={{ flex: .45 }} className={classes.containerDetail}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: "45px" }}>
                                 <div className={classes.title}>{t(langKeys.sinonims)}</div>
                             </div>
                             <div>
@@ -223,13 +228,13 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                                         key={i}
                                         onChange={(value) => {
                                             let tempkeywords = keywords
-                                            tempkeywords[i].keyword = value
+                                            tempkeywords[i].synonyms = value
                                             setkeywords(tempkeywords)
                                         }}
                                         loading={false}
-                                        data={keywords[i].synonyms}
-                                        optionDesc=""
-                                        optionValue=""
+                                        data={keywords[i].synonyms.map((x:any) => ({ value: x }))}
+                                        optionDesc="value"
+                                        optionValue="value"
                                     />
                                 )}
                             </div>
@@ -294,6 +299,7 @@ export const Entities: FC = () => {
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
+
                         <label>
                             {row?.datajson?.keywords?.reduce((acc:string,item:any)=>acc + item.keyword + ", ","").slice(0,-2)}
                         </label>

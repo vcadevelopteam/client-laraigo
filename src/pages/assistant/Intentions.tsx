@@ -12,8 +12,8 @@ import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import { getCollection, getCollectionAux, resetAllMain } from 'store/main/actions';
-import { selIntent, selUtterance } from 'common/helpers/requestBodies';
+import { getCollection, getCollectionAux, getCollectionAux2, resetAllMain } from 'store/main/actions';
+import { selEntities, selIntent, selUtterance } from 'common/helpers/requestBodies';
 
 
 interface RowSelected {
@@ -54,6 +54,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
     const [newIntention, setnewIntention] = useState("");
     const [examples, setexamples] = useState<any>([]);
     const mainResult = useSelector(state => state.main.mainAux);
+    const mainResultAux = useSelector(state => state.main.mainAux2);
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -281,6 +282,7 @@ export const Intentions: FC = () => {
     const { t } = useTranslation();
     const classes = useStyles();
     const mainResult = useSelector(state => state.main);
+    const mainResultAux = useSelector(state => state.main.mainAux2);
     const [selectedRows, setSelectedRows] = useState<any>({});
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
 
@@ -291,7 +293,7 @@ export const Intentions: FC = () => {
     
     useEffect(() => {
         fetchData();
-        
+        dispatch(getCollectionAux2(selEntities()))
         return () => {
             dispatch(resetAllMain());
         };
