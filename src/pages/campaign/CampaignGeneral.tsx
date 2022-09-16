@@ -778,7 +778,7 @@ const ModalCampaignSchedule: React.FC<ModalProps> = ({ openModal, setOpenModal, 
                                         type="number"
                                         valueDefault={item.quantity}
                                         error={errors?.batchjson?.[i]?.quantity?.message}
-                                        onChange={(value) => setValue(`batchjson[${i}].quantity`, value)}
+                                        onChange={(value) => setValue(`batchjson[${i}].quantity`, parseInt(value))}
                                         inputProps={{ min: 0, step: 1 }}
                                     />
                                 </TableCell>
