@@ -14,7 +14,7 @@ import { getAccessToken } from 'common/helpers';
 import { Redirect } from 'react-router-dom';
 import { logout, validateToken } from 'store/login/actions';
 import { useDispatch } from 'react-redux';
-import { PersonDetail } from 'pages';
+import { PersonDetail } from 'pages/Person';
 
 const Users = lazy(() => import('pages/Users'));
 const ReportScheduler = lazy(() => import('pages/ReportScheduler'));
