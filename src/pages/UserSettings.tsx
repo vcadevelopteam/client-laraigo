@@ -532,7 +532,7 @@ const UserSettings: FC = () => {
     const [view, setView] = useState('view-1');
 
     function changePlan() {
-        if (user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMINISTRADOR") {
+        if (["SUPERADMIN","ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '')) {
             setView('view-4')
         } else {
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.notpermisionforaction) }));
@@ -554,7 +554,7 @@ const UserSettings: FC = () => {
     }, [executeResult])
 
     function cancelSuscription() {
-        if (user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMINISTRADOR") {
+        if (["SUPERADMIN","ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '')) {
             const callback = () => {
                 setWaitSave(true);
                 dispatch(execute(cancelSuscriptionFunction()));
@@ -609,7 +609,7 @@ const UserSettings: FC = () => {
                         </div>
                     </div>
                 </div>
-                {(user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMINISTRADOR")&&
+                {(["SUPERADMIN","ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '')) &&
                 <>
                 <div className={classes.containerDetail}>
                     <div className={classes.seccionTitle}>{t(langKeys.planinformation)}</div>
