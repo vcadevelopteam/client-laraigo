@@ -3257,3 +3257,43 @@ export const selInvoiceComment = ({ corpid, orgid, invoiceid, invoicecommentid }
     key: "UFN_INVOICECOMMENT_SEL",
     parameters: { corpid, orgid, invoiceid, invoicecommentid }
 });
+export const selIntent = (): IRequestBody => ({
+    method: "UFN_WITAI_INTENT_SEL",
+    key: "UFN_WITAI_INTENT_SEL",
+    parameters: {}
+})
+
+export const selUtterance = (intent: string): IRequestBody => ({
+    method: "UFN_WITAI_UTTERANCE_SEL",
+    key: "UFN_WITAI_UTTERANCE_SEL",
+    parameters: {intent}
+})
+
+export const selEntities = (): IRequestBody => ({
+    method: "UFN_WITAI_ENTITY_SEL",
+    key: "UFN_WITAI_ENTITY_SEL",
+    parameters: {}
+})
+
+export const insertutterance = ({name, description, datajson, utterance_datajson, operation}:Dictionary): IRequestBody => ({
+    method: "UFN_WITAI_INTENT_UTTERANCE_INS",
+    key: "UFN_WITAI_INTENT_UTTERANCE_INS",
+    parameters: {name, description, datajson, utterance_datajson, operation}
+})
+
+export const insertentity = ({name, datajson, operation}:Dictionary): IRequestBody => ({
+    method: "UFN_WITAI_ENTITY_INS",
+    key: "UFN_WITAI_ENTITY_INS",
+    parameters: {name, datajson, operation}
+})
+export const utterancedelete = ({table}:Dictionary): IRequestBody => ({
+    method: "UFN_WITUFN_WITAI_INTENT_UTTERANCE_DEL",
+    key: "UFN_WITUFN_WITAI_INTENT_UTTERANCE_DEL",
+    parameters: {table, model:""}
+})
+
+export const entitydelete = ({table,}:Dictionary): IRequestBody => ({
+    method: "UFN_WITAI_ENTITY_DEL",
+    key: "UFN_WITAI_ENTITY_DEL",
+    parameters: {table, model:""}
+})
