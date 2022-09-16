@@ -103,8 +103,10 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
     const [gridData, setGridData] = useState<any[]>([]);
     const [openModal, setOpenModal] = useState(false);
     const [openModalData, setOpenModalData] = useState<Dictionary | null>(null);
+    const [searchState, setSearchState] = useState(false);
 
     function search() {
+        setSearchState(true)
         dispatch(showBackdrop(true))
         dispatch(getMultiCollectionAux2([
             getInvoiceReportDetail({
@@ -116,13 +118,14 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
         ]))
     }
     useEffect(() => {
-        if (!multiDataAux2.loading) {
+        if (searchState && !multiDataAux2.loading) {
             setGridData((multiDataAux2.data[0]?.data || []).map(x => ({
                 ...x,
                 invoicestatus: (t(`${x.invoicestatus}`) || ""),
                 paymentstatus: (t(`${x.paymentstatus}`) || ""),
                 paymentdate: x.paymentdate ? new Date(x.paymentdate).toLocaleString() : '',
             })) || []);
+            setSearchState(false)
             dispatch(showBackdrop(false))
         }
     }, [multiDataAux2])
@@ -337,6 +340,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
 
     const onModalSuccess = () => {
         setOpenModal(false);
+        search();
         setViewSelected("view-2");
     }
 
@@ -364,7 +368,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                     columns={columns}
                     data={gridData}
                     download={true}
-                    loading={multiDataAux2.loading}
+                    loading={searchState && multiDataAux2.loading}
                     register={false}
                     filterGeneral={false}
                 // fetchData={fetchData}
@@ -380,13 +384,14 @@ const InvoiceCommentModal: FC<{ data: any, openModal: boolean, setOpenModal: (pa
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const mainResult = useSelector(state => state.main.mainAux2);
+    const multiDataAux2 = useSelector(state => state.main.multiDataAux2);
     const executeResult = useSelector(state => state.main.execute);
 
     const [dataInvoiceComment, setDataInvoiceComment] = useState<Dictionary[]>([]);
     const [waitSave, setWaitSave] = useState(false);
     const [waitLoad, setWaitLoad] = useState(false);
     const [contentValidation, setContentValidation] = useState('');
+    const [reloadExit, setReloadExit] = useState(false);
 
     const [fields, setFields] = useState({
         "corpid": data?.corpid,
@@ -402,12 +407,12 @@ const InvoiceCommentModal: FC<{ data: any, openModal: boolean, setOpenModal: (pa
     })
 
     const fetchData = () => {
-        dispatch(getCollectionAux2(selInvoiceComment({
+        dispatch(getMultiCollectionAux2([selInvoiceComment({
             corpid: data?.corpid,
             orgid: data?.orgid,
             invoiceid: data?.invoiceid,
             invoicecommentid: 0,
-        })));
+        })]));
         setWaitLoad(true);
         dispatch(showBackdrop(true));
     }
@@ -416,6 +421,7 @@ const InvoiceCommentModal: FC<{ data: any, openModal: boolean, setOpenModal: (pa
         if (openModal && data) {
             setDataInvoiceComment([]);
             setContentValidation('');
+            setReloadExit(false);
 
             let partialFields = fields;
             partialFields.corpid = data?.corpid;
@@ -436,16 +442,16 @@ const InvoiceCommentModal: FC<{ data: any, openModal: boolean, setOpenModal: (pa
 
     useEffect(() => {
         if (waitLoad) {
-            if (!mainResult.loading && !mainResult.error) {
-                setDataInvoiceComment(mainResult.data);
+            if (!multiDataAux2.loading && !multiDataAux2.error) {
+                setDataInvoiceComment(multiDataAux2.data[0]?.data || []);
                 dispatch(showBackdrop(false));
                 setWaitLoad(false);
-            } else if (mainResult.error) {
+            } else if (multiDataAux2.error) {
                 setWaitLoad(false);
                 dispatch(showBackdrop(false));
             }
         }
-    }, [mainResult, waitLoad])
+    }, [multiDataAux2, waitLoad])
 
     useEffect(() => {
         if (waitSave) {
@@ -461,6 +467,8 @@ const InvoiceCommentModal: FC<{ data: any, openModal: boolean, setOpenModal: (pa
                 setFields(partialFields);
 
                 fetchData();
+
+                setReloadExit(true);
             } else if (executeResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(executeResult.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() }) }));
                 dispatch(showBackdrop(false));
@@ -526,7 +534,7 @@ const InvoiceCommentModal: FC<{ data: any, openModal: boolean, setOpenModal: (pa
             open={openModal}
             title={t(langKeys.invoicecomments)}
             buttonText1={t(langKeys.close)}
-            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton1={() => { setOpenModal(false); if (reloadExit) { onTrigger(); } }}
         >
             <div style={{ overflowY: 'auto' }}>
                 {dataInvoiceComment.map((item, index) => (
