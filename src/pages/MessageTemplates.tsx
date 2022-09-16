@@ -1,18 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import React, { Suspense, FC, useCallback, useEffect, useState } from 'react';
 import AddIcon from '@material-ui/icons/Add';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import Button from '@material-ui/core/Button';
 import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
-import CodeMirror from '@uiw/react-codemirror';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import MenuItem from '@material-ui/core/MenuItem';
-import React, { FC, useCallback, useEffect, useState } from 'react';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import RemoveIcon from '@material-ui/icons/Remove';
 import SaveIcon from '@material-ui/icons/Save';
 import TableZyx from '../components/fields/table-simple';
-
 import { Box, CircularProgress, IconButton, Paper } from '@material-ui/core';
 import { Close, FileCopy, GetApp } from '@material-ui/icons';
 import { getMessageTemplateSel, getValuesFromDomain, insMessageTemplate, richTextToString, selCommunicationChannelWhatsApp, dateToLocalDate } from 'common/helpers';
@@ -30,6 +28,8 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { useSelector } from 'hooks';
 import { useTranslation } from 'react-i18next';
 import { synchronizeTemplate, deleteTemplate, addTemplate } from 'store/channel/actions';
+
+const CodeMirror = React.lazy(() => import('@uiw/react-codemirror'));
 
 interface RowSelected {
     edit: boolean,
@@ -419,7 +419,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
     const addRequest = useSelector(state => state.channel.requestAddTemplate);
     const executeRes = useSelector(state => state.main.execute);
     const uploadResult = useSelector(state => state.main.uploadFile);
-
+    const [htmlLoad, setHtmlLoad] = useState<any | undefined>(undefined)
     const [bodyAttachment, setBodyAttachment] = useState(row?.body || "");
     const [bodyAlert, setBodyAlert] = useState("");
     const [bodyObject, setBodyObject] = useState<Descendant[]>(row?.bodyobject || [{ "type": "paragraph", "children": [{ "text": row?.body || "" }] }]);
@@ -630,6 +630,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
         register('integrationid');
         register('exampleparameters');
     }, [edit, register]);
+
+    useEffect(() => {
+        import('@codemirror/lang-html').then(html => {
+           setHtmlLoad([html.html({ matchClosingTags: true })])
+        });
+    }, [])
 
     useEffect(() => {
         if (!isNew && isProvider) {
@@ -1484,12 +1490,16 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                 </ListItemIcon>
                                 <div style={{ fontSize: 16 }}>{htmlEdit ? t(langKeys.messagetemplate_changetoview) : t(langKeys.messagetemplate_changetoeditor)}</div>
                             </MenuItem>
-                            {!htmlEdit ? <div style={{ borderStyle: "solid", borderWidth: "1px", borderColor: "#762AA9", borderRadius: "4px", padding: "20px" }} dangerouslySetInnerHTML={{ __html: bodyAttachment }} /> : <CodeMirror
-                                value={getValues('body')}
-                                height={"600px"}
-                                onChange={(value) => { setValue('body', value || ""); setBodyAttachment(value || ""); }}
-                                extensions={[html({ matchClosingTags: true })]}
-                            />}
+                            {!htmlEdit ? <div style={{ borderStyle: "solid", borderWidth: "1px", borderColor: "#762AA9", borderRadius: "4px", padding: "20px" }} dangerouslySetInnerHTML={{ __html: bodyAttachment }} /> : (
+                                <Suspense fallback={<div>Loading...</div>}>
+                                    <CodeMirror
+                                        value={getValues('body')}
+                                        height={"600px"}
+                                        onChange={(value) => { setValue('body', value || ""); setBodyAttachment(value || ""); }}
+                                        extensions={htmlLoad}
+                                    />
+                                </Suspense>
+                            )}
                         </React.Fragment>}
                     </div>}
                     {(getValues('type') === 'MAIL' || getValues('type') === 'HTML') && <div className="row-zyx">

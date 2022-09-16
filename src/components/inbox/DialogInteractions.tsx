@@ -13,7 +13,6 @@ import Button from '@material-ui/core/Button';
 import { Trans } from 'react-i18next';
 import { DownloadIcon } from 'icons';
 import DomToImage from 'dom-to-image';
-import jsPDF from 'jspdf';
 import IOSSwitch from "components/fields/IOSSwitch";
 import Tooltip from '@material-ui/core/Tooltip';
 
@@ -320,44 +319,47 @@ const DialogInteractions: React.FC<{ ticket: Dictionary | null, openModal: boole
 
     const GenericPdfDownloader: React.FC<{ downloadFileName: string }> = ({ downloadFileName }) => {
         const downloadPdfDocument = () => {
-            if (el.current) {
-                const gg = document.createElement('div');
-                gg.style.display = 'flex';
-                gg.style.flexDirection = 'column';
-                gg.style.gap = '8px';
-                gg.style.width = '190mm';
-                gg.id = "newexportcontainer"
-                document.body.appendChild(gg);
+            import('jspdf').then(jsPDF => {
+                if (el.current) {
+                    const gg = document.createElement('div');
+                    gg.style.display = 'flex';
+                    gg.style.flexDirection = 'column';
+                    gg.style.gap = '8px';
+                    gg.style.width = '190mm';
+                    gg.id = "newexportcontainer"
+                    document.body.appendChild(gg);
 
-                gg.innerHTML = el.current.innerHTML;
-                document.body.appendChild(gg);
-                const pdf = new jsPDF('p', 'mm');
-                if (pdf) {
-                    DomToImage.toPng(gg)
-                        .then(imgData => {
-                            var imgWidth = 200;
-                            var pageHeight = 297;
-                            var imgHeight = Math.ceil(gg.scrollHeight * 0.2645833333);
-                            var heightLeft = imgHeight;
-                            var doc = new jsPDF('p', 'mm');
-                            var topPadding = 10;
-                            var position = topPadding; // give some top padding to first page
+                    gg.innerHTML = el.current.innerHTML;
+                    document.body.appendChild(gg);
+                    const pdf = new jsPDF.jsPDF('p', 'mm');
+                    if (pdf) {
+                        DomToImage.toPng(gg)
+                            .then(imgData => {
+                                var imgWidth = 200;
+                                var pageHeight = 297;
+                                var imgHeight = Math.ceil(gg.scrollHeight * 0.2645833333);
+                                var heightLeft = imgHeight;
+                                var doc = new jsPDF.jsPDF('p', 'mm');
+                                var topPadding = 10;
+                                var position = topPadding; // give some top padding to first page
 
-                            doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-                            heightLeft -= pageHeight;
-
-                            while (heightLeft >= 0) {
-                                debugger // 4806109
-                                position = heightLeft - imgHeight + topPadding; // top padding for other pages
-                                doc.addPage();
                                 doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
                                 heightLeft -= pageHeight;
-                            }
-                            doc.save(`ticket${ticket?.ticketnum}.pdf`);
-                            document.getElementById('newexportcontainer')?.remove();
-                        });
+
+                                while (heightLeft >= 0) {
+                                    debugger // 4806109
+                                    position = heightLeft - imgHeight + topPadding; // top padding for other pages
+                                    doc.addPage();
+                                    doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                                    heightLeft -= pageHeight;
+                                }
+                                doc.save(`ticket${ticket?.ticketnum}.pdf`);
+                                document.getElementById('newexportcontainer')?.remove();
+                            });
+                    }
                 }
-            }
+            });
+
         }
         return (
             <Button

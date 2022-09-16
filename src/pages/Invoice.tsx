@@ -42,11 +42,8 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';
 import clsx from 'clsx';
-import jsPDF from 'jspdf';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
-import { Trans } from 'react-i18next';
-import DomToImage from 'dom-to-image';
 import { charge, resetCharge, balance, resetBalance } from 'store/culqi/actions';
 import { formatNumber, formatNumberFourDecimals, formatNumberNoDecimals } from 'common/helpers';
 
