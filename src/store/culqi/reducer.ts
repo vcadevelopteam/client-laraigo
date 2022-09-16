@@ -14,6 +14,7 @@ interface culqiResponse {
 export interface IRequest extends ITemplate {
     data: culqiResponse | null;
     datacard?: any | null;
+    datareport?: any | null;
     exchangerate?: number | null;
     msg?: string | null;
 }
@@ -28,6 +29,7 @@ export interface IState {
     requestCardCreate: IRequest;
     requestCardDelete: IRequest;
     requestCardGet: IRequest;
+    requestReportPdf: IRequest;
 }
 
 export const initialState: IState = {
@@ -40,6 +42,7 @@ export const initialState: IState = {
     requestCardCreate: { ...initialCommon, data: null, loading: false, error: false },
     requestCardDelete: { ...initialCommon, data: null, loading: false, error: false },
     requestCardGet: { ...initialCommon, data: null, loading: false, error: false },
+    requestReportPdf: { ...initialCommon, data: null, loading: false, error: false },
 };
 
 export default createReducer<IState>(initialState, {
@@ -47,7 +50,7 @@ export default createReducer<IState>(initialState, {
     [actionTypes.CHARGE_FAILURE]: caseFUnctions.chargeFailure,
     [actionTypes.CHARGE_SUCCESS]: caseFUnctions.chargeSuccess,
     [actionTypes.CHARGE_RESET]: caseFUnctions.chargeReset,
-    
+
     [actionTypes.BALANCE]: caseFUnctions.balance,
     [actionTypes.BALANCE_FAILURE]: caseFUnctions.balanceFailure,
     [actionTypes.BALANCE_SUCCESS]: caseFUnctions.balanceSuccess,
@@ -107,4 +110,9 @@ export default createReducer<IState>(initialState, {
     [actionTypes.CARD_GET_FAILURE]: caseFUnctions.cardGetFailure,
     [actionTypes.CARD_GET_SUCCESS]: caseFUnctions.cardGetSuccess,
     [actionTypes.CARD_GET_RESET]: caseFUnctions.cardGetReset,
+
+    [actionTypes.DRAW_REPORTPDF]: caseFUnctions.reportPdf,
+    [actionTypes.DRAW_REPORTPDF_FAILURE]: caseFUnctions.reportPdfFailure,
+    [actionTypes.DRAW_REPORTPDF_SUCCESS]: caseFUnctions.reportPdfSuccess,
+    [actionTypes.DRAW_REPORTPDF_RESET]: caseFUnctions.reportPdfReset,
 });
