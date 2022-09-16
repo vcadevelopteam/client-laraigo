@@ -49,7 +49,7 @@ export const Assistant: FC = () => {
                 </div>
             }
             {pageSelected === 2 &&
-                <div style={{ marginTop: 16 }}>
+                <div style={{ marginTop: 16, height:"100%" }}>
                     <Dialog />
                 </div>
             }

@@ -9,13 +9,13 @@ import TableZyx from 'components/fields/table-simple';
 import ClearIcon from '@material-ui/icons/Clear';
 import { Dictionary } from '@types';
 import { useDispatch } from 'react-redux';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import AddIcon from '@material-ui/icons/Add';
 import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { execute, getCollection, resetAllMain } from 'store/main/actions';
-import { insertentity, selEntities } from 'common/helpers/requestBodies';
+import { entitydelete, insertentity, selEntities } from 'common/helpers/requestBodies';
 
 
 interface RowSelected {
@@ -66,7 +66,7 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
-    const { register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
             id: row ? row.id : 0,
@@ -102,7 +102,6 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
     
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            debugger
             dispatch(execute(insertentity({...data, datajson:JSON.stringify({...row?.datajson,
                 keywords:keywords,
                 lookups: ["keywords"],
@@ -252,11 +251,13 @@ export const Entities: FC = () => {
     const { t } = useTranslation();
     const classes = useStyles();
     const mainResult = useSelector(state => state.main);
+    const [waitSave, setWaitSave] = useState(false);
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
 
     const [viewSelected, setViewSelected] = useState("view-1");
     const selectionKey= "name"
+    const executeRes = useSelector(state => state.main.execute);
 
     const fetchData = () => {dispatch(getCollection(selEntities()))};
     
@@ -267,6 +268,22 @@ export const Entities: FC = () => {
             dispatch(resetAllMain());
         };
     }, []);
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
+                fetchData();
+                dispatch(showBackdrop(false));
+                setViewSelected("view-1")
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.messagingcost).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                setWaitSave(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [executeRes, waitSave])
 
     const columns = React.useMemo(
         () => [
@@ -325,6 +342,19 @@ export const Entities: FC = () => {
         setViewSelected("view-2");
         setRowSelected({ row: null, edit: true })
     }
+    const handleDelete = () => {
+        const callback = () => {
+            dispatch(execute(entitydelete({table:JSON.stringify(Object.keys(selectedRows).map(x=>({name:x})))})))
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete),
+            callback
+        }))
+    }
 
     if (viewSelected==="view-1"){
         return (
@@ -346,7 +376,7 @@ export const Entities: FC = () => {
                                 color="primary"
                                 startIcon={<ClearIcon color="secondary" />}
                                 style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
-                                onClick={() => {debugger}}
+                                onClick={handleDelete}
                             >{t(langKeys.delete)}</Button>
                         </div>
                     )}

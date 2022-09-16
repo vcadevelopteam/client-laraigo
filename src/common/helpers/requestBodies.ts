@@ -3223,14 +3223,25 @@ export const selEntities = (): IRequestBody => ({
     parameters: {}
 })
 
-export const insertutterance = ({intent, name, description, datajson, utterance_datajson, operation}:Dictionary): IRequestBody => ({
+export const insertutterance = ({name, description, datajson, utterance_datajson, operation}:Dictionary): IRequestBody => ({
     method: "UFN_WITAI_INTENT_UTTERANCE_INS",
     key: "UFN_WITAI_INTENT_UTTERANCE_INS",
-    parameters: {intent, name, description, datajson, utterance_datajson, operation}
+    parameters: {name, description, datajson, utterance_datajson, operation}
 })
 
 export const insertentity = ({name, datajson, operation}:Dictionary): IRequestBody => ({
     method: "UFN_WITAI_ENTITY_INS",
     key: "UFN_WITAI_ENTITY_INS",
     parameters: {name, datajson, operation}
+})
+export const utterancedelete = ({table}:Dictionary): IRequestBody => ({
+    method: "UFN_WITUFN_WITAI_INTENT_UTTERANCE_DEL",
+    key: "UFN_WITUFN_WITAI_INTENT_UTTERANCE_DEL",
+    parameters: {table, model:""}
+})
+
+export const entitydelete = ({table,}:Dictionary): IRequestBody => ({
+    method: "UFN_WITAI_ENTITY_DEL",
+    key: "UFN_WITAI_ENTITY_DEL",
+    parameters: {table, model:""}
 })
