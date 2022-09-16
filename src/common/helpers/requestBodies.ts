@@ -1064,7 +1064,7 @@ export const getInsertChatwebChannel = (name: string, auto: boolean, iconColor: 
     service,
 });
 
-export const getEditChannel = (id: number, payload: IChannel, name: string, auto: boolean, iconColor: string, welcometoneurl?:string, holdingtoneurl?:string): IRequestBody<IChannel> => ({
+export const getEditChannel = (id: number, payload: IChannel, name: string, auto: boolean, iconColor: string, welcometoneurl?: string, holdingtoneurl?: string): IRequestBody<IChannel> => ({
     method: "UFN_COMMUNICATIONCHANNEL_INS",
     parameters: {
         ...payload,
@@ -1080,8 +1080,8 @@ export const getEditChannel = (id: number, payload: IChannel, name: string, auto
         apikey: "",
         updintegration: null,
         motive: "Edited from API",
-        voximplantwelcometone: welcometoneurl||"",
-        voximplantholdtone: holdingtoneurl||"",
+        voximplantwelcometone: welcometoneurl || "",
+        voximplantholdtone: holdingtoneurl || "",
     },
 });
 
@@ -3204,3 +3204,15 @@ export const selCommunicationChannelWhatsApp = (): IRequestBody => ({
     key: "UFN_COMMUNICATIONCHANNEL_SEL_WHATSAPP",
     parameters: {}
 })
+
+export const insInvoiceComment = ({ corpid, orgid, invoiceid, invoicecommentid, description, status, type, username, commentcontent, commenttype, commentcaption }: Dictionary): IRequestBody => ({
+    method: "UFN_INVOICECOMMENT_INS",
+    key: "UFN_INVOICECOMMENT_INS",
+    parameters: { corpid, orgid, invoiceid, invoicecommentid, description, status, type, username, commentcontent, commenttype, commentcaption }
+});
+
+export const selInvoiceComment = ({ corpid, orgid, invoiceid, invoicecommentid }: Dictionary): IRequestBody => ({
+    method: "UFN_INVOICECOMMENT_SEL",
+    key: "UFN_INVOICECOMMENT_SEL",
+    parameters: { corpid, orgid, invoiceid, invoicecommentid }
+});
