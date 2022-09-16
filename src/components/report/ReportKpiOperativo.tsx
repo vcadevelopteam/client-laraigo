@@ -149,7 +149,7 @@ const ReportKpiOperativo: FC = () => {
                 Footer: (props: any) => {
                     const total = React.useMemo(
                         () =>
-                            props.rows.reduce((sum: any, row: any) => row.values["tickets"] + sum, 0),
+                            props.rows.reduce((sum: any, row: any) => +row.values["tickets"] + sum, 0),
                         [props.rows]
                     )
                     return <>{total ? formatNumberNoDecimals(total) : ''}</>
@@ -164,7 +164,7 @@ const ReportKpiOperativo: FC = () => {
                 Footer: (props: any) => {
                     const total = React.useMemo(
                         () =>
-                            props.rows.reduce((sum: any, row: any) => row.values["eqtime"] + sum, 0),
+                            props.rows.reduce((sum: any, row: any) => +row.values["eqtime"] + sum, 0),
                         [props.rows]
                     )
                     return <>{total ? formatNumber(total) : ''}</>
@@ -179,10 +179,10 @@ const ReportKpiOperativo: FC = () => {
                 Footer: (props: any) => {
                     const total = React.useMemo(
                         () =>
-                            props.rows.reduce((sum: any, row: any) => row.values["onlinetime_tickets"] + sum, 0),
+                            props.rows.reduce((sum: any, row: any) => +row.values["onlinetime_tickets"] + sum, 0),
                         [props.rows]
                     )
-                    return <>{total ? formatNumber(total / props.rows.length) : ''}</>
+                    return <>{total ? formatNumber(total / props.rows.filter((r: any) => r.values["onlinetime_tickets"]).length) : ''}</>
                 },
             },
             {
@@ -194,10 +194,10 @@ const ReportKpiOperativo: FC = () => {
                 Footer: (props: any) => {
                     const total = React.useMemo(
                         () =>
-                            props.rows.reduce((sum: any, row: any) => row.values["tickets_eqtime"] + sum, 0),
+                            props.rows.reduce((sum: any, row: any) => +row.values["tickets_eqtime"] + sum, 0),
                         [props.rows]
                     )
-                    return <>{total ? formatNumber(total / props.rows.length) : ''}</>
+                    return <>{total ? formatNumber(total / props.rows.filter((r: any) => r.values["tickets_eqtime"]).length) : ''}</>
                 },
             },
             {
@@ -209,10 +209,10 @@ const ReportKpiOperativo: FC = () => {
                 Footer: (props: any) => {
                     const total = React.useMemo(
                         () =>
-                            props.rows.reduce((sum: any, row: any) => row.values["onlinetime_prod"] + sum, 0),
+                            props.rows.reduce((sum: any, row: any) => +row.values["onlinetime_prod"] + sum, 0),
                         [props.rows]
                     )
-                    return <>{total ? formatNumber(total / props.rows.length) : ''}</>
+                    return <>{total ? formatNumber(total / props.rows.filter((r: any) => r.values["onlinetime_prod"]).length) : ''}</>
                 },
             },
             {
@@ -224,10 +224,10 @@ const ReportKpiOperativo: FC = () => {
                 Footer: (props: any) => {
                     const total = React.useMemo(
                         () =>
-                            props.rows.reduce((sum: any, row: any) => row.values["busytime"] + sum, 0),
+                            props.rows.reduce((sum: any, row: any) => +row.values["busytime"] + sum, 0),
                         [props.rows]
                     )
-                    return <>{total ? formatNumberNoDecimals(total / props.rows.length) : ''}</>
+                    return <>{total ? formatNumberNoDecimals(total / props.rows.filter((r: any) => r.values["busytime"]).length) : ''}</>
                 },
             },
         ],
