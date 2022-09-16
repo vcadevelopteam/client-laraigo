@@ -480,3 +480,40 @@ export const cardGetReset = (state: IState): IState => ({
     ...state,
     requestCardGet: initialState.requestCardGet,
 })
+
+export const reportPdf = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestReportPdf: {
+        ...state.requestReportPdf,
+        error: false,
+        loading: true,
+    }
+})
+
+export const reportPdfFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestReportPdf: {
+        ...state.requestReportPdf,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message || 'error_unexpected_error',
+    }
+})
+
+export const reportPdfSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestReportPdf: {
+        ...state.requestReportPdf,
+        datacard: action?.payload?.url,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message,
+    }
+})
+
+export const reportPdfReset = (state: IState): IState => ({
+    ...state,
+    requestReportPdf: initialState.requestReportPdf,
+})

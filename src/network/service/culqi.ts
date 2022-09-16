@@ -62,3 +62,7 @@ export function cardDelete(request: any) {
 export function cardGet(request: any) {
     return APIManager.post(apiUrls.CARDGET, { data: request }, true);
 }
+
+export function reportPdf(request: any) {
+    return APIManager.post(apiUrls.BILLING_REPORTPDF, { data: request }, true);
+}
