@@ -12,7 +12,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { getCollection, execute, getCollectionAux, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { CampaignDetail } from 'pages';
+import { CampaignDetail } from './CampaignDetail';
 import { Blacklist } from './Blacklist';
 import { CampaignReport } from './CampaignReport';
 import { IconButton, ListItemIcon } from '@material-ui/core';

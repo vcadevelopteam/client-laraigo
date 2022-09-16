@@ -6,7 +6,9 @@ import { extractVariables, getCampaignMemberSel, getCampaignSel, getCommChannelL
 import { Dictionary, ICampaign, SelectedColumns } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { execute, getMultiCollection, resetMainAux } from 'store/main/actions';
-import { CampaignGeneral, CampaignPerson, CampaignMessage } from 'pages';
+import { CampaignGeneral } from './CampaignGeneral';
+import { CampaignPerson } from './CampaignPerson';
+import { CampaignMessage } from './CampaignMessage';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { Button, Tabs } from '@material-ui/core';
 import { langKeys } from 'lang/keys';
