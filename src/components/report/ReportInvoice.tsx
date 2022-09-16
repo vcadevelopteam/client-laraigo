@@ -340,6 +340,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
 
     const onModalSuccess = () => {
         setOpenModal(false);
+        search();
         setViewSelected("view-2");
     }
 
@@ -390,6 +391,7 @@ const InvoiceCommentModal: FC<{ data: any, openModal: boolean, setOpenModal: (pa
     const [waitSave, setWaitSave] = useState(false);
     const [waitLoad, setWaitLoad] = useState(false);
     const [contentValidation, setContentValidation] = useState('');
+    const [reloadExit, setReloadExit] = useState(false);
 
     const [fields, setFields] = useState({
         "corpid": data?.corpid,
@@ -419,6 +421,7 @@ const InvoiceCommentModal: FC<{ data: any, openModal: boolean, setOpenModal: (pa
         if (openModal && data) {
             setDataInvoiceComment([]);
             setContentValidation('');
+            setReloadExit(false);
 
             let partialFields = fields;
             partialFields.corpid = data?.corpid;
@@ -464,6 +467,8 @@ const InvoiceCommentModal: FC<{ data: any, openModal: boolean, setOpenModal: (pa
                 setFields(partialFields);
 
                 fetchData();
+
+                setReloadExit(true);
             } else if (executeResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(executeResult.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() }) }));
                 dispatch(showBackdrop(false));
@@ -529,7 +534,7 @@ const InvoiceCommentModal: FC<{ data: any, openModal: boolean, setOpenModal: (pa
             open={openModal}
             title={t(langKeys.invoicecomments)}
             buttonText1={t(langKeys.close)}
-            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton1={() => { setOpenModal(false); if (reloadExit) { onTrigger(); } }}
         >
             <div style={{ overflowY: 'auto' }}>
                 {dataInvoiceComment.map((item, index) => (
