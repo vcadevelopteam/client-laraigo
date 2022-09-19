@@ -35,8 +35,8 @@ import IOSSwitch from "components/fields/IOSSwitch";
 import { setModalCall } from 'store/voximplant/actions';
 import { useLocation } from 'react-router-dom';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
-import InteractionPanel from './InteractionsPanel';
 import ReplyPanel from './ReplyPanel';
+import InteractionsPanel from './InteractionsPanel';
 
 const dataPriority = [
     { option: 'HIGH' },
@@ -1264,7 +1264,7 @@ const ChatPanel: React.FC<{ classes: any }> = React.memo(({ classes }) => {
             <HeadChat
                 classes={classes}
             />
-            <InteractionPanel
+            <InteractionsPanel
                 classes={classes}
             />
             {(!(ticketSelected?.conversationid === call.data?.conversationid && !!call?.call)) && (
