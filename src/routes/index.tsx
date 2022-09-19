@@ -181,9 +181,13 @@ const RouterApp: FC = () => {
 
 	return (
 		<Router basename={process.env.PUBLIC_URL}>
-			<React.Suspense fallback={<span>Loading!!!!</span>}>
+			<React.Suspense fallback={(
+				<Backdrop style={{ zIndex: 999999999, color: '#fff', }} open={true}>
+					<CircularProgress color="inherit" />
+				</Backdrop>
+			)}>
 				<Switch>
-					<ProtectRoute exact path="/" component={() => <span>x</span>}/>
+					<ProtectRoute exact path="/" component={() => <span>x</span>} />
 					<Route exact path={paths.SIGNIN} render={() => <SignIn />} />
 					<Route exact path={paths.SIGNUP.path} render={() => <SignUp />} />
 					<Route exact path={paths.LOCATION.path} render={() => <GetLocations />} />
