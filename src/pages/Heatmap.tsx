@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Button, createStyles, makeStyles, Tabs, TextField, Theme } from '@material-ui/core';
-import { AntTab, DialogInteractions, DialogZyx, TemplateSwitchYesNo } from 'components';
+import { AntTab, DialogZyx, TemplateSwitchYesNo } from 'components';
+import { DialogInteractions } from 'components/inbox/DialogInteractions';
 import { langKeys } from 'lang/keys';
 import React, { FC, Fragment, useEffect, useState ,useCallback} from 'react';
 import { FieldMultiSelect } from "components";

@@ -7,7 +7,7 @@ import ItemGroupInteraction from 'components/inbox/Interaction';
 import { SkeletonInteraction } from 'components';
 import ManageCallInfoTicket from './ManageCallInfoTicket';
 
-const InteractionPanel: React.FC<{ classes: any }> = React.memo(({ classes }) => {
+export const InteractionsPanel: React.FC<{ classes: any }> = React.memo(({ classes }) => {
 
     const dispatch = useDispatch();
     const call = useSelector(state => state.voximplant.call);
@@ -79,5 +79,3 @@ const InteractionPanel: React.FC<{ classes: any }> = React.memo(({ classes }) =>
         </div>
     )
 })
-
-export default InteractionPanel;

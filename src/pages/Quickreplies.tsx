@@ -31,6 +31,9 @@ import paths from 'common/constants/paths';
 import {
     MoreVert as MoreVertIcon,
 } from '@material-ui/icons';
+import { emojis } from "common/constants/emojis";
+
+const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
 
 interface RowSelected {
     row: Dictionary | null,
@@ -491,6 +494,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                                 maxLength={1024}
                             />
                             <EmojiPickerZyx
+                                emojisIndexed={EMOJISINDEXED} 
                                 style={{ position: "absolute", bottom: "40px", display: 'flex', justifyContent: 'end', right: 16 }}
                                 onSelect={e => setQuickreply(quickreply + e.native)} />
 

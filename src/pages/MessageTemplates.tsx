@@ -17,12 +17,12 @@ import { getMessageTemplateSel, getValuesFromDomain, insMessageTemplate, richTex
 import { Descendant } from "slate";
 import { Dictionary, MultiData } from "@types";
 import { execute, getCollection, getMultiCollection, resetAllMain, uploadFile, cleanMemoryTable, setMemoryTable } from 'store/main/actions';
-import { FieldEdit, FieldEditMulti, FieldSelect, FieldView, RichText, TemplateBreadcrumbs, TemplateIcons, TitleDetail } from 'components';
+import { FieldEdit, FieldEditMulti, FieldSelect, FieldView, TemplateBreadcrumbs, TemplateIcons, TitleDetail } from 'components';
 import { html } from '@codemirror/lang-html';
 import { langKeys } from 'lang/keys';
 import { makeStyles } from '@material-ui/core/styles';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import { renderToString, toElement } from 'components/fields/RichText';
+import { RichText, renderToString, toElement } from 'components/fields/RichText';
 import { useDispatch } from 'react-redux';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useSelector } from 'hooks';

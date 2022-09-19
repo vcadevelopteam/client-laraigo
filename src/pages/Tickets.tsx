@@ -13,7 +13,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import Box from '@material-ui/core/Box/Box';
 import { DialogZyx, FieldMultiSelect, FieldSelect, FieldEditMulti, FieldMultiSelectVirtualized } from 'components';
 import TableZyx from 'components/fields/table-simple';
-import { DialogInteractions } from 'components';
+import { DialogInteractions } from 'components/inbox/DialogInteractions';
 import { useForm } from 'react-hook-form';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';

@@ -1,6 +1,7 @@
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, IconButton, Checkbox, Tabs, Avatar, Paper, InputAdornment } from '@material-ui/core';
-import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, RadioGroudFieldEdit, TitleDetail, AntTabPanel, FieldMultiSelect, RichText, FieldEditArray } from 'components';
+import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, RadioGroudFieldEdit, TitleDetail, AntTabPanel, FieldMultiSelect, FieldEditArray } from 'components';
+import { RichText } from 'components/fields/RichText';
 import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
@@ -34,6 +35,9 @@ import { AntTab } from 'components';
 import { EmailIcon, WhatsappIcon, SmsIcon } from 'icons';
 import { Descendant } from 'slate';
 import { emitEvent } from 'store/inbox/actions';
+import { emojis } from "common/constants/emojis";
+
+const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
 
 const urgencyLevels = ['', 'LOW', 'MEDIUM', 'HIGH']
 
@@ -1297,6 +1301,7 @@ export const TabPanelLogNote: FC<TabPanelLogNoteProps> = ({ notes, loading, read
                             />
                             <div className={classes.row}>
                                 <EmojiPickerZyx
+                                    emojisIndexed={EMOJISINDEXED} 
                                     style={{ zIndex: 10 }}
                                     onSelect={e => setNoteDescription(prev => prev.concat(e.native))}
                                     icon={onClick => (

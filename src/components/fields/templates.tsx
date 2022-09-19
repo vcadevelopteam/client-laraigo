@@ -1,7 +1,6 @@
 import React, { CSSProperties, FC, useEffect, useState } from 'react';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { emojis } from "common/constants";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import IconButton from '@material-ui/core/IconButton';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
@@ -59,8 +58,6 @@ import {
 import { VariableSizeList, FixedSizeList, ListChildComponentProps } from 'react-window';
 import MuiPhoneNumber, { MaterialUiPhoneNumberProps } from 'material-ui-phone-number';
 import InfoIcon from '@material-ui/icons/Info';
-
-const EMOJISINDEXED = emojis.reduce((acc, item) => ({ ...acc, [item.emojihex]: item }), {});
 
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
@@ -1167,6 +1164,7 @@ export const ListItemSkeleton: React.FC = () => (
 )
 
 interface EmojiPickerZyxProps {
+    emojisIndexed?: Dictionary[];
     emojisNoShow?: string[];
     emojiFavorite?: string[];
     onSelect: (e: any) => void;
@@ -1186,7 +1184,7 @@ const emojiPickerStyle = makeStyles({
 });
 
 
-export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow = [], emojiFavorite = [], onSelect, style, icon }) => {
+export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, emojisNoShow = [], emojiFavorite = [], onSelect, style, icon }) => {
     const [open, setOpen] = React.useState(false);
     const classes = emojiPickerStyle();
     const handleClick = () => setOpen((prev) => !prev);
@@ -1223,7 +1221,7 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow = [
                                     flags: t(langKeys.flags),
                                 }
                             }}
-                            recent={emojiFavorite.length > 0 ? emojiFavorite?.map(x => (EMOJISINDEXED as Dictionary)?.[x || ""]?.id || '') : undefined}
+                            recent={emojiFavorite.length > 0 ? emojiFavorite?.map(x => (emojisIndexed as Dictionary)?.[x || ""]?.id || '') : undefined}
                             emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.map(x => x.toUpperCase()).indexOf(emoji.unified.toUpperCase()) === -1 : undefined}
                         />
                     </div>
