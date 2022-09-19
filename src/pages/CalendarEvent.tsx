@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { Button, IconButton, makeStyles, Typography } from "@material-ui/core";
 import { useParams } from 'react-router';
-import { FieldEdit, CalendarZyx, FieldEditMulti } from "components";
+import { FieldEdit, FieldEditMulti } from "components";
 import { getCollEventBooking } from 'store/main/actions';
 import { getEventByCode, validateCalendaryBooking, dayNames, calculateDateFromMonth, insBookingCalendar } from 'common/helpers';
 import { Dictionary } from '@types';
@@ -23,6 +23,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { useLocation } from "react-router";
+import CalendarZyx from 'components/fields/Calendar';
 
 interface IDay {
     date: Date;

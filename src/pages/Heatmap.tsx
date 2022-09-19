@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Button, createStyles, makeStyles, Tabs, TextField, Theme } from '@material-ui/core';
-import { AntTab, DialogInteractions, DialogZyx, TemplateSwitchYesNo } from 'components';
+import { AntTab, DialogZyx, TemplateSwitchYesNo } from 'components';
 import { langKeys } from 'lang/keys';
 import React, { FC, Fragment, useEffect, useState ,useCallback} from 'react';
 import { FieldMultiSelect } from "components";
@@ -12,6 +12,7 @@ import { getCollectionAux, getMultiCollection, getMultiCollectionAux, getMultiCo
 import { useSelector } from 'hooks';
 import { Dictionary } from '@types';
 import TableZyx from 'components/fields/table-simple';
+import DialogInteractions from 'components/inbox/DialogInteractions';
 
 const hours=["00:00 a 01:00","01:00 a 02:00","02:00 a 03:00","03:00 a 04:00","04:00 a 05:00","05:00 a 06:00","06:00 a 07:00","07:00 a 08:00","08:00 a 09:00","09:00 a 10:00","10:00 a 11:00","11:00 a 12:00",
                        "12:00 a 13:00","13:00 a 14:00","14:00 a 15:00","15:00 a 16:00","16:00 a 17:00","17:00 a 18:00","18:00 a 19:00","19:00 a 20:00","20:00 a 21:00","21:00 a 22:00","22:00 a 23:00","23:00 a 00:00","TOTAL"]
