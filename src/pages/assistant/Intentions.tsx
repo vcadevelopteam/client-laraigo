@@ -188,7 +188,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
         const callback = () => {
             let tempexamples = examples
             tempexamples.forEach((e:any)=>delete e.updatedate)
-            dispatch(execute(insertutterance({...data, datajson: JSON.stringify({name: ""}), utterance_datajson: JSON.stringify(tempexamples)})));
+            dispatch(execute(insertutterance({...data, datajson: JSON.stringify({name: data.name}), utterance_datajson: JSON.stringify(tempexamples)})));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
