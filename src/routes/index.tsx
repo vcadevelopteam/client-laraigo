@@ -7,7 +7,7 @@ import {
 	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger, ChannelAddInstagram, ChannelAddWhatsapp, ChannelAddTelegram,
 	Reports, Tickets, MessageInbox, BotDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail, Iaservices, UserSettings,
 	Corporations, Settings, Dashboard, ChannelEdit, ChannelAddIos, ChannelAddAndroid, ChannelAddInstagramDM, Privacy, CRM, ActivateUser, RecoverPassword, LeadForm, ChangePwdFirstLogin, BillingSetups, DashboardAdd,
-	InputValidation, DashboardLayout, Invoice, KPIManager, GetLocations, ReportScheduler, ProductCatalog, Calendar, CalendarEvent, ChannelAddEmail, ChannelAddSMS, Whitelist, Location, ChannelAddPhone, ChannelAddBlogger, ChannelAddLinkedIn, ChannelAddTeams, ChannelAddYouTube, ChannelAddTikTok
+	InputValidation, DashboardLayout, Invoice, KPIManager, GetLocations, ReportScheduler, ProductCatalog, Calendar, CalendarEvent, ChannelAddEmail, ChannelAddSMS, Whitelist, Location, ChannelAddPhone, ChannelAddBlogger, ChannelAddLinkedIn, ChannelAddTeams, ChannelAddYouTube, ChannelAddTikTok, Assistant
 } from 'pages';
 
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
@@ -417,6 +417,9 @@ const RouterApp: FC = () => {
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CALENDAR}>
 					<Layout mainClasses={classes.main}><Calendar /></Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.ASSISTANT}>
+					<Layout mainClasses={classes.main}><Assistant /></Layout>
 				</ProtectRoute>
 				<Route exact path={paths.CHNAGE_PWD_FIRST_LOGIN}>
 					<ChangePwdFirstLogin />
