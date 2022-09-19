@@ -303,7 +303,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const DialogInteractions: React.FC<{ ticket: Dictionary | null, openModal: boolean, setOpenModal: (param: any) => void }> = ({ ticket, openModal, setOpenModal }) => {
+const DialogInteractions: React.FC<{ ticket: Dictionary | null, openModal: boolean, setOpenModal: (param: any) => void }> = ({ ticket, openModal, setOpenModal }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -416,3 +416,5 @@ export const DialogInteractions: React.FC<{ ticket: Dictionary | null, openModal
         </DialogZyx>
     )
 }
+
+export default DialogInteractions;

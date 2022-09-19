@@ -434,7 +434,7 @@ const BottomGoToUnder: React.FC = () => {
     )
 }
 
-export const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
+const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
@@ -951,3 +951,5 @@ export const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
         </div >
     )
 }
+
+export default ReplyPanel;
