@@ -1,21 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useState, Fragment } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useSelector } from 'hooks';
 import { showBackdrop } from "store/popus/actions";
 import { makeStyles } from '@material-ui/core/styles';
-import { getCollectionAux2, getMultiCollection, getMultiCollectionAux2, resetMultiMain, cleanMemoryTable, setMemoryTable } from "store/main/actions";
+import { getCollectionAux2, getMultiCollection, getMultiCollectionAux2, resetMultiMain, cleanMemoryTable, setMemoryTable, execute } from "store/main/actions";
 import { langKeys } from "lang/keys";
 import TableZyx from "components/fields/table-simple";
 import { Button, } from "@material-ui/core";
-import { getInvoiceReportSummary, formatCurrencyNoDecimals, getInvoiceReportDetail, getCurrencyList, formatCurrency } from 'common/helpers';
+import { getInvoiceReportSummary, formatCurrencyNoDecimals, getInvoiceReportDetail, getCurrencyList, formatCurrency, selInvoiceComment, insInvoiceComment, convertLocalDate } from 'common/helpers';
 import { Search as SearchIcon } from '@material-ui/icons';
 import { FieldSelect } from "components/fields/templates";
 import { Dictionary } from "@types";
 import ClearIcon from '@material-ui/icons/Clear';
-import { showSnackbar } from 'store/popus/actions';
+import { showSnackbar, manageConfirmation } from 'store/popus/actions';
 import { dataYears } from 'common/helpers';
+import { FieldEditMulti, DialogZyx } from 'components';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -100,8 +101,12 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
     const { t } = useTranslation();
     const multiDataAux2 = useSelector(state => state.main.multiDataAux2);
     const [gridData, setGridData] = useState<any[]>([]);
+    const [openModal, setOpenModal] = useState(false);
+    const [openModalData, setOpenModalData] = useState<Dictionary | null>(null);
+    const [searchState, setSearchState] = useState(false);
 
     function search() {
+        setSearchState(true)
         dispatch(showBackdrop(true))
         dispatch(getMultiCollectionAux2([
             getInvoiceReportDetail({
@@ -113,13 +118,14 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
         ]))
     }
     useEffect(() => {
-        if (!multiDataAux2.loading) {
+        if (searchState && !multiDataAux2.loading) {
             setGridData((multiDataAux2.data[0]?.data || []).map(x => ({
                 ...x,
                 invoicestatus: (t(`${x.invoicestatus}`) || ""),
                 paymentstatus: (t(`${x.paymentstatus}`) || ""),
                 paymentdate: x.paymentdate ? new Date(x.paymentdate).toLocaleString() : '',
             })) || []);
+            setSearchState(false)
             dispatch(showBackdrop(false))
         }
     }, [multiDataAux2])
@@ -299,12 +305,53 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                     return <span style={{ color: row["color"] }}>{row[column]}</span>
                 },
             },
+            {
+                Header: t(langKeys.comments),
+                accessor: 'commentcontent',
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const { commentcontent } = props.cell.row.original;
+                    if (commentcontent) {
+                        return (<span style={{ color: row["color"] }}><Fragment>
+                            <div style={{ display: 'inline-block' }}>
+                                {(commentcontent || '').substring(0, 20)}... <a onClick={(e) => { e.stopPropagation(); openInvoiceComment(row); }} style={{ cursor: 'pointer', textDecoration: 'underline', color: 'blue' }} rel="noreferrer">{t(langKeys.seeMore)}</a>
+                            </div>
+                        </Fragment></span>)
+                    }
+                    else {
+                        return (<span style={{ color: row["color"] }}><Fragment>
+                            <div style={{ display: 'inline-block' }}>
+                                <a onClick={(e) => { e.stopPropagation(); openInvoiceComment(row); }} style={{ display: "block", cursor: 'pointer', textDecoration: 'underline', color: 'blue' }} rel="noreferrer">{t(langKeys.seeMore)}</a>
+                            </div>
+                        </Fragment></span>)
+                    }
+                }
+            },
         ],
         [t]
     );
 
+    const openInvoiceComment = (row: Dictionary) => {
+        setViewSelected("view-2");
+        setOpenModalData(row);
+        setOpenModal(true);
+    }
+
+    const onModalSuccess = () => {
+        setOpenModal(false);
+        search();
+        setViewSelected("view-2");
+    }
+
     return (
         <div style={{ width: '100%' }}>
+            <InvoiceCommentModal
+                data={openModalData}
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                onTrigger={onModalSuccess}
+            />
             <div className={classes.containerDetail}>
                 <TableZyx
                     titlemodule={`${row?.corpdesc} (${row?.year}${columnid?.includes('month_') ? `-${columnid.replace('month_', '')}` : ''})`}
@@ -321,7 +368,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                     columns={columns}
                     data={gridData}
                     download={true}
-                    loading={multiDataAux2.loading}
+                    loading={searchState && multiDataAux2.loading}
                     register={false}
                     filterGeneral={false}
                 // fetchData={fetchData}
@@ -329,6 +376,217 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
             </div>
         </div>
     );
+}
+
+const InvoiceCommentModal: FC<{ data: any, openModal: boolean, setOpenModal: (param: any) => void, onTrigger: () => void }> = ({ data, openModal, setOpenModal, onTrigger }) => {
+    const dispatch = useDispatch();
+
+    const { t } = useTranslation();
+
+    const classes = useStyles();
+    const multiDataAux2 = useSelector(state => state.main.multiDataAux2);
+    const executeResult = useSelector(state => state.main.execute);
+
+    const [dataInvoiceComment, setDataInvoiceComment] = useState<Dictionary[]>([]);
+    const [waitSave, setWaitSave] = useState(false);
+    const [waitLoad, setWaitLoad] = useState(false);
+    const [contentValidation, setContentValidation] = useState('');
+    const [reloadExit, setReloadExit] = useState(false);
+
+    const [fields, setFields] = useState({
+        "corpid": data?.corpid,
+        "orgid": data?.orgid,
+        "invoiceid": data?.invoiceid,
+        "invoicecommentid": 0,
+        "description": '',
+        "status": 'ACTIVO',
+        "type": '',
+        "commentcontent": '',
+        "commenttype": 'text',
+        "commentcaption": '',
+    })
+
+    const fetchData = () => {
+        dispatch(getMultiCollectionAux2([selInvoiceComment({
+            corpid: data?.corpid,
+            orgid: data?.orgid,
+            invoiceid: data?.invoiceid,
+            invoicecommentid: 0,
+        })]));
+        setWaitLoad(true);
+        dispatch(showBackdrop(true));
+    }
+
+    useEffect(() => {
+        if (openModal && data) {
+            setDataInvoiceComment([]);
+            setContentValidation('');
+            setReloadExit(false);
+
+            let partialFields = fields;
+            partialFields.corpid = data?.corpid;
+            partialFields.orgid = data?.orgid;
+            partialFields.invoiceid = data?.invoiceid;
+            partialFields.invoicecommentid = 0;
+            partialFields.description = '';
+            partialFields.status = 'ACTIVO';
+            partialFields.type = '';
+            partialFields.commentcontent = '';
+            partialFields.commenttype = 'text';
+            partialFields.commentcaption = '';
+            setFields(partialFields);
+
+            fetchData();
+        }
+    }, [data, openModal]);
+
+    useEffect(() => {
+        if (waitLoad) {
+            if (!multiDataAux2.loading && !multiDataAux2.error) {
+                setDataInvoiceComment(multiDataAux2.data[0]?.data || []);
+                dispatch(showBackdrop(false));
+                setWaitLoad(false);
+            } else if (multiDataAux2.error) {
+                setWaitLoad(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [multiDataAux2, waitLoad])
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+
+                setDataInvoiceComment([]);
+
+                let partialFields = fields;
+                partialFields.commentcontent = '';
+                setFields(partialFields);
+
+                fetchData();
+
+                setReloadExit(true);
+            } else if (executeResult.error) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(executeResult.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() }) }));
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [executeResult, waitSave])
+
+    const handleCommentRegister = () => {
+        if (fields) {
+            if (fields.commentcontent) {
+                setContentValidation('');
+
+                const callback = () => {
+                    dispatch(execute(insInvoiceComment(fields)));
+                    dispatch(showBackdrop(true));
+                    setWaitSave(true);
+                }
+
+                dispatch(manageConfirmation({
+                    visible: true,
+                    question: t(langKeys.confirmation_save),
+                    callback
+                }))
+            }
+            else {
+                setContentValidation(t(langKeys.required_fields_missing));
+            }
+        }
+    }
+
+    const handleCommentDelete = (data: any) => {
+        if (fields && data) {
+            const callback = () => {
+                var fieldTemporal = fields;
+
+                fieldTemporal.corpid = data?.corpid;
+                fieldTemporal.orgid = data?.orgid;
+                fieldTemporal.invoiceid = data?.invoiceid;
+                fieldTemporal.invoicecommentid = data?.invoicecommentid;
+                fieldTemporal.description = data?.description;
+                fieldTemporal.status = 'ELIMINADO';
+                fieldTemporal.type = data?.type;
+                fieldTemporal.commentcontent = data?.commentcontent;
+                fieldTemporal.commenttype = data?.commenttype;
+                fieldTemporal.commentcaption = data?.commentcaption;
+
+                dispatch(execute(insInvoiceComment(fieldTemporal)));
+                dispatch(showBackdrop(true));
+                setWaitSave(true);
+            }
+
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_delete),
+                callback
+            }))
+        }
+    }
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.invoicecomments)}
+            buttonText1={t(langKeys.close)}
+            handleClickButton1={() => { setOpenModal(false); if (reloadExit) { onTrigger(); } }}
+        >
+            <div style={{ overflowY: 'auto' }}>
+                {dataInvoiceComment.map((item, index) => (
+                    <div style={{ borderStyle: "solid", borderWidth: "1px", borderColor: "#762AA9", borderRadius: "4px", padding: "10px", margin: "10px" }}>
+                        <div style={{ display: 'flex' }}>
+                            <b style={{ width: '100%' }}>{item.createby} {t(langKeys.invoiceat)} {convertLocalDate(item.createdate || '').toLocaleString()}</b>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                type='button'
+                                style={{ backgroundColor: "#FB5F5F" }}
+                                onClick={() => handleCommentDelete(item)}
+                            >{t(langKeys.delete)}
+                            </Button>
+                        </div>
+                        <FieldEditMulti
+                            className="col-12"
+                            label={''}
+                            valueDefault={item.commentcontent}
+                            disabled={true}
+                        />
+                    </div>
+                ))}
+                <div style={{ padding: "10px", margin: "10px" }}>
+                    <div style={{ display: 'flex' }}>
+                        <b style={{ width: '100%' }}>{t(langKeys.new)} {t(langKeys.invoicecomment)}</b>
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            type='button'
+                            style={{ backgroundColor: "#55BD84" }}
+                            onClick={() => handleCommentRegister()}
+                        >{t(langKeys.save)}
+                        </Button>
+                    </div>
+                    <FieldEditMulti
+                        className="col-12"
+                        label={''}
+                        valueDefault={fields.commentcontent}
+                        error={contentValidation}
+                        onChange={(value) => {
+                            let partialf = fields;
+                            partialf.commentcontent = value;
+                            setFields(partialf);
+                        }}
+                    />
+                </div>
+            </div>
+        </DialogZyx>
+    )
 }
 
 const IDREPORTINVOICE = "IDREPORTINVOICE";

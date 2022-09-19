@@ -3998,6 +3998,9 @@ export const langKeys = {
     billingreport_interaction: "billingreport_interaction",
     billingreport_agent: "billingreport_agent",
     billingreport_template: "billingreport_template",
+    invoicecomment: "invoicecomment",
+    invoicecomments: "invoicecomments",
+    invoiceat: "invoiceat",
 };
 
 export type LangKeys = typeof langKeys;

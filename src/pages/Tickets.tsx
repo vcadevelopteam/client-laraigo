@@ -1242,7 +1242,7 @@ const Tickets = () => {
                 ButtonsElement={() => (
                     <>
                         {
-                            ['SUPERADMIN','ADMINISTRADOR'].includes(user?.roledesc || '')
+                            ['SUPERADMIN','ADMINISTRADOR','ADMINISTRADOR P'].includes(user?.roledesc || '')
                             && mainResult?.multiData?.data?.[8]?.data?.[0]?.propertyvalue === '1'
                             && <Button
                                 className={classes.button}

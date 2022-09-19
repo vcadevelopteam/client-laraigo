@@ -4015,6 +4015,9 @@ const translation: LangKeys = {
     billingreport_interaction: "Interactions",
     billingreport_agent: "Agents",
     billingreport_template: "billingreport-english.html",
+    invoicecomment: "Comment",
+    invoicecomments: "Invoice Comments",
+    invoiceat: "at",
 };
 
 const enResource: ResourceLanguage = {

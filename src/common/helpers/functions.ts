@@ -321,6 +321,8 @@ export function formatCurrencyNoDecimals(num: number) {
 
 export const getSecondsUntelNow = (date: Date, regressive: boolean = false): number => !regressive ? Math.floor((new Date().getTime() - date.getTime()) / 1000) : Math.floor((date.getTime() - new Date().getTime()) / 1000);
 
+export const getTimeBetweenDates = (date1: Date, date2: Date): string => secondsToTime(Math.floor((date2.getTime() - date1.getTime()) / 1000));
+
 export const getDateCleaned = (date: Date): string => new Date(date.setHours(10)).toISOString().substring(0, 10)
 
 export const cleanedRichResponse = (data: Dictionary[], variablesContext: Dictionary = {}): Dictionary[] => {

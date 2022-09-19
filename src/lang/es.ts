@@ -4006,6 +4006,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     billingreport_interaction: "Interacciones",
     billingreport_agent: "Agentes",
     billingreport_template: "billingreport-spanish.html",
+    invoicecomment: "Comentario",
+    invoicecomments: "Comentarios de la Factura",
+    invoiceat: "el",
 };
 
 const esResource: ResourceLanguage = {
