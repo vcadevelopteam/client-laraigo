@@ -14,8 +14,6 @@ import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { changeStatus, getConversationClassification2, insertClassificationConversation, insLeadPerson } from 'common/helpers';
 import { execute, getCollectionAux2 } from 'store/main/actions';
 import { DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView, FieldMultiSelect, FieldMultiSelectFreeSolo } from 'components'
-import { InteractionsPanel } from 'components/inbox/InteractionsPanel';
-import { ReplyPanel } from 'components/inbox/ReplyPanel';
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -37,6 +35,8 @@ import IOSSwitch from "components/fields/IOSSwitch";
 import { setModalCall } from 'store/voximplant/actions';
 import { useLocation } from 'react-router-dom';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
+import InteractionPanel from './InteractionsPanel';
+import ReplyPanel from './ReplyPanel';
 
 const dataPriority = [
     { option: 'HIGH' },
@@ -1264,7 +1264,7 @@ const ChatPanel: React.FC<{ classes: any }> = React.memo(({ classes }) => {
             <HeadChat
                 classes={classes}
             />
-            <InteractionsPanel
+            <InteractionPanel
                 classes={classes}
             />
             {(!(ticketSelected?.conversationid === call.data?.conversationid && !!call?.call)) && (

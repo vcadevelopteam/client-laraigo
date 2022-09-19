@@ -14,4 +14,3 @@ export { default as SkeletonInteraction } from './skeletons/SkeletonInteraction'
 export { default as SkeletonReportCard } from './skeletons/SkeletonReportCard';
 export { default as SkeletonReport } from './skeletons/SkeletonReport';
 export { default as BadgeGo } from './fields/BadgeGo';
-export { default as CalendarZyx } from './fields/Calendar';

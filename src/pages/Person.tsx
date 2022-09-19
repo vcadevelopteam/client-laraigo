@@ -25,7 +25,6 @@ import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/acti
 import { useForm, UseFormGetValues, UseFormSetValue, useFieldArray } from 'react-hook-form';
 import { execute, resetAllMain, exportData } from 'store/main/actions';
 import { FieldMultiSelect, FieldEditArray, DialogZyx } from 'components';
-import { DialogInteractions } from 'components/inbox/DialogInteractions';
 import Rating from '@material-ui/lab/Rating';
 import TablePaginated, { buildQueryFilters, useQueryParams } from 'components/fields/table-paginated';
 import TableZyx from '../components/fields/table-simple';
@@ -38,6 +37,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import { getLeadPhases, resetGetLeadPhases } from 'store/lead/actions';
 import { setModalCall, setPhoneNumber } from 'store/voximplant/actions';
 import { VoximplantService } from 'network';
+import DialogInteractions from 'components/inbox/DialogInteractions';
 const urgencyLevels = [null, 'LOW', 'MEDIUM', 'HIGH']
 
 // interface SelectFieldProps {

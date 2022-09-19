@@ -8,7 +8,6 @@ import Avatar from '@material-ui/core/Avatar';
 import { EMailInboxIcon, PhoneIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon } from 'icons';
 import { getTicketsPerson, showInfoPanel, updateClassificationPerson, updatePerson } from 'store/inbox/actions';
 import { GetIcon, FieldEdit, FieldSelect, AntTab, FieldEditMulti } from 'components'
-import { DialogInteractions } from 'components/inbox/DialogInteractions';
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { convertLocalDate, getConversationClassification2, getValuesFromDomain, insertClassificationConversation, insPersonBody, validateIsUrl } from 'common/helpers';
@@ -26,6 +25,7 @@ import ImportExportIcon from '@material-ui/icons/ImportExport';
 import clsx from 'clsx';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import DeleteIcon from '@material-ui/icons/Delete';
+import DialogInteractions from './DialogInteractions';
 
 const useStyles = makeStyles((theme) => ({
     containerInfo: {

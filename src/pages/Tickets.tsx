@@ -13,7 +13,6 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import Box from '@material-ui/core/Box/Box';
 import { DialogZyx, FieldMultiSelect, FieldSelect, FieldEditMulti, FieldMultiSelectVirtualized } from 'components';
 import TableZyx from 'components/fields/table-simple';
-import { DialogInteractions } from 'components/inbox/DialogInteractions';
 import { useForm } from 'react-hook-form';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
@@ -24,6 +23,7 @@ import { massiveCloseTicket, getTipificationLevel2, resetGetTipificationLevel2, 
 import { Button, ListItemIcon, Tooltip } from '@material-ui/core';
 import PublishIcon from '@material-ui/icons/Publish';
 import { VoximplantService } from 'network';
+import DialogInteractions from 'components/inbox/DialogInteractions';
 
 const selectionKey = 'conversationid';
 
