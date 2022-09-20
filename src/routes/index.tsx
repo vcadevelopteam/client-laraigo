@@ -14,7 +14,6 @@ import { getAccessToken } from 'common/helpers';
 import { Redirect } from 'react-router-dom';
 import { logout, validateToken } from 'store/login/actions';
 import { useDispatch } from 'react-redux';
-import { PersonDetail } from 'pages/Person';
 
 const Users = lazy(() => import('pages/Users'));
 const ReportScheduler = lazy(() => import('pages/ReportScheduler'));
@@ -30,6 +29,7 @@ const SLA = lazy(() => import('pages/SLA'));
 const Domains = lazy(() => import('pages/Domains'));
 const Reports = lazy(() => import('pages/Reports'));
 const Person = lazy(() => import('pages/Person'));
+const PersonDetail = lazy(() => import('pages/PersonDetail'));
 const Supervisor = lazy(() => import('pages/Supervisor'));
 const MessageInbox = lazy(() => import('pages/MessageInbox'));
 const MessageTemplates = lazy(() => import('pages/MessageTemplates'));
