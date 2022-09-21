@@ -36,7 +36,7 @@ import { setModalCall } from 'store/voximplant/actions';
 import { useLocation } from 'react-router-dom';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import ReplyPanel from './ReplyPanel';
-import InteractionsPanel from 'components/InteractionsPanel';
+import InteractionsPanel from './InteractionsPanel';
 
 const dataPriority = [
     { option: 'HIGH' },
