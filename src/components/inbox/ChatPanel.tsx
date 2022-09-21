@@ -13,7 +13,7 @@ import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipification
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { changeStatus, getConversationClassification2, insertClassificationConversation, insLeadPerson } from 'common/helpers';
 import { execute, getCollectionAux2 } from 'store/main/actions';
-import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView, FieldMultiSelect, FieldMultiSelectFreeSolo } from 'components'
+import { DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView, FieldMultiSelect, FieldMultiSelectFreeSolo } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -35,6 +35,8 @@ import IOSSwitch from "components/fields/IOSSwitch";
 import { setModalCall } from 'store/voximplant/actions';
 import { useLocation } from 'react-router-dom';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
+import ReplyPanel from './ReplyPanel';
+import InteractionsPanel from './InteractionsPanel';
 
 const dataPriority = [
     { option: 'HIGH' },

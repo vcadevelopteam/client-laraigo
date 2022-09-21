@@ -798,3 +798,6 @@ export const ChannelAddPhone: FC = () => {
         )
     }
 }
+
+
+export default ChannelAddPhone

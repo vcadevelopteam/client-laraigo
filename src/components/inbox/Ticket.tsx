@@ -8,7 +8,7 @@ import clsx from 'clsx';
 import Badge from '@material-ui/core/Badge';
 import { useDispatch } from 'react-redux';
 import Tooltip from '@material-ui/core/Tooltip';
-import { convertLocalDate, secondsToTime, getSecondsUntelNow, callUpdateToken } from 'common/helpers';
+import { convertLocalDate, secondsToTime, getSecondsUntelNow, callUpdateToken, getTimeBetweenDates } from 'common/helpers';
 import { answerCall, hangupCall } from 'store/voximplant/actions';
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
@@ -110,7 +110,7 @@ const SmallAvatar = styled(Avatar)(() => ({
     fontSize: 11,
 }));
 
-const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { conversationid, call, personlastreplydate, origin, communicationchanneltype, lastmessage, displayname, imageurldef, ticketnum, firstconversationdate, countnewmessages, status, communicationchannelid, lastreplyuser, lastconversationdate } }) => {
+const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { conversationid, call, personlastreplydate, origin, communicationchanneltype, lastmessage, displayname, imageurldef, ticketnum, firstconversationdate, finishdate, countnewmessages, status, communicationchannelid, lastreplyuser, lastconversationdate } }) => {
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const localclasses = useStyles({ color: "red" });
     const agentSelected = useSelector(state => state.inbox.agentSelected);
@@ -118,7 +118,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
     const multiData = useSelector(state => state.main.multiData);
     const [dateToClose, setDateToClose] = useState<Date | null>(null)
     const data14 = React.useRef<Dictionary[] | null>(null)
-    
+
     // const refreshToken = React.useRef<number>(-1)
     const [refreshToken, setRefreshToken] = useState(-1)
 
@@ -170,7 +170,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dictAutoClose, dictAutoCloseHolding, countnewmessages, userType, agentSelected?.userid, communicationchannelid, lastreplyuser])
-    
+
     useEffect(() => {
         let timer = null;
         if (statusCall === "CONNECTED") {
@@ -280,16 +280,18 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                         color={status === 'ASIGNADO' ? "#55BD84" : (status === "PAUSADO" ? "#ffbf00" : "#FB5F5F")}
                     />
                     <LabelGo
-                        isTimer={true}
+                        isTimer={status !== "CERRADO"}
                         tooltip={t(langKeys.total_duration)}
-                        dateGo={firstconversationdate || new Date().toISOString()}
+                        label={status === "CERRADO" ? getTimeBetweenDates(new Date(firstconversationdate || ""), new Date(finishdate || "")) : undefined}
+                        dateGo={status !== "CERRADO" ? (firstconversationdate || new Date().toISOString()) : undefined}
                         color="#465a6ed9"
                     />
                     {(communicationchanneltype !== "VOXI" && (countnewmessages || 0) > 0) &&
                         <LabelGo
-                            isTimer={true}
+                            isTimer={status !== "CERRADO"}
                             tooltip={t(langKeys.waiting_person_time)}
-                            dateGo={lastconversationdate || new Date().toISOString()}
+                            label={status === "CERRADO" ? getTimeBetweenDates(new Date(lastconversationdate || ""), new Date(finishdate || "")) : undefined}
+                            dateGo={status !== "CERRADO" ? (lastconversationdate || new Date().toISOString()) : undefined}
                             color="#FB5F5F"
                             callback={validateTime}
                         />

@@ -241,3 +241,5 @@ export const Channels: FC = () => {
         </div>
     );
 };
+
+export default Channels

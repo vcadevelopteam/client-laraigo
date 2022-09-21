@@ -8,7 +8,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Menu from '@material-ui/core/Menu';
-import { exportExcel, getLocaleDateString } from 'common/helpers';
+import { exportExcel, getLocaleDateString, localesLaraigo } from 'common/helpers';
 import { setMemoryTable } from 'store/main/actions';
 import { useDispatch } from 'react-redux';
 import {
@@ -49,7 +49,6 @@ import { langKeys } from 'lang/keys';
 import { Skeleton } from '@material-ui/lab';
 import { FixedSizeList } from 'react-window';
 import DateFnsUtils from '@date-io/date-fns';
-import * as locale from "date-fns/locale";
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import {
     MuiPickersUtilsProvider,
@@ -242,7 +241,7 @@ export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: 
     }, [value])
 
     return (
-        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(locale as any)[navigator.language.split('-')[0]]}>
+        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(localesLaraigo() as any)[navigator.language.split('-')[0]]}>
             <KeyboardDatePicker
                 invalidDateMessage={t(langKeys.invalid_date_format)}
                 format={getLocaleDateString()}
@@ -259,7 +258,7 @@ export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: 
 
 export const TimeOptionsMenuComponent = (value: any, handleClickItemMenu: (key: any) => void) => {
     return (
-        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(locale as any)[navigator.language.split('-')[0]]}>
+        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(localesLaraigo())[navigator.language.split('-')[0]]}>
             <KeyboardTimePicker
                 ampm={false}
                 views={['hours', 'minutes', 'seconds']}
@@ -883,7 +882,8 @@ const TableZyx = React.memo(({
                                                     minWidth: column.minWidth,
                                                     width: column.width,
                                                     maxWidth: column.maxWidth,
-                                                })} : {}}>
+                                                })
+                                            } : {}}>
                                                 {column.isComponent ?
                                                     column.render('Header') :
                                                     (<>

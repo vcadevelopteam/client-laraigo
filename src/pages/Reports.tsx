@@ -41,7 +41,7 @@ import { Search as SearchIcon } from '@material-ui/icons';
 import ReportInvoice from 'components/report/ReportInvoice';
 import TicketvsAdviser from 'components/report/TicketvsAdviser';
 import HSMHistoryReport from './HSMHistoryReport';
-import { CampaignReport } from './campaign';
+import { CampaignReport } from 'pages/campaign/CampaignReport';
 import ReportKpiOperativo from 'components/report/ReportKpiOperativo';
 
 interface RowSelected {

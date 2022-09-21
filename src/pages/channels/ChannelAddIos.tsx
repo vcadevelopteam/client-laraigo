@@ -192,3 +192,5 @@ export const ChannelAddIos: FC = () => {
         </div>
     )
 }
+
+export default ChannelAddIos

@@ -284,3 +284,5 @@ export const ChannelAddTwitter: FC = () => {
         )
     }
 }
+
+export default ChannelAddTwitter

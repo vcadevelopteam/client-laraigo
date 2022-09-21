@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import SearchField from "components/fields/SearchField";
 import { TemplateBreadcrumbs } from 'components';
-import { emojis } from "common/constants";
+import { emojis } from "common/constants/emojis";
 import { LaraigoAnimalIcon, LaraigoBanderaIcon, LaraigoCaraIcon, LaraigoCarroIcon, LaraigoComidaIcon, LaraigoDeporteIcon, LaraigoFocoIcon, LaraigoHashtagIcon, LaraigoRecienteIcon,LaraigoBlockedIcon } from "icons";
 import Tabs from "@material-ui/core/Tabs/Tabs";
 import Tab from "@material-ui/core/Tab/Tab";
