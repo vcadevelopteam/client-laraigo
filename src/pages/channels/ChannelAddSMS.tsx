@@ -228,3 +228,5 @@ export const ChannelAddSMS: FC = () => {
         )
     }
 }
+
+export default ChannelAddSMS

@@ -1,7 +1,6 @@
 import React, { CSSProperties, FC, useEffect, useState } from 'react';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { emojis } from "common/constants";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import IconButton from '@material-ui/core/IconButton';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
@@ -58,10 +57,7 @@ import {
 } from 'icons';
 import { VariableSizeList, FixedSizeList, ListChildComponentProps } from 'react-window';
 import MuiPhoneNumber, { MaterialUiPhoneNumberProps } from 'material-ui-phone-number';
-import NumberFormat from 'react-number-format';
 import InfoIcon from '@material-ui/icons/Info';
-
-const EMOJISINDEXED = emojis.reduce((acc, item) => ({ ...acc, [item.emojihex]: item }), {});
 
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
@@ -406,64 +402,6 @@ export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, c
             />
         </div>
     )
-}
-
-interface ICurrencyFieldEdit extends Omit<InputProps, 'type'> {
-    type?: 'text';
-}
-
-export const CurrencyFieldEdit: FC<ICurrencyFieldEdit> = ({
-    label,
-    size,
-    className,
-    disabled = false,
-    valueDefault = "",
-    onChange,
-    error,
-    type = "text",
-    rows = 1,
-    fregister = {},
-    inputProps = {},
-    InputProps = {},
-    variant = "standard",
-}) => {
-    const [value, setvalue] = useState("");
-
-    useEffect(() => {
-        setvalue(valueDefault);
-    }, [valueDefault])
-
-    return (
-        <div className={className}>
-            {variant === "standard" &&
-                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
-            }
-            <NumberFormat
-                customInput={TextField}
-                thousandSeparator
-                autoComplete="off"
-
-                {...fregister}
-                color="primary"
-                fullWidth
-                label={variant !== "standard" && label}
-                disabled={disabled}
-                type={type}
-                value={value}
-                variant={variant}
-                error={!!error}
-                helperText={error || null}
-                rows={rows}
-                size={size}
-                onValueChange={(values) => { // { formattedValue, value }
-                    setvalue(values.value);
-                    onChange && onChange(values.value);
-                }}
-                inputProps={inputProps}
-                InputProps={InputProps}
-            />
-        </div>
-    );
 }
 
 export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, inputProps = {}, variant = "standard" }) => {
@@ -1226,6 +1164,7 @@ export const ListItemSkeleton: React.FC = () => (
 )
 
 interface EmojiPickerZyxProps {
+    emojisIndexed?: Dictionary[];
     emojisNoShow?: string[];
     emojiFavorite?: string[];
     onSelect: (e: any) => void;
@@ -1245,7 +1184,7 @@ const emojiPickerStyle = makeStyles({
 });
 
 
-export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow = [], emojiFavorite = [], onSelect, style, icon }) => {
+export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, emojisNoShow = [], emojiFavorite = [], onSelect, style, icon }) => {
     const [open, setOpen] = React.useState(false);
     const classes = emojiPickerStyle();
     const handleClick = () => setOpen((prev) => !prev);
@@ -1282,7 +1221,7 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow = [
                                     flags: t(langKeys.flags),
                                 }
                             }}
-                            recent={emojiFavorite.length > 0 ? emojiFavorite?.map(x => (EMOJISINDEXED as Dictionary)?.[x || ""]?.id || '') : undefined}
+                            recent={emojiFavorite.length > 0 ? emojiFavorite?.map(x => (emojisIndexed as Dictionary)?.[x || ""]?.id || '') : undefined}
                             emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.map(x => x.toUpperCase()).indexOf(emoji.unified.toUpperCase()) === -1 : undefined}
                         />
                     </div>

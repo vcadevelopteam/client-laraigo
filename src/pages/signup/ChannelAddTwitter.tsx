@@ -286,3 +286,5 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
         </div>
     );
 }
+
+export default ChannelAddTwitter

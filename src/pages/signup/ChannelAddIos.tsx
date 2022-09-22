@@ -111,3 +111,5 @@ export const ChannelAddIos: FC<{ setOpenWarning: (param: any) => void }> = ({ se
         </div>
     )
 }
+
+export default ChannelAddIos

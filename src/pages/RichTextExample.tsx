@@ -1,6 +1,5 @@
 import { makeStyles } from "@material-ui/styles";
-import { RichText } from "components";
-import { renderToString, toElement } from "components/fields/RichText";
+import { RichText, renderToString, toElement } from "components/fields/RichText";
 import { FC, useEffect, useMemo, useState } from "react";
 import { Descendant } from "slate";
 

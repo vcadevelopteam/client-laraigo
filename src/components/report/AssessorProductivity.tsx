@@ -114,9 +114,8 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     const dispatch = useDispatch();
     const user = useSelector(state => state.login.validateToken.user);
     const groups = user?.groups?.split(",").filter(x=>!!x) || [];
-    console.log(groups)
-    console.log(multiData)
     const mainAux = useSelector(state => state.main.mainAux);
+    const [groupsdata, setgroupsdata] = useState<any>([]);
     const [allParameters, setAllParameters] = useState({});
     const [dateRange, setdateRange] = useState<Range>({ startDate: new Date(new Date().setDate(1)), endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0), key: 'selection' });
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
@@ -250,6 +249,15 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
         [isday, mainAux, desconectedmotives]
     );
 
+    useEffect(() => {
+        if(allFilters){
+            let groupitem = allFilters.find(e=>e.values[0].label === "group")
+            if(!!groupitem){
+                let arraygroups = multiData[multiData.findIndex(x => x.key === (groupitem?.values[0].isListDomains ? groupitem?.values[0].filter + "_" + groupitem?.values[0].domainname : groupitem?.values[0].filter))]
+                setgroupsdata(groups.length > 0?arraygroups.data.filter(x => groups.includes(x.domainvalue)):arraygroups.data)
+            }
+        }
+    }, [multiData,allFilters])
     useEffect(() => {
         if (!mainAux.error && !mainAux.loading && mainAux.key === "UFN_REPORT_USERPRODUCTIVITY_SEL") {
             setDetailCustomReport(mainAux);
@@ -392,8 +400,8 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                 key={filtro.values[0].isListDomains ? filtro.values[0].filter + "_" + filtro.values[0].domainname : filtro.values[0].filter}
                                 onChange={(value) => setValue(filtro.values[0].parameterName, value ? value.map((o: Dictionary) => o[filtro.values[0].optionValue]).join() : '')}
                                 variant="outlined"
-                                data={filtro.values[0].label==="group" && groups.length > 0?
-                                    multiData[multiData.findIndex(x => x.key === (filtro.values[0].isListDomains ? filtro.values[0].filter + "_" + filtro.values[0].domainname : filtro.values[0].filter))].data.filter(x => groups.includes(x.domainvalue)):
+                                data={filtro.values[0].label==="group"?
+                                    groupsdata:
                                     multiData[multiData.findIndex(x => x.key === (filtro.values[0].isListDomains ? filtro.values[0].filter + "_" + filtro.values[0].domainname : filtro.values[0].filter))].data}
                                 optionDesc={filtro.values[0].optionDesc}
                                 optionValue={filtro.values[0].optionValue}

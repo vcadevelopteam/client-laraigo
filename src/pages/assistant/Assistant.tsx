@@ -56,3 +56,5 @@ export const Assistant: FC = () => {
         </div>
     );
 }
+
+export default Assistant;

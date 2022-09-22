@@ -333,3 +333,5 @@ export const ChannelAddYouTube: FC = () => {
         )
     }
 }
+
+export default ChannelAddYouTube;

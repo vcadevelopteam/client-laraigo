@@ -1,9 +1,9 @@
 /* eslint-disable no-useless-escape */
 import { Dictionary } from "@types";
-import * as XLSX from 'xlsx';
+// import * as XLSX from 'xlsx';
 
-export const dataMonths =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
-export const dataYears = Array.from(Array(21).keys()).map(x => ({value: `${new Date().getFullYear() + x - 10}`}))
+export const dataMonths = [{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
+export const dataYears = Array.from(Array(21).keys()).map(x => ({ value: `${new Date().getFullYear() + x - 10}` }))
 
 
 export function formatNumber(num: number) {
@@ -173,7 +173,7 @@ export function downloadCSV(filename: string, data: Dictionary[], options: Downl
 
         if (typeof options.headers === "function") {
             // Se ejecuta una funcion para cada key de columns
-            for (let i = 0; i< columns.length; i++) {
+            for (let i = 0; i < columns.length; i++) {
                 const result = options.headers(columns[i], i);
                 if (i < columns.length - 1) {
                     headers += `${result};`;
@@ -188,7 +188,7 @@ export function downloadCSV(filename: string, data: Dictionary[], options: Downl
             // eslint-disable-next-line no-throw-literal
             throw 'El tipo de options.header no es valido';
         }
-        
+
     } else {
         headers = columns.join(';');
     }
@@ -255,24 +255,26 @@ export function uploadCSV(file: any, owner: any = {}) {
 }
 
 export function uploadExcel(file: any, owner: any = {}) {
-    var reader = new FileReader();
-    reader.readAsBinaryString(file);
     return new Promise((res, rej) => {
-        reader.onload = (event: any) => {
-            var data = event.target.result;
-            let workbook = XLSX.read(data, { type: 'binary' });
-            const wsname = workbook.SheetNames[0];
-            // const ws = workbook.Sheets[wsname];
-            // sheet_to_row_object_array
-            let rowsx = XLSX.utils.sheet_to_json(workbook.Sheets[wsname])
-            .map((row: any) =>
-                Object.keys(row).reduce((obj: any, key: any) => {
-                    obj[key.trim()] = row[key];
-                    return obj;
-                }, {})
-            );
-            res(rowsx)
-        };
+        import('xlsx').then(XLSX => {
+            var reader = new FileReader();
+            reader.readAsBinaryString(file);
+            reader.onload = (event: any) => {
+                var data = event.target.result;
+                let workbook = XLSX.read(data, { type: 'binary' });
+                const wsname = workbook.SheetNames[0];
+                // const ws = workbook.Sheets[wsname];
+                // sheet_to_row_object_array
+                let rowsx = XLSX.utils.sheet_to_json(workbook.Sheets[wsname])
+                    .map((row: any) =>
+                        Object.keys(row).reduce((obj: any, key: any) => {
+                            obj[key.trim()] = row[key];
+                            return obj;
+                        }, {})
+                    );
+                res(rowsx)
+            };
+        });
     });
 }
 
@@ -329,6 +331,8 @@ export function formatCurrencyNoDecimals(num: number) {
 }
 
 export const getSecondsUntelNow = (date: Date, regressive: boolean = false): number => !regressive ? Math.floor((new Date().getTime() - date.getTime()) / 1000) : Math.floor((date.getTime() - new Date().getTime()) / 1000);
+
+export const getTimeBetweenDates = (date1: Date, date2: Date): string => secondsToTime(Math.floor((date2.getTime() - date1.getTime()) / 1000));
 
 export const getDateCleaned = (date: Date): string => new Date(date.setHours(10)).toISOString().substring(0, 10)
 
@@ -424,7 +428,7 @@ export const randomText = (length = 8, use_upper = false, use_number = false, us
 }
 
 export const templateMaker = (data: any[], header: string[]) => {
-    const max = (Math.max(...data.map((d: Dictionary) => Object.keys(d).length))||1);
+    const max = (Math.max(...data.map((d: Dictionary) => Object.keys(d).length)) || 1);
     let temp: any[] = new Array(max).fill(0).map(() => ({}));
     for (let i = 0; i < max; i++) {
         header.forEach((d, j) => {
@@ -708,54 +712,54 @@ export const calculateDateFromMonth = (year: number, month: number) => {
 }
 
 export const hours = [
-    {desc: "00:00", value: "00:00:00"},
-    {desc: "00:30", value: "00:30:00"},
-    {desc: "01:00", value: "01:00:00"},
-    {desc: "01:30", value: "01:30:00"},
-    {desc: "02:00", value: "02:00:00"},
-    {desc: "02:30", value: "02:30:00"},
-    {desc: "03:00", value: "03:00:00"},
-    {desc: "03:30", value: "03:30:00"},
-    {desc: "04:00", value: "04:00:00"},
-    {desc: "04:30", value: "04:30:00"},
-    {desc: "05:00", value: "05:00:00"},
-    {desc: "05:30", value: "05:30:00"},
-    {desc: "06:00", value: "06:00:00"},
-    {desc: "06:30", value: "06:30:00"},
-    {desc: "07:00", value: "07:00:00"},
-    {desc: "07:30", value: "07:30:00"},
-    {desc: "08:00", value: "08:00:00"},
-    {desc: "08:30", value: "08:30:00"},
-    {desc: "09:00", value: "09:00:00"},
-    {desc: "09:30", value: "09:30:00"},
-    {desc: "10:00", value: "10:00:00"},
-    {desc: "10:30", value: "10:30:00"},
-    {desc: "11:00", value: "11:00:00"},
-    {desc: "11:30", value: "11:30:00"},
-    {desc: "12:00", value: "12:00:00"},
-    {desc: "12:30", value: "12:30:00"},
-    {desc: "13:00", value: "13:00:00"},
-    {desc: "13:30", value: "13:30:00"},
-    {desc: "14:00", value: "14:00:00"},
-    {desc: "14:30", value: "14:30:00"},
-    {desc: "15:00", value: "15:00:00"},
-    {desc: "15:30", value: "15:30:00"},
-    {desc: "16:00", value: "16:00:00"},
-    {desc: "16:30", value: "16:30:00"},
-    {desc: "17:00", value: "17:00:00"},
-    {desc: "17:30", value: "17:30:00"},
-    {desc: "18:00", value: "18:00:00"},
-    {desc: "18:30", value: "18:30:00"},
-    {desc: "19:00", value: "19:00:00"},
-    {desc: "19:30", value: "19:30:00"},
-    {desc: "20:00", value: "20:00:00"},
-    {desc: "20:30", value: "20:30:00"},
-    {desc: "21:00", value: "21:00:00"},
-    {desc: "21:30", value: "21:30:00"},
-    {desc: "22:00", value: "22:00:00"},
-    {desc: "22:30", value: "22:30:00"},
-    {desc: "23:00", value: "23:00:00"},
-    {desc: "23:30", value: "23:30:00"},
+    { desc: "00:00", value: "00:00:00" },
+    { desc: "00:30", value: "00:30:00" },
+    { desc: "01:00", value: "01:00:00" },
+    { desc: "01:30", value: "01:30:00" },
+    { desc: "02:00", value: "02:00:00" },
+    { desc: "02:30", value: "02:30:00" },
+    { desc: "03:00", value: "03:00:00" },
+    { desc: "03:30", value: "03:30:00" },
+    { desc: "04:00", value: "04:00:00" },
+    { desc: "04:30", value: "04:30:00" },
+    { desc: "05:00", value: "05:00:00" },
+    { desc: "05:30", value: "05:30:00" },
+    { desc: "06:00", value: "06:00:00" },
+    { desc: "06:30", value: "06:30:00" },
+    { desc: "07:00", value: "07:00:00" },
+    { desc: "07:30", value: "07:30:00" },
+    { desc: "08:00", value: "08:00:00" },
+    { desc: "08:30", value: "08:30:00" },
+    { desc: "09:00", value: "09:00:00" },
+    { desc: "09:30", value: "09:30:00" },
+    { desc: "10:00", value: "10:00:00" },
+    { desc: "10:30", value: "10:30:00" },
+    { desc: "11:00", value: "11:00:00" },
+    { desc: "11:30", value: "11:30:00" },
+    { desc: "12:00", value: "12:00:00" },
+    { desc: "12:30", value: "12:30:00" },
+    { desc: "13:00", value: "13:00:00" },
+    { desc: "13:30", value: "13:30:00" },
+    { desc: "14:00", value: "14:00:00" },
+    { desc: "14:30", value: "14:30:00" },
+    { desc: "15:00", value: "15:00:00" },
+    { desc: "15:30", value: "15:30:00" },
+    { desc: "16:00", value: "16:00:00" },
+    { desc: "16:30", value: "16:30:00" },
+    { desc: "17:00", value: "17:00:00" },
+    { desc: "17:30", value: "17:30:00" },
+    { desc: "18:00", value: "18:00:00" },
+    { desc: "18:30", value: "18:30:00" },
+    { desc: "19:00", value: "19:00:00" },
+    { desc: "19:30", value: "19:30:00" },
+    { desc: "20:00", value: "20:00:00" },
+    { desc: "20:30", value: "20:30:00" },
+    { desc: "21:00", value: "21:00:00" },
+    { desc: "21:30", value: "21:30:00" },
+    { desc: "22:00", value: "22:00:00" },
+    { desc: "22:30", value: "22:30:00" },
+    { desc: "23:00", value: "23:00:00" },
+    { desc: "23:30", value: "23:30:00" },
 ]
 
 export const dayNames = [

@@ -385,3 +385,5 @@ export const ChannelAddEmail: FC = () => {
         )
     }
 }
+
+export default ChannelAddEmail;

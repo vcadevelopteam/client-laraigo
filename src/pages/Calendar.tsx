@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, AntTab, RichText, ColorInput, AntTabPanel, DateRangePicker, FieldEditMulti, FieldView } from 'components';
+import { TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, AntTab, ColorInput, AntTabPanel, DateRangePicker, FieldEditMulti, FieldView } from 'components';
 import { getDateCleaned, insCommentsBooking, getValuesFromDomain, insCalendar, hours, selCalendar, getMessageTemplateLst, getCommChannelLst, getDateToday, selBookingCalendar, dayNames } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -22,7 +22,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { renderToString, toElement } from 'components/fields/RichText';
+import { RichText, renderToString, toElement } from 'components/fields/RichText';
 import {
     Search as SearchIcon,
 } from '@material-ui/icons';

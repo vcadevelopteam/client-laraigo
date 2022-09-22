@@ -260,3 +260,5 @@ export const ChannelAddInstagramDM: FC = () => {
         )
     }
 }
+
+export default ChannelAddInstagramDM

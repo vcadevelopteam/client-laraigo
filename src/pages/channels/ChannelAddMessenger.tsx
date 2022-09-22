@@ -263,3 +263,5 @@ export const ChannelAddMessenger: FC = () => {
         )
     }
 }
+
+export default ChannelAddMessenger
