@@ -127,14 +127,14 @@ const ReportKpiOperativo: FC = () => {
                 NoFilter: true,
             },
             {
-                Header: t(langKeys.report_kpioperativo_tme),
-                accessor: 'tme',
-                helpText: t(`report_${origin}_tme_help`),
+                Header: t(langKeys.report_kpioperativo_tme_avg),
+                accessor: 'tme_avg',
+                helpText: t(`report_${origin}_tme_avg_help`),
                 NoFilter: true,
                 Footer: (props: any) => {
                     const total = React.useMemo(
                         () =>
-                            props.rows.reduce((sum: any, row: any) => timetoseconds(row.values["tme"]) + sum, 0),
+                            props.rows.reduce((sum: any, row: any) => timetoseconds(row.values["tme_avg"]) + sum, 0),
                         [props.rows]
                     )
                     return <>{total ? secondsToDayTime(total / props.rows.length) : ''}</>
@@ -156,78 +156,78 @@ const ReportKpiOperativo: FC = () => {
                 },
             },
             {
-                Header: t(langKeys.report_kpioperativo_eqtime),
-                accessor: 'eqtime',
-                helpText: t(`report_${origin}_eqtime_help`),
+                Header: t(langKeys.report_kpioperativo_eqtmoasesor),
+                accessor: 'eqtmoasesor',
+                helpText: t(`report_${origin}_eqtmoasesor_help`),
                 type: 'number',
                 NoFilter: true,
                 Footer: (props: any) => {
                     const total = React.useMemo(
                         () =>
-                            props.rows.reduce((sum: any, row: any) => +row.values["eqtime"] + sum, 0),
+                            props.rows.reduce((sum: any, row: any) => +row.values["eqtmoasesor"] + sum, 0),
                         [props.rows]
                     )
                     return <>{total ? formatNumber(total) : ''}</>
                 },
             },
             {
-                Header: t(langKeys.report_kpioperativo_onlinetime_tickets),
-                accessor: 'onlinetime_tickets',
-                helpText: t(`report_${origin}_onlinetime_tickets_help`),
+                Header: t(langKeys.report_kpioperativo_userpause_avg),
+                accessor: 'userpause_avg',
+                helpText: t(`report_${origin}_userpause_avg_help`),
                 type: 'number',
                 NoFilter: true,
                 Footer: (props: any) => {
                     const total = React.useMemo(
                         () =>
-                            props.rows.reduce((sum: any, row: any) => +row.values["onlinetime_tickets"] + sum, 0),
+                            props.rows.reduce((sum: any, row: any) => +row.values["userpause_avg"] + sum, 0),
                         [props.rows]
                     )
-                    return <>{total ? formatNumber(total / props.rows.filter((r: any) => r.values["onlinetime_tickets"]).length) : ''}</>
+                    return <>{total ? formatNumber(total) : ''}</>
                 },
             },
             {
-                Header: t(langKeys.report_kpioperativo_tickets_eqtime),
-                accessor: 'tickets_eqtime',
-                helpText: t(`report_${origin}_tickets_eqtime_help`),
+                Header: t(langKeys.report_kpioperativo_tmoasesor_tickets),
+                accessor: 'tmoasesor_tickets',
+                helpText: t(`report_${origin}_tmoasesor_tickets_help`),
                 type: 'number',
                 NoFilter: true,
                 Footer: (props: any) => {
                     const total = React.useMemo(
                         () =>
-                            props.rows.reduce((sum: any, row: any) => +row.values["tickets_eqtime"] + sum, 0),
+                            props.rows.reduce((sum: any, row: any) => +row.values["tmoasesor_tickets"] + sum, 0),
                         [props.rows]
                     )
-                    return <>{total ? formatNumber(total / props.rows.filter((r: any) => r.values["tickets_eqtime"]).length) : ''}</>
+                    return <>{total ? formatNumber(total / props.rows.filter((r: any) => r.values["tmoasesor_tickets"]).length) : ''}</>
                 },
             },
             {
-                Header: t(langKeys.report_kpioperativo_onlinetime_prod),
-                accessor: 'onlinetime_prod',
-                helpText: t(`report_${origin}_onlinetime_prod_help`),
+                Header: t(langKeys.report_kpioperativo_tickets_eqtmoasesor),
+                accessor: 'tickets_eqtmoasesor',
+                helpText: t(`report_${origin}_tickets_eqtmoasesor_help`),
                 type: 'number',
                 NoFilter: true,
                 Footer: (props: any) => {
                     const total = React.useMemo(
                         () =>
-                            props.rows.reduce((sum: any, row: any) => +row.values["onlinetime_prod"] + sum, 0),
+                            props.rows.reduce((sum: any, row: any) => +row.values["tickets_eqtmoasesor"] + sum, 0),
                         [props.rows]
                     )
-                    return <>{total ? formatNumber(total / props.rows.filter((r: any) => r.values["onlinetime_prod"]).length) : ''}</>
+                    return <>{total ? formatNumber(total / props.rows.filter((r: any) => r.values["tickets_eqtmoasesor"]).length) : ''}</>
                 },
             },
             {
-                Header: t(langKeys.report_kpioperativo_busytime),
-                accessor: 'busytime',
-                helpText: t(`report_${origin}_busytime_help`),
+                Header: t(langKeys.report_kpioperativo_tmoasesor_avg),
+                accessor: 'tmoasesor_avg',
+                helpText: t(`report_${origin}_tmoasesor_avg_help`),
                 type: 'number',
                 NoFilter: true,
                 Footer: (props: any) => {
                     const total = React.useMemo(
                         () =>
-                            props.rows.reduce((sum: any, row: any) => +row.values["busytime"] + sum, 0),
+                            props.rows.reduce((sum: any, row: any) => +row.values["tmoasesor_avg"] + sum, 0),
                         [props.rows]
                     )
-                    return <>{total ? formatNumberNoDecimals(total / props.rows.filter((r: any) => r.values["busytime"]).length) : ''}</>
+                    return <>{total ? formatNumberNoDecimals(total / props.rows.filter((r: any) => r.values["tmoasesor_avg"]).length) : ''}</>
                 },
             },
         ],
