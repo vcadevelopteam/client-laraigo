@@ -268,7 +268,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
             })}>
                 <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
                     <GetIcon channelType={communicationchanneltype} color={iconColor} />
-                    <div className={classes.name}>{displayname || "-"}</div>
+                    <div className={classes.name} style={{ maxWidth: (statusCall === "CONNECTING" ? 165 : 200) }}>{displayname || "-"}</div>
                 </div>
                 <div style={{ color: '#465a6ed9', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', minWidth: 180, maxWidth: callVoxi ? 180 : 230 }}>
                     {(lastmessage?.split("&%MAIL%&")[0] || "").trim() || "-"}
@@ -282,7 +282,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                     <LabelGo
                         isTimer={status !== "CERRADO"}
                         tooltip={t(langKeys.total_duration)}
-                        label={status === "CERRADO" ? getTimeBetweenDates(new Date(firstconversationdate || ""), new Date(finishdate || "")) : undefined}
+                        label={status === "CERRADO" ? (finishdate ? getTimeBetweenDates(new Date(firstconversationdate || ""), new Date(finishdate || "")) : secondsToTime(0)) : undefined}
                         dateGo={status !== "CERRADO" ? (firstconversationdate || new Date().toISOString()) : undefined}
                         color="#465a6ed9"
                     />
