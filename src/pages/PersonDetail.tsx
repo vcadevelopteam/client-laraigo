@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { FieldSelect, GetIcon } from 'components';
 import { getChannelListByPersonBody, getTicketListByPersonBody, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, insPersonCommunicationChannel, convertLocalDate } from 'common/helpers';
 import { Dictionary, IObjectState, IPerson, IPersonChannel, IPersonConversation, IPersonDomains } from "@types";
-import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, TextField, Paper, InputBase, Tooltip } from '@material-ui/core';
+import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, TextField, Paper, InputBase, Tooltip, styled } from '@material-ui/core';
 import clsx from 'clsx';
 import { BuildingIcon, DocNumberIcon, DocTypeIcon, EMailInboxIcon, GenderIcon, TelephoneIcon, SearchIcon, CallRecordIcon } from 'icons';
 import PhoneIcon from '@material-ui/icons/Phone';
@@ -28,6 +28,8 @@ import TableZyx from '../components/fields/table-simple';
 import { setModalCall, setPhoneNumber } from 'store/voximplant/actions';
 import { VoximplantService } from 'network';
 import DialogInteractions from 'components/inbox/DialogInteractions';
+import { Controller } from "react-hook-form";
+import MuiPhoneNumber from 'material-ui-phone-number';
 const urgencyLevels = [null, 'LOW', 'MEDIUM', 'HIGH']
 
 const usePhotoClasses = makeStyles(theme => ({
@@ -52,6 +54,20 @@ const Photo: FC<PhotoProps> = ({ src, radius }) => {
     }
     return <Avatar alt={src} src={src} className={classes.accountPhoto} style={{ width, height }} />;
 }
+
+const CssPhonemui = styled(MuiPhoneNumber)({
+    '& label.Mui-focused': {
+        color: '#7721ad',
+    },
+    '& .MuiInput-underline:after': {
+        borderBottomColor: '#7721ad',
+    },
+    '& .MuiOutlinedInput-root': {
+        '&.Mui-focused fieldset': {
+            borderColor: '#7721ad',
+        },
+    },
+});
 
 const usePropertyStyles = makeStyles(theme => ({
     propertyRoot: {
@@ -150,9 +166,10 @@ interface GeneralInformationTabProps {
     setValue: any;
     domains: IObjectState<IPersonDomains>;
     errors: any;
+    control: any;
 }
 
-const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValues, setValue, domains, errors }) => {
+const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValues, setValue, domains, errors, control }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     // const referrerList = useSelector(state => state.person.personReferrerList);
@@ -220,12 +237,28 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                             />
                         </Grid>
 
-                        {!person.personid &&
+                        {/*{!person.personid &&
                             <>
                                 <Grid item sm={6} xl={6} xs={6} md={6} lg={6}>
                                     <Property
                                         title={<Trans i18nKey={langKeys.personIdentifier} />}
-                                        subtitle={(
+                                        subtitle={
+                                            channel.includes('WHA')||channel.includes('VOX')?(
+                                                <Controller
+                                                    name="personcommunicationchannel"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <CssPhonemui
+                                                            {...field}
+                                                            fullWidth
+                                                            defaultCountry={"pe"}
+                                                            placeholder={t(langKeys.personIdentifier)}
+                                                            error={errors?.personcommunicationchannel?.message ? true : false}
+                                                            helperText={errors?.personcommunicationchannel?.message || null}
+                                                        />
+                                                    )}
+                                                />
+                                            ):(
                                             <TextField
                                                 fullWidth
                                                 placeholder={t(langKeys.personIdentifier)}
@@ -240,12 +273,28 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                                     <Property
                                         title={<Trans i18nKey={langKeys.internalIdentifier} />}
-                                        subtitle={(
+                                        subtitle={
+                                            channel.includes('WHA')||channel.includes('VOX')?(
+                                                <Controller
+                                                    name="personcommunicationchannelowner"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <CssPhonemui
+                                                            {...field}
+                                                            fullWidth
+                                                            defaultCountry={"pe"}
+                                                            placeholder={t(langKeys.personIdentifier)}
+                                                            error={errors?.personcommunicationchannelowner?.message ? true : false}
+                                                            helperText={errors?.personcommunicationchannelowner?.message || null}
+                                                        />
+                                                    )}
+                                                />
+                                            ):(
                                             <TextField
                                                 fullWidth
                                                 placeholder={t(langKeys.internalIdentifier)}
-                                                onChange={e => setValue('personcommunicationchannelowner', e.target.value)}
-                                                error={!!errors?.personcommunicationchannelowner?.message}
+                                                onChange={e => setValue('personcommunicationchannel', e.target.value)}
+                                                error={errors?.personcommunicationchannelowner?.message ? true : false}
                                                 helperText={errors?.personcommunicationchannelowner?.message || null}
                                             />
                                         )}
@@ -259,6 +308,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                             <FieldSelect
                                                 onChange={(value) => {
                                                     setValue('channeltype', value?.domainvalue);
+                                                    setchannel(value?.domainvalue||"")
                                                 }}
                                                 loading={domains.loading}
                                                 data={domains.value?.channelTypes || []}
@@ -271,7 +321,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                     />
                                 </Grid>
                             </>
-                        }
+                        }*/}
 
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <Property
@@ -357,28 +407,51 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                             <Property
                                 title={<Trans i18nKey={langKeys.phone} />}
-                                subtitle={(
-                                    <TextField
-                                        fullWidth
-                                        placeholder={t(langKeys.phone)}
-                                        defaultValue={person.phone}
-                                        onChange={e => setValue('phone', e.target.value)}
-                                    />
-                                )}
+                                subtitle={(     
+                                    <Controller
+                                        name="phone"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <CssPhonemui
+                                                {...field}
+                                                fullWidth
+                                                defaultCountry={"pe"}
+                                                placeholder={t(langKeys.phone)}
+                                                error={errors?.phone?.message ? true : false}
+                                                helperText={errors?.phone?.message || null}
+                                                onChange={(value:any) => {
+                                                    setValue('personcommunicationchannel', value||"")
+                                                    setValue('personcommunicationchannelowner', value||"")
+                                                    setValue('channeltype', value?.domainvalue);
+                                                    setValue('phone', value||"");
+                                                }}
+                                            />
+                                        )}
+                                    />                               
+                                    )}
                                 m={1}
                             />
                         </Grid>
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                             <Property
                                 title={<Trans i18nKey={langKeys.alternativePhone} />}
-                                subtitle={(
-                                    <TextField
-                                        fullWidth
-                                        placeholder={t(langKeys.alternativePhone)}
-                                        defaultValue={person.alternativephone}
-                                        onChange={e => setValue('alternativephone', e.target.value)}
-                                    />
-                                )}
+                                subtitle={(     
+                                    <Controller                
+                                        name="alternativephone"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <CssPhonemui
+                                                {...field}
+                                                fullWidth
+                                                defaultCountry={"pe"}
+                                                placeholder={t(langKeys.alternativePhone)}
+                                                onChange={(value:any) => {
+                                                    setValue('alternativephone', value||"");
+                                                }}
+                                            />
+                                        )}
+                                    />                               
+                                    )}
                                 m={1}
                             />
                         </Grid>
@@ -1425,7 +1498,7 @@ const PersonDetail: FC = () => {
     const user = useSelector(state => state.login.validateToken.user);
     const person = location.state as IPerson | null;
 
-    const { setValue, getValues, trigger, register, formState: { errors } } = useForm<any>({
+    const { setValue, getValues, trigger, register, control, formState: { errors } } = useForm<any>({
         defaultValues: { ...person } || {},
     });
 
@@ -1461,9 +1534,7 @@ const PersonDetail: FC = () => {
 
                 register('firstname', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
                 register('lastname', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
-                register('personcommunicationchannel', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
-                register('personcommunicationchannelowner', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
-                register('channeltype', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
+                register('phone', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
             }
             dispatch(getDomainsByTypename());
         }
@@ -1700,6 +1771,7 @@ const PersonDetail: FC = () => {
                             person={person}
                             domains={domains}
                             errors={errors}
+                            control={control}
                         />
                     </TabPanel>
                     <TabPanel value="1" index={tabIndex}>
