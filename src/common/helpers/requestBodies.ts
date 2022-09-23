@@ -2033,6 +2033,7 @@ export const insPersonBody = (person: Dictionary): IRequestBody => ({
         ...person,
         corpid: null,
         orgid: null,
+        phone: person?.phone?.replaceAll('+',''),
         observation: person.observation || '',
     },
 });
@@ -2055,6 +2056,7 @@ export const editPersonBody = (person: IPerson): IRequestBody => ({
         id: person.personid,
         operation: person.personid ? 'UPDATE' : 'INSERT',
         observation: person.observation || '',
+        phone: person?.phone?.replaceAll('+',''),
     },
 });
 

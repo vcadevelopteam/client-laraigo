@@ -749,7 +749,7 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                                 {(!voxiConnection.error && !voxiConnection.loading && statusCall !== "CONNECTED" && userConnected && statusCall !== "CONNECTING" && (channel.type.includes("WHA") || channel.type.includes("VOXI"))) &&
                                     <IconButton
                                         className={classes.buttonphone}
-                                        onClick={() => { dispatch(setPhoneNumber(channel.personcommunicationchannelowner)); dispatch(setModalCall(true)) }}
+                                        onClick={() => { dispatch(setPhoneNumber(channel.personcommunicationchannelowner.replaceAll('+',''))); dispatch(setModalCall(true)) }}
                                     >
                                         <PhoneIcon style={{ width: "20px", height: "20px" }} />
                                     </IconButton>
