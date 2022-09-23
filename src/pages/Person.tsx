@@ -656,9 +656,9 @@ export const Person: FC = () => {
             domains.value?.civilStatuses.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_civilstatus_${d.domainvalue?.toLowerCase()}`) }), {}),
             domains.value?.occupations.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_ocupation_${d.domainvalue?.toLowerCase()}`) }), {}),
             domains.value?.groups.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
-            domains.value?.channelTypes.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
-            {},
-            {},
+            //domains.value?.channelTypes.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
+            //{},
+            //{},
             {}
         ];
         const header = [
@@ -678,9 +678,9 @@ export const Person: FC = () => {
             'civilstatus',
             'occupation',
             'groups',
-            'channeltype',
-            'personcommunicationchannel',
-            'personcommunicationchannelowner',
+            //'channeltype',
+            //'personcommunicationchannel',
+            //'personcommunicationchannelowner',
             'displayname'
         ];
         exportExcel(t(langKeys.template), templateMaker(data, header));
@@ -700,7 +700,8 @@ export const Person: FC = () => {
                 && (f.civilstatus === undefined || Object.keys(domains.value?.civilStatuses.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.civilstatus))
                 && (f.occupation === undefined || Object.keys(domains.value?.occupations.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.occupation))
                 && (f.groups === undefined || Object.keys(domains.value?.groups.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.groups))
-                && (f.channeltype === undefined || Object.keys(domains.value?.channelTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.channeltype))
+                //&& (f.channeltype === undefined || Object.keys(domains.value?.channelTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.channeltype))
+                && !['', null, undefined].includes(f.phone)
             );
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
@@ -733,13 +734,13 @@ export const Person: FC = () => {
                         operation: 'INSERT',
                         pcc: data
                             .filter((c: IPersonImport) => `${c.documenttype}_${c.documentnumber}` === `${d.documenttype}_${d.documentnumber}`
-                                && !['', null, undefined].includes(c.channeltype)
-                                && !['', null, undefined].includes(c.personcommunicationchannel)
+                                //&& !['', null, undefined].includes(c.channeltype)
+                                && !['', null, undefined].includes(d.phone)
                             )
                             .map((c: IPersonImport) => ({
-                                type: c.channeltype,
-                                personcommunicationchannel: c.personcommunicationchannel || null,
-                                personcommunicationchannelowner: c.personcommunicationchannelowner || null,
+                                type: "VOXI",//c.channeltype,
+                                personcommunicationchannel: d.phone || null,
+                                personcommunicationchannelowner: d.phone || null,
                                 displayname: c.displayname || null,
                                 status: 'ACTIVO',
                                 operation: 'INSERT'
