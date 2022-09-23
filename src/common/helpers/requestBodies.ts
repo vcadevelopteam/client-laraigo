@@ -2046,6 +2046,7 @@ export const insPersonCommunicationChannel = (pcc: Dictionary): IRequestBody => 
     parameters: {
         ...pcc,
         corpid: null,
+        type: pcc.type||"VOXI",
         orgid: null,
     },
 });
@@ -2054,6 +2055,7 @@ export const editPersonBody = (person: IPerson): IRequestBody => ({
     method: 'UFN_PERSON_INS',
     parameters: {
         ...person,
+        alternativephone: person.alternativephone||"",
         id: person.personid,
         operation: person.personid ? 'UPDATE' : 'INSERT',
         observation: person.observation || '',
