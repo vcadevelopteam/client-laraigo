@@ -12,9 +12,9 @@ import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import { execute, getCollection, getCollectionAux, getCollectionAux2, resetAllMain } from 'store/main/actions';
-import { insertutterance, selEntities, selIntent, selUtterance, utterancedelete } from 'common/helpers/requestBodies';
-import { filterPipe } from 'common/helpers';
+import { execute, exportData, getCollection, getCollectionAux, getCollectionAux2, resetAllMain } from 'store/main/actions';
+import { exportintent, insertutterance, selEntities, selIntent, selUtterance, utterancedelete } from 'common/helpers/requestBodies';
+import { exportExcel, filterPipe, uploadExcel } from 'common/helpers';
 
 
 interface RowSelected {
@@ -45,40 +45,6 @@ const useStyles = makeStyles((theme) => ({
         background: '#fff',
     },
 }));
-
-/*{
-    name: "Quiero comprar un Samsung",
-    datajson: {
-        text: "Quiero comprar un Samsung",
-        intent: {
-            id: "525288882688594",
-            "name": "saludo"
-        },
-        traits: [],
-        entities: [
-            {
-                id: "1136777953889025",
-                end: 25,
-                body: "comprar un Samsung",
-                name: "marca",
-                role: "marca",
-                start: 7,
-                entities: [
-                    {
-                        id: "1767365776940765",
-                        end: 18,
-                        body: "Samsung",
-                        name: "documento",
-                        role: "documento",
-                        start: 11,
-                        entities: []
-                    }
-                ]
-            }
-        ]
-    }
-}*/
-
 
 class VariableHandler {
     show: boolean;
@@ -275,6 +241,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
         }
     }
 
+
     return (
         <div style={{width: '100%'}}>
             <form onSubmit={onSubmit}>
@@ -464,9 +431,12 @@ export const Intentions: FC = () => {
     const [selectedRows, setSelectedRows] = useState<any>({});
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
+    const [waitExport, setWaitExport] = useState(false);
+    const mainResultAux = useSelector(state => state.main.mainAux);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
 
     const [viewSelected, setViewSelected] = useState("view-1");
+    const [waitImport, setWaitImport] = useState(false);
 
     const fetchData = () => {dispatch(getCollection(selIntent()))};
     const selectionKey = 'name';
@@ -494,6 +464,22 @@ export const Intentions: FC = () => {
             }
         }
     }, [executeRes, waitSave])
+
+    useEffect(() => {
+        if (waitImport) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
+                fetchData();
+                dispatch(showBackdrop(false));
+                setWaitImport(false);
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.intentions).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitImport(false);
+            }
+        }
+    }, [executeRes, waitImport]);
 
     const columns = React.useMemo(
         () => [
@@ -564,6 +550,75 @@ export const Intentions: FC = () => {
             callback
         }))
     }
+
+    
+    const triggerExportData = () => {
+        if (Object.keys(selectedRows).length === 0) {
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_record_selected)}));
+            return null;
+        }
+        dispatch(getCollectionAux(exportintent({name_json: JSON.stringify(Object.keys(selectedRows).map(x=>({name:x})))})))    
+        dispatch(showBackdrop(true));
+        setWaitExport(true);
+    };
+
+    useEffect(() => {
+        if (waitExport) {
+            if (!mainResultAux.loading && !mainResultAux.error) {
+                dispatch(showBackdrop(false));
+                setWaitExport(false);
+                exportExcel(t(langKeys.intentions), mainResultAux.data.map(x=>({...x,intent_datajson: JSON.stringify(x.intent_datajson), utterance_datajson: JSON.stringify(x.utterance_datajson)})))
+            } else if (mainResultAux.error) {
+                const errormessage = t(mainResultAux.code || "error_unexpected_error", { module: t(langKeys.blacklist).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitExport(false);
+            }
+        }
+    }, [mainResultAux, waitExport]);
+
+    const handleUpload = async (files: any[]) => {
+        const file = files[0];
+        if (file) {
+            const data: any = (await uploadExcel(file, undefined) as any[]).filter((d: any) => !['', null, undefined].includes(d.intent_name));
+            if (data.length > 0) {
+                data.reduce((acc:any,element:any)=>{
+                    let repeatedindex = acc.findIndex((item:any)=>item.intent_name === element.intent_name)
+                    if (repeatedindex < 0){
+                        debugger
+                        return [...acc, {
+                            name: element.intent_name,
+                            description: element.intent_description,
+                            datajson: JSON.parse(element.intent_datajson),
+                            utterance_datajson: [{
+                                
+                            }]
+                        }]
+                    }else{
+                        debugger
+
+                    }
+                },[])
+                dispatch(showBackdrop(true));
+                dispatch(execute(insertutterance(data.reduce((ad: any[], d: any) => {
+                    ad.push({
+                        ...d,
+                        id: d.id || 0,
+                        name: d.intent_name || '',
+                        description: d.intent_description || '',
+                        datajson: JSON.stringify({name: d.intent_datajson}), 
+                        utterance_datajson: JSON.stringify(d.utterance_datajson),
+                        type: 'NINGUNO',
+                        status: d.status || 'ACTIVO',
+                        operation: d.operation || 'INSERT',
+                    })
+                    return ad;
+                }, []))));
+                setWaitImport(true)
+            }
+        }
+    }
+    
     if (viewSelected==="view-1"){
         return (
             <React.Fragment>
@@ -591,8 +646,11 @@ export const Intentions: FC = () => {
                         )}
                         loading={mainResult.mainData.loading}
                         register={true}
-                        download={false}
+                        download={true}
+                        triggerExportPersonalized={true}
+                        exportPersonalized={triggerExportData}
                         handleRegister={handleRegister}
+                        importCSV={handleUpload}
                         pageSizeDefault={20}
                         initialPageIndex={0}
                     />
