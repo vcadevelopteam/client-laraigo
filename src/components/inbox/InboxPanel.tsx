@@ -277,7 +277,7 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
-        maxWidth: 200
+        
     },
     containerQuickReply: {
         whiteSpace: 'break-spaces',
