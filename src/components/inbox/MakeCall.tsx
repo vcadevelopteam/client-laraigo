@@ -22,7 +22,7 @@ import ContactPhoneIcon from '@material-ui/icons/ContactPhone';
 import PhoneCallbackIcon from '@material-ui/icons/PhoneCallback';
 import BackspaceIcon from '@material-ui/icons/Backspace';
 import clsx from 'clsx';
-import { execute } from 'store/main/actions';
+import { execute, resetExecute } from 'store/main/actions';
 import { ITicket } from '@types';
 import { ListItemSkeleton } from 'components';
 import { showSnackbar } from 'store/popus/actions';
@@ -253,7 +253,7 @@ const MakeCall: React.FC = () => {
     React.useEffect(() => {
         if (!resExecute.loading && !resExecute.error) {
             if (resExecute.key === "UFN_CONVERSATION_OUTBOUND_INS") {
-                const { v_conversationid, v_ticketnum, v_personid, v_firstconversationdate, v_personname, v_voximplantrecording } = resExecute.data[0]
+                const { v_conversationid, v_ticketnum, v_personid, v_firstconversationdate, v_personname, v_voximplantrecording, v_personcommunicationchannelowner } = resExecute.data[0]
                 const data: ITicket = {
                     conversationid: parseInt(v_conversationid),
                     ticketnum: v_ticketnum,
@@ -265,18 +265,19 @@ const MakeCall: React.FC = () => {
                     personlastreplydate: null,
                     countnewmessages: 0,
                     usergroup: "",
-                    displayname: v_personname || numberVox,
+                    displayname: v_personname || v_personcommunicationchannelowner,
                     coloricon: '',
                     communicationchanneltype: "VOXI",
                     lastmessage: "LLAMADA SALIENTE",
-                    personcommunicationchannel: `${numberVox}_VOXI`,
+                    personcommunicationchannel: `${v_personcommunicationchannelowner}_VOXI`,
                     communicationchannelsite: sitevoxi || "",
                     lastreplyuser: "",
                 }
                 dispatch(setModalCall(false));
                 const identifier = `${corpid}-${orgid}-${ccidvoxi}-${resExecute.data[0].v_conversationid}-${resExecute.data[0].v_personid}.${sitevoxi}.${userid}.${v_voximplantrecording}`;
 
-                dispatch(makeCall({ number: numberVox, site: identifier || "", data }));
+                dispatch(resetExecute());
+                dispatch(makeCall({ number: v_personcommunicationchannelowner, site: identifier || "", data }));
                 history.push('/message_inbox');
             }
         } else if (!resExecute.loading && resExecute.error && resExecute.key === "UFN_CONVERSATION_OUTBOUND_INS") {
@@ -303,7 +304,7 @@ const MakeCall: React.FC = () => {
             setTimeWaiting(0);
             ringtone.current?.pause();
             if (ringtone.current) {
-                ringtone.current.volume = (user?.properties?.ringer_volume||100)/100
+                ringtone.current.volume = (user?.properties?.ringer_volume || 100) / 100
                 ringtone.current.currentTime = 0;
             }
             ringtone.current?.play();
@@ -348,7 +349,7 @@ const MakeCall: React.FC = () => {
     React.useEffect(() => {
         if (showcall) {
             setwaiting2(false)
-            setNumberVox(personData?.data?.phone||phonenumber||"")
+            setNumberVox(personData?.data?.phone || phonenumber || "")
             dispatch(setPhoneNumber(""))
         } else {
             setPageSelected(1)
