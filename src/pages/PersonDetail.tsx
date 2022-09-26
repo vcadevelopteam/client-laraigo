@@ -323,13 +323,13 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                             </>
                         }*/}
 
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        {/*<Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <Property
                                 title={<Trans i18nKey={langKeys.fullname} />}
                                 subtitle={person.name}
                                 m={1}
                             />
-                        </Grid>
+                        </Grid>*/}
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                             <Property
                                 title={<Trans i18nKey={langKeys.documenttype} />}
@@ -417,8 +417,6 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                                 fullWidth
                                                 defaultCountry={"pe"}
                                                 placeholder={t(langKeys.phone)}
-                                                error={errors?.phone?.message ? true : false}
-                                                helperText={errors?.phone?.message || null}
                                                 onChange={(value:any) => {
                                                     setValue('personcommunicationchannel', value||"")
                                                     setValue('personcommunicationchannelowner', value||"")
@@ -749,7 +747,7 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                                 {(!voxiConnection.error && !voxiConnection.loading && statusCall !== "CONNECTED" && userConnected && statusCall !== "CONNECTING" && (channel.type.includes("WHA") || channel.type.includes("VOXI"))) &&
                                     <IconButton
                                         className={classes.buttonphone}
-                                        onClick={() => { dispatch(setPhoneNumber(channel.personcommunicationchannelowner.replaceAll('+',''))); dispatch(setModalCall(true)) }}
+                                        onClick={() => { debugger;dispatch(setPhoneNumber(channel.personcommunicationchannelowner.replaceAll('+',''))); dispatch(setModalCall(true)) }}
                                     >
                                         <PhoneIcon style={{ width: "20px", height: "20px" }} />
                                     </IconButton>
@@ -1534,7 +1532,6 @@ const PersonDetail: FC = () => {
 
                 register('firstname', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
                 register('lastname', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
-                register('phone', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
             }
             dispatch(getDomainsByTypename());
         }
@@ -1591,8 +1588,9 @@ const PersonDetail: FC = () => {
                     header: editPersonBody({ ...person, ...values }),
                     detail: [
                         insPersonCommunicationChannel({
-                            personcommunicationchannel: values.personcommunicationchannel,
-                            personcommunicationchannelowner: values.personcommunicationchannelowner,
+                            phone:values.phone.replaceAll('+','')||"",
+                            personcommunicationchannel: values.personcommunicationchannel.replaceAll('+','')||"",
+                            personcommunicationchannelowner: values.personcommunicationchannelowner.replaceAll('+','')||"",
                             displayname: `${values.firstname} ${values.lastname}`,
                             type: values.channeltype,
                             operation: 'INSERT',

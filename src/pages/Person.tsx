@@ -60,13 +60,12 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             default: return '-';
         }
     }, [type]);
-
     const { control, register, handleSubmit, setValue, getValues, trigger, reset, formState: { errors } } = useForm<any>({
         defaultValues: {
             hsmtemplateid: 0,
             observation: '',
-            communicationchannelid: 0,
-            communicationchanneltype: '',
+            communicationchannelid: type==="HSM"?(channelList?.length === 1?channelList[0].communicationchannelid:0):0,
+            communicationchanneltype: type==="HSM"?(channelList?.length === 1?channelList[0].type:""):'',
             variables: []
         }
     });
@@ -92,6 +91,8 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             }
         }
     }, [sendingRes, waitClose])
+    useEffect(() => {
+    }, [channelList])
 
     useEffect(() => {
         if (!domains.error && !domains.loading) {
@@ -107,8 +108,8 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
                 hsmtemplateid: 0,
                 hsmtemplatename: '',
                 variables: [],
-                communicationchannelid: 0,
-                communicationchanneltype: ''
+                communicationchannelid: type==="HSM"?(channelList?.length === 1?channelList[0].communicationchannelid:0):0,
+                communicationchanneltype: type==="HSM"?(channelList?.length === 1?channelList[0].type:""):''
             })
             register('hsmtemplateid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
 
@@ -169,6 +170,14 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
         dispatch(showBackdrop(true));
         setWaitClose(true)
     });
+
+    useEffect(() => {
+        if(channelList.length === 1 && type==="HSM"){
+            setValue("communicationchannelid",channelList[0].communicationchannelid||0)
+            setValue('communicationchanneltype', channelList[0].type || "");
+            trigger("communicationchannelid")
+        }
+    }, [channelList])
 
     return (
         <DialogZyx
