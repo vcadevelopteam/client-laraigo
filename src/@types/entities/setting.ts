@@ -15,4 +15,5 @@ export interface ISetting {
     num_whitelist: number | null;
     num_inputvalidation: number | null;
     num_property: number | null;
+    num_location: number | null;
 }

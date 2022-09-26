@@ -465,8 +465,7 @@ const Settings: FC = () => {
                                         }
                                         m={2}
                                     />
-                                </Grid>                        
-                                
+                                </Grid>             
                             </Grid>
                         </Grid>
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
@@ -561,6 +560,21 @@ const Settings: FC = () => {
                                         m={2}
                                     />
                                 </Grid>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <ItemTile
+                                        title={<Trans i18nKey={langKeys.location} count={2} />}
+                                        subtitle={<SubtitleText value={value?.num_location} i18nKey={langKeys.location} />}
+                                        icon={<ClassificationIcon fill="inherit" stroke="inherit" />}
+                                        helpText={
+                                            <HelpText
+                                                i18nKey={langKeys.manageLocation}
+                                                count={2}
+                                                onClick={() => history.push(paths.EXTRASLOCATION)}
+                                            />
+                                        }
+                                        m={2}
+                                    />
+                                </Grid> 
                             </Grid>
                         </Grid>
                     </Grid>
@@ -602,26 +616,46 @@ const Settings: FC = () => {
                     </Grid> 
                     
                     {(user.properties.environment!=="CLARO") &&
+
                     <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
                         <Grid container direction="column">
                             <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                                 <ItemTile
-                                    title={<Trans i18nKey={langKeys.domain} count={2} />}
-                                    subtitle={<SubtitleText value={value?.num_domain} i18nKey={langKeys.domain} />}
-                                    icon={<DomainsIcon fill="inherit" stroke="inherit" />}
+                                    title={<Trans i18nKey={langKeys.classification} count={2} />}
+                                    subtitle={<SubtitleText value={value?.num_classification} i18nKey={langKeys.classification} />}
+                                    icon={<ClassificationIcon fill="inherit" stroke="inherit" />}
                                     helpText={
                                         <HelpText
-                                            i18nKey={langKeys.manageDomain}
+                                            i18nKey={langKeys.manageClassification}
                                             count={2}
-                                            onClick={() => history.push(paths.DOMAINS)}
+                                            onClick={() => history.push(paths.TIPIFICATIONS)}
                                         />
                                     }
                                     m={2}
                                 />
-                            </Grid>
-                        </Grid>
+                            </Grid>  
+                        </Grid> 
                     </Grid>
                     }
+                    <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
+                        <Grid container direction="column">
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                <ItemTile
+                                    title={<Trans i18nKey={langKeys.whitelist} count={2} />}
+                                    subtitle={<SubtitleText value={value?.num_whitelist} i18nKey={langKeys.whitelist} />}
+                                    icon={<ClassificationIcon fill="inherit" stroke="inherit" />}
+                                    helpText={
+                                        <HelpText
+                                            i18nKey={langKeys.manageWhitelist}
+                                            count={2}
+                                            onClick={() => history.push(paths.WHITELIST)}
+                                        />
+                                    }
+                                    m={2}
+                                />
+                            </Grid>  
+                        </Grid> 
+                    </Grid>
                     <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
                         <Grid container direction="column">
                             <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
@@ -641,7 +675,65 @@ const Settings: FC = () => {
                             </Grid>
                         </Grid>
                     </Grid>
-                    {(user.properties.environment!=="CLARO") &&
+                    <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
+                        <Grid container direction="column">
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                <ItemTile
+                                    title={<Trans i18nKey={langKeys.location} count={2} />}
+                                    subtitle={<SubtitleText value={value?.num_location} i18nKey={langKeys.location} />}
+                                    icon={<ClassificationIcon fill="inherit" stroke="inherit" />}
+                                    helpText={
+                                        <HelpText
+                                            i18nKey={langKeys.manageLocation}
+                                            count={2}
+                                            onClick={() => history.push(paths.EXTRASLOCATION)}
+                                        />
+                                    }
+                                    m={2}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
+                        <Grid container direction="column">
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <ItemTile
+                                        title={<Trans i18nKey={langKeys.serviceLevelAgreement} count={2} />}
+                                        subtitle={<SubtitleText value={value?.num_sla} i18nKey={langKeys.agreement} />}
+                                        icon={<SLAIcon fill="inherit" stroke="inherit" />}
+                                        helpText={
+                                            <HelpText
+                                                i18nKey={langKeys.manageAgreement}
+                                                count={2}
+                                                onClick={() => history.push(paths.SLA)}
+                                            />
+                                        }
+                                        m={2}
+                                    />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
+                        <Grid container direction="column">
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                <ItemTile
+                                    title={<Trans i18nKey={langKeys.forbiddenWord} count={2} />}
+                                    subtitle={<SubtitleText value={value?.num_forbidden_words} i18nKey={langKeys.forbiddenWord} />}
+                                    icon={<ForbiddenWordsIcon fill="inherit" stroke="inherit" />}
+                                    helpText={
+                                        <HelpText
+                                            i18nKey={langKeys.manageForbiddenWord}
+                                            count={2}
+                                            onClick={() => history.push(paths.INAPPROPRIATEWORDS)}
+                                        />
+                                    }
+                                    m={2}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    {
+                    //(user.properties.environment!=="CLARO") &&
                     <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
                         <Grid container direction="column">
                             <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>

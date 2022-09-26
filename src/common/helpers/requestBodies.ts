@@ -697,6 +697,20 @@ export const getPaginatedPerson = ({ skip, take, filters, sorts, startdate, endd
     }
 })
 //tabla paginada
+export const getPaginatedPersonLink = ({ skip, take, filters, sorts, originpersonid }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_PERSON_LINK_SEL",
+    methodCount: "UFN_PERSON_LINK_TOTALRECORDS",
+    parameters: {
+        originpersonid,
+        skip,
+        take,
+        filters,
+        sorts,
+        origin: "person",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+//tabla paginada
 export const getPersonExport = ({ filters, sorts, startdate, enddate, userids, personcommunicationchannels }: Dictionary): IRequestBody => ({
     method: "UFN_PERSON_EXPORT",
     key: "UFN_PERSON_EXPORT",
@@ -2025,10 +2039,6 @@ export const getPropertyConfigurationsBody = (): IRequestBody[] => ([
         method: "UFN_PROPERTY_SELBYNAME",
         parameters: { propertyname: 'WAITINGREPETITIVEMESSAGE' },
     },
-    {
-        method: "UFN_PROPERTY_SELBYNAME",
-        parameters: { propertyname: 'AMBIENTE' },
-    },
 ]);
 
 export const insPersonBody = (person: Dictionary): IRequestBody => ({
@@ -3117,6 +3127,40 @@ export const getDisconnectionTimes = ({ startdate, enddate, asesorid, supervisor
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
+
+export const ufnlinkPersons = ({ personidfrom, personidto, imageurl, name, firstname, documenttype, documentnumber, persontype, birthday, gender, phone, alternativephone, email, alternativeemail, civilstatus, occupation, educationlevel }: Dictionary): IRequestBody => ({
+    method: "UFN_CONVERSATION_LINKEDPERSON_EXECUTE",
+    key: "UFN_CONVERSATION_LINKEDPERSON_EXECUTE",
+    parameters: {
+        personidfrom, 
+        personidto, 
+        imageurl: imageurl || "",
+        name: name || "",
+        firstname: firstname || "",
+        documenttype: documenttype || "",
+        documentnumber: documentnumber || "",
+        persontype: persontype || "",
+        birthday: birthday || "",
+        gender: gender || "",
+        phone: phone || "",
+        alternativephone: alternativephone || "",
+        email: email || "",
+        alternativeemail: alternativeemail || "",
+        civilstatus: civilstatus || "",
+        occupation: occupation || "",
+        educationlevel: educationlevel || "",
+        groups: ""
+    }
+})
+
+export const unLinkPerson = ({ personid, personcommunicationchannel }: Dictionary): IRequestBody => ({
+    method: "UFN_CONVERSATION_UNLINKPERSON_EXECUTE",
+    key: "UFN_CONVERSATION_UNLINKPERSON_EXECUTE",
+    parameters: {
+        personid, personcommunicationchannel
+    }
+})
+
 export const getDisconnectionDataTimes = ({ startdate, enddate, asesorid, supervisorid }: Dictionary): IRequestBody => ({
     method: "UFN_DASHBOARD_DISCONNECTIONTIMES_DATA_SEL",
     key: "UFN_DASHBOARD_DISCONNECTIONTIMES_DATA_SEL",
@@ -3209,6 +3253,51 @@ export const selCommunicationChannelWhatsApp = (): IRequestBody => ({
     parameters: {}
 })
 
+export const getPaginatedLocation = ({ skip, take, filters, sorts,locationid=""}: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_LOCATION_SEL",
+    methodCount: "UFN_LOCATION_TOTALRECORDS",
+    parameters: {
+        skip,
+        take,
+        filters,
+        sorts,
+        locationid,
+        origin: "location",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+
+export const getLocationExport = ({ filters, sorts }: Dictionary): IRequestBody => ({
+    method: "UFN_LOCATION_EXPORT",
+    key: "UFN_LOCATION_EXPORT",
+    parameters: {
+        origin: "location",
+        filters,
+        sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+
+export const locationIns = ({ id, operation, name, address, district, city, country, schedule, phone, alternativephone, email, alternativeemail, latitude, longitude, googleurl, description, status, type, username }: Dictionary): IRequestBody => ({
+    method: "UFN_LOCATION_INS",
+    key: "UFN_LOCATION_INS",
+    parameters: {
+        id, operation, name, address, district, city, country, schedule, phone, alternativephone, email, alternativeemail, latitude, longitude, googleurl, description, status, type, username
+    }
+});
+
+export const getReportKpiOperativoSel = ({ date, ...allParameters }: Dictionary): IRequestBody => ({
+    method: "UFN_REPORT_KPI_OPERATIVO_SEL",
+    key: "UFN_REPORT_KPI_OPERATIVO_SEL",
+    parameters: {
+        origin: "kpioperativo",
+        date,
+        ...allParameters,
+        usergroup: allParameters['usergroup'] ? allParameters['usergroup'] : "",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+
 export const insInvoiceComment = ({ corpid, orgid, invoiceid, invoicecommentid, description, status, type, username, commentcontent, commenttype, commentcaption }: Dictionary): IRequestBody => ({
     method: "UFN_INVOICECOMMENT_INS",
     key: "UFN_INVOICECOMMENT_INS",
@@ -3220,3 +3309,43 @@ export const selInvoiceComment = ({ corpid, orgid, invoiceid, invoicecommentid }
     key: "UFN_INVOICECOMMENT_SEL",
     parameters: { corpid, orgid, invoiceid, invoicecommentid }
 });
+export const selIntent = (): IRequestBody => ({
+    method: "UFN_WITAI_INTENT_SEL",
+    key: "UFN_WITAI_INTENT_SEL",
+    parameters: {}
+})
+
+export const selUtterance = (intent: string): IRequestBody => ({
+    method: "UFN_WITAI_UTTERANCE_SEL",
+    key: "UFN_WITAI_UTTERANCE_SEL",
+    parameters: {intent}
+})
+
+export const selEntities = (): IRequestBody => ({
+    method: "UFN_WITAI_ENTITY_SEL",
+    key: "UFN_WITAI_ENTITY_SEL",
+    parameters: {}
+})
+
+export const insertutterance = ({name, description, datajson, utterance_datajson, operation}:Dictionary): IRequestBody => ({
+    method: "UFN_WITAI_INTENT_UTTERANCE_INS",
+    key: "UFN_WITAI_INTENT_UTTERANCE_INS",
+    parameters: {name, description, datajson, utterance_datajson, operation}
+})
+
+export const insertentity = ({name, datajson, operation}:Dictionary): IRequestBody => ({
+    method: "UFN_WITAI_ENTITY_INS",
+    key: "UFN_WITAI_ENTITY_INS",
+    parameters: {name, datajson, operation}
+})
+export const utterancedelete = ({table}:Dictionary): IRequestBody => ({
+    method: "UFN_WITUFN_WITAI_INTENT_UTTERANCE_DEL",
+    key: "UFN_WITUFN_WITAI_INTENT_UTTERANCE_DEL",
+    parameters: {table, model:""}
+})
+
+export const entitydelete = ({table,}:Dictionary): IRequestBody => ({
+    method: "UFN_WITAI_ENTITY_DEL",
+    key: "UFN_WITAI_ENTITY_DEL",
+    parameters: {table, model:""}
+})

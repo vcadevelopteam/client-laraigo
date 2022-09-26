@@ -13,7 +13,7 @@ const APIS_URL = {
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
     },
     TESTING: {
-        API: 'https://testapix.laraigo.com/api',
+    API: 'https://testapix.laraigo.com/api',
         WS: 'https://testsocket.laraigo.com',
         CHATFLOW: 'https://zyxmelinux.zyxmeapp.com/zyxmetest/chatflow',
         FACEBOOKAPP: '1094526090706564',
@@ -152,6 +152,8 @@ export const apiUrls = {
     VOXIMPLANT_GET_ACCOUNTBALANCE: `${BASE_URL}/voximplant/getaccountbalance`,
 
     VOXIMPLANT_GET_CALLRECORD: `${BASE_URL}/voximplant/getcallrecord`,
+
+    VOXIMPLANT_UPDATE_SCENARIO: `${BASE_URL}/voximplant/updatescenario`,
 
     GOOGLE_EXCHANGECODE: `${BASE_URL}/google/exchangecode`,
     GOOGLE_LISTBLOGGER: `${BASE_URL}/google/listblogger`,
