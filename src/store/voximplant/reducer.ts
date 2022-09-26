@@ -30,6 +30,7 @@ export interface IState {
     requestTransferAccountBalance: IRequest;
     requestGetAccountBalance: IRequest;
     requestGetCallRecord: IRequest;
+    requestUpdateScenario: IRequest;
 }
 
 export const initialState: IState = {
@@ -51,6 +52,7 @@ export const initialState: IState = {
     requestTransferAccountBalance: { ...initialCommon, data: null, loading: false, error: false },
     requestGetAccountBalance: { ...initialCommon, data: null, loading: false, error: false },
     requestGetCallRecord: { ...initialCommon, data: null, loading: false, error: false },
+    requestUpdateScenario: { ...initialCommon, data: null, loading: false, error: false },
 };
 
 export default createReducer<IState>(initialState, {
@@ -105,4 +107,9 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_CALLRECORD_FAILURE]: caseFUnctions.getCallRecordFailure,
     [actionTypes.GET_CALLRECORD_SUCCESS]: caseFUnctions.getCallRecordSuccess,
     [actionTypes.GET_CALLRECORD_RESET]: caseFUnctions.getCallRecordReset,
+
+    [actionTypes.UPDATE_SCENARIO]: caseFUnctions.updateScenario,
+    [actionTypes.UPDATE_SCENARIO_FAILURE]: caseFUnctions.updateScenarioFailure,
+    [actionTypes.UPDATE_SCENARIO_SUCCESS]: caseFUnctions.updateScenarioSuccess,
+    [actionTypes.UPDATE_SCENARIO_RESET]: caseFUnctions.updateScenarioReset,
 });

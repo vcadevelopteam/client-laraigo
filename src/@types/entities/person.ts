@@ -102,6 +102,7 @@ export interface IPersonChannel {
     corpid: number;
     displayname: string;
     globalid: number;
+    originpersonid?: number;
     orgid: number;
     personcommunicationchannel: string;
     personcommunicationchannelowner: string;

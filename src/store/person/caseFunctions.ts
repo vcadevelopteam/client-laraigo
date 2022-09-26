@@ -62,6 +62,53 @@ export const getPersonListPaginatedReset = (state: IState): IState => ({
     personList: initialState.personList,
 });
 
+
+
+
+
+
+
+
+export const getPersonLinkListPaginated = (state: IState): IState => ({
+    ...state,
+    personLinkList: { ...state.personLinkList, loading: true },
+});
+
+export const getPersonLinkListPaginatedSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    personLinkList: {
+        ...state.personLinkList,
+        data: action.payload.data || [],
+        count: action.payload.count || 0,
+        loading: false,
+        error: false,
+    },
+});
+
+export const getPersonLinkListPaginatedFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    personLinkList: {
+        ...state.personLinkList,
+        error: true,
+        loading: false,
+        message: action.payload?.message || "Ocurrio un error Obtener la lista de personas"
+    },
+});
+
+export const getPersonLinkListPaginatedReset = (state: IState): IState => ({
+    ...state,
+    personLinkList: initialState.personLinkList,
+});
+
+
+
+
+
+
+
+
+
+
 export const getTicketListByPerson = (state: IState): IState => ({
     ...state,
     personTicketList: { ...state.personTicketList, loading: true },

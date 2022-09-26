@@ -171,6 +171,13 @@ export const routes: RouteConfig[] = [
         icon: (className) => <BotDesignerIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
     },
     {
+        key: paths.ASSISTANT,
+        description: <Trans i18nKey={langKeys.assistant} />,
+        tooltip: <Trans i18nKey={langKeys.assistant} />,
+        path: paths.ASSISTANT,
+        icon: (className) => <BotDesignerIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
+    },
+    {
         key: paths.VARIABLECONFIGURATION,
         description: <Trans i18nKey={langKeys.variableconfiguration_plural} count={2} />,
         tooltip: <Trans i18nKey={langKeys.variableconfiguration} />,
@@ -276,6 +283,13 @@ export const subroutes: RouteConfig[] = [
         description: <Trans i18nKey={langKeys.whitelist} count={2} />,
         tooltip: "",
         path: paths.WHITELIST,
+        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+    },
+    {
+        key: paths.EXTRASLOCATION,
+        description: <Trans i18nKey={langKeys.location} count={2} />,
+        tooltip: "",
+        path: paths.EXTRASLOCATION,
         icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
     },
     {

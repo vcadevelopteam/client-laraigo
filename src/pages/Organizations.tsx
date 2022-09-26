@@ -23,7 +23,7 @@ import { useHistory } from 'react-router-dom';
 import paths from 'common/constants/paths';
 import clsx from 'clsx';
 import { formatNumber } from 'common/helpers';
-import { getMaximumConsumption, transferAccountBalance, getAccountBalance } from "store/voximplant/actions";
+import { getMaximumConsumption, transferAccountBalance, getAccountBalance, updateScenario } from "store/voximplant/actions";
 
 interface RowSelected {
     row: Dictionary | null,
@@ -108,6 +108,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const [waitSaveUpload, setWaitSaveUpload] = useState(false);
     const [waitTransferBalance, setWaitTransferBalance] = useState(false);
     const [waitGetBalance, setWaitGetBalance] = useState(false);
+    const [waitUpdateScenario, setWaitUpdateScenario] = useState(false);
     const [waitGetConsumption, setWaitGetConsumption] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
@@ -117,6 +118,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const [showCredential, setShowCredential] = useState(row?.private_mail || false);
     const uploadResult = useSelector(state => state.main.uploadFile);
     const getBalanceResult = useSelector(state => state.voximplant.requestGetAccountBalance);
+    const updateScenarioResult = useSelector(state => state.voximplant.requestUpdateScenario);
     const getConsumptionResult = useSelector(state => state.voximplant.requestGetMaximumConsumption);
     const transferBalanceResult = useSelector(state => state.voximplant.requestTransferAccountBalance);
     // const [valuefile, setvaluefile] = useState('')
@@ -330,6 +332,27 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             }
         }
     }, [getBalanceResult, waitGetBalance])
+
+    useEffect(() => {
+        if (waitUpdateScenario) {
+            if (!updateScenarioResult.loading) {
+                if (!updateScenarioResult.error) {
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
+                }
+                else {
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(((updateScenarioResult.msg || updateScenarioResult.message) || updateScenarioResult.code) || 'error_unexpected_error') }));
+                }
+                dispatch(showBackdrop(false));
+                setWaitUpdateScenario(false);
+            }
+        }
+    }, [updateScenarioResult, waitUpdateScenario])
+
+    const handleUpdateScenario = () => {
+        dispatch(updateScenario({}));
+        setWaitUpdateScenario(true);
+        dispatch(showBackdrop(true));
+    }
 
     const handleGetBalance = (orgid: any) => {
         dispatch(getAccountBalance({ orgid: orgid }));
@@ -1056,6 +1079,34 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 label={t(langKeys.voximplant_organizationfathercredit)}
                                 value={formatNumber(balanceParent || 0)}
                                 className="col-6"
+                            />
+                        </div>}
+                    </div>
+                    <div className={classes.containerDetail}>
+                        {row?.orgid && <div>
+                            <div style={{ marginLeft: "auto", marginRight: "0px", float: "right" }}>
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    startIcon={<RefreshIcon color="secondary" />}
+                                    style={{ backgroundColor: "#55BD84" }}
+                                    onClick={() => handleUpdateScenario()}
+                                >{t(langKeys.voximplant_organizationupdatescenario)}</Button>
+                            </div>
+                        </div>}
+                        {row?.orgid && <div className="row-zyx">
+                            <FieldView
+                                className={classes.section}
+                                label={''}
+                                value={t(langKeys.scenario)}
+                            />
+                        </div>}
+                        {row?.orgid && <div className="row-zyx">
+                            <FieldView
+                                label={''}
+                                value={t(langKeys.voximplant_organizationupdatescenarioalert)}
+                                className="col-12"
                             />
                         </div>}
                     </div>

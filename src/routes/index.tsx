@@ -89,6 +89,8 @@ const CRM = lazy(() => import('pages/crm/CRM'));
 const LeadForm = lazy(() => import('pages/crm/LeadForm'));
 const ChangePwdFirstLogin = lazy(() => import('pages/ChangePwdFirstLogin'));
 const CalendarEvent = lazy(() => import('pages/CalendarEvent'));
+const Assistant = lazy(() => import('pages/assistant/Assistant'));
+const Location = lazy(() => import('pages/Location'));
 
 const useStyles = makeStyles((theme) => ({
 	main: {
@@ -263,6 +265,8 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.CRM_EDIT_LEAD.path} component={() => <Layout mainClasses={classes.main}><LeadForm edit /></Layout>} />
 					<ProtectRoute exact path={paths.KPIMANAGER} component={() => <Layout mainClasses={classes.main}><KPIManager /></Layout>} />
 					<ProtectRoute exact path={paths.CALENDAR} component={() => <Layout mainClasses={classes.main}><Calendar /></Layout>} />
+					<ProtectRoute exact path={paths.ASSISTANT} component={() => <Layout mainClasses={classes.main}><Assistant /></Layout>} />
+					<ProtectRoute exact path={paths.EXTRASLOCATION} component={() => <Layout mainClasses={classes.main}><Location /></Layout>} />
 					<Route exact path={paths.CHNAGE_PWD_FIRST_LOGIN}>
 						<ChangePwdFirstLogin />
 					</Route>
