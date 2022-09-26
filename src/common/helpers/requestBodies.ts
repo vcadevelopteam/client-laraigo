@@ -2051,6 +2051,12 @@ export const insPersonCommunicationChannel = (pcc: Dictionary): IRequestBody => 
         orgid: null,
     },
 });
+export const personInsValidation = ({id, phone, email, alternativephone, alternativeemail, operation}: Dictionary): IRequestBody => ({
+    method: 'UFN_PERSON_INS_VALIDATION',
+    parameters: {
+        id, phone, email, alternativephone, alternativeemail, operation
+    },
+});
 
 export const editPersonBody = (person: IPerson): IRequestBody => ({
     method: 'UFN_PERSON_INS',

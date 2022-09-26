@@ -1578,6 +1578,7 @@ const PersonDetail: FC = () => {
 
 
     const handleEditPerson = async () => {
+        debugger
         const allOk = await trigger(); //para q valide el formulario
         if (allOk) {
             const values = getValues();
