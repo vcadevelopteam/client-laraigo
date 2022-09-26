@@ -3,7 +3,7 @@ import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 're
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { FieldSelect, GetIcon } from 'components';
-import { getChannelListByPersonBody, getTicketListByPersonBody, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, insPersonCommunicationChannel, convertLocalDate } from 'common/helpers';
+import { getChannelListByPersonBody, getTicketListByPersonBody, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, insPersonCommunicationChannel, convertLocalDate, unLinkPerson } from 'common/helpers';
 import { Dictionary, IObjectState, IPerson, IPersonChannel, IPersonConversation, IPersonDomains } from "@types";
 import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, TextField, Paper, InputBase, Tooltip } from '@material-ui/core';
 import clsx from 'clsx';
@@ -28,6 +28,10 @@ import TableZyx from '../components/fields/table-simple';
 import { setModalCall, setPhoneNumber } from 'store/voximplant/actions';
 import { VoximplantService } from 'network';
 import DialogInteractions from 'components/inbox/DialogInteractions';
+import DialogLinkPerson from 'components/inbox/PersonLinked';
+import LinkIcon from '@material-ui/icons/Link';
+import LinkOffIcon from '@material-ui/icons/LinkOff';
+
 const urgencyLevels = [null, 'LOW', 'MEDIUM', 'HIGH']
 
 const usePhotoClasses = makeStyles(theme => ({
@@ -634,15 +638,53 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
     const voxiConnection = useSelector(state => state.voximplant.connection);
     const statusCall = useSelector(state => state.voximplant.statusCall);
     const userConnected = useSelector(state => state.inbox.userConnected);
+    const [waitUnLink, setWaitUnLink] = useState(false);
+    const unLinkRes = useSelector(state => state.main.execute);
+
     const personIdentifier = useMemo(() => {
         if (!channel) return '';
-
         const index = channel.personcommunicationchannel.lastIndexOf('_');
         return channel.personcommunicationchannel.substring(0, index);
     }, [channel]);
+    
+    useEffect(() => {
+        if (waitUnLink) {
+            if (!unLinkRes.loading && !unLinkRes.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: "Vinculación correcta" }))
+                setWaitUnLink(false);
+                dispatch(getChannelListByPerson(getChannelListByPersonBody(channel.personid)));
+            } else if (unLinkRes.error) {
+                const message = t(unLinkRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message }))
+                dispatch(showBackdrop(false));
+                setWaitUnLink(false);
+            }
+        }
+    }, [unLinkRes, waitUnLink])
 
+    // dispatch(getChannelListByPerson(getChannelListByPersonBody(person.personid)));
     return (
-        <div className={classes.root} style={{ display: "flex" }}>
+        <div className={classes.root}>
+            {channel.originpersonid && (
+                <div style={{ textAlign: "right" }}>
+                    <Button
+                        variant="contained"
+                        type="button"
+                        color="primary"
+                        disabled={unLinkRes.loading}
+                        startIcon={<LinkOffIcon color="secondary" />}
+                        onClick={() => {
+                            dispatch(execute(unLinkPerson({
+                                personid: channel.personid,
+                                personcommunicationchannel: channel.personcommunicationchannel
+                            })))
+                            setWaitUnLink(true)
+                        }}
+                    >
+                        {"Desvincular"}
+                    </Button>
+                </div>
+            )}
             <Grid container direction="row">
                 <Grid item xs={11} sm={11} md={6} lg={6} xl={6}>
                     <Property
@@ -1036,10 +1078,10 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
         // setWaitDownloadRecord(true);
         debugger
         try {
-            const axios_result = await VoximplantService.getCallRecord({call_session_history_id: ticket.postexternalid});
+            const axios_result = await VoximplantService.getCallRecord({ call_session_history_id: ticket.postexternalid });
             if (axios_result.status === 200) {
                 let buff = Buffer.from(axios_result.data, 'base64');
-                const blob = new Blob([buff], {type: axios_result.headers['content-type'].split(';').find((x: string) => x.includes('audio'))});
+                const blob = new Blob([buff], { type: axios_result.headers['content-type'].split(';').find((x: string) => x.includes('audio')) });
                 const objectUrl = window.URL.createObjectURL(blob);
                 let a = document.createElement('a');
                 a.href = objectUrl;
@@ -1061,16 +1103,16 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
                 ticket={rowSelected}
             />
             <Grid container direction="row">
-                
+
                 <Grid item xs={12} sm={12} md={1} lg={1} xl={1}>
-                {(conversation.channeltype==="VOXI" && conversation.postexternalid && conversation.callanswereddate ) && 
+                    {(conversation.channeltype === "VOXI" && conversation.postexternalid && conversation.callanswereddate) &&
                         <Tooltip title={t(langKeys.download_record) || ""}>
-                            <IconButton size="small" onClick={() => downloadCallRecord(conversation)} style={{paddingTop: 15, paddingLeft: 20}}
+                            <IconButton size="small" onClick={() => downloadCallRecord(conversation)} style={{ paddingTop: 15, paddingLeft: 20 }}
                             >
                                 <CallRecordIcon style={{ fill: '#7721AD' }} />
                             </IconButton>
                         </Tooltip>
-                }
+                    }
                 </Grid>
                 <Grid item xs={12} sm={12} md={1} lg={1} xl={1}>
                     <Property title="Ticket #" subtitle={conversation.ticketnum} isLink={true} onClick={() => openDialogInteractions(conversation)} />
@@ -1421,6 +1463,7 @@ const PersonDetail: FC = () => {
     const edit = useSelector(state => state.person.editPerson);
     const executeResult = useSelector(state => state.main.execute);
     const [waitLock, setWaitLock] = useState(false);
+    const [showLinkPerson, setShowLinkPerson] = useState(false)
 
     const user = useSelector(state => state.login.validateToken.user);
     const person = location.state as IPerson | null;
@@ -1608,15 +1651,26 @@ const PersonDetail: FC = () => {
                 <h1>{person.name}</h1>
                 <div style={{ display: 'flex', gap: '10px' }}>
                     {!!person.personid &&
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            startIcon={getValues('locked') ? <LockOpenIcon color="secondary" /> : <LockIcon color="secondary" />}
-                            onClick={handleLock}
-                        >
-                            {getValues('locked') ? t(langKeys.unlock) : t(langKeys.lock)}
-                        </Button>
+                        <>
+                            <Button
+                                variant="contained"
+                                type="button"
+                                color="primary"
+                                startIcon={<LinkIcon color="secondary" />}
+                                onClick={() => setShowLinkPerson(true)}
+                            >
+                                {t(langKeys.link)}
+                            </Button>
+                            <Button
+                                variant="contained"
+                                type="button"
+                                color="primary"
+                                startIcon={getValues('locked') ? <LockOpenIcon color="secondary" /> : <LockIcon color="secondary" />}
+                                onClick={handleLock}
+                            >
+                                {getValues('locked') ? t(langKeys.unlock) : t(langKeys.lock)}
+                            </Button>
+                        </>
                     }
                     <Button
                         variant="contained"
@@ -1817,6 +1871,14 @@ const PersonDetail: FC = () => {
                     </div>
                 }
             </div>
+            <DialogLinkPerson
+                openModal={showLinkPerson}
+                setOpenModal={setShowLinkPerson}
+                person={person}
+                callback={() => {
+                    dispatch(getChannelListByPerson(getChannelListByPersonBody(person.personid)));
+                }}
+            />
         </div>
     );
 }

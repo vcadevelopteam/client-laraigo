@@ -27,6 +27,7 @@ import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/acti
 import DeleteIcon from '@material-ui/icons/Delete';
 import DialogInteractions from './DialogInteractions';
 import DialogLinkPerson from './PersonLinked';
+import LinkIcon from '@material-ui/icons/Link';
 
 const useStyles = makeStyles((theme) => ({
     containerInfo: {
@@ -149,12 +150,12 @@ const InfoClient: React.FC = () => {
                         <Button
                             variant="contained"
                             component="span"
+                            startIcon={<LinkIcon color="secondary" />}
                             color="primary"
                             onClick={() => {
                                 setShowLinkPerson(true)
                             }}
-                        // style={{ backgroundColor: "#55BD84" }}
-                        >Vincular
+                        >{t(langKeys.link)}
                         </Button>
                     </div>
                     <div className={classes.containerName}>

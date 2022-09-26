@@ -697,6 +697,20 @@ export const getPaginatedPerson = ({ skip, take, filters, sorts, startdate, endd
     }
 })
 //tabla paginada
+export const getPaginatedPersonLink = ({ skip, take, filters, sorts, originpersonid }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_PERSON_LINK_SEL",
+    methodCount: "UFN_PERSON_LINK_TOTALRECORDS",
+    parameters: {
+        originpersonid,
+        skip,
+        take,
+        filters,
+        sorts,
+        origin: "person",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+//tabla paginada
 export const getPersonExport = ({ filters, sorts, startdate, enddate, userids, personcommunicationchannels }: Dictionary): IRequestBody => ({
     method: "UFN_PERSON_EXPORT",
     key: "UFN_PERSON_EXPORT",
@@ -3109,6 +3123,40 @@ export const getDisconnectionTimes = ({ startdate, enddate, asesorid, supervisor
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
+
+export const ufnlinkPersons = ({ personidfrom, personidto, imageurl, name, firstname, documenttype, documentnumber, persontype, birthday, gender, phone, alternativephone, email, alternativeemail, civilstatus, occupation, educationlevel }: Dictionary): IRequestBody => ({
+    method: "UFN_CONVERSATION_LINKEDPERSON_EXECUTE",
+    key: "UFN_CONVERSATION_LINKEDPERSON_EXECUTE",
+    parameters: {
+        personidfrom, 
+        personidto, 
+        imageurl: imageurl || "",
+        name: name || "",
+        firstname: firstname || "",
+        documenttype: documenttype || "",
+        documentnumber: documentnumber || "",
+        persontype: persontype || "",
+        birthday: birthday || "",
+        gender: gender || "",
+        phone: phone || "",
+        alternativephone: alternativephone || "",
+        email: email || "",
+        alternativeemail: alternativeemail || "",
+        civilstatus: civilstatus || "",
+        occupation: occupation || "",
+        educationlevel: educationlevel || "",
+        groups: ""
+    }
+})
+
+export const unLinkPerson = ({ personid, personcommunicationchannel }: Dictionary): IRequestBody => ({
+    method: "UFN_CONVERSATION_UNLINKPERSON_EXECUTE",
+    key: "UFN_CONVERSATION_UNLINKPERSON_EXECUTE",
+    parameters: {
+        personid, personcommunicationchannel
+    }
+})
+
 export const getDisconnectionDataTimes = ({ startdate, enddate, asesorid, supervisorid }: Dictionary): IRequestBody => ({
     method: "UFN_DASHBOARD_DISCONNECTIONTIMES_DATA_SEL",
     key: "UFN_DASHBOARD_DISCONNECTIONTIMES_DATA_SEL",

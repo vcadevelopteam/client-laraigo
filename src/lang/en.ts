@@ -1010,7 +1010,7 @@ const translation: LangKeys = {
     tickettime: 'Ticket time',
     firstagent: 'First agent',
     lastagent: 'Last agent',
-
+    link: 'Link',
     status_history: 'Status history',
     signupstep1title: 'Sign up in less than a minute!',
     signupfacebookbutton: 'Sign up with Facebook',
@@ -1368,6 +1368,7 @@ const translation: LangKeys = {
     error_channels_limit: "The maximum number of channels has been reached, upgrade your plan to continue",
     error_users_limit: "The maximum number of users was reached({{limit}}), upgrade your plan to continue",
     error_limit_exceeded: "Limit exceeded",
+    error_ticket_open: "There are open tickets for the channel to unlink. Please close these tickets.",
     timeofday: "Time of day",
     calendarview: "Calendar view",
     linkcopysuccesfull: "Link copied successfully",

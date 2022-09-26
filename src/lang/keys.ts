@@ -1526,6 +1526,7 @@ export const langKeys = {
     tickettime: 'tickettime',
     firstagent: 'firstagent',
     lastagent: 'lastagent',
+    link: 'link',
 
     tablePageOf: 'tablePageOf',
     tableShowingRecordOf: 'tableShowingRecordOf',
@@ -1600,6 +1601,7 @@ export const langKeys = {
     error_excess_channels: "error_excess_channels",
     error_excess_users: "error_excess_users",
     error_limit_exceeded: "error_limit_exceeded",
+    error_ticket_open: "error_ticket_open",
 
     no_records: 'no_records',
 
