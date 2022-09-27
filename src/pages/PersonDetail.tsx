@@ -3,7 +3,7 @@ import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 're
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { FieldSelect, GetIcon } from 'components';
-import { getChannelListByPersonBody, getTicketListByPersonBody, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, insPersonCommunicationChannel, convertLocalDate, unLinkPerson } from 'common/helpers';
+import { getChannelListByPersonBody, getTicketListByPersonBody, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, convertLocalDate, unLinkPerson, personInsValidation } from 'common/helpers';
 import { Dictionary, IObjectState, IPerson, IPersonChannel, IPersonConversation, IPersonDomains } from "@types";
 import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, TextField, Paper, InputBase, Tooltip, styled } from '@material-ui/core';
 import clsx from 'clsx';
@@ -789,7 +789,7 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                                 {(!voxiConnection.error && !voxiConnection.loading && statusCall !== "CONNECTED" && userConnected && statusCall !== "CONNECTING" && (channel.type.includes("WHA") || channel.type.includes("VOXI"))) &&
                                     <IconButton
                                         className={classes.buttonphone}
-                                        onClick={() => { debugger;dispatch(setPhoneNumber(channel.personcommunicationchannelowner.replaceAll('+',''))); dispatch(setModalCall(true)) }}
+                                        onClick={() => { dispatch(setPhoneNumber(channel.personcommunicationchannelowner.replaceAll('+',''))); dispatch(setModalCall(true)) }}
                                     >
                                         <PhoneIcon style={{ width: "20px", height: "20px" }} />
                                     </IconButton>
@@ -1147,7 +1147,6 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
     const downloadCallRecord = async (ticket: Dictionary) => {
         // dispatch(getCallRecord({call_session_history_id: ticket.postexternalid}));
         // setWaitDownloadRecord(true);
-        debugger
         try {
             const axios_result = await VoximplantService.getCallRecord({ call_session_history_id: ticket.postexternalid });
             if (axios_result.status === 200) {
@@ -1534,7 +1533,10 @@ const PersonDetail: FC = () => {
     const edit = useSelector(state => state.person.editPerson);
     const executeResult = useSelector(state => state.main.execute);
     const [waitLock, setWaitLock] = useState(false);
+    const [waitValidation, setWaitValidation] = useState(false);
     const [showLinkPerson, setShowLinkPerson] = useState(false)
+    const [payloadTemp, setpayloadTemp] = useState<any>(null)
+    const [valuestosend, setvaluestosend] = useState<any>(null)
 
     const user = useSelector(state => state.login.validateToken.user);
     const person = location.state as IPerson | null;
@@ -1619,23 +1621,15 @@ const PersonDetail: FC = () => {
         }
     }, [edit, dispatch]);
 
-    const editperson = (payload:any, values:any) => {
-        dispatch(editPerson(payload.parameters.personid ? payload : {
-            header: editPersonBody({ ...person, ...values }),
-            detail: [
-                insPersonCommunicationChannel({
-                    phone:values.phone.replaceAll('+','')||"",
-                    personcommunicationchannel: values.personcommunicationchannel.replaceAll('+','')||"",
-                    personcommunicationchannelowner: values.personcommunicationchannelowner.replaceAll('+','')||"",
-                    displayname: `${values.firstname} ${values.lastname}`,
-                    type: values.channeltype,
-                    operation: 'INSERT',
-                    status: 'ACTIVO'
-                })
-            ]
-        }, !payload.parameters.personid));
+    const editperson = () => {
+        dispatch(editPerson(payloadTemp.parameters.personid ? payloadTemp : {
+            header: editPersonBody({ ...person, ...valuestosend }),
+            detail: []
+        }, !payloadTemp.parameters.personid));
 
         dispatch(showBackdrop(true));
+        setpayloadTemp(null)
+        setvaluestosend(null)
     }
 
     const handleEditPerson = async () => {
@@ -1644,7 +1638,18 @@ const PersonDetail: FC = () => {
             const values = getValues();
             const callback = () => {
                 const payload = editPersonBody(values);
-                editperson(payload, values)
+                setpayloadTemp(payload)
+                setvaluestosend(values)
+                dispatch(execute(personInsValidation({
+                    id: payload.parameters?.id||0, 
+                    phone: payload.parameters?.phone||"", 
+                    email: payload.parameters?.email||"", 
+                    alternativephone: payload.parameters?.alternativephone||"", 
+                    alternativeemail: payload.parameters?.alternativeemail||"", 
+                    operation:payload.parameters.operation
+                })))
+                setWaitValidation(true)
+                dispatch(showBackdrop(true));
             }
 
             dispatch(manageConfirmation({
@@ -1687,6 +1692,28 @@ const PersonDetail: FC = () => {
             }
         }
     }, [executeResult, waitLock]);
+    useEffect(() => {
+        if (waitValidation) {
+            if (!executeResult.loading && !executeResult.error) {
+                let errormessage = ""
+                if(executeResult?.data[0].alternativeemail_exists)  errormessage = t(langKeys.error_alternativeemail_exists)
+                if(executeResult?.data[0].alternativephone_exists) errormessage = t(langKeys.error_alternativephone_exists)
+                if(executeResult?.data[0].email_exists) errormessage = t(langKeys.error_email_exists)
+                if(executeResult?.data[0].phone_exists) errormessage = t(langKeys.error_phone_exists)
+                if(errormessage===""){
+                    editperson()
+                }else{
+                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                    dispatch(showBackdrop(false));
+                }
+                setWaitValidation(false);
+            } else if (executeResult.error) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: "error" }))
+                dispatch(showBackdrop(false));
+                setWaitValidation(false);
+            }
+        }
+    }, [executeResult, waitValidation]);
 
     if (!person) {
         return <div />;
