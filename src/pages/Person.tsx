@@ -718,22 +718,21 @@ export const Person: FC = () => {
                 && (f.occupation === undefined || Object.keys(domains.value?.occupations.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.occupation))
                 && (f.groups === undefined || Object.keys(domains.value?.groups.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.groups))
                 //&& (f.channeltype === undefined || Object.keys(domains.value?.channelTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.channeltype))
-                && !['', null, undefined].includes(f.phone)
             );
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
                 let table: Dictionary = data.reduce((a: any, d: IPersonImport) => ({
                     ...a,
                     [`${d.documenttype}_${d.documentnumber}`]: {
-                        id: 0,
+                        personid: 0,
                         firstname: d.firstname || null,
                         lastname: d.lastname || null,
                         documenttype: d.documenttype,
                         documentnumber: d.documentnumber,
                         persontype: d.persontype || null,
                         type: d.type || '',
-                        phone: d.phone || null,
-                        alternativephone: d.alternativephone || null,
+                        phone: String(d.phone|| "") ,
+                        alternativephone: String(d?.alternativephone|| "") ,
                         email: d.email || null,
                         alternativeemail: d.alternativeemail || null,
                         birthday: d.birthday || null,
@@ -749,27 +748,13 @@ export const Person: FC = () => {
                         age: null,
                         sex: null,
                         operation: 'INSERT',
-                        pcc: data
-                            .filter((c: IPersonImport) => `${c.documenttype}_${c.documentnumber}` === `${d.documenttype}_${d.documentnumber}`
-                                //&& !['', null, undefined].includes(c.channeltype)
-                                && !['', null, undefined].includes(d.phone)
-                            )
-                            .map((c: IPersonImport) => ({
-                                type: "VOXI",//c.channeltype,
-                                personcommunicationchannel: d.phone || null,
-                                personcommunicationchannelowner: d.phone || null,
-                                displayname: c.displayname || null,
-                                status: 'ACTIVO',
-                                operation: 'INSERT'
-                            }))
                     }
                 }), {});
                 Object.values(table).forEach((p: IPersonImport) => {
+                    debugger
                     dispatch(execute({
-                        header: insPersonBody({ ...p }),
-                        detail: [
-                            ...p.pcc.map((x: IPersonCommunicationChannel) => insPersonCommunicationChannel({ ...x })),
-                        ]
+                        header: editPersonBody({ ...p }),
+                        detail: []
                     }, true));
                 });
                 setWaitImport(true)
