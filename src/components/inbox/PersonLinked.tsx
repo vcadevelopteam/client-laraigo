@@ -135,7 +135,7 @@ const DialogLinkPerson: React.FC<{
             setPersonParent(person);
             setPersonChild(null);
             setStep("view-table");
-            fetchData({ pageSize: 10, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+            fetchData({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
         }
     }, [openModal])
 
