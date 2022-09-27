@@ -1619,6 +1619,24 @@ const PersonDetail: FC = () => {
         }
     }, [edit, dispatch]);
 
+    const editperson = (payload:any, values:any) => {
+        dispatch(editPerson(payload.parameters.personid ? payload : {
+            header: editPersonBody({ ...person, ...values }),
+            detail: [
+                insPersonCommunicationChannel({
+                    phone:values.phone.replaceAll('+','')||"",
+                    personcommunicationchannel: values.personcommunicationchannel.replaceAll('+','')||"",
+                    personcommunicationchannelowner: values.personcommunicationchannelowner.replaceAll('+','')||"",
+                    displayname: `${values.firstname} ${values.lastname}`,
+                    type: values.channeltype,
+                    operation: 'INSERT',
+                    status: 'ACTIVO'
+                })
+            ]
+        }, !payload.parameters.personid));
+
+        dispatch(showBackdrop(true));
+    }
 
     const handleEditPerson = async () => {
         const allOk = await trigger(); //para q valide el formulario
@@ -1626,23 +1644,7 @@ const PersonDetail: FC = () => {
             const values = getValues();
             const callback = () => {
                 const payload = editPersonBody(values);
-
-                dispatch(editPerson(payload.parameters.personid ? payload : {
-                    header: editPersonBody({ ...person, ...values }),
-                    detail: [
-                        insPersonCommunicationChannel({
-                            phone:values.phone.replaceAll('+','')||"",
-                            personcommunicationchannel: values.personcommunicationchannel.replaceAll('+','')||"",
-                            personcommunicationchannelowner: values.personcommunicationchannelowner.replaceAll('+','')||"",
-                            displayname: `${values.firstname} ${values.lastname}`,
-                            type: values.channeltype,
-                            operation: 'INSERT',
-                            status: 'ACTIVO'
-                        })
-                    ]
-                }, !payload.parameters.personid));
-
-                dispatch(showBackdrop(true));
+                editperson(payload, values)
             }
 
             dispatch(manageConfirmation({
