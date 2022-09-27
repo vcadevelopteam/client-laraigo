@@ -841,6 +841,7 @@ export const langKeys = {
     leadactivity: "leadactivity",
     datenote: "datenote",
     note: "note",
+    no_people_to_send: "no_people_to_send",
 
     next_activity: 'next_activity',
     nextprogramedactivity: 'nextprogramedactivity',

@@ -1417,7 +1417,7 @@ const translation: LangKeys = {
     leadactivity: "Activity",
     datenote: "Note date",
     note: "Note",
-
+    no_people_to_send: "No people to send",
     dateRangeFilterTitle: 'Filter by date range',
     person_who_modified: 'Person who modified',
     tipify_ticket: 'Classify ticket',

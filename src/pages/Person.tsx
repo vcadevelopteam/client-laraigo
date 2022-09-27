@@ -64,8 +64,8 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
         defaultValues: {
             hsmtemplateid: 0,
             observation: '',
-            communicationchannelid: type==="HSM"?(channelList?.length === 1?channelList[0].communicationchannelid:0):0,
-            communicationchanneltype: type==="HSM"?(channelList?.length === 1?channelList[0].type:""):'',
+            communicationchannelid: type === "HSM" ? (channelList?.length === 1 ? channelList[0].communicationchannelid : 0) : 0,
+            communicationchanneltype: type === "HSM" ? (channelList?.length === 1 ? channelList[0].type : "") : '',
             variables: []
         }
     });
@@ -108,8 +108,8 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
                 hsmtemplateid: 0,
                 hsmtemplatename: '',
                 variables: [],
-                communicationchannelid: type==="HSM"?(channelList?.length === 1?channelList[0].communicationchannelid:0):0,
-                communicationchanneltype: type==="HSM"?(channelList?.length === 1?channelList[0].type:""):''
+                communicationchannelid: type === "HSM" ? (channelList?.length === 1 ? channelList[0].communicationchannelid : 0) : 0,
+                communicationchanneltype: type === "HSM" ? (channelList?.length === 1 ? channelList[0].type : "") : ''
             })
             register('hsmtemplateid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
 
@@ -121,6 +121,8 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
 
             if (type === "MAIL") {
                 setPersonWithData(persons.filter(x => x.email && x.email.length > 0))
+            } else if (type === "HSM") {
+                setPersonWithData(persons.filter(x => !!x.phonewhatsapp))
             } else {
                 setPersonWithData(persons.filter(x => x.phone && x.phone.length > 0))
             }
@@ -145,6 +147,10 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
         }
     }
     const onSubmit = handleSubmit((data) => {
+        if (personWithData.length === 0) {
+            dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.no_people_to_send) }))
+            return
+        }
         const messagedata = {
             hsmtemplateid: data.hsmtemplateid,
             hsmtemplatename: data.hsmtemplatename,
@@ -155,7 +161,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             shippingreason: "PERSON",
             listmembers: personWithData.map(person => ({
                 personid: person.personid,
-                phone: person.phone || "",
+                phone: person.phonewhatsapp || "",
                 firstname: person.firstname || "",
                 email: person.email || "",
                 lastname: person.lastname,
@@ -172,8 +178,8 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
     });
 
     useEffect(() => {
-        if(channelList.length === 1 && type==="HSM"){
-            setValue("communicationchannelid",channelList[0].communicationchannelid||0)
+        if (channelList.length === 1 && type === "HSM") {
+            setValue("communicationchannelid", channelList[0].communicationchannelid || 0)
             setValue('communicationchanneltype', channelList[0].type || "");
             trigger("communicationchannelid")
         }
@@ -288,7 +294,7 @@ const CountTicket: FC<{ label: string, count: string, color: string }> = ({ labe
 
 
 export const TemplateIcons: React.FC<{
-    sendHSM: (data: any) => void;
+    sendHSM?: (data: any) => void;
     sendSMS: (data: any) => void;
     sendMAIL: (data: any) => void;
 }> = ({ sendHSM, sendSMS, sendMAIL }) => {
@@ -330,12 +336,14 @@ export const TemplateIcons: React.FC<{
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                <MenuItem onClick={sendHSM}>
-                    <ListItemIcon color="inherit">
-                        <WhatsappIcon width={22} style={{ fill: '#7721AD' }} />
-                    </ListItemIcon>
-                    {t(langKeys.send_hsm)}
-                </MenuItem>
+                {sendHSM &&
+                    <MenuItem onClick={sendHSM}>
+                        <ListItemIcon color="inherit">
+                            <WhatsappIcon width={22} style={{ fill: '#7721AD' }} />
+                        </ListItemIcon>
+                        {t(langKeys.send_hsm)}
+                    </MenuItem>
+                }
                 <MenuItem onClick={sendSMS}>
                     <ListItemIcon color="inherit">
                         <SmsIcon width={18} style={{ fill: '#7721AD' }} />
@@ -394,12 +402,12 @@ export const Person: FC = () => {
                 const person = props.cell.row.original as IPerson;
                 return (
                     <TemplateIcons
-                        sendHSM={(e) => {
+                        sendHSM={person.phonewhatsapp ? (e) => {
                             e.stopPropagation();
                             setPersonsSelected([person]);
                             setOpenDialogTemplate(true);
                             setTypeTemplate("HSM");
-                        }}
+                        } : undefined}
                         sendSMS={(e) => {
                             e.stopPropagation();
                             setPersonsSelected([person]);

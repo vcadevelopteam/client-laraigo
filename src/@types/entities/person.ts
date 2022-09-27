@@ -46,6 +46,7 @@ export interface IPerson {
     country: string;
     region?: string;
     province?: string;
+    phonewhatsapp?: string;
     district?: string;
     latitude?: string;
     longitude?: string;

@@ -698,7 +698,7 @@ const translation: LangKeys = {
     leadactivity: "Actividad",
     datenote: "Fecha nota",
     note: "Nota",
-
+    no_people_to_send: "Sin personas a enviar",
     username: 'Usuario',
     copyLink: "Copiar enlace",
     password: 'Contraseña',
