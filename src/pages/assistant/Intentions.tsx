@@ -12,7 +12,7 @@ import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import { execute, exportData, getCollection, getCollectionAux, getCollectionAux2, resetAllMain } from 'store/main/actions';
+import { execute, exportData, getCollection, getCollectionAux, getCollectionAux2, getMultiCollection, resetAllMain } from 'store/main/actions';
 import { exportintent, insertutterance, selEntities, selIntent, selUtterance, utterancedelete } from 'common/helpers/requestBodies';
 import { exportExcel, filterPipe, uploadExcel } from 'common/helpers';
 
@@ -440,6 +440,7 @@ export const Intentions: FC = () => {
 
     const fetchData = () => {dispatch(getCollection(selIntent()))};
     const selectionKey = 'name';
+    const multiData = useSelector(state => state.main.multiData);
     
     useEffect(() => {
         fetchData();
@@ -467,19 +468,19 @@ export const Intentions: FC = () => {
 
     useEffect(() => {
         if (waitImport) {
-            if (!executeRes.loading && !executeRes.error) {
+            if (!multiData.loading && !multiData.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.intentions).toLocaleLowerCase() })
+            } else if (multiData.error) {
+                const errormessage = t(multiData.code || "error_unexpected_error", { module: t(langKeys.intentions).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
             }
         }
-    }, [executeRes, waitImport]);
+    }, [multiData, waitImport]);
 
     const columns = React.useMemo(
         () => [
@@ -606,20 +607,18 @@ export const Intentions: FC = () => {
                     }
                 },[])
                 dispatch(showBackdrop(true));
-
-                data.forEach((d:any) => {
-                    dispatch(execute(insertutterance({
-                        ...d,
-                        id: d.id || 0,
-                        name: d.intent_name || '',
-                        description: d.intent_description || '',
-                        datajson: JSON.stringify({name: d.intent_datajson}), 
-                        utterance_datajson: JSON.stringify(d.utterance_datajson),
-                        type: 'NINGUNO',
-                        status: d.status || 'ACTIVO',
-                        operation: d.operation || 'INSERT',
-                    })));
-                })
+                dispatch(getMultiCollection(data.reduce((acc:any,d:any) => [...acc,insertutterance({
+                    ...d,
+                    id: d.id || 0,
+                    name: d.intent_name || '',
+                    description: d.intent_description || '',
+                    datajson: JSON.stringify({name: d.intent_datajson}), 
+                    utterance_datajson: JSON.stringify(d.utterance_datajson),
+                    type: 'NINGUNO',
+                    status: d.status || 'ACTIVO',
+                    operation: d.operation || 'INSERT',
+                })],[])))
+            
                 setWaitImport(true)
             }
         }
