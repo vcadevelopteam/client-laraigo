@@ -1673,12 +1673,12 @@ const PersonDetail: FC = () => {
     }, [edit, dispatch]);
 
     const editperson = () => {
+        dispatch(showBackdrop(true));        
         dispatch(editPerson(payloadTemp.parameters.personid ? payloadTemp : {
             header: editPersonBody({ ...person, ...valuestosend }),
             detail: []
         }, !payloadTemp.parameters.personid));
 
-        dispatch(showBackdrop(true));
         setpayloadTemp(null)
         setvaluestosend(null)
     }
@@ -1746,16 +1746,20 @@ const PersonDetail: FC = () => {
     useEffect(() => {
         if (waitValidation) {
             if (!executeResult.loading && !executeResult.error) {
-                let errormessage = ""
-                if (executeResult?.data[0].alternativeemail_exists) errormessage = t(langKeys.error_alternativeemail_exists)
-                if (executeResult?.data[0].alternativephone_exists) errormessage = t(langKeys.error_alternativephone_exists)
-                if (executeResult?.data[0].email_exists) errormessage = t(langKeys.error_email_exists)
-                if (executeResult?.data[0].phone_exists) errormessage = t(langKeys.error_phone_exists)
-                if (errormessage === "") {
+                let errormessage:any[] = []
+                if (executeResult?.data[0].phone_exists) errormessage = errormessage.concat(t(langKeys.phone) + " " + payloadTemp.parameters.phone)
+                if (executeResult?.data[0].email_exists) errormessage = errormessage.concat(t(langKeys.mail) + " " + payloadTemp.parameters.email)
+                if (executeResult?.data[0].alternativephone_exists) errormessage = errormessage.concat(t(langKeys.phone) + " " + payloadTemp.parameters.alternativephone)
+                if (executeResult?.data[0].alternativeemail_exists) errormessage = errormessage.concat(t(langKeys.mail) + " " + payloadTemp.parameters.alternativeemail)
+                if (errormessage.length === 0) {
                     editperson()
                 } else {
-                    dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                     dispatch(showBackdrop(false));
+                    dispatch(manageConfirmation({
+                        visible: true,
+                        question: `${t(langKeys.personrepeatedwarning1)} ${errormessage.join(" - ")} ${t(langKeys.personrepeatedwarning2)}`,
+                        callback: editperson
+                    }))
                 }
                 setWaitValidation(false);
             } else if (executeResult.error) {

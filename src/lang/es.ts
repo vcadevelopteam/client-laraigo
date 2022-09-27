@@ -401,6 +401,8 @@ const translation: LangKeys = {
     symbols: "Símbolos",
     flags: "Banderas",
     travel: "viaje",
+    personrepeatedwarning1: "Los siguientes datos ya han sido registrado para una persona:",
+    personrepeatedwarning2: "¿Desea continuar? Está acción duplicará esta información para las dos personas.",
     usersettings: 'Preferencias de usuario',
     restricted: "Restringido",
     enable: "Habilitado",
