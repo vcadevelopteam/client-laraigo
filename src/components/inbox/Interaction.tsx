@@ -415,13 +415,19 @@ const PickerInteraction: React.FC<{ userType: string, fill?: string }> = ({ user
         )
 }
 
-const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userType: string }> = ({ interaction: { interactiontype, interactiontext, listImage, indexImage, createdate, onlyTime }, classes, userType }) => {
+const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userType: string }> = ({ interaction: { interactionid, interactiontype, interactiontext, listImage, indexImage, createdate, onlyTime }, classes, userType }) => {
+    const ref = React.useRef<HTMLIFrameElement>(null);
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [showfulltext, setshowfulltext] = useState(interactiontext.length <= 450)
     const { isLoaded } = useJsApiLoader({
         googleMapsApiKey: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4" /*"AIzaSyCBij6DbsB8SQC_RRKm3-X07RLmvQEnP9w"*/,
     });
+    
+    const [height, setHeight] = React.useState("0px");
+    const onLoad = () => {
+        setHeight(((ref as any)?.current.contentWindow.document.body.scrollHeight + 20) + "px");
+    };
 
 
     if (!interactiontext.trim() || interactiontype === "typing")
@@ -448,7 +454,16 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
                 [classes.interactionTextAgent]: userType !== 'client',
             })}>
-                <div dangerouslySetInnerHTML={{ __html: interactiontext }} />
+                <iframe
+                    ref={ref}
+                    srcDoc={interactiontext}
+                    id={`frame-${interactionid}`}
+                    width="100%"
+                    height={height}
+                    onLoad={onLoad}
+                    style={{ border: 'none' }}
+                >
+                </iframe>
                 <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
             </div>
@@ -461,7 +476,16 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                     [classes.interactionTextAgent]: userType !== 'client',
                 })} >
                     <div>RE-LARAIGO: {subject}</div>
-                    <div dangerouslySetInnerHTML={{ __html: body }} />
+                    <iframe
+                        ref={ref}
+                        srcDoc={body}
+                        id={`frame-${interactionid}`}
+                        width="100%"
+                        height={height}
+                        onLoad={onLoad}
+                        style={{ border: 'none' }}
+                    >
+                    </iframe>
                     {(files && files !== "{}") &&
                         Object.keys(JSON.parse(files)).map((file: any) => {
                             let hreffile = JSON.parse(files)[file]
