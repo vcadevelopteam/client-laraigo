@@ -1,22 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react'
-import { DialogZyx, SkeletonInteraction } from 'components'
+import { DialogZyx } from 'components'
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { getInteractions } from 'store/inbox/actions'
-import { Dictionary, IFetchData, IGroupInteraction, IPerson } from '@types';
+import { IFetchData, IPerson } from '@types';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import ItemGroupInteraction from './Interaction';
 import Button from '@material-ui/core/Button';
-import { Trans } from 'react-i18next';
-import { DownloadIcon } from 'icons';
-import DomToImage from 'dom-to-image';
-import IOSSwitch from "components/fields/IOSSwitch";
-import Tooltip from '@material-ui/core/Tooltip';
 import { Avatar, IconButton } from '@material-ui/core';
-import { convertLocalDate, getPaginatedPerson, getPaginatedPersonLink, ufnlinkPersons } from 'common/helpers';
+import { convertLocalDate, getPaginatedPersonLink, ufnlinkPersons } from 'common/helpers';
 import { getPersonLinkListPaginated } from 'store/person/actions';
 import TablePaginated from 'components/fields/table-paginated';
 import LinkIcon from '@material-ui/icons/Link';
@@ -49,7 +42,7 @@ const DialogLinkPerson: React.FC<{
     openModal: boolean,
     setOpenModal: (param: any) => void,
     person?: IPerson | undefined | null,
-    callback?: () => void
+    callback?: (newPerson: IPerson) => void
 }> = ({ openModal, setOpenModal, person, callback }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -135,7 +128,7 @@ const DialogLinkPerson: React.FC<{
             setPersonParent(person);
             setPersonChild(null);
             setStep("view-table");
-            fetchData({ pageSize: 10, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+            fetchData({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
         }
     }, [openModal])
 
@@ -150,7 +143,7 @@ const DialogLinkPerson: React.FC<{
     useEffect(() => {
         if (waitLink) {
             if (!linkRes.loading && !linkRes.error) {
-                callback && callback()
+                callback && callback(personParent!!)
                 dispatch(showSnackbar({ show: true, severity: "success", message: "Vinculación correcta" }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
@@ -181,9 +174,9 @@ const DialogLinkPerson: React.FC<{
     return (
         <DialogZyx
             open={openModal}
-            title={"Vincular"}
+            title={t(langKeys.link)}
             buttonText1={t(langKeys.cancel)}
-            buttonText2={"Vincular"}
+            buttonText2={t(langKeys.link)}
             handleClickButton1={() => setOpenModal(false)}
             handleClickButton2={linkPersons}
             maxWidth="md"
@@ -284,7 +277,7 @@ const DialogLinkPerson: React.FC<{
                                     <IconButton size="small" onClick={() => {
                                         setPersonParent({
                                             ...personParent!!,
-                                            // firstname: personChild.firstname
+                                            imageurldef: personChild.imageurldef
                                         })
                                     }}>
                                         <ArrowUpwardIcon color="action" />

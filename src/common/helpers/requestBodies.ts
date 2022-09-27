@@ -2064,7 +2064,12 @@ export const insPersonCommunicationChannel = (pcc: Dictionary): IRequestBody => 
 export const personInsValidation = ({id, phone, email, alternativephone, alternativeemail, operation}: Dictionary): IRequestBody => ({
     method: 'UFN_PERSON_INS_VALIDATION',
     parameters: {
-        id, phone, email, alternativephone, alternativeemail, operation
+        id, 
+        phone: phone?.replaceAll('+','') || "",
+        email, 
+        alternativephone: alternativephone?.replaceAll('+','') || "",
+        alternativeemail, 
+        operation
     },
 });
 
@@ -2072,11 +2077,11 @@ export const editPersonBody = (person: IPerson): IRequestBody => ({
     method: 'UFN_PERSON_PCC_INS',
     parameters: {
         ...person,
-        alternativephone: person.alternativephone||"",
+        alternativephone: person?.alternativephone?.replaceAll('+','') || "",
         id: person.personid,
         operation: person.personid ? 'UPDATE' : 'INSERT',
         observation: person.observation || '',
-        phone: person?.phone?.replaceAll('+',''),
+        phone: person?.phone?.replaceAll('+','') || "",
     },
 });
 
@@ -3134,7 +3139,7 @@ export const getDisconnectionTimes = ({ startdate, enddate, asesorid, supervisor
     }
 })
 
-export const ufnlinkPersons = ({ personidfrom, personidto, imageurl, name, firstname, documenttype, documentnumber, persontype, birthday, gender, phone, alternativephone, email, alternativeemail, civilstatus, occupation, educationlevel }: Dictionary): IRequestBody => ({
+export const ufnlinkPersons = ({ personidfrom, personidto, imageurl, lastname, name, firstname, documenttype, documentnumber, persontype, birthday, gender, phone, alternativephone, observation, email, alternativeemail, civilstatus, occupation, educationlevel }: Dictionary): IRequestBody => ({
     method: "UFN_CONVERSATION_LINKEDPERSON_EXECUTE",
     key: "UFN_CONVERSATION_LINKEDPERSON_EXECUTE",
     parameters: {
@@ -3143,6 +3148,8 @@ export const ufnlinkPersons = ({ personidfrom, personidto, imageurl, name, first
         imageurl: imageurl || "",
         name: name || "",
         firstname: firstname || "",
+        observation: observation || "",
+        lastname: lastname || "",
         documenttype: documenttype || "",
         documentnumber: documentnumber || "",
         persontype: persontype || "",

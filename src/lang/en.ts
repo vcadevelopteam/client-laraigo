@@ -3710,6 +3710,8 @@ const translation: LangKeys = {
     error_card_get: 'Could not retrieve information from the Culqi platform, contact an administrator',
     paymentmethodsdetail: 'Payment Method Detail',
     addresscity: 'City',
+    personrepeatedwarning1: "The following data has already been recorded for a person:",
+    personrepeatedwarning2: "Do you wish to continue? This action will duplicate this information for both people.",
     paymentmethodnew: 'New payment method',
     paymentmethodtype: 'Operation type',
     paymentmethodcard: 'Card to use',
