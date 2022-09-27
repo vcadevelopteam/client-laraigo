@@ -168,12 +168,13 @@ interface GeneralInformationTabProps {
     person: IPerson;
     getValues: UseFormGetValues<IPerson>;
     setValue: any;
+    trigger: any;
     domains: IObjectState<IPersonDomains>;
     errors: any;
     control: any;
 }
 
-const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValues, setValue, domains, errors, control }) => {
+const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValues, trigger, setValue, domains, errors, control }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     // const referrerList = useSelector(state => state.person.personReferrerList);
@@ -216,7 +217,10 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         placeholder={t(langKeys.firstname)}
                                         defaultValue={getValues("firstname")}
                                         value={getValues("firstname")}
-                                        onChange={e => setValue('firstname', e.target.value)}
+                                        onChange={e => {
+                                            setValue('firstname', e.target.value)
+                                            trigger("firstname")
+                                        }}
                                         error={errors?.firstname?.message ? true : false}
                                         helperText={errors?.firstname?.message || null}
                                     />
@@ -234,7 +238,10 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         placeholder={t(langKeys.lastname)}
                                         defaultValue={getValues("lastname")}
                                         value={getValues("lastname")}
-                                        onChange={e => setValue('lastname', e.target.value)}
+                                        onChange={e => {
+                                            setValue('lastname', e.target.value)
+                                            trigger("lastname")
+                                        }}
                                         error={errors?.lastname?.message ? true : false}
                                         helperText={errors?.lastname?.message || null}
                                     />
@@ -365,7 +372,10 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         placeholder={t(langKeys.docNumber)}
                                         defaultValue={getValues("documentnumber")}
                                         value={getValues("documentnumber")}
-                                        onChange={e => setValue('documentnumber', e.target.value)}
+                                        onChange={e => {
+                                            setValue('documentnumber', e.target.value)
+                                            trigger('documentnumber')
+                                        }}
                                     />
                                 )}
                                 m={1}
@@ -469,7 +479,10 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         placeholder={t(langKeys.email)}
                                         defaultValue={getValues("email")}
                                         value={getValues("email")}
-                                        onChange={e => setValue('email', e.target.value)}
+                                        onChange={e => {
+                                            setValue('email', e.target.value)
+                                            trigger("email")
+                                        }}
                                     />
                                 )}
                                 m={1}
@@ -484,7 +497,10 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         placeholder={t(langKeys.alternativeEmail)}
                                         defaultValue={getValues("alternativeemail")}
                                         value={getValues("alternativeemail")}
-                                        onChange={e => setValue('alternativeemail', e.target.value)}
+                                        onChange={e => {
+                                            setValue('alternativeemail', e.target.value)
+                                            trigger("alternativeemail")
+                                        }}
                                     />
                                 )}
                                 m={1}
@@ -500,7 +516,10 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         placeholder={t(langKeys.birthday)}
                                         defaultValue={getValues("birthday")}
                                         value={getValues("birthday")}
-                                        onChange={e => setValue('birthday', e.target.value)}
+                                        onChange={e => {
+                                            setValue('birthday', e.target.value)
+                                            trigger("birthday")
+                                        }}
                                     />
                                 )}
                                 m={1}
@@ -1461,7 +1480,9 @@ const OpportunitiesTab: FC<OpportunitiesTabProps> = ({ person }) => {
     );
 
     useEffect(() => {
-        dispatch(getLeadsByPerson(getOpportunitiesByPersonBody(person.personid)));
+        if ((person?.personid || 0) > 0) {
+            dispatch(getLeadsByPerson(getOpportunitiesByPersonBody(person.personid)));
+        }
         return () => {
             dispatch(resetGetLeadsByPerson());
         };
@@ -1880,6 +1901,7 @@ const PersonDetail: FC = () => {
                             getValues={getValues}
                             setValue={setValue}
                             person={person}
+                            trigger={trigger}
                             domains={domains}
                             errors={errors}
                             control={control}
