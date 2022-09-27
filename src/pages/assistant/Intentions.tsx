@@ -583,25 +583,32 @@ export const Intentions: FC = () => {
             const data: any = (await uploadExcel(file, undefined) as any[]).filter((d: any) => !['', null, undefined].includes(d.intent_name));
             if (data.length > 0) {
                 data.reduce((acc:any,element:any)=>{
-                    let repeatedindex = acc.findIndex((item:any)=>item.intent_name === element.intent_name)
+                    let repeatedindex = acc.findIndex((item:any)=>item.name === element.intent_name)
                     if (repeatedindex < 0){
-                        debugger
                         return [...acc, {
                             name: element.intent_name,
                             description: element.intent_description,
                             datajson: JSON.parse(element.intent_datajson),
                             utterance_datajson: [{
-                                
+                                name: element.utterance_name,
+                                datajson: JSON.parse(element.utterance_datajson)
                             }]
                         }]
                     }else{
-                        debugger
+                        let newacc = acc
+                        newacc[repeatedindex].utterance_datajson.push(
+                            {
+                                name: element.utterance_name,
+                                datajson: JSON.parse(element.utterance_datajson)
+                            })                         
+                        return newacc
 
                     }
                 },[])
                 dispatch(showBackdrop(true));
-                dispatch(execute(insertutterance(data.reduce((ad: any[], d: any) => {
-                    ad.push({
+
+                data.forEach((d:any) => {
+                    dispatch(execute(insertutterance({
                         ...d,
                         id: d.id || 0,
                         name: d.intent_name || '',
@@ -611,9 +618,8 @@ export const Intentions: FC = () => {
                         type: 'NINGUNO',
                         status: d.status || 'ACTIVO',
                         operation: d.operation || 'INSERT',
-                    })
-                    return ad;
-                }, []))));
+                    })));
+                })
                 setWaitImport(true)
             }
         }
