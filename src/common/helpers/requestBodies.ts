@@ -2069,7 +2069,7 @@ export const personInsValidation = ({id, phone, email, alternativephone, alterna
 });
 
 export const editPersonBody = (person: IPerson): IRequestBody => ({
-    method: 'UFN_PERSON_INS',
+    method: 'UFN_PERSON_PCC_INS',
     parameters: {
         ...person,
         alternativephone: person.alternativephone||"",
