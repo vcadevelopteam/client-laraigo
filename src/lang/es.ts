@@ -406,6 +406,10 @@ const translation: LangKeys = {
     enable: "Habilitado",
     disabled: "Desabilitado",
     productivitybyhour: 'Tickets atendidos por hora',
+    error_alternativeemail_exists: "El correo electrónico alternativo ya ha sido registrado",
+    error_alternativephone_exists: "El teléfono alternativo ya ha sido registrado",
+    error_email_exists: "El correo electrónico ya ha sido registrado",
+    error_phone_exists: "El teléfono ya ha sido registrado",
     firstname: 'Nombre',
     socialmediachannel2: "Usted podrá seleccionar más de un canal a la vez si lo considera necesario al momento de autoregistrarse o gestionar los canales adicionales posterior al primer registro.",
     additional_information: 'Información adicional',
@@ -698,7 +702,7 @@ const translation: LangKeys = {
     leadactivity: "Actividad",
     datenote: "Fecha nota",
     note: "Nota",
-
+    no_people_to_send: "Sin personas a enviar",
     username: 'Usuario',
     copyLink: "Copiar enlace",
     password: 'Contraseña',
@@ -1220,7 +1224,7 @@ const translation: LangKeys = {
     tickettime: 'Hora Ticket',
     firstagent: 'Primer Asesor',
     lastagent: 'Último Asesor',
-
+    link: 'Vincular',
     available_columns: 'Columnas disponibles',
     selected_plural: 'Seleccionados',
     select_a_field_then_add_it: 'Seleccione un campo y luego añadelo',
@@ -1400,6 +1404,7 @@ const translation: LangKeys = {
     error_users_limit: "Se alcanzo el maximo número de usuarios({{limit}}), mejora tu plan para continuar",
     error_kpi_sql: 'Query error: {{error}}',
     error_limit_exceeded: "Límite excedido",
+    error_ticket_open: "Existen tickets abiertos para el canal a desvincular. Por favor cierre estos tickets.",
     dateRangeFilterTitle: 'Filtrar por rango de fechas',
 
     successful_change_plan: 'El plan fue cambiado satisfactoriamente. Vuelva a iniciar sesión para que pueda ver el cambio de plan.',
