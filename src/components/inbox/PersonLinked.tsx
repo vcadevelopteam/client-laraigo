@@ -42,7 +42,7 @@ const DialogLinkPerson: React.FC<{
     openModal: boolean,
     setOpenModal: (param: any) => void,
     person?: IPerson | undefined | null,
-    callback?: () => void
+    callback?: (newPerson: IPerson) => void
 }> = ({ openModal, setOpenModal, person, callback }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -143,7 +143,7 @@ const DialogLinkPerson: React.FC<{
     useEffect(() => {
         if (waitLink) {
             if (!linkRes.loading && !linkRes.error) {
-                callback && callback()
+                callback && callback(personParent!!)
                 dispatch(showSnackbar({ show: true, severity: "success", message: "Vinculación correcta" }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
@@ -277,7 +277,7 @@ const DialogLinkPerson: React.FC<{
                                     <IconButton size="small" onClick={() => {
                                         setPersonParent({
                                             ...personParent!!,
-                                            // firstname: personChild.firstname
+                                            imageurldef: personChild.imageurldef
                                         })
                                     }}>
                                         <ArrowUpwardIcon color="action" />

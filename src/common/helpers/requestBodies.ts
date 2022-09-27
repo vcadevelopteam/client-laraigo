@@ -2064,7 +2064,12 @@ export const insPersonCommunicationChannel = (pcc: Dictionary): IRequestBody => 
 export const personInsValidation = ({id, phone, email, alternativephone, alternativeemail, operation}: Dictionary): IRequestBody => ({
     method: 'UFN_PERSON_INS_VALIDATION',
     parameters: {
-        id, phone, email, alternativephone, alternativeemail, operation
+        id, 
+        phone: phone?.replaceAll('+','') || "",
+        email, 
+        alternativephone: alternativephone?.replaceAll('+','') || "",
+        alternativeemail, 
+        operation
     },
 });
 
@@ -2072,11 +2077,11 @@ export const editPersonBody = (person: IPerson): IRequestBody => ({
     method: 'UFN_PERSON_PCC_INS',
     parameters: {
         ...person,
-        alternativephone: person.alternativephone||"",
+        alternativephone: person?.alternativephone?.replaceAll('+','') || "",
         id: person.personid,
         operation: person.personid ? 'UPDATE' : 'INSERT',
         observation: person.observation || '',
-        phone: person?.phone?.replaceAll('+',''),
+        phone: person?.phone?.replaceAll('+','') || "",
     },
 });
 
