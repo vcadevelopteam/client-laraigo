@@ -12,7 +12,7 @@ import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import { execute, exportData, getCollection, getCollectionAux, getCollectionAux2, getMultiCollection, resetAllMain } from 'store/main/actions';
+import { execute, getCollection, getCollectionAux, getCollectionAux2, getMultiCollection, resetAllMain } from 'store/main/actions';
 import { exportintent, insertutterance, selEntities, selIntent, selUtterance, utterancedelete } from 'common/helpers/requestBodies';
 import { exportExcel, filterPipe, uploadExcel } from 'common/helpers';
 
@@ -468,12 +468,12 @@ export const Intentions: FC = () => {
 
     useEffect(() => {
         if (waitImport) {
-            if (!multiData.loading && !multiData.error) {
+            if (!multiData.loading && !multiData.error && !!multiData.data?.reduce((acc:number,element:any)=>acc * element.success,1)) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
-            } else if (multiData.error) {
+            } else if (multiData.error || !!multiData.data?.reduce((acc:number,element:any)=>acc * element.success,1)) {
                 const errormessage = t(multiData.code || "error_unexpected_error", { module: t(langKeys.intentions).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
@@ -583,7 +583,7 @@ export const Intentions: FC = () => {
         if (file) {
             const data: any = (await uploadExcel(file, undefined) as any[]).filter((d: any) => !['', null, undefined].includes(d.intent_name));
             if (data.length > 0) {
-                data.reduce((acc:any,element:any)=>{
+                let datareduced = data.reduce((acc:any,element:any)=>{
                     let repeatedindex = acc.findIndex((item:any)=>item.name === element.intent_name)
                     if (repeatedindex < 0){
                         return [...acc, {
@@ -607,19 +607,22 @@ export const Intentions: FC = () => {
                     }
                 },[])
                 dispatch(showBackdrop(true));
-                dispatch(getMultiCollection(data.reduce((acc:any,d:any) => [...acc,insertutterance({
+                setWaitImport(true)
+                dispatch(getMultiCollection(datareduced.reduce((acc:any,d:any) => [...acc,insertutterance({
                     ...d,
                     id: d.id || 0,
-                    name: d.intent_name || '',
-                    description: d.intent_description || '',
-                    datajson: JSON.stringify({name: d.intent_datajson}), 
+                    name: d.name || '',
+                    description: d.description || '',
+                    datajson: JSON.stringify({name: d.datajson}), 
                     utterance_datajson: JSON.stringify(d.utterance_datajson),
                     type: 'NINGUNO',
                     status: d.status || 'ACTIVO',
                     operation: d.operation || 'INSERT',
                 })],[])))
             
-                setWaitImport(true)
+            }
+            else {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) }));
             }
         }
     }
