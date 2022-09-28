@@ -8,6 +8,7 @@ import { Tabs } from '@material-ui/core';
 import { Intentions } from './Intentions';
 import { Entities } from './Entities';
 import { Dialog } from './Dialog';
+import { TestWitai } from './TestWitai';
 
 
 export const Assistant: FC = () => {
@@ -35,6 +36,9 @@ export const Assistant: FC = () => {
                     <AntTab label={t(langKeys.entities)} />
                 }
                 {user?.roledesc === "SUPERADMIN" &&
+                    <AntTab label={"Test"} />
+                }
+                {user?.roledesc === "SUPERADMIN" &&
                     <AntTab label={t(langKeys.dialog)} />
                 }
             </Tabs>
@@ -49,6 +53,11 @@ export const Assistant: FC = () => {
                 </div>
             }
             {pageSelected === 2 &&
+                <div style={{ marginTop: 16, height:"100%" }}>
+                    <TestWitai />
+                </div>
+            }
+            {pageSelected === 3 &&
                 <div style={{ marginTop: 16, height:"100%" }}>
                     <Dialog />
                 </div>

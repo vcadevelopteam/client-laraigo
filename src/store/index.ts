@@ -21,6 +21,7 @@ import getlocationsReducer, { IState as IGetLocations } from './getlocations/red
 import subscriptionReducer, { IState as ISubscription } from './subscription/reducer';
 import voximplantReducer, { IState as IVoximplant } from './voximplant/reducer';
 import googleReducer, { IState as IGoogle } from './google/reducer';
+import witaiReducer, { IState as IWitai } from './witia/reducer';
 
 export interface IRootState {
     login: ILogin,
@@ -41,6 +42,7 @@ export interface IRootState {
     subscription: ISubscription;
     voximplant: IVoximplant;
     google: IGoogle;
+    witai: IWitai;
 }
 
 declare global {
@@ -68,6 +70,7 @@ const rootReducer = combineReducers<IRootState>({
     subscription: subscriptionReducer,
     voximplant: voximplantReducer,
     google: googleReducer,
+    witai: witaiReducer,
 });
 
 export default function configureStore(preloadedState?: IRootState) {

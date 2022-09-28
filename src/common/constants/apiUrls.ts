@@ -100,6 +100,7 @@ export const apiUrls = {
     UPDATE_USER: `${BASE_URL}/user/update/info`,
     SAVE_USER: `${BASE_URL}/user/sendmail/password`,
     DEL_USER: `${BASE_URL}/user/delete`,
+    WITAITEST: `${BASE_URL}/witai/message`,
     GETGEOCODE: `${BASE_URL}/gmaps/geocode`,
     GETLOCATION: `${BASE_URL}/flow/location`,
     TRIGGERBLOCK: `${BASE_URL}/flow/triggerblock`,
