@@ -14,8 +14,9 @@ import AddIcon from '@material-ui/icons/Add';
 import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { execute, getCollection, resetAllMain } from 'store/main/actions';
+import { execute, getCollection, getMultiCollection, resetAllMain } from 'store/main/actions';
 import { entitydelete, insertentity, selEntities } from 'common/helpers/requestBodies';
+import { exportExcel, uploadExcel } from 'common/helpers';
 
 
 interface RowSelected {
@@ -258,6 +259,8 @@ export const Entities: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const selectionKey= "name"
     const executeRes = useSelector(state => state.main.execute);
+    const [waitImport, setWaitImport] = useState(false);
+    const multiData = useSelector(state => state.main.multiData);
 
     const fetchData = () => {dispatch(getCollection(selEntities()))};
     
@@ -355,6 +358,50 @@ export const Entities: FC = () => {
             callback
         }))
     }
+    const triggerExportData = () => {
+        if (Object.keys(selectedRows).length === 0) {
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_record_selected)}));
+            return null;
+        }
+        let keys = Object.keys(selectedRows)
+        let filtereddata = mainResult.mainData.data.filter(x=>keys.includes(x.name))
+        exportExcel(t(langKeys.entities), filtereddata.map(x=>({...x,datajson: JSON.stringify(x.datajson)})))
+    };
+    useEffect(() => {
+        if (waitImport) {
+            if (!multiData.loading && !multiData.error && !!multiData.data?.reduce((acc:number,element:any)=>acc * element.success,1)) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
+                dispatch(showBackdrop(false));
+                setWaitImport(false);
+                fetchData();
+            } else if (multiData.error || !!multiData.data?.reduce((acc:number,element:any)=>acc * element.success,1)) {
+                const errormessage = t(multiData.code || "error_unexpected_error", { module: t(langKeys.intentions).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitImport(false);
+            }
+        }
+    }, [multiData, waitImport]);
+
+    const handleUpload = async (files: any[]) => {
+        debugger
+        const file = files[0];
+        if (file) {
+            const data: any = (await uploadExcel(file, undefined) as any[]).filter((d: any) => !['', null, undefined].includes(d.name));
+            if (data.length > 0) {
+                dispatch(showBackdrop(true));
+                setWaitImport(true)
+                debugger
+                dispatch(getMultiCollection(data.reduce((acc:any,d:any) => [...acc,insertentity({
+                    name: d.name, 
+                    datajson: d.datajson, 
+                    operation: d.operation || 'INSERT',
+                })],[])))
+            
+            }
+        }
+    }
+    
 
     if (viewSelected==="view-1"){
         return (
@@ -382,8 +429,11 @@ export const Entities: FC = () => {
                     )}
                     loading={mainResult.mainData.loading}
                     register={true}
-                    download={false}
+                    download={true}
+                    triggerExportPersonalized={true}
                     handleRegister={handleRegister}
+                    exportPersonalized={triggerExportData}
+                    importCSV={handleUpload}
                     pageSizeDefault={20}
                     initialPageIndex={0}
                 />

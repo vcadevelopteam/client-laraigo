@@ -3362,3 +3362,9 @@ export const entitydelete = ({table,}:Dictionary): IRequestBody => ({
     key: "UFN_WITAI_ENTITY_DEL",
     parameters: {table, model:""}
 })
+
+export const exportintent = ({name_json}:Dictionary): IRequestBody => ({
+    method: "UFN_WITAI_INTENT_EXPORT",
+    key: "UFN_WITAI_INTENT_EXPORT",
+    parameters: {name_json}
+})
