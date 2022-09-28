@@ -1,9 +1,9 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect } from 'react';
 import { BoxProps, makeStyles, Box, Grid } from '@material-ui/core';
 import { Title } from 'components';
 import { langKeys } from 'lang/keys';
 import { Trans } from 'react-i18next';
-import { ChannelsIcon, ClassificationIcon, ConfigPropertiesIcon, DomainsIcon, EmojiSadFaceIcon, ForbiddenWordsIcon, IntegrationIcon, SLAIcon, Corporation2Icon, OrganizationsIcon, QuickReplyIcon, UserGroupIcon } from 'icons';
+import { ChannelsIcon, ClassificationIcon, ConfigPropertiesIcon, DomainsIcon, EmojiSadFaceIcon, ForbiddenWordsIcon, IntegrationIcon, SLAIcon, Corporation2Icon, OrganizationsIcon, QuickReplyIcon, UserGroupIcon, LocationIcon } from 'icons';
 import { useDispatch } from 'react-redux';
 import { getPropertySettings, getSetting, resetGetPropertySettings, resetGetSetting } from 'store/setting/actions';
 import { getCountConfigurationsBody, getPropertyConfigurationsBody } from 'common/helpers';
@@ -25,6 +25,7 @@ const useItemTileStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'column',
         width: 'inherit',
+        height: "135px",
     },
     header: {
         display: 'flex',
@@ -565,7 +566,7 @@ const Settings: FC = () => {
                                     <ItemTile
                                         title={<Trans i18nKey={langKeys.location} count={2} />}
                                         subtitle={<SubtitleText value={value?.num_location} i18nKey={langKeys.location} />}
-                                        icon={<ClassificationIcon fill="inherit" stroke="inherit" />}
+                                        icon={<LocationIcon fill="inherit" stroke="inherit" />}
                                         helpText={
                                             <HelpText
                                                 i18nKey={langKeys.manageLocation}
