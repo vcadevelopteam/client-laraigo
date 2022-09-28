@@ -52,14 +52,14 @@ export interface IPerson {
     longitude?: string;
     referringpersonid: number;
     referringpersonname?: string;
-    displayname: string;
+    // displayname: string;
     variablecontext: Dictionary;
     locked?: boolean;
     createby: string;
     createdate: string;
     changeby: string;
     changedate: string;
-    personcommunicationchannel: string;
+    // personcommunicationchannel: string;
     havelead: boolean;
     haveclassification: boolean;
 }

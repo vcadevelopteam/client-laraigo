@@ -769,7 +769,7 @@ export const Person: FC = () => {
         const callback = () => {
             const data = personsSelected.map(p => ({
                 personid: p.personid,
-                personcommunicationchannel: p.personcommunicationchannel,
+                // personcommunicationchannel: p.personcommunicationchannel,
                 locked: type === "LOCK",
             }));
             dispatch(execute(personcommunicationchannelUpdateLockedArrayIns(data)));

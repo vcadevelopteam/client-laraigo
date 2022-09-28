@@ -1,4 +1,4 @@
-const ENV = "DEVELOP";
+const ENV = "TESTING";
 
 const APIS_URL = {
     DEVELOP: {
@@ -13,7 +13,7 @@ const APIS_URL = {
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
     },
     TESTING: {
-    API: 'https://testapix.laraigo.com/api',
+        API: 'https://testapix.laraigo.com/api',
         WS: 'https://testsocket.laraigo.com',
         CHATFLOW: 'https://zyxmelinux.zyxmeapp.com/zyxmetest/chatflow',
         FACEBOOKAPP: '1094526090706564',
