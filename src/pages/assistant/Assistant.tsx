@@ -8,6 +8,7 @@ import { Tabs } from '@material-ui/core';
 import { Intentions } from './Intentions';
 import { Entities } from './Entities';
 import { Dialog } from './Dialog';
+import { TestWitai } from './TestWitai';
 
 
 export const Assistant: FC = () => {
@@ -35,10 +36,10 @@ export const Assistant: FC = () => {
                     <AntTab label={t(langKeys.entities)} />
                 }
                 {user?.roledesc === "SUPERADMIN" &&
-                    <AntTab label={t(langKeys.dialog)} />
+                    <AntTab label={"Test"} />
                 }
                 {user?.roledesc === "SUPERADMIN" &&
-                    <AntTab label={"Test"} />
+                    <AntTab label={t(langKeys.dialog)} />
                 }
             </Tabs>
             {pageSelected === 0 &&
@@ -53,12 +54,12 @@ export const Assistant: FC = () => {
             }
             {pageSelected === 2 &&
                 <div style={{ marginTop: 16, height:"100%" }}>
-                    <Dialog />
+                    <TestWitai />
                 </div>
             }
-            {pageSelected === 2 &&
+            {pageSelected === 3 &&
                 <div style={{ marginTop: 16, height:"100%" }}>
-                    aca hay prueba
+                    <Dialog />
                 </div>
             }
         </div>
