@@ -122,6 +122,7 @@ export { ReactComponent as EditPencilIcon } from './edit-pencil.svg';
 export { ReactComponent as InfoRoundedIcon } from './info-rounded.svg';
 
 export { ReactComponent as ClassificationIcon } from './classification.svg';
+export { ReactComponent as LocationIcon } from './ubicacionLocal.svg';
 export { ReactComponent as UserGroupIcon } from './user-group.svg';
 export { ReactComponent as EmojiSadFaceIcon } from './emoji-sad-face.svg';
 export { ReactComponent as ChannelsIcon } from './channels.svg';
