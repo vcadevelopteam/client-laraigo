@@ -37,6 +37,9 @@ export const Assistant: FC = () => {
                 {user?.roledesc === "SUPERADMIN" &&
                     <AntTab label={t(langKeys.dialog)} />
                 }
+                {user?.roledesc === "SUPERADMIN" &&
+                    <AntTab label={"Test"} />
+                }
             </Tabs>
             {pageSelected === 0 &&
                 <div style={{ marginTop: 16 }}>
@@ -51,6 +54,11 @@ export const Assistant: FC = () => {
             {pageSelected === 2 &&
                 <div style={{ marginTop: 16, height:"100%" }}>
                     <Dialog />
+                </div>
+            }
+            {pageSelected === 2 &&
+                <div style={{ marginTop: 16, height:"100%" }}>
+                    aca hay prueba
                 </div>
             }
         </div>
