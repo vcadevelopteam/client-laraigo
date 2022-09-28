@@ -1306,11 +1306,11 @@ export const getReferrerByPersonBody = (personId: ID) => ({
     },
 });
 
-export const insPersonUpdateLocked = ({ personid, personcommunicationchannel, locked }: Dictionary) => ({
+export const insPersonUpdateLocked = ({ personid, locked }: Dictionary) => ({
     method: "UFN_PERSONCOMMUNICATIONCHANNEL_UPDATE_LOCKED",
     parameters: {
         personid,
-        personcommunicationchannel,
+        personcommunicationchannel: "",
         locked
     },
 });
@@ -2739,7 +2739,7 @@ export const billingNotificationIns = ({ year, month, countrycode, id, vcacomiss
 })
 
 /**bloquear o desbloquear personas de forma masiva */
-export const personcommunicationchannelUpdateLockedArrayIns = (table: { personid: number, personcommunicationchannel: string, locked: boolean }[]) => ({
+export const personcommunicationchannelUpdateLockedArrayIns = (table: { personid: number, locked: boolean }[]) => ({
     method: "UFN_PERSONCOMMUNICATIONCHANNEL_UPDATE_LOCKED_ARRAY",
     key: "UFN_PERSONCOMMUNICATIONCHANNEL_UPDATE_LOCKED_ARRAY",
     parameters: { table: JSON.stringify(table) },
