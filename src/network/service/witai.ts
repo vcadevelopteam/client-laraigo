@@ -6,5 +6,5 @@ export function witaitest(requestBody: any) {
 }
 
 export function witaitrain() {
-    return APIManager.post(apiUrls.WITAITEST, { data: {model: ""} }, true);
+    return APIManager.post(apiUrls.WITAITRAIN, { data: {model: ""} }, true);
 }

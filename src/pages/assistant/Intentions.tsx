@@ -435,6 +435,7 @@ export const Intentions: FC = () => {
     const mainResult = useSelector(state => state.main);
     const [selectedRows, setSelectedRows] = useState<any>({});
     const [waitSave, setWaitSave] = useState(false);
+    const [sendTrainCall, setSendTrainCall] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const [waitExport, setWaitExport] = useState(false);
     const mainResultAux = useSelector(state => state.main.mainAux);
@@ -447,6 +448,34 @@ export const Intentions: FC = () => {
     const fetchData = () => {dispatch(getCollection(selIntent()))};
     const selectionKey = 'name';
     const multiData = useSelector(state => state.main.multiData);
+
+    
+    useEffect(() => {
+        if(sendTrainCall){
+            if(!trainResult.loading && !trainResult.error){
+                let message="";
+                switch (trainResult.data.training_status) {
+                    case ("done"):
+                        message=t(langKeys.bot_training_done)
+                        break;
+                    case ("scheduled"):
+                        message=t(langKeys.bot_training_scheduled)
+                        break;
+                    case ("ongoing"):
+                        message=t(langKeys.bot_training_ongoing)
+                        break;
+                }
+                dispatch(showSnackbar({ show: true, severity: "success", message:  message}))
+                setSendTrainCall(false);
+                dispatch(showBackdrop(false));
+            }else if(executeRes.error){
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.test).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                setSendTrainCall(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [trainResult,sendTrainCall]);
     
     useEffect(() => {
         fetchData();
@@ -666,7 +695,7 @@ export const Intentions: FC = () => {
                                         type="button"
                                         color="primary"
                                         style={{ backgroundColor: "#7721ad" }}
-                                        onClick={()=>{dispatch(trainwitai())}}
+                                        onClick={()=>{dispatch(trainwitai());setSendTrainCall(true)}}
                                     >{t(langKeys.train)}</Button>
                                 </div>
                             </div>
