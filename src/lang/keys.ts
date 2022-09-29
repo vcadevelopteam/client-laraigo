@@ -36,6 +36,7 @@ export const langKeys = {
     add_classification: "add_classification",
     assistant: "Laraigo Assitant",
     intentions: "intentions",
+    train: "train",
     dialog: "dialog",
     error_invaliddata: "error_invaliddata",
     uniqueexamplesuser: "uniqueexamplesuser",

@@ -16,7 +16,7 @@ import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/acti
 import DeleteIcon from '@material-ui/icons/Delete';
 import { execute, getCollection, getMultiCollection, resetAllMain } from 'store/main/actions';
 import { entitydelete, insertentity, selEntities } from 'common/helpers/requestBodies';
-import { exportExcel, uploadExcel } from 'common/helpers';
+import { convertLocalDate, exportExcel, uploadExcel } from 'common/helpers';
 
 
 interface RowSelected {
@@ -163,7 +163,7 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                         <div style={{ flex: .55 }} className={classes.containerDetail}>
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <div className={classes.title}>{t(langKeys.keywords)}</div>
+                                <div className={classes.title}>{t(langKeys.keywords)} & {t(langKeys.sinonims)}</div>
                             </div>
                             <div>
                                 <TableContainer>
@@ -215,11 +215,10 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                         </div>
 
                         <div style={{ flex: .45 }} className={classes.containerDetail}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: "45px" }}>
-                                <div className={classes.title}>{t(langKeys.sinonims)}</div>
-                            </div>
                             <div>
-                                
+                                <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: "45px", paddingBottom: "9px" }}>
+                                    <div><b>{t(langKeys.sinonims)}</b></div>
+                                </div>
                                 {keywords.map((item: any, i: number) =>
                                 
                                     <FieldMultiSelectFreeSolo
@@ -337,6 +336,10 @@ export const Entities: FC = () => {
                 accessor: 'updatedate',
                 width: "auto",
                 NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return convertLocalDate(row.updatedate).toLocaleString()
+                }
             },
         ],
         []
