@@ -1,4 +1,4 @@
-const ENV = "TESTING";
+const ENV = "CLOUD";
 
 const APIS_URL = {
     DEVELOP: {
@@ -38,6 +38,26 @@ const APIS_URL = {
         CHATFLOW: 'https://clarobackend.laraigo.com/zyxme/chatflow',
         FACEBOOKAPP: '1980305408682607',
         INSTAGRAMAPP: '1924971937716955',
+        CULQIKEY: 'pk_test_041501e753dcb2f9',
+        GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
+        GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
+    },
+    CLOUD: {
+        API: 'https://cloudapi.laraigo.com/api',
+        WS: 'https://cloudbroker.laraigo.com',
+        CHATFLOW: 'https://zyxmelinux.zyxmeapp.com/zyxmetest/chatflow',
+        FACEBOOKAPP: '1094526090706564',
+        INSTAGRAMAPP: '1872023336244866',
+        CULQIKEY: 'pk_test_041501e753dcb2f9',
+        GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
+        GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
+    },
+    DEMO: {
+        API: 'https://demoapix.laraigo.com/api',
+        WS: 'https://demosocket.laraigo.com',
+        CHATFLOW: 'https://zyxmelinux.zyxmeapp.com/zyxmedemo/chatflow',
+        FACEBOOKAPP: '1094526090706564',
+        INSTAGRAMAPP: '1872023336244866',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
         GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
