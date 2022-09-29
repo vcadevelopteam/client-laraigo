@@ -1,4 +1,4 @@
-const ENV = "CLOUD";
+const ENV = "TESTING";
 
 const APIS_URL = {
     DEVELOP: {
