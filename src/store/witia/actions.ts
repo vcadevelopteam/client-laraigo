@@ -14,3 +14,15 @@ export const testwitai = (requestBody: any): any => ({
 });
 
 export const resetWitaiTest = (): IActionCall => ({type: actionTypes.TESTMESSAGE_RESET});
+
+export const trainwitai = (): any => ({
+    callAPI: () => WitaiService.witaitrain(),
+    types: {
+        loading: actionTypes.TRAINMODEL_SEND,
+        success: actionTypes.TRAINMODEL_SUCCESS,
+        failure: actionTypes.TRAINMODEL_FAILURE,
+    },
+    type: null,
+});
+
+export const resetWitaiTrain = (): IActionCall => ({type: actionTypes.TRAINMODEL_RESET});

@@ -14,7 +14,8 @@ import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { execute, getCollection, getCollectionAux, getCollectionAux2, getMultiCollection, resetAllMain } from 'store/main/actions';
 import { exportintent, insertutterance, selEntities, selIntent, selUtterance, utterancedelete } from 'common/helpers/requestBodies';
-import { exportExcel, filterPipe, uploadExcel } from 'common/helpers';
+import { convertLocalDate, exportExcel, filterPipe, uploadExcel } from 'common/helpers';
+import { trainwitai } from 'store/witia/actions';
 
 
 interface RowSelected {
@@ -180,6 +181,10 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                 accessor: 'updatedate',
                 NoFilter: true,
                 width: "auto",
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return convertLocalDate(row.updatedate).toLocaleString()
+                }
             },
         ],
         []
@@ -430,6 +435,7 @@ export const Intentions: FC = () => {
     const mainResult = useSelector(state => state.main);
     const [selectedRows, setSelectedRows] = useState<any>({});
     const [waitSave, setWaitSave] = useState(false);
+    const [sendTrainCall, setSendTrainCall] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const [waitExport, setWaitExport] = useState(false);
     const mainResultAux = useSelector(state => state.main.mainAux);
@@ -437,10 +443,39 @@ export const Intentions: FC = () => {
 
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitImport, setWaitImport] = useState(false);
+    const trainResult = useSelector(state => state.witai.witaitrainresult);
 
     const fetchData = () => {dispatch(getCollection(selIntent()))};
     const selectionKey = 'name';
     const multiData = useSelector(state => state.main.multiData);
+
+    
+    useEffect(() => {
+        if(sendTrainCall){
+            if(!trainResult.loading && !trainResult.error){
+                let message="";
+                switch (trainResult.data.training_status) {
+                    case ("done"):
+                        message=t(langKeys.bot_training_done)
+                        break;
+                    case ("scheduled"):
+                        message=t(langKeys.bot_training_scheduled)
+                        break;
+                    case ("ongoing"):
+                        message=t(langKeys.bot_training_ongoing)
+                        break;
+                }
+                dispatch(showSnackbar({ show: true, severity: "success", message:  message}))
+                setSendTrainCall(false);
+                dispatch(showBackdrop(false));
+            }else if(executeRes.error){
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.test).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                setSendTrainCall(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [trainResult,sendTrainCall]);
     
     useEffect(() => {
         fetchData();
@@ -529,6 +564,10 @@ export const Intentions: FC = () => {
                 accessor: 'updatedate',
                 width: "auto",
                 NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return convertLocalDate(row.updatedate).toLocaleString()
+                }
             },
         ],
         []
@@ -639,17 +678,26 @@ export const Intentions: FC = () => {
                         useSelection={true}
                         selectionKey={selectionKey}
                         setSelectedRows={setSelectedRows}
-                        ButtonsElement={() => (
-                            <div style={{display: "flex", justifyContent: "end", width: "100%"}}>
-                                <Button
-                                    disabled={Object.keys(selectedRows).length===0}
-                                    variant="contained"
-                                    type="button"
-                                    color="primary"
-                                    startIcon={<ClearIcon color="secondary" />}
-                                    style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
-                                    onClick={handleDelete}
-                                >{t(langKeys.delete)}</Button>
+                        ButtonsElement={() => (     
+                            <div style={{display: "flex", justifyContent: "end", width: "100%"}}>                       
+                                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                                    <Button
+                                        disabled={Object.keys(selectedRows).length===0}
+                                        variant="contained"
+                                        type="button"
+                                        color="primary"
+                                        startIcon={<ClearIcon color="secondary" />}
+                                        style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
+                                        onClick={handleDelete}
+                                    >{t(langKeys.delete)}</Button>
+                                    <Button
+                                        variant="contained"
+                                        type="button"
+                                        color="primary"
+                                        style={{ backgroundColor: "#7721ad" }}
+                                        onClick={()=>{dispatch(trainwitai());setSendTrainCall(true)}}
+                                    >{t(langKeys.train)}</Button>
+                                </div>
                             </div>
                         )}
                         loading={mainResult.mainData.loading}
