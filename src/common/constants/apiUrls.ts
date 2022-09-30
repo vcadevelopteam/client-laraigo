@@ -45,7 +45,7 @@ const APIS_URL = {
     CLOUD: {
         API: 'https://cloudapi.laraigo.com/api',
         WS: 'https://cloudbroker.laraigo.com',
-        CHATFLOW: 'https://zyxmelinux.zyxmeapp.com/zyxmedemo/chatflow',
+        CHATFLOW: 'https://zyxmelinux.zyxmeapp.com/zyxmedemo/chatflowcloud',
         FACEBOOKAPP: '1094526090706564',
         INSTAGRAMAPP: '1872023336244866',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
