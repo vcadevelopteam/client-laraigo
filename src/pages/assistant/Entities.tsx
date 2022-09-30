@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
-import {  FieldEdit, FieldEditArray, FieldMultiSelectFreeSolo } from 'components';
+import { FieldEditArray, FieldMultiSelectFreeSolo } from 'components';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Box, Button, IconButton, makeStyles, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@material-ui/core';
@@ -64,7 +64,7 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
     const [waitSave, setWaitSave] = useState(false);
     const [keywords, setkeywords] = useState<any>(row?.datajson?.keywords || []);
     const executeRes = useSelector(state => state.main.execute);
-    const [name, setname] = useState("");
+    const [name, setname] = useState(row?.name || '');
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
@@ -159,6 +159,7 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                                 error={!!errors?.name?.message}
                                 helperText={errors?.name?.message || null}
                                 onInput={(e: any) => {
+                                    // eslint-disable-next-line no-useless-escape
                                     if(!((/^[a-zA-Z_]/g).test(e.target.value) && (/[a-zA-Z0-9\_]$/g).test(e.target.value))){
                                         if(e.target.value!=="") e.target.value = name
                                     }
@@ -172,8 +173,8 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                        <div style={{ flex: .55 }} className={classes.containerDetail}>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', width: "100%" }}>
+                        <div style={{ width: "100%" }} className={classes.containerDetail}>
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <div className={classes.title}>{t(langKeys.keywords)} & {t(langKeys.sinonims)}</div>
                             </div>
@@ -193,6 +194,7 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                                                     </IconButton>
                                                 </TableCell>
                                                 <TableCell>{t(langKeys.keywords)}</TableCell>
+                                                <TableCell>{t(langKeys.sinonims)}</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody style={{ marginTop: 5 }}>
@@ -208,7 +210,7 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                                                             </IconButton>
                                                         </div>
                                                     </TableCell>
-                                                    <TableCell style={{ width: 200 }}>
+                                                    <TableCell style={{ width: "50%" }}>
                                                         <FieldEditArray
                                                             valueDefault={keywords[i].keyword}
                                                             onChange={(value) => {
@@ -218,36 +220,27 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                                                             }}
                                                         />
                                                     </TableCell>
+                                                    <TableCell style={{ width: "50%" }}>
+                                                        <FieldMultiSelectFreeSolo
+                                                            valueDefault={keywords[i].synonyms.join()||""}
+                                                            className={classes.field}
+                                                            key={i}
+                                                            onChange={(value) => {
+                                                                let tempkeywords = keywords
+                                                                tempkeywords[i].synonyms = value
+                                                                setkeywords(tempkeywords)
+                                                            }}
+                                                            loading={false}
+                                                            data={keywords[i].synonyms.map((x:any) => ({ value: x }))}
+                                                            optionDesc="value"
+                                                            optionValue="value"
+                                                        />
+                                                    </TableCell>
                                                 </TableRow>
                                             )}
                                         </TableBody>
                                     </Table>
                                 </TableContainer>
-                            </div>
-                        </div>
-
-                        <div style={{ flex: .45 }} className={classes.containerDetail}>
-                            <div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: "45px", paddingBottom: "9px" }}>
-                                    <div><b>{t(langKeys.sinonims)}</b></div>
-                                </div>
-                                {keywords.map((item: any, i: number) =>
-                                
-                                    <FieldMultiSelectFreeSolo
-                                        valueDefault={keywords[i].synonyms.join()||""}
-                                        className={classes.field}
-                                        key={i}
-                                        onChange={(value) => {
-                                            let tempkeywords = keywords
-                                            tempkeywords[i].synonyms = value
-                                            setkeywords(tempkeywords)
-                                        }}
-                                        loading={false}
-                                        data={keywords[i].synonyms.map((x:any) => ({ value: x }))}
-                                        optionDesc="value"
-                                        optionValue="value"
-                                    />
-                                )}
                             </div>
                         </div>
                     </div>
