@@ -155,7 +155,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
     }, [type])
 
     useEffect(() => {
-        if (['number','number-centered'].includes(type))
+        if (['number', 'number-centered'].includes(type))
             setoperator("equals");
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [type])
@@ -223,7 +223,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
                     },
                 }, 0)
             }
-        } else if (['number','number-centered'].includes(type)) {
+        } else if (['number', 'number-centered'].includes(type)) {
             if (op === 'isempty' ||
                 op === 'isnotempty' ||
                 op === 'isnull' ||
@@ -318,7 +318,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
             setValue(filters?.[header]?.value || '');
             if (filters?.[header]) setoperator(filters[header].operator);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filters]);
 
     return (
@@ -342,7 +342,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
                         {!['date', 'time'].includes(type) &&
                             <Input
                                 style={{ fontSize: '15px', minWidth: '100px' }}
-                                type={['number','number-centered'].includes(type) ? "number" : "text"}
+                                type={['number', 'number-centered'].includes(type) ? "number" : "text"}
                                 fullWidth
                                 value={value}
                                 onKeyDown={keyPress}
@@ -552,13 +552,13 @@ const TableZyx = React.memo(({
 
     const triggertmp = (fromButton: boolean = false) => {
         if (fromButton)
-            setPagination(prev => ({ ...prev, pageIndex: 0, trigger: false }));
+            setPagination(prev => ({ ...prev, pageIndex: initialPageIndex, trigger: false }));
 
         if (!fetchData) return;
         fetchData({
             ...pagination,
             pageSize,
-            pageIndex: fromButton ? 0 : pagination.pageIndex,
+            pageIndex: fromButton ? initialPageIndex : pagination.pageIndex,
             daterange: {
                 startDate: dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : null,
                 endDate: dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : null,
@@ -566,7 +566,7 @@ const TableZyx = React.memo(({
         });
         setTFilters(prev => ({
             ...prev,
-            page: fromButton ? 0 : pagination.pageIndex,
+            page: fromButton ? initialPageIndex : pagination.pageIndex,
             startDate: dateRange.startDate ? (new Date(dateRange.startDate.setHours(10))).getTime() : null,
             endDate: dateRange.endDate ? (new Date(dateRange.endDate.setHours(10))).getTime() : null,
         }));
@@ -590,7 +590,7 @@ const TableZyx = React.memo(({
         if (triggerSearch) {
             triggerSearch && triggertmp(true);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [triggerSearch])
 
     useEffect(() => {
@@ -608,7 +608,7 @@ const TableZyx = React.memo(({
 
     useEffect(() => {
         onFilterChange?.(tFilters);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tFilters]);
 
     const exportData = () => {
@@ -752,7 +752,7 @@ const TableZyx = React.memo(({
                                                                 }
                                                             </Box>
                                                             {!!column.helpText && (
-                                                                <Tooltip title={<div style={{ fontSize: 12,  whiteSpace: 'break-spaces' }}>{column.helpText}</div>} arrow placement="top" >
+                                                                <Tooltip title={<div style={{ fontSize: 12, whiteSpace: 'break-spaces' }}>{column.helpText}</div>} arrow placement="top" >
                                                                     <InfoRoundedIcon color="action" className={classes.iconHelpText} />
                                                                 </Tooltip>
                                                             )}
