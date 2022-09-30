@@ -55,7 +55,7 @@ export interface TableConfig {
     onClickRow?: (param?: any, columnid?: any) => void;
     /**cualquier filtro */
     onFilterChange?: (filter: ITablePaginatedFilter) => void;
-    helperText?:string;
+    helperText?: string;
     initialStateFilter?: {
         id: string,
         value: {

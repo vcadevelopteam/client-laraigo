@@ -903,9 +903,9 @@ export const Person: FC = () => {
                     state: {},
                 })}
                 onFilterChange={f => {
-                    const params = buildQueryFilters(f);
-                    if (filterChannelsType !== '') params.append('channelTypes', filterChannelsType);
-                    history.push({ search: params.toString() });
+                    const filterParams = buildQueryFilters(f);
+                    if (filterChannelsType !== '') filterParams.append('channelTypes', filterChannelsType);
+                    history.push({ search: filterParams.toString() });
                 }}
                 initialEndDate={params.endDate}
                 initialStartDate={params.startDate}
@@ -1252,7 +1252,6 @@ export const PersonDetail: FC = () => {
                     href="/"
                     onClick={(e) => {
                         e.preventDefault();
-                        // history.push(paths.PERSON);
                         history.goBack();
                     }}
                 >
@@ -1291,7 +1290,6 @@ export const PersonDetail: FC = () => {
                         style={{ backgroundColor: "#FB5F5F" }}
                         onClick={(e) => {
                             e.preventDefault();
-                            // history.push(paths.PERSON);
                             history.goBack();
                         }}
                     >
@@ -2497,10 +2495,10 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
         // dispatch(getCallRecord({call_session_history_id: ticket.postexternalid}));
         // setWaitDownloadRecord(true);
         try {
-            const axios_result = await VoximplantService.getCallRecord({call_session_history_id: ticket.postexternalid});
+            const axios_result = await VoximplantService.getCallRecord({ call_session_history_id: ticket.postexternalid });
             if (axios_result.status === 200) {
                 let buff = Buffer.from(axios_result.data, 'base64');
-                const blob = new Blob([buff], {type: axios_result.headers['content-type'].split(';').find((x: string) => x.includes('audio'))});
+                const blob = new Blob([buff], { type: axios_result.headers['content-type'].split(';').find((x: string) => x.includes('audio')) });
                 const objectUrl = window.URL.createObjectURL(blob);
                 let a = document.createElement('a');
                 a.href = objectUrl;
@@ -2522,16 +2520,16 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
                 ticket={rowSelected}
             />
             <Grid container direction="row">
-                
+
                 <Grid item xs={12} sm={12} md={1} lg={1} xl={1}>
-                {(conversation.channeltype==="VOXI" && conversation.postexternalid && conversation.callanswereddate ) && 
+                    {(conversation.channeltype === "VOXI" && conversation.postexternalid && conversation.callanswereddate) &&
                         <Tooltip title={t(langKeys.download_record) || ""}>
-                            <IconButton size="small" onClick={() => downloadCallRecord(conversation)} style={{paddingTop: 15, paddingLeft: 20}}
+                            <IconButton size="small" onClick={() => downloadCallRecord(conversation)} style={{ paddingTop: 15, paddingLeft: 20 }}
                             >
                                 <CallRecordIcon style={{ fill: '#7721AD' }} />
                             </IconButton>
                         </Tooltip>
-                }
+                    }
                 </Grid>
                 <Grid item xs={12} sm={12} md={1} lg={1} xl={1}>
                     <Property title="Ticket #" subtitle={conversation.ticketnum} isLink={true} onClick={() => openDialogInteractions(conversation)} />
