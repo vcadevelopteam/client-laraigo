@@ -1202,6 +1202,19 @@ export const stopCampaign = ({ campaignid }: Dictionary): IRequestBody => ({
     }
 });
 
+export const campaignPersonSel = ({ skip, take, filters, sorts }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_CAMPAIGN_PERSON_SEL",
+    methodCount: "UFN_CAMPAIGN_PERSON_TOTALRECORDS",
+    parameters: {
+        skip,
+        take,
+        filters,
+        sorts,
+        origin: "person",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+
 export const getUserGroupsSel = (): IRequestBody => ({
     method: "UFN_USER_GROUPS_SEL",
     parameters: {}
