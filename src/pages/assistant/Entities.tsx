@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import {  FieldEdit, FieldEditArray, FieldMultiSelectFreeSolo } from 'components';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { Button, IconButton, makeStyles, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
+import { Box, Button, IconButton, makeStyles, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@material-ui/core';
 import TableZyx from 'components/fields/table-simple';
 import ClearIcon from '@material-ui/icons/Clear';
 import { Dictionary } from '@types';
@@ -64,6 +64,7 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
     const [waitSave, setWaitSave] = useState(false);
     const [keywords, setkeywords] = useState<any>(row?.datajson?.keywords || []);
     const executeRes = useSelector(state => state.main.execute);
+    const [name, setname] = useState("");
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
@@ -148,15 +149,26 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.newentity)} 
-                            className="col-12"
-                            onChange={(value) => {
-                                setValue('name', value)
-                            }}
-                            valueDefault={row?.name || ""}
-                            error={errors?.name?.message}
-                        />
+                        
+                        <div className="col-12">
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">{t(langKeys.newentity)}</Box>
+                            <TextField
+                                color="primary"
+                                fullWidth
+                                value={name}
+                                error={!!errors?.name?.message}
+                                helperText={errors?.name?.message || null}
+                                onInput={(e: any) => {
+                                    if(!((/^[a-zA-Z_]/g).test(e.target.value) && (/[a-zA-Z0-9\_]$/g).test(e.target.value))){
+                                        if(e.target.value!=="") e.target.value = name
+                                    }
+                                }}
+                                onChange={(e) => {
+                                    setValue('name', e.target.value)
+                                    setname(e.target.value)
+                                }}
+                            />
+                        </div>
                     </div>
                 </div>
                 <div className={classes.containerDetail}>

@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { FieldEdit, FieldEditWithSelect, TitleDetail } from 'components';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { Button, makeStyles } from '@material-ui/core';
+import { Box, Button, makeStyles, TextField } from '@material-ui/core';
 import TableZyx from 'components/fields/table-simple';
 import ClearIcon from '@material-ui/icons/Clear';
 import { Dictionary } from '@types';
@@ -75,6 +75,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
     const [disableCreate, setDisableCreate] = useState(true);
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [dataEntities, setdataEntities] = useState<any>([]);
+    const [name, setname] = useState("");
     const [variableHandler, setVariableHandler] = useState<VariableHandler>(new VariableHandler());
     const [newIntention, setnewIntention] = useState<Dictionary>({
         name: "",
@@ -279,17 +280,27 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.name)} 
-                            disabled={!disableSave}
-                            className="col-12"
-                            onChange={(value) => {
-                                setValue('name', value)
-                                setDisableCreate(getValues("description")===""||value==="")
-                            }}
-                            valueDefault={row?.name || ""}
-                            error={errors?.name?.message}
-                        />
+                        <div className="col-12">
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">{t(langKeys.name)}</Box>
+                            <TextField
+                                color="primary"
+                                fullWidth
+                                disabled={!disableSave}
+                                value={name}
+                                error={!!errors?.name?.message}
+                                helperText={errors?.name?.message || null}
+                                onInput={(e: any) => {
+                                    if(!((/^[a-zA-Z_]/g).test(e.target.value) && (/[a-zA-Z0-9\_]$/g).test(e.target.value))){
+                                        if(e.target.value!=="") e.target.value = name
+                                    }
+                                }}
+                                onChange={(e) => {
+                                    setValue('name', e.target.value)
+                                    setname(e.target.value)
+                                    setDisableCreate(getValues("description")===""||e.target.value==="")
+                                }}
+                            />
+                        </div>
                         <FieldEdit
                             label={t(langKeys.description)} 
                             disabled={!disableSave}
