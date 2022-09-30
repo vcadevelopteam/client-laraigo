@@ -75,7 +75,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
     const [disableCreate, setDisableCreate] = useState(true);
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [dataEntities, setdataEntities] = useState<any>([]);
-    const [name, setname] = useState("");
+    const [name, setname] = useState(row?.name || '');
     const [variableHandler, setVariableHandler] = useState<VariableHandler>(new VariableHandler());
     const [newIntention, setnewIntention] = useState<Dictionary>({
         name: "",
@@ -290,6 +290,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                                 error={!!errors?.name?.message}
                                 helperText={errors?.name?.message || null}
                                 onInput={(e: any) => {
+                                    // eslint-disable-next-line no-useless-escape
                                     if(!((/^[a-zA-Z_]/g).test(e.target.value) && (/[a-zA-Z0-9\_]$/g).test(e.target.value))){
                                         if(e.target.value!=="") e.target.value = name
                                     }
