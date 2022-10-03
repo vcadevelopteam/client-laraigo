@@ -1306,11 +1306,11 @@ export const getReferrerByPersonBody = (personId: ID) => ({
     },
 });
 
-export const insPersonUpdateLocked = ({ personid, personcommunicationchannel, locked }: Dictionary) => ({
+export const insPersonUpdateLocked = ({ personid, locked }: Dictionary) => ({
     method: "UFN_PERSONCOMMUNICATIONCHANNEL_UPDATE_LOCKED",
     parameters: {
         personid,
-        personcommunicationchannel,
+        personcommunicationchannel: "",
         locked
     },
 });
@@ -2064,7 +2064,12 @@ export const insPersonCommunicationChannel = (pcc: Dictionary): IRequestBody => 
 export const personInsValidation = ({id, phone, email, alternativephone, alternativeemail, operation}: Dictionary): IRequestBody => ({
     method: 'UFN_PERSON_INS_VALIDATION',
     parameters: {
-        id, phone, email, alternativephone, alternativeemail, operation
+        id, 
+        phone: phone?.replaceAll('+','') || "",
+        email, 
+        alternativephone: alternativephone?.replaceAll('+','') || "",
+        alternativeemail, 
+        operation
     },
 });
 
@@ -2072,11 +2077,11 @@ export const editPersonBody = (person: IPerson): IRequestBody => ({
     method: 'UFN_PERSON_PCC_INS',
     parameters: {
         ...person,
-        alternativephone: person.alternativephone||"",
+        alternativephone: person?.alternativephone?.replaceAll('+','') || "",
         id: person.personid,
         operation: person.personid ? 'UPDATE' : 'INSERT',
         observation: person.observation || '',
-        phone: person?.phone?.replaceAll('+',''),
+        phone: person?.phone?.replaceAll('+','') || "",
     },
 });
 
@@ -2734,7 +2739,7 @@ export const billingNotificationIns = ({ year, month, countrycode, id, vcacomiss
 })
 
 /**bloquear o desbloquear personas de forma masiva */
-export const personcommunicationchannelUpdateLockedArrayIns = (table: { personid: number, personcommunicationchannel: string, locked: boolean }[]) => ({
+export const personcommunicationchannelUpdateLockedArrayIns = (table: { personid: number, locked: boolean }[]) => ({
     method: "UFN_PERSONCOMMUNICATIONCHANNEL_UPDATE_LOCKED_ARRAY",
     key: "UFN_PERSONCOMMUNICATIONCHANNEL_UPDATE_LOCKED_ARRAY",
     parameters: { table: JSON.stringify(table) },
@@ -3134,7 +3139,7 @@ export const getDisconnectionTimes = ({ startdate, enddate, asesorid, supervisor
     }
 })
 
-export const ufnlinkPersons = ({ personidfrom, personidto, imageurl, name, firstname, documenttype, documentnumber, persontype, birthday, gender, phone, alternativephone, email, alternativeemail, civilstatus, occupation, educationlevel }: Dictionary): IRequestBody => ({
+export const ufnlinkPersons = ({ personidfrom, personidto, imageurl, lastname, name, firstname, documenttype, documentnumber, persontype, birthday, gender, phone, alternativephone, observation, email, alternativeemail, civilstatus, occupation, educationlevel }: Dictionary): IRequestBody => ({
     method: "UFN_CONVERSATION_LINKEDPERSON_EXECUTE",
     key: "UFN_CONVERSATION_LINKEDPERSON_EXECUTE",
     parameters: {
@@ -3143,6 +3148,8 @@ export const ufnlinkPersons = ({ personidfrom, personidto, imageurl, name, first
         imageurl: imageurl || "",
         name: name || "",
         firstname: firstname || "",
+        observation: observation || "",
+        lastname: lastname || "",
         documenttype: documenttype || "",
         documentnumber: documentnumber || "",
         persontype: persontype || "",
@@ -3354,4 +3361,10 @@ export const entitydelete = ({table,}:Dictionary): IRequestBody => ({
     method: "UFN_WITAI_ENTITY_DEL",
     key: "UFN_WITAI_ENTITY_DEL",
     parameters: {table, model:""}
+})
+
+export const exportintent = ({name_json}:Dictionary): IRequestBody => ({
+    method: "UFN_WITAI_INTENT_EXPORT",
+    key: "UFN_WITAI_INTENT_EXPORT",
+    parameters: {name_json}
 })

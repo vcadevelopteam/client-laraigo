@@ -718,22 +718,21 @@ export const Person: FC = () => {
                 && (f.occupation === undefined || Object.keys(domains.value?.occupations.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.occupation))
                 && (f.groups === undefined || Object.keys(domains.value?.groups.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.groups))
                 //&& (f.channeltype === undefined || Object.keys(domains.value?.channelTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.channeltype))
-                && !['', null, undefined].includes(f.phone)
             );
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
                 let table: Dictionary = data.reduce((a: any, d: IPersonImport) => ({
                     ...a,
                     [`${d.documenttype}_${d.documentnumber}`]: {
-                        id: 0,
+                        personid: 0,
                         firstname: d.firstname || null,
                         lastname: d.lastname || null,
                         documenttype: d.documenttype,
                         documentnumber: d.documentnumber,
                         persontype: d.persontype || null,
                         type: d.type || '',
-                        phone: d.phone || null,
-                        alternativephone: d.alternativephone || null,
+                        phone: String(d.phone|| "") ,
+                        alternativephone: String(d?.alternativephone|| "") ,
                         email: d.email || null,
                         alternativeemail: d.alternativeemail || null,
                         birthday: d.birthday || null,
@@ -749,27 +748,13 @@ export const Person: FC = () => {
                         age: null,
                         sex: null,
                         operation: 'INSERT',
-                        pcc: data
-                            .filter((c: IPersonImport) => `${c.documenttype}_${c.documentnumber}` === `${d.documenttype}_${d.documentnumber}`
-                                //&& !['', null, undefined].includes(c.channeltype)
-                                && !['', null, undefined].includes(d.phone)
-                            )
-                            .map((c: IPersonImport) => ({
-                                type: "VOXI",//c.channeltype,
-                                personcommunicationchannel: d.phone || null,
-                                personcommunicationchannelowner: d.phone || null,
-                                displayname: c.displayname || null,
-                                status: 'ACTIVO',
-                                operation: 'INSERT'
-                            }))
                     }
                 }), {});
                 Object.values(table).forEach((p: IPersonImport) => {
+                    debugger
                     dispatch(execute({
-                        header: insPersonBody({ ...p }),
-                        detail: [
-                            ...p.pcc.map((x: IPersonCommunicationChannel) => insPersonCommunicationChannel({ ...x })),
-                        ]
+                        header: editPersonBody({ ...p }),
+                        detail: []
                     }, true));
                 });
                 setWaitImport(true)
@@ -784,7 +769,7 @@ export const Person: FC = () => {
         const callback = () => {
             const data = personsSelected.map(p => ({
                 personid: p.personid,
-                personcommunicationchannel: p.personcommunicationchannel,
+                // personcommunicationchannel: p.personcommunicationchannel,
                 locked: type === "LOCK",
             }));
             dispatch(execute(personcommunicationchannelUpdateLockedArrayIns(data)));
@@ -918,9 +903,9 @@ export const Person: FC = () => {
                     state: {},
                 })}
                 onFilterChange={f => {
-                    const params = buildQueryFilters(f);
-                    if (filterChannelsType !== '') params.append('channelTypes', filterChannelsType);
-                    history.push({ search: params.toString() });
+                    const filterParams = buildQueryFilters(f);
+                    if (filterChannelsType !== '') filterParams.append('channelTypes', filterChannelsType);
+                    history.push({ search: filterParams.toString() });
                 }}
                 initialEndDate={params.endDate}
                 initialStartDate={params.startDate}
@@ -1267,7 +1252,6 @@ export const PersonDetail: FC = () => {
                     href="/"
                     onClick={(e) => {
                         e.preventDefault();
-                        // history.push(paths.PERSON);
                         history.goBack();
                     }}
                 >
@@ -1306,7 +1290,6 @@ export const PersonDetail: FC = () => {
                         style={{ backgroundColor: "#FB5F5F" }}
                         onClick={(e) => {
                             e.preventDefault();
-                            // history.push(paths.PERSON);
                             history.goBack();
                         }}
                     >
@@ -2512,10 +2495,10 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
         // dispatch(getCallRecord({call_session_history_id: ticket.postexternalid}));
         // setWaitDownloadRecord(true);
         try {
-            const axios_result = await VoximplantService.getCallRecord({call_session_history_id: ticket.postexternalid});
+            const axios_result = await VoximplantService.getCallRecord({ call_session_history_id: ticket.postexternalid });
             if (axios_result.status === 200) {
                 let buff = Buffer.from(axios_result.data, 'base64');
-                const blob = new Blob([buff], {type: axios_result.headers['content-type'].split(';').find((x: string) => x.includes('audio'))});
+                const blob = new Blob([buff], { type: axios_result.headers['content-type'].split(';').find((x: string) => x.includes('audio')) });
                 const objectUrl = window.URL.createObjectURL(blob);
                 let a = document.createElement('a');
                 a.href = objectUrl;
@@ -2537,16 +2520,16 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
                 ticket={rowSelected}
             />
             <Grid container direction="row">
-                
+
                 <Grid item xs={12} sm={12} md={1} lg={1} xl={1}>
-                {(conversation.channeltype==="VOXI" && conversation.postexternalid && conversation.callanswereddate ) && 
+                    {(conversation.channeltype === "VOXI" && conversation.postexternalid && conversation.callanswereddate) &&
                         <Tooltip title={t(langKeys.download_record) || ""}>
-                            <IconButton size="small" onClick={() => downloadCallRecord(conversation)} style={{paddingTop: 15, paddingLeft: 20}}
+                            <IconButton size="small" onClick={() => downloadCallRecord(conversation)} style={{ paddingTop: 15, paddingLeft: 20 }}
                             >
                                 <CallRecordIcon style={{ fill: '#7721AD' }} />
                             </IconButton>
                         </Tooltip>
-                }
+                    }
                 </Grid>
                 <Grid item xs={12} sm={12} md={1} lg={1} xl={1}>
                     <Property title="Ticket #" subtitle={conversation.ticketnum} isLink={true} onClick={() => openDialogInteractions(conversation)} />
