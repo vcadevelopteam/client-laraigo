@@ -137,7 +137,7 @@ const ReportKpiOperativo: FC = () => {
                             props.rows.reduce((sum: any, row: any) => timetoseconds(row.values["tme_avg"]) + sum, 0),
                         [props.rows]
                     )
-                    return <>{props.rows.length != 0 ? secondsToDayTime(total / props.rows.length) : ''}</>
+                    return <>{props.rows.length != 0 ? secondsToDayTime(total / props.rows.filter((r: any) => r.values["tme_avg"]).length) : ''}</>
                 },
             },
             {
