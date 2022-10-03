@@ -308,7 +308,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                         type: p.type || '',
                         displayname: p.name || '',
                         status: 'ACTIVO',
-                        field1: detaildata.communicationchanneltype?.startsWith('MAI') ? p.email : p.phone,
+                        field1: (detaildata.communicationchanneltype?.startsWith('MAI') ? p.email : p.phone) || '',
                         field2: p[usedTablevariable['field2']] || '',
                         field3: p[usedTablevariable['field3']] || '',
                         field4: p[usedTablevariable['field4']] || '',
