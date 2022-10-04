@@ -3792,6 +3792,12 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     channel_tiktoktitle: 'Conectar TikTok',
     channel_linkedintitle: 'Conectar LinkedIn',
 
+    elements: 'Elementos',
+    show_shopping_cart: 'Mostrar carritos de compras',
+    cart_sent: 'Carrito enviado',
+    show_items: 'Ver elementos',
+    options: 'Opciones',
+
     subscription_congratulations: '¡Felicidades!',
     subscription_message1: '¡Haz conectado',
     subscription_message2: 'exitosamente!',

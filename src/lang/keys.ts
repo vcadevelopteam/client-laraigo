@@ -3784,6 +3784,12 @@ export const langKeys = {
     channel_tiktoktitle: 'channel_tiktoktitle',
     channel_linkedintitle: 'channel_linkedintitle',
 
+    elements: 'elements',
+    show_shopping_cart: 'show_shopping_cart',
+    cart_sent: 'cart_sent',
+    show_items: 'show_items',
+    options: 'options',
+
     subscription_congratulations: 'subscription_congratulations',
     subscription_message1: 'subscription_message1',
     subscription_message2: 'subscription_message2',
