@@ -431,6 +431,7 @@ const Supervisor: FC = () => {
             getInappropriateWordsLst(),
             getPropertySelByName("TIPIFICACION"),
             getUserChannelSel(),
+            getPropertySelByName("ASESORDELEGACION","ASESORDELEGACION"),
         ]))
         return () => {
             dispatch(resetAllMain());

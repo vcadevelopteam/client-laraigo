@@ -88,6 +88,8 @@ const MessageInbox: React.FC = () => {
             getPropertySelByName("TIPIFICACION"),
             getUserChannelSel(),
             getPropertiesIncludingName("WAITINGTIMECUSTOMER"),
+            getPropertySelByName("ASESORDELEGACION"),
+            getPropertySelByName("ASESORDELEGACION","ASESORDELEGACION"),
         ]))
         dispatch(getMultiCollectionAux2([
             getValuesFromDomainLight("MOTIVOCIERRE"),
