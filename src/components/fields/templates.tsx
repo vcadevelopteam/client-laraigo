@@ -1395,7 +1395,7 @@ export const FieldEditWithSelect: React.FC<EditWithSelectProps> = ({ label, clas
                             borderStyle: 'solid',
                             borderWidth: '1px',
                             borderRadius: '5px',
-                            zIndex: 100
+                            zIndex: 9999
                         }}>
                             <FixedSizeList
                                 className="scroll-style-go"
