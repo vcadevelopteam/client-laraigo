@@ -4001,6 +4001,9 @@ export const langKeys = {
     invoicecomment: "invoicecomment",
     invoicecomments: "invoicecomments",
     invoiceat: "invoiceat",
+    voximplant_organizationupdatescenario: "voximplant_organizationupdatescenario",
+    voximplant_organizationupdatescenarioalert: "voximplant_organizationupdatescenarioalert",
+    scenario: "scenario",
 };
 
 export type LangKeys = typeof langKeys;
