@@ -4070,7 +4070,7 @@ export const langKeys = {
     billingreport_conversation: "billingreport_conversation",
     billingreport_interaction: "billingreport_interaction",
     billingreport_agent: "billingreport_agent",
-    billingreport_template: "billingreport_template",
+    billingreport_template: "billingreport_template"
 };
 
 export type LangKeys = typeof langKeys;
