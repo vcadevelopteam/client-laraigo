@@ -303,8 +303,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     ap.push({
                         id: 0,
                         personid: p.personid || 0,
-                        personcommunicationchannel: p.personcommunicationchannel || '',
-                        personcommunicationchannelowner: p.personcommunicationchannelowner || '',
+                        personcommunicationchannel: '',
+                        personcommunicationchannelowner: (detaildata.communicationchanneltype?.startsWith('MAI') ? p.email : p.phone) || '',
                         type: p.type || '',
                         displayname: p.name || '',
                         status: 'ACTIVO',

@@ -484,7 +484,6 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                     />
                     :
                     <TableZyx
-                        titlemodule={t(langKeys.person_plural)}
                         columns={headers}
                         data={jsonData}
                         download={false}
