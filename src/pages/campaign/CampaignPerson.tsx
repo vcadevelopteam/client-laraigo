@@ -4,14 +4,15 @@ import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { DialogZyx } from 'components';
 import { Dictionary, ICampaign, MultiData, SelectedColumns } from "@types";
+import TablePaginated from 'components/fields/table-paginated';
 import TableZyx from '../../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { getCampaignMemberSel, uploadExcel } from 'common/helpers';
+import { getCampaignMemberSel, campaignPersonSel, uploadExcel } from 'common/helpers';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
 import { useSelector } from 'hooks';
-import { getCollectionAux } from 'store/main/actions';
+import { getCollectionAux, getCollectionPaginatedAux } from 'store/main/actions';
 import { showSnackbar } from 'store/popus/actions';
 import { FrameProps } from './CampaignDetail';
 
@@ -74,6 +75,22 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
 
     const fetchPersonData = (id: number) => dispatch(getCollectionAux(getCampaignMemberSel(id)));
 
+    const paginatedAuxResult = useSelector(state => state.main.mainPaginatedAux);
+    const [fetchDataAux, setfetchDataAux] = useState<any>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+    const [pageCount, setPageCount] = useState(0);
+    const [totalrow, settotalrow] = useState(0);
+    const fetchPaginatedData = ({ pageSize, pageIndex, filters, sorts }: any) => {
+        setfetchDataAux({ pageSize, pageIndex, filters, sorts })
+        dispatch(getCollectionPaginatedAux(campaignPersonSel({
+            take: pageSize,
+            skip: pageIndex * pageSize,
+            sorts: sorts,
+            filters: {
+                ...filters,
+            }
+        })))
+    };
+
     useEffect(() => {
         if (frameProps.checkPage) {
             const valid = changeStep(frameProps.page);
@@ -90,7 +107,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     useEffect(() => {
         if (detaildata.operation === 'INSERT') {
             if (detaildata.source === 'INTERNAL') {
-                // dispatch(getPersonSel());
+                fetchPaginatedData(fetchDataAux);
             }
         }
         else if (detaildata.operation === 'UPDATE') {
@@ -154,6 +171,43 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             }
         }
     }, [auxResult]);
+
+    useEffect(() => {
+        if (!paginatedAuxResult.loading && !paginatedAuxResult.error && paginatedAuxResult.data.length > 0) {
+            if (detaildata.operation === 'INSERT' && detaildata.source === 'INTERNAL') {
+                setPageCount(Math.ceil(paginatedAuxResult.count / fetchDataAux.pageSize));
+                settotalrow(paginatedAuxResult.count);
+                setJsonData(paginatedAuxResult.data);
+                setHeaders([
+                    { Header: t(langKeys.firstname), accessor: 'firstname' },
+                    { Header: t(langKeys.lastname), accessor: 'lastname' },
+                    { Header: t(langKeys.documenttype), accessor: 'documenttype' },
+                    { Header: t(langKeys.documentnumber), accessor: 'documentnumber' },
+                    { Header: t(langKeys.personType), accessor: 'persontype' },
+                    { Header: t(langKeys.phone), accessor: 'phone' },
+                    { Header: t(langKeys.alternativePhone), accessor: 'alternativephone' },
+                    { Header: t(langKeys.email), accessor: 'email' },
+                    { Header: t(langKeys.alternativeEmail), accessor: 'alternativeemail' },
+                    { Header: t(langKeys.birthday), accessor: 'birthday' },
+                    { Header: t(langKeys.gender), accessor: 'genderdesc' },
+                    { Header: t(langKeys.educationLevel), accessor: 'educationleveldesc' },
+                    { Header: t(langKeys.civilStatus), accessor: 'civilstatusdesc' },
+                    { Header: t(langKeys.occupation), accessor: 'occupationdesc' },
+                    { Header: t(langKeys.observation), accessor: 'observation' },
+                ]);
+                setDetaildata({
+                    ...detaildata,
+                    selectedRows: selectedRows,
+                    person: Array.from(
+                        new Map([
+                            ...(detaildata.person || []),
+                            ...jsonData.filter(j => Object.keys(selectedRows).includes('' + j[selectionKey]))
+                        ].map(d => [d['personid'], d])).values())
+                });
+                setFrameProps({...frameProps, valid: {...frameProps.valid, 1: Object.keys(selectedRows).length > 0}});
+            }
+        }
+    }, [paginatedAuxResult]);
 
     const handleUpload = async (files: any) => {
         const file = files[0];
@@ -335,11 +389,12 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         if (detaildata.operation === 'INSERT' && detaildata.source === 'INTERNAL') {
             setDetaildata({
                 ...detaildata,
-                headers: setHeaderTableData(selectedColumns),
-                jsonData: jsonData,
-                selectedColumns: selectedColumns,
                 selectedRows: selectedRows,
-                person: jsonData.filter(j => Object.keys(selectedRows).includes('' + j[selectionKey]))
+                person: Array.from(
+                    new Map([
+                        ...(detaildata.person || []),
+                        ...jsonData.filter(j => Object.keys(selectedRows).includes('' + j[selectionKey]))
+                    ].map(d => [d['personid'], d])).values())
             });
         }
         else if (detaildata.operation === 'UPDATE' && detaildata.source === 'INTERNAL') {
@@ -411,21 +466,39 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     return (
         <React.Fragment>
             <div className={classes.containerDetail}>
-                <TableZyx
-                    titlemodule={t(langKeys.person_plural)}
-                    columns={headers}
-                    data={jsonData}
-                    download={false}
-                    loading={detaildata.source === 'INTERNAL' && auxResult.loading}
-                    filterGeneral={false}
-                    ButtonsElement={AdditionalButtons}
-                    useSelection={true}
-                    selectionKey={selectionKey}
-                    initialSelectedRows={selectedRows}
-                    setSelectedRows={setSelectedRows}
-                    allRowsSelected={allRowsSelected}
-                    setAllRowsSelected={setAllRowsSelected}
-                />
+                {
+                    detaildata.operation === 'INSERT' && detaildata.source === 'INTERNAL' ?
+                    <TablePaginated
+                        columns={headers}
+                        data={jsonData}
+                        totalrow={totalrow}
+                        pageCount={pageCount}
+                        loading={paginatedAuxResult.loading}
+                        fetchData={fetchPaginatedData}
+                        useSelection={true}
+                        selectionKey={selectionKey}
+                        initialSelectedRows={selectedRows}
+                        setSelectedRows={setSelectedRows}
+                        allRowsSelected={allRowsSelected}
+                        setAllRowsSelected={setAllRowsSelected}
+                    />
+                    :
+                    <TableZyx
+                        columns={headers}
+                        data={jsonData}
+                        download={false}
+                        loading={detaildata.source === 'INTERNAL' && auxResult.loading}
+                        filterGeneral={false}
+                        ButtonsElement={AdditionalButtons}
+                        useSelection={true}
+                        selectionKey={selectionKey}
+                        initialSelectedRows={selectedRows}
+                        setSelectedRows={setSelectedRows}
+                        allRowsSelected={allRowsSelected}
+                        setAllRowsSelected={setAllRowsSelected}
+                    />
+                }
+                
             </div>
             <ModalCampaignColumns
                 columnList={columnList}
