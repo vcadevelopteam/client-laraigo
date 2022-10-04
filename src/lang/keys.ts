@@ -4066,13 +4066,7 @@ export const langKeys = {
     billingreport_conversation: "billingreport_conversation",
     billingreport_interaction: "billingreport_interaction",
     billingreport_agent: "billingreport_agent",
-    billingreport_template: "billingreport_template",
-    invoicecomment: "invoicecomment",
-    invoicecomments: "invoicecomments",
-    invoiceat: "invoiceat",
-    voximplant_organizationupdatescenario: "voximplant_organizationupdatescenario",
-    voximplant_organizationupdatescenarioalert: "voximplant_organizationupdatescenarioalert",
-    scenario: "scenario",
+    billingreport_template: "billingreport_template"
 };
 
 export type LangKeys = typeof langKeys;
