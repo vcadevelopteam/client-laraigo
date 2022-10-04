@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useCallback, lazy, Suspense } from "react";
+import React, { FC, useCallback, lazy } from "react";
 import Layout from 'components/layout/Layout';
 import Popus from 'components/layout/Popus';
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
@@ -37,7 +37,6 @@ const Tipifications = lazy(() => import('pages/Tipifications'));
 const InputValidation = lazy(() => import('pages/InputValidation'));
 const IntegrationManager = lazy(() => import('pages/IntegrationManager'));
 const VariableConfiguration = lazy(() => import('pages/VariableConfiguration'));
-const ReportTemplate = lazy(() => import('pages/ReportTemplate'));
 const Emojis = lazy(() => import('pages/Emojis'));
 const Iaservices = lazy(() => import('pages/Iaservices'));
 const Campaign = lazy(() => import('pages/campaign/Campaign'));
@@ -112,7 +111,6 @@ interface PrivateRouteProps extends Omit<RouteProps, "component"> {
 const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, ...rest }) => {
 	const resValidateToken = useSelector(state => state.login.validateToken);
 	const ignorePwdchangefirstloginValidation = useSelector(state => state.login.ignorePwdchangefirstloginValidation);
-	const resLogin = useSelector(state => state.login.login);
 
 	const applications = resValidateToken?.user?.menu;
 	const location = useLocation();
