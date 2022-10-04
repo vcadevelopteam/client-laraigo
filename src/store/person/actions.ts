@@ -27,6 +27,22 @@ export const getPersonListPaginated = (payload: IRequestBodyPaginated): IActionC
 
 export const resetGetPersonListPaginated = () => ({ type: actionTypes.GET_PERSON_LIST_RESET });
 
+
+
+export const getPersonLinkListPaginated = (payload: IRequestBodyPaginated): IActionCall => ({
+    callAPI: async () => CommonService.mainPaginated(payload),
+    types: {
+        loading: actionTypes.GET_PERSON_LINK,
+        failure: actionTypes.GET_PERSON_LINK_FAILURE,
+        success: actionTypes.GET_PERSON_LINK_SUCCESS,
+    },
+    type: null,
+});
+
+export const resetGetPersonLinkListPaginated = () => ({ type: actionTypes.GET_PERSON_LINK_RESET });
+
+
+
 export const getTicketListByPerson = (payload: IRequestBodyPaginated): IActionCall => ({
     callAPI: async () => CommonService.mainPaginated(payload),
     types: {

@@ -17,12 +17,13 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { CalendarZyx, FieldSelect } from "components";
+import { FieldSelect } from "components";
 import { useFieldArray, useForm } from 'react-hook-form';
 import { hours, calculateDateFromMonth, dayNames } from "common/helpers";
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
 import RefreshIcon from '@material-ui/icons/Refresh';
+import CalendarZyx from "./Calendar";
 
 interface ISchedule {
     dow: number;

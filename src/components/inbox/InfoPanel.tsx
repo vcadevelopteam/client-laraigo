@@ -7,7 +7,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Avatar from '@material-ui/core/Avatar';
 import { EMailInboxIcon, PhoneIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, ZipIcon } from 'icons';
 import { getTicketsPerson, showInfoPanel, updateClassificationPerson, updatePerson } from 'store/inbox/actions';
-import { GetIcon, FieldEdit, FieldSelect, DialogInteractions, AntTab, FieldEditMulti } from 'components'
+import { GetIcon, FieldEdit, FieldSelect, AntTab, FieldEditMulti } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { convertLocalDate, getConversationClassification2, getValuesFromDomain, insertClassificationConversation, insPersonBody, validateIsUrl } from 'common/helpers';
@@ -19,12 +19,15 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useForm } from 'react-hook-form';
 import { getMultiCollectionAux, resetMultiMainAux, execute, getCollectionAux2 } from 'store/main/actions';
 import Fab from '@material-ui/core/Fab';
-import { CircularProgress } from '@material-ui/core';
+import { Button, CircularProgress } from '@material-ui/core';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import ImportExportIcon from '@material-ui/icons/ImportExport';
 import clsx from 'clsx';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import DeleteIcon from '@material-ui/icons/Delete';
+import DialogInteractions from './DialogInteractions';
+import DialogLinkPerson from './PersonLinked';
+import LinkIcon from '@material-ui/icons/Link';
 
 const useStyles = makeStyles((theme) => ({
     containerInfo: {
@@ -74,7 +77,6 @@ const useStyles = makeStyles((theme) => ({
     },
     label: {
         overflowWrap: 'anywhere',
-        // fontWeight: 400,
         fontSize: 12,
         color: '#B6B4BA',
     },
@@ -127,40 +129,58 @@ const InfoClient: React.FC = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const showInfoPanelTrigger = () => dispatch(showInfoPanel())
-
+    const [showLinkPerson, setShowLinkPerson] = useState(false)
     const person = useSelector(state => state.inbox.person.data);
-    return (
-        <div style={{ backgroundColor: 'white' }}>
-            <IconButton
-                onClick={showInfoPanelTrigger}
-                size="small"
-            >
-                <CloseIcon />
-            </IconButton>
-            <div className={classes.containerInfoClient} style={{ paddingTop: 0 }}>
-                <div className={classes.containerNameHead}>
-                    <Avatar alt="" style={{ width: 120, height: 120 }} src={person?.imageurldef} />
-                    <div style={{ flex: 1, textAlign: 'center' }}>
-                        <div style={{ fontSize: 18, fontWeight: 500 }}>{person?.firstname} {person?.lastname}</div>
-                    </div>
-                </div>
-                <div className={classes.containerName}>
-                    <EMailInboxIcon className={classes.propIcon} />
-                    <div style={{ flex: 1 }}>
-                        <div className={classes.label}>{t(langKeys.email)}</div>
-                        <div>{person?.email}</div>
-                    </div>
-                </div>
-                <div className={classes.containerName}>
-                    <PhoneIcon className={classes.propIcon} />
-                    <div style={{ flex: 1 }}>
-                        <div className={classes.label}>{t(langKeys.phone)}</div>
-                        <div>{person?.phone}</div>
-                    </div>
-                </div>
 
+    return (
+        <>
+            <div style={{ backgroundColor: 'white' }}>
+                <IconButton
+                    onClick={showInfoPanelTrigger}
+                    size="small"
+                >
+                    <CloseIcon />
+                </IconButton>
+                <div className={classes.containerInfoClient} style={{ paddingTop: 0 }}>
+                    <div className={classes.containerNameHead}>
+                        <Avatar alt="" style={{ width: 120, height: 120 }} src={person?.imageurldef} />
+                        <div style={{ flex: 1, textAlign: 'center' }}>
+                            <div style={{ fontSize: 18, fontWeight: 500 }}>{person?.firstname} {person?.lastname}</div>
+                        </div>
+                        <Button
+                            variant="contained"
+                            component="span"
+                            startIcon={<LinkIcon color="secondary" />}
+                            color="primary"
+                            onClick={() => {
+                                setShowLinkPerson(true)
+                            }}
+                        >{t(langKeys.link)}
+                        </Button>
+                    </div>
+                    <div className={classes.containerName}>
+                        <EMailInboxIcon className={classes.propIcon} />
+                        <div style={{ flex: 1 }}>
+                            <div className={classes.label}>{t(langKeys.email)}</div>
+                            <div>{person?.email}</div>
+                        </div>
+                    </div>
+                    <div className={classes.containerName}>
+                        <PhoneIcon className={classes.propIcon} />
+                        <div style={{ flex: 1 }}>
+                            <div className={classes.label}>{t(langKeys.phone)}</div>
+                            <div>{person?.phone}</div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
-        </div>
+            <DialogLinkPerson
+                openModal={showLinkPerson}
+                setOpenModal={setShowLinkPerson}
+                person={person}
+            />
+        </>
     )
 }
 
@@ -663,7 +683,7 @@ const PreviewTickets: React.FC<{ order: number }> = ({ order }) => {
     }
 
     return (
-        <div style={{ display: 'flex', flex: 1}} className={clsx("scroll-style-go", {
+        <div style={{ display: 'flex', flex: 1 }} className={clsx("scroll-style-go", {
             [classes.orderDefault]: order === -1,
             [classes.orderReverse]: order === 1,
         })}>
@@ -703,7 +723,7 @@ const Attachments: React.FC = () => {
     const [listFiles, setListFiles] = useState<Dictionary[]>([]);
     const interactionList = useSelector(state => state.inbox.interactionList);
     const { t } = useTranslation();
-    
+
     useEffect(() => {
         if (interactionList.data[0].interactiontype === "email") {
             let interactions = interactionList.data.reduce<Dictionary[]>((acc, item) => [

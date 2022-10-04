@@ -41,7 +41,8 @@ import { Search as SearchIcon } from '@material-ui/icons';
 import ReportInvoice from 'components/report/ReportInvoice';
 import TicketvsAdviser from 'components/report/TicketvsAdviser';
 import HSMHistoryReport from './HSMHistoryReport';
-import { CampaignReport } from './campaign';
+import { CampaignReport } from 'pages/campaign/CampaignReport';
+import ReportKpiOperativo from 'components/report/ReportKpiOperativo';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -1032,6 +1033,27 @@ const Reports: FC = () => {
                         </Card>
                     </Grid>
                 )
+            case 'KPIOPERATIVO':
+                return (
+                    <Grid item key={"kpioperativo"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
+                        <Card >
+                            <CardActionArea onClick={() => handleSelectedString("kpioperativo")}>
+                                <CardMedia
+                                    component="img"
+                                    height="140"
+                                    className={classes.media}
+                                    image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'}
+                                    title={t(langKeys.kpimanager)}
+                                />
+                                <CardContent>
+                                    <Typography gutterBottom variant="h6" component="div" style={{fontSize: "130%"}}>
+                                        {t(langKeys.kpimanager)}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                )
             case 'TICKETVSADVISER':
                 return (
                     <Grid item key={"report_ticketvsasesor"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
@@ -1396,6 +1418,18 @@ const Reports: FC = () => {
                         handleClick={handleSelectedString}
                     />
                     <ReportInvoice />
+                </div>
+            </>
+        )
+    } else if (viewSelected === "kpioperativo") {
+        return (
+            <>
+                <div style={{ width: '100%' }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={getArrayBread(t('report_kpioperativo'), t(langKeys.report_plural))}
+                        handleClick={handleSelectedString}
+                    />
+                    <ReportKpiOperativo />
                 </div>
             </>
         )

@@ -239,3 +239,5 @@ const SignUpFunc: FC = () => {
         </div>
     );
 };
+
+export default SignUp;

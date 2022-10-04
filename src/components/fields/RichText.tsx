@@ -21,7 +21,7 @@ import {
     EmojiEmotions as EmojiEmotionsIcon,
     FormatAlignLeft as FormatAlignLeftIcon,
 } from '@material-ui/icons';
-import { emojis } from "common/constants";
+import { emojis } from "common/constants/emojis";
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { createEditor, BaseEditor, Descendant, Transforms, Editor, Element as SlateElement } from 'slate';
 import { Slate, Editable, withReact, ReactEditor, useSlate, useSlateStatic, useSelected, useFocused } from 'slate-react';
@@ -41,6 +41,8 @@ import { Dictionary } from '@types';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+
+const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
 
 export const renderToString = (element: React.ReactElement) => {
     return ReactDomServer.renderToString(element);
@@ -162,6 +164,7 @@ const useRichTextStyles = makeStyles(theme => ({
 }));
 
 interface EmojiPickerZyxProps {
+    emojisIndexed?: Dictionary[];
     emojisNoShow?: string[];
     emojiFavorite?: string[];
     onSelect: (e: any) => void;
@@ -199,9 +202,6 @@ interface QuickReplyProps {
     quickReplies: any[];
     editor: BaseEditor & ReactEditor;
 }
-
-
-const EMOJISINDEXED = emojis.reduce((acc, item) => ({ ...acc, [item.emojihex]: item }), {});
 
 export const QuickReply: React.FC<QuickReplyProps> = ({ quickReplies, editor}) => {
     const classes = QuickResponseStyles();
@@ -306,7 +306,7 @@ export const QuickReply: React.FC<QuickReplyProps> = ({ quickReplies, editor}) =
         </ClickAwayListener>
     )
 }
-export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow = [], emojiFavorite = [], onSelect, icon }) => {
+export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, emojisNoShow = [], emojiFavorite = [], onSelect, icon }) => {
     const [open, setOpen] = React.useState(false);
     const handleClick = () => setOpen((prev) => !prev);
     const { t } = useTranslation();
@@ -363,7 +363,7 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow = [
 const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify']
 
 /**TODO: Validar que la URL de la imagen sea valida en el boton de insertar imagen */
-const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, placeholder, image = true, spellCheck, error, positionEditable = "bottom", children, onlyurl = false
+export const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, placeholder, image = true, spellCheck, error, positionEditable = "bottom", children, onlyurl = false
     , endinput, emojiNoShow, emojiFavorite, emoji = false,quickReplies=[], ...boxProps }) => {
     const classes = useRichTextStyles();
     // Create a Slate editor object that won't change across renders.
@@ -407,7 +407,7 @@ const RichText: FC<RichTextProps> = ({ value, refresh = 0, onChange, placeholder
                         {quickReplies.length > 0 && (
                             <QuickReply quickReplies={quickReplies} editor={editor}></QuickReply>
                         )}
-                        {emoji && <EmojiPickerZyx onSelect={e => editor.insertText(e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite} />}
+                        {emoji && <EmojiPickerZyx emojisIndexed={EMOJISINDEXED} onSelect={e => editor.insertText(e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite} />}
                         <MarkButton format="bold" tooltip='bold'>
                             <FormatBoldIcon />
                         </MarkButton>
@@ -1438,5 +1438,3 @@ const withImages = (editor: BaseEditor & ReactEditor) => {
 
     return editor;
 }
-
-export default RichText;

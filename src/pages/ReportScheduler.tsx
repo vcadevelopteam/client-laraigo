@@ -8,7 +8,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import TableZyx from '../components/fields/table-simple';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { TemplateIcons, TemplateBreadcrumbs, FieldEdit, FieldSelect, TitleDetail, RichText, FieldMultiSelectEmails } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, FieldEdit, FieldSelect, TitleDetail, FieldMultiSelectEmails } from 'components';
 import { getDomainValueSel, getReportSchedulerSel, getValuesFromDomain, reportSchedulerIns , getReportschedulerreportsSel} from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import { useTranslation } from 'react-i18next';
@@ -22,7 +22,7 @@ import Box from '@material-ui/core/Box';
 import { IconButton } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { Descendant } from 'slate';
-import { renderToString, toElement } from 'components/fields/RichText';
+import { RichText, renderToString, toElement } from 'components/fields/RichText';
 
 interface RowSelected {
     row: Dictionary | null;

@@ -111,3 +111,5 @@ export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = (
         </div>
     )
 }
+
+export default ChannelAddAndroid

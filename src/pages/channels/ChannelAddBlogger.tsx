@@ -330,3 +330,5 @@ export const ChannelAddBlogger: FC = () => {
         )
     }
 }
+
+export default ChannelAddBlogger

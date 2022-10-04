@@ -201,3 +201,5 @@ export const ChannelAddAndroid: FC = () => {
         </div>
     )
 }
+
+export default ChannelAddAndroid

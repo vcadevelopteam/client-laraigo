@@ -1815,3 +1815,6 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
         </div>
     );
 }
+
+
+export default ChannelAddChatWeb

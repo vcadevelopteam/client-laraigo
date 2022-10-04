@@ -259,3 +259,5 @@ export const ChannelAdd: FC = () => {
         </div>
     </Box>)
 };
+
+export default ChannelAdd

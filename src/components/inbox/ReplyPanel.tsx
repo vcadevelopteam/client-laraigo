@@ -12,7 +12,7 @@ import { uploadFile, resetUploadFile } from 'store/main/actions';
 import { manageConfirmation } from 'store/popus/actions';
 import InputBase from '@material-ui/core/InputBase';
 import clsx from 'clsx';
-import { EmojiPickerZyx, GifPickerZyx, RichText } from 'components'
+import { EmojiPickerZyx, GifPickerZyx } from 'components'
 import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
@@ -34,9 +34,12 @@ import TextField from '@material-ui/core/TextField';
 import { showSnackbar } from 'store/popus/actions';
 import { cleanedRichResponse, convertLocalDate, getSecondsUntelNow } from 'common/helpers/functions'
 import { Descendant } from 'slate';
-import { renderToString, toElement } from 'components/fields/RichText';
+import { RichText, renderToString, toElement } from 'components/fields/RichText';
 import UndoIcon from '@material-ui/icons/Undo';
 import RedoIcon from '@material-ui/icons/Redo';
+import { emojis } from "common/constants/emojis";
+
+const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
 
 const channelsWhatsapp = ["WHAT", "WHAD", "WHAP"];
 interface IFile {
@@ -931,7 +934,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                             <TmpRichResponseIcon classes={classes} setText={setText} />
                             <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
                             <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
-                            <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite} />
+                            <EmojiPickerZyx emojisIndexed={EMOJISINDEXED} onSelect={e => setText(p => p + e.native)} emojisNoShow={emojiNoShow} emojiFavorite={emojiFavorite} />
                             <UploaderIcon type="image" classes={classes} setFiles={setFiles} initfile={fileimage} setfileimage={setfileimage} />
                         </div>
                         <div className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(text || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>

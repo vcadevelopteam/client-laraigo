@@ -214,3 +214,5 @@ export const ChannelAddLinkedIn: FC = () => {
         )
     }
 }
+
+export default ChannelAddLinkedIn;

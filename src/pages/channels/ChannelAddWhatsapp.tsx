@@ -1064,3 +1064,5 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
         )
     }
 }
+
+export default ChannelAddWhatsapp

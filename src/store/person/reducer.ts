@@ -5,6 +5,7 @@ import actionTypes from "./actionTypes";
 
 export interface IState {
     personList: IListStatePaginated<IPerson>;
+    personLinkList: IListStatePaginated<IPerson>;
     personTicketList: IListStatePaginated<IPersonConversation>;
     personReferrerList: IListState<IPersonReferrer>;
     personChannelList: IListState<IPersonChannel>;
@@ -20,6 +21,7 @@ export interface IState {
 
 export const initialState: IState = {
     personList: initialListPaginatedState,
+    personLinkList: initialListPaginatedState,
     personTicketList: initialListPaginatedState,
     personReferrerList: initialListState,
     personChannelList: initialListState,
@@ -36,6 +38,11 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_PERSON_SUCCESS]: caseFUnctions.getPersonSuccess,
     [actionTypes.GET_PERSON_FAILURE]: caseFUnctions.getPersonFailure,
     [actionTypes.GET_PERSON_RESET]: caseFUnctions.getPersonReset,
+    
+    [actionTypes.GET_PERSON_LINK]: caseFUnctions.getPersonLinkListPaginated,
+    [actionTypes.GET_PERSON_LINK_SUCCESS]: caseFUnctions.getPersonLinkListPaginatedSuccess,
+    [actionTypes.GET_PERSON_LINK_FAILURE]: caseFUnctions.getPersonLinkListPaginatedFailure,
+    [actionTypes.GET_PERSON_LINK_RESET]: caseFUnctions.getPersonListPaginatedReset,
 
     [actionTypes.GET_PERSON_LIST]: caseFUnctions.getPersonListPaginated,
     [actionTypes.GET_PERSON_LIST_SUCCESS]: caseFUnctions.getPersonListPaginatedSuccess,

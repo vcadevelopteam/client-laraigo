@@ -23,6 +23,7 @@ const paths = {
     ORGANIZATIONS: '/organizations',
     SIGNIN: "/sign-in",
     SIGNUPBASIC: "/sign-up/BASIC",
+    ASSISTANT: "/assistant",
     SIGNUP: {
         path: "/sign-up/:token",
         resolve: (token: string) => `/sign-up/${token}`,
@@ -136,6 +137,7 @@ const paths = {
     USERS: '/extras/users',
     GROUPCONFIG: '/extras/groupconfig',
     WHITELIST: '/extras/whitelist',
+    EXTRASLOCATION: '/extras/location',
     USERSETTINGS: '/usersettings',
     INAPPROPRIATEWORDS: '/extras/inappropriatewords',
     INTELLIGENTMODELS: '/extras/intelligentmodels',
