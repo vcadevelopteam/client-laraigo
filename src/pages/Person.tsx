@@ -826,9 +826,9 @@ export const Person: FC = () => {
                     state: {},
                 })}
                 onFilterChange={f => {
-                    const params = buildQueryFilters(f);
-                    if (filterChannelsType !== '') params.append('channelTypes', filterChannelsType);
-                    history.push({ search: params.toString() });
+                    const filterParams = buildQueryFilters(f);
+                    if (filterChannelsType !== '') filterParams.append('channelTypes', filterChannelsType);
+                    history.push({ search: filterParams.toString() });
                 }}
                 initialEndDate={params.endDate}
                 initialStartDate={params.startDate}
