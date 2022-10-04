@@ -3,8 +3,8 @@ import React, { FC, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { FieldEditMulti, FieldSelect, Title } from 'components';
-import { getPaginatedPerson, getPersonExport, exportExcel, templateMaker, uploadExcel, insPersonBody, insPersonCommunicationChannel, array_trimmer, convertLocalDate, getColumnsSel, personcommunicationchannelUpdateLockedArrayIns } from 'common/helpers';
-import { Dictionary, IPerson, IPersonCommunicationChannel, IPersonImport, IFetchData } from "@types";
+import { getPaginatedPerson, getPersonExport, exportExcel, templateMaker, uploadExcel, editPersonBody, array_trimmer, convertLocalDate, getColumnsSel, personcommunicationchannelUpdateLockedArrayIns } from 'common/helpers';
+import { Dictionary, IPerson, IPersonImport, IFetchData } from "@types";
 import { Box, Button, IconButton, MenuItem } from '@material-ui/core';
 import { WhatsappIcon } from 'icons';
 import { Trans, useTranslation } from 'react-i18next';
@@ -61,13 +61,12 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             default: return '-';
         }
     }, [type]);
-
     const { control, register, handleSubmit, setValue, getValues, trigger, reset, formState: { errors } } = useForm<any>({
         defaultValues: {
             hsmtemplateid: 0,
             observation: '',
-            communicationchannelid: 0,
-            communicationchanneltype: '',
+            communicationchannelid: type === "HSM" ? (channelList?.length === 1 ? channelList[0].communicationchannelid : 0) : 0,
+            communicationchanneltype: type === "HSM" ? (channelList?.length === 1 ? channelList[0].type : "") : '',
             variables: []
         }
     });
@@ -93,6 +92,8 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             }
         }
     }, [sendingRes, waitClose])
+    useEffect(() => {
+    }, [channelList])
 
     useEffect(() => {
         if (!domains.error && !domains.loading) {
@@ -108,8 +109,8 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
                 hsmtemplateid: 0,
                 hsmtemplatename: '',
                 variables: [],
-                communicationchannelid: 0,
-                communicationchanneltype: ''
+                communicationchannelid: type === "HSM" ? (channelList?.length === 1 ? channelList[0].communicationchannelid : 0) : 0,
+                communicationchanneltype: type === "HSM" ? (channelList?.length === 1 ? channelList[0].type : "") : ''
             })
             register('hsmtemplateid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
 
@@ -121,6 +122,8 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
 
             if (type === "MAIL") {
                 setPersonWithData(persons.filter(x => x.email && x.email.length > 0))
+            } else if (type === "HSM") {
+                setPersonWithData(persons.filter(x => !!x.phonewhatsapp))
             } else {
                 setPersonWithData(persons.filter(x => x.phone && x.phone.length > 0))
             }
@@ -145,6 +148,10 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
         }
     }
     const onSubmit = handleSubmit((data) => {
+        if (personWithData.length === 0) {
+            dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.no_people_to_send) }))
+            return
+        }
         const messagedata = {
             hsmtemplateid: data.hsmtemplateid,
             hsmtemplatename: data.hsmtemplatename,
@@ -155,7 +162,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             shippingreason: "PERSON",
             listmembers: personWithData.map(person => ({
                 personid: person.personid,
-                phone: person.phone || "",
+                phone: person.phonewhatsapp || "",
                 firstname: person.firstname || "",
                 email: person.email || "",
                 lastname: person.lastname,
@@ -170,6 +177,14 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
         dispatch(showBackdrop(true));
         setWaitClose(true)
     });
+
+    useEffect(() => {
+        if (channelList.length === 1 && type === "HSM") {
+            setValue("communicationchannelid", channelList[0].communicationchannelid || 0)
+            setValue('communicationchanneltype', channelList[0].type || "");
+            trigger("communicationchannelid")
+        }
+    }, [channelList])
 
     return (
         <DialogZyx
@@ -280,7 +295,7 @@ const CountTicket: FC<{ label: string, count: string, color: string }> = ({ labe
 
 
 export const TemplateIcons: React.FC<{
-    sendHSM: (data: any) => void;
+    sendHSM?: (data: any) => void;
     sendSMS: (data: any) => void;
     sendMAIL: (data: any) => void;
 }> = ({ sendHSM, sendSMS, sendMAIL }) => {
@@ -322,12 +337,14 @@ export const TemplateIcons: React.FC<{
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                <MenuItem onClick={sendHSM}>
-                    <ListItemIcon color="inherit">
-                        <WhatsappIcon width={22} style={{ fill: '#7721AD' }} />
-                    </ListItemIcon>
-                    {t(langKeys.send_hsm)}
-                </MenuItem>
+                {sendHSM &&
+                    <MenuItem onClick={sendHSM}>
+                        <ListItemIcon color="inherit">
+                            <WhatsappIcon width={22} style={{ fill: '#7721AD' }} />
+                        </ListItemIcon>
+                        {t(langKeys.send_hsm)}
+                    </MenuItem>
+                }
                 <MenuItem onClick={sendSMS}>
                     <ListItemIcon color="inherit">
                         <SmsIcon width={18} style={{ fill: '#7721AD' }} />
@@ -386,12 +403,12 @@ export const Person: FC = () => {
                 const person = props.cell.row.original as IPerson;
                 return (
                     <TemplateIcons
-                        sendHSM={(e) => {
+                        sendHSM={person.phonewhatsapp ? (e) => {
                             e.stopPropagation();
                             setPersonsSelected([person]);
                             setOpenDialogTemplate(true);
                             setTypeTemplate("HSM");
-                        }}
+                        } : undefined}
                         sendSMS={(e) => {
                             e.stopPropagation();
                             setPersonsSelected([person]);
@@ -579,9 +596,9 @@ export const Person: FC = () => {
             domains.value?.civilStatuses.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_civilstatus_${d.domainvalue?.toLowerCase()}`) }), {}),
             domains.value?.occupations.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_ocupation_${d.domainvalue?.toLowerCase()}`) }), {}),
             domains.value?.groups.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
-            domains.value?.channelTypes.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
-            {},
-            {},
+            //domains.value?.channelTypes.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
+            //{},
+            //{},
             {}
         ];
         const header = [
@@ -601,9 +618,9 @@ export const Person: FC = () => {
             'civilstatus',
             'occupation',
             'groups',
-            'channeltype',
-            'personcommunicationchannel',
-            'personcommunicationchannelowner',
+            //'channeltype',
+            //'personcommunicationchannel',
+            //'personcommunicationchannelowner',
             'displayname'
         ];
         exportExcel(t(langKeys.template), templateMaker(data, header));
@@ -623,22 +640,22 @@ export const Person: FC = () => {
                 && (f.civilstatus === undefined || Object.keys(domains.value?.civilStatuses.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.civilstatus))
                 && (f.occupation === undefined || Object.keys(domains.value?.occupations.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.occupation))
                 && (f.groups === undefined || Object.keys(domains.value?.groups.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.groups))
-                && (f.channeltype === undefined || Object.keys(domains.value?.channelTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.channeltype))
+                //&& (f.channeltype === undefined || Object.keys(domains.value?.channelTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.channeltype))
             );
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
                 let table: Dictionary = data.reduce((a: any, d: IPersonImport) => ({
                     ...a,
                     [`${d.documenttype}_${d.documentnumber}`]: {
-                        id: 0,
+                        personid: 0,
                         firstname: d.firstname || null,
                         lastname: d.lastname || null,
                         documenttype: d.documenttype,
                         documentnumber: d.documentnumber,
                         persontype: d.persontype || null,
                         type: d.type || '',
-                        phone: d.phone || null,
-                        alternativephone: d.alternativephone || null,
+                        phone: String(d.phone|| "") ,
+                        alternativephone: String(d?.alternativephone|| "") ,
                         email: d.email || null,
                         alternativeemail: d.alternativeemail || null,
                         birthday: d.birthday || null,
@@ -654,27 +671,13 @@ export const Person: FC = () => {
                         age: null,
                         sex: null,
                         operation: 'INSERT',
-                        pcc: data
-                            .filter((c: IPersonImport) => `${c.documenttype}_${c.documentnumber}` === `${d.documenttype}_${d.documentnumber}`
-                                && !['', null, undefined].includes(c.channeltype)
-                                && !['', null, undefined].includes(c.personcommunicationchannel)
-                            )
-                            .map((c: IPersonImport) => ({
-                                type: c.channeltype,
-                                personcommunicationchannel: c.personcommunicationchannel || null,
-                                personcommunicationchannelowner: c.personcommunicationchannelowner || null,
-                                displayname: c.displayname || null,
-                                status: 'ACTIVO',
-                                operation: 'INSERT'
-                            }))
                     }
                 }), {});
                 Object.values(table).forEach((p: IPersonImport) => {
+                    debugger
                     dispatch(execute({
-                        header: insPersonBody({ ...p }),
-                        detail: [
-                            ...p.pcc.map((x: IPersonCommunicationChannel) => insPersonCommunicationChannel({ ...x })),
-                        ]
+                        header: editPersonBody({ ...p }),
+                        detail: []
                     }, true));
                 });
                 setWaitImport(true)
@@ -689,7 +692,7 @@ export const Person: FC = () => {
         const callback = () => {
             const data = personsSelected.map(p => ({
                 personid: p.personid,
-                personcommunicationchannel: p.personcommunicationchannel,
+                // personcommunicationchannel: p.personcommunicationchannel,
                 locked: type === "LOCK",
             }));
             dispatch(execute(personcommunicationchannelUpdateLockedArrayIns(data)));

@@ -611,10 +611,10 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     }, []);
 
     const onClickSelectPersonModal = useCallback((value: IPerson) => {
-        setValue('personcommunicationchannel', value.personcommunicationchannel)
+        setValue('personcommunicationchannel', "")
         setValue('email', value.email || '')
         setValue('phone', value.phone || '')
-        setValues(prev => ({ ...prev, displayname: value.displayname }))
+        setValues(prev => ({ ...prev, displayname: value.name }))
     }, [setValue]);
 
     const isStatusClosed = useCallback(() => {

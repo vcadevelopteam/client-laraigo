@@ -3,9 +3,9 @@ import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 're
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { FieldSelect, GetIcon } from 'components';
-import { getChannelListByPersonBody, getTicketListByPersonBody, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, insPersonCommunicationChannel, convertLocalDate, unLinkPerson } from 'common/helpers';
+import { getChannelListByPersonBody, getTicketListByPersonBody, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, convertLocalDate, unLinkPerson, personInsValidation } from 'common/helpers';
 import { Dictionary, IObjectState, IPerson, IPersonChannel, IPersonConversation, IPersonDomains } from "@types";
-import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, TextField, Paper, InputBase, Tooltip } from '@material-ui/core';
+import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, TextField, Paper, InputBase, Tooltip, styled } from '@material-ui/core';
 import clsx from 'clsx';
 import { BuildingIcon, DocNumberIcon, DocTypeIcon, EMailInboxIcon, GenderIcon, TelephoneIcon, SearchIcon, CallRecordIcon } from 'icons';
 import PhoneIcon from '@material-ui/icons/Phone';
@@ -32,6 +32,8 @@ import DialogLinkPerson from 'components/inbox/PersonLinked';
 import LinkIcon from '@material-ui/icons/Link';
 import LinkOffIcon from '@material-ui/icons/LinkOff';
 
+import { Controller } from "react-hook-form";
+import MuiPhoneNumber from 'material-ui-phone-number';
 const urgencyLevels = [null, 'LOW', 'MEDIUM', 'HIGH']
 
 const usePhotoClasses = makeStyles(theme => ({
@@ -56,6 +58,20 @@ const Photo: FC<PhotoProps> = ({ src, radius }) => {
     }
     return <Avatar alt={src} src={src} className={classes.accountPhoto} style={{ width, height }} />;
 }
+
+const CssPhonemui = styled(MuiPhoneNumber)({
+    '& label.Mui-focused': {
+        color: '#7721ad',
+    },
+    '& .MuiInput-underline:after': {
+        borderBottomColor: '#7721ad',
+    },
+    '& .MuiOutlinedInput-root': {
+        '&.Mui-focused fieldset': {
+            borderColor: '#7721ad',
+        },
+    },
+});
 
 const usePropertyStyles = makeStyles(theme => ({
     propertyRoot: {
@@ -152,11 +168,13 @@ interface GeneralInformationTabProps {
     person: IPerson;
     getValues: UseFormGetValues<IPerson>;
     setValue: any;
+    trigger: any;
     domains: IObjectState<IPersonDomains>;
     errors: any;
+    control: any;
 }
 
-const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValues, setValue, domains, errors }) => {
+const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValues, trigger, setValue, domains, errors, control }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     // const referrerList = useSelector(state => state.person.personReferrerList);
@@ -194,11 +212,15 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                             <Property
                                 title={<Trans i18nKey={langKeys.firstname} />}
                                 subtitle={(
-                                    <TextField
+                                <TextField
                                         fullWidth
                                         placeholder={t(langKeys.firstname)}
-                                        defaultValue={person.firstname}
-                                        onChange={e => setValue('firstname', e.target.value)}
+                                        defaultValue={getValues("firstname")}
+                                        value={getValues("firstname")}
+                                        onChange={e => {
+                                            setValue('firstname', e.target.value)
+                                            trigger("firstname")
+                                        }}
                                         error={errors?.firstname?.message ? true : false}
                                         helperText={errors?.firstname?.message || null}
                                     />
@@ -214,8 +236,12 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                     <TextField
                                         fullWidth
                                         placeholder={t(langKeys.lastname)}
-                                        defaultValue={person.lastname}
-                                        onChange={e => setValue('lastname', e.target.value)}
+                                        defaultValue={getValues("lastname")}
+                                        value={getValues("lastname")}
+                                        onChange={e => {
+                                            setValue('lastname', e.target.value)
+                                            trigger("lastname")
+                                        }}
                                         error={errors?.lastname?.message ? true : false}
                                         helperText={errors?.lastname?.message || null}
                                     />
@@ -224,12 +250,28 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                             />
                         </Grid>
 
-                        {!person.personid &&
+                        {/*{!person.personid &&
                             <>
                                 <Grid item sm={6} xl={6} xs={6} md={6} lg={6}>
                                     <Property
                                         title={<Trans i18nKey={langKeys.personIdentifier} />}
-                                        subtitle={(
+                                        subtitle={
+                                            channel.includes('WHA')||channel.includes('VOX')?(
+                                                <Controller
+                                                    name="personcommunicationchannel"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <CssPhonemui
+                                                            {...field}
+                                                            fullWidth
+                                                            defaultCountry={"pe"}
+                                                            placeholder={t(langKeys.personIdentifier)}
+                                                            error={errors?.personcommunicationchannel?.message ? true : false}
+                                                            helperText={errors?.personcommunicationchannel?.message || null}
+                                                        />
+                                                    )}
+                                                />
+                                            ):(
                                             <TextField
                                                 fullWidth
                                                 placeholder={t(langKeys.personIdentifier)}
@@ -244,12 +286,28 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                                     <Property
                                         title={<Trans i18nKey={langKeys.internalIdentifier} />}
-                                        subtitle={(
+                                        subtitle={
+                                            channel.includes('WHA')||channel.includes('VOX')?(
+                                                <Controller
+                                                    name="personcommunicationchannelowner"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <CssPhonemui
+                                                            {...field}
+                                                            fullWidth
+                                                            defaultCountry={"pe"}
+                                                            placeholder={t(langKeys.personIdentifier)}
+                                                            error={errors?.personcommunicationchannelowner?.message ? true : false}
+                                                            helperText={errors?.personcommunicationchannelowner?.message || null}
+                                                        />
+                                                    )}
+                                                />
+                                            ):(
                                             <TextField
                                                 fullWidth
                                                 placeholder={t(langKeys.internalIdentifier)}
-                                                onChange={e => setValue('personcommunicationchannelowner', e.target.value)}
-                                                error={!!errors?.personcommunicationchannelowner?.message}
+                                                onChange={e => setValue('personcommunicationchannel', e.target.value)}
+                                                error={errors?.personcommunicationchannelowner?.message ? true : false}
                                                 helperText={errors?.personcommunicationchannelowner?.message || null}
                                             />
                                         )}
@@ -263,6 +321,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                             <FieldSelect
                                                 onChange={(value) => {
                                                     setValue('channeltype', value?.domainvalue);
+                                                    setchannel(value?.domainvalue||"")
                                                 }}
                                                 loading={domains.loading}
                                                 data={domains.value?.channelTypes || []}
@@ -275,22 +334,22 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                     />
                                 </Grid>
                             </>
-                        }
+                        }*/}
 
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        {/*<Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <Property
                                 title={<Trans i18nKey={langKeys.fullname} />}
                                 subtitle={person.name}
                                 m={1}
                             />
-                        </Grid>
+                        </Grid>*/}
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                             <Property
                                 title={<Trans i18nKey={langKeys.documenttype} />}
                                 subtitle={(
                                     <FieldSelect
                                         uset={true}
-                                        valueDefault={person.documenttype}
+                                        valueDefault={getValues("documenttype")}
                                         onChange={(value) => {
                                             setValue('documenttype', value?.domainvalue);
                                         }}
@@ -311,8 +370,12 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                     <TextField
                                         fullWidth
                                         placeholder={t(langKeys.docNumber)}
-                                        defaultValue={person.documentnumber}
-                                        onChange={e => setValue('documentnumber', e.target.value)}
+                                        defaultValue={getValues("documentnumber")}
+                                        value={getValues("documentnumber")}
+                                        onChange={e => {
+                                            setValue('documentnumber', e.target.value)
+                                            trigger('documentnumber')
+                                        }}
                                     />
                                 )}
                                 m={1}
@@ -344,7 +407,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 subtitle={(
                                     <FieldSelect
                                         uset={true}
-                                        valueDefault={person.persontype}
+                                        valueDefault={getValues("persontype")}
                                         onChange={(value) => {
                                             setValue('persontype', value?.domainvalue);
                                         }}
@@ -362,11 +425,23 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                             <Property
                                 title={<Trans i18nKey={langKeys.phone} />}
                                 subtitle={(
-                                    <TextField
-                                        fullWidth
-                                        placeholder={t(langKeys.phone)}
-                                        defaultValue={person.phone}
-                                        onChange={e => setValue('phone', e.target.value)}
+                                    <Controller
+                                        name="phone"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <CssPhonemui
+                                                {...field}
+                                                fullWidth
+                                                defaultCountry={"pe"}
+                                                placeholder={t(langKeys.phone)}
+                                                onChange={(value: any) => {
+                                                    setValue('personcommunicationchannel', value || "")
+                                                    setValue('personcommunicationchannelowner', value || "")
+                                                    setValue('channeltype', value?.domainvalue);
+                                                    setValue('phone', value || "");
+                                                }}
+                                            />
+                                        )}
                                     />
                                 )}
                                 m={1}
@@ -376,11 +451,20 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                             <Property
                                 title={<Trans i18nKey={langKeys.alternativePhone} />}
                                 subtitle={(
-                                    <TextField
-                                        fullWidth
-                                        placeholder={t(langKeys.alternativePhone)}
-                                        defaultValue={person.alternativephone}
-                                        onChange={e => setValue('alternativephone', e.target.value)}
+                                    <Controller
+                                        name="alternativephone"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <CssPhonemui
+                                                {...field}
+                                                fullWidth
+                                                defaultCountry={"pe"}
+                                                placeholder={t(langKeys.alternativePhone)}
+                                                onChange={(value: any) => {
+                                                    setValue('alternativephone', value || "");
+                                                }}
+                                            />
+                                        )}
                                     />
                                 )}
                                 m={1}
@@ -393,8 +477,12 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                     <TextField
                                         fullWidth
                                         placeholder={t(langKeys.email)}
-                                        defaultValue={person.email}
-                                        onChange={e => setValue('email', e.target.value)}
+                                        defaultValue={getValues("email")}
+                                        value={getValues("email")}
+                                        onChange={e => {
+                                            setValue('email', e.target.value)
+                                            trigger("email")
+                                        }}
                                     />
                                 )}
                                 m={1}
@@ -407,8 +495,12 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                     <TextField
                                         fullWidth
                                         placeholder={t(langKeys.alternativeEmail)}
-                                        defaultValue={person.alternativeemail}
-                                        onChange={e => setValue('alternativeemail', e.target.value)}
+                                        defaultValue={getValues("alternativeemail")}
+                                        value={getValues("alternativeemail")}
+                                        onChange={e => {
+                                            setValue('alternativeemail', e.target.value)
+                                            trigger("alternativeemail")
+                                        }}
                                     />
                                 )}
                                 m={1}
@@ -422,8 +514,12 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         type="date"
                                         fullWidth
                                         placeholder={t(langKeys.birthday)}
-                                        defaultValue={person.birthday}
-                                        onChange={e => setValue('birthday', e.target.value)}
+                                        defaultValue={getValues("birthday")}
+                                        value={getValues("birthday")}
+                                        onChange={e => {
+                                            setValue('birthday', e.target.value)
+                                            trigger("birthday")
+                                        }}
                                     />
                                 )}
                                 m={1}
@@ -435,7 +531,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 subtitle={(
                                     <FieldSelect
                                         uset={true}
-                                        valueDefault={person.gender}
+                                        valueDefault={getValues("gender")}
                                         onChange={(value) => {
                                             setValue('gender', value?.domainvalue);
                                             setValue('genderdesc', value?.domaindesc)
@@ -456,7 +552,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 subtitle={(
                                     <FieldSelect
                                         uset={true}
-                                        valueDefault={person.educationlevel}
+                                        valueDefault={getValues("educationlevel")}
                                         onChange={(value) => {
                                             setValue('educationlevel', value?.domainvalue);
                                             setValue('educationleveldesc', value?.domaindesc)
@@ -477,7 +573,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 subtitle={(
                                     <FieldSelect
                                         uset={true}
-                                        valueDefault={person.civilstatus}
+                                        valueDefault={getValues("civilstatus")}
                                         onChange={(value) => {
                                             setValue('civilstatus', value?.domainvalue);
                                             setValue('civilstatusdesc', value?.domaindesc)
@@ -498,7 +594,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 subtitle={(
                                     <FieldSelect
                                         uset={true}
-                                        valueDefault={person.occupation}
+                                        valueDefault={getValues("occupation")}
                                         onChange={(value) => {
                                             setValue('occupation', value?.domainvalue);
                                             setValue('occupationdesc', value?.domaindesc)
@@ -518,7 +614,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 title={<Trans i18nKey={langKeys.group} count={2} />}
                                 subtitle={(
                                     <FieldSelect
-                                        valueDefault={person.groups || ""}
+                                        valueDefault={getValues("groups")}
                                         onChange={(value) => {
                                             setValue('groups', value?.domainvalue);
                                         }}
@@ -646,7 +742,7 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
         const index = channel.personcommunicationchannel.lastIndexOf('_');
         return channel.personcommunicationchannel.substring(0, index);
     }, [channel]);
-    
+
     useEffect(() => {
         if (waitUnLink) {
             if (!unLinkRes.loading && !unLinkRes.error) {
@@ -718,7 +814,7 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                                 {(!voxiConnection.error && !voxiConnection.loading && statusCall !== "CONNECTED" && userConnected && statusCall !== "CONNECTING" && (channel.type.includes("WHA") || channel.type.includes("VOXI"))) &&
                                     <IconButton
                                         className={classes.buttonphone}
-                                        onClick={() => { dispatch(setPhoneNumber(channel.personcommunicationchannelowner)); dispatch(setModalCall(true)) }}
+                                        onClick={() => { dispatch(setPhoneNumber(channel.personcommunicationchannelowner.replaceAll('+', ''))); dispatch(setModalCall(true)) }}
                                     >
                                         <PhoneIcon style={{ width: "20px", height: "20px" }} />
                                     </IconButton>
@@ -1076,7 +1172,6 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
     const downloadCallRecord = async (ticket: Dictionary) => {
         // dispatch(getCallRecord({call_session_history_id: ticket.postexternalid}));
         // setWaitDownloadRecord(true);
-        debugger
         try {
             const axios_result = await VoximplantService.getCallRecord({ call_session_history_id: ticket.postexternalid });
             if (axios_result.status === 200) {
@@ -1385,7 +1480,9 @@ const OpportunitiesTab: FC<OpportunitiesTabProps> = ({ person }) => {
     );
 
     useEffect(() => {
-        dispatch(getLeadsByPerson(getOpportunitiesByPersonBody(person.personid)));
+        if ((person?.personid || 0) > 0) {
+            dispatch(getLeadsByPerson(getOpportunitiesByPersonBody(person.personid)));
+        }
         return () => {
             dispatch(resetGetLeadsByPerson());
         };
@@ -1463,15 +1560,42 @@ const PersonDetail: FC = () => {
     const edit = useSelector(state => state.person.editPerson);
     const executeResult = useSelector(state => state.main.execute);
     const [waitLock, setWaitLock] = useState(false);
+    const [waitValidation, setWaitValidation] = useState(false);
     const [showLinkPerson, setShowLinkPerson] = useState(false)
+    const [payloadTemp, setpayloadTemp] = useState<any>(null)
+    const [valuestosend, setvaluestosend] = useState<any>(null)
 
     const user = useSelector(state => state.login.validateToken.user);
     const person = location.state as IPerson | null;
 
-    const { setValue, getValues, trigger, register, formState: { errors } } = useForm<any>({
-        defaultValues: { ...person } || {},
+    const { setValue, getValues, trigger, register, control, formState: { errors } } = useForm<any>({
+        defaultValues: {
+            ...person,
+            corpdesc: user?.corpdesc || '',
+            orgdesc: user?.orgdesc || '',
+            personid: person?.personid || 0,
+            groups: person?.groups || '',
+            status: person?.status || 'ACTIVO',
+            type: person?.type || '',
+            persontype: person?.persontype || '',
+            personstatus: person?.personstatus || '',
+            phone: person?.phone || '',
+            email: person?.email || '',
+            birthday: person?.birthday || null,
+            alternativephone: person?.alternativephone || '',
+            alternativeemail: person?.alternativeemail || '',
+            documenttype: person?.documenttype || '',
+            documentnumber: person?.documentnumber || '',
+            firstname: person?.firstname || '',
+            lastname: person?.lastname || '',
+            sex: person?.sex || '',
+            gender: person?.gender || '',
+            civilstatus: person?.civilstatus || '',
+            occupation: person?.occupation || '',
+            educationlevel: person?.educationlevel || '',
+            referringpersonid: person?.referringpersonid || 0,
+        } || {},
     });
-
 
     useEffect(() => {
         if (!person) {
@@ -1504,9 +1628,6 @@ const PersonDetail: FC = () => {
 
                 register('firstname', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
                 register('lastname', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
-                register('personcommunicationchannel', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
-                register('personcommunicationchannelowner', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
-                register('channeltype', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
             }
             dispatch(getDomainsByTypename());
         }
@@ -1551,6 +1672,16 @@ const PersonDetail: FC = () => {
         }
     }, [edit, dispatch]);
 
+    const editperson = () => {
+        dispatch(showBackdrop(true));        
+        dispatch(editPerson(payloadTemp.parameters.personid ? payloadTemp : {
+            header: editPersonBody({ ...person, ...valuestosend }),
+            detail: []
+        }, !payloadTemp.parameters.personid));
+
+        setpayloadTemp(null)
+        setvaluestosend(null)
+    }
 
     const handleEditPerson = async () => {
         const allOk = await trigger(); //para q valide el formulario
@@ -1558,21 +1689,17 @@ const PersonDetail: FC = () => {
             const values = getValues();
             const callback = () => {
                 const payload = editPersonBody(values);
-
-                dispatch(editPerson(payload.parameters.personid ? payload : {
-                    header: editPersonBody({ ...person, ...values }),
-                    detail: [
-                        insPersonCommunicationChannel({
-                            personcommunicationchannel: values.personcommunicationchannel,
-                            personcommunicationchannelowner: values.personcommunicationchannelowner,
-                            displayname: `${values.firstname} ${values.lastname}`,
-                            type: values.channeltype,
-                            operation: 'INSERT',
-                            status: 'ACTIVO'
-                        })
-                    ]
-                }, !payload.parameters.personid));
-
+                setpayloadTemp(payload)
+                setvaluestosend(values)
+                dispatch(execute(personInsValidation({
+                    id: payload.parameters?.id || 0,
+                    phone: payload.parameters?.phone || "",
+                    email: payload.parameters?.email || "",
+                    alternativephone: payload.parameters?.alternativephone || "",
+                    alternativeemail: payload.parameters?.alternativeemail || "",
+                    operation: payload.parameters.operation
+                })))
+                setWaitValidation(true)
                 dispatch(showBackdrop(true));
             }
 
@@ -1616,6 +1743,32 @@ const PersonDetail: FC = () => {
             }
         }
     }, [executeResult, waitLock]);
+    useEffect(() => {
+        if (waitValidation) {
+            if (!executeResult.loading && !executeResult.error) {
+                let errormessage:any[] = []
+                if (executeResult?.data[0].phone_exists) errormessage = errormessage.concat(t(langKeys.phone) + " " + payloadTemp.parameters.phone)
+                if (executeResult?.data[0].email_exists) errormessage = errormessage.concat(t(langKeys.mail) + " " + payloadTemp.parameters.email)
+                if (executeResult?.data[0].alternativephone_exists) errormessage = errormessage.concat(t(langKeys.phone) + " " + payloadTemp.parameters.alternativephone)
+                if (executeResult?.data[0].alternativeemail_exists) errormessage = errormessage.concat(t(langKeys.mail) + " " + payloadTemp.parameters.alternativeemail)
+                if (errormessage.length === 0) {
+                    editperson()
+                } else {
+                    dispatch(showBackdrop(false));
+                    dispatch(manageConfirmation({
+                        visible: true,
+                        question: `${t(langKeys.personrepeatedwarning1)} ${errormessage.join(" - ")} ${t(langKeys.personrepeatedwarning2)}`,
+                        callback: editperson
+                    }))
+                }
+                setWaitValidation(false);
+            } else if (executeResult.error) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: "error" }))
+                dispatch(showBackdrop(false));
+                setWaitValidation(false);
+            }
+        }
+    }, [executeResult, waitValidation]);
 
     if (!person) {
         return <div />;
@@ -1752,8 +1905,10 @@ const PersonDetail: FC = () => {
                             getValues={getValues}
                             setValue={setValue}
                             person={person}
+                            trigger={trigger}
                             domains={domains}
                             errors={errors}
+                            control={control}
                         />
                     </TabPanel>
                     <TabPanel value="1" index={tabIndex}>
@@ -1789,7 +1944,7 @@ const PersonDetail: FC = () => {
                             //     <TextField
                             //         fullWidth
                             //         placeholder={t(langKeys.phone)}
-                            //         defaultValue={person.phone}
+                            //         defaultValue={getValues("phone")}
                             //         onChange={e => setValue('phone', e.target.value)}
                             //     />
                             // )}
@@ -1804,7 +1959,7 @@ const PersonDetail: FC = () => {
                             //     <TextField
                             //         fullWidth
                             //         placeholder={t(langKeys.email)}
-                            //         defaultValue={person.email}
+                            //         defaultValue={getValues("email")}
                             //         onChange={e => setValue('email', e.target.value)}
                             //     />
                             // )}
@@ -1816,7 +1971,7 @@ const PersonDetail: FC = () => {
                             title={<Trans i18nKey={langKeys.documenttype} />}
                             // subtitle={(
                             //     <DomainSelectField
-                            //         defaultValue={person.documenttype}
+                            //         defaultValue={getValues("documenttype")}
                             //         onChange={(value) => {
                             //             setValue('documenttype', value);
                             //         }}
@@ -1835,7 +1990,7 @@ const PersonDetail: FC = () => {
                             //     <TextField
                             //         fullWidth
                             //         placeholder={t(langKeys.docNumber)}
-                            //         defaultValue={person.documentnumber}
+                            //         defaultValue={getValues("documentnumber")}
                             //         onChange={e => setValue('documentnumber', e.target.value)}
                             //     />
                             // )}
@@ -1848,7 +2003,7 @@ const PersonDetail: FC = () => {
                             title={<Trans i18nKey={langKeys.gender} />}
                             // subtitle={(
                             //     <DomainSelectField
-                            //         defaultValue={person.gender}
+                            //         defaultValue={getValues("gender")}
                             //         onChange={(value, desc) => {
                             //             setValue('gender', value);
                             //             setValue('genderdesc', desc)
@@ -1875,7 +2030,34 @@ const PersonDetail: FC = () => {
                 openModal={showLinkPerson}
                 setOpenModal={setShowLinkPerson}
                 person={person}
-                callback={() => {
+                callback={(newPerson) => {
+                    console.log("newPerson", newPerson)
+                    setValue("firstname", newPerson.firstname)
+                    trigger("firstname")
+                    setValue("lastname", newPerson.lastname)
+                    trigger("lastname")
+                    setValue("documenttype", newPerson.documenttype)
+                    trigger("documenttype")
+                    setValue("documentnumber", newPerson.documentnumber)
+                    trigger("documentnumber")
+                    setValue("phone", newPerson.phone)
+                    trigger("phone")
+                    setValue("alternativephone", newPerson.alternativephone)
+                    trigger("alternativephone")
+                    setValue("email", newPerson.email)
+                    trigger("email")
+                    setValue("alternativeemail", newPerson.alternativeemail)
+                    trigger("alternativeemail")
+                    setValue("birthday", newPerson.birthday)
+                    trigger("birthday")
+                    setValue("gender", newPerson.gender)
+                    trigger("gender")
+                    setValue("educationlevel", newPerson.educationlevel)
+                    trigger("educationlevel")
+                    setValue("civilstatus", newPerson.civilstatus)
+                    trigger("civilstatus")
+                    setValue("occupation", newPerson.occupation)
+                    trigger("occupation")
                     dispatch(getChannelListByPerson(getChannelListByPersonBody(person.personid)));
                 }}
             />

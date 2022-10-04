@@ -46,19 +46,20 @@ export interface IPerson {
     country: string;
     region?: string;
     province?: string;
+    phonewhatsapp?: string;
     district?: string;
     latitude?: string;
     longitude?: string;
     referringpersonid: number;
     referringpersonname?: string;
-    displayname: string;
+    // displayname: string;
     variablecontext: Dictionary;
     locked?: boolean;
     createby: string;
     createdate: string;
     changeby: string;
     changedate: string;
-    personcommunicationchannel: string;
+    // personcommunicationchannel: string;
     havelead: boolean;
     haveclassification: boolean;
 }
