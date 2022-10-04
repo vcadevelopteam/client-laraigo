@@ -4018,6 +4018,9 @@ const translation: LangKeys = {
     invoicecomment: "Comment",
     invoicecomments: "Invoice Comments",
     invoiceat: "at",
+    voximplant_organizationupdatescenario: "Update Scenario",
+    voximplant_organizationupdatescenarioalert: "An scenario defines the steps that inbound and outbound calls will follow when launched from one of our voice channels. Use the button in order to update the scenarios of all the organizations to the latest registered version in the database.",
+    scenario: "Scenario",
 };
 
 const enResource: ResourceLanguage = {
