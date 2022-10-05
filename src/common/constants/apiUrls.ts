@@ -103,7 +103,7 @@ export const apiUrls = {
     WITAITEST: `${BASE_URL}/witai/message`,
     WITAITRAIN: `${BASE_URL}/witai/train_model`,
     WITAIENTITYINS: `${BASE_URL}/witai/entity`,
-    WITAIUTTERANCEINS: `${BASE_URL}/witai/itent_utterance`,
+    WITAIUTTERANCEINS: `${BASE_URL}/witai/intent_utterance`,
     WITAIINTENTDEL: `${BASE_URL}/witai/intent_del`,
     WITAIENTITYDEL: `${BASE_URL}/witai/entity_del`,
     WITAIENTITYIMPORT: `${BASE_URL}/witai/entity_import`,
