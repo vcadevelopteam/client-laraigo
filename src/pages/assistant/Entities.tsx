@@ -401,12 +401,12 @@ export const Entities: FC = () => {
                 setWaitImport(true)
                 let datatosend = data.reduce((acc:any,d:any) => [...acc,{
                     name: d.name, 
-                    datajson: d.datajson, 
+                    datajson: JSON.parse(d.datajson), 
                     operation: d.operation || 'INSERT',
                 }],[])
 
                 dispatch(entityimport({
-                    p_datajson: JSON.stringify(datatosend)
+                    datajson: JSON.stringify(datatosend)
                 }))
             
             }
