@@ -14,9 +14,10 @@ import AddIcon from '@material-ui/icons/Add';
 import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { execute, getCollection, getMultiCollection, resetAllMain } from 'store/main/actions';
-import { entitydelete, insertentity, selEntities } from 'common/helpers/requestBodies';
+import { getCollection, resetAllMain } from 'store/main/actions';
+import { selEntities } from 'common/helpers/requestBodies';
 import { convertLocalDate, exportExcel, uploadExcel } from 'common/helpers';
+import { entitydel, entityimport, entityins } from 'store/witia/actions';
 
 
 interface RowSelected {
@@ -63,7 +64,7 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [keywords, setkeywords] = useState<any>(row?.datajson?.keywords || []);
-    const executeRes = useSelector(state => state.main.execute);
+    const operationRes = useSelector(state => state.witai.witaioperationresult);
     const [name, setname] = useState(row?.name || '');
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -88,28 +89,28 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
 
     useEffect(() => {
         if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
+            if (!operationRes.loading && !operationRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.entities).toLocaleLowerCase() })
+            } else if (operationRes.error) {
+                const errormessage = t(operationRes.code || "error_unexpected_error", { module: t(langKeys.entities).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
         }
-    }, [executeRes, waitSave])
+    }, [operationRes, waitSave])
     
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            dispatch(execute(insertentity({...data, datajson:JSON.stringify({...row?.datajson,
+            dispatch(entityins({...data, datajson:JSON.stringify({...row?.datajson,
                 keywords:keywords,
                 lookups: ["keywords"],
                 name:data.name,
                 roles: [row?.datajson?.roles? (row?.datajson?.roles[0]):data.name]
-            })})));
+            })}));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -262,9 +263,8 @@ export const Entities: FC = () => {
 
     const [viewSelected, setViewSelected] = useState("view-1");
     const selectionKey= "name"
-    const executeRes = useSelector(state => state.main.execute);
+    const operationRes = useSelector(state => state.witai.witaioperationresult);
     const [waitImport, setWaitImport] = useState(false);
-    const multiData = useSelector(state => state.main.multiData);
 
     const fetchData = () => {dispatch(getCollection(selEntities()))};
     
@@ -278,19 +278,19 @@ export const Entities: FC = () => {
 
     useEffect(() => {
         if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
+            if (!operationRes.loading && !operationRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.messagingcost).toLocaleLowerCase() })
+            } else if (operationRes.error) {
+                const errormessage = t(operationRes.code || "error_unexpected_error", { module: t(langKeys.intentions).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
         }
-    }, [executeRes, waitSave])
+    }, [operationRes, waitSave])
 
     const columns = React.useMemo(
         () => [
@@ -355,7 +355,7 @@ export const Entities: FC = () => {
     }
     const handleDelete = () => {
         const callback = () => {
-            dispatch(execute(entitydelete({table:JSON.stringify(Object.keys(selectedRows).map(x=>({name:x})))})))
+            dispatch(entitydel({table:JSON.stringify(Object.keys(selectedRows).map(x=>({name:x})))}))
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -377,19 +377,19 @@ export const Entities: FC = () => {
     };
     useEffect(() => {
         if (waitImport) {
-            if (!multiData.loading && !multiData.error && !!multiData.data?.reduce((acc:number,element:any)=>acc * element.success,1)) {
+            if (!operationRes.loading && !operationRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
                 fetchData();
-            } else if (multiData.error || !!multiData.data?.reduce((acc:number,element:any)=>acc * element.success,1)) {
-                const errormessage = t(multiData.code || "error_unexpected_error", { module: t(langKeys.intentions).toLocaleLowerCase() })
+            } else if (operationRes.error) {
+                const errormessage = t(operationRes.code || "error_unexpected_error", { module: t(langKeys.intentions).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
             }
         }
-    }, [multiData, waitImport]);
+    }, [operationRes, waitImport]);
 
     const handleUpload = async (files: any[]) => {
         debugger
@@ -399,12 +399,15 @@ export const Entities: FC = () => {
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
                 setWaitImport(true)
-                debugger
-                dispatch(getMultiCollection(data.reduce((acc:any,d:any) => [...acc,insertentity({
+                let datatosend = data.reduce((acc:any,d:any) => [...acc,{
                     name: d.name, 
                     datajson: d.datajson, 
                     operation: d.operation || 'INSERT',
-                })],[])))
+                }],[])
+
+                dispatch(entityimport({
+                    p_datajson: JSON.stringify(datatosend)
+                }))
             
             }
         }

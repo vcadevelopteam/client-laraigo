@@ -26,3 +26,64 @@ export const trainwitai = (): any => ({
 });
 
 export const resetWitaiTrain = (): IActionCall => ({type: actionTypes.TRAINMODEL_RESET});
+
+export const entityins = (requestBodies: any): IActionCall => ({
+    callAPI: () => WitaiService.witaientityins(requestBodies),
+    types: {
+        loading: actionTypes.OPERATIONPOST_SEND,
+        success: actionTypes.OPERATIONPOST_SUCCESS,
+        failure: actionTypes.OPERATIONPOST_FAILURE,
+    },
+    type: null,
+});
+
+export const intentutteranceins = (requestBodies: any): IActionCall => ({
+    callAPI: () => WitaiService.witaiintentutteranceins(requestBodies),
+    types: {
+        loading: actionTypes.OPERATIONPOST_SEND,
+        success: actionTypes.OPERATIONPOST_SUCCESS,
+        failure: actionTypes.OPERATIONPOST_FAILURE,
+    },
+    type: null,
+});
+
+export const entitydel = (requestBodies: any): IActionCall => ({
+    callAPI: () => WitaiService.witaientitydel(requestBodies),
+    types: {
+        loading: actionTypes.OPERATIONPOST_SEND,
+        success: actionTypes.OPERATIONPOST_SUCCESS,
+        failure: actionTypes.OPERATIONPOST_FAILURE,
+    },
+    type: null,
+});
+
+export const intentdel = (requestBodies: any): IActionCall => ({
+    callAPI: () => WitaiService.witaiintentdel(requestBodies),
+    types: {
+        loading: actionTypes.OPERATIONPOST_SEND,
+        success: actionTypes.OPERATIONPOST_SUCCESS,
+        failure: actionTypes.OPERATIONPOST_FAILURE,
+    },
+    type: null,
+});
+
+export const entityimport = (requestBodies: any): IActionCall => ({
+    callAPI: () => WitaiService.witaientityimport(requestBodies),
+    types: {
+        loading: actionTypes.OPERATIONPOST_SEND,
+        success: actionTypes.OPERATIONPOST_SUCCESS,
+        failure: actionTypes.OPERATIONPOST_FAILURE,
+    },
+    type: null,
+});
+export const intentimport = (requestBodies: any): IActionCall => ({
+    callAPI: () => WitaiService.witaiintentimport(requestBodies),
+    types: {
+        loading: actionTypes.OPERATIONPOST_SEND,
+        success: actionTypes.OPERATIONPOST_SUCCESS,
+        failure: actionTypes.OPERATIONPOST_FAILURE,
+    },
+    type: null,
+});
+
+export const resetOperationResult = (): IActionCall => ({type: actionTypes.RESETOPERATIONRESULT});

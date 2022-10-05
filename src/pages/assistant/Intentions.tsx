@@ -12,10 +12,10 @@ import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import { execute, getCollection, getCollectionAux, getCollectionAux2, getMultiCollection, resetAllMain } from 'store/main/actions';
-import { exportintent, insertutterance, selEntities, selIntent, selUtterance, utterancedelete } from 'common/helpers/requestBodies';
+import { getCollection, getCollectionAux, getCollectionAux2, resetAllMain } from 'store/main/actions';
+import { exportintent, selEntities, selIntent, selUtterance } from 'common/helpers/requestBodies';
 import { convertLocalDate, exportExcel, filterPipe, uploadExcel } from 'common/helpers';
-import { trainwitai } from 'store/witia/actions';
+import { intentdel, intentimport, intentutteranceins, trainwitai } from 'store/witia/actions';
 
 
 interface RowSelected {
@@ -77,6 +77,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
     const [dataEntities, setdataEntities] = useState<any>([]);
     const [name, setname] = useState(row?.name || '');
     const [variableHandler, setVariableHandler] = useState<VariableHandler>(new VariableHandler());
+    const operationRes = useSelector(state => state.witai.witaioperationresult);
     const [newIntention, setnewIntention] = useState<Dictionary>({
         name: "",
         datajson: {
@@ -91,7 +92,6 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
     const [examples, setexamples] = useState<any>([]);
     const mainResult = useSelector(state => state.main.mainAux);
     const mainResultAux = useSelector(state => state.main.mainAux2);
-    const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const selectionKey= "name"
@@ -138,25 +138,25 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
 
     useEffect(() => {
         if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
+            if (!operationRes.loading && !operationRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.whitelist).toLocaleLowerCase() })
+            } else if (operationRes.error) {
+                const errormessage = t(operationRes.code || "error_unexpected_error", { module: t(langKeys.whitelist).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
         }
-    }, [executeRes, waitSave])
+    }, [operationRes, waitSave])
     
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             let tempexamples = examples
             tempexamples.forEach((e:any)=>delete e.updatedate)
-            dispatch(execute(insertutterance({...data, datajson: JSON.stringify({name: data.name}), utterance_datajson: JSON.stringify(tempexamples)})));
+            dispatch(intentutteranceins({...data, datajson: JSON.stringify({name: data.name}), utterance_datajson: JSON.stringify(tempexamples)}));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -448,7 +448,7 @@ export const Intentions: FC = () => {
     const [selectedRows, setSelectedRows] = useState<any>({});
     const [waitSave, setWaitSave] = useState(false);
     const [sendTrainCall, setSendTrainCall] = useState(false);
-    const executeRes = useSelector(state => state.main.execute);
+    const operationRes = useSelector(state => state.witai.witaioperationresult);
     const [waitExport, setWaitExport] = useState(false);
     const mainResultAux = useSelector(state => state.main.mainAux);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
@@ -459,7 +459,6 @@ export const Intentions: FC = () => {
 
     const fetchData = () => {dispatch(getCollection(selIntent()))};
     const selectionKey = 'name';
-    const multiData = useSelector(state => state.main.multiData);
 
     
     useEffect(() => {
@@ -480,8 +479,8 @@ export const Intentions: FC = () => {
                 dispatch(showSnackbar({ show: true, severity: "success", message:  message}))
                 setSendTrainCall(false);
                 dispatch(showBackdrop(false));
-            }else if(executeRes.error){
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.test).toLocaleLowerCase() })
+            }else if(trainResult.error){
+                const errormessage = t(trainResult.code || "error_unexpected_error", { module: t(langKeys.test).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setSendTrainCall(false);
                 dispatch(showBackdrop(false));
@@ -499,35 +498,35 @@ export const Intentions: FC = () => {
 
     useEffect(() => {
         if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
+            if (!operationRes.loading && !operationRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.messagingcost).toLocaleLowerCase() })
+            } else if (operationRes.error) {
+                const errormessage = t(operationRes.code || "error_unexpected_error", { module: t(langKeys.intentions).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
         }
-    }, [executeRes, waitSave])
+    }, [operationRes, waitSave])
 
     useEffect(() => {
         if (waitImport) {
-            if (!multiData.loading && !multiData.error && !!multiData.data?.reduce((acc:number,element:any)=>acc * element.success,1)) {
+            if (!operationRes.loading && !operationRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
-            } else if (multiData.error || !!multiData.data?.reduce((acc:number,element:any)=>acc * element.success,1)) {
-                const errormessage = t(multiData.code || "error_unexpected_error", { module: t(langKeys.intentions).toLocaleLowerCase() })
+            } else if (operationRes.error) {
+                const errormessage = t(operationRes.code || "error_unexpected_error", { module: t(langKeys.intentions).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
             }
         }
-    }, [multiData, waitImport]);
+    }, [operationRes, operationRes]);
 
     const columns = React.useMemo(
         () => [
@@ -591,7 +590,7 @@ export const Intentions: FC = () => {
     }
     const handleDelete = () => {
         const callback = () => {
-            dispatch(execute(utterancedelete({table:JSON.stringify(Object.keys(selectedRows).map(x=>({name:x})))})))
+            dispatch(intentdel({table:JSON.stringify(Object.keys(selectedRows).map(x=>({name:x})))}))
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -643,7 +642,7 @@ export const Intentions: FC = () => {
                             datajson: JSON.parse(element.intent_datajson),
                             utterance_datajson: [{
                                 name: element.utterance_name,
-                                datajson: JSON.parse(element.utterance_datajson)
+                                datajson: element.utterance_datajson
                             }]
                         }]
                     }else{
@@ -651,7 +650,7 @@ export const Intentions: FC = () => {
                         newacc[repeatedindex].utterance_datajson.push(
                             {
                                 name: element.utterance_name,
-                                datajson: JSON.parse(element.utterance_datajson)
+                                datajson: element.utterance_datajson
                             })                         
                         return newacc
 
@@ -659,18 +658,11 @@ export const Intentions: FC = () => {
                 },[])
                 dispatch(showBackdrop(true));
                 setWaitImport(true)
-                dispatch(getMultiCollection(datareduced.reduce((acc:any,d:any) => [...acc,insertutterance({
-                    ...d,
-                    id: d.id || 0,
-                    name: d.name || '',
-                    description: d.description || '',
-                    datajson: JSON.stringify({name: d.datajson}), 
-                    utterance_datajson: JSON.stringify(d.utterance_datajson),
-                    type: 'NINGUNO',
-                    status: d.status || 'ACTIVO',
-                    operation: d.operation || 'INSERT',
-                })],[])))
-            
+                debugger
+                dispatch(intentimport({
+                    utterance_datajson: JSON.stringify(datareduced.reduce((acc:any,x:any) => [...acc,...x.utterance_datajson],[])),
+                    datajson: JSON.stringify(datareduced.map((x:any) => ({ name:x.name, description:x.description, datajson:x.datajson }))),
+                }))            
             }
             else {
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) }));
