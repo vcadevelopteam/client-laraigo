@@ -642,7 +642,7 @@ export const Intentions: FC = () => {
                             datajson: JSON.parse(element.intent_datajson),
                             utterance_datajson: [{
                                 name: element.utterance_name,
-                                datajson: element.utterance_datajson
+                                datajson: JSON.parse(element.utterance_datajson)
                             }]
                         }]
                     }else{
@@ -650,7 +650,7 @@ export const Intentions: FC = () => {
                         newacc[repeatedindex].utterance_datajson.push(
                             {
                                 name: element.utterance_name,
-                                datajson: element.utterance_datajson
+                                datajson: JSON.parse(element.utterance_datajson)
                             })                         
                         return newacc
 
