@@ -80,3 +80,43 @@ export const witaiTrainReset = (state: IState): IState => ({
     ...state,
     witaitrainresult: initialState.witaitrainresult,
 });
+
+export const operationPost = (state: IState): IState => ({
+    ...state,
+    witaioperationresult: { 
+        ...state.witaioperationresult, 
+        loading: true, 
+        error: false, 
+        success: undefined 
+    }
+});
+
+export const operationPostSuccess = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        witaioperationresult: {
+            ...action.payload,
+            data: action.payload.data || [],
+            loading: false,
+            error: false,
+            success: true,
+        }
+    }
+};
+
+export const operationPostFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    witaioperationresult: {
+        ...state.witaioperationresult,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+        success: false,
+    }
+});
+
+export const resteOperationResult = (state: IState): IState => ({
+    ...state,
+    witaioperationresult: initialState.witaioperationresult,
+});
