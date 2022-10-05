@@ -694,10 +694,10 @@ const translation: LangKeys = {
     report_kpioperativo_origin_help: "Origen calculado el KPI",
     report_kpioperativo_tme_avg_help: "Tiempo promedio de la primera respuesta del asesor del grupo perteneciente",
     report_kpioperativo_tickets_help: "Suma de la cantidad de tickets atendidos por grupo perteneciente",
-    report_kpioperativo_eqtmoasesor_help: "Suma de minutos conectados del grupo de asesores divididos entre la cantidad de minutos laborables por mes (11583 min)",
-    report_kpioperativo_userpause_avg_help: "Promedio del tiempo suspendido",
+    report_kpioperativo_eqtmoasesor_help: "Suma de minutos del TMO ASESOR sin TS dividido entre la cantidad de minutos laborables por mes definido (11583 min)",
+    report_kpioperativo_userpause_avg_help: "Promedio del tiempo suspendido relacionados al grupo perteneciente",
     report_kpioperativo_tmoasesor_tickets_help: "Suma del TMO ASESOR sin TS del grupo de asesores divididos entre la cantidad de tickets atendidos por grupo perteneciente y origen",
-    report_kpioperativo_tickets_eqtmoasesor_help: "Suma de la cantidad de tickets atendidos por grupo perteneciente dividido entre la Sum Eq Asesor sin TS",
+    report_kpioperativo_tickets_eqtmoasesor_help: "Suma de cantidad de tickets atendidos dividido entre la cantidad de Asesores sin TS",
     report_kpioperativo_tmoasesor_avg_help: "Promedio de las horas TMO ASESOR sin TS perteneciente al grupo",
 
     dateactivity: "Fecha actividad",
