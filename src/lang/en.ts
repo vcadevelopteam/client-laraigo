@@ -1339,10 +1339,10 @@ const translation: LangKeys = {
     report_kpioperativo_origin_help: "KPI origin",
     report_kpioperativo_tme_avg_help: "Average time of the first response of the advisor of the belonging group",
     report_kpioperativo_tickets_help: "Sum of the number of tickets attended by belonging group",
-    report_kpioperativo_eqtmoasesor_help: "Sum of connected minutes of the group of advisors divided by the number of working minutes per month (11583 min)",
-    report_kpioperativo_userpause_avg_help: "Average time suspended",
+    report_kpioperativo_eqtmoasesor_help: "Sum of minutes of TMO ASESOR without ST divided by the number of working minutes per defined month (11583 min)",
+    report_kpioperativo_userpause_avg_help: "Average time suspended related to the group belonging",
     report_kpioperativo_tmoasesor_tickets_help: "Sum of the ADVISOR TMO without ST of the group of advisers divided by the number of tickets attended by belonging group and origin",
-    report_kpioperativo_tickets_eqtmoasesor_help: "Sum of the number of tickets attended per belonging group divided by the Sum Eq Advisor without ST",
+    report_kpioperativo_tickets_eqtmoasesor_help: "Sum of the number of tickets attended divided by the number of Advisors without ST",
     report_kpioperativo_tmoasesor_avg_help: "Average of the hours TMO ASESOR without SW belonging to the group",
 
     error_cos_unexpected: '5005: There was an error, contact the administrator',
