@@ -2540,16 +2540,6 @@ export const billingPeriodUpd = ({ corpid, orgid, year, month, billingplan, supp
     parameters: { corpid, orgid, year, month, billingplan, supportplan, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee, clientfreequantity, clientadditionalfee, supportbasicfee, unitpricepersms, vcacomissionpersms, unitepricepermail, vcacomissionpermail, additionalservicename1, additionalservicefee1, additionalservicename2, additionalservicefee2, additionalservicename3, additionalservicefee3, freewhatsappchannel, freewhatsappconversations, usercreateoverride, channelcreateoverride, vcacomissionperconversation, vcacomissionperhsm, minimumsmsquantity, minimummailquantity, vcacomissionpervoicechannel, force }
 })
 
-export const getBillingPeriodHSMSel = ({ corpid, orgid, year, month }: Dictionary): IRequestBody => ({
-    method: "UFN_BILLINGPERIODHSM_SEL",
-    key: "UFN_BILLINGPERIODHSM_SEL",
-    parameters: { corpid, orgid, year, month }
-})
-export const billingPeriodHSMUpd = ({ corpid, orgid, year, month, hsmutilityfee, force }: Dictionary): IRequestBody => ({
-    method: "UFN_BILLINGPERIODHSM_UPD",
-    key: "UFN_BILLINGPERIODHSM_UPD",
-    parameters: { corpid, orgid, year, month, hsmutilityfee, force }
-})
 export const getBillingPeriodSummarySel = ({ corpid, orgid, year, month }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGPERIOD_SUMMARYORG",
     key: "UFN_BILLINGPERIOD_SUMMARYORG",
