@@ -943,6 +943,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     const [checkTipification, setCheckTipification] = useState(false);
     const mainAux2 = useSelector(state => state.main.mainAux2);
     const location = useLocation();
+    const user = useSelector(state => state.login.validateToken.user);
     const userConnected = useSelector(state => state.inbox.userConnected);
 
     const closeTicket = (newstatus: string) => {
@@ -1046,7 +1047,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                {(ticketSelected?.status !== 'CERRADO' && ticketSelected?.communicationchanneltype !== "VOXI" && (multiData?.data?.filter(x=>x.key==="UFN_PROPERTY_SELBYNAMEASESORDELEGACION")?.[0]?.data?.[0]?.propertyvalue==="1")) &&
+                {(ticketSelected?.status !== 'CERRADO' && ticketSelected?.communicationchanneltype !== "VOXI" && (user?.roledesc === "ASESOR"?multiData?.data?.filter(x=>x.key==="UFN_PROPERTY_SELBYNAMEASESORDELEGACION")?.[0]?.data?.[0]?.propertyvalue==="1":true)) &&
                     <MenuItem onClick={() => {
                         setOpenModalReassignticket(true)
                         setAnchorEl(null)
