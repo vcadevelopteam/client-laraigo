@@ -2,11 +2,11 @@
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { FieldEditMulti, FieldSelect, GetIcon, Title } from 'components';
-import { getPaginatedPerson, getPersonExport, exportExcel, templateMaker, uploadExcel, insPersonBody, insPersonCommunicationChannel, array_trimmer, convertLocalDate, getColumnsSel, personcommunicationchannelUpdateLockedArrayIns, editPersonBody, getChannelListByPersonBody, getOpportunitiesByPersonBody, getReferrerByPersonBody, getTicketListByPersonBody, insPersonUpdateLocked } from 'common/helpers';
-import { Dictionary, IPerson, IPersonCommunicationChannel, IPersonImport, IFetchData, IObjectState, IPersonChannel, IPersonConversation, IPersonDomains } from "@types";
-import { AppBar, Avatar, Box, BoxProps, Breadcrumbs, Button, Collapse, Divider, Grid, IconButton, InputBase, Link, MenuItem, Paper, Tab, Tabs, TextField, Tooltip } from '@material-ui/core';
-import { BuildingIcon, CallRecordIcon, DocNumberIcon, DocTypeIcon, EMailInboxIcon, GenderIcon, PhoneIcon, SearchIcon, TelephoneIcon, WhatsappIcon } from 'icons';
+import { FieldEditMulti, FieldSelect, Title } from 'components';
+import { getPaginatedPerson, getPersonExport, exportExcel, templateMaker, uploadExcel, editPersonBody, array_trimmer, convertLocalDate, getColumnsSel, personcommunicationchannelUpdateLockedArrayIns, personImportValidation } from 'common/helpers';
+import { Dictionary, IPerson, IPersonImport, IFetchData } from "@types";
+import { Box, Button, IconButton, MenuItem } from '@material-ui/core';
+import { WhatsappIcon } from 'icons';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useHistory, useLocation } from 'react-router';
@@ -377,7 +377,9 @@ export const Person: FC = () => {
     const executeResult = useSelector(state => state.main.execute);
     const [waitExport, setWaitExport] = useState(false);
     const [waitImport, setWaitImport] = useState(false);
+    const [importData, setImportData] = useState<Dictionary>([]);
     const [openDialogTemplate, setOpenDialogTemplate] = useState(false)
+    const [waitValidation, setWaitValidation] = useState(false);
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [personsSelected, setPersonsSelected] = useState<IPerson[]>([]);
     const [typeTemplate, setTypeTemplate] = useState<"HSM" | "SMS" | "MAIL">('MAIL');
@@ -643,7 +645,7 @@ export const Person: FC = () => {
                 //&& (f.channeltype === undefined || Object.keys(domains.value?.channelTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.channeltype))
             );
             if (data.length > 0) {
-                dispatch(showBackdrop(true));
+                let datavalidation = data.reduce((acc:any,x:any)=>[...acc,{phone:x.phone,alternativephone:x.alternativephone,email:x.email,alternativeemail:x.alternativeemail}],[])
                 let table: Dictionary = data.reduce((a: any, d: IPersonImport) => ({
                     ...a,
                     [`${d.documenttype}_${d.documentnumber}`]: {
@@ -673,20 +675,76 @@ export const Person: FC = () => {
                         operation: 'INSERT',
                     }
                 }), {});
-                Object.values(table).forEach((p: IPersonImport) => {
-                    debugger
+                setImportData(table)
+                
+                const callback = () => {
+                    dispatch(execute(personImportValidation({
+                        table: JSON.stringify(datavalidation)
+                    })))
+                    setWaitValidation(true)
+                    dispatch(showBackdrop(true));
+                }
+                dispatch(manageConfirmation({
+                    visible: true,
+                    question: t(langKeys.confirmation_save),
+                    callback
+                }))
+                /*Object.values(table).forEach((p: IPersonImport) => {
                     dispatch(execute({
                         header: editPersonBody({ ...p }),
                         detail: []
                     }, true));
-                });
-                setWaitImport(true)
+                });*/
             }
             else {
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) }));
             }
         }
     }
+
+    
+    useEffect(() => {
+        if (waitValidation) {
+            if (!executeResult.loading && !executeResult.error) {
+                let phonesexisting:any[] = []
+                let emailsexisting:any[] = []
+                const callback = () => {
+                    setWaitImport(true)
+                    Object.values(importData).forEach((p: IPersonImport) => {
+                        dispatch(execute({
+                            header: editPersonBody({ ...p }),
+                            detail: []
+                        }, true));
+                    });
+                }
+                if (executeResult?.data[0].phone) phonesexisting = phonesexisting.concat(executeResult.data[0].phone.split(','))
+                if (executeResult?.data[0].alternativephone) phonesexisting = phonesexisting.concat(executeResult.data[0].alternativephone.split(','))
+                if (executeResult?.data[0].email) emailsexisting = emailsexisting.concat(executeResult.data[0].email.split(','))
+                if (executeResult?.data[0].alternativeemail) emailsexisting = emailsexisting.concat(executeResult.data[0].alternativeemail.split(','))
+                if (phonesexisting.length === 0 || emailsexisting.length === 0) {
+                    setWaitValidation(false);
+                    callback()
+                } else {
+                    let warningmessage = ""
+                    if(phonesexisting.length!==0){
+                        warningmessage += ` ${t(langKeys.phone)}: ${phonesexisting.join(', ')}`
+                    }
+                    if(emailsexisting.length!==0){
+                        warningmessage += ` ${t(langKeys.email)}: ${emailsexisting.join(', ')}`
+                    }
+                    dispatch(manageConfirmation({
+                        visible: true,
+                        question: `${t(langKeys.personrepeatedwarning1)}${warningmessage}`,
+                        callback: callback
+                    }))
+                }
+            } else if (executeResult.error) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: "error" }))
+                dispatch(showBackdrop(false));
+                setWaitValidation(false);
+            }
+        }
+    }, [executeResult, waitValidation]);
 
     const handleLock = (type: "LOCK" | "UNLOCK") => {
         const callback = () => {
@@ -710,6 +768,7 @@ export const Person: FC = () => {
     useEffect(() => {
         if (waitImport) {
             if (!executeResult.loading && !executeResult.error) {
+                debugger
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
                 fetchData(fetchDataAux);
                 dispatch(showBackdrop(false));
