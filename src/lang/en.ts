@@ -3375,6 +3375,7 @@ const translation: LangKeys = {
     propertyhorasuspension: 'Time for automatic suspension',
     propertycargarconversaciones: 'Allows you to enable or disable the Upload Conversations button',
     propertyreporte_encuestas: 'Enable Survey Report (Score and Comment)',
+    propertyreporte_kpioperativo: 'Enable KPI Operative Report',
 
     property_tooltip_enable_button: 'Enable button',
     property_tooltip_disable_button: 'Disable button',

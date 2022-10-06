@@ -3386,6 +3386,7 @@ export const langKeys = {
     propertyhorasuspension: 'propertyhorasuspension',
     propertycargarconversaciones: 'propertycargarconversaciones',
     propertyreporte_encuestas: 'propertyreporte_encuestas',
+    propertyreporte_kpioperativo: 'propertyreporte_kpioperativo',
 
     property_tooltip_enable_button: 'property_tooltip_enable_button',
     property_tooltip_disable_button: 'property_tooltip_disable_button',
