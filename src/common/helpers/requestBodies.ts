@@ -2072,6 +2072,12 @@ export const personInsValidation = ({id, phone, email, alternativephone, alterna
         operation
     },
 });
+export const personImportValidation = ({table}: Dictionary): IRequestBody => ({
+    method: 'UFN_PERSON_IMPORT_VALIDATION',
+    parameters: {
+        table
+    },
+});
 
 export const editPersonBody = (person: IPerson): IRequestBody => ({
     method: 'UFN_PERSON_PCC_INS',
