@@ -120,7 +120,7 @@ const ShoppingCart: React.FC<{ onlyTime?: string, interactiontext: string, creat
                     <div style={{ display: 'flex', alignItems: 'center', paddingLeft: 8 }}>
                         <div>
                             <div style={{ fontWeight: 'bold' }}>{jsonIntt.Product_items.length} {t(langKeys.elements)}</div>
-                            <div style={{ fontWeight: 'bold' }}>{jsonIntt.Product_items.reduce((acc: number, item: Dictionary) => acc + parseFloat(item.Item_price)*parseFloat(item.Quantity), 0).toFixed(2)} {jsonIntt.Product_items[0].Currency}</div>
+                            <div style={{ fontWeight: 'bold' }}>{jsonIntt.Product_items.reduce((acc: number, item: Dictionary) => acc + parseFloat(item.Item_price) * parseFloat(item.Quantity), 0).toFixed(2)} {jsonIntt.Product_items[0].Currency}</div>
                         </div>
                     </div>
                 </div>
@@ -144,7 +144,7 @@ const ShoppingCart: React.FC<{ onlyTime?: string, interactiontext: string, creat
                     <h4 >{t(langKeys.cart_sent)}</h4>
                     <div>
                         <div style={{ fontWeight: 500 }}>{jsonIntt.Product_items.length} {t(langKeys.elements)}</div>
-                        <div style={{ color: '#8696a0' }}>{jsonIntt.Product_items.reduce((acc: number, item: Dictionary) => acc + parseFloat(item.Item_price)*parseFloat(item.Quantity), 0).toFixed(2)} {jsonIntt.Product_items[0].Currency}</div>
+                        <div style={{ color: '#8696a0' }}>{jsonIntt.Product_items.reduce((acc: number, item: Dictionary) => acc + parseFloat(item.Item_price) * parseFloat(item.Quantity), 0).toFixed(2)} {jsonIntt.Product_items[0].Currency}</div>
                         <div style={{ marginTop: 16 }}>
                         </div>
                     </div>
@@ -423,7 +423,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     const { isLoaded } = useJsApiLoader({
         googleMapsApiKey: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4" /*"AIzaSyCBij6DbsB8SQC_RRKm3-X07RLmvQEnP9w"*/,
     });
-    
+
     const [height, setHeight] = React.useState("0px");
     const onLoad = () => {
         setHeight(((ref as any)?.current.contentWindow.document.body.scrollHeight + 20) + "px");
@@ -525,7 +525,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                     className={classes.imageCard}
                     src={interactiontext}
                     alt=""
-                    crossOrigin={interactiontext.includes('cloud-object-storage') ? undefined : 'anonymous'}
+                    crossOrigin={interactiontext.includes('cloud-object-storage') ? 'anonymous' : undefined}
                     onClick={() => {
                         dispatch(manageLightBox({ visible: true, images: listImage!!, index: indexImage!! }))
                     }}
