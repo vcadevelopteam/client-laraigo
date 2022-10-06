@@ -710,6 +710,7 @@ export const Person: FC = () => {
                 let emailsexisting:any[] = []
                 const callback = () => {
                     setWaitImport(true)
+                    dispatch(showBackdrop(true));
                     Object.values(importData).forEach((p: IPersonImport) => {
                         dispatch(execute({
                             header: editPersonBody({ ...p }),
@@ -732,6 +733,7 @@ export const Person: FC = () => {
                     if(emailsexisting.length!==0){
                         warningmessage += ` ${t(langKeys.email)}: ${emailsexisting.join(', ')}`
                     }
+                    dispatch(showBackdrop(false));
                     dispatch(manageConfirmation({
                         visible: true,
                         question: `${t(langKeys.personrepeatedwarning1)}${warningmessage}`,
