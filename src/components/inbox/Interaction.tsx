@@ -773,7 +773,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                     [classes.interactionTextAgent]: userType !== 'client',
                 })}
             >
-                <div style={{ width: "300px" }}>
+                <div style={{ width: "300px" }} className="interaction-gmap">
                     <GoogleMap
                         mapContainerStyle={{
                             width: '100%',
@@ -786,6 +786,9 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                             position={{ lat: parseFloat(coordinates[0]), lng: parseFloat(coordinates[1]) }}
                         />
                     </GoogleMap>
+                </div>
+                <div style={{ display: "none" }} className="interaction-gmap-text">
+                    {interactiontext}
                 </div>
                 <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
