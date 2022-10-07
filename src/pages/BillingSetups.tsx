@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateSwitch, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, IOSSwitch } from 'components';
-import { billingSupportIns, getBillingConfigurationSel, getBillingSupportSel, getPlanSel, getPaymentPlanSel, billingConfigurationIns, getBillingConversationSel, billingConversationIns, getOrgSelList, getCorpSel, getLocaleDateString, getAppsettingInvoiceSel, updateAppsettingInvoice, getValuesFromDomainCorp, getBillingMessagingSel, billingMessagingIns, localesLaraigo } from 'common/helpers';
+import { billingSupportIns, getBillingConfigurationSel, getBillingSupportSel, getPlanSel, getPaymentPlanSel, billingConfigurationIns, getBillingConversationSel, billingConversationIns, getOrgSelList, getCorpSel, getLocaleDateString, getAppsettingInvoiceSel, updateAppsettingInvoice, getValuesFromDomainCorp, getBillingMessagingSel, billingMessagingIns, localesLaraigo, artificialIntelligencePlanSel, artificialIntelligenceServiceSel, billingArtificialIntelligenceSel, billingArtificialIntelligenceIns } from 'common/helpers';
 import { cleanMemoryTable, setMemoryTable } from 'store/main/actions';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -2013,6 +2013,240 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
     );
 }
 
+const IDARTIFICIALINTELLIGENCE = 'IDARTIFICIALINTELLIGENCE';
+const ArtificialIntelligence: React.FC<{ providerData: any, planData: any }> = ({ providerData, planData }) => {
+    const dispatch = useDispatch();
+
+    const { t } = useTranslation();
+
+    const classes = useStyles();
+    const executeResult = useSelector(state => state.main.execute);
+    const mainResult = useSelector(state => state.main);
+    const memoryTable = useSelector(state => state.main.memoryTable);
+
+    const [dataMain, setdataMain] = useState({
+        provider: "",
+        service: "",
+        plan: "",
+        year: String(new Date().getFullYear()),
+        month: (new Date().getMonth() + 1).toString().padStart(2, "0")
+    });
+
+    const [disableSearch, setdisableSearch] = useState(false);
+    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
+    const [viewSelected, setViewSelected] = useState("view-1");
+    const [waitSave, setWaitSave] = useState(false);
+
+    function search() {
+        dispatch(showBackdrop(true))
+        dispatch(getCollection(billingArtificialIntelligenceSel(dataMain)))
+    }
+
+    useEffect(() => {
+        search()
+        dispatch(setMemoryTable({
+            id: IDARTIFICIALINTELLIGENCE
+        }))
+        return () => {
+            dispatch(cleanMemoryTable());
+        }
+    }, [])
+
+    useEffect(() => {
+        if (!mainResult.mainData.loading) {
+            dispatch(showBackdrop(false));
+        }
+    }, [mainResult])
+
+    const columns = React.useMemo(
+        () => [
+            {
+                accessor: 'billingartificialintelligenceid',
+                isComponent: true,
+                minWidth: 60,
+                width: '1%',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <TemplateIcons
+                            deleteFunction={() => handleDelete(row)}
+                            editFunction={() => handleEdit(row)}
+                        />
+                    )
+                }
+            },
+            {
+                Header: t(langKeys.year),
+                accessor: 'year',
+            },
+            {
+                Header: t(langKeys.month),
+                accessor: 'month',
+            },
+            {
+                Header: t(langKeys.billingsetup_provider),
+                accessor: 'provider',
+            },
+            {
+                Header: t(langKeys.billingsetup_service),
+                accessor: 'service',
+            },
+            {
+                Header: t(langKeys.billingsetup_measureunit),
+                accessor: 'measureunit',
+            },
+            {
+                Header: t(langKeys.billingsetup_plan),
+                accessor: 'plan',
+            },
+            {
+                Header: t(langKeys.billingsetup_minimuminteractions),
+                accessor: 'freeinteractions',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { freeinteractions } = props.cell.row.original;
+                    return formatNumberNoDecimals(freeinteractions || 0);
+                }
+            },
+            {
+                Header: t(langKeys.billingsetup_baseprice),
+                accessor: 'basicfee',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { basicfee } = props.cell.row.original;
+                    return formatNumber(basicfee || 0);
+                }
+            },
+            {
+                Header: t(langKeys.billingsetup_additionalprice),
+                accessor: 'additionalfee',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { additionalfee } = props.cell.row.original;
+                    return formatNumber(additionalfee || 0);
+                }
+            },
+        ],
+        []
+    );
+
+    const fetchData = () => dispatch(getCollection(billingArtificialIntelligenceSel(dataMain)));
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }));
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+                fetchData();
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.supportplan).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [executeResult, waitSave])
+
+    useEffect(() => {
+        setdisableSearch(dataMain.year === "")
+    }, [dataMain])
+
+    const handleRegister = () => {
+        setViewSelected("view-2");
+        setRowSelected({ row: null, edit: true });
+    }
+
+    const handleEdit = (row: Dictionary) => {
+        setViewSelected("view-2");
+        setRowSelected({ row, edit: true });
+    }
+
+    const handleDelete = (row: Dictionary) => {
+        const callback = () => {
+            dispatch(execute(billingArtificialIntelligenceIns({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.billingartificialintelligenceid })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete),
+            callback
+        }))
+    }
+
+    if (viewSelected === "view-1") {
+        return (
+            <Fragment>
+                <TableZyx
+                    onClickRow={handleEdit}
+                    columns={columns}
+                    ButtonsElement={() => (
+                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                            <FieldSelect
+                                label={t(langKeys.year)}
+                                style={{ width: 150 }}
+                                valueDefault={dataMain.year}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.value || 0 }))}
+                                data={dataYears}
+                                optionDesc="value"
+                                optionValue="value"
+                            />
+                            <FieldMultiSelect
+                                label={t(langKeys.month)}
+                                style={{ width: 300 }}
+                                valueDefault={dataMain.month}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev => ({ ...prev, month: value.map((o: Dictionary) => o.val).join() }))}
+                                data={dataMonths}
+                                uset={true}
+                                prefixTranslation="month_"
+                                optionDesc="val"
+                                optionValue="val"
+                            />
+
+                            <Button
+                                disabled={mainResult.mainData.loading || disableSearch}
+                                variant="contained"
+                                color="primary"
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                onClick={() => search()}
+                            >{t(langKeys.search)}
+                            </Button>
+                        </div>
+                    )}
+                    data={mainResult.mainData.data}
+                    filterGeneral={false}
+                    download={true}
+                    loading={mainResult.mainData.loading}
+                    register={true}
+                    handleRegister={handleRegister}
+                    pageSizeDefault={IDARTIFICIALINTELLIGENCE === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                    initialPageIndex={IDARTIFICIALINTELLIGENCE === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                    initialStateFilter={IDARTIFICIALINTELLIGENCE === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
+                />
+            </Fragment>
+        )
+    }
+    else if (viewSelected === "view-2") {
+        return (
+            <DetailSupportPlan
+                data={rowSelected}
+                setViewSelected={setViewSelected}
+                fetchData={fetchData}
+                dataPlan={planData}
+            />
+        )
+    } else
+        return null;
+}
+
 const IDSUPPORTPLAN = 'IDSUPPORTPLAN';
 const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const dispatch = useDispatch();
@@ -2888,6 +3122,8 @@ const BillingSetup: FC = () => {
     const multiData = useSelector(state => state.main.multiData);
     const user = useSelector(state => state.login.validateToken.user);
 
+    const [providerList, setProviderList] = useState<any>([]);
+    const [planList, setPlanList] = useState<any>([]);
     const [countryList, setcountryList] = useState<any>([]);
     const [dataPaymentPlan, setdataPaymentPlan] = useState<any>([]);
     const [dataPlan, setdataPlan] = useState<any>([]);
@@ -2899,6 +3135,8 @@ const BillingSetup: FC = () => {
             setsentfirstinfo(false);
             setdataPlan(multiData.data[0] && multiData.data[0].success ? multiData.data[0].data : []);
             setdataPaymentPlan(multiData.data[3] && multiData.data[3].success ? multiData.data[3].data : []);
+            setPlanList(multiData.data[4] && multiData.data[4].success ? multiData.data[4].data : []);
+            setProviderList(multiData.data[5] && multiData.data[5].success ? multiData.data[5].data : []);
         }
     }, [multiData])
 
@@ -2916,6 +3154,8 @@ const BillingSetup: FC = () => {
             getOrgSelList(0),
             getCorpSel(0),
             getPaymentPlanSel(),
+            artificialIntelligencePlanSel({ description: '' }),
+            artificialIntelligenceServiceSel({ provider: '', service: '' }),
         ]));
     }, [])
 
@@ -2937,6 +3177,9 @@ const BillingSetup: FC = () => {
                 }
                 {user?.roledesc === "SUPERADMIN" &&
                     <AntTab label={t(langKeys.conversationcost)} />
+                }
+                {user?.roledesc === "SUPERADMIN" &&
+                    <AntTab label={t(langKeys.billingsetup_artificialintelligence)} />
                 }
                 {user?.roledesc === "SUPERADMIN" &&
                     <AntTab label={t(langKeys.messagingcost)} />
@@ -2962,10 +3205,15 @@ const BillingSetup: FC = () => {
             }
             {pageSelected === 3 &&
                 <div style={{ marginTop: 16 }}>
-                    <MessagingCost dataPlan={countryList} />
+                    <ArtificialIntelligence planData={planList} providerData={providerList} />
                 </div>
             }
             {pageSelected === 4 &&
+                <div style={{ marginTop: 16 }}>
+                    <MessagingCost dataPlan={countryList} />
+                </div>
+            }
+            {pageSelected === 5 &&
                 <div style={{ marginTop: 16 }}>
                     <SupportPlan dataPlan={dataPlan} />
                 </div>

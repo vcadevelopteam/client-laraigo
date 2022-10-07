@@ -4072,7 +4072,16 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     billingreport_conversation: "Conversaciones",
     billingreport_interaction: "Interacciones",
     billingreport_agent: "Agentes",
-    billingreport_template: "billingreport-spanish.html"
+    billingreport_template: "billingreport-spanish.html",
+    billingsetup_artificialintelligence: "Costos IA",
+    billingsetup_ai: "IA",
+    billingsetup_measureunit: "Unidad de Medida",
+    billingsetup_plan: "Plan",
+    billingsetup_minimuminteractions: "Interacciones Mínimas",
+    billingsetup_baseprice: "Precio Bolsa",
+    billingsetup_additionalprice: "Precio Interacción Adicional",
+    billingsetup_provider: "Proveedor",
+    billingsetup_service: "Servicio",
 };
 
 const esResource: ResourceLanguage = {

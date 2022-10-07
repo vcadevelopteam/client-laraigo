@@ -4082,6 +4082,15 @@ const translation: LangKeys = {
     billingreport_interaction: "Interactions",
     billingreport_agent: "Agents",
     billingreport_template: "billingreport-english.html",
+    billingsetup_artificialintelligence: "AI Cost",
+    billingsetup_ai: "AI",
+    billingsetup_measureunit: "Unit of Measure",
+    billingsetup_plan: "Plan",
+    billingsetup_minimuminteractions: "Minimum Interactions",
+    billingsetup_baseprice: "Base Price",
+    billingsetup_additionalprice: "Additional Interaction Price",
+    billingsetup_provider: "Provider",
+    billingsetup_service: "Service",
 };
 
 const enResource: ResourceLanguage = {

@@ -2047,7 +2047,7 @@ export const insPersonBody = (person: Dictionary): IRequestBody => ({
         ...person,
         corpid: null,
         orgid: null,
-        phone: person?.phone?.replaceAll('+',''),
+        phone: person?.phone?.replaceAll('+', ''),
         observation: person.observation || '',
     },
 });
@@ -2057,18 +2057,18 @@ export const insPersonCommunicationChannel = (pcc: Dictionary): IRequestBody => 
     parameters: {
         ...pcc,
         corpid: null,
-        type: pcc.type||"VOXI",
+        type: pcc.type || "VOXI",
         orgid: null,
     },
 });
-export const personInsValidation = ({id, phone, email, alternativephone, alternativeemail, operation}: Dictionary): IRequestBody => ({
+export const personInsValidation = ({ id, phone, email, alternativephone, alternativeemail, operation }: Dictionary): IRequestBody => ({
     method: 'UFN_PERSON_INS_VALIDATION',
     parameters: {
-        id, 
-        phone: phone?.replaceAll('+','') || "",
-        email, 
-        alternativephone: alternativephone?.replaceAll('+','') || "",
-        alternativeemail, 
+        id,
+        phone: phone?.replaceAll('+', '') || "",
+        email,
+        alternativephone: alternativephone?.replaceAll('+', '') || "",
+        alternativeemail,
         operation
     },
 });
@@ -2077,11 +2077,11 @@ export const editPersonBody = (person: IPerson): IRequestBody => ({
     method: 'UFN_PERSON_PCC_INS',
     parameters: {
         ...person,
-        alternativephone: person?.alternativephone?.replaceAll('+','') || "",
+        alternativephone: person?.alternativephone?.replaceAll('+', '') || "",
         id: person.personid,
         operation: person.personid ? 'UPDATE' : 'INSERT',
         observation: person.observation || '',
-        phone: person?.phone?.replaceAll('+','') || "",
+        phone: person?.phone?.replaceAll('+', '') || "",
     },
 });
 
@@ -3133,8 +3133,8 @@ export const ufnlinkPersons = ({ personidfrom, personidto, imageurl, lastname, n
     method: "UFN_CONVERSATION_LINKEDPERSON_EXECUTE",
     key: "UFN_CONVERSATION_LINKEDPERSON_EXECUTE",
     parameters: {
-        personidfrom, 
-        personidto, 
+        personidfrom,
+        personidto,
         imageurl: imageurl || "",
         name: name || "",
         firstname: firstname || "",
@@ -3256,7 +3256,7 @@ export const selCommunicationChannelWhatsApp = (): IRequestBody => ({
     parameters: {}
 })
 
-export const getPaginatedLocation = ({ skip, take, filters, sorts,locationid=""}: Dictionary): IRequestBodyPaginated => ({
+export const getPaginatedLocation = ({ skip, take, filters, sorts, locationid = "" }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_LOCATION_SEL",
     methodCount: "UFN_LOCATION_TOTALRECORDS",
     parameters: {
@@ -3321,7 +3321,7 @@ export const selIntent = (): IRequestBody => ({
 export const selUtterance = (intent: string): IRequestBody => ({
     method: "UFN_WITAI_UTTERANCE_SEL",
     key: "UFN_WITAI_UTTERANCE_SEL",
-    parameters: {intent}
+    parameters: { intent }
 })
 
 export const selEntities = (): IRequestBody => ({
@@ -3330,25 +3330,67 @@ export const selEntities = (): IRequestBody => ({
     parameters: {}
 })
 
-export const insertutterance = ({name, description, datajson, utterance_datajson, operation}:Dictionary): IRequestBody => ({
+export const insertutterance = ({ name, description, datajson, utterance_datajson, operation }: Dictionary): IRequestBody => ({
     method: "UFN_WITAI_INTENT_UTTERANCE_INS",
     key: "UFN_WITAI_INTENT_UTTERANCE_INS",
-    parameters: {name, description, datajson, utterance_datajson, operation}
+    parameters: { name, description, datajson, utterance_datajson, operation }
 })
 
-export const insertentity = ({name, datajson, operation}:Dictionary): IRequestBody => ({
+export const insertentity = ({ name, datajson, operation }: Dictionary): IRequestBody => ({
     method: "UFN_WITAI_ENTITY_INS",
     key: "UFN_WITAI_ENTITY_INS",
-    parameters: {name, datajson, operation}
+    parameters: { name, datajson, operation }
 })
-export const utterancedelete = ({table}:Dictionary): IRequestBody => ({
+export const utterancedelete = ({ table }: Dictionary): IRequestBody => ({
     method: "UFN_WITUFN_WITAI_INTENT_UTTERANCE_DEL",
     key: "UFN_WITUFN_WITAI_INTENT_UTTERANCE_DEL",
-    parameters: {table, model:""}
+    parameters: { table, model: "" }
 })
 
-export const entitydelete = ({table,}:Dictionary): IRequestBody => ({
+export const entitydelete = ({ table, }: Dictionary): IRequestBody => ({
     method: "UFN_WITAI_ENTITY_DEL",
     key: "UFN_WITAI_ENTITY_DEL",
-    parameters: {table, model:""}
+    parameters: { table, model: "" }
+})
+
+export const billingConfigurationNewMonth = ({ year, month }: Dictionary): IRequestBody => ({
+    method: "UFN_BILLINGCONFIGURATION_NEWMONTH",
+    key: "UFN_BILLINGCONFIGURATION_NEWMONTH",
+    parameters: { year, month }
+})
+
+export const artificialIntelligencePlanIns = ({ freeinteractions, basicfee, additionalfee, description, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_ARTIFICIALINTELLIGENCEPLAN_INS",
+    key: "UFN_ARTIFICIALINTELLIGENCEPLAN_INS",
+    parameters: { freeinteractions, basicfee, additionalfee, description, operation }
+})
+
+export const artificialIntelligencePlanSel = ({ description }: Dictionary): IRequestBody => ({
+    method: "UFN_ARTIFICIALINTELLIGENCEPLAN_SEL",
+    key: "UFN_ARTIFICIALINTELLIGENCEPLAN_SEL",
+    parameters: { description }
+})
+
+export const artificialIntelligenceServiceIns = ({ provider, service, type, description, measureunit, charlimit, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_ARTIFICIALINTELLIGENCESERVICE_INS",
+    key: "UFN_ARTIFICIALINTELLIGENCESERVICE_INS",
+    parameters: { provider, service, type, description, measureunit, charlimit, operation }
+})
+
+export const artificialIntelligenceServiceSel = ({ provider, service }: Dictionary): IRequestBody => ({
+    method: "UFN_ARTIFICIALINTELLIGENCESERVICE_SEL",
+    key: "UFN_ARTIFICIALINTELLIGENCESERVICE_SEL",
+    parameters: { provider, service }
+})
+
+export const billingArtificialIntelligenceIns = ({ year, month, id, provider, service, measureunit, charlimit, plan, freeinteractions, basicfee, additionalfee, description, status, type, username, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_BILLINGARTIFICIALINTELLIGENCE_INS",
+    key: "UFN_BILLINGARTIFICIALINTELLIGENCE_INS",
+    parameters: { year, month, id, provider, service, measureunit, charlimit, plan, freeinteractions, basicfee, additionalfee, description, status, type, username, operation }
+})
+
+export const billingArtificialIntelligenceSel = ({ year, month, provider, service, plan }: Dictionary): IRequestBody => ({
+    method: "UFN_BILLINGARTIFICIALINTELLIGENCE_SEL",
+    key: "UFN_BILLINGARTIFICIALINTELLIGENCE_SEL",
+    parameters: { year, month, provider, service, plan }
 })
