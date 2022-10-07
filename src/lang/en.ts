@@ -4083,6 +4083,8 @@ const translation: LangKeys = {
     billingreport_agent: "Agents",
     billingreport_template: "billingreport-english.html",
     billingsetup_artificialintelligence: "AI Cost",
+    billingsetup_artificialintelligencedetail: "AI Cost detail",
+    billingsetup_artificialintelligencenew: "New AI Cost",
     billingsetup_ai: "AI",
     billingsetup_measureunit: "Unit of Measure",
     billingsetup_plan: "Plan",

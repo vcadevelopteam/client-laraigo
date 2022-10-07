@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateSwitch, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, IOSSwitch } from 'components';
-import { billingSupportIns, getBillingConfigurationSel, getBillingSupportSel, getPlanSel, getPaymentPlanSel, billingConfigurationIns, getBillingConversationSel, billingConversationIns, getOrgSelList, getCorpSel, getLocaleDateString, getAppsettingInvoiceSel, updateAppsettingInvoice, getValuesFromDomainCorp, getBillingMessagingSel, billingMessagingIns, localesLaraigo, artificialIntelligencePlanSel, artificialIntelligenceServiceSel, billingArtificialIntelligenceSel, billingArtificialIntelligenceIns } from 'common/helpers';
+import { billingSupportIns, getBillingConfigurationSel, getBillingSupportSel, getPlanSel, getPaymentPlanSel, billingConfigurationIns, getBillingConversationSel, billingConversationIns, getOrgSelList, getCorpSel, getLocaleDateString, getAppsettingInvoiceSel, updateAppsettingInvoice, getValuesFromDomainCorp, getBillingMessagingSel, billingMessagingIns, localesLaraigo, artificialIntelligencePlanSel, artificialIntelligenceServiceSel, billingArtificialIntelligenceSel, billingArtificialIntelligenceIns, validateIsUrl } from 'common/helpers';
 import { cleanMemoryTable, setMemoryTable } from 'store/main/actions';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -37,6 +37,14 @@ interface DetailSupportPlanProps {
     setViewSelected: (view: string) => void;
     fetchData: () => void,
     dataPlan: any[];
+}
+
+interface DetailArtificialIntelligenceProps {
+    data: RowSelected;
+    setViewSelected: (view: string) => void;
+    fetchData: () => void,
+    providerData: any[];
+    planData: any[];
 }
 
 export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: any) => void) => {
@@ -2019,7 +2027,6 @@ const ArtificialIntelligence: React.FC<{ providerData: any, planData: any }> = (
 
     const { t } = useTranslation();
 
-    const classes = useStyles();
     const executeResult = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main);
     const memoryTable = useSelector(state => state.main.memoryTable);
@@ -2032,6 +2039,9 @@ const ArtificialIntelligence: React.FC<{ providerData: any, planData: any }> = (
         month: (new Date().getMonth() + 1).toString().padStart(2, "0")
     });
 
+    const [providerCombo, setProviderCombo] = useState([]);
+    const [serviceCombo, setServiceCombo] = useState([]);
+    const [planCombo, setPlanCombo] = useState([]);
     const [disableSearch, setdisableSearch] = useState(false);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [viewSelected, setViewSelected] = useState("view-1");
@@ -2041,6 +2051,16 @@ const ArtificialIntelligence: React.FC<{ providerData: any, planData: any }> = (
         dispatch(showBackdrop(true))
         dispatch(getCollection(billingArtificialIntelligenceSel(dataMain)))
     }
+
+    useEffect(() => {
+        if (providerData) {
+            setProviderCombo(providerData.filter((elem: { provider: any; }, index: any, self: any[]) => self.findIndex((t) => { return (t.provider === elem.provider) }) === index));
+            setServiceCombo(providerData.filter((elem: { service: any; }, index: any, self: any[]) => self.findIndex((t) => { return (t.service === elem.service) }) === index));
+        }
+        if (planData) {
+            setPlanCombo(planData.filter((elem: { description: any; }, index: any, self: any[]) => self.findIndex((t) => { return (t.description === elem.description) }) === index));
+        }
+    }, [providerData, planData])
 
     useEffect(() => {
         search()
@@ -2209,7 +2229,36 @@ const ArtificialIntelligence: React.FC<{ providerData: any, planData: any }> = (
                                 optionDesc="val"
                                 optionValue="val"
                             />
-
+                            <FieldSelect
+                                label={t(langKeys.billingsetup_provider)}
+                                style={{ width: 200 }}
+                                valueDefault={dataMain.provider}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev => ({ ...prev, provider: value?.provider || '' }))}
+                                data={providerCombo}
+                                optionDesc="provider"
+                                optionValue="provider"
+                            />
+                            <FieldSelect
+                                label={t(langKeys.billingsetup_service)}
+                                style={{ width: 200 }}
+                                valueDefault={dataMain.service}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev => ({ ...prev, service: value?.service || '' }))}
+                                data={serviceCombo}
+                                optionDesc="service"
+                                optionValue="service"
+                            />
+                            <FieldSelect
+                                label={t(langKeys.billingsetup_plan)}
+                                style={{ width: 200 }}
+                                valueDefault={dataMain.plan}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev => ({ ...prev, plan: value?.description || '' }))}
+                                data={planCombo}
+                                optionDesc="description"
+                                optionValue="description"
+                            />
                             <Button
                                 disabled={mainResult.mainData.loading || disableSearch}
                                 variant="contained"
@@ -2236,15 +2285,295 @@ const ArtificialIntelligence: React.FC<{ providerData: any, planData: any }> = (
     }
     else if (viewSelected === "view-2") {
         return (
-            <DetailSupportPlan
+            <DetailArtificialIntelligence
                 data={rowSelected}
                 setViewSelected={setViewSelected}
                 fetchData={fetchData}
-                dataPlan={planData}
+                providerData={providerData}
+                planData={planData}
             />
         )
     } else
         return null;
+}
+
+const DetailArtificialIntelligence: React.FC<DetailArtificialIntelligenceProps> = ({ data: { row, edit }, setViewSelected, fetchData, providerData, planData }) => {
+    const dispatch = useDispatch();
+
+    const { t } = useTranslation();
+
+    const classes = useStyles();
+    const executeRes = useSelector(state => state.main.execute);
+
+    const [datetoshow, setdatetoshow] = useState(row ? `${row.year}-${String(row.month).padStart(2, '0')}` : `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth() + 1).padStart(2, '0')}`)
+    const [waitSave, setWaitSave] = useState(false);
+
+    const arrayBread = [
+        { id: "view-1", name: t(langKeys.billingsetup_artificialintelligence) },
+        { id: "view-2", name: t(langKeys.billingsetup_artificialintelligencedetail) }
+    ];
+
+    const { register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm({
+        defaultValues: {
+            id: row ? row.billingsupportid : 0,
+            year: row?.year || new Date().getFullYear(),
+            month: row?.month || new Date().getMonth() + 1,
+            provider: row?.provider || "",
+            service: row?.service || "",
+            measureunit: row?.measureunit || "",
+            charlimit: row?.charlimit || 0,
+            plan: row?.plan || "",
+            freeinteractions: row?.freeinteractions || 0,
+            basicfee: row?.basicfee || 0.00,
+            additionalfee: row?.additionalfee || 0.00,
+            status: row ? row.status : 'ACTIVO',
+            type: row ? row.type : '',
+            description: row ? row.description : '',
+            operation: row ? "UPDATE" : "INSERT",
+        }
+    });
+
+    function handleDateChange(e: any) {
+        if (e !== "") {
+            let datetochange = new Date(e + "-02");
+            let mes = datetochange?.getMonth() + 1;
+            let year = datetochange?.getFullYear();
+            setdatetoshow(`${year}-${String(mes).padStart(2, '0')}`);
+            setValue('year', year);
+            setValue('month', mes);
+        }
+    }
+
+    React.useEffect(() => {
+        register('id');
+        register('year');
+        register('month');
+        register('provider', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('service', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('measureunit', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('charlimit');
+        register('plan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('freeinteractions', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('basicfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('additionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('status');
+        register('type');
+        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('operation');
+    }, [edit, register]);
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                fetchData && fetchData();
+                dispatch(showBackdrop(false));
+                setViewSelected("view-1")
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.billingsetup_artificialintelligence).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                setWaitSave(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [executeRes, waitSave])
+
+    const onSubmit = handleSubmit((data) => {
+        const callback = () => {
+            dispatch(execute(billingArtificialIntelligenceIns(data)));
+            dispatch(showBackdrop(true));
+            setWaitSave(true)
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
+    });
+
+    function handleServiceChange(data: any) {
+        if (data) {
+            setValue("provider", data.provider || '');
+            setValue("service", data.service || '');
+            setValue("type", data.type || '');
+            setValue("charlimit", data.charlimit || 0);
+            setValue("measureunit", data.measureunit || '');
+        }
+        else {
+            setValue("provider", '');
+            setValue("service", '');
+            setValue("type", '');
+            setValue("charlimit", 0);
+            setValue("measureunit", '');
+        }
+
+        trigger("provider");
+        trigger("service");
+        trigger("type");
+        trigger("measureunit");
+    }
+
+    function handlePlanChange(data: any) {
+        if (data) {
+            setValue("plan", data.description || '');
+            setValue("freeinteractions", data.freeinteractions || 0);
+            setValue("basicfee", data.basicfee || 0.00);
+            setValue("additionalfee", data.additionalfee || 0.00);
+        }
+        else {
+            setValue("plan", '');
+            setValue("freeinteractions", 0);
+            setValue("basicfee", 0.00);
+            setValue("additionalfee", 0.00);
+        }
+
+        trigger("plan");
+        trigger("freeinteractions");
+        trigger("basicfee");
+        trigger("additionalfee");
+    }
+
+    return (
+        <div style={{ width: '100%' }}>
+            <form onSubmit={onSubmit}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={arrayBread}
+                            handleClick={setViewSelected}
+                        />
+                        <TitleDetail
+                            title={row ? `${row.provider} - ${row.service}` : t(langKeys.billingsetup_artificialintelligencenew)}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => setViewSelected("view-1")}
+                        >{t(langKeys.back)}</Button>
+                        {edit &&
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                                startIcon={<SaveIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >{t(langKeys.save)}
+                            </Button>
+                        }
+                    </div>
+                </div>
+                <div className={classes.containerDetail}>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.description)}
+                            onChange={(value) => setValue('description', value)}
+                            valueDefault={getValues('description')}
+                            error={errors?.description?.message}
+                            className="col-6"
+                        />
+                        <TextField
+                            id="date"
+                            className="col-6"
+                            type="month"
+                            variant="outlined"
+                            onChange={(e) => handleDateChange(e.target.value)}
+                            value={datetoshow}
+                            size="small"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldSelect
+                            label={t(langKeys.billingsetup_ai)}
+                            className="col-6"
+                            valueDefault={getValues('service')}
+                            onChange={(value) => { handleServiceChange(value) }}
+                            error={errors?.service?.message}
+                            data={providerData}
+                            optionDesc="service"
+                            optionValue="service"
+                        />
+                        <FieldEdit
+                            label={t(langKeys.billingsetup_provider)}
+                            className="col-6"
+                            valueDefault={getValues('provider')}
+                            error={errors?.provider?.message}
+                            disabled={true}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.billingsetup_service)}
+                            className="col-6"
+                            valueDefault={getValues('service')}
+                            error={errors?.service?.message}
+                            disabled={true}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.type)}
+                            className="col-6"
+                            valueDefault={getValues('type')}
+                            error={errors?.type?.message}
+                            disabled={true}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.billingsetup_measureunit)}
+                            className="col-6"
+                            valueDefault={getValues('measureunit')}
+                            error={errors?.measureunit?.message}
+                            disabled={true}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldSelect
+                            label={t(langKeys.billingsetup_plan)}
+                            className="col-6"
+                            valueDefault={getValues('plan')}
+                            onChange={(value) => { handlePlanChange(value) }}
+                            error={errors?.plan?.message}
+                            data={planData}
+                            optionDesc="description"
+                            optionValue="description"
+                        />
+                        <FieldEdit
+                            label={t(langKeys.billingsetup_minimuminteractions)}
+                            className="col-6"
+                            valueDefault={getValues('freeinteractions')}
+                            onChange={(value) => setValue('freeinteractions', value)}
+                            error={errors?.freeinteractions?.message}
+                            type="number"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.billingsetup_baseprice)}
+                            className="col-6"
+                            valueDefault={getValues('basicfee')}
+                            onChange={(value) => setValue('basicfee', value)}
+                            error={errors?.basicfee?.message}
+                            type="number"
+                        />
+                        <FieldEdit
+                            label={t(langKeys.billingsetup_additionalprice)}
+                            className="col-6"
+                            valueDefault={getValues('additionalfee')}
+                            onChange={(value) => setValue('additionalfee', value)}
+                            error={errors?.additionalfee?.message}
+                            type="number"
+                        />
+                    </div>
+                </div>
+            </form>
+        </div>
+    );
 }
 
 const IDSUPPORTPLAN = 'IDSUPPORTPLAN';

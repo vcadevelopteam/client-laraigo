@@ -4068,6 +4068,8 @@ export const langKeys = {
     billingreport_agent: "billingreport_agent",
     billingreport_template: "billingreport_template",
     billingsetup_artificialintelligence: "billingsetup_artificialintelligence",
+    billingsetup_artificialintelligencedetail: "billingsetup_artificialintelligencedetail",
+    billingsetup_artificialintelligencenew: "billingsetup_artificialintelligencenew",
     billingsetup_ai: "billingsetup_ai",
     billingsetup_measureunit: "billingsetup_measureunit",
     billingsetup_plan: "billingsetup_plan",
