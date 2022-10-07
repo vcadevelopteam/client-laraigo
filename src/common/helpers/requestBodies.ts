@@ -3216,3 +3216,8 @@ export const selInvoiceComment = ({ corpid, orgid, invoiceid, invoicecommentid }
     key: "UFN_INVOICECOMMENT_SEL",
     parameters: { corpid, orgid, invoiceid, invoicecommentid }
 });
+
+export const getChatflowVariableSel = (): IRequestBody => ({
+    method: "UFN_CHATFLOW_VARIABLE_SEL",
+    parameters: {}
+});
