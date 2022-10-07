@@ -429,7 +429,8 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
         setHeight(((ref as any)?.current.contentWindow.document.body.scrollHeight + 20) + "px");
     };
 
-
+    console.log(interactiontext)
+    console.log(interactiontype)
     if (!interactiontext.trim() || interactiontype === "typing")
         return null;
     if (interactiontype === "text")
@@ -552,14 +553,14 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 text = interactiontext.split("&&&")[0];
                 json = interactiontext.split("&&&")[1]
             }
-
+            //debugger
             const listButtons: Dictionary[] = JSON.parse(`[${json}]`);
             return (
                 <div className={clsx(classes.interactionText, {
                     [classes.interactionTextAgent]: userType !== 'client',
                 })} style={{ display: 'inline-block' }}>
                     {text}
-                    <div className={classes.containerQuickreply}>
+                    <div className={classes.containerQuickreply} style={{justifyContent:'space-evenly', display:"flex"}}>
                         {listButtons.map((item: Dictionary, index: number) => {
                             return <div key={index} className={classes.buttonQuickreply}>{item.text || item.title}
                             </div>
