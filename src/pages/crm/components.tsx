@@ -11,6 +11,7 @@ import { useHistory } from 'react-router';
 import paths from 'common/constants/paths';
 import { ICrmLead } from '@types';
 import { FieldEdit, FieldSelect } from 'components';
+import { useSelector } from 'hooks';
 
 const columnWidth = 275;
 const columnMinHeight = 500;
@@ -113,6 +114,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
     const urgencyLevels = [null,'LOW','MEDIUM','HIGH'];
     const colors = ['', 'cyan', 'red', 'violet', 'blue', 'blueviolet'];
     const history = useHistory();
+    const user = useSelector(state => state.login.validateToken.user);
 
     const handleMoreVertClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -145,7 +147,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                     {': '}
                     {lead.campaign}
                 </span>}
-                <span className={classes.info}>S/ {Number(lead.expected_revenue).toLocaleString('en-US')}</span>
+                <span className={classes.info}>{user?.currencysymbol||"S/."} {Number(lead.expected_revenue).toLocaleString('en-US')}</span>
                 <span className={classes.info}>{lead.displayname}</span>
                 <div className={classes.tagsRow}>
                     {tags.map((tag: String, index: number) =>
@@ -379,7 +381,7 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
         onDelete?.(columnid);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-    
+    const user = useSelector(state => state.login.validateToken.user);
 
     return (
         <Box {...boxProps}>
@@ -394,7 +396,7 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
                         <CloseIcon style={{ height: 22, width: 22 }} />
                     </IconButton>}
                 </div>
-                <span className={classes.currency}>S/ {total_revenue?.toLocaleString('en-US') || 0}</span>
+                <span className={classes.currency}>{user?.currencysymbol||"S/."} {total_revenue?.toLocaleString('en-US') || 0}</span>
                 {children}
             </div>
         </Box>

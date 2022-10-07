@@ -429,7 +429,8 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
         setHeight(((ref as any)?.current.contentWindow.document.body.scrollHeight + 20) + "px");
     };
 
-
+    console.log(interactiontext)
+    console.log(interactiontype)
     if (!interactiontext.trim() || interactiontype === "typing")
         return null;
     if (interactiontype === "text")
@@ -552,14 +553,14 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 text = interactiontext.split("&&&")[0];
                 json = interactiontext.split("&&&")[1]
             }
-
+            //debugger
             const listButtons: Dictionary[] = JSON.parse(`[${json}]`);
             return (
                 <div className={clsx(classes.interactionText, {
                     [classes.interactionTextAgent]: userType !== 'client',
                 })} style={{ display: 'inline-block' }}>
                     {text}
-                    <div className={classes.containerQuickreply}>
+                    <div className={classes.containerQuickreply} style={{justifyContent:'space-evenly', display:"flex"}}>
                         {listButtons.map((item: Dictionary, index: number) => {
                             return <div key={index} className={classes.buttonQuickreply}>{item.text || item.title}
                             </div>
@@ -773,7 +774,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                     [classes.interactionTextAgent]: userType !== 'client',
                 })}
             >
-                <div style={{ width: "300px" }}>
+                <div style={{ width: "300px" }} className="interaction-gmap">
                     <GoogleMap
                         mapContainerStyle={{
                             width: '100%',
@@ -786,6 +787,9 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                             position={{ lat: parseFloat(coordinates[0]), lng: parseFloat(coordinates[1]) }}
                         />
                     </GoogleMap>
+                </div>
+                <div style={{ display: "none" }} className="interaction-gmap-text">
+                    {interactiontext}
                 </div>
                 <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
