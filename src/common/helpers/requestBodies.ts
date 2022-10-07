@@ -3387,3 +3387,8 @@ export const exportintent = ({name_json}:Dictionary): IRequestBody => ({
     key: "UFN_WITAI_INTENT_EXPORT",
     parameters: {name_json}
 })
+
+export const getChatflowVariableSel = (): IRequestBody => ({
+    method: "UFN_CHATFLOW_VARIABLE_SEL",
+    parameters: {}
+});
