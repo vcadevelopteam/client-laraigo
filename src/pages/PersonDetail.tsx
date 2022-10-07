@@ -351,7 +351,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         uset={true}
                                         valueDefault={getValues("documenttype")}
                                         onChange={(value) => {
-                                            setValue('documenttype', value?.domainvalue);
+                                            setValue('documenttype', value?.domainvalue||"");
                                         }}
                                         loading={domains.loading}
                                         data={domains.value?.docTypes || []}

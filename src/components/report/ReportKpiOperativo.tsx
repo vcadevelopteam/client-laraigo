@@ -227,7 +227,7 @@ const ReportKpiOperativo: FC = () => {
                             props.rows.reduce((sum: any, row: any) => +row.values["tmoasesor_avg"] + sum, 0),
                         [props.rows]
                     )
-                    return <>{props.rows.length != 0 ? (total / props.rows.filter((r: any) => r.values["tmoasesor_avg"]).length).toFixed(0) : ''}</>
+                    return <>{props.rows.length != 0 ? (total / props.rows.filter((r: any) => r.values["tmoasesor_avg"]).length).toFixed(2) : ''}</>
                 },
             },
         ],
