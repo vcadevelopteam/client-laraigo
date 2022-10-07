@@ -630,6 +630,7 @@ export const Person: FC = () => {
 
     const handleUpload = async (files: any) => {
         const file = files?.item(0);
+        files=null
         if (file) {
             let excel: any = await uploadExcel(file, undefined);
             let data: IPersonImport[] = array_trimmer(excel);
@@ -652,8 +653,8 @@ export const Person: FC = () => {
                         personid: 0,
                         firstname: d.firstname || null,
                         lastname: d.lastname || null,
-                        documenttype: d.documenttype,
-                        documentnumber: d.documentnumber,
+                        documenttype: d.documenttype||"",
+                        documentnumber: d.documentnumber||"",
                         persontype: d.persontype || null,
                         type: d.type || '',
                         phone: String(d.phone|| "") ,
@@ -689,12 +690,6 @@ export const Person: FC = () => {
                     question: t(langKeys.confirmation_save),
                     callback
                 }))
-                /*Object.values(table).forEach((p: IPersonImport) => {
-                    dispatch(execute({
-                        header: editPersonBody({ ...p }),
-                        detail: []
-                    }, true));
-                });*/
             }
             else {
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) }));
@@ -706,6 +701,7 @@ export const Person: FC = () => {
     useEffect(() => {
         if (waitValidation) {
             if (!executeResult.loading && !executeResult.error) {
+                setWaitValidation(false);
                 let phonesexisting:any[] = []
                 let emailsexisting:any[] = []
                 const callback = () => {
@@ -718,12 +714,11 @@ export const Person: FC = () => {
                         }, true));
                     });
                 }
-                if (executeResult?.data[0].phone) phonesexisting = phonesexisting.concat(executeResult.data[0].phone.split(','))
-                if (executeResult?.data[0].alternativephone) phonesexisting = phonesexisting.concat(executeResult.data[0].alternativephone.split(','))
-                if (executeResult?.data[0].email) emailsexisting = emailsexisting.concat(executeResult.data[0].email.split(','))
-                if (executeResult?.data[0].alternativeemail) emailsexisting = emailsexisting.concat(executeResult.data[0].alternativeemail.split(','))
+                if (executeResult?.data[0]?.phone) phonesexisting = phonesexisting.concat(executeResult.data[0].phone.split(','))
+                if (executeResult?.data[0]?.alternativephone) phonesexisting = phonesexisting.concat(executeResult.data[0].alternativephone.split(','))
+                if (executeResult?.data[0]?.email) emailsexisting = emailsexisting.concat(executeResult.data[0].email.split(','))
+                if (executeResult?.data[0]?.alternativeemail) emailsexisting = emailsexisting.concat(executeResult.data[0].alternativeemail.split(','))
                 if (phonesexisting.length === 0 || emailsexisting.length === 0) {
-                    setWaitValidation(false);
                     callback()
                 } else {
                     let warningmessage = ""
