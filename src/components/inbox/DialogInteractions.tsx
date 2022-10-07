@@ -327,9 +327,12 @@ const DialogInteractions: React.FC<{ ticket: Dictionary | null, openModal: boole
                     gg.style.gap = '8px';
                     gg.style.width = '190mm';
                     gg.id = "newexportcontainer"
-                    document.body.appendChild(gg);
 
                     gg.innerHTML = el.current.innerHTML;
+
+                    gg.querySelectorAll(".interaction-gmap").forEach(x => x.remove())
+                    gg.querySelectorAll(".interaction-gmap-text").forEach(x => (x as HTMLDivElement).style.display = "")
+
                     document.body.appendChild(gg);
                     const pdf = new jsPDF.jsPDF('p', 'mm');
                     if (pdf) {
