@@ -623,7 +623,10 @@ export const Person: FC = () => {
             //'channeltype',
             //'personcommunicationchannel',
             //'personcommunicationchannelowner',
-            'displayname'
+            'displayname',
+            'address',
+            'healthprofessional',
+            'referralchannel',
         ];
         exportExcel(t(langKeys.template), templateMaker(data, header));
     }
@@ -666,6 +669,9 @@ export const Person: FC = () => {
                         educationlevel: d.educationlevel || null,
                         civilstatus: d.civilstatus || null,
                         occupation: d.occupation || null,
+                        address: d.address|| "",
+                        healthprofessional: d.healthprofessional|| "",
+                        referralchannel: d.referralchannel|| "",
                         groups: d.groups || null,
                         status: 'ACTIVO',
                         personstatus: 'ACTIVO',

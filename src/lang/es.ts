@@ -389,6 +389,8 @@ const translation: LangKeys = {
     tmoexpected: "TMO esperado",
     tmoadviserexpected: "TMO asesor esperado",
     food: "Comida",
+    healthprofessional: "Profesional de salud",
+    referralchannel: "Canal de Referencia",
     distributionbycategoryHSM: "Distribución por Categoría HSM",
     messagesentreceivedfailedanswered: "Mensajes enviados, entregados, fallidos, respondidos",
     animals: "Animales",

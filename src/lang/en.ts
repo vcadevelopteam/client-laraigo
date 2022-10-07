@@ -912,6 +912,8 @@ const translation: LangKeys = {
     flow: 'Flow',
     color: 'Color',
     suspend_ticket: 'Suspend ticket',
+    healthprofessional: "Health professional",
+    referralchannel: "Referral channel",
     activate_ticket: 'Activate ticket',
     bold: 'Bold',
     italic: 'Italic',
