@@ -466,6 +466,7 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     if (channelType === "CHATZ") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "CHAZ") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "MAIL") return <EmailIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "MAII") return <EmailIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "YOUT") return <YoutubeIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "LINE") return <LineIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "SMS") return <SmsIcon width={width} fill={color} stroke={color} height={height} color={color} />
