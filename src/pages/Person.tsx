@@ -600,7 +600,9 @@ export const Person: FC = () => {
             domains.value?.groups.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
             //domains.value?.channelTypes.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
             //{},
-            //{},
+            {},
+            {},
+            {},
             {}
         ];
         const header = [
@@ -650,9 +652,9 @@ export const Person: FC = () => {
             );
             if (data.length > 0) {
                 let datavalidation = data.reduce((acc:any,x:any)=>[...acc,{phone:x.phone,alternativephone:x.alternativephone,email:x.email,alternativeemail:x.alternativeemail}],[])
-                let table: Dictionary = data.reduce((a: any, d: IPersonImport) => ({
+                let table: Dictionary = data.reduce((a: any, d: IPersonImport,i:number) => ({
                     ...a,
-                    [`${d.documenttype}_${d.documentnumber}`]: {
+                    [`${d.firstname}_${d.lastname}_${i}`]: {
                         personid: 0,
                         firstname: d.firstname || null,
                         lastname: d.lastname || null,
@@ -681,7 +683,7 @@ export const Person: FC = () => {
                         sex: null,
                         operation: 'INSERT',
                     }
-                }), {});
+                }), {});                
                 setImportData(table)
                 
                 const callback = () => {
@@ -771,7 +773,6 @@ export const Person: FC = () => {
     useEffect(() => {
         if (waitImport) {
             if (!executeResult.loading && !executeResult.error) {
-                debugger
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
                 fetchData(fetchDataAux);
                 dispatch(showBackdrop(false));
