@@ -709,7 +709,7 @@ export const Person: FC = () => {
     useEffect(() => {
         if (waitValidation) {
             if (!executeResult.loading && !executeResult.error) {
-                setWaitValidation(false);
+                debugger
                 let phonesexisting:any[] = []
                 let emailsexisting:any[] = []
                 const callback = () => {
@@ -726,7 +726,7 @@ export const Person: FC = () => {
                 if (executeResult?.data[0]?.alternativephone) phonesexisting = phonesexisting.concat(executeResult.data[0].alternativephone.split(','))
                 if (executeResult?.data[0]?.email) emailsexisting = emailsexisting.concat(executeResult.data[0].email.split(','))
                 if (executeResult?.data[0]?.alternativeemail) emailsexisting = emailsexisting.concat(executeResult.data[0].alternativeemail.split(','))
-                if (phonesexisting.length === 0 || emailsexisting.length === 0) {
+                if (phonesexisting.length === 0 && emailsexisting.length === 0) {
                     callback()
                 } else {
                     let warningmessage = ""
@@ -743,6 +743,7 @@ export const Person: FC = () => {
                         callback: callback
                     }))
                 }
+                setWaitValidation(false);
             } else if (executeResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "error", message: "error" }))
                 dispatch(showBackdrop(false));
