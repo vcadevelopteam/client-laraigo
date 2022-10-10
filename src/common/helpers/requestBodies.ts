@@ -891,6 +891,13 @@ export const insarrayIntegrationManager = (id: number, table: Dictionary[]): IRe
     }
 });
 
+export const importPerson = (table: Dictionary[]): IRequestBody => ({
+    method: "UDTT_PERSON_PCC_IMPORT",
+    parameters: {
+        table: JSON.stringify(table)
+    }
+});
+
 export const deldataIntegrationManager = (id: number): IRequestBody => ({
     method: "UFN_INTEGRATIONMANAGER_DELETEDATA",
     parameters: {

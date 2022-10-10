@@ -3,7 +3,7 @@ import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 're
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { FieldEditMulti, FieldSelect, Title } from 'components';
-import { getPaginatedPerson, getPersonExport, exportExcel, templateMaker, uploadExcel, editPersonBody, array_trimmer, convertLocalDate, getColumnsSel, personcommunicationchannelUpdateLockedArrayIns, personImportValidation } from 'common/helpers';
+import { getPaginatedPerson, getPersonExport, exportExcel, templateMaker, uploadExcel, editPersonBody, array_trimmer, convertLocalDate, getColumnsSel, personcommunicationchannelUpdateLockedArrayIns, personImportValidation, importPerson } from 'common/helpers';
 import { Dictionary, IPerson, IPersonImport, IFetchData } from "@types";
 import { Box, Button, IconButton, MenuItem } from '@material-ui/core';
 import { WhatsappIcon } from 'icons';
@@ -721,18 +721,12 @@ export const Person: FC = () => {
     useEffect(() => {
         if (waitValidation) {
             if (!executeResult.loading && !executeResult.error) {
-                debugger
                 let phonesexisting:any[] = []
                 let emailsexisting:any[] = []
                 const callback = () => {
                     setWaitImport(true)
                     dispatch(showBackdrop(true));
-                    Object.values(importData).forEach((p: IPersonImport) => {
-                        dispatch(execute({
-                            header: editPersonBody({ ...p }),
-                            detail: []
-                        }, true));
-                    });
+                    dispatch(execute(importPerson(Object.values(importData))))
                 }
                 if (executeResult?.data[0]?.phone) phonesexisting = phonesexisting.concat(executeResult.data[0].phone.split(','))
                 if (executeResult?.data[0]?.alternativephone) phonesexisting = phonesexisting.concat(executeResult.data[0].alternativephone.split(','))
