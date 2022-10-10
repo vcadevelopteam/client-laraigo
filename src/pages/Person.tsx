@@ -512,6 +512,18 @@ export const Person: FC = () => {
                 )
             }
         },
+        {
+            Header: t(langKeys.address),
+            accessor: 'address',
+        },
+        {
+            Header: t(langKeys.healthprofessional),
+            accessor: 'healthprofessional',
+        },
+        {
+            Header: t(langKeys.referralchannel),
+            accessor: 'referralchannel',
+        },
     ]), [t]);
 
     useEffect(() => {
