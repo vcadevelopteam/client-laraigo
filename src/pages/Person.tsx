@@ -3,7 +3,7 @@ import React, { FC, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { FieldEditMulti, FieldSelect, Title } from 'components';
-import { getPaginatedPerson, getPersonExport, exportExcel, templateMaker, uploadExcel, editPersonBody, array_trimmer, convertLocalDate, getColumnsSel, personcommunicationchannelUpdateLockedArrayIns, personImportValidation } from 'common/helpers';
+import { getPaginatedPerson, getPersonExport, exportExcel, templateMaker, uploadExcel, editPersonBody, array_trimmer, convertLocalDate, getColumnsSel, personcommunicationchannelUpdateLockedArrayIns, personImportValidation, importPerson } from 'common/helpers';
 import { Dictionary, IPerson, IPersonImport, IFetchData } from "@types";
 import { Box, Button, IconButton, MenuItem } from '@material-ui/core';
 import { WhatsappIcon } from 'icons';
@@ -26,7 +26,6 @@ import { sendHSM } from 'store/inbox/actions';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Menu from '@material-ui/core/Menu';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import { styled } from '@material-ui/core/styles';
 import { getLeadPhases, resetGetLeadPhases } from 'store/lead/actions';
 
 const format = (datex: Date) => new Date(datex.setHours(10)).toISOString().substring(0, 10)
@@ -721,18 +720,12 @@ export const Person: FC = () => {
     useEffect(() => {
         if (waitValidation) {
             if (!executeResult.loading && !executeResult.error) {
-                debugger
                 let phonesexisting:any[] = []
                 let emailsexisting:any[] = []
                 const callback = () => {
                     setWaitImport(true)
                     dispatch(showBackdrop(true));
-                    Object.values(importData).forEach((p: IPersonImport) => {
-                        dispatch(execute({
-                            header: editPersonBody({ ...p }),
-                            detail: []
-                        }, true));
-                    });
+                    dispatch(execute(importPerson(Object.values(importData))))
                 }
                 if (executeResult?.data[0]?.phone) phonesexisting = phonesexisting.concat(executeResult.data[0].phone.split(','))
                 if (executeResult?.data[0]?.alternativephone) phonesexisting = phonesexisting.concat(executeResult.data[0].alternativephone.split(','))
