@@ -36,6 +36,8 @@ export const langKeys = {
     error_email_exists: "error_email_exists",
     error_phone_exists: "error_phone_exists",
     newintention: "newintention",
+    healthprofessional: "healthprofessional",
+    referralchannel: "referralchannel",
     invitation_phone: "invitation_phone",
     invitation_date: "invitation_date",
     add_classification: "add_classification",
