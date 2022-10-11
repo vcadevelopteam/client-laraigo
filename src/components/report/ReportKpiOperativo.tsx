@@ -182,7 +182,7 @@ const ReportKpiOperativo: FC = () => {
                             props.rows.reduce((sum: any, row: any) => +row.values["userpause_avg"] + sum, 0),
                         [props.rows]
                     )
-                    return <>{props.rows.length != 0 ? (total).toFixed(2) : ''}</>
+                    return <>{props.rows.filter((r: any) => r.values["userpause_avg"]).length != 0 ? (total / props.rows.filter((r: any) => r.values["userpause_avg"]).length).toFixed(2) : ''}</>
                 },
             },
             {
