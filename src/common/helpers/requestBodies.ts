@@ -3179,7 +3179,7 @@ export const getDisconnectionTimes = ({ startdate, enddate, asesorid, supervisor
     }
 })
 
-export const ufnlinkPersons = ({ personidfrom, personidto, imageurl, lastname, name, firstname, documenttype, documentnumber, persontype, birthday, gender, phone, alternativephone, observation, email, alternativeemail, civilstatus, occupation, educationlevel }: Dictionary): IRequestBody => ({
+export const ufnlinkPersons = ({ personidfrom, personidto, imageurl, lastname, name, firstname, documenttype, documentnumber, persontype, birthday, gender, phone, alternativephone, observation, email, alternativeemail, civilstatus, occupation, educationlevel, address, healthprofessional, referralchannel }: Dictionary): IRequestBody => ({
     method: "UFN_CONVERSATION_LINKEDPERSON_EXECUTE",
     key: "UFN_CONVERSATION_LINKEDPERSON_EXECUTE",
     parameters: {
@@ -3202,7 +3202,10 @@ export const ufnlinkPersons = ({ personidfrom, personidto, imageurl, lastname, n
         civilstatus: civilstatus || "",
         occupation: occupation || "",
         educationlevel: educationlevel || "",
-        groups: ""
+        groups: "",
+        address: address || "",
+        healthprofessional: healthprofessional || "",
+        referralchannel: referralchannel || "",
     }
 })
 

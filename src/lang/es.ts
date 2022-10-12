@@ -832,7 +832,7 @@ const translation: LangKeys = {
     type_domain_cliente: 'Dominio de cliente',
     type_domain_sistema: 'Dominio de sistema',
 
-    type_gender_femenino: 'Fememino',
+    type_gender_femenino: 'Femenino',
     type_gender_masculino: 'Masculino',
 
     type_documenttype_ce: 'Carnet de extranjería',
