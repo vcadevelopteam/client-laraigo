@@ -1102,7 +1102,12 @@ const SelectPersonModal: FC<SelectPersonModalProps> = ({ open, onClose, onClick 
             },
             {
                 Header: t(langKeys.name),
-                accessor: 'displayname' as keyof IPerson,
+                accessor: 'firstname' as keyof IPerson,
+                Cell: (props: any) => {                    
+                    const { firstname, lastname } = props.cell.row.original;
+                    const row = props.cell.row.original;
+                    return <>{firstname} {lastname}</>
+                }
             },
             {
                 Header: t(langKeys.email),
