@@ -7,7 +7,7 @@ import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useRouteMatch } from 'react-router';
 import {
-    insLead2, adviserSel, getPaginatedPerson as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSel, insArchiveLead, leadHistorySel,
+    insLead2, adviserSel, getPaginatedPersonLead as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSel, insArchiveLead, leadHistorySel,
     getLeadsSel, leadHistoryIns
 } from 'common/helpers';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -1102,12 +1102,7 @@ const SelectPersonModal: FC<SelectPersonModalProps> = ({ open, onClose, onClick 
             },
             {
                 Header: t(langKeys.name),
-                accessor: 'firstname' as keyof IPerson,
-                Cell: (props: any) => {                    
-                    const { firstname, lastname } = props.cell.row.original;
-                    const row = props.cell.row.original;
-                    return <>{firstname} {lastname}</>
-                }
+                accessor: 'name' as keyof IPerson,
             },
             {
                 Header: t(langKeys.email),
