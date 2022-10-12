@@ -696,6 +696,22 @@ export const getPaginatedPerson = ({ skip, take, filters, sorts, startdate, endd
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
+export const getPaginatedPersonLead = ({ skip, take, filters, sorts, startdate, enddate, userids = "", channeltypes = "" }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_LEAD_PERSON_SEL",
+    methodCount: "UFN_LEAD_PERSON_TOTALRECORDS",
+    parameters: {
+        startdate,
+        enddate,
+        skip,
+        take,
+        filters,
+        sorts,
+        origin: "person",
+        userids,
+        channeltypes,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
 //tabla paginada
 export const getPaginatedPersonLink = ({ skip, take, filters, sorts, originpersonid }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_PERSON_LINK_SEL",
