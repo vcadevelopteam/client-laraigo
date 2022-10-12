@@ -632,7 +632,6 @@ const Tipifications: FC = () => {
                     && (['', null, undefined].includes(d.parent) || Object.keys(mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.title}), {0: ''})).includes('' + d.parent))
                 );
                 
-        debugger
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
                 dispatch(execute({
@@ -652,6 +651,8 @@ const Tipifications: FC = () => {
                 }, true));
                 setinsertexcel(true)
                 setWaitSave(true)
+            }else{
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_invaliddata) }))
             }
         }
     }
