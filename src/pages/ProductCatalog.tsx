@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import TableZyx from '../components/fields/table-simple';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { TemplateIcons, TemplateBreadcrumbs, FieldEdit, FieldSelect, TitleDetail } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, FieldEdit, FieldSelect, TitleDetail, FieldMultiSelectFreeSolo } from 'components';
 import { getValuesFromDomain, getProductCatalogSel, productCatalogIns } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import { useTranslation } from 'react-i18next';
@@ -57,7 +57,12 @@ const useStyles = makeStyles((theme) => ({
     },
     button: {
         marginRight: theme.spacing(2),
-    }
+    },
+    labellink: {
+        color: '#7721ad',
+        textDecoration: 'underline',
+        cursor: 'pointer'
+    },
 }));
 
 const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
@@ -106,6 +111,9 @@ const ProductCatalog: FC = () => {
             dispatch(resetAllMain());
         };
     }, []);
+    useEffect(() => {
+        console.log(mainResult.mainData.data)
+    }, [mainResult.mainData.data]);
 
     function redirectFunc(view: string) {
         setViewSelected(view)
@@ -196,30 +204,76 @@ const ProductCatalog: FC = () => {
                 }
             },
             {
-                Header: t(langKeys.productcatalog_title),
-                accessor: 'title',
-            },
-            {
-                Header: t(langKeys.code),
-                accessor: 'code',
+                Header: t(langKeys.title),
+                accessor: 'title'
             },
             {
                 Header: t(langKeys.description),
-                accessor: 'description'
+                accessor: 'description',
+                Cell: (props: any) => {
+                    const { description } = props.cell.row.original;
+                    return description.substring(0, 50) + "... "
+                }
+            },
+            {
+                Header: t(langKeys.brand),
+                accessor: 'brand'
+            },
+            {
+                Header: t(langKeys.condition),
+                accessor: 'condition'
+            },
+            {
+                Header: t(langKeys.availability),
+                accessor: 'availability'
             },
             {
                 Header: t(langKeys.productcatalogcategory),
-                accessor: 'descriptiontext'
+                accessor: 'category'
+            },
+            {
+                Header: "Material",
+                accessor: 'material'
+            },
+            {
+                Header: t(langKeys.color),
+                accessor: 'color'
+            },
+            {
+                Header: t(langKeys.pattern),
+                accessor: 'pattern'
+            },
+            {
+                Header: t(langKeys.currency),
+                accessor: 'currency'
             },
             {
                 Header: t(langKeys.productcatalogunitprice),
-                accessor: 'unitprice',
+                accessor: 'price',
                 type: 'number',
                 sortType: 'number',
                 Cell: (props: any) => {
-                    const { unitprice } = props.cell.row.original;
-                    return formatNumber(unitprice || 0);
+                    const { price } = props.cell.row.original;
+                    return formatNumber(price || 0);
                 }
+            },
+            {
+                Header: t(langKeys.saleprice),
+                accessor: 'saleprice',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { saleprice } = props.cell.row.original;
+                    return formatNumber(saleprice || 0);
+                }
+            },
+            {
+                Header: t(langKeys.labels),
+                accessor: 'labels'
+            },
+            {
+                Header: t(langKeys.catalogname),
+                accessor: 'catalogname'
             },
             {
                 Header: t(langKeys.status),
@@ -228,6 +282,54 @@ const ProductCatalog: FC = () => {
                 Cell: (props: any) => {
                     const { status } = props.cell.row.original;
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+                }
+            },
+            {
+                Header: "",
+                accessor: 'link',
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <label
+                            className={classes.labellink}
+                            onClick={() => {window.open(`${row.link}`, '_blank')?.focus()}}
+                        >
+                            {row.link?t(langKeys.link):""}
+                        </label>
+                    )
+                }
+            },
+            {
+                Header: "",
+                accessor: 'imagelink',
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <label
+                            className={classes.labellink}
+                            onClick={() => {window.open(`${row.imagelink}`, '_blank')?.focus()}}
+                        >
+                            {row.imagelink?t(langKeys.imagelink):""}
+                        </label>
+                    )
+                }
+            },
+            {
+                Header: "",
+                accessor: 'additionalimagelink',
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <label
+                            className={classes.labellink}
+                            onClick={() => {window.open(`${row.additionalimagelink}`, '_blank')?.focus()}}
+                        >
+                            {row.additionalimagelink?t(langKeys.additionalimagelink):""}
+                        </label>
+                    )
                 }
             },
         ],
@@ -315,30 +417,38 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
     const uploadResult = useSelector(state => state.main.uploadFile);
 
     const [fileAttachment, setFileAttachment] = useState<File | null>(null);
+    const [fileAttachmentAditional, setFileAttachmentAditional] = useState<File | null>(null);
     const [waitSave, setWaitSave] = useState(false);
+    const [fieldupload, setfieldupload] = useState<"imagelink"|"additionalimagelink">("imagelink");
     const [waitUploadFile, setWaitUploadFile] = useState(false);
+    const [labels, setlabels] = useState(row?.labels?.split(',')||[]);
 
     const { trigger, register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             id: row?.productcatalogid || 0,
-            code: row?.code || '',
+            productid: row?.productid || "",
             description: row?.description || '',
-            descriptiontext: row?.descriptiontext || '',
             category: row?.category || '',
             status: row?.status || 'ACTIVO',
             type: row?.type || '',
-            imagereference: row?.imagereference || '',
-            notes: row?.notes || '',
+            imagelink: row?.imagelink || '',
+            additionalimagelink: row?.additionalimagelink || '',
             title: row?.title || '',
-            website: row?.website || '',
+            link: row?.link || '',
             currency: row?.currency || '',
             condition: row?.condition || '',
-            contentid: row?.contentid || '',
-            facebookcatalogid: row?.facebookcatalogid || '',
-            facebookproductid: row?.facebookproductid || '',
-            facebookcatalogname: row?.facebookcatalogname || '',
-            unitprice: row?.unitprice || 0.0,
+            price: row?.price || 0.0,
+            saleprice: row?.saleprice || 0.0,
+            brand: row?.brand || "",
+            availability: row?.availability || "",
+            material: row?.material || "",
+            color: row?.color || "",
+            pattern: row?.pattern || "",
+            labels: row?.labels || "",
+            catalogid: row?.catalogid || "",
+            catalogname: row?.catalogname || "",
             operation: (edit && row) ? "EDIT" : "INSERT",
+            
         }
     });
 
@@ -360,27 +470,34 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
 
     React.useEffect(() => {
         register('id');
-        register('code', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('descriptiontext');
-        register('category', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('type');
-        register('imagereference');
-        register('notes');
         register('title', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('website');
+        register('link', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('currency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('availability', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('catalogid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('catalogname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('price', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('productid');
+        register('category');
+        register('status');
+        register('type');
+        register('imagelink');
+        register('additionalimagelink');
         register('condition');
-        register('contentid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('facebookcatalogid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('facebookproductid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('facebookcatalogname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('unitprice', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('saleprice');
+        register('brand');
+        register('material');
+        register('color');
+        register('pattern');
+        register('labels');
     }, [edit, register]);
 
     const onSubmit = handleSubmit((data) => {
+        debugger
+        console.log("save")
         const callback = () => {
+            debugger
             dispatch(execute(productCatalogIns(data)));
             dispatch(showBackdrop(true));
             setWaitSave(true)
@@ -393,10 +510,14 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
         }))
     });
 
-    const onChangeAttachment = useCallback((files: any) => {
+    const onChangeAttachment = useCallback((files: any,type: "imagelink"|"additionalimagelink") => {
         const file = files?.item(0);
         if (file) {
-            setFileAttachment(file);
+            if(type==="imagelink"){
+                setFileAttachment(file);
+            }else{
+                setFileAttachmentAditional(file)
+            }
             let fd = new FormData();
             fd.append('file', file, file.name);
             dispatch(uploadFile(fd));
@@ -404,25 +525,30 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
         }
     }, []);
 
-    const onClickAttachment = useCallback(() => {
-        const input = document.getElementById('attachmentInput');
+    const onClickAttachment = useCallback((attachment: string) => {
+        const input = document.getElementById(attachment);
         input!.click();
     }, []);
 
-    const handleCleanMediaInput = async (f: string) => {
-        const input = document.getElementById('attachmentInput') as HTMLInputElement;
+    const handleCleanMediaInput = async (f: string, field:"imagelink"|"additionalimagelink") => {
+        const input = document.getElementById(field==="imagelink"?'attachmentInput':'attachmentInput2') as HTMLInputElement;
         if (input) {
             input.value = "";
         }
-        setFileAttachment(null);
-        setValue('imagereference', getValues('imagereference').split(',').filter((a: string) => a !== f).join(''));
-        await trigger('imagereference');
+        if(field==="imagelink"){
+            setFileAttachment(null);
+        }else{
+            setFileAttachmentAditional(null)
+        }
+        setValue(field, getValues(field).split(',').filter((a: string) => a !== f).join(''));
+        await trigger(field);
     }
 
     useEffect(() => {
         if (waitUploadFile) {
             if (!uploadResult.loading && !uploadResult.error) {
-                setValue('imagereference', [getValues('imagereference'), uploadResult?.url || ''].join(''))
+                debugger
+                setValue(fieldupload, [getValues(fieldupload), uploadResult?.url || ''].join(''))
                 setWaitUploadFile(false);
             } else if (uploadResult.error) {
                 setWaitUploadFile(false);
@@ -476,11 +602,11 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             error={errors?.title?.message}
                         />
                         <FieldEdit
-                            label={t(langKeys.code)}
+                            label={`${t(langKeys.product)} ID`}
                             className="col-6"
-                            valueDefault={row?.code || ""}
-                            onChange={(value) => setValue('code', value)}
-                            error={errors?.code?.message}
+                            valueDefault={row?.productid || ""}
+                            onChange={(value) => setValue('productid', value)}
+                            error={errors?.productid?.message}
                         />
                     </div>
                     <div className="row-zyx">
@@ -490,7 +616,6 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             valueDefault={row?.category || ""}
                             onChange={(value) => {
                                 setValue('category', value?.domainvalue || '');
-                                setValue('descriptiontext', value?.domaindesc || '');
                             }}
                             error={errors?.category?.message}
                             data={dataDomainCategory}
@@ -513,7 +638,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                     <div className="row-zyx">
                         <FieldSelect
                             label={t(langKeys.productcatalog_currency)}
-                            className="col-6"
+                            className="col-2"
                             valueDefault={row?.currency}
                             onChange={(value) => setValue('currency', value?.value || '')}
                             error={errors?.currency?.message}
@@ -523,10 +648,19 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         />
                         <FieldEdit
                             label={t(langKeys.productcatalogunitprice)}
-                            className="col-6"
-                            valueDefault={row?.unitprice || 0.0}
-                            onChange={(value) => setValue('unitprice', value)}
-                            error={errors?.unitprice?.message}
+                            className="col-5"
+                            valueDefault={row?.price || 0.0}
+                            onChange={(value) => setValue('price', value)}
+                            error={errors?.price?.message}
+                            type="number"
+                            inputProps={{ step: "any" }}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.saleprice)}
+                            className="col-5"
+                            valueDefault={row?.saleprice || 0.0}
+                            onChange={(value) => setValue('saleprice', value)}
+                            error={errors?.saleprice?.message}
                             type="number"
                             inputProps={{ step: "any" }}
                         />
@@ -542,29 +676,11 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.productcatalognotes)}
-                            className="col-12"
-                            valueDefault={row?.notes || ""}
-                            onChange={(value) => setValue('notes', value)}
-                            error={errors?.notes?.message}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
                             label={t(langKeys.productcatalog_website)}
                             className="col-12"
-                            valueDefault={row?.website || ""}
-                            onChange={(value) => setValue('website', value)}
-                            error={errors?.website?.message}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.productcatalog_facebookcatalogname)}
-                            className="col-12"
-                            valueDefault={row?.facebookcatalogname || ""}
-                            onChange={(value) => setValue('facebookcatalogname', value)}
-                            error={errors?.facebookcatalogname?.message}
+                            valueDefault={row?.link || ""}
+                            onChange={(value) => setValue('link', value)}
+                            error={errors?.link?.message}
                         />
                     </div>
                     <div className="row-zyx">
@@ -576,38 +692,85 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             error={errors?.condition?.message}
                         />
                         <FieldEdit
-                            label={t(langKeys.productcatalog_contentid)}
+                            label={t(langKeys.brand)}
                             className="col-6"
-                            valueDefault={row?.contentid || ""}
-                            onChange={(value) => setValue('contentid', value)}
-                            error={errors?.contentid?.message}
+                            valueDefault={row?.brand || ""}
+                            onChange={(value) => setValue('brand', value)}
+                            error={errors?.brand?.message}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.productcatalog_facebookcatalogid)}
+                            label={t(langKeys.availability)}
                             className="col-6"
-                            valueDefault={row?.facebookcatalogid || ""}
-                            onChange={(value) => setValue('facebookcatalogid', value)}
-                            error={errors?.facebookcatalogid?.message}
+                            valueDefault={row?.availability || ""}
+                            onChange={(value) => setValue('availability', value)}
+                            error={errors?.availability?.message}
                         />
                         <FieldEdit
-                            label={t(langKeys.productcatalog_facebookproductid)}
+                            label={"Material"}
                             className="col-6"
-                            valueDefault={row?.facebookproductid || ""}
-                            onChange={(value) => setValue('facebookproductid', value)}
-                            error={errors?.facebookproductid?.message}
+                            valueDefault={row?.material || ""}
+                            onChange={(value) => setValue('material', value)}
+                            error={errors?.material?.message}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.color)}
+                            className="col-6"
+                            valueDefault={row?.color || ""}
+                            onChange={(value) => setValue('color', value)}
+                            error={errors?.color?.message}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.pattern)}
+                            className="col-6"
+                            valueDefault={row?.pattern || ""}
+                            onChange={(value) => setValue('pattern', value)}
+                            error={errors?.pattern?.message}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={"Catalog ID"}
+                            className="col-6"
+                            valueDefault={row?.catalogid || ""}
+                            onChange={(value) => setValue('catalogid', value)}
+                            error={errors?.catalogid?.message}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.catalogname)}
+                            className="col-6"
+                            valueDefault={row?.catalogname || ""}
+                            onChange={(value) => setValue('catalogname', value)}
+                            error={errors?.catalogname?.message}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldMultiSelectFreeSolo
+                            label={t(langKeys.labels)}
+                            valueDefault={labels.join(",")||""}
+                            className="col-12"
+                            onChange={(value) => {                                
+                                setlabels(value.reduce((acc:any,x:any)=>[...acc, typeof x === "object"?x.value:x],[]))
+                                setValue("labels",value.reduce((acc:any,x:any)=>[...acc, typeof x === "object"?x.value:x],[]).join(","))
+                            }}
+                            loading={false}
+                            data={labels.map((x:any) => ({ value: x }))}
+                            optionDesc="value"
+                            optionValue="value"
                         />
                     </div>
                     <div className="row-zyx">
                         <div className={classes.subtitle}>{t(langKeys.productcatalogimage)}</div>
                         {
-                            getValues("imagereference") ? (
+                            getValues("imagelink") ? (
                                 <React.Fragment>
                                     <Box sx={{ ...sxImageBox, borderTop: '0px' }}>
                                         <img
-                                            src={getValues("imagereference")}
-                                            alt={getValues("imagereference")}
+                                            src={getValues("imagelink")}
+                                            alt={getValues("imagelink")}
                                             style={{ maxWidth: '300px' }}
                                         />
                                     </Box>
@@ -620,18 +783,53 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                                 style={{ display: 'none' }}
                                 id="attachmentInput"
                                 type="file"
-                                onChange={(e) => onChangeAttachment(e.target.files)}
+                                onChange={(e) => onChangeAttachment(e.target.files,"imagelink")}
                             />
                             {<IconButton
-                                onClick={onClickAttachment}
-                                disabled={(waitUploadFile || (fileAttachment !== null || getValues("imagereference")))}
+                                onClick={()=>{setfieldupload("imagelink");onClickAttachment("attachmentInput")}}
+                                disabled={(waitUploadFile || (fileAttachment !== null || getValues("imagelink")))}
                             >
                                 <AttachFileIcon color="primary" />
                             </IconButton>}
-                            {!!getValues("imagereference") && getValues("imagereference").split(',').map((f: string, i: number) => (
-                                <FilePreview key={`attachment-${i}`} src={f} onClose={(f) => handleCleanMediaInput(f)} />
+                            {!!getValues("imagelink") && getValues("imagelink").split(',').map((f: string, i: number) => (
+                                <FilePreview key={`attachment-${i}`} src={f} onClose={(f) => handleCleanMediaInput(f,"imagelink")} />
                             ))}
-                            {waitUploadFile && fileAttachment && <FilePreview key={`attachment-x`} src={fileAttachment} />}
+                            {waitUploadFile && fieldupload==="imagelink" && fileAttachment && <FilePreview key={`attachment-x`} src={fileAttachment} />}
+                        </React.Fragment>
+                    </div>
+                    <div className="row-zyx">
+                        <div className={classes.subtitle}>{t(langKeys.productcatalogimage)} {t(langKeys.additional)}</div>
+                        {
+                            getValues("additionalimagelink") ? (
+                                <React.Fragment>
+                                    <Box sx={{ ...sxImageBox, borderTop: '0px' }}>
+                                        <img
+                                            src={getValues("additionalimagelink")}
+                                            alt={getValues("additionalimagelink")}
+                                            style={{ maxWidth: '300px' }}
+                                        />
+                                    </Box>
+                                </React.Fragment>)
+                                : null
+                        }
+                        <React.Fragment>
+                            <input
+                                accept="image/*"
+                                style={{ display: 'none' }}
+                                id="attachmentInput2"
+                                type="file"
+                                onChange={(e) => onChangeAttachment(e.target.files,"additionalimagelink")}
+                            />
+                            {<IconButton
+                                onClick={()=>{setfieldupload("additionalimagelink");onClickAttachment("attachmentInput2")}}
+                                disabled={(waitUploadFile || (fileAttachmentAditional !== null || getValues("additionalimagelink")))}
+                            >
+                                <AttachFileIcon color="primary" />
+                            </IconButton>}
+                            {!!getValues("additionalimagelink") && getValues("additionalimagelink").split(',').map((f: string, i: number) => (
+                                <FilePreview key={`attachment-x${i}`} src={f} onClose={(f) => handleCleanMediaInput(f,"additionalimagelink")} />
+                            ))}
+                            {waitUploadFile && fieldupload==="additionalimagelink" && fileAttachmentAditional && <FilePreview key={`attachment-x2`} src={fileAttachmentAditional} />}
                         </React.Fragment>
                     </div>
                 </div>
