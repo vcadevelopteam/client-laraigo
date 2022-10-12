@@ -62,8 +62,8 @@ export interface IPerson {
     havelead: boolean;
     haveclassification: boolean;
     address?: string;
-    healthprofessional: string;
-    referralchannel: string;
+    healthprofessional?: string;
+    referralchannel?: string;
 }
 
 export interface IPersonCommunicationChannel {
