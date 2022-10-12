@@ -624,14 +624,15 @@ const Tipifications: FC = () => {
 
 
     const importCSV = async (files: any[]) => {
-        setinsertexcel(true)
         const file = files[0];
         if (file) {
             let data: any = (await uploadExcel(file, undefined) as any[])
-                .filter((d: any) => !['', null, undefined].includes(d.classification)
+            data=data.filter((d: any) => !['', null, undefined].includes(d.classification)
                     && !['', null, undefined].includes(d.channels)    
-                    && Object.keys(mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.title}), {0: ''})).includes('' + d.parent)
+                    && (['', null, undefined].includes(d.parent) || Object.keys(mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.title}), {0: ''})).includes('' + d.parent))
                 );
+                
+        debugger
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
                 dispatch(execute({
@@ -649,6 +650,7 @@ const Tipifications: FC = () => {
                         id: 0,
                     }))
                 }, true));
+                setinsertexcel(true)
                 setWaitSave(true)
             }
         }
