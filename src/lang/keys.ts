@@ -4078,6 +4078,13 @@ export const langKeys = {
     billingsetup_additionalprice: "billingsetup_additionalprice",
     billingsetup_provider: "billingsetup_provider",
     billingsetup_service: "billingsetup_service",
+    partner: "partner",
+    taxableamount: "taxableamount",
+    addnewai: "addnewai",
+    newai: "newai",
+    aiservice: "aiservice",
+    aicost: "aicost",
+    aitotalcost: "aitotalcost",
 };
 
 export type LangKeys = typeof langKeys;

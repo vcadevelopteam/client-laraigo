@@ -123,6 +123,7 @@ const Corporations: FC = () => {
             getPaymentPlanSel(),
             getValuesFromDomainCorp('BILLINGDOCUMENTTYPE', '_DOCUMENT', 1, 0),
             getValuesFromDomain("TYPECREDIT"),
+            getValuesFromDomain("TYPEPARTNER"),
         ]));
         return () => {
             dispatch(resetAllMain());
@@ -144,7 +145,7 @@ const Corporations: FC = () => {
             }
         }
     }, [executeResult, waitSave])
-    
+
     useEffect(() => {
         setMainData(mainResult.mainData.data.map(x => ({
             ...x,
@@ -181,8 +182,8 @@ const Corporations: FC = () => {
             callback
         }))
     }
-    function redirectFunc(view:string){
-        if(view ==="view-0"){
+    function redirectFunc(view: string) {
+        if (view === "view-0") {
             history.push(paths.CONFIGURATION)
             return;
         }
@@ -191,8 +192,8 @@ const Corporations: FC = () => {
 
     if (viewSelected === "view-1") {
         return (
-            <div style={{width:"100%"}}>
-                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
+            <div style={{ width: "100%" }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <TemplateBreadcrumbs
                         breadcrumbs={arrayBread}
                         handleClick={redirectFunc}
@@ -245,11 +246,11 @@ interface DetailCorporationProps {
     arrayBread: any;
 }
 
-const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData,arrayBread }) => {
+const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, arrayBread }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [billbyorg, setbillbyorg] = useState(row?.billbyorg || false);
-    const [doctype, setdoctype] = useState( row?.doctype || ((row?.sunatcountry) === "PE" ? "1" : "0"))
+    const [doctype, setdoctype] = useState(row?.doctype || ((row?.sunatcountry) === "PE" ? "1" : "0"))
     const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
@@ -260,6 +261,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
     const dataPaymentPlan = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const countryList = useSelector(state => state.signup.countryList);
     const typeofcreditList = multiData[4] && multiData[4].success ? multiData[4].data : [];
+    const partnerType = multiData[5] && multiData[5].success ? multiData[5].data : [];
 
     const { register, handleSubmit, setValue, trigger, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -286,6 +288,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
             operation: row ? "UPDATE" : "INSERT",
             paymentmethod: row?.paymentmethod || "",
             companysize: null,
+            partner: row?.partner || "",
         }
     });
 
@@ -324,17 +327,20 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
         register('businessname', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('fiscaladdress', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('contact', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
-        register('contactemail', { validate: {
-            hasvalue: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true ,
-            isemail: (value) => !billbyorg ? ((/\S+@\S+\.\S+/.test(value)) || t(langKeys.emailverification)+"") : true
-        }});
+        register('contactemail', {
+            validate: {
+                hasvalue: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true,
+                isemail: (value) => !billbyorg ? ((/\S+@\S+\.\S+/.test(value)) || t(langKeys.emailverification) + "") : true
+            }
+        });
         register('sunatcountry', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('credittype', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
-        register('paymentmethod', { validate: (value) => user?.roledesc === "SUPERADMIN"? ((value && value.length) || t(langKeys.field_required)) : true });
-        register('paymentplanid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('paymentmethod', { validate: (value) => user?.roledesc === "SUPERADMIN" ? ((value && value.length) || t(langKeys.field_required)) : true });
+        register('paymentplanid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('automaticpayment');
         register('automaticperiod');
         register('automaticinvoice');
+        register('partner');
     }, [register, billbyorg, doctype, getValues, t]);
 
     useEffect(() => {
@@ -501,14 +507,14 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                             optionValue="domainvalue"
                         />
                         <FieldSelect
-                            label={t(langKeys.billingplan)}
+                            label={t(langKeys.partner)}
                             className="col-6"
-                            valueDefault={getValues("paymentplanid")}
-                            onChange={(value) => setValue('paymentplanid', value?.paymentplanid || 0)}
-                            data={dataPaymentPlan}
-                            error={errors?.paymentplanid?.message}
-                            optionDesc="plan"
-                            optionValue="paymentplanid"
+                            valueDefault={getValues("partner")}
+                            onChange={(value) => setValue('partner', value?.domainvalue || "")}
+                            data={partnerType}
+                            error={errors?.partner?.message}
+                            optionDesc="domainvalue"
+                            optionValue="domainvalue"
                         />
                     </div>
                     <div className="row-zyx">
@@ -522,20 +528,29 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                 trigger('billbyorg');
                             }}
                         />
-                        {user?.roledesc === "SUPERADMIN" &&
-                            
-                            <FieldSelect
-                                label={t(langKeys.paymentmethod)}
-                                className="col-6"
-                                valueDefault={getValues("paymentmethod")}
-                                onChange={(value) => setValue('paymentmethod', value?.value || "")}
-                                data={[{name: t(langKeys.prepaid), value: "PREPAGO"},{name: t(langKeys.postpaid), value: "POSTPAGO"}]}
-                                error={errors?.paymentmethod?.message}
-                                optionDesc="name"   
-                                optionValue="value"                        
-                            />
-                        }
+                        <FieldSelect
+                            label={t(langKeys.billingplan)}
+                            className="col-6"
+                            valueDefault={getValues("paymentplanid")}
+                            onChange={(value) => setValue('paymentplanid', value?.paymentplanid || 0)}
+                            data={dataPaymentPlan}
+                            error={errors?.paymentplanid?.message}
+                            optionDesc="plan"
+                            optionValue="paymentplanid"
+                        />
                     </div>
+                    {user?.roledesc === "SUPERADMIN" && <div className="row-zyx">
+                        <FieldSelect
+                            label={t(langKeys.paymentmethod)}
+                            className="col-12"
+                            valueDefault={getValues("paymentmethod")}
+                            onChange={(value) => setValue('paymentmethod', value?.value || "")}
+                            data={[{ name: t(langKeys.prepaid), value: "PREPAGO" }, { name: t(langKeys.postpaid), value: "POSTPAGO" }]}
+                            error={errors?.paymentmethod?.message}
+                            optionDesc="name"
+                            optionValue="value"
+                        />
+                    </div>}
                     {!getValues('billbyorg') && (
                         <>
                             <div className="row-zyx">

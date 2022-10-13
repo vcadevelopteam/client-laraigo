@@ -4093,6 +4093,13 @@ const translation: LangKeys = {
     billingsetup_additionalprice: "Additional Interaction Price",
     billingsetup_provider: "Provider",
     billingsetup_service: "Service",
+    partner: "Partner",
+    taxableamount: "Taxable Amount",
+    addnewai: "Add New AI",
+    newai: "New AI",
+    aiservice: "AI Service",
+    aicost: "AI Cost",
+    aitotalcost: "AI Total Cost",
 };
 
 const enResource: ResourceLanguage = {

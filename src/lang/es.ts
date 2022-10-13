@@ -4084,6 +4084,13 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     billingsetup_additionalprice: "Precio Interacción Adicional",
     billingsetup_provider: "Proveedor",
     billingsetup_service: "Servicio",
+    partner: "Socio",
+    taxableamount: "Base Imponible",
+    addnewai: "Añadir Nueva IA",
+    newai: "Nueva IA",
+    aiservice: "Servicio de IA",
+    aicost: "Costo IA",
+    aitotalcost: "Costo Total IA",
 };
 
 const esResource: ResourceLanguage = {

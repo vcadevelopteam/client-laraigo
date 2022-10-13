@@ -603,10 +603,10 @@ export const getQuickrepliesSel = (id: number): IRequestBody => ({
     }
 })
 
-export const insCorp = ({ id, description, type, status, logo, logotype, operation, paymentplanid = 0, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, billbyorg = false, credittype = "", paymentmethod = "", automaticpayment, automaticperiod, automaticinvoice }: Dictionary): IRequestBody => ({
+export const insCorp = ({ id, description, type, status, logo, logotype, operation, paymentplanid = 0, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, billbyorg = false, credittype = "", paymentmethod = "", automaticpayment, automaticperiod, automaticinvoice, partner }: Dictionary): IRequestBody => ({
     method: "UFN_CORP_INS",
     key: "UFN_CORP_INS",
-    parameters: { companysize: null, id, description, type, status, logo, logotype, operation, paymentplanid, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, billbyorg, credittype, paymentmethod, automaticpayment, automaticperiod, automaticinvoice }
+    parameters: { companysize: null, id, description, type, status, logo, logotype, operation, paymentplanid, doctype, docnum, businessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, billbyorg, credittype, paymentmethod, automaticpayment, automaticperiod, automaticinvoice, partner }
 });
 export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", businessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, iconbot = "", iconadvisor = "", iconclient = "", credittype = "", timezone, timezoneoffset, automaticpayment, automaticperiod, automaticinvoice, voximplantautomaticrecharge, voximplantrechargerange, voximplantrechargepercentage, voximplantrechargefixed, voximplantadditionalperchannel }: Dictionary): IRequestBody => ({
     method: "UFN_ORG_INS",
@@ -3394,3 +3394,24 @@ export const billingArtificialIntelligenceSel = ({ year, month, provider, servic
     key: "UFN_BILLINGARTIFICIALINTELLIGENCE_SEL",
     parameters: { year, month, provider, service, plan }
 })
+
+export const billingPeriodArtificialIntelligenceIns = ({ id, corpid, orgid, year, month, provider, service, measureunit, charlimit, plan, freeinteractions, basicfee, additionalfee, description, aiquantity, aicost, status, type, username, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_BILLINGPERIODARTIFICIALINTELLIGENCE_INS",
+    key: "UFN_BILLINGPERIODARTIFICIALINTELLIGENCE_INS",
+    parameters: { id, corpid, orgid, year, month, provider, service, measureunit, charlimit, plan, freeinteractions, basicfee, additionalfee, description, aiquantity, aicost, status, type, username, operation }
+})
+
+export const billingPeriodArtificialIntelligenceSel = ({ corpid, orgid, year, month, provider, service, plan, userid }: Dictionary): IRequestBody => ({
+    method: "UFN_BILLINGPERIODARTIFICIALINTELLIGENCE_SEL",
+    key: "UFN_BILLINGPERIODARTIFICIALINTELLIGENCE_SEL",
+    parameters: { corpid, orgid, year, month, provider, service, plan, userid }
+})
+
+export const billingPeriodArtificialIntelligenceInsArray = (corpid: number, orgid: number, table: Dictionary[]): IRequestBody => ({
+    method: "UFN_BILLINGPERIODARTIFICIALINTELLIGENCE_INS_ARRAY",
+    parameters: {
+        corpid: corpid,
+        orgid: orgid,
+        table: JSON.stringify(table),
+    },
+});
