@@ -1042,7 +1042,7 @@ const Reports: FC = () => {
                                     component="img"
                                     height="140"
                                     className={classes.media}
-                                    image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'}
+                                    image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/LARAIGO%20-%20ACME/2477ae23-02a0-401b-987c-677159d47c0b/iconosvcaperu_720.png'}
                                     title={t(langKeys.kpimanager)}
                                 />
                                 <CardContent>
