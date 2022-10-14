@@ -43,58 +43,59 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                     console.log("e", e)
                     console.log("call", e.call)
                     const headers = e.call?.headers();
-                    const splitIdentifier = headers["X-identifier"].split("-");
+                    if (headers["X-identifier"]) {
+                        const splitIdentifier = headers["X-identifier"].split("-");
 
-                    const data: ITicket = {
-                        conversationid: parseInt(splitIdentifier[3]),
-                        ticketnum: splitIdentifier[5],
-                        personid: parseInt(splitIdentifier[4]),
-                        communicationchannelid: parseInt(splitIdentifier[2]),
-                        status: "ASIGNADO",
-                        imageurldef: "",
-                        firstconversationdate: headers["X-createdatecall"],
-                        personlastreplydate: new Date().toISOString(),
-                        countnewmessages: 1,
-                        usergroup: "",
-                        displayname: headers["X-personname"],
-                        coloricon: "",
-                        communicationchanneltype: "VOXI",
-                        lastmessage: "LLAMADA ENTRANTE",
-                        personcommunicationchannel: `${e.call.number()}_VOXI`,
-                        communicationchannelsite: headers["X-site"],
-                        lastreplyuser: "",
+                        const data: ITicket = {
+                            conversationid: parseInt(splitIdentifier[3]),
+                            ticketnum: splitIdentifier[5],
+                            personid: parseInt(splitIdentifier[4]),
+                            communicationchannelid: parseInt(splitIdentifier[2]),
+                            status: "ASIGNADO",
+                            imageurldef: "",
+                            firstconversationdate: headers["X-createdatecall"],
+                            personlastreplydate: new Date().toISOString(),
+                            countnewmessages: 1,
+                            usergroup: "",
+                            displayname: headers["X-personname"],
+                            coloricon: "",
+                            communicationchanneltype: "VOXI",
+                            lastmessage: "LLAMADA ENTRANTE",
+                            personcommunicationchannel: `${e.call.number()}_VOXI`,
+                            communicationchannelsite: headers["X-site"],
+                            lastreplyuser: "",
+                        }
+                        //enviar a los otros supervisores
+                        dispatch(emitEvent({
+                            event: 'newCallTicket',
+                            data: {
+                                ...data,
+                                newuserid: 0,
+                                orpid: parseInt(splitIdentifier[0]),
+                                orgid: parseInt(splitIdentifier[1]),
+                            }
+                        }));
+    
+                        //iniciar la llamada en managecall
+                        dispatch({
+                            type: typeVoximplant.INIT_CALL,
+                            payload: {
+                                call: e.call,
+                                type: "INBOUND",
+                                number: e.call.number(),
+                                identifier: headers["X-identifier"],
+                                data
+                            }
+                        })
+                        //agregar el ticket con el control de llamada
+                        dispatch({
+                            type: typeInbox.NEW_TICKET_CALL,
+                            payload: {
+                                ...data,
+                                call: e.call
+                            }
+                        })
                     }
-                    //enviar a los otros supervisores
-                    dispatch(emitEvent({
-                        event: 'newCallTicket',
-                        data: {
-                            ...data,
-                            newuserid: 0,
-                            orpid: parseInt(splitIdentifier[0]),
-                            orgid: parseInt(splitIdentifier[1]),
-                        }
-                    }));
-
-                    //iniciar la llamada en managecall
-                    dispatch({
-                        type: typeVoximplant.INIT_CALL,
-                        payload: {
-                            call: e.call,
-                            type: "INBOUND",
-                            number: e.call.number(),
-                            identifier: headers["X-identifier"],
-                            data
-                        }
-                    })
-                    //agregar el ticket con el control de llamada
-                    dispatch({
-                        type: typeInbox.NEW_TICKET_CALL,
-                        payload: {
-                            ...data,
-                            call: e.call
-                        }
-                    })
-
                     e.call.on(VoxImplant.CallEvents.Disconnected, () => {
                         dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "DISCONNECTED" });
                     });
@@ -205,15 +206,17 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
             },
             customData: call2Data.site
         }
-        const call2 =  sdk?.call(callSettings2);
-        sdk?.transferCall(call1, call2);
-        console.log(call2);
-        call2.on(VoxImplant.CallEvents.TransferComplete, () => {
-            console.log("Transfer complete")
-        });
-        call2.on(VoxImplant.CallEvents.TransferFailed, () => {
-            console.log("Transfer failed")
-        });
+        const call2 = sdk?.call(callSettings2);
+        call2.on(VoxImplant.CallEvents.Connected, () => {
+            console.log(call2);
+            sdk?.transferCall(call1, call2);
+            call2.on(VoxImplant.CallEvents.TransferComplete, () => {
+                console.log("Transfer complete")
+            });
+            call2.on(VoxImplant.CallEvents.TransferFailed, () => {
+                console.log("Transfer failed")
+            });
+        })
         return
     } else if (type === typeVoximplant.HOLD_CALL) {
         const call = payload.call;

@@ -366,7 +366,7 @@ const MakeCall: React.FC = () => {
     React.useEffect(() => {
         if (showcall) {
             setwaiting2(false)
-            setNumberVox(personData?.data?.phone || phonenumber || "")
+            setNumberVox(transferAction ? "" : personData?.data?.phone || phonenumber || "")
             dispatch(setPhoneNumber(""))
         } else {
             setPageSelected(1)

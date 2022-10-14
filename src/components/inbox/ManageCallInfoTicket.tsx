@@ -248,7 +248,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                         valueDefault={advisertodiver}
                                         style={{ marginRight: "auto", marginLeft: "auto", width: "400px" }}
                                         onChange={(value) => setadvisertodiver(value?.userid || '')}
-                                        data={agentToReassignList.filter(x => x.userid !== agentSelected?.userid && x.status === "ACTIVO")}
+                                        data={agentToReassignList.filter(x => x.hasvoxichannel && x.userid !== agentSelected?.userid && x.status === "ACTIVO")}
                                         optionDesc="displayname"
                                         optionValue="userid"
                                     />
