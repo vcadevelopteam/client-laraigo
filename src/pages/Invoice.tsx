@@ -3,9 +3,9 @@ import React, { FC, useCallback, Fragment, useEffect, useState, useMemo } from '
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { cleanMemoryTable, getCollectionAux2, setMemoryTable, uploadFile } from 'store/main/actions';
-import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray, TemplateIcons, IOSSwitch, FieldEditMulti } from 'components';
-import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, billingReportConversationWhatsApp, billingReportHsmHistory, invoiceRefresh, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent, getBalanceSelSent, getCorpSelVariant, listPaymentCard, paymentCardInsert, uploadExcel, insInvoice, templateMaker, exportExcel, selInvoiceComment, insInvoiceComment, convertLocalDate, localesLaraigo } from 'common/helpers';
+import { cleanMemoryTable, getCollectionAux, getCollectionAux2, setMemoryTable, uploadFile } from 'store/main/actions';
+import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray, TemplateIcons, IOSSwitch, FieldEditMulti, TemplateSwitchYesNo } from 'components';
+import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, billingReportConversationWhatsApp, billingReportHsmHistory, invoiceRefresh, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent, getBalanceSelSent, getCorpSelVariant, listPaymentCard, paymentCardInsert, uploadExcel, insInvoice, templateMaker, exportExcel, selInvoiceComment, insInvoiceComment, convertLocalDate, localesLaraigo, billingArtificialIntelligenceSel, billingPeriodArtificialIntelligenceSel, billingPeriodArtificialIntelligenceInsArray } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -17,7 +17,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import { getCollection, getMultiCollection, execute, exportData, getMultiCollectionAux } from 'store/main/actions';
 import { createInvoice, regularizeInvoice, createCreditNote, getExchangeRate, emitInvoice, cardDelete, cardCreate, reportPdf } from 'store/culqi/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { CircularProgress, IconButton, Tabs, TextField, Box, FormControlLabel } from '@material-ui/core';
+import { CircularProgress, IconButton, Tabs, TextField, Box, FormControlLabel, Divider, Grid, ListItem } from '@material-ui/core';
 import { DownloadIcon } from 'icons';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import { dataYears, dataMonths } from 'common/helpers';
@@ -46,6 +46,12 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import { charge, resetCharge, balance, resetBalance } from 'store/culqi/actions';
 import { formatNumber, formatNumberFourDecimals, formatNumberNoDecimals } from 'common/helpers';
+import { Skeleton } from '@material-ui/lab';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Typography from '@material-ui/core/Typography';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -125,7 +131,10 @@ export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: 
 }
 
 const useStyles = makeStyles((theme) => ({
-
+    title: {
+        fontSize: '22px',
+        color: theme.palette.text.primary,
+    },
     fieldView: {
     },
     container: {
@@ -257,6 +266,10 @@ const CostPerPeriod: React.FC<{ dataCorp: any, dataOrg: any, dataPaymentPlan: an
                 accessor: 'corpdesc',
             },
             {
+                Header: t(langKeys.partner),
+                accessor: 'partner',
+            },
+            {
                 Header: t(langKeys.organization),
                 accessor: 'orgdesc',
             },
@@ -277,6 +290,16 @@ const CostPerPeriod: React.FC<{ dataCorp: any, dataOrg: any, dataPaymentPlan: an
                 accessor: 'supportplan',
             },
             {
+                Header: t(langKeys.taxableamount),
+                accessor: 'taxableamount',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { taxableamount } = props.cell.row.original;
+                    return formatNumber(taxableamount || 0);
+                }
+            },
+            {
                 Header: t(langKeys.totalcharge),
                 accessor: 'totalcharge',
                 type: 'number',
@@ -284,6 +307,56 @@ const CostPerPeriod: React.FC<{ dataCorp: any, dataOrg: any, dataPaymentPlan: an
                 Cell: (props: any) => {
                     const { totalcharge } = props.cell.row.original;
                     return formatNumber(totalcharge || 0);
+                }
+            },
+            {
+                Header: t(langKeys.uniquecontacts),
+                accessor: 'clientquantity',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { clientquantity } = props.cell.row.original;
+                    return formatNumberNoDecimals(clientquantity || 0);
+                }
+            },
+            {
+                Header: t(langKeys.conversation_plural),
+                accessor: 'conversationquantity',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { conversationquantity } = props.cell.row.original;
+                    return formatNumberNoDecimals(conversationquantity || 0);
+                }
+            },
+            {
+                Header: t(langKeys.interaction_plural),
+                accessor: 'interactionquantity',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { interactionquantity } = props.cell.row.original;
+                    return formatNumberNoDecimals(interactionquantity || 0);
+                }
+            },
+            {
+                Header: t(langKeys.supervisor_plural),
+                accessor: 'supervisorquantity',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { supervisorquantity } = props.cell.row.original;
+                    return formatNumberNoDecimals(supervisorquantity || 0);
+                }
+            },
+            {
+                Header: t(langKeys.agent_plural),
+                accessor: 'asesorquantity',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { asesorquantity } = props.cell.row.original;
+                    return formatNumberNoDecimals(asesorquantity || 0);
                 }
             },
         ],
@@ -378,7 +451,7 @@ const CostPerPeriod: React.FC<{ dataCorp: any, dataOrg: any, dataPaymentPlan: an
                                 data={dataCorp}
                                 optionDesc="description"
                                 optionValue="corpid"
-                                disabled={["ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '')}
+                                disabled={["ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '')}
                                 orderbylabel={true}
                             />
                             <FieldSelect
@@ -455,18 +528,26 @@ const CostPerPeriod: React.FC<{ dataCorp: any, dataOrg: any, dataPaymentPlan: an
         return null;
 }
 
-const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, edit }, setViewSelected, fetchData, dataCorp, dataOrg, dataPaymentPlan, dataPlan }) => {
+const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, edit }, setViewSelected, fetchData, dataPaymentPlan, dataPlan }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
     const classes = useStyles();
+    const auxRes = useSelector(state => state.main.mainAux);
     const executeRes = useSelector(state => state.main.execute);
+    const multiRes = useSelector(state => state.main.multiData);
 
-    const [checkeduser, setCheckeduser] = useState(row?.usercreateoverride || false);
-    const [checkedchannel, setCheckedchannel] = useState(row?.channelcreateoverride || false);
+    const [allIndex, setAllIndex] = useState([]);
     const [canEdit, setCanEdit] = useState(false);
+    const [checkedChannel, setCheckedChannel] = useState(row?.channelcreateoverride || false);
+    const [checkedUser, setCheckedUser] = useState(row?.usercreateoverride || false);
+    const [dataArtificialBilling, setDataArtificialBilling] = useState<Dictionary[]>([]);
+    const [dataArtificialIntelligence, setDataArtificialIntelligence] = useState<Dictionary[]>([]);
+    const [dataArtificialIntelligenceDelete, setDataArtificialIntelligenceDelete] = useState<Dictionary[]>([]);
     const [pageSelected, setPageSelected] = useState(0);
+    const [triggerSave, setTriggerSave] = useState(false);
+    const [waitAiBilling, setWaitAiBilling] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
 
     const arrayBreadCostPerPeriod = [
@@ -475,6 +556,31 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
     ];
 
     useEffect(() => {
+        if (!auxRes.loading && !auxRes.error) {
+            setDataArtificialIntelligence(auxRes.data);
+        }
+    }, [auxRes]);
+
+    useEffect(() => {
+        if (waitAiBilling) {
+            if (multiRes.data[0] && multiRes.data[0].success && multiRes.data[0].data) {
+                if (multiRes.data[0].data[0].service) {
+                    setDataArtificialBilling(multiRes.data[0] && multiRes.data[0].success ? multiRes.data[0].data : []);
+                }
+            }
+        }
+    }, [multiRes.data, waitAiBilling]);
+
+    const getPeriodArtificialIntelligence = () => dispatch(getCollectionAux(billingPeriodArtificialIntelligenceSel({ corpid: row?.corpid, orgid: (row?.orgid || 0), year: row?.year, month: row?.month, provider: '', service: '', plan: '' })));
+
+    useEffect(() => {
+        if (row?.year && row?.month) {
+            dispatch(getMultiCollection([
+                billingArtificialIntelligenceSel({ year: row?.year, month: row?.month, provider: '', service: '', plan: '' }),
+            ]));
+            setWaitAiBilling(true);
+        }
+
         if (row?.invoicestatus && row?.paymentstatus) {
             if (row?.invoicestatus !== "INVOICED" && row?.paymentstatus !== "PAID") {
                 setCanEdit(true);
@@ -483,183 +589,236 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
         else {
             setCanEdit(true);
         }
+
+        getPeriodArtificialIntelligence();
     }, [])
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            corpid: row?.corpid || 0,
-            orgid: row?.orgid || 0,
-            corpdesc: row?.corpdesc || "",
-            orgdesc: row?.orgdesc || "",
-            year: row?.year || new Date().getFullYear(),
-            month: row?.month || new Date().getMonth() + 1,
-            billingplan: row?.billingplan || "",
-            supportplan: row?.supportplan || "",
-            basicfee: row?.basicfee || 0,
-            userfreequantity: row?.userfreequantity || 0,
-            useradditionalfee: row?.useradditionalfee || 0,
-            supervisorquantity: row?.supervisorquantity || 0,
+            additionalservicefee1: row?.additionalservicefee1 || 0,
+            additionalservicefee2: row?.additionalservicefee2 || 0,
+            additionalservicefee3: row?.additionalservicefee3 || 0,
+            additionalservicename1: row?.additionalservicename1 || "",
+            additionalservicename2: row?.additionalservicename2 || "",
+            additionalservicename3: row?.additionalservicename3 || "",
             asesorquantity: row?.asesorquantity || 0,
-            userquantity: row?.userquantity || 0,
-            useradditionalcharge: row?.useradditionalcharge || 0,
+            basicfee: row?.basicfee || 0,
+            billingplan: row?.billingplan || "",
+            callchannelcost: row?.callchannelcost || 0,
+            callothercost: row?.callothercost || 0,
+            callphonecost: row?.callphonecost || 0,
+            callpubliccost: row?.callpubliccost || 0,
+            callrecordingcost: row?.callrecordingcost || 0,
+            callvoipcost: row?.callvoipcost || 0,
+            channelcharge: row?.channelcharge || 0,
+            channelcreateoverride: row?.channelcreateoverride || false,
             channelfreequantity: row?.channelfreequantity || 0,
-            channelwhatsappfee: row?.channelwhatsappfee || 0,
-            channelwhatsappquantity: row?.channelwhatsappquantity || 0,
-            channelwhatsappcharge: row?.channelwhatsappcharge || 0,
+            channelothercharge: row?.channelothercharge || 0,
             channelotherfee: row?.channelotherfee || 0,
             channelotherquantity: row?.channelotherquantity || 0,
-            channelothercharge: row?.channelothercharge || 0,
-            channelcharge: row?.channelcharge || 0,
+            channelwhatsappcharge: row?.channelwhatsappcharge || 0,
+            channelwhatsappfee: row?.channelwhatsappfee || 0,
+            channelwhatsappquantity: row?.channelwhatsappquantity || 0,
+            clientadditionalcharge: row?.clientadditionalcharge || 0,
+            clientadditionalfee: row?.clientadditionalfee || 0,
             clientfreequantity: row?.clientfreequantity || 0,
             clientquantity: row?.clientquantity || 0,
-            clientadditionalfee: row?.clientadditionalfee || 0,
-            clientadditionalcharge: row?.clientadditionalcharge || 0,
-            conversationquantity: row?.conversationquantity || 0,
-            conversationcompanywhatquantity: row?.conversationcompanywhatquantity || 0,
-            conversationcompanywhatfee: row?.conversationcompanywhatfee || 0,
-            conversationcompanywhatcharge: row?.conversationcompanywhatcharge || 0,
-            conversationclientwhatquantity: row?.conversationclientwhatquantity || 0,
-            conversationclientwhatfee: row?.conversationclientwhatfee || 0,
             conversationclientwhatcharge: row?.conversationclientwhatcharge || 0,
-            conversationwhatcharge: row?.conversationwhatcharge || 0,
-            interactionquantity: row?.interactionquantity || 0,
-            supportbasicfee: row?.supportbasicfee || 0,
-            additionalservicename1: row?.additionalservicename1 || "",
-            additionalservicefee1: row?.additionalservicefee1 || 0,
-            additionalservicename2: row?.additionalservicename2 || "",
-            additionalservicefee2: row?.additionalservicefee2 || 0,
-            additionalservicename3: row?.additionalservicename3 || "",
-            additionalservicefee3: row?.additionalservicefee3 || 0,
-            force: row?.force || true,
-            totalcharge: row?.totalcharge || 0,
+            conversationclientwhatfee: row?.conversationclientwhatfee || 0,
             conversationclientwhatfreequantity: row?.conversationclientwhatfreequantity || 0,
+            conversationclientwhatquantity: row?.conversationclientwhatquantity || 0,
+            conversationcompanywhatcharge: row?.conversationcompanywhatcharge || 0,
+            conversationcompanywhatfee: row?.conversationcompanywhatfee || 0,
             conversationcompanywhatfreequantity: row?.conversationcompanywhatfreequantity || 0,
-            unitpricepersms: row?.unitpricepersms || 0,
-            vcacomissionpersms: row?.vcacomissionpersms || 0,
-            smsquantity: row?.smsquantity || 0,
-            smscost: row?.smscost || 0,
-            unitepricepermail: row?.unitepricepermail || 0,
-            vcacomissionpermail: row?.vcacomissionpermail || 0,
-            mailquantity: row?.mailquantity || 0,
-            mailcost: row?.mailcost || 0,
+            conversationcompanywhatquantity: row?.conversationcompanywhatquantity || 0,
+            conversationquantity: row?.conversationquantity || 0,
+            conversationwhatcharge: row?.conversationwhatcharge || 0,
+            corpdesc: row?.corpdesc || "",
+            corpid: row?.corpid || 0,
+            force: row?.force || true,
             freewhatsappchannel: row?.freewhatsappchannel || 0,
             freewhatsappconversations: row?.freewhatsappconversations || 0,
+            interactionquantity: row?.interactionquantity || 0,
+            mailcost: row?.mailcost || 0,
+            mailquantity: row?.mailquantity || 0,
+            minimummailquantity: row?.minimummailquantity || 0,
+            minimumsmsquantity: row?.minimumsmsquantity || 0,
+            month: row?.month || new Date().getMonth() + 1,
+            orgdesc: row?.orgdesc || "",
+            orgid: row?.orgid || 0,
+            smscost: row?.smscost || 0,
+            smsquantity: row?.smsquantity || 0,
+            supervisorquantity: row?.supervisorquantity || 0,
+            supportbasicfee: row?.supportbasicfee || 0,
+            supportplan: row?.supportplan || "",
+            totalcharge: row?.totalcharge || 0,
+            unitepricepermail: row?.unitepricepermail || 0,
+            unitpricepersms: row?.unitpricepersms || 0,
+            useradditionalcharge: row?.useradditionalcharge || 0,
+            useradditionalfee: row?.useradditionalfee || 0,
             usercreateoverride: row?.usercreateoverride || false,
-            channelcreateoverride: row?.channelcreateoverride || false,
+            userfreequantity: row?.userfreequantity || 0,
+            userquantity: row?.userquantity || 0,
             vcacomissionperconversation: row?.vcacomissionperconversation || 0,
             vcacomissionperhsm: row?.vcacomissionperhsm || 0,
-            minimumsmsquantity: row?.minimumsmsquantity || 0,
-            minimummailquantity: row?.minimummailquantity || 0,
+            vcacomissionpermail: row?.vcacomissionpermail || 0,
+            vcacomissionpersms: row?.vcacomissionpersms || 0,
             vcacomissionpervoicechannel: row?.vcacomissionpervoicechannel || 0,
-            voximplantcallphonecost: row?.voximplantcallphonecost || 0,
-            voximplantcallphonevcacost: row?.voximplantcallphonevcacost || 0,
-            callphonecost: row?.callphonecost || 0,
-            voximplantcallpubliccost: row?.voximplantcallpubliccost || 0,
-            voximplantcallpublicvcacost: row?.voximplantcallpublicvcacost || 0,
-            callpubliccost: row?.callpubliccost || 0,
-            voximplantcallvoipcost: row?.voximplantcallvoipcost || 0,
-            voximplantcallvoipvcacost: row?.voximplantcallvoipvcacost || 0,
-            callvoipcost: row?.callvoipcost || 0,
-            voximplantcallrecordingcost: row?.voximplantcallrecordingcost || 0,
-            voximplantcallrecordingvcacost: row?.voximplantcallrecordingvcacost || 0,
-            callrecordingcost: row?.callrecordingcost || 0,
             voximplantcallothercost: row?.voximplantcallothercost || 0,
             voximplantcallothervcacost: row?.voximplantcallothervcacost || 0,
-            callothercost: row?.callothercost || 0,
-            callchannelcost: row?.callchannelcost || 0,
+            voximplantcallphonecost: row?.voximplantcallphonecost || 0,
+            voximplantcallphonevcacost: row?.voximplantcallphonevcacost || 0,
+            voximplantcallpubliccost: row?.voximplantcallpubliccost || 0,
+            voximplantcallpublicvcacost: row?.voximplantcallpublicvcacost || 0,
+            voximplantcallrecordingcost: row?.voximplantcallrecordingcost || 0,
+            voximplantcallrecordingvcacost: row?.voximplantcallrecordingvcacost || 0,
+            voximplantcallvoipcost: row?.voximplantcallvoipcost || 0,
+            voximplantcallvoipvcacost: row?.voximplantcallvoipvcacost || 0,
+            year: row?.year || new Date().getFullYear(),
         }
     });
 
     React.useEffect(() => {
-        register('corpid');
-        register('orgid');
-        register('year');
-        register('month');
-        register('billingplan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('supportplan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('basicfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('userfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('useradditionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('channelfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('channelwhatsappfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('channelotherfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('clientfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('clientadditionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('supportbasicfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('additionalservicename1');
         register('additionalservicefee1');
-        register('additionalservicename2');
         register('additionalservicefee2');
-        register('additionalservicename3');
         register('additionalservicefee3');
-        register('force');
-        register('totalcharge');
+        register('additionalservicename1');
+        register('additionalservicename2');
+        register('additionalservicename3');
+        register('basicfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('billingplan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('callchannelcost');
+        register('callothercost');
+        register('callphonecost');
+        register('callpubliccost');
+        register('callrecordingcost');
+        register('callvoipcost');
+        register('channelcreateoverride');
+        register('channelfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('channelotherfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('channelwhatsappfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('clientadditionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('clientfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
         register('conversationclientwhatfreequantity');
         register('conversationcompanywhatfreequantity');
-        register('unitpricepersms');
-        register('vcacomissionpersms');
-        register('smsquantity');
-        register('smscost');
-        register('unitepricepermail');
-        register('vcacomissionpermail');
-        register('mailquantity');
-        register('mailcost');
+        register('corpid');
+        register('force');
         register('freewhatsappchannel', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
         register('freewhatsappconversations');
+        register('mailcost');
+        register('mailquantity');
+        register('minimummailquantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('minimumsmsquantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('month');
+        register('orgid');
+        register('smscost');
+        register('smsquantity');
+        register('supportbasicfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('supportplan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('totalcharge');
+        register('unitepricepermail');
+        register('unitpricepersms');
+        register('useradditionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
         register('usercreateoverride');
-        register('channelcreateoverride');
+        register('userfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
         register('vcacomissionperconversation');
         register('vcacomissionperhsm', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('minimumsmsquantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('minimummailquantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('vcacomissionpermail');
+        register('vcacomissionpersms');
         register('vcacomissionpervoicechannel', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('voximplantcallphonecost');
-        register('voximplantcallphonevcacost');
-        register('callphonecost');
-        register('voximplantcallpubliccost');
-        register('voximplantcallpublicvcacost');
-        register('callpubliccost');
-        register('voximplantcallvoipcost');
-        register('voximplantcallvoipvcacost');
-        register('callvoipcost');
-        register('voximplantcallrecordingcost');
-        register('voximplantcallrecordingvcacost');
-        register('callrecordingcost');
         register('voximplantcallothercost');
         register('voximplantcallothervcacost');
-        register('callothercost');
-        register('callchannelcost');
+        register('voximplantcallphonecost');
+        register('voximplantcallphonevcacost');
+        register('voximplantcallpubliccost');
+        register('voximplantcallpublicvcacost');
+        register('voximplantcallrecordingcost');
+        register('voximplantcallrecordingvcacost');
+        register('voximplantcallvoipcost');
+        register('voximplantcallvoipvcacost');
+        register('year');
     }, [edit, register]);
 
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }));
                 fetchData && fetchData();
+                getPeriodArtificialIntelligence && getPeriodArtificialIntelligence();
                 dispatch(showBackdrop(false));
-                setViewSelected("view-1")
+                setViewSelected("view-1");
             } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(executeRes.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() }) }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
         }
     }, [executeRes, waitSave])
 
-    const onSubmit = handleSubmit((data) => {
-        const callback = () => {
-            dispatch(execute(billingPeriodUpd(data)));
-            dispatch(showBackdrop(true));
-            setWaitSave(true)
-        }
+    useEffect(() => {
+        if (allIndex.length === dataArtificialIntelligence.length && triggerSave) {
+            setTriggerSave(false);
 
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
+            const error = allIndex.some((x: any) => !x.allOk);
+
+            if (error) {
+                return
+            }
+
+            if (dataArtificialIntelligence.length > 0) {
+                const uniqueDataArtificialIntelligence = new Set(dataArtificialIntelligence.map(dataRow => dataRow.service));
+
+                if (uniqueDataArtificialIntelligence.size < dataArtificialIntelligence.length) {
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.aiduplicatealert) }));
+                    return;
+                }
+            }
+
+            const data = getValues();
+
+            const callback = () => {
+                const dataArtificialInsert = [...dataArtificialIntelligence, ...dataArtificialIntelligenceDelete];
+
+                if (dataArtificialInsert.length > 0) {
+                    dataArtificialInsert.map(function (object) {
+                        object.corpid = row?.corpid || 0;
+                        object.orgid = row?.orgid || 0;
+                        return object;
+                    });
+                }
+
+                dispatch(showBackdrop(true));
+                dispatch(execute({
+                    header: billingPeriodUpd(data),
+                    detail: [(dataArtificialInsert.length > 0) ? billingPeriodArtificialIntelligenceInsArray(row?.corpid || 0, row?.orgid || 0, dataArtificialInsert) : null]!
+                }, true));
+                setWaitSave(true);
+            }
+
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_save),
+                callback
+            }))
+        }
+    }, [allIndex, triggerSave])
+
+    const onSubmit = handleSubmit((data) => {
+        setTriggerSave(true);
+        setAllIndex([]);
     });
+
+    const handleDelete = (row: Dictionary | null, index: number) => {
+        if (row && row.operation !== "INSERT") {
+            setDataArtificialIntelligenceDelete(p => [...p, { ...row, operation: "DELETE", status: 'ELIMINADO' }]);
+        }
+        const filterDataArtificialIntelligence = dataArtificialIntelligence.filter((x, i) => i !== index);
+        setDataArtificialIntelligence(filterDataArtificialIntelligence);
+    }
+
+    const handleRegister = () => {
+        setDataArtificialIntelligence(p => [...p, { id: 0, corpid: row?.corpid || 0, orgid: row?.orgid || 0, year: row?.year || 0, month: row?.month || 0, aicost: 0, aiquantity: 0, operation: "INSERT", status: "ACTIVO" }]);
+    }
 
     return (
         <div style={{ width: '100%' }}>
@@ -711,6 +870,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                     <AntTab label={t(langKeys.contact_plural)} />
                     <AntTab label={t(langKeys.messaging)} />
                     <AntTab label={t(langKeys.billingperiodvoice)} />
+                    <AntTab label={t(langKeys.billingsetup_ai)} />
                     <AntTab label="Extras" />
                 </Tabs>
                 {pageSelected === 0 && <div className={classes.containerDetail}>
@@ -878,7 +1038,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.allowuseroverride)}</Box>
                             <FormControlLabel
                                 style={{ paddingLeft: 10 }}
-                                control={<IOSSwitch disabled={canEdit === false} checked={checkeduser} onChange={(e) => { setCheckeduser(e.target.checked); setValue('usercreateoverride', e.target.checked) }} />}
+                                control={<IOSSwitch disabled={canEdit === false} checked={checkedUser} onChange={(e) => { setCheckedUser(e.target.checked); setValue('usercreateoverride', e.target.checked) }} />}
                                 label={""}
                             />
                         </div>
@@ -976,7 +1136,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.allowchanneloverride)}</Box>
                             <FormControlLabel
                                 style={{ paddingLeft: 10 }}
-                                control={<IOSSwitch disabled={canEdit === false} checked={checkedchannel} onChange={(e) => { setCheckedchannel(e.target.checked); setValue('channelcreateoverride', e.target.checked) }} />}
+                                control={<IOSSwitch disabled={canEdit === false} checked={checkedChannel} onChange={(e) => { setCheckedChannel(e.target.checked); setValue('channelcreateoverride', e.target.checked) }} />}
                                 label={""}
                             />
                         </div>
@@ -1345,6 +1505,39 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                     </div>
                 </div>}
                 {pageSelected === 7 && <div className={classes.containerDetail}>
+                    <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between' }}>
+                        <div className={classes.title}>{t(langKeys.aitotalcost)}: {formatNumber(row?.totalaicost || 0)}</div>
+                        <div>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={auxRes.loading || !canEdit}
+                                startIcon={<AddIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                                onClick={handleRegister}
+                            >{t(langKeys.addnewai)}
+                            </Button>
+                        </div>
+                    </div>
+                    {auxRes.loading ?
+                        <ListItemSkeleton /> :
+                        dataArtificialIntelligence.map((item, index) => (
+                            <DetailArtificialIntelligence
+                                key={`ai-${item?.provider}-${item?.service}-${index * 1000}`}
+                                index={index}
+                                data={{ row: item, edit: canEdit }}
+                                updateRecords={setDataArtificialIntelligence}
+                                preData={dataArtificialIntelligence}
+                                triggerSave={triggerSave}
+                                handleDelete={handleDelete}
+                                setAllIndex={setAllIndex}
+                                intelligenceData={dataArtificialBilling}
+                            />
+                        ))
+                    }
+                </div>}
+                {pageSelected === 8 && <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         {canEdit ? <FieldEdit
                             label={`${t(langKeys.additionalservicename)} 1`}
@@ -1440,6 +1633,291 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
         </div>
     );
 }
+
+interface ModalProps {
+    data: RowSelected;
+    preData: (Dictionary | null)[];
+    intelligenceData: Dictionary[];
+    openModal?: boolean;
+    setOpenModal?: (open: boolean) => void;
+    updateRecords?: (record: any) => void;
+    triggerSave?: boolean;
+    index: number;
+    setAllIndex: (index: any) => void;
+    handleDelete: (row: Dictionary | null, index: number) => void;
+}
+
+const DetailArtificialIntelligence: React.FC<ModalProps> = ({ index, data: { row, edit }, updateRecords, preData, triggerSave, setAllIndex, handleDelete, intelligenceData }) => {
+    const { t } = useTranslation();
+
+    const { register, handleSubmit, setValue, getValues, trigger, formState: { errors }, reset } = useForm();
+
+    useEffect(() => {
+        if (triggerSave) {
+            (async () => {
+                const allOk = await trigger();
+                const data = getValues();
+                if (allOk) {
+                    updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
+                        p[index] = { ...data, operation: p[index].operation === "INSERT" ? "INSERT" : "UPDATE" }
+                        return p;
+                    })
+                }
+                setAllIndex((p: number[]) => [...p, { index, allOk }]);
+            })()
+        }
+    }, [triggerSave])
+
+    function updatefield(field: string, value: any) {
+        updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
+            p[index] = { ...p[index], [field]: value }
+            return p;
+        })
+    }
+
+    useEffect(() => {
+        reset({
+            id: row ? row.id : 0,
+            corpid: row ? row.corpid : 0,
+            orgid: row ? row.orgid : 0,
+            year: row ? row.year : 0,
+            month: row ? row.month : 0,
+            provider: row ? row.provider : '',
+            service: row ? row.service : '',
+            measureunit: row ? row.measureunit : '',
+            charlimit: row ? row.charlimit : 0,
+            plan: row ? row.plan : '',
+            freeinteractions: row ? row.freeinteractions : 0,
+            basicfee: row ? row.basicfee : 0.00,
+            additionalfee: row ? row.additionalfee : 0.00,
+            description: row ? row.description : '',
+            aiquantity: row ? row.aiquantity : 0,
+            aicost: row ? row.aicost : 0.00,
+            status: row ? row.status : 'ACTIVO',
+            type: row ? row.type : '',
+            operation: row ? 'UPDATE' : 'INSERT',
+        })
+
+        register('id');
+        register('corpid');
+        register('orgid');
+        register('year');
+        register('month');
+        register('provider', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('service', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('measureunit');
+        register('charlimit', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('plan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('freeinteractions', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('basicfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('additionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('description');
+        register('aiquantity');
+        register('aicost');
+        register('status');
+        register('type');
+        register('operation');
+    }, [preData])
+
+    const onSubmit = handleSubmit((data) => {
+        if (!row)
+            updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, operation: "INSERT" }])
+        else
+            updateRecords && updateRecords((p: Dictionary[]) => p.map(x => x.orgid === row ? { ...x, ...data, operation: (x.operation || "UPDATE") } : x))
+    });
+
+    const onChangeArtificialIntelligence = (value: Dictionary) => {
+        setValue('provider', value?.provider || '');
+        setValue('service', value?.service || '');
+        setValue('measureunit', value?.measureunit || '');
+        setValue('charlimit', value?.charlimit || 0);
+        setValue('plan', value?.plan || '');
+        setValue('freeinteractions', value?.freeinteractions || 0);
+        setValue('basicfee', value?.basicfee || 0.00);
+        setValue('additionalfee', value?.additionalfee || 0.00);
+        setValue('description', value?.description || '');
+        setValue('type', value?.type || '');
+
+        updatefield('provider', value?.provider || '');
+        updatefield('service', value?.service || '');
+        updatefield('measureunit', value?.measureunit || '');
+        updatefield('charlimit', value?.charlimit || 0);
+        updatefield('plan', value?.plan || '');
+        updatefield('freeinteractions', value?.freeinteractions || 0);
+        updatefield('basicfee', value?.basicfee || 0.00);
+        updatefield('additionalfee', value?.additionalfee || 0.00);
+        updatefield('description', value?.description || '');
+        updatefield('type', value?.type || '');
+
+        trigger('provider');
+        trigger('service');
+        trigger('measureunit');
+        trigger('charlimit');
+        trigger('plan');
+        trigger('freeinteractions');
+        trigger('basicfee');
+        trigger('additionalfee');
+        trigger('description');
+        trigger('type');
+
+        updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
+            p[index] = { ...p[index], corpid: value?.corpid, orgid: value?.orgid || 0 }
+            return p;
+        })
+    }
+
+    return (
+        <Accordion defaultExpanded={row?.id === 0} style={{ marginBottom: '8px' }}>
+            <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+            >
+                <Typography>{(row?.provider) ? `${row.service} - ${row.plan}` : t(langKeys.newai)}</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+                <form onSubmit={onSubmit} style={{ width: '100%' }}>
+                    <div className="row-zyx">
+                        <FieldSelect
+                            label={t(langKeys.aiservice)}
+                            className="col-6"
+                            valueDefault={`${getValues('service')} - ${getValues('plan')}`}
+                            onChange={onChangeArtificialIntelligence}
+                            error={errors?.service?.message}
+                            data={intelligenceData}
+                            optionDesc="serviceplan"
+                            optionValue="serviceplan"
+                            disabled={!edit}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.billingsetup_provider)}
+                            className="col-6"
+                            valueDefault={getValues('provider')}
+                            error={errors?.provider?.message}
+                            disabled={true}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.billingsetup_service)}
+                            className="col-6"
+                            valueDefault={getValues('service')}
+                            error={errors?.service?.message}
+                            disabled={true}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.billingsetup_plan)}
+                            className="col-6"
+                            valueDefault={getValues('plan')}
+                            error={errors?.plan?.message}
+                            disabled={true}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.billingsetup_measureunit)}
+                            className="col-6"
+                            valueDefault={getValues('measureunit')}
+                            error={errors?.measureunit?.message}
+                            disabled={true}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.billingsetup_minimuminteractions)}
+                            className="col-6"
+                            valueDefault={getValues('freeinteractions')}
+                            error={errors?.freeinteractions?.message}
+                            type="number"
+                            onChange={(value) => {
+                                setValue('freeinteractions', value || 0);
+                                updatefield('freeinteractions', value || 0);
+                            }}
+                            disabled={!edit}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.billingsetup_baseprice)}
+                            className="col-6"
+                            valueDefault={getValues('basicfee')}
+                            error={errors?.basicfee?.message}
+                            type="number"
+                            inputProps={{ step: "any" }}
+                            onChange={(value) => {
+                                setValue('basicfee', value || 0.00);
+                                updatefield('basicfee', value || 0.00);
+                            }}
+                            disabled={!edit}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.billingsetup_additionalprice)}
+                            className="col-6"
+                            valueDefault={getValues('additionalfee')}
+                            error={errors?.additionalfee?.message}
+                            type="number"
+                            inputProps={{ step: "any" }}
+                            onChange={(value) => {
+                                setValue('additionalfee', value || 0.00);
+                                updatefield('additionalfee', value || 0.00);
+                            }}
+                            disabled={!edit}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.quantity)}
+                            className="col-6"
+                            valueDefault={getValues('aiquantity')}
+                            error={errors?.aiquantity?.message}
+                            type="number"
+                            inputProps={{ step: "any" }}
+                            disabled={true}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.aicost)}
+                            className="col-6"
+                            valueDefault={getValues('aicost')}
+                            error={errors?.aicost?.message}
+                            type="number"
+                            inputProps={{ step: "any" }}
+                            disabled={true}
+                        />
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<DeleteIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => handleDelete(row, index)}
+                            disabled={!edit}
+                        >{t(langKeys.delete)}</Button>
+                    </div>
+                </form>
+            </AccordionDetails>
+        </Accordion>
+    );
+}
+
+const ListItemSkeleton: FC = () => (
+    <ListItem style={{ display: 'flex', paddingLeft: 0, paddingRight: 0, paddingBottom: 8 }}>
+        <Box style={{ padding: 20, backgroundColor: 'white', display: 'flex', flexDirection: 'column', flexGrow: 1, }}>
+            <Grid container direction="column">
+                <Grid container direction="row" spacing={1}>
+                    <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
+                        <Skeleton />
+                    </Grid>
+                </Grid>
+                <Divider style={{ margin: '10px 0' }} />
+                <Grid container direction="row" spacing={1}>
+                    <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
+                        <Skeleton />
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Box>
+    </ListItem>
+)
 
 const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }> = ({ dataCorp, dataOrg, customSearch }) => {
     const dispatch = useDispatch();
@@ -1612,6 +2090,24 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
 
     const handleReportPdf = () => {
         if (datareport) {
+            var intelligenceDetail: {}[] = [];
+
+            if (datareport.artificialintelligencedata) {
+                datareport.artificialintelligencedata.forEach((element: any) => {
+                    intelligenceDetail.push({
+                        service: element.service,
+                        provider: element.provider,
+                        plan: element.plan,
+                        freeinteractions: formatNumberNoDecimals(element.freeinteractions || 0),
+                        aiquantity: formatNumberNoDecimals(element.aiquantity || 0),
+                        additionalfee: `$${formatNumberFourDecimals(element.additionalfee || 0)}`,
+                        taxableamount: `$${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), element.aicost || 0) : formatNumber(element.aicost)}`,
+                        igv: `$${datareport.taxrate !== 1 ? getIgv(datareport.igv, element.aicost) : "0.00"}`,
+                        aicost: `$${formatNumber(element.aicost || 0)}`,
+                    });
+                });
+            }
+
             var reportbody = {
                 method: "",
                 parameters: {
@@ -1767,6 +2263,7 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                     totalinteraction: datareport.interactionquantity,
                     totalagent: datareport.asesorquantity,
                     totalsupervisor: datareport.supervisorquantity,
+                    intelligencedetail: intelligenceDetail,
                 },
                 dataonparameters: true,
                 template: t(langKeys.billingreport_template),
@@ -1834,7 +2331,7 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                         data={dataCorp}
                         optionDesc="description"
                         optionValue="corpid"
-                        disabled={["ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '')}
+                        disabled={["ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '')}
                         orderbylabel={true}
                     />
                     <FieldSelect
@@ -2237,6 +2734,46 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                                                 <div>${formatNumber(datareport.clientadditionalcharge || 0)}</div>
                                             </StyledTableCell>
                                         </StyledTableRow>
+                                        {datareport?.artificialintelligencedata?.map((item: any) => (
+                                            <StyledTableRow>
+                                                <StyledTableCell>
+                                                    <div><b>{t(langKeys.aiservice)} - {item.provider}</b></div>
+                                                    <div>{t(langKeys.aiminimumquantity)}</div>
+                                                    <div>{t(langKeys.aitotalquantity)}</div>
+                                                    <div>{item.service} - {item.plan}</div>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="right">
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div>{formatNumberNoDecimals(item.freeinteractions || 0)}</div>
+                                                    <div>{formatNumberNoDecimals(item.aiquantity || 0)}</div>
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="right">
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div>${formatNumberFourDecimals(item.additionalfee || 0)}</div>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="right">
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), item.aicost || 0) : formatNumber(item.aicost)}</div>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="right">
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div>${datareport.taxrate !== 1 ? getIgv(datareport.igv, item.aicost) : "0.00"}</div>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="right">
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div>${formatNumber(item.aicost || 0)}</div>
+                                                </StyledTableCell>
+                                            </StyledTableRow>
+                                        ))}
                                         <StyledTableRow>
                                             <StyledTableCell><b>{t(langKeys.supportplan)} {datareport.supportplan}</b></StyledTableCell>
                                             <StyledTableCell></StyledTableCell>
@@ -2672,7 +3209,7 @@ const Payments: React.FC<{ dataCorp: any, dataOrg: any, setCustomSearch(value: R
                                 data={dataCorp}
                                 optionDesc="description"
                                 optionValue="corpid"
-                                disabled={["ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '')}
+                                disabled={["ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '')}
                                 orderbylabel={true}
                             />
                             <FieldSelect
@@ -3503,9 +4040,6 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
                 && !['', null, undefined].includes(d.receiverfiscaladdress)
                 && !['', null, undefined].includes(d.receivercountry)
                 && !['', null, undefined].includes(d.receivermail)
-                // && !['', null, undefined].includes(d.serie)
-                // && !['', null, undefined].includes(d.correlative)
-                // && !['', null, undefined].includes(d.invoicedate)
                 && !['', null, undefined].includes(d.invoicestatus)
                 && !['', null, undefined].includes(d.paymentstatus)
                 && !['', null, undefined].includes(d.totalamount)
@@ -3673,7 +4207,7 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
                                 data={dataCorp}
                                 optionDesc="description"
                                 optionValue="corpid"
-                                disabled={["ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '')}
+                                disabled={["ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '')}
                                 orderbylabel={true}
                             />
                             <FieldSelect
@@ -5942,7 +6476,7 @@ const MessagingPackages: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp
                                 data={dataCorp}
                                 optionDesc="description"
                                 optionValue="corpid"
-                                disabled={["ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '')}
+                                disabled={["ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '')}
                                 orderbylabel={true}
                             />
                             <FieldSelect
@@ -6117,7 +6651,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
         setCorpList({ loading: true, data: [] });
         setOrgList({ loading: false, data: [] });
 
-        dispatch(getMultiCollectionAux([getCorpSel(["ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '') ? user?.corpid || 0 : 0), getBillingMessagingCurrent(new Date().getFullYear(), new Date().getMonth(), user?.countrycode || ''), listPaymentCard({ corpid: user?.corpid || 0, id: 0, orgid: 0 })]));
+        dispatch(getMultiCollectionAux([getCorpSel(["ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '') ? user?.corpid || 0 : 0), getBillingMessagingCurrent(new Date().getFullYear(), new Date().getMonth(), user?.countrycode || ''), listPaymentCard({ corpid: user?.corpid || 0, id: 0, orgid: 0 })]));
 
         if (data?.row === null) {
             dispatch(getCollection(getAppsettingInvoiceSel()));
@@ -6908,12 +7442,6 @@ const PaymentMethods: React.FC<{}> = () => {
     const [waitDelete, setWaitDelete] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
 
-    // const [dataMain, setdataMain] = useState({
-    //     corpid: user?.corpid || 0,
-    //     id: 0,
-    //     orgid: 0,
-    // });
-
     const fetchData = () => dispatch(getCollection(listPaymentCard({
         corpid: user?.corpid || 0,
         id: 0,
@@ -7100,7 +7628,6 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
 
     const [checkedFavorite, setCheckedFavorite] = useState(row?.favorite || false);
     const [icon, setIcon] = useState(<></>);
-    // const [limitNumbers, setLimitNumbers] = useState(16);
     const [waitSave, setWaitSave] = useState(false);
 
     const datamonth = useMemo(() => ([
@@ -7433,7 +7960,7 @@ const Invoice: FC = () => {
     const [dataPaymentPlan, setDataPaymentPlan] = useState<any>([]);
     const [dataPlan, setDataPlan] = useState<any>([]);
     const [pageSelected, setPageSelected] = useState(0);
-    const [sentfirstinfo, setsentfirstinfo] = useState(false);
+    const [sentFirstInfo, setSentFirstInfo] = useState(false);
 
     const [customSearch, setCustomSearch] = useState({
         year: 0,
@@ -7450,8 +7977,8 @@ const Invoice: FC = () => {
     }, [customSearch])
 
     useEffect(() => {
-        if (!multiData.loading && sentfirstinfo) {
-            setsentfirstinfo(false);
+        if (!multiData.loading && sentFirstInfo) {
+            setSentFirstInfo(false);
             setDataPlan(multiData.data[0] && multiData.data[0].success ? multiData.data[0].data : []);
             setDataOrg(multiData.data[1] && multiData.data[1].success ? multiData.data[1].data : []);
             setDataCorp(multiData.data[2] && multiData.data[2].success ? multiData.data[2].data : []);
@@ -7460,7 +7987,7 @@ const Invoice: FC = () => {
     }, [multiData])
 
     useEffect(() => {
-        setsentfirstinfo(true)
+        setSentFirstInfo(true);
         dispatch(getCountryList())
         if (user?.roledesc === "SUPERADMIN") {
             dispatch(getMultiCollection([
@@ -7529,7 +8056,7 @@ const Invoice: FC = () => {
                     </div>
                 }
             </div>}
-            {["ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '') && <div>
+            {["ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '') && <div>
                 <Tabs
                     value={pageSelected}
                     indicatorColor="primary"
