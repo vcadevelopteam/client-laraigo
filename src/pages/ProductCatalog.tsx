@@ -471,6 +471,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
     React.useEffect(() => {
         register('id');
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('productid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('title', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('link', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('currency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -478,7 +479,6 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
         register('catalogid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('catalogname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('price', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('productid');
         register('category');
         register('status');
         register('type');
@@ -566,7 +566,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={edit ? (row ? `${row.code}` : `${t(langKeys.new)} ${t(langKeys.productcatalogsingle)}`) : `${t(langKeys.new)} ${t(langKeys.productcatalogsingle)}`}
+                            title={edit ? (row ? `${row.productid}` : `${t(langKeys.new)} ${t(langKeys.productcatalogsingle)}`) : `${t(langKeys.new)} ${t(langKeys.productcatalogsingle)}`}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
