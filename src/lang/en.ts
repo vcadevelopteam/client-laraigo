@@ -4100,6 +4100,9 @@ const translation: LangKeys = {
     aiservice: "AI Service",
     aicost: "AI Cost",
     aitotalcost: "AI Total Cost",
+    aiduplicatealert: "The active AI services must be unique",
+    aitotalquantity: "Total AI Quantity",
+    aiminimumquantity: "Minimum AI Quantity",
 };
 
 const enResource: ResourceLanguage = {

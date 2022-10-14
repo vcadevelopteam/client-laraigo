@@ -4091,6 +4091,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     aiservice: "Servicio de IA",
     aicost: "Costo IA",
     aitotalcost: "Costo Total IA",
+    aiduplicatealert: "Los servicios de AI activos deben ser únicos",
+    aitotalquantity: "Cantidad IA Total",
+    aiminimumquantity: "Cantidad IA Mínima",
 };
 
 const esResource: ResourceLanguage = {

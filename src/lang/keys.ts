@@ -4085,6 +4085,9 @@ export const langKeys = {
     aiservice: "aiservice",
     aicost: "aicost",
     aitotalcost: "aitotalcost",
+    aiduplicatealert: "aiduplicatealert",
+    aitotalquantity: "aitotalquantity",
+    aiminimumquantity: "aiminimumquantity",
 };
 
 export type LangKeys = typeof langKeys;

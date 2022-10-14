@@ -563,7 +563,11 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
 
     useEffect(() => {
         if (waitAiBilling) {
-            setDataArtificialBilling(multiRes.data[0] && multiRes.data[0].success ? multiRes.data[0].data : []);
+            if (multiRes.data[0] && multiRes.data[0].success && multiRes.data[0].data) {
+                if (multiRes.data[0].data[0].service) {
+                    setDataArtificialBilling(multiRes.data[0] && multiRes.data[0].success ? multiRes.data[0].data : []);
+                }
+            }
         }
     }, [multiRes.data, waitAiBilling]);
 
@@ -571,10 +575,10 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
 
     useEffect(() => {
         if (row?.year && row?.month) {
-            setWaitAiBilling(true);
             dispatch(getMultiCollection([
                 billingArtificialIntelligenceSel({ year: row?.year, month: row?.month, provider: '', service: '', plan: '' }),
             ]));
+            setWaitAiBilling(true);
         }
 
         if (row?.invoicestatus && row?.paymentstatus) {
@@ -759,6 +763,15 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
 
             if (error) {
                 return
+            }
+
+            if (dataArtificialIntelligence.length > 0) {
+                const uniqueDataArtificialIntelligence = new Set(dataArtificialIntelligence.map(dataRow => dataRow.service));
+
+                if (uniqueDataArtificialIntelligence.size < dataArtificialIntelligence.length) {
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.aiduplicatealert) }));
+                    return;
+                }
             }
 
             const data = getValues();
@@ -1493,7 +1506,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                 </div>}
                 {pageSelected === 7 && <div className={classes.containerDetail}>
                     <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between' }}>
-                        <div className={classes.title}>{t(langKeys.aitotalcost)}:</div>
+                        <div className={classes.title}>{t(langKeys.aitotalcost)}: {formatNumber(row?.totalaicost || 0)}</div>
                         <div>
                             <Button
                                 className={classes.button}
@@ -2077,6 +2090,24 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
 
     const handleReportPdf = () => {
         if (datareport) {
+            var intelligenceDetail: {}[] = [];
+
+            if (datareport.artificialintelligencedata) {
+                datareport.artificialintelligencedata.forEach((element: any) => {
+                    intelligenceDetail.push({
+                        service: element.service,
+                        provider: element.provider,
+                        plan: element.plan,
+                        freeinteractions: formatNumberNoDecimals(element.freeinteractions || 0),
+                        aiquantity: formatNumberNoDecimals(element.aiquantity || 0),
+                        additionalfee: `$${formatNumberFourDecimals(element.additionalfee || 0)}`,
+                        taxableamount: `$${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), element.aicost || 0) : formatNumber(element.aicost)}`,
+                        igv: `$${datareport.taxrate !== 1 ? getIgv(datareport.igv, element.aicost) : "0.00"}`,
+                        aicost: `$${formatNumber(element.aicost || 0)}`,
+                    });
+                });
+            }
+
             var reportbody = {
                 method: "",
                 parameters: {
@@ -2232,6 +2263,7 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                     totalinteraction: datareport.interactionquantity,
                     totalagent: datareport.asesorquantity,
                     totalsupervisor: datareport.supervisorquantity,
+                    intelligencedetail: intelligenceDetail,
                 },
                 dataonparameters: true,
                 template: t(langKeys.billingreport_template),
@@ -2702,6 +2734,46 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                                                 <div>${formatNumber(datareport.clientadditionalcharge || 0)}</div>
                                             </StyledTableCell>
                                         </StyledTableRow>
+                                        {datareport?.artificialintelligencedata?.map((item: any) => (
+                                            <StyledTableRow>
+                                                <StyledTableCell>
+                                                    <div><b>{t(langKeys.aiservice)} - {item.provider}</b></div>
+                                                    <div>{t(langKeys.aiminimumquantity)}</div>
+                                                    <div>{t(langKeys.aitotalquantity)}</div>
+                                                    <div>{item.service} - {item.plan}</div>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="right">
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div>{formatNumberNoDecimals(item.freeinteractions || 0)}</div>
+                                                    <div>{formatNumberNoDecimals(item.aiquantity || 0)}</div>
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="right">
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div>${formatNumberFourDecimals(item.additionalfee || 0)}</div>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="right">
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), item.aicost || 0) : formatNumber(item.aicost)}</div>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="right">
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div>${datareport.taxrate !== 1 ? getIgv(datareport.igv, item.aicost) : "0.00"}</div>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="right">
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div>${formatNumber(item.aicost || 0)}</div>
+                                                </StyledTableCell>
+                                            </StyledTableRow>
+                                        ))}
                                         <StyledTableRow>
                                             <StyledTableCell><b>{t(langKeys.supportplan)} {datareport.supportplan}</b></StyledTableCell>
                                             <StyledTableCell></StyledTableCell>
