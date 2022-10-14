@@ -31,6 +31,7 @@ export const langKeys = {
     invitation_email: "invitation_email",
     sinonims: "sinonims",
     securityrules: "securityrules",
+    securityrule: "securityrule",
     invalid_password: "invalid_password",
     passwordCond1: "passwordCond1",
     passwordCond2: "passwordCond2",
