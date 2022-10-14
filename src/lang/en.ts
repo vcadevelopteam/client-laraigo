@@ -2832,6 +2832,7 @@ const translation: LangKeys = {
     message_try_later: 'Something happened, try againg later...',
     message_account_already_activated: 'Account already active!',
     message_account_activated: 'Your account has been successfully activated!',
+    securityrule: "Security rule",
     message_thanks_for_register: 'Thanks for registering to our platform!',
     message_click_to_login: 'Click continue to go to login',
     passwordCond1: "Both passwords must be the same.",
