@@ -13,6 +13,8 @@ export const rejectCall = (payload?: Call | null): IActionCall => ({ type: actio
 
 export const hangupCall = (payload?: Call | null): IActionCall => ({ type: actionTypes.HANGUP_CALL, payload });
 
+export const transferCall = (call1?: Call | null, call2Data?: Dictionary): IActionCall => ({ type: actionTypes.TRANSFER_CALL, payload: {call1, call2Data} });
+
 export const muteCall = (payload?: Call | null): IActionCall => ({ type: actionTypes.MUTE_CALL, payload });
 
 export const unmuteCall = (payload?: Call | null): IActionCall => ({ type: actionTypes.UNMUTE_CALL, payload });
@@ -21,7 +23,8 @@ export const holdCall = (payload?: Dictionary): IActionCall => ({ type: actionTy
 
 export const makeCall = (payload: { number: string, site: string, data: ITicket }): IActionCall => ({ type: actionTypes.MAKE_CALL, payload });
 
-export const setModalCall = (payload?: Boolean): IActionCall => ({ type: actionTypes.SET_MODAL_CALL, payload });
+export const setModalCall = (showModalCall?: Boolean, transferAction?: boolean, originCall?: Call | null ): IActionCall => ({ type: actionTypes.SET_MODAL_CALL, payload: { showModalCall, transferAction, originCall }});
+
 export const setPhoneNumber = (payload?: string): IActionCall => ({ type: actionTypes.SET_PHONE_NUMBER, payload });
 
 export const setHold = (payload?: Boolean): IActionCall => ({ type: actionTypes.SET_HOLD, payload });

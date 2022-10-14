@@ -22,6 +22,8 @@ export interface IState {
     requestGetAdvisors: IRequest;
     sdk: Client | null;
     showcall: boolean;
+    transferAction: boolean,
+    originCall: Call | null,
     phoneNumber: string;
     onhold: boolean;
     onholddate: string;
@@ -44,6 +46,8 @@ export const initialState: IState = {
     requestGetAdvisors: { ...initialCommon, data: null, loading: false, error: false },
     sdk: null,
     showcall: false,
+    transferAction: false,
+    originCall: null,
     phoneNumber: "",
     onhold: false,
     onholddate: new Date().toISOString(),

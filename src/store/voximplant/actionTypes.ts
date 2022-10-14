@@ -10,6 +10,7 @@ const actionType = {
     ANSWER_CALL: 'voximplant/ANSWER_CALL',
     REJECT_CALL: 'voximplant/REJECT_CALL',
     HANGUP_CALL: 'voximplant/HANGUP_CALL',
+    TRANSFER_CALL: 'voximplant/TRANSFER_CALL',
     HOLD_CALL: 'voximplant/HOLD_CALL',
     MUTE_CALL: 'voximplant/MUTE_CALL',
     UNMUTE_CALL: 'voximplant/UNMUTE_CALL',

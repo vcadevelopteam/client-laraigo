@@ -40,6 +40,8 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                 })
 
                 sdk.on(VoxImplant.Events.IncomingCall, (e) => {
+                    console.log("e", e)
+                    console.log("call", e.call)
                     const headers = e.call?.headers();
                     const splitIdentifier = headers["X-identifier"].split("-");
 
@@ -190,6 +192,28 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         const call = payload;
         call?.hangup();
         dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "DISCONNECTED" });
+        return
+    } else if (type === typeVoximplant.TRANSFER_CALL ) {
+        const { call1, call2Data } = payload;
+        console.log("call1", call1);
+        console.log("call2", call2Data);
+        const callSettings2: CallSettings = {
+            number: call2Data.number,
+            video: {
+                sendVideo: false,
+                receiveVideo: false,
+            },
+            customData: call2Data.site
+        }
+        const call2 =  sdk?.call(callSettings2);
+        sdk?.transferCall(call1, call2);
+        console.log(call2);
+        call2.on(VoxImplant.CallEvents.TransferComplete, () => {
+            console.log("Transfer complete")
+        });
+        call2.on(VoxImplant.CallEvents.TransferFailed, () => {
+            console.log("Transfer failed")
+        });
         return
     } else if (type === typeVoximplant.HOLD_CALL) {
         const call = payload.call;

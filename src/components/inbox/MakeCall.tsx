@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'hooks';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { useDispatch } from 'react-redux';
-import { makeCall, setModalCall, getHistory, geAdvisors, rejectCall, setPhoneNumber } from 'store/voximplant/actions';
+import { makeCall, setModalCall, getHistory, geAdvisors, rejectCall, setPhoneNumber, transferCall } from 'store/voximplant/actions';
 import TextField from '@material-ui/core/TextField';
 import PhoneForwardedIcon from '@material-ui/icons/PhoneForwarded';
 import PhoneIcon from '@material-ui/icons/Phone';
@@ -240,6 +240,8 @@ const MakeCall: React.FC = () => {
     const ringtone = React.useRef<HTMLAudioElement>(null);
     const phonenumber = useSelector(state => state.voximplant.phoneNumber);
     const showcall = useSelector(state => state.voximplant.showcall);
+    const transferAction = useSelector(state => state.voximplant.transferAction);
+    const originCall = useSelector(state => state.voximplant.originCall);
     const statusCall = useSelector(state => state.voximplant.statusCall);
     const historial = useSelector(state => state.voximplant.requestGetHistory);
     const advisors = useSelector(state => state.voximplant.requestGetAdvisors);
@@ -277,7 +279,22 @@ const MakeCall: React.FC = () => {
                 const identifier = `${corpid}-${orgid}-${ccidvoxi}-${resExecute.data[0].v_conversationid}-${resExecute.data[0].v_personid}.${sitevoxi}.${userid}.${v_voximplantrecording}`;
 
                 dispatch(resetExecute());
-                dispatch(makeCall({ number: v_personcommunicationchannelowner, site: identifier || "", data }));
+                if (transferAction) {
+                    console.log('Transfer call')
+                    dispatch(transferCall(originCall, {
+                        number: v_personcommunicationchannelowner,
+                        site: `${identifier}.phone` || "",
+                        data
+                    }));
+                }
+                else {
+                    console.log('New call')
+                    dispatch(makeCall({
+                        number: v_personcommunicationchannelowner,
+                        site: identifier || "",
+                        data
+                    }));
+                }
                 history.push('/message_inbox');
             }
         } else if (!resExecute.loading && resExecute.error && resExecute.key === "UFN_CONVERSATION_OUTBOUND_INS") {

@@ -15,7 +15,9 @@ export const manageConnection = (state: IState, action: IAction): IState => {
 export const setModalCall = (state: IState, action: IAction): IState => {
     return {
         ...state,
-        showcall: action.payload,
+        showcall: action.payload.showModalCall,
+        transferAction: action.payload.transferAction,
+        originCall: action.payload.originCall,
     }
 }
 export const setPhoneNumber = (state: IState, action: IAction): IState => {

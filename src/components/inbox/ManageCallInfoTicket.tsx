@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'hooks';
 import PersonIcon from '@material-ui/icons/Person';
 import { useDispatch } from 'react-redux';
-import { answerCall, hangupCall, rejectCall, holdCall, muteCall, unmuteCall, setHold } from 'store/voximplant/actions';
+import { answerCall, hangupCall, rejectCall, holdCall, muteCall, unmuteCall, setHold, setModalCall, transferCall } from 'store/voximplant/actions';
 import TextField from '@material-ui/core/TextField';
 import PhoneIcon from '@material-ui/icons/Phone';
 import CallEndIcon from '@material-ui/icons/CallEnd';
@@ -30,14 +30,17 @@ const ManageCallInfoTicket: React.FC = () => {
     const [mute, setmute] = useState(false);
     const call = useSelector(state => state.voximplant.call);
     const statusCall = useSelector(state => state.voximplant.statusCall);
+    // const [statusCall, setStatusCall] = useState('CONNECTED'); // ONLY FOR DEVELOP
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const agentSelected = useSelector(state => state.inbox.agentSelected);
     const [date, setdate] = useState<string>(new Date().toISOString());
     const [time, settime] = useState(0);
     const [timehold, settimehold] = useState(0);
     const [divertcall, setdivertcall] = useState(false);
     const [advisertodiver, setadvisertodiver] = useState("");
     const agentToReassignList = useSelector(state => state.inbox.agentToReassignList);
-
+    const { corpid, orgid, sitevoxi, ccidvoxi, userid } = useSelector(state => state.login.validateToken?.user!!);
+    
     React.useEffect(() => {
         if (call.type === "INBOUND" && statusCall === "CONNECTING") {
             sethold(true)
@@ -192,7 +195,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                 </>
                             )}
                             {statusCall === "CONNECTED" && (
-                                <div style={{ display: "grid", width: "100%", gridTemplateColumns: 'auto [col1] 50px 50px [col2] 50px 50px [col4] 50px auto', }}>
+                                <div style={{ display: "grid", width: "100%", gridTemplateColumns: 'auto [col1] 50px 50px [col2] 50px 50px [col3] 50px 50px [col4] 50px auto', }}>
                                     {(mute || !hold) ? (
                                         <IconButton //unmuteself
                                             style={{ gridColumnStart: "col1", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#7721ad' }}
@@ -212,6 +215,12 @@ const ManageCallInfoTicket: React.FC = () => {
                                     >
                                         <PauseIcon style={{ color: "white", width: "35px", height: "35px" }} />
                                     </IconButton>
+                                    <IconButton //transfercall
+                                        style={{ gridColumnStart: "col3", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#7721ad' }}
+                                        onClick={() => setdivertcall(!divertcall)}
+                                    >
+                                        <DialpadIcon style={{ color: "white", width: "35px", height: "35px" }} />
+                                    </IconButton>
                                     <IconButton //hangupcall
                                         style={{ gridColumnStart: "col4", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#fa6262' }}
                                         onClick={() => dispatch(hangupCall(call.call))}
@@ -225,7 +234,7 @@ const ManageCallInfoTicket: React.FC = () => {
                     </div>
                 </CardContent>
             </Card>
-            <Card style={{ maxWidth: "500px", marginLeft: "auto", marginRight: "auto", marginTop: 50, display: divertcall ? "block" : "none" }}>
+            <Card style={{ maxWidth: "500px", marginRight: "auto", marginTop: 50, display: divertcall ? "block" : "none" }}>
                 <CardContent>
                     <>
                         <div>
@@ -235,13 +244,11 @@ const ManageCallInfoTicket: React.FC = () => {
                             <div>
                                 <div style={{ display: "flex", width: "100%", justifyContent: "center", marginTop: 15 }}>
                                     <FieldSelect
-                                        label={t(langKeys.advisor)}
                                         className="col-12"
                                         valueDefault={advisertodiver}
                                         style={{ marginRight: "auto", marginLeft: "auto", width: "400px" }}
                                         onChange={(value) => setadvisertodiver(value?.userid || '')}
-                                        error={advisertodiver ? "" : t(langKeys.required)}
-                                        data={agentToReassignList.filter(x => x.status === "ACTIVO")}
+                                        data={agentToReassignList.filter(x => x.userid !== agentSelected?.userid && x.status === "ACTIVO")}
                                         optionDesc="displayname"
                                         optionValue="userid"
                                     />
@@ -251,7 +258,21 @@ const ManageCallInfoTicket: React.FC = () => {
                                 <IconButton //divertcall
                                     style={{ marginLeft: "auto", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#7721ad' }}
                                     onClick={() => {
-                                        //dispatch(makeCall(numberVox))
+                                        dispatch(transferCall(call.call, {
+                                            number: `user${advisertodiver}.${orgid}`,
+                                            site: `${corpid}-${orgid}-${ccidvoxi}-${ticketSelected?.conversationid}-${ticketSelected?.personid}.${sitevoxi}.${advisertodiver}..username` || "",
+                                            data: call.data
+                                        }))
+                                        sethold(true)
+                                        setmute(false)
+                                    }}
+                                >
+                                    <PhoneIcon style={{ color: "white", width: "35px", height: "35px" }} />
+                                </IconButton>
+                                <IconButton //divertcall
+                                    style={{ marginLeft: "auto", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#7721ad' }}
+                                    onClick={() => {
+                                        dispatch(setModalCall(true, true, call.call))
                                         sethold(true)
                                         setmute(false)
                                     }}
