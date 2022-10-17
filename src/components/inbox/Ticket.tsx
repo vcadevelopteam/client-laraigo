@@ -251,7 +251,10 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
             className={clsx(classes.containerItemTicket, {
                 [classes.itemSelected]: (ticketSelected?.conversationid === conversationid)
             })}
-            onClick={() => setTicketSelected(item)}>
+            onClick={() => {
+                setTicketSelected(item);
+                console.log("item.postexternalid", item.postexternalid)
+            }}>
             <Badge
                 overlap="circular"
                 anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
