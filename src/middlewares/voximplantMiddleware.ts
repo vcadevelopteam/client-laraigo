@@ -43,6 +43,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                     console.log("e", e)
                     console.log("call", e.call)
                     const headers = e.call?.headers();
+                    console.log("headers", headers)
                     if (headers["X-identifier"]) {
                         const splitIdentifier = headers["X-identifier"].split("-");
 
@@ -196,8 +197,6 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         return
     } else if (type === typeVoximplant.TRANSFER_CALL ) {
         const { call1, call2Data } = payload;
-        console.log("call1", call1);
-        console.log("call2", call2Data);
         const callSettings2: CallSettings = {
             number: call2Data.number,
             video: {
@@ -207,8 +206,9 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
             customData: call2Data.site
         }
         const call2 = sdk?.call(callSettings2);
+        
         call2.on(VoxImplant.CallEvents.Connected, () => {
-            console.log(call2);
+            console.log("conected second call", call2);
             sdk?.transferCall(call1, call2);
             call2.on(VoxImplant.CallEvents.TransferComplete, () => {
                 console.log("Transfer complete")
