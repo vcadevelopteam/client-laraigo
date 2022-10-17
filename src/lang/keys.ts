@@ -4069,7 +4069,9 @@ export const langKeys = {
     billingreport_conversation: "billingreport_conversation",
     billingreport_interaction: "billingreport_interaction",
     billingreport_agent: "billingreport_agent",
-    billingreport_template: "billingreport_template"
+    billingreport_template: "billingreport_template",
+    instagram_warning: "instagram_warning",
+    view_steps: "view_steps",
 };
 
 export type LangKeys = typeof langKeys;
