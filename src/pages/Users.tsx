@@ -585,7 +585,10 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
                     className="col-6"
                     valueDefault={getValues('confirmpassword')}
                     type={showConfirmPassword ? 'text' : 'password'}
-                    onChange={(value) => setValue('confirmpassword', value)}
+                    onChange={(value) => {
+                        setpasswordConditions({...passwordConditions,samepassword:getValues("password")===value})
+                        setValue('confirmpassword', value)
+                    }}
                     error={errors?.confirmpassword?.message}
                     InputProps={{
                         endAdornment: (
