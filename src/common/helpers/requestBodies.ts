@@ -3442,28 +3442,28 @@ export const artificialIntelligenceServiceSel = ({ provider, service }: Dictiona
     parameters: { provider, service }
 })
 
-export const billingArtificialIntelligenceIns = ({ year, month, id, provider, service, measureunit, charlimit, plan, freeinteractions, basicfee, additionalfee, description, status, type, username, operation }: Dictionary): IRequestBody => ({
+export const billingArtificialIntelligenceIns = ({ year, month, id, provider, measureunit, charlimit, plan, freeinteractions, basicfee, additionalfee, description, status, type, username, operation }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGARTIFICIALINTELLIGENCE_INS",
     key: "UFN_BILLINGARTIFICIALINTELLIGENCE_INS",
-    parameters: { year, month, id, provider, service, measureunit, charlimit, plan, freeinteractions, basicfee, additionalfee, description, status, type, username, operation }
+    parameters: { year, month, id, provider, measureunit, charlimit, plan, freeinteractions, basicfee, additionalfee, description, status, type, username, operation }
 })
 
-export const billingArtificialIntelligenceSel = ({ year, month, provider, service, plan }: Dictionary): IRequestBody => ({
+export const billingArtificialIntelligenceSel = ({ year, month, provider, type, plan }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGARTIFICIALINTELLIGENCE_SEL",
     key: "UFN_BILLINGARTIFICIALINTELLIGENCE_SEL",
-    parameters: { year, month, provider, service, plan }
+    parameters: { year, month, provider, type, plan }
 })
 
-export const billingPeriodArtificialIntelligenceIns = ({ id, corpid, orgid, year, month, provider, service, measureunit, charlimit, plan, freeinteractions, basicfee, additionalfee, description, aiquantity, aicost, status, type, username, operation }: Dictionary): IRequestBody => ({
+export const billingPeriodArtificialIntelligenceIns = ({ id, corpid, orgid, year, month, provider, measureunit, charlimit, plan, freeinteractions, basicfee, additionalfee, description, aiquantity, aicost, status, type, username, operation }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGPERIODARTIFICIALINTELLIGENCE_INS",
     key: "UFN_BILLINGPERIODARTIFICIALINTELLIGENCE_INS",
-    parameters: { id, corpid, orgid, year, month, provider, service, measureunit, charlimit, plan, freeinteractions, basicfee, additionalfee, description, aiquantity, aicost, status, type, username, operation }
+    parameters: { id, corpid, orgid, year, month, provider, measureunit, charlimit, plan, freeinteractions, basicfee, additionalfee, description, aiquantity, aicost, status, type, username, operation }
 })
 
-export const billingPeriodArtificialIntelligenceSel = ({ corpid, orgid, year, month, provider, service, plan, userid }: Dictionary): IRequestBody => ({
+export const billingPeriodArtificialIntelligenceSel = ({ corpid, orgid, year, month, provider, type, plan, userid }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGPERIODARTIFICIALINTELLIGENCE_SEL",
     key: "UFN_BILLINGPERIODARTIFICIALINTELLIGENCE_SEL",
-    parameters: { corpid, orgid, year, month, provider, service, plan, userid }
+    parameters: { corpid, orgid, year, month, provider, type, plan, userid }
 })
 
 export const billingPeriodArtificialIntelligenceInsArray = (corpid: number, orgid: number, table: Dictionary[]): IRequestBody => ({

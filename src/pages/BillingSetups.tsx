@@ -2033,14 +2033,14 @@ const ArtificialIntelligence: React.FC<{ providerData: any, planData: any }> = (
 
     const [dataMain, setdataMain] = useState({
         provider: "",
-        service: "",
+        type: "",
         plan: "",
         year: String(new Date().getFullYear()),
         month: (new Date().getMonth() + 1).toString().padStart(2, "0")
     });
 
     const [providerCombo, setProviderCombo] = useState([]);
-    const [serviceCombo, setServiceCombo] = useState([]);
+    const [typeCombo, setTypeCombo] = useState([]);
     const [planCombo, setPlanCombo] = useState([]);
     const [disableSearch, setdisableSearch] = useState(false);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
@@ -2055,7 +2055,7 @@ const ArtificialIntelligence: React.FC<{ providerData: any, planData: any }> = (
     useEffect(() => {
         if (providerData) {
             setProviderCombo(providerData.filter((elem: { provider: any; }, index: any, self: any[]) => self.findIndex((t) => { return (t.provider === elem.provider) }) === index));
-            setServiceCombo(providerData.filter((elem: { service: any; }, index: any, self: any[]) => self.findIndex((t) => { return (t.service === elem.service) }) === index));
+            setTypeCombo(providerData.filter((elem: { type: any; }, index: any, self: any[]) => self.findIndex((t) => { return (t.type === elem.type) }) === index));
         }
         if (planData) {
             setPlanCombo(planData.filter((elem: { description: any; }, index: any, self: any[]) => self.findIndex((t) => { return (t.description === elem.description) }) === index));
@@ -2109,7 +2109,7 @@ const ArtificialIntelligence: React.FC<{ providerData: any, planData: any }> = (
             },
             {
                 Header: t(langKeys.billingsetup_service),
-                accessor: 'service',
+                accessor: 'type',
             },
             {
                 Header: t(langKeys.billingsetup_measureunit),
@@ -2242,12 +2242,12 @@ const ArtificialIntelligence: React.FC<{ providerData: any, planData: any }> = (
                             <FieldSelect
                                 label={t(langKeys.billingsetup_service)}
                                 style={{ width: 200 }}
-                                valueDefault={dataMain.service}
+                                valueDefault={dataMain.type}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev => ({ ...prev, service: value?.service || '' }))}
-                                data={serviceCombo}
-                                optionDesc="service"
-                                optionValue="service"
+                                onChange={(value) => setdataMain(prev => ({ ...prev, type: value?.type || '' }))}
+                                data={typeCombo}
+                                optionDesc="type"
+                                optionValue="type"
                             />
                             <FieldSelect
                                 label={t(langKeys.billingsetup_plan)}
@@ -2319,7 +2319,6 @@ const DetailArtificialIntelligence: React.FC<DetailArtificialIntelligenceProps> 
             year: row?.year || new Date().getFullYear(),
             month: row?.month || new Date().getMonth() + 1,
             provider: row?.provider || "",
-            service: row?.service || "",
             measureunit: row?.measureunit || "",
             charlimit: row?.charlimit || 0,
             plan: row?.plan || "",
@@ -2349,7 +2348,6 @@ const DetailArtificialIntelligence: React.FC<DetailArtificialIntelligenceProps> 
         register('year');
         register('month');
         register('provider', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('service', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('measureunit', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('charlimit');
         register('plan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -2395,21 +2393,18 @@ const DetailArtificialIntelligence: React.FC<DetailArtificialIntelligenceProps> 
     function handleServiceChange(data: any) {
         if (data) {
             setValue("provider", data.provider || '');
-            setValue("service", data.service || '');
             setValue("type", data.type || '');
             setValue("charlimit", data.charlimit || 0);
             setValue("measureunit", data.measureunit || '');
         }
         else {
             setValue("provider", '');
-            setValue("service", '');
             setValue("type", '');
             setValue("charlimit", 0);
             setValue("measureunit", '');
         }
 
         trigger("provider");
-        trigger("service");
         trigger("type");
         trigger("measureunit");
     }
@@ -2444,7 +2439,7 @@ const DetailArtificialIntelligence: React.FC<DetailArtificialIntelligenceProps> 
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={row ? `${row.provider} - ${row.service}` : t(langKeys.billingsetup_artificialintelligencenew)}
+                            title={row ? `${row.provider} - ${row.type}` : t(langKeys.billingsetup_artificialintelligencenew)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -2492,12 +2487,13 @@ const DetailArtificialIntelligence: React.FC<DetailArtificialIntelligenceProps> 
                         <FieldSelect
                             label={t(langKeys.billingsetup_ai)}
                             className="col-6"
-                            valueDefault={getValues('service')}
+                            valueDefault={`${getValues('type')} - ${getValues('provider')}`}
                             onChange={(value) => { handleServiceChange(value) }}
-                            error={errors?.service?.message}
-                            data={providerData}
-                            optionDesc="service"
-                            optionValue="service"
+                            error={errors?.type?.message}
+                            data={providerData?.filter((v: { type: any; provider: any; }, i: any, a: any[]) => a.findIndex((v2: { type: any; provider: any; }) => (v.type === v2.type && v.provider === v2.provider)) === i)}
+                            optionDesc="typeprovider"
+                            optionValue="typeprovider"
+                            orderbylabel={true}
                         />
                         <FieldEdit
                             label={t(langKeys.billingsetup_provider)}
@@ -2511,8 +2507,8 @@ const DetailArtificialIntelligence: React.FC<DetailArtificialIntelligenceProps> 
                         <FieldEdit
                             label={t(langKeys.billingsetup_service)}
                             className="col-6"
-                            valueDefault={getValues('service')}
-                            error={errors?.service?.message}
+                            valueDefault={getValues('type')}
+                            error={errors?.type?.message}
                             disabled={true}
                         />
                         <FieldEdit

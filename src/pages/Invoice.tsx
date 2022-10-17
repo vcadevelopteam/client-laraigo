@@ -564,19 +564,19 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
     useEffect(() => {
         if (waitAiBilling) {
             if (multiRes.data[0] && multiRes.data[0].success && multiRes.data[0].data) {
-                if (multiRes.data[0].data[0].service) {
+                if (multiRes.data[0].data[0].type) {
                     setDataArtificialBilling(multiRes.data[0] && multiRes.data[0].success ? multiRes.data[0].data : []);
                 }
             }
         }
     }, [multiRes.data, waitAiBilling]);
 
-    const getPeriodArtificialIntelligence = () => dispatch(getCollectionAux(billingPeriodArtificialIntelligenceSel({ corpid: row?.corpid, orgid: (row?.orgid || 0), year: row?.year, month: row?.month, provider: '', service: '', plan: '' })));
+    const getPeriodArtificialIntelligence = () => dispatch(getCollectionAux(billingPeriodArtificialIntelligenceSel({ corpid: row?.corpid, orgid: (row?.orgid || 0), year: row?.year, month: row?.month, provider: '', type: '', plan: '' })));
 
     useEffect(() => {
         if (row?.year && row?.month) {
             dispatch(getMultiCollection([
-                billingArtificialIntelligenceSel({ year: row?.year, month: row?.month, provider: '', service: '', plan: '' }),
+                billingArtificialIntelligenceSel({ year: row?.year, month: row?.month, provider: '', type: '', plan: '' }),
             ]));
             setWaitAiBilling(true);
         }
@@ -766,7 +766,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
             }
 
             if (dataArtificialIntelligence.length > 0) {
-                const uniqueDataArtificialIntelligence = new Set(dataArtificialIntelligence.map(dataRow => dataRow.service));
+                const uniqueDataArtificialIntelligence = new Set(dataArtificialIntelligence.map(dataRow => dataRow.typeprovider));
 
                 if (uniqueDataArtificialIntelligence.size < dataArtificialIntelligence.length) {
                     dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.aiduplicatealert) }));
@@ -1524,7 +1524,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         <ListItemSkeleton /> :
                         dataArtificialIntelligence.map((item, index) => (
                             <DetailArtificialIntelligence
-                                key={`ai-${item?.provider}-${item?.service}-${index * 1000}`}
+                                key={`ai-${item?.provider}-${item?.typeprovider}-${index * 1000}`}
                                 index={index}
                                 data={{ row: item, edit: canEdit }}
                                 updateRecords={setDataArtificialIntelligence}
@@ -1683,7 +1683,6 @@ const DetailArtificialIntelligence: React.FC<ModalProps> = ({ index, data: { row
             year: row ? row.year : 0,
             month: row ? row.month : 0,
             provider: row ? row.provider : '',
-            service: row ? row.service : '',
             measureunit: row ? row.measureunit : '',
             charlimit: row ? row.charlimit : 0,
             plan: row ? row.plan : '',
@@ -1704,7 +1703,6 @@ const DetailArtificialIntelligence: React.FC<ModalProps> = ({ index, data: { row
         register('year');
         register('month');
         register('provider', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('service', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('measureunit');
         register('charlimit', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
         register('plan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -1715,7 +1713,7 @@ const DetailArtificialIntelligence: React.FC<ModalProps> = ({ index, data: { row
         register('aiquantity');
         register('aicost');
         register('status');
-        register('type');
+        register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('operation');
     }, [preData])
 
@@ -1728,7 +1726,6 @@ const DetailArtificialIntelligence: React.FC<ModalProps> = ({ index, data: { row
 
     const onChangeArtificialIntelligence = (value: Dictionary) => {
         setValue('provider', value?.provider || '');
-        setValue('service', value?.service || '');
         setValue('measureunit', value?.measureunit || '');
         setValue('charlimit', value?.charlimit || 0);
         setValue('plan', value?.plan || '');
@@ -1739,7 +1736,6 @@ const DetailArtificialIntelligence: React.FC<ModalProps> = ({ index, data: { row
         setValue('type', value?.type || '');
 
         updatefield('provider', value?.provider || '');
-        updatefield('service', value?.service || '');
         updatefield('measureunit', value?.measureunit || '');
         updatefield('charlimit', value?.charlimit || 0);
         updatefield('plan', value?.plan || '');
@@ -1750,7 +1746,6 @@ const DetailArtificialIntelligence: React.FC<ModalProps> = ({ index, data: { row
         updatefield('type', value?.type || '');
 
         trigger('provider');
-        trigger('service');
         trigger('measureunit');
         trigger('charlimit');
         trigger('plan');
@@ -1773,7 +1768,7 @@ const DetailArtificialIntelligence: React.FC<ModalProps> = ({ index, data: { row
                 aria-controls="panel1a-content"
                 id="panel1a-header"
             >
-                <Typography>{(row?.provider) ? `${row.service} - ${row.plan}` : t(langKeys.newai)}</Typography>
+                <Typography>{(row?.type) ? `${row.type} - ${row.provider} (${row.plan})` : t(langKeys.newai)}</Typography>
             </AccordionSummary>
             <AccordionDetails>
                 <form onSubmit={onSubmit} style={{ width: '100%' }}>
@@ -1781,12 +1776,12 @@ const DetailArtificialIntelligence: React.FC<ModalProps> = ({ index, data: { row
                         <FieldSelect
                             label={t(langKeys.aiservice)}
                             className="col-6"
-                            valueDefault={`${getValues('service')} - ${getValues('plan')}`}
+                            valueDefault={`${getValues('type')} - ${getValues('provider')} (${getValues('plan')})`}
                             onChange={onChangeArtificialIntelligence}
-                            error={errors?.service?.message}
+                            error={errors?.type?.message}
                             data={intelligenceData}
-                            optionDesc="serviceplan"
-                            optionValue="serviceplan"
+                            optionDesc="typeproviderplan"
+                            optionValue="typeproviderplan"
                             disabled={!edit}
                         />
                         <FieldEdit
@@ -1801,8 +1796,8 @@ const DetailArtificialIntelligence: React.FC<ModalProps> = ({ index, data: { row
                         <FieldEdit
                             label={t(langKeys.billingsetup_service)}
                             className="col-6"
-                            valueDefault={getValues('service')}
-                            error={errors?.service?.message}
+                            valueDefault={getValues('type')}
+                            error={errors?.type?.message}
                             disabled={true}
                         />
                         <FieldEdit
@@ -2095,7 +2090,7 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
             if (datareport.artificialintelligencedata) {
                 datareport.artificialintelligencedata.forEach((element: any) => {
                     intelligenceDetail.push({
-                        service: element.service,
+                        service: element.type,
                         provider: element.provider,
                         plan: element.plan,
                         freeinteractions: formatNumberNoDecimals(element.freeinteractions || 0),
@@ -2740,7 +2735,7 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                                                     <div><b>{t(langKeys.aiservice)} - {item.provider}</b></div>
                                                     <div>{t(langKeys.aiminimumquantity)}</div>
                                                     <div>{t(langKeys.aitotalquantity)}</div>
-                                                    <div>{item.service} - {item.plan}</div>
+                                                    <div>{item.type} ({item.plan})</div>
                                                 </StyledTableCell>
                                                 <StyledTableCell align="right">
                                                     <div style={{ color: "transparent" }}>.</div>
