@@ -4119,6 +4119,8 @@ const translation: LangKeys = {
     billingreport_interaction: "Interactions",
     billingreport_agent: "Agents",
     billingreport_template: "billingreport-english.html",
+    instagram_warning: "Before following these steps, don't forget to enable API Access by following these steps in the IG Business Account that you want to use.",
+    view_steps: "View Steps",
     billingsetup_artificialintelligence: "AI Cost",
     billingsetup_artificialintelligencedetail: "AI Cost detail",
     billingsetup_artificialintelligencenew: "New AI Cost",

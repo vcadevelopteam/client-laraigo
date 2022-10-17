@@ -4110,6 +4110,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     billingreport_interaction: "Interacciones",
     billingreport_agent: "Agentes",
     billingreport_template: "billingreport-spanish.html",
+    billingreport_template: "billingreport-spanish.html",
     billingsetup_artificialintelligence: "Costos IA",
     billingsetup_artificialintelligencedetail: "Detalle de Costos IA",
     billingsetup_artificialintelligencenew: "Nuevo Costo AI",
@@ -4131,6 +4132,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     aiduplicatealert: "Los servicios de AI activos deben ser únicos",
     aitotalquantity: "Cantidad IA Total",
     aiminimumquantity: "Cantidad IA Mínima",
+    instagram_warning: "Antes de seguir estos pasos, no te olvides de activar el Acceso API en la Cuenta Profesional de IG que vas a utilizar.",
+    view_steps: "Ver Instrucciones",
 };
 
 const esResource: ResourceLanguage = {

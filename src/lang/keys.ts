@@ -851,7 +851,7 @@ export const langKeys = {
     connecttelegramins: "connecttelegramins",
     enterbotname: "enterbotname",
     enterbotapikey: "enterbotapikey",
-
+    
     report_kpioperativo: "report_kpioperativo",
     report_kpioperativo_year: "report_kpioperativo_year",
     report_kpioperativo_month: "report_kpioperativo_month",
@@ -4125,6 +4125,8 @@ export const langKeys = {
     aiduplicatealert: "aiduplicatealert",
     aitotalquantity: "aitotalquantity",
     aiminimumquantity: "aiminimumquantity",
+    instagram_warning: "instagram_warning",
+    view_steps: "view_steps",
 };
 
 export type LangKeys = typeof langKeys;
