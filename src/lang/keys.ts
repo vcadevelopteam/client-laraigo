@@ -817,7 +817,7 @@ export const langKeys = {
     connecttelegramins: "connecttelegramins",
     enterbotname: "enterbotname",
     enterbotapikey: "enterbotapikey",
-    
+
     report_kpioperativo: "report_kpioperativo",
     report_kpioperativo_year: "report_kpioperativo_year",
     report_kpioperativo_month: "report_kpioperativo_month",
@@ -843,7 +843,7 @@ export const langKeys = {
     report_kpioperativo_userpause_avg_help: "report_kpioperativo_userpause_avg_help",
     report_kpioperativo_tmoasesor_tickets_help: "report_kpioperativo_tmoasesor_tickets_help",
     report_kpioperativo_tickets_eqtmoasesor_help: "report_kpioperativo_tickets_eqtmoasesor_help",
-    report_kpioperativo_tmoasesor_avg_help: "report_kpioperativo_tmoasesor_avg_help",    
+    report_kpioperativo_tmoasesor_avg_help: "report_kpioperativo_tmoasesor_avg_help",
 
     dateactivity: "dateactivity",
     leadactivity: "leadactivity",
