@@ -218,7 +218,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         });
         register('date_deadline', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('tags', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('personcommunicationchannel', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('personcommunicationchannel');
         register('userid', { validate: (value) => ((value && value > 0) ? true : t(langKeys.field_required) + "") });
         register('columnid', { validate: (value) => ((value !== null && value !== undefined && value !== '') || t(langKeys.field_required) + "") });
         register('leadproduct', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
