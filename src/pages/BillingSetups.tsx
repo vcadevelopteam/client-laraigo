@@ -2315,7 +2315,7 @@ const DetailArtificialIntelligence: React.FC<DetailArtificialIntelligenceProps> 
 
     const { register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm({
         defaultValues: {
-            id: row ? row.billingsupportid : 0,
+            id: row ? row.billingartificialintelligenceid : 0,
             year: row?.year || new Date().getFullYear(),
             month: row?.month || new Date().getMonth() + 1,
             provider: row?.provider || "",
