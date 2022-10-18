@@ -162,7 +162,7 @@ export const ChannelAddFacebook: FC = () => {
                                 appId: apiUrls.FACEBOOKAPP,
                                 cookie: true,
                                 xfbml: true,
-                                version: "v8.0"
+                                version: "v15.0"
                             });
                         }}
                         disableMobileRedirect={true}
