@@ -580,7 +580,7 @@ const Settings: FC = () => {
                                     <ItemTile
                                         title={<Trans i18nKey={langKeys.location} count={2} />}
                                         subtitle={<SubtitleText value={value?.num_location} i18nKey={langKeys.location} />}
-                                        icon={<LocationIcon fill="inherit" stroke="inherit" />}
+                                        icon={<LocationIcon style={{width:"35px", height: "35px"}} fill="inherit" stroke="inherit" />}
                                         helpText={
                                             <HelpText
                                                 i18nKey={langKeys.manageLocation}
