@@ -2095,7 +2095,7 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                         plan: element.plan,
                         freeinteractions: formatNumberNoDecimals(element.freeinteractions || 0),
                         aiquantity: formatNumberNoDecimals(element.aiquantity || 0),
-                        additionalfee: `$${formatNumberFourDecimals(element.additionalfee || 0)}`,
+                        additionalfee: ((element.aiquantity || 0) <= (element.freeinteractions || 0)) ? '' : `$${formatNumberFourDecimals(element.additionalfee || 0)}`,
                         taxableamount: `$${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), element.aicost || 0) : formatNumber(element.aicost)}`,
                         igv: `$${datareport.taxrate !== 1 ? getIgv(datareport.igv, element.aicost) : "0.00"}`,
                         aicost: `$${formatNumber(element.aicost || 0)}`,
@@ -2732,39 +2732,22 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                                         {datareport?.artificialintelligencedata?.map((item: any) => (
                                             <StyledTableRow>
                                                 <StyledTableCell>
-                                                    <div><b>{t(langKeys.aiservice)} - {item.provider}</b></div>
-                                                    <div>{t(langKeys.aiminimumquantity)}</div>
-                                                    <div>{t(langKeys.aitotalquantity)}</div>
-                                                    <div>{item.type} ({item.plan})</div>
+                                                    <div><b>{item.type} - {item.provider} ({item.plan})</b></div>
                                                 </StyledTableCell>
                                                 <StyledTableCell align="right">
-                                                    <div style={{ color: "transparent" }}>.</div>
-                                                    <div>{formatNumberNoDecimals(item.freeinteractions || 0)}</div>
                                                     <div>{formatNumberNoDecimals(item.aiquantity || 0)}</div>
-                                                    <div style={{ color: "transparent" }}>.</div>
                                                 </StyledTableCell>
                                                 <StyledTableCell align="right">
-                                                    <div style={{ color: "transparent" }}>.</div>
-                                                    <div style={{ color: "transparent" }}>.</div>
-                                                    <div style={{ color: "transparent" }}>.</div>
-                                                    <div>${formatNumberFourDecimals(item.additionalfee || 0)}</div>
+                                                    {((item.aiquantity || 0) > (item.freeinteractions || 0)) && <div>${formatNumberFourDecimals(item.additionalfee || 0)}</div>}
+                                                    {((item.aiquantity || 0) <= (item.freeinteractions || 0)) && <div style={{ color: "transparent" }}>.</div>}
                                                 </StyledTableCell>
                                                 <StyledTableCell align="right">
-                                                    <div style={{ color: "transparent" }}>.</div>
-                                                    <div style={{ color: "transparent" }}>.</div>
-                                                    <div style={{ color: "transparent" }}>.</div>
                                                     <div>${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), item.aicost || 0) : formatNumber(item.aicost)}</div>
                                                 </StyledTableCell>
                                                 <StyledTableCell align="right">
-                                                    <div style={{ color: "transparent" }}>.</div>
-                                                    <div style={{ color: "transparent" }}>.</div>
-                                                    <div style={{ color: "transparent" }}>.</div>
                                                     <div>${datareport.taxrate !== 1 ? getIgv(datareport.igv, item.aicost) : "0.00"}</div>
                                                 </StyledTableCell>
                                                 <StyledTableCell align="right">
-                                                    <div style={{ color: "transparent" }}>.</div>
-                                                    <div style={{ color: "transparent" }}>.</div>
-                                                    <div style={{ color: "transparent" }}>.</div>
                                                     <div>${formatNumber(item.aicost || 0)}</div>
                                                 </StyledTableCell>
                                             </StyledTableRow>
@@ -3937,7 +3920,7 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
                     if (commentcontent) {
                         return (<Fragment>
                             <div style={{ display: 'inline-block' }}>
-                                {(commentcontent || '').substring(0, 20)}... <a onClick={(e) => { e.stopPropagation(); openInvoiceComment(rowdata); }} style={{ cursor: 'pointer', textDecoration: 'underline', color: 'blue' }} rel="noreferrer">{t(langKeys.seeMore)}</a>
+                                {(commentcontent || '').substring(0, 50)}... <a onClick={(e) => { e.stopPropagation(); openInvoiceComment(rowdata); }} style={{ cursor: 'pointer', textDecoration: 'underline', color: 'blue' }} rel="noreferrer">{t(langKeys.seeMore)}</a>
                             </div>
                         </Fragment>)
                     }
