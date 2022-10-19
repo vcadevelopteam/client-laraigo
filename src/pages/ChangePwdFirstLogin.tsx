@@ -13,6 +13,7 @@ import { logout, setPwdFirsLogin } from 'store/login/actions';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
 import clsx from 'clsx';
+import { showSnackbar } from 'store/popus/actions';
 
 const ChangePwdFirstLogin: FC = () => {
     const classes = useLoginStyles();
@@ -58,9 +59,6 @@ const ChangePwdFirstLogin: FC = () => {
             dispatch(resetAllMain());
         };
     }, []);
-    useEffect(() => {
-        console.log(securityRules)
-    }, [securityRules]);
     
     useEffect(() => {
         if (waiLoading) {
@@ -107,16 +105,21 @@ const ChangePwdFirstLogin: FC = () => {
     }, [changePwd, dispatch]);
 
     const onSubmit = useCallback(() => {
-        if (password !== repeatPasword) {
-            setError(true);
-            return;
-        }
+        
+        if(!!Object.values(passwordConditions).reduce((acc,x)=>acc*(+ x),1)){
+            if (password !== repeatPasword) {
+                setError(true);
+                return;
+            }
 
-        setError(false);
-        dispatch(execute({
-            header: changePasswordOnFirstLoginIns(resValidateToken.user?.userid || 0, password),
-            detail: [],
-        }, true));
+            setError(false);
+            dispatch(execute({
+                header: changePasswordOnFirstLoginIns(resValidateToken.user?.userid || 0, password),
+                detail: [],
+            }, true));
+        }else{
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.invalid_password) }));
+        }
     }, [resValidateToken.user?.userid, password, repeatPasword, dispatch]);
 
     return (
