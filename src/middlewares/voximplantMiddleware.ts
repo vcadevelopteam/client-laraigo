@@ -196,6 +196,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "DISCONNECTED" });
         return
     } else if (type === typeVoximplant.TRANSFER_CALL ) {
+        console.log("executing transfer")
         const { call1, call2Data } = payload;
         const callSettings2: CallSettings = {
             number: call2Data.number,
@@ -206,6 +207,8 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
             customData: call2Data.site
         }
         const call2 = sdk?.call(callSettings2);
+        console.log("call1", call1)
+        console.log("call2", call2)
         
         call2.on(VoxImplant.CallEvents.Connected, () => {
             console.log("conected second call", call2);
