@@ -618,10 +618,10 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
                     [classes.badgeSuccess]: passwordConditions.maxcharacters,
                     [classes.badgeFailure]: !passwordConditions.maxcharacters,
                 })}>{securityRules?.data?.[0]?.maxcharacterspwd}</span></div>}
-                <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond4)}</span><span className={clsx(classes.badge, {
+                {!!securityRules?.data?.[0]?.allowsconsecutivenumbers && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond4)}</span><span className={clsx(classes.badge, {
                     [classes.badgeSuccess]: passwordConditions.consecutivecharacters,
                     [classes.badgeFailure]: !passwordConditions.consecutivecharacters,
-                })}>{securityRules?.data?.[0]?.numequalconsecutivecharacterspwd}</span></div>
+                })}>{securityRules?.data?.[0]?.numequalconsecutivecharacterspwd}</span></div>}
                 {(securityRules?.data?.[0]?.lowercaseletterspwd!=="04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond7)}</span><span className={clsx(classes.badge, {
                     [classes.badgeSuccess]: passwordConditions.lowercaseletters,
                     [classes.badgeFailure]: !passwordConditions.lowercaseletters,
