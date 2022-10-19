@@ -360,7 +360,7 @@ const ChangePassword: React.FC<DetailProps> = ({ setViewSelected }) => {
                                 samepassword:getValues("confirmpassword")===value,
                                 mincharacters: value.length >= (securityRules?.data?.[0]?.mincharacterspwd||0),
                                 maxcharacters: value.length <= (securityRules?.data?.[0]?.maxcharacterspwd||0),
-                                consecutivecharacters: validateNumbersEqualsConsecutive(value,securityRules?.data?.[0]?.numequalconsecutivecharacterspwd||0),
+                                consecutivecharacters: validateNumbersEqualsConsecutive(value,securityRules?.data?.[0]?.numequalconsecutivecharacterspwd||securityRules?.data?.[0]?.maxcharacterspwd||0),
                                 lowercaseletters: validateDomainCharacters(value, 'a-z', securityRules?.data?.[0]?.lowercaseletterspwd||"04"),
                                 uppercaseletters: validateDomainCharacters(value, 'A-Z', securityRules?.data?.[0]?.uppercaseletterspwd||"04"),
                                 numbers: validateDomainCharacters(value, '1-9', securityRules?.data?.[0]?.numericalcharacterspwd||"04"),

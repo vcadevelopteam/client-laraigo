@@ -442,7 +442,7 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
         samepassword: !!data?.password,
         mincharacters: (data?.password||"").length >= (securityRules?.data?.[0]?.mincharacterspwd||0),
         maxcharacters: (data?.password||"").length <= (securityRules?.data?.[0]?.maxcharacterspwd||0),
-        consecutivecharacters: validateNumbersEqualsConsecutive(data?.password||"",securityRules?.data?.[0]?.numequalconsecutivecharacterspwd||0),
+        consecutivecharacters: validateNumbersEqualsConsecutive(data?.password||"",securityRules?.data?.[0]?.numequalconsecutivecharacterspwd||securityRules?.data?.[0]?.maxcharacterspwd||0),
         lowercaseletters: validateDomainCharacters(data?.password||"", 'a-z', securityRules?.data?.[0]?.lowercaseletterspwd||"04"),
         uppercaseletters: validateDomainCharacters(data?.password||"", 'A-Z', securityRules?.data?.[0]?.uppercaseletterspwd||"04"),
         numbers: validateDomainCharacters(data?.password||"", '1-9', securityRules?.data?.[0]?.numericalcharacterspwd||"04"),
@@ -498,7 +498,7 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
             samepassword: !!data?.password,
             mincharacters: (data?.password||"").length >= (securityRules?.data?.[0]?.mincharacterspwd||0),
             maxcharacters: (data?.password||"").length <= (securityRules?.data?.[0]?.maxcharacterspwd||0),
-            consecutivecharacters: validateNumbersEqualsConsecutive(data?.password||"",securityRules?.data?.[0]?.numequalconsecutivecharacterspwd||0),
+            consecutivecharacters: validateNumbersEqualsConsecutive(data?.password||"",securityRules?.data?.[0]?.numequalconsecutivecharacterspwd||securityRules?.data?.[0]?.maxcharacterspwd||0),
             lowercaseletters: validateDomainCharacters(data?.password||"", 'a-z', securityRules?.data?.[0]?.lowercaseletterspwd||"04"),
             uppercaseletters: validateDomainCharacters(data?.password||"", 'A-Z', securityRules?.data?.[0]?.uppercaseletterspwd||"04"),
             numbers: validateDomainCharacters(data?.password||"", '1-9', securityRules?.data?.[0]?.numericalcharacterspwd||"04"),
@@ -506,7 +506,7 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
         })        
     }
 
-    const onSubmitPassword = handleSubmit((data) => {        
+    const onSubmitPassword = handleSubmit((data) => {    
         if(!!Object.values(passwordConditions).reduce((acc,x)=>acc*(+ x),1)){
             parentSetValue('password', data.password);
             parentSetValue('send_password_by_email', data.send_password_by_email);
@@ -557,7 +557,7 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
                             samepassword:getValues("confirmpassword")===value,
                             mincharacters: value.length >= (securityRules?.data?.[0]?.mincharacterspwd||0),
                             maxcharacters: value.length <= (securityRules?.data?.[0]?.maxcharacterspwd||0),
-                            consecutivecharacters: validateNumbersEqualsConsecutive(value,securityRules?.data?.[0]?.numequalconsecutivecharacterspwd||0),
+                            consecutivecharacters: validateNumbersEqualsConsecutive(value,securityRules?.data?.[0]?.numequalconsecutivecharacterspwd||securityRules?.data?.[0]?.maxcharacterspwd||0),
                             lowercaseletters: validateDomainCharacters(value, 'a-z', securityRules?.data?.[0]?.lowercaseletterspwd||"04"),
                             uppercaseletters: validateDomainCharacters(value, 'A-Z', securityRules?.data?.[0]?.uppercaseletterspwd||"04"),
                             numbers: validateDomainCharacters(value, '1-9', securityRules?.data?.[0]?.numericalcharacterspwd||"04"),
