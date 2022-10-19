@@ -105,20 +105,15 @@ const ChangePwdFirstLogin: FC = () => {
     }, [changePwd, dispatch]);
 
     const onSubmit = useCallback(() => {
-        
+        debugger
         if(!!Object.values(passwordConditions).reduce((acc,x)=>acc*(+ x),1)){
-            if (password !== repeatPasword) {
-                setError(true);
-                return;
-            }
-
             setError(false);
             dispatch(execute({
                 header: changePasswordOnFirstLoginIns(resValidateToken.user?.userid || 0, password),
                 detail: [],
             }, true));
         }else{
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.invalid_password) }));
+            setError(true);
         }
     }, [resValidateToken.user?.userid, password, repeatPasword, dispatch]);
 
