@@ -538,7 +538,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
     const executeRes = useSelector(state => state.main.execute);
     const multiRes = useSelector(state => state.main.multiData);
 
-    const [allIndex, setAllIndex] = useState([]);
+    const [allIndex, setAllIndex] = useState<any[]>([]);
     const [canEdit, setCanEdit] = useState(false);
     const [checkedChannel, setCheckedChannel] = useState(row?.channelcreateoverride || false);
     const [checkedUser, setCheckedUser] = useState(row?.usercreateoverride || false);
@@ -558,6 +558,13 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
     useEffect(() => {
         if (!auxRes.loading && !auxRes.error) {
             setDataArtificialIntelligence(auxRes.data);
+            var array: any = [];
+            var index = 0;
+            auxRes.data?.forEach(() => {
+                array = [...array, { index: index, allOk: true }];
+                index++;
+            });
+            setAllIndex(array);
         }
     }, [auxRes]);
 
@@ -805,7 +812,9 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
 
     const onSubmit = handleSubmit((data) => {
         setTriggerSave(true);
-        setAllIndex([]);
+        if (pageSelected === 7) {
+            setAllIndex([]);
+        }
     });
 
     const handleDelete = (row: Dictionary | null, index: number) => {
@@ -4029,7 +4038,7 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
                 && Object.keys(dataMonths.reduce((a, d) => ({ ...a, [d.val]: d.val }), {})).includes(`${d.month}`.padStart(2, '0'))
                 && Object.keys(dataCurrency.reduce((a, d) => ({ ...a, [d.value]: d.description }), {})).includes('' + d.currency)
             );
-            debugger
+
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
                 dispatch(execute({
