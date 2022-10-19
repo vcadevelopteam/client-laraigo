@@ -794,11 +794,17 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                     });
                 }
 
+                if (dataArtificialInsert.length > 0) {
+                    dispatch(execute({
+                        header: billingPeriodUpd(data),
+                        detail: [billingPeriodArtificialIntelligenceInsArray(row?.corpid || 0, row?.orgid || 0, dataArtificialInsert)]!,
+                    }, true));
+                }
+                else {
+                    dispatch(execute(billingPeriodUpd(data)));
+                }
+
                 dispatch(showBackdrop(true));
-                dispatch(execute({
-                    header: billingPeriodUpd(data),
-                    detail: [(dataArtificialInsert.length > 0) ? billingPeriodArtificialIntelligenceInsArray(row?.corpid || 0, row?.orgid || 0, dataArtificialInsert) : null]!
-                }, true));
                 setWaitSave(true);
             }
 
