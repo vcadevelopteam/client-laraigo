@@ -33,7 +33,7 @@ const ChangePwdFirstLogin: FC = () => {
     const mainResult = useSelector(state => state.main.mainData);
     const securityRules = mainResult?.data?.[0]
     const [passwordConditions, setpasswordConditions] = useState({
-        samepassword: true,
+        samepassword: false,
         mincharacters: ("").length >= (securityRules?.mincharacterspwd||0),
         maxcharacters: ("").length <= (securityRules?.maxcharacterspwd||0),
         consecutivecharacters: validateNumbersEqualsConsecutive("",securityRules?.numequalconsecutivecharacterspwd||0),
@@ -64,7 +64,7 @@ const ChangePwdFirstLogin: FC = () => {
         if (waiLoading) {
             if (!mainResult.loading && !mainResult.error) {
                 setpasswordConditions({...passwordConditions,
-                    samepassword: true,
+                    samepassword: false,
                     mincharacters: "".length >= (securityRules?.mincharacterspwd||0),
                     maxcharacters: "".length <= (securityRules?.maxcharacterspwd||0),
                     consecutivecharacters: validateNumbersEqualsConsecutive("",securityRules?.numequalconsecutivecharacterspwd||0),
