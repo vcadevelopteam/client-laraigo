@@ -2054,7 +2054,7 @@ export const insPersonBody = (person: Dictionary): IRequestBody => ({
         ...person,
         corpid: null,
         orgid: null,
-        phone: person?.phone?.replaceAll('+',''),
+        phone: person?.phone?.replaceAll('+', ''),
         observation: person.observation || '',
     },
 });
@@ -2064,22 +2064,22 @@ export const insPersonCommunicationChannel = (pcc: Dictionary): IRequestBody => 
     parameters: {
         ...pcc,
         corpid: null,
-        type: pcc.type||"VOXI",
+        type: pcc.type || "VOXI",
         orgid: null,
     },
 });
-export const personInsValidation = ({id, phone, email, alternativephone, alternativeemail, operation}: Dictionary): IRequestBody => ({
+export const personInsValidation = ({ id, phone, email, alternativephone, alternativeemail, operation }: Dictionary): IRequestBody => ({
     method: 'UFN_PERSON_INS_VALIDATION',
     parameters: {
-        id, 
-        phone: phone?.replaceAll('+','') || "",
-        email, 
-        alternativephone: alternativephone?.replaceAll('+','') || "",
-        alternativeemail, 
+        id,
+        phone: phone?.replaceAll('+', '') || "",
+        email,
+        alternativephone: alternativephone?.replaceAll('+', '') || "",
+        alternativeemail,
         operation
     },
 });
-export const personImportValidation = ({table}: Dictionary): IRequestBody => ({
+export const personImportValidation = ({ table }: Dictionary): IRequestBody => ({
     method: 'UFN_PERSON_IMPORT_VALIDATION',
     parameters: {
         table
@@ -2090,11 +2090,11 @@ export const editPersonBody = (person: IPerson): IRequestBody => ({
     method: 'UFN_PERSON_PCC_INS',
     parameters: {
         ...person,
-        alternativephone: person?.alternativephone?.replaceAll('+','') || "",
+        alternativephone: person?.alternativephone?.replaceAll('+', '') || "",
         id: person.personid,
         operation: person.personid ? 'UPDATE' : 'INSERT',
         observation: person.observation || '',
-        phone: person?.phone?.replaceAll('+','') || "",
+        phone: person?.phone?.replaceAll('+', '') || "",
     },
 });
 
@@ -3025,11 +3025,11 @@ export const getProductCatalogSel = (id: number = 0, category: string = ''): IRe
     }
 })
 
-export const productCatalogIns = ({ id, productid, title, link, imagelink, additionalimagelink, brand, condition, availability, category, material, color, pattern, currency, price, saleprice, labels, catalogid, catalogname, description, status, type, operation}: Dictionary): IRequestBody => ({
+export const productCatalogIns = ({ id, productid, title, link, imagelink, additionalimagelink, brand, condition, availability, category, material, color, pattern, currency, price, saleprice, customlabel1, customlabel2, customlabel3, customlabel4, customlabel5, labels, catalogid, catalogname, description, status, type, operation }: Dictionary): IRequestBody => ({
     method: "UFN_PRODUCTCATALOG_INS",
     key: "UFN_PRODUCTCATALOG_INS",
     parameters: {
-        id,productid,title,link,imagelink,additionalimagelink,brand,condition,availability,category,material,color,pattern,currency,price,saleprice,labels,catalogid,catalogname,description,status,type,operation,
+        id, productid, title, link, imagelink, additionalimagelink, brand, condition, availability, category, material, color, pattern, currency, price, saleprice, customlabel1, customlabel2, customlabel3, customlabel4, customlabel5, labels, catalogid, catalogname, description, status, type, operation,
     }
 })
 export const listPaymentCard = ({ corpid, orgid, id }: Dictionary) => ({
@@ -3156,8 +3156,8 @@ export const ufnlinkPersons = ({ personidfrom, personidto, imageurl, lastname, n
     method: "UFN_CONVERSATION_LINKEDPERSON_EXECUTE",
     key: "UFN_CONVERSATION_LINKEDPERSON_EXECUTE",
     parameters: {
-        personidfrom, 
-        personidto, 
+        personidfrom,
+        personidto,
         imageurl: imageurl || "",
         name: name || "",
         firstname: firstname || "",
@@ -3279,7 +3279,7 @@ export const selCommunicationChannelWhatsApp = (): IRequestBody => ({
     parameters: {}
 })
 
-export const getPaginatedLocation = ({ skip, take, filters, sorts,locationid=""}: Dictionary): IRequestBodyPaginated => ({
+export const getPaginatedLocation = ({ skip, take, filters, sorts, locationid = "" }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_LOCATION_SEL",
     methodCount: "UFN_LOCATION_TOTALRECORDS",
     parameters: {
@@ -3344,7 +3344,7 @@ export const selIntent = (): IRequestBody => ({
 export const selUtterance = (intent: string): IRequestBody => ({
     method: "UFN_WITAI_UTTERANCE_SEL",
     key: "UFN_WITAI_UTTERANCE_SEL",
-    parameters: {intent}
+    parameters: { intent }
 })
 
 export const selEntities = (): IRequestBody => ({
@@ -3353,25 +3353,32 @@ export const selEntities = (): IRequestBody => ({
     parameters: {}
 })
 
-export const insertutterance = ({name, description, datajson, utterance_datajson, operation}:Dictionary): IRequestBody => ({
+export const insertutterance = ({ name, description, datajson, utterance_datajson, operation }: Dictionary): IRequestBody => ({
     method: "UFN_WITAI_INTENT_UTTERANCE_INS",
     key: "UFN_WITAI_INTENT_UTTERANCE_INS",
-    parameters: {name, description, datajson, utterance_datajson, operation}
+    parameters: { name, description, datajson, utterance_datajson, operation }
 })
 
-export const insertentity = ({name, datajson, operation}:Dictionary): IRequestBody => ({
+export const insertentity = ({ name, datajson, operation }: Dictionary): IRequestBody => ({
     method: "UFN_WITAI_ENTITY_INS",
     key: "UFN_WITAI_ENTITY_INS",
-    parameters: {name, datajson, operation}
+    parameters: { name, datajson, operation }
 })
-export const utterancedelete = ({table}:Dictionary): IRequestBody => ({
+export const utterancedelete = ({ table }: Dictionary): IRequestBody => ({
     method: "UFN_WITUFN_WITAI_INTENT_UTTERANCE_DEL",
     key: "UFN_WITUFN_WITAI_INTENT_UTTERANCE_DEL",
-    parameters: {table, model:""}
+    parameters: { table, model: "" }
 })
 
-export const entitydelete = ({table,}:Dictionary): IRequestBody => ({
+export const entitydelete = ({ table, }: Dictionary): IRequestBody => ({
     method: "UFN_WITAI_ENTITY_DEL",
     key: "UFN_WITAI_ENTITY_DEL",
-    parameters: {table, model:""}
+    parameters: { table, model: "" }
 })
+
+export const productCatalogInsArray = (table: Dictionary[]): IRequestBody => ({
+    method: "UFN_PRODUCTCATALOG_INS_ARRAY",
+    parameters: {
+        table: JSON.stringify(table)
+    }
+});

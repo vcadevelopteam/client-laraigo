@@ -3816,15 +3816,6 @@ export const langKeys = {
 
     go_ticket: 'go_ticket',
 
-    productcatalog_title: 'productcatalog_title',
-    productcatalog_website: 'productcatalog_website',
-    productcatalog_currency: 'productcatalog_currency',
-    productcatalog_condition: 'productcatalog_condition',
-    productcatalog_contentid: 'productcatalog_contentid',
-    productcatalog_facebookcatalogid: 'productcatalog_facebookcatalogid',
-    productcatalog_facebookproductid: 'productcatalog_facebookproductid',
-    productcatalog_facebookcatalogname: 'productcatalog_facebookcatalogname',
-
     channel_facebook: 'channel_facebook',
     channel_messenger: 'channel_messenger',
     channel_instagram: 'channel_instagram',
@@ -4076,7 +4067,13 @@ export const langKeys = {
     billingreport_conversation: "billingreport_conversation",
     billingreport_interaction: "billingreport_interaction",
     billingreport_agent: "billingreport_agent",
-    billingreport_template: "billingreport_template"
+    billingreport_template: "billingreport_template",
+    customlabel: "customlabel",
+    catalogid: "catalogid",
+    productid: "productid",
+    material: "material",
+    website: "website",
+    additionalimage: "additionalimage",
 };
 
 export type LangKeys = typeof langKeys;
