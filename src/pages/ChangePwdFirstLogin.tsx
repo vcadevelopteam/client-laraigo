@@ -36,7 +36,7 @@ const ChangePwdFirstLogin: FC = () => {
         samepassword: false,
         mincharacters: ("").length >= (securityRules?.mincharacterspwd||0),
         maxcharacters: ("").length <= (securityRules?.maxcharacterspwd||0),
-        consecutivecharacters: validateNumbersEqualsConsecutive("",securityRules?.numequalconsecutivecharacterspwd||0),
+        consecutivecharacters: validateNumbersEqualsConsecutive("",securityRules?.numequalconsecutivecharacterspwd||securityRules?.maxcharacterspwd||0),
         lowercaseletters: validateDomainCharacters("", 'a-z', securityRules?.lowercaseletterspwd||"04"),
         uppercaseletters: validateDomainCharacters("", 'A-Z', securityRules?.uppercaseletterspwd||"04"),
         numbers: validateDomainCharacters("", '1-9', securityRules?.numericalcharacterspwd||"04"),
@@ -67,7 +67,7 @@ const ChangePwdFirstLogin: FC = () => {
                     samepassword: false,
                     mincharacters: "".length >= (securityRules?.mincharacterspwd||0),
                     maxcharacters: "".length <= (securityRules?.maxcharacterspwd||0),
-                    consecutivecharacters: validateNumbersEqualsConsecutive("",securityRules?.numequalconsecutivecharacterspwd||0),
+                    consecutivecharacters: validateNumbersEqualsConsecutive("",securityRules?.numequalconsecutivecharacterspwd||securityRules?.maxcharacterspwd||0),
                     lowercaseletters: validateDomainCharacters("", 'a-z', securityRules?.lowercaseletterspwd||"04"),
                     uppercaseletters: validateDomainCharacters("", 'A-Z', securityRules?.uppercaseletterspwd||"04"),
                     numbers: validateDomainCharacters("", '1-9', securityRules?.numericalcharacterspwd||"04"),
@@ -105,7 +105,6 @@ const ChangePwdFirstLogin: FC = () => {
     }, [changePwd, dispatch]);
 
     const onSubmit = useCallback(() => {
-        debugger
         if(!!Object.values(passwordConditions).reduce((acc,x)=>acc*(+ x),1)){
             setError(false);
             dispatch(execute({
@@ -150,7 +149,7 @@ const ChangePwdFirstLogin: FC = () => {
                                     samepassword:repeatPasword===e.target.value,
                                     mincharacters: e.target.value.length >= (securityRules?.mincharacterspwd||0),
                                     maxcharacters: e.target.value.length <= (securityRules?.maxcharacterspwd||0),
-                                    consecutivecharacters: validateNumbersEqualsConsecutive(e.target.value,securityRules?.numequalconsecutivecharacterspwd||0),
+                                    consecutivecharacters: validateNumbersEqualsConsecutive(e.target.value,securityRules?.numequalconsecutivecharacterspwd||securityRules?.maxcharacterspwd||0),
                                     lowercaseletters: validateDomainCharacters(e.target.value, 'a-z', securityRules?.lowercaseletterspwd||"04"),
                                     uppercaseletters: validateDomainCharacters(e.target.value, 'A-Z', securityRules?.uppercaseletterspwd||"04"),
                                     numbers: validateDomainCharacters(e.target.value, '1-9', securityRules?.numericalcharacterspwd||"04"),
