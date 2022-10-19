@@ -44,6 +44,7 @@ const translation: LangKeys = {
     errorhours: "Las horas se solapan con otro conjunto de horas",
     errorhoursdontmatch: "Elija una hora de fin más tarde que la hora de inicio",
     transfercalltoadvisor: "Transferir llamada a un asesor",
+    transfer: "Transferir",
 
     type_activitylead_automated: 'Automatizar mensaje',
     type_activitylead_automatedmail: 'Automatizar mensaje Email',

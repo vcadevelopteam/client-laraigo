@@ -18,6 +18,7 @@ import { convertLocalDate, secondsToTime, getSecondsUntelNow, conversationCallHo
 import { langKeys } from 'lang/keys';
 import DialpadIcon from '@material-ui/icons/Dialpad';
 import { execute } from 'store/main/actions';
+import { CallTransferInactiveIcon, CallTransferActiveIcon } from 'icons';
 
 const ManageCallInfoTicket: React.FC = () => {
     const { t } = useTranslation();
@@ -215,12 +216,21 @@ const ManageCallInfoTicket: React.FC = () => {
                                     >
                                         <PauseIcon style={{ color: "white", width: "35px", height: "35px" }} />
                                     </IconButton>
-                                    <IconButton //transfercall
-                                        style={{ gridColumnStart: "col3", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#7721ad' }}
-                                        onClick={() => setdivertcall(!divertcall)}
-                                    >
-                                        <DialpadIcon style={{ color: "white", width: "35px", height: "35px" }} />
-                                    </IconButton>
+                                    <div style={{ gridColumnStart: "col3", marginLeft: "auto", marginRight: "10px", width: "60px", textAlign: "center" }}>
+                                        <IconButton //transfercall
+                                            style={{ width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#bdbdbd' }}
+                                            onClick={() => setdivertcall(!divertcall)}
+                                        >
+                                            {
+                                                divertcall
+                                                ? <>
+                                                    <CallTransferActiveIcon title="Transferir" style={{ color: "white", width: "35px", height: "35px" }} />
+                                                </>
+                                                : <CallTransferInactiveIcon style={{ color: "white", width: "35px", height: "35px" }} />
+                                            }
+                                        </IconButton>
+                                        {divertcall && <span style={{ color: '#781baf' }}>{t(langKeys.transfer)}</span>}
+                                    </div>
                                     <IconButton //hangupcall
                                         style={{ gridColumnStart: "col4", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#fa6262' }}
                                         onClick={() => dispatch(hangupCall(call.call))}
