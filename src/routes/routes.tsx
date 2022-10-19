@@ -178,13 +178,6 @@ export const routes: RouteConfig[] = [
         icon: (className) => <BotDesignerIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
     },
     {
-        key: paths.SECURITYRULES,
-        description: <Trans i18nKey={langKeys.securityrules} />,
-        tooltip: <Trans i18nKey={langKeys.securityrules} />,
-        path: paths.SECURITYRULES,
-        icon: (className) => <BotDesignerIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
-    },
-    {
         key: paths.VARIABLECONFIGURATION,
         description: <Trans i18nKey={langKeys.variableconfiguration_plural} count={2} />,
         tooltip: <Trans i18nKey={langKeys.variableconfiguration} />,

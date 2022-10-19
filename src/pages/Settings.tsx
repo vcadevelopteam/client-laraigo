@@ -12,6 +12,7 @@ import { showSnackbar } from 'store/popus/actions';
 import { useHistory } from 'react-router';
 import paths from 'common/constants/paths';
 import InputIcon from '@material-ui/icons/Input';
+import LockOpenIcon from '@material-ui/icons/LockOpen';
 
 interface ItemTileProps extends Omit<BoxProps, 'title'> {
     title: React.ReactNode;
@@ -471,7 +472,7 @@ const Settings: FC = () => {
                                     <ItemTile
                                         title={<Trans i18nKey={langKeys.securityrules} count={2} />}
                                         subtitle={<SubtitleText value={1} i18nKey={langKeys.securityrule} />}
-                                        icon={<ClassificationIcon fill="inherit" stroke="inherit" />}
+                                        icon={<LockOpenIcon fill="inherit" stroke="inherit" />}
                                         helpText={
                                             <HelpText
                                                 i18nKey={langKeys.securityrules}

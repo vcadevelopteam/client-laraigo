@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'; // we need this to make JSX 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateSwitch, TitleDetail, FieldEdit, FieldSelect } from 'components';
+import { TemplateSwitch, TitleDetail, FieldEdit, FieldSelect, TemplateBreadcrumbs } from 'components';
 import { getSecurityRules, updSecurityRules } from 'common/helpers';
 import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
@@ -12,6 +12,9 @@ import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { getCollection, resetAllMain, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
+import ClearIcon from '@material-ui/icons/Clear';
+import { useHistory } from 'react-router-dom';
+import paths from 'common/constants/paths';
 
 
 
@@ -34,9 +37,12 @@ const SecurityRules = () => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [waiLoading, setWaiLoading] = useState(false);
+    const [allowsconsecutivenumbers, setallowsconsecutivenumbers] = useState(false);
+    const [numequalconsecutivecharacterspwd, setnumequalconsecutivecharacterspwd] = useState(0);
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
+    const history = useHistory();
     const mainResult = useSelector(state => state.main.mainData);
     const dataFieldSelect = [
         {name: "Empieza", value: "01"},
@@ -56,7 +62,12 @@ const SecurityRules = () => {
         };
     }, []);
 
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+    const arrayBread = [
+        { id: "view-0", name: t(langKeys.configuration_plural) },
+        { id: "view-1", name: t(langKeys.securityrules)}
+    ];
+
+    const { register, handleSubmit, setValue, getValues,trigger, formState: { errors } } = useForm({
         defaultValues: {
             id: 0,
             mincharacterspwd: 8,
@@ -65,7 +76,7 @@ const SecurityRules = () => {
             numericalcharacterspwd: "04",
             uppercaseletterspwd: "04",
             lowercaseletterspwd: "04",
-            allowsconsecutivenumbers: true,
+            allowsconsecutivenumbers: false,
             numequalconsecutivecharacterspwd: 0,
             periodvaliditypwd: 0,
             maxattemptsbeforeblocked: 0,
@@ -117,6 +128,8 @@ const SecurityRules = () => {
                 setValue('periodvaliditypwd', mainResult?.data?.[0]?.periodvaliditypwd)
                 setValue('maxattemptsbeforeblocked', mainResult?.data?.[0]?.maxattemptsbeforeblocked)
                 setValue('pwddifferentchangelogin', mainResult?.data?.[0]?.pwddifferentchangelogin)
+                setallowsconsecutivenumbers(!!mainResult?.data?.[0]?.allowsconsecutivenumbers)
+                setnumequalconsecutivecharacterspwd(mainResult?.data?.[0]?.numequalconsecutivecharacterspwd)
                 dispatch(showBackdrop(false));
                 setWaiLoading(false)
             } 
@@ -151,9 +164,22 @@ const SecurityRules = () => {
         }))
     });
 
+    function redirectFunc(view:string){
+        if(view ==="view-0"){
+            history.push(paths.CONFIGURATION)
+            return;
+        }
+    }
+
     return (
         <div style={{width: '100%'}}>
             <form onSubmit={onSubmit}>
+                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={arrayBread}
+                            handleClick={redirectFunc}
+                        />
+                </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TitleDetail
@@ -161,6 +187,14 @@ const SecurityRules = () => {
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center'  }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => history.push(paths.CONFIGURATION)}
+                        >{t(langKeys.back)}</Button>
                         <Button
                             className={classes.button}
                             variant="contained"
@@ -179,6 +213,7 @@ const SecurityRules = () => {
                             error={errors?.mincharacterspwd?.message}
                             onChange={(value) => setValue('mincharacterspwd', value ? parseInt(value) : 0)}
                             type="number"
+                            InputProps={{ inputProps: { min: 0 } }}
                             className="col-6"
                             valueDefault={getValues('mincharacterspwd')}
                         />
@@ -187,6 +222,7 @@ const SecurityRules = () => {
                             error={errors?.maxcharacterspwd?.message}
                             onChange={(value) => setValue('maxcharacterspwd', value ? parseInt(value) : 0)}
                             type="number"
+                            InputProps={{ inputProps: { min: 0 } }}
                             className="col-6"
                             valueDefault={getValues('maxcharacterspwd')}
                         />
@@ -241,15 +277,27 @@ const SecurityRules = () => {
                             label={t(langKeys.allowconsecutivenumbers)}
                             className="col-6"
                             valueDefault={getValues('allowsconsecutivenumbers')}
-                            onChange={(value) => setValue('allowsconsecutivenumbers', value)}
+                            onChange={(value) => {
+                                setValue('allowsconsecutivenumbers', value)
+                                setallowsconsecutivenumbers(value)
+                                if(!value){
+                                    setValue('numequalconsecutivecharacterspwd', 0)
+                                    setnumequalconsecutivecharacterspwd(0)
+                                }
+                            }}
                         />
                         <FieldEdit
                             label={t(langKeys.numequalconsecutivecharacterspwd)} 
                             error={errors?.numequalconsecutivecharacterspwd?.message}
-                            onChange={(value) => setValue('numequalconsecutivecharacterspwd', value ? parseInt(value) : 0)}
+                            onChange={(value) => {
+                                setValue('numequalconsecutivecharacterspwd', value ? parseInt(value) : 0)
+                                setnumequalconsecutivecharacterspwd(value ? parseInt(value) : 0)
+                            }}
                             type="number"
+                            InputProps={{ inputProps: { min: 0 } }}
                             className="col-6"
-                            valueDefault={getValues('numequalconsecutivecharacterspwd')}
+                            disabled={!allowsconsecutivenumbers}
+                            valueDefault={numequalconsecutivecharacterspwd}
                         />
                     </div>
                     <div className="row-zyx">
@@ -258,6 +306,7 @@ const SecurityRules = () => {
                             error={errors?.periodvaliditypwd?.message}
                             onChange={(value) => setValue('periodvaliditypwd', value ? parseInt(value) : 0)}
                             type="number"
+                            InputProps={{ inputProps: { min: 0 } }}
                             className="col-6"
                             valueDefault={getValues('periodvaliditypwd')}
                         />
@@ -266,6 +315,7 @@ const SecurityRules = () => {
                             error={errors?.maxattemptsbeforeblocked?.message}
                             onChange={(value) => setValue('maxattemptsbeforeblocked', value ? parseInt(value) : 0)}
                             type="number"
+                            InputProps={{ inputProps: { min: 0 } }}
                             className="col-6"
                             valueDefault={getValues('maxattemptsbeforeblocked')}
                         />
