@@ -177,7 +177,7 @@ const CatalogProduct: React.FC<{ onlyTime?: string, interactiontext: string, cre
 
     const jsonIntt = JSON.parse(interactiontext);
 
-    if (jsonIntt.Type === "product_list") {
+    if (jsonIntt.Type === "product_list" || jsonIntt.Type === "dynamic") {
         const firstimage = jsonIntt.SectionList?.[0]?.ProductList?.[0]?.ImageReference || "";
         const totalitems = jsonIntt.SectionList.reduce((a: number, i: Dictionary) => a + i.ProductList.length, 0)
 
