@@ -2122,7 +2122,7 @@ export const personInsValidation = ({ id, phone, email, alternativephone, altern
         operation
     },
 });
-export const personImportValidation = ({table}: Dictionary): IRequestBody => ({
+export const personImportValidation = ({ table }: Dictionary): IRequestBody => ({
     method: 'UFN_PERSON_IMPORT_VALIDATION',
     parameters: {
         table
@@ -3058,11 +3058,11 @@ export const getProductCatalogSel = (id: number = 0, category: string = ''): IRe
     }
 })
 
-export const productCatalogIns = ({ id, productid, title, link, imagelink, additionalimagelink, brand, condition, availability, category, material, color, pattern, currency, price, saleprice, labels, catalogid, catalogname, description, status, type, operation}: Dictionary): IRequestBody => ({
+export const productCatalogIns = ({ id, productid, title, link, imagelink, additionalimagelink, brand, condition, availability, category, material, color, pattern, currency, price, saleprice, customlabel1, customlabel2, customlabel3, customlabel4, customlabel5, labels, catalogid, catalogname, description, status, type, operation }: Dictionary): IRequestBody => ({
     method: "UFN_PRODUCTCATALOG_INS",
     key: "UFN_PRODUCTCATALOG_INS",
     parameters: {
-        id,productid,title,link,imagelink,additionalimagelink,brand,condition,availability,category,material,color,pattern,currency,price,saleprice,labels,catalogid,catalogname,description,status,type,operation,
+        id, productid, title, link, imagelink, additionalimagelink, brand, condition, availability, category, material, color, pattern, currency, price, saleprice, customlabel1, customlabel2, customlabel3, customlabel4, customlabel5, labels, catalogid, catalogname, description, status, type, operation,
     }
 })
 export const listPaymentCard = ({ corpid, orgid, id }: Dictionary) => ({
@@ -3480,6 +3480,12 @@ export const exportintent = ({name_json}:Dictionary): IRequestBody => ({
     parameters: {name_json}
 })
 
+export const productCatalogInsArray = (table: Dictionary[]): IRequestBody => ({
+    method: "UFN_PRODUCTCATALOG_INS_ARRAY",
+    parameters: {
+        table: JSON.stringify(table)
+    }
+});
 export const getChatflowVariableSel = (): IRequestBody => ({
     method: "UFN_CHATFLOW_VARIABLE_SEL",
     parameters: {}
