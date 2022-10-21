@@ -182,7 +182,7 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
                             appId: apiUrls.INSTAGRAMAPP,
                             cookie: true,
                             xfbml: true,
-                            version: 'v8.0'
+                            version: 'v15.0'
                         });
                     }}
                     isDisabled={mainResult.loading}
