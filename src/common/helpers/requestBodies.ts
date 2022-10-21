@@ -250,7 +250,21 @@ export const getWhitelistSel = (whitelistid: number): IRequestBody => ({
         all: whitelistid === 0,
     }
 });
+export const getSecurityRules = (): IRequestBody => ({
+    method: "UFN_SECURITYRULES_SEL",
+    key: "UFN_SECURITYRULES_SEL",
+    parameters: { }
+});
 
+export const updSecurityRules = ({ id, mincharacterspwd, maxcharacterspwd, specialcharacterspwd, numericalcharacterspwd, uppercaseletterspwd, lowercaseletterspwd, allowsconsecutivenumbers, numequalconsecutivecharacterspwd, periodvaliditypwd, maxattemptsbeforeblocked, pwddifferentchangelogin,  }: Dictionary): IRequestBody => ({
+    method: "UFN_SECURITYRULES_UPD",
+    key: "UFN_SECURITYRULES_UPD",
+    parameters: { id, mincharacterspwd, maxcharacterspwd, 
+        specialcharacterspwd: specialcharacterspwd||"04", 
+        numericalcharacterspwd: numericalcharacterspwd||"04", 
+        uppercaseletterspwd: uppercaseletterspwd||"04", 
+        lowercaseletterspwd: lowercaseletterspwd||"04", allowsconsecutivenumbers, numequalconsecutivecharacterspwd, periodvaliditypwd, maxattemptsbeforeblocked, pwddifferentchangelogin,  }
+});
 export const insWhitelist = ({ id, operation, documenttype, phone, documentnumber, usergroup, type, status, username }: Dictionary): IRequestBody => ({
     method: "UFN_WHITELIST_INS",
     key: "UFN_WHITELIST_INS",

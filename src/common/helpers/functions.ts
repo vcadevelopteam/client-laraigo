@@ -35,6 +35,67 @@ export function formattime(cc: any) {
     return `${hh}${mm}${ss}`
 }
 
+export function validateNumbersEqualsConsecutive(text:string, limit:number){
+    let canxx = 1;
+    for (var i = 0; i < text.length; i++) {
+        if (/^\d+$/.test(text.charAt(i))) {
+            canxx = 1;
+            for (var j = i + 1; j < text.length; j++) {
+                if (text.charAt(i) == text.charAt(j)) {
+                    canxx++;
+                }
+            }
+            if (canxx > limit) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+export function validateDomainCharacters(text:string, regex:any, option:string){
+    switch (option) {
+        case "01": //comienza
+            return (eval(`/^[${regex}]/`).test(text));
+        case "05": //termina
+            return (eval(`/[${regex}]/g`).test(text.substring(text.length-1)));
+        case "02": //incluye
+            return (eval(`/[${regex}]/`).test(text));
+        case "03": //mas de 1
+            return text.replace(eval(`/[^${regex}]/g`), "").length > 1 ? true : false;
+        default:
+            return true;
+    }
+}
+
+export function validateDomainCharactersSpecials(text:string, option:string){
+    let charactersallowed = `! " # $ % & ' ( ) * + , - . / : ; < = > ? @ [ \ ] ^ _ { | } ~`
+    switch (option) {
+        case "01": //comienza
+            return charactersallowed.includes(text.substring(0, 1));
+        case "05": //termina
+            return charactersallowed.includes(text.substring(text.length-1));
+        case "02": //incluye
+            let isok = false;
+            charactersallowed.split(" ").forEach(c => {
+                if (text.includes(c))
+                    isok = true;
+            });
+            return isok;
+        case "03": //mas de 1
+
+            let count = 0;
+            charactersallowed.split(" ").forEach(c => {
+                count += text.split('').reduce((t, l) => t = t + (l === c ? 1 : 0), 0);
+            });
+
+
+            return count > 1;
+        default:
+            return true;
+    }
+}
+
 export function timetoseconds(cc: any) {
     if (!cc)
         return 0;
