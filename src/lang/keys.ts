@@ -4095,12 +4095,8 @@ export const langKeys = {
     billingreport_interaction: "billingreport_interaction",
     billingreport_agent: "billingreport_agent",
     billingreport_template: "billingreport_template",
-    customlabel: "customlabel",
-    catalogid: "catalogid",
-    productid: "productid",
-    material: "material",
-    website: "website",
-    additionalimage: "additionalimage",
+    instagram_warning: "instagram_warning",
+    view_steps: "view_steps",
     billingsetup_artificialintelligence: "billingsetup_artificialintelligence",
     billingsetup_artificialintelligencedetail: "billingsetup_artificialintelligencedetail",
     billingsetup_artificialintelligencenew: "billingsetup_artificialintelligencenew",
@@ -4122,8 +4118,6 @@ export const langKeys = {
     aiduplicatealert: "aiduplicatealert",
     aitotalquantity: "aitotalquantity",
     aiminimumquantity: "aiminimumquantity",
-    instagram_warning: "instagram_warning",
-    view_steps: "view_steps",
     importxml: "importxml",
 };
 

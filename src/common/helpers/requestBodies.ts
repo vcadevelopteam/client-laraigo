@@ -3420,6 +3420,10 @@ export const entitydelete = ({ table, }: Dictionary): IRequestBody => ({
     parameters: { table, model: "" }
 })
 
+export const getChatflowVariableSel = (): IRequestBody => ({
+    method: "UFN_CHATFLOW_VARIABLE_SEL",
+    parameters: {}
+});
 export const billingConfigurationNewMonth = ({ year, month }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGCONFIGURATION_NEWMONTH",
     key: "UFN_BILLINGCONFIGURATION_NEWMONTH",
@@ -3496,8 +3500,4 @@ export const productCatalogInsArray = (catalogid: string, catalogname: string, t
         table: JSON.stringify(table),
         username: username,
     }
-});
-export const getChatflowVariableSel = (): IRequestBody => ({
-    method: "UFN_CHATFLOW_VARIABLE_SEL",
-    parameters: {}
 });
