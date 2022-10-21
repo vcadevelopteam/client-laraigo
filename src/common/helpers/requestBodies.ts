@@ -3376,9 +3376,12 @@ export const entitydelete = ({ table, }: Dictionary): IRequestBody => ({
     parameters: { table, model: "" }
 })
 
-export const productCatalogInsArray = (table: Dictionary[]): IRequestBody => ({
+export const productCatalogInsArray = (catalogid: string, catalogname: string, table: Dictionary[], username: string): IRequestBody => ({
     method: "UFN_PRODUCTCATALOG_INS_ARRAY",
     parameters: {
-        table: JSON.stringify(table)
+        catalogid: catalogid,
+        catalogname: catalogname,
+        table: JSON.stringify(table),
+        username: username,
     }
 });

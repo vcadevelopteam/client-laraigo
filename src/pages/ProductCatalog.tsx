@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import TableZyx from '../components/fields/table-simple';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { TemplateIcons, TemplateBreadcrumbs, FieldEdit, FieldSelect, TitleDetail, FieldMultiSelectFreeSolo } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, FieldEdit, FieldSelect, TitleDetail, FieldMultiSelectFreeSolo, DialogZyx, IOSSwitch } from 'components';
 import { getValuesFromDomain, getProductCatalogSel, productCatalogIns } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import { useTranslation } from 'react-i18next';
@@ -15,13 +15,13 @@ import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { getCollection, getMultiCollection, execute, resetAllMain, setMemoryTable, cleanMemoryTable, uploadFile } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { Search as SearchIcon, FileCopy, GetApp, Close } from '@material-ui/icons';
-import { IconButton, CircularProgress } from '@material-ui/core';
-import { DuplicateIcon } from 'icons';
+import { Search as SearchIcon, AddCircle, FileCopy, GetApp, Close } from '@material-ui/icons';
+import { IconButton, CircularProgress, FormControlLabel } from '@material-ui/core';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import { formatNumber } from 'common/helpers';
+import { importXml } from 'store/product/actions';
 
 interface RowSelected {
     row: Dictionary | null;
@@ -80,6 +80,7 @@ const ProductCatalog: FC = () => {
     const user = useSelector(state => state.login.validateToken.user);
     const superadmin = ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '');
 
+    const [openModal, setOpenModal] = useState(false);
     const [dataCategory, setdataCategory] = useState<Dictionary[]>([]);
     const [dataMain, setdataMain] = useState({
         category: ""
@@ -93,6 +94,12 @@ const ProductCatalog: FC = () => {
     ];
 
     const fetchData = () => dispatch(getCollection(getProductCatalogSel(0, dataMain.category)));
+
+    const onModalSuccess = () => {
+        setOpenModal(false);
+        fetchData();
+        setViewSelected("view-1");
+    }
 
     useEffect(() => {
         fetchData();
@@ -293,6 +300,11 @@ const ProductCatalog: FC = () => {
 
         return (
             <div style={{ width: "100%" }}>
+                <ImportXmlModal
+                    openModal={openModal}
+                    setOpenModal={setOpenModal}
+                    onTrigger={onModalSuccess}
+                />
                 <Fragment>
                     <TableZyx
                         ButtonsElement={() => (
@@ -315,6 +327,15 @@ const ProductCatalog: FC = () => {
                                     startIcon={<SearchIcon style={{ color: 'white' }} />}
                                     onClick={() => fetchData()}
                                 >{t(langKeys.search)}
+                                </Button>
+                                <Button
+                                    disabled={mainResult.mainData.loading}
+                                    variant="contained"
+                                    color="primary"
+                                    style={{ width: 140, backgroundColor: "#55BD84" }}
+                                    startIcon={<AddCircle style={{ color: 'white' }} />}
+                                    onClick={() => { setOpenModal(true) }}
+                                >{t(langKeys.importxml)}
                                 </Button>
                             </div>
                         )}
@@ -344,6 +365,170 @@ const ProductCatalog: FC = () => {
                 arrayBread={arrayBread}
             />
         )
+}
+
+const ImportXmlModal: FC<{ openModal: boolean, setOpenModal: (param: any) => void, onTrigger: () => void }> = ({ openModal, setOpenModal, onTrigger }) => {
+    const dispatch = useDispatch();
+
+    const { t } = useTranslation();
+
+    const importResult = useSelector(state => state.product.requestImportXml);
+    const uploadResult = useSelector(state => state.main.uploadFile);
+    const user = useSelector(state => state.login.validateToken.user);
+
+    const [checkedFavorite, setCheckedFavorite] = useState(false);
+    const [waitSave, setWaitSave] = useState(false);
+    const [waitUploadFile, setWaitUploadFile] = useState(false);
+    const [fileAttachment, setFileAttachment] = useState<File | null>(null);
+
+    const { register, trigger, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+        defaultValues: {
+            corpid: user?.corpid,
+            orgid: user?.orgid,
+            url: '',
+            catalogname: '',
+            catalogid: '',
+        }
+    });
+
+    React.useEffect(() => {
+        register('url', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('catalogname', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('catalogid', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+    }, [register]);
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!importResult.loading && !importResult.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(importResult.code || "success") }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+                onTrigger();
+            }
+            else if (importResult.error) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(importResult.code || "error_unexpected_db_error") }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [importResult, waitSave])
+
+    const onSubmit = handleSubmit((data) => {
+        const callback = () => {
+            dispatch(importXml(data));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
+    });
+
+    const onClickAttachment = useCallback(() => {
+        const input = document.getElementById('attachmentInput');
+        input!.click();
+    }, []);
+
+    const onChangeAttachment = useCallback((files: any) => {
+        const file = files?.item(0);
+        if (file) {
+            setFileAttachment(file);
+            let fd = new FormData();
+            fd.append('file', file, file.name);
+            dispatch(uploadFile(fd));
+            setWaitUploadFile(true);
+        }
+    }, [])
+
+    const handleCleanMediaInput = async (f: string) => {
+        const input = document.getElementById('attachmentInput') as HTMLInputElement;
+        if (input) {
+            input.value = "";
+        }
+        setFileAttachment(null);
+        setValue('url', getValues('url').split(',').filter((a: string) => a !== f).join(''));
+        await trigger('url');
+    }
+
+    useEffect(() => {
+        if (waitUploadFile) {
+            if (!uploadResult.loading && !uploadResult.error) {
+                setValue('url', [getValues('url'), uploadResult?.url || ''].join(''))
+                setWaitUploadFile(false);
+            } else if (uploadResult.error) {
+                setWaitUploadFile(false);
+            }
+        }
+    }, [waitUploadFile, uploadResult])
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.importxml)}
+            buttonText1={t(langKeys.cancel)}
+            handleClickButton1={() => setOpenModal(false)}
+            buttonText2={t(langKeys.save)}
+            handleClickButton2={onSubmit}
+            button2Type="submit"
+        >
+            <div className="row-zyx">
+                <FieldEdit
+                    label={t(langKeys.catalogname)}
+                    valueDefault={getValues('catalogname')}
+                    error={errors?.catalogname?.message}
+                    onChange={(value) => setValue('catalogname', value)}
+                    className="col-6"
+                />
+                <FieldEdit
+                    label={t(langKeys.catalogid)}
+                    valueDefault={getValues('catalogid')}
+                    error={errors?.catalogid?.message}
+                    onChange={(value) => setValue('catalogid', value)}
+                    className="col-6"
+                />
+            </div>
+            <div className="row-zyx">
+                <FieldEdit
+                    label={t(langKeys.url)}
+                    valueDefault={getValues('url')}
+                    error={errors?.url?.message}
+                    disabled={!checkedFavorite}
+                    className="col-9"
+                    onChange={(value) => setValue('url', value)}
+                />
+                <div className={"col-3"} style={{ paddingBottom: '3px' }}>
+                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.uploadFile)}</Box>
+                    <FormControlLabel
+                        style={{ paddingLeft: 10 }}
+                        control={<IOSSwitch checked={checkedFavorite} onChange={(e) => { setCheckedFavorite(e.target.checked); }} />}
+                        label={""}
+                    />
+                </div>
+                {!checkedFavorite && <React.Fragment>
+                    <input
+                        accept="text/xml"
+                        style={{ display: 'none' }}
+                        id="attachmentInput"
+                        type="file"
+                        onChange={(e) => onChangeAttachment(e.target.files)}
+                    />
+                    {<IconButton
+                        onClick={onClickAttachment}
+                        disabled={(waitUploadFile || fileAttachment !== null)}
+                    >
+                        <AttachFileIcon color="primary" />
+                    </IconButton>}
+                    {!!getValues("url") && getValues("url").split(',').map((f: string, i: number) => (
+                        <FilePreview key={`attachment-${i}`} src={f} onClose={(f) => handleCleanMediaInput(f)} />
+                    ))}
+                    {waitUploadFile && fileAttachment && <FilePreview key={`attachment-x`} src={fileAttachment} />}
+                </React.Fragment>}
+            </div>
+        </DialogZyx>
+    )
 }
 
 const sxImageBox = {

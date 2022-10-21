@@ -4089,6 +4089,7 @@ const translation: LangKeys = {
     material: "Material",
     website: "Website",
     additionalimage: "Additional Image",
+    importxml: "Import XML",
 };
 
 const enResource: ResourceLanguage = {

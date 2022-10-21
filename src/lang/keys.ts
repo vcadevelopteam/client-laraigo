@@ -4074,6 +4074,7 @@ export const langKeys = {
     material: "material",
     website: "website",
     additionalimage: "additionalimage",
+    importxml: "importxml",
 };
 
 export type LangKeys = typeof langKeys;

@@ -4080,6 +4080,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     material: "Material",
     website: "Sitio Web",
     additionalimage: "Imagen Adicional",
+    importxml: "Importar XML",
 };
 
 const esResource: ResourceLanguage = {
