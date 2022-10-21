@@ -4075,7 +4075,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     billingreport_conversation: "Conversaciones",
     billingreport_interaction: "Interacciones",
     billingreport_agent: "Agentes",
-    billingreport_template: "billingreport-spanish.html"
+    billingreport_template: "billingreport-spanish.html",
+    instagram_warning: "Antes de seguir estos pasos, no te olvides de activar el Acceso API en la Cuenta Profesional de IG que vas a utilizar.",
+    view_steps: "Ver Instrucciones",
 };
 
 const esResource: ResourceLanguage = {
