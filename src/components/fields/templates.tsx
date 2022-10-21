@@ -1325,6 +1325,7 @@ interface EditWithSelectProps extends InputProps {
     show: boolean;
     data: Dictionary[];
     datakey: string;
+    datalabel?: string;
     top?: number;
     left?: number;
     onClickSelection: (e: any, value: string) => any
@@ -1332,7 +1333,7 @@ interface EditWithSelectProps extends InputProps {
 }
 
 export const FieldEditWithSelect: React.FC<EditWithSelectProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {},
-    primitive = false, inputProps = {}, show, data, datakey, top = 0, left = 0, onClickSelection, onClickAway }) => {
+    primitive = false, inputProps = {}, show, data, datakey, datalabel, top = 0, left = 0, onClickSelection, onClickAway }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -1350,7 +1351,7 @@ export const FieldEditWithSelect: React.FC<EditWithSelectProps> = ({ label, clas
                     onClick={(e) => onClickSelection(e, data[index][datakey])}
                     divider={true}
                 >
-                    <ListItemText primary={data[index][datakey]} />
+                    <ListItemText primary={data[index][datalabel || datakey]} />
                 </ListItem>
             </React.Fragment>
         );
