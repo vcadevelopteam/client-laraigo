@@ -3272,6 +3272,14 @@ export const getHSMHistoryList = ({ startdate, enddate }: Dictionary): IRequestB
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
+export const getUniqueContactsSel = ({ year, channeltype }: Dictionary): IRequestBody => ({
+    method: "UFN_REPORT_UNIQUECONTACTS_SEL",
+    key: "UFN_REPORT_UNIQUECONTACTS_SEL",
+    parameters: {
+        year, channeltype,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
 
 export const getHSMHistoryReport = ({ campaign = "", date }: Dictionary): IRequestBody => ({
     method: "UFN_HSMHISTORY_REPORT",
