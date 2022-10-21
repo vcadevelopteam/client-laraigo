@@ -7,7 +7,7 @@ import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useRouteMatch } from 'react-router';
 import {
-    insLead2, adviserSel, getPaginatedPerson as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSel, insArchiveLead, leadHistorySel,
+    insLead2, adviserSel, getPaginatedPersonLead as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSel, insArchiveLead, leadHistorySel,
     getLeadsSel, leadHistoryIns
 } from 'common/helpers';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -197,7 +197,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         });
         register('date_deadline', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('tags', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('personcommunicationchannel', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('personcommunicationchannel');
         register('userid', { validate: (value) => ((value && value > 0) ? true : t(langKeys.field_required) + "") });
         register('columnid', { validate: (value) => ((value !== null && value !== undefined && value !== '') || t(langKeys.field_required) + "") });
         register('leadproduct', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -1102,7 +1102,7 @@ const SelectPersonModal: FC<SelectPersonModalProps> = ({ open, onClose, onClick 
             },
             {
                 Header: t(langKeys.name),
-                accessor: 'displayname' as keyof IPerson,
+                accessor: 'name' as keyof IPerson,
             },
             {
                 Header: t(langKeys.email),
