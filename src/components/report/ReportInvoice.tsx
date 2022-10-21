@@ -315,7 +315,7 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                     if (commentcontent) {
                         return (<span style={{ color: row["color"] }}><Fragment>
                             <div style={{ display: 'inline-block' }}>
-                                {(commentcontent || '').substring(0, 20)}... <a onClick={(e) => { e.stopPropagation(); openInvoiceComment(row); }} style={{ cursor: 'pointer', textDecoration: 'underline', color: 'blue' }} rel="noreferrer">{t(langKeys.seeMore)}</a>
+                                {(commentcontent || '').substring(0, 50)}... <a onClick={(e) => { e.stopPropagation(); openInvoiceComment(row); }} style={{ cursor: 'pointer', textDecoration: 'underline', color: 'blue' }} rel="noreferrer">{t(langKeys.seeMore)}</a>
                             </div>
                         </Fragment></span>)
                     }
