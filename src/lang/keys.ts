@@ -30,6 +30,8 @@ export const langKeys = {
     personrepeatedwarning2: "personrepeatedwarning2",
     invitation_email: "invitation_email",
     sinonims: "sinonims",
+    uniquecontactsreport: "uniquecontactsreport",
+    report_uniquecontactsreport: "report_uniquecontactsreport",
     keywords: "keywords",
     error_alternativeemail_exists: "error_alternativeemail_exists",
     error_alternativephone_exists: "error_alternativephone_exists",

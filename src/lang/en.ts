@@ -3846,6 +3846,8 @@ const translation: LangKeys = {
     channel_linkedin: 'LinkedIn',
     channel_chatweb: 'Web Chat',
     channel_email: 'Email',
+    uniquecontactsreport: "Unique Contacts and Number of Conversations",
+    report_uniquecontactsreport: "Report Unique Contacts and Number of Conversations",
     channel_phone: 'Voice',
     channel_sms: 'SMS',
     channel_ios: 'iOS SDK',
