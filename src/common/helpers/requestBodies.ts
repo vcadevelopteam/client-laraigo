@@ -3488,10 +3488,13 @@ export const exportintent = ({name_json}:Dictionary): IRequestBody => ({
     parameters: {name_json}
 })
 
-export const productCatalogInsArray = (table: Dictionary[]): IRequestBody => ({
+export const productCatalogInsArray = (catalogid: string, catalogname: string, table: Dictionary[], username: string): IRequestBody => ({
     method: "UFN_PRODUCTCATALOG_INS_ARRAY",
     parameters: {
-        table: JSON.stringify(table)
+        catalogid: catalogid,
+        catalogname: catalogname,
+        table: JSON.stringify(table),
+        username: username,
     }
 });
 export const getChatflowVariableSel = (): IRequestBody => ({

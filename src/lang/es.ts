@@ -4130,6 +4130,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     aiminimumquantity: "Cantidad IA Mínima",
     instagram_warning: "Antes de seguir estos pasos, no te olvides de activar el Acceso API en la Cuenta Profesional de IG que vas a utilizar.",
     view_steps: "Ver Instrucciones",
+    importxml: "Importar XML",
 };
 
 const esResource: ResourceLanguage = {

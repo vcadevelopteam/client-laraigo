@@ -4139,6 +4139,7 @@ const translation: LangKeys = {
     aiduplicatealert: "The active AI services must be unique",
     aitotalquantity: "Total AI Quantity",
     aiminimumquantity: "Minimum AI Quantity",
+    importxml: "Import XML",
 };
 
 const enResource: ResourceLanguage = {

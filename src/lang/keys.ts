@@ -4124,6 +4124,7 @@ export const langKeys = {
     aiminimumquantity: "aiminimumquantity",
     instagram_warning: "instagram_warning",
     view_steps: "view_steps",
+    importxml: "importxml",
 };
 
 export type LangKeys = typeof langKeys;
