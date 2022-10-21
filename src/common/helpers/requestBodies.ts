@@ -3378,3 +3378,8 @@ export const entitydelete = ({table,}:Dictionary): IRequestBody => ({
     key: "UFN_WITAI_ENTITY_DEL",
     parameters: {table, model:""}
 })
+
+export const getChatflowVariableSel = (): IRequestBody => ({
+    method: "UFN_CHATFLOW_VARIABLE_SEL",
+    parameters: {}
+});
