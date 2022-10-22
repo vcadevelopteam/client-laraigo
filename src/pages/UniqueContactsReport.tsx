@@ -1,23 +1,23 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, Fragment, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { DateRangePicker} from 'components';
-import { getDateCleaned, getHSMHistoryList, getHSMHistoryReport, getHSMHistoryReportExport } from 'common/helpers';
+import { AntTab, DateRangePicker, FieldSelect} from 'components';
+import { getDateCleaned, getHSMHistoryList, getHSMHistoryReport, getHSMHistoryReportExport, getUniqueContactsSel, getValuesFromDomain } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { cleanMemoryTable, setMemoryTable, exportData, getMultiCollection, getMultiCollectionAux2, resetMultiMain } from 'store/main/actions';
+import { cleanMemoryTable, setMemoryTable, exportData, getMultiCollection, getMultiCollectionAux2, resetMultiMain, getMultiCollectionAux, resetMainAux, resetMultiMainAux, resetMultiMainAux2, getCollection } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { CalendarIcon } from 'icons';
-import { Range } from 'react-date-range';
 import ClearIcon from '@material-ui/icons/Clear';
+import { dataYears } from 'common/helpers';
 import {
     Search as SearchIcon,
 } from '@material-ui/icons';
+import { Tabs } from '@material-ui/core';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -55,6 +55,10 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: 4,
         color: 'rgb(143, 146, 161)'
     },
+    filterComponent: {
+        minWidth: '220px',
+        maxWidth: '260px'
+    },
 }));
 
 const DetailHSMHistoryReport: React.FC<DetailHSMHistoryReportProps> = ({ data: { row }, setViewSelected }) => {
@@ -77,10 +81,6 @@ const DetailHSMHistoryReport: React.FC<DetailHSMHistoryReportProps> = ({ data: {
             dispatch(showBackdrop(false))
         }
     }, [multiDataAux2])
-
-    useEffect(() => {
-        search()
-    }, [])
 
     const columns = React.useMemo(
         () => [
@@ -213,18 +213,16 @@ const DetailHSMHistoryReport: React.FC<DetailHSMHistoryReportProps> = ({ data: {
     );
 }
 
-const selectionKey = 'id';
-const IDHSMHISTORY = 'IDHSMHISTORY';
-
-const UniqueContactsReport: FC = () => {
+const UniqueContactsReportDetail: FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const multiData = useSelector(state => state.main.multiData);
+    const multiData = useSelector(state => state.main.multiDataAux);
+    const mainResult = useSelector(state => state.main.mainData);
     
     const classes = useStyles()
-    const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
-    const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
     const [viewSelected, setViewSelected] = useState("view-1");
+    const [channelType, setChannelType] = useState("");
+    const [year, setYear] = useState(`${new Date().getFullYear()}`);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [gridData, setGridData] = useState<any[]>([]);
 
@@ -238,62 +236,73 @@ const UniqueContactsReport: FC = () => {
     const columns = React.useMemo(
         () => [
             {
-                Header: t(langKeys.campaign),
-                accessor: 'campaign',
+                Header: t(langKeys.client),
+                accessor: 'client',
                 width: 'auto',
             },
             {
-                Header: t(langKeys.date),
-                accessor: 'date',
+                Header: t(langKeys.month_01),
+                accessor: 'month_01',
                 width: 'auto',
             },
             {
-                Header: t(langKeys.total),
-                accessor: 'total',
-                type: 'number',
-                sortType: 'number',
+                Header: t(langKeys.month_02),
+                accessor: 'month_02',
                 width: 'auto',
             },
             {
-                Header: t(langKeys.success),
-                accessor: 'success',
-                type: 'number',
-                sortType: 'number',
+                Header: t(langKeys.month_03),
+                accessor: 'month_03',
                 width: 'auto',
             },
             {
-                Header: t(langKeys.failed),
-                accessor: 'failed',
-                type: 'number',
-                sortType: 'number',
+                Header: t(langKeys.month_04),
+                accessor: 'month_04',
                 width: 'auto',
             },
             {
-                Header: t(langKeys.success_percent),
-                accessor: 'successp',
-                type: 'number',
-                sortType: 'number',
+                Header: t(langKeys.month_05),
+                accessor: 'month_05',
                 width: 'auto',
             },
             {
-                Header: t(langKeys.failed_percent),
-                accessor: 'failedp',
-                type: 'number',
-                sortType: 'number',
+                Header: t(langKeys.month_06),
+                accessor: 'month_06',
+                width: 'auto',
+            },
+            {
+                Header: t(langKeys.month_07),
+                accessor: 'month_07',
+                width: 'auto',
+            },
+            {
+                Header: t(langKeys.month_08),
+                accessor: 'month_08',
+                width: 'auto',
+            },
+            {
+                Header: t(langKeys.month_09),
+                accessor: 'month_09',
+                width: 'auto',
+            },
+            {
+                Header: t(langKeys.month_10),
+                accessor: 'month_10',
+                width: 'auto',
+            },
+            {
+                Header: t(langKeys.month_11),
+                accessor: 'month_11',
+                width: 'auto',
+            },
+            {
+                Header: t(langKeys.month_12),
+                accessor: 'month_12',
                 width: 'auto',
             },
         ],
         [t]
     );
-
-    useEffect(() => {
-        dispatch(setMemoryTable({
-            id: IDHSMHISTORY
-        }))
-        return () => {
-            dispatch(cleanMemoryTable());
-        };
-    }, []);
 
     const triggerExportData = () => {
         if (Object.keys(selectedRows).length === 0) {
@@ -366,14 +375,14 @@ const UniqueContactsReport: FC = () => {
     
     function search(){
         dispatch(showBackdrop(true))
-        dispatch(getMultiCollection([
-            getHSMHistoryList(
+        dispatch(getCollection(
+            getUniqueContactsSel(
                 {
-                    startdate: dateRangeCreateDate.startDate,
-                    enddate: dateRangeCreateDate.endDate,
+                    year: year,
+                    channeltype: channelType,
                 }
             )
-        ]))
+        ))
     }
     useEffect(() => {
         return () => {
@@ -381,14 +390,35 @@ const UniqueContactsReport: FC = () => {
         }
     }, [])
     useEffect(() => {
-        if (!multiData.loading){
-            setGridData(multiData.data[0]?.data.map(x => ({
-                ...x,
-                name_translated: x.name !== x.translationname?(t(`report_sentmessages_${x.name}`.toLowerCase()) || "").toUpperCase():x.name?.toUpperCase(),
-            }))||[]);
+        if (!mainResult.loading && mainResult.key === "UFN_REPORT_UNIQUECONTACTS_SEL"){
+            let processedData = mainResult.data.reduce((acc:any,x)=>{
+                let indexField = acc?.findIndex((y:any)=>(y).client===`${x.corpid}-${x.orgid}`)
+                if(indexField<0){
+                    return([...acc,{
+                        client: `${x.corpid}-${x.orgid}`,
+                        month_01: x.month.split('-')[1] === '01'?x.pcc:0,
+                        month_02: x.month.split('-')[1] === '02'?x.pcc:0,
+                        month_03: x.month.split('-')[1] === '03'?x.pcc:0,
+                        month_04: x.month.split('-')[1] === '04'?x.pcc:0,
+                        month_05: x.month.split('-')[1] === '05'?x.pcc:0,
+                        month_06: x.month.split('-')[1] === '06'?x.pcc:0,
+                        month_07: x.month.split('-')[1] === '07'?x.pcc:0,
+                        month_08: x.month.split('-')[1] === '08'?x.pcc:0,
+                        month_09: x.month.split('-')[1] === '09'?x.pcc:0,
+                        month_10: x.month.split('-')[1] === '10'?x.pcc:0,
+                        month_11: x.month.split('-')[1] === '11'?x.pcc:0,
+                        month_12: x.month.split('-')[1] === '12'?x.pcc:0,
+                    }])
+                }else{
+                    acc[indexField][`month_${x.month.split('-')[1]}`] = x.pcc
+                    return acc
+                }
+
+            },[])
+            setGridData(processedData||[]);
             dispatch(showBackdrop(false));
         }
-    }, [multiData])
+    }, [mainResult])
 
     const handleView = (row: Dictionary) => {
         setViewSelected("view-2");
@@ -406,24 +436,30 @@ const UniqueContactsReport: FC = () => {
                         data={gridData}
                         ButtonsElement={() => (
                             <div className={classes.containerHeader} style={{display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'space-between'}}>
-                                <div style={{display: 'flex', gap: 8}}>
-                                    <DateRangePicker
-                                        open={openDateRangeCreateDateModal}
-                                        setOpen={setOpenDateRangeCreateDateModal}
-                                        range={dateRangeCreateDate}
-                                        onSelect={setDateRangeCreateDate}
-                                    >
-                                        <Button
-                                            className={classes.itemDate}
-                                            startIcon={<CalendarIcon />}
-                                            onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
-                                        >
-                                            {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
-                                        </Button>
-                                    </DateRangePicker>
+                                <div style={{display: 'flex', gap: 8}}>                                    
+                                    <FieldSelect
+                                        label={t(langKeys.channeltype)}
+                                        className={classes.filterComponent}
+                                        onChange={(value) => {setChannelType(value?.domainvalue||'')}}
+                                        valueDefault={channelType}
+                                        variant="outlined"
+                                        data={multiData?.data?.[0]?.data||[]}
+                                        optionDesc={"domaindesc"}
+                                        optionValue={"domainvalue"}
+                                    />
+                                    <FieldSelect
+                                        label={t(langKeys.year)}
+                                        style={{ width: 140 }}
+                                        variant="outlined"
+                                        valueDefault={year}
+                                        onChange={(value) => setYear(value?.value)}
+                                        data={dataYears}
+                                        optionDesc="value"
+                                        optionValue="value"
+                                    />
                                     <div>
                                         <Button
-                                            disabled={multiData.loading}
+                                            disabled={mainResult.loading}
                                             variant="contained"
                                             color="primary"
                                             startIcon={<SearchIcon style={{ color: 'white' }} />}
@@ -437,16 +473,10 @@ const UniqueContactsReport: FC = () => {
                         )}
                         download={true}
                         filterGeneral={false}
-                        loading={multiData.loading}
+                        loading={mainResult.loading}
                         register={false}
                         triggerExportPersonalized={triggerExportPersonalized}
                         exportPersonalized={triggerExportData}
-                        useSelection={true}
-                        selectionKey={selectionKey}
-                        setSelectedRows={setSelectedRows}
-                        pageSizeDefault={IDHSMHISTORY === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
-                        initialPageIndex={IDHSMHISTORY === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
-                        initialStateFilter={IDHSMHISTORY === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
                     />
             </React.Fragment>
         )
@@ -462,6 +492,49 @@ const UniqueContactsReport: FC = () => {
     else
         return null;
 
+}
+
+const UniqueContactsReport: FC = () => {
+    const [pageSelected, setPageSelected] = useState(0);    
+    const [companydomain, setcompanydomain] = useState<any>([]);
+    const [groupsdomain, setgroupsdomain] = useState<any>([]);
+    const multiDataAux = useSelector(state => state.main.multiDataAux);
+    const dispatch = useDispatch();
+    useEffect(() => {
+        if(!multiDataAux.loading){
+            setcompanydomain(multiDataAux.data[0]?.data||[]) 
+            setgroupsdomain(multiDataAux.data[1]?.data||[])    
+        }
+    }, [multiDataAux])
+    useEffect(() => {
+        dispatch(getMultiCollectionAux([
+            getValuesFromDomain("TIPOCANAL"),
+            //getValuesFromDomain("GRUPOS")
+        ]))
+        return () => {
+            dispatch(resetMainAux());
+            dispatch(resetMultiMain());
+            dispatch(resetMultiMainAux());
+            dispatch(resetMultiMainAux2());
+        }
+    }, [])
+    const { t } = useTranslation();
+    return (
+        <Fragment>
+            <Tabs
+                value={pageSelected}
+                indicatorColor="primary"
+                variant="fullWidth"
+                style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
+                textColor="primary"
+                onChange={(_, value) => setPageSelected(value)}
+            >
+                <AntTab label={t(langKeys.uniquecontacts)}/>
+                <AntTab label={t(langKeys.conversationquantity)}/>
+            </Tabs>
+            {pageSelected === 0 && <UniqueContactsReportDetail />}
+        </Fragment>
+    )
 }
 
 export default UniqueContactsReport;
