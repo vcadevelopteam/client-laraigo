@@ -1,13 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-<<<<<<< HEAD
-import React, { FC, Fragment, useEffect, useState } from 'react'; // we need this to make JSX compile
-import { useSelector } from 'hooks';
-import { useDispatch } from 'react-redux';
-import Button from '@material-ui/core/Button';
-import { AntTab, DateRangePicker, FieldSelect} from 'components';
-import { getDateCleaned, getHSMHistoryList, getHSMHistoryReport, getHSMHistoryReportExport, getUniqueContactsSel, getValuesFromDomain } from 'common/helpers';
-import { Dictionary } from "@types";
-=======
 import React, { FC, Fragment, useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
@@ -15,22 +6,10 @@ import Button from '@material-ui/core/Button';
 import { AntTab, DialogZyx, FieldMultiSelect, FieldSelect} from 'components';
 import { convertLocalDate, dateToLocalDate, getUniqueContactsConversationExport, getUniqueContactsExport, getUniqueContactsSel, getValuesFromDomain, selOrgSimpleList, selUniqueContactsConversation, selUniqueContactsPcc } from 'common/helpers';
 import { Dictionary, IFetchData } from "@types";
->>>>>>> feature/RLA259
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-<<<<<<< HEAD
-import { cleanMemoryTable, setMemoryTable, exportData, getMultiCollection, getMultiCollectionAux2, resetMultiMain, getMultiCollectionAux, resetMainAux, resetMultiMainAux, resetMultiMainAux2, getCollection } from 'store/main/actions';
-import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import ClearIcon from '@material-ui/icons/Clear';
-import { dataYears } from 'common/helpers';
-import {
-    Search as SearchIcon,
-} from '@material-ui/icons';
-import { Tabs } from '@material-ui/core';
-
-=======
 import { resetMultiMain, getMultiCollectionAux, resetMainAux, resetMultiMainAux, resetMultiMainAux2, getCollection, getCollectionAux, getCollectionPaginated, exportData } from 'store/main/actions';
 import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, LabelList } from 'recharts';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
@@ -47,7 +26,6 @@ import { StreetViewPanorama } from '@react-google-maps/api';
 import TablePaginated from 'components/fields/table-paginated';
 
 const COLORS = ["#0f8fe5", "#067713", "#296680", "#fc3617", "#e8187a", "#7cfa57", "#cfbace", "#4cd45f", "#fd5055", "#7e1be4", "#bf1490", "#66c6cf", "#011c3d", "#1a9595", "#4ae2c7", "#515496", "#a2aa65", "#df909c", "#3aa343", "#e0606e"];
->>>>>>> feature/RLA259
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
