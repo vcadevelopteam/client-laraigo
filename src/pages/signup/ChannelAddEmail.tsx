@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable no-useless-escape */
 /* eslint-disable react-hooks/exhaustive-deps */
 import clsx from 'clsx';
@@ -8,7 +9,7 @@ import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon, LinkOff as LinkOf
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
-import { FieldEdit, FieldSelect } from "components";
+import { FieldEdit } from "components";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { EmailColor } from "icons";

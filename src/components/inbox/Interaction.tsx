@@ -461,6 +461,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                     id={`frame-${interactionid}`}
                     width="100%"
                     height={height}
+                    title="frame1"
                     onLoad={onLoad}
                     style={{ border: 'none' }}
                 >
@@ -482,6 +483,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                         srcDoc={body}
                         id={`frame-${interactionid}`}
                         width="100%"
+                        title="frame2"
                         height={height}
                         onLoad={onLoad}
                         style={{ border: 'none' }}

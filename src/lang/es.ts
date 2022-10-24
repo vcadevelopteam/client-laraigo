@@ -201,7 +201,7 @@ const translation: LangKeys = {
     passwordCond3: "Cantidad máxima de caracteres",
     passwordCond4: "Cantidad de numeros iguales consecutivos permitidos",
     passwordCond5: "Caracteres especiales",
-    passwordCond6: `Los caracteres permitidos: ! " # $ % & ' ( ) * + , - . / : ; < = > ? @ [ \ ] ^ _ { | } ~`,
+    passwordCond6: `Los caracteres permitidos: ! " # $ % & ' ( ) * + , - . / \\ : ; < = > ? @ [  ] ^ _ { | } ~`,
     passwordCond7: "Minúsculas",
     passwordCond8: "Mayusculas",
     passwordCond9: "Números",
