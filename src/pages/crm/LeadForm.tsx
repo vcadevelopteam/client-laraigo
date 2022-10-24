@@ -866,7 +866,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     }}
                                     data={leadProductsDomain.data}
                                     loading={leadProductsDomain.loading}
-                                    optionDesc="description"
+                                    optionDesc="title"
                                     optionValue="code"
                                     error={errors?.leadproduct?.message}
                                 />
