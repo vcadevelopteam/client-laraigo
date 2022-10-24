@@ -780,7 +780,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
                     error={errors?.products?.message}
                     data={leadProductsDomain.data}
                     loading={leadProductsDomain.loading}
-                    optionDesc="description"
+                    optionDesc="title"
                     optionValue="code"
                 />
                 <div style={{ display: 'flex', gap: 16 }}>

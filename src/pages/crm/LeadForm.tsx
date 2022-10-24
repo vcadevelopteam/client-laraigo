@@ -867,7 +867,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     data={leadProductsDomain.data}
                                     loading={leadProductsDomain.loading}
                                     optionDesc="title"
-                                    optionValue="productid"
+                                    optionValue="code"
                                     error={errors?.leadproduct?.message}
                                 />
                             </Grid>
