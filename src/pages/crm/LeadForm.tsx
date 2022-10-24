@@ -2557,7 +2557,6 @@ interface Options {
 
 const formatDate = (strDate: string = "", options: Options = { withTime: true }) => {
     if (!strDate || strDate === '') return '';
-    console.log("strDate", strDate)
 
     const date = new Date(typeof strDate === "number" ? strDate : strDate.replace("Z", ""));
     // date.setHours(date.getHours() + 5);

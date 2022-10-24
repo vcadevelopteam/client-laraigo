@@ -429,8 +429,6 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
         setHeight(((ref as any)?.current.contentWindow.document.body.scrollHeight + 20) + "px");
     };
 
-    console.log(interactiontext)
-    console.log(interactiontype)
     if (!interactiontext.trim() || interactiontype === "typing")
         return null;
     if (interactiontype === "text")

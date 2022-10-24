@@ -169,7 +169,6 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
 
     const handlerClickItem = (item: Dictionary) => {
         setOpen(false);
-        console.log(variablecontext)
         const variablesList = item.quickreply.match(/({{)(.*?)(}})/g) || [];
         let myquickreply = item.quickreply
             .replace("{{numticket}}", ticketSelected?.ticketnum)
@@ -664,7 +663,6 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
 
     useEffect(() => {
         if (text.substring(0, 2).toLowerCase() === "\\q") {
-            console.log("text", text)
             setTypeHotKey("quickreply")
             setOpenDialogHotKey(true);
             const textToSearch = text.trim().split(text.trim().includes("\\q") ? "\\q" : "\\Q")[1];

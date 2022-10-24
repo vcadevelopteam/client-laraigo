@@ -189,7 +189,6 @@ const InfoTab: React.FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const person = useSelector(state => state.inbox.person.data);
-    console.log(person)
     const [view, setView] = useState('view');
 
     const multiData = useSelector(state => state.main.multiDataAux);
