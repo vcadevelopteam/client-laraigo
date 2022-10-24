@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+<<<<<<< HEAD
 import React, { FC, Fragment, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
@@ -6,10 +7,20 @@ import Button from '@material-ui/core/Button';
 import { AntTab, DateRangePicker, FieldSelect} from 'components';
 import { getDateCleaned, getHSMHistoryList, getHSMHistoryReport, getHSMHistoryReportExport, getUniqueContactsSel, getValuesFromDomain } from 'common/helpers';
 import { Dictionary } from "@types";
+=======
+import React, { FC, Fragment, useEffect, useState } from 'react';
+import { useSelector } from 'hooks';
+import { useDispatch } from 'react-redux';
+import Button from '@material-ui/core/Button';
+import { AntTab, DialogZyx, FieldMultiSelect, FieldSelect} from 'components';
+import { convertLocalDate, dateToLocalDate, getUniqueContactsConversationExport, getUniqueContactsExport, getUniqueContactsSel, getValuesFromDomain, selOrgSimpleList, selUniqueContactsConversation, selUniqueContactsPcc } from 'common/helpers';
+import { Dictionary, IFetchData } from "@types";
+>>>>>>> feature/RLA259
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
+<<<<<<< HEAD
 import { cleanMemoryTable, setMemoryTable, exportData, getMultiCollection, getMultiCollectionAux2, resetMultiMain, getMultiCollectionAux, resetMainAux, resetMultiMainAux, resetMultiMainAux2, getCollection } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -19,6 +30,24 @@ import {
 } from '@material-ui/icons';
 import { Tabs } from '@material-ui/core';
 
+=======
+import { resetMultiMain, getMultiCollectionAux, resetMainAux, resetMultiMainAux, resetMultiMainAux2, getCollection, getCollectionAux, getCollectionPaginated, exportData } from 'store/main/actions';
+import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, LabelList } from 'recharts';
+import { showBackdrop, showSnackbar } from 'store/popus/actions';
+import { dataYears } from 'common/helpers';
+import ListIcon from '@material-ui/icons/List';
+import AssessmentIcon from '@material-ui/icons/Assessment';
+import ClearIcon from '@material-ui/icons/Clear';
+import {
+    Search as SearchIcon, Settings,
+} from '@material-ui/icons';
+import { Box, CircularProgress, Tabs } from '@material-ui/core';
+import { useForm } from 'react-hook-form';
+import { StreetViewPanorama } from '@react-google-maps/api';
+import TablePaginated from 'components/fields/table-paginated';
+
+const COLORS = ["#0f8fe5", "#067713", "#296680", "#fc3617", "#e8187a", "#7cfa57", "#cfbace", "#4cd45f", "#fd5055", "#7e1be4", "#bf1490", "#66c6cf", "#011c3d", "#1a9595", "#4ae2c7", "#515496", "#a2aa65", "#df909c", "#3aa343", "#e0606e"];
+>>>>>>> feature/RLA259
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
@@ -59,304 +88,277 @@ const useStyles = makeStyles((theme) => ({
         minWidth: '220px',
         maxWidth: '260px'
     },
+    numericCell:{
+        textAlign: 'end',
+        paddingRight: '40px'
+    },
+    containerHeaderItem: {
+        backgroundColor: '#FFF',
+        padding: 8,
+        display: 'block',
+        flexWrap: 'wrap',
+        gap: 8,
+        [theme.breakpoints.up('sm')]: {
+            display: 'flex',
+        }
+    },
 }));
 
-const DetailHSMHistoryReport: React.FC<DetailHSMHistoryReportProps> = ({ data: { row }, setViewSelected }) => {
-    const classes = useStyles();
-    const dispatch = useDispatch();
-    const { t } = useTranslation();
-    const multiDataAux2 = useSelector(state => state.main.multiDataAux2);
+interface SummaryGraphicProps {
+    openModal: boolean;
+    setOpenModal: (value: boolean) => void;
+    setView: (value: string) => void;
+    setGraphicType: (value: string) => void;
+    columns: any[];
+    columnsprefix?: string;
+}
 
-    function search(){
-        dispatch(showBackdrop(true))
-        dispatch(getMultiCollectionAux2([
-            getHSMHistoryReport({
-                campaign: row?.campaign || "",
-                date: row?.date || "",
-            })
-        ]))
-    }
-    useEffect(() => {
-        if (!multiDataAux2.loading){
-            dispatch(showBackdrop(false))
-        }
-    }, [multiDataAux2])
+interface DetailUniqueContactProps {
+    row: any;
+    setViewSelected: (view: string) => void;
+}
+
+const TableResume: FC<{ graphicType: string; data: Dictionary[] }> = ({ data, graphicType }) => {
+    const { t } = useTranslation();
 
     const columns = React.useMemo(
         () => [
             {
-                Header: t(langKeys.firstname),
-                accessor: 'firstname',
+                Header: t(langKeys.month),
+                accessor: 'name',
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+
+                    if (graphicType === "BAR")
+                        return row?.name;
+                    return (
+                        <div style={{ display: 'flex', gap: 4 }}>
+                            <div style={{ width: 15, height: 15, backgroundColor: row.color }}></div>
+                            {row?.name}
+                        </div>
+                    )
+                }
             },
             {
-                Header: t(langKeys.lastname),
-                accessor: 'lastname',
+                Header: t(langKeys.quantity),
+                accessor: 'value',
+                NoFilter: true,
+                type: 'number'
             },
             {
-                Header: t(langKeys.ticket_number),
-                accessor: 'ticketnum',
+                Header: t(langKeys.percentage),
+                accessor: 'percentage',
+                NoFilter: true,
+                type: 'number',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return row.percentage.toFixed(2) + "%";
+                }
+            },
+        ],
+        []
+    );
+
+    return (
+        <div>
+            <TableZyx
+                columns={columns}
+                data={data}
+                download={false}
+                filterGeneral={false}
+                toolsFooter={false}
+            />
+        </div>
+    )
+}
+
+
+
+const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal,setView, setOpenModal, columns, setGraphicType }) => {
+    const { t } = useTranslation();
+
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm<any>({
+        defaultValues: {
+            graphictype: 'BAR',
+            column: 'month'
+        }
+    });
+
+    useEffect(() => {
+        register('graphictype', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('column', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+    }, [register]);
+
+    const handleCancelModal = () => {
+        setOpenModal(false);
+    }
+
+    const handleAcceptModal = handleSubmit((data:any) => {
+        setOpenModal(false);
+        setGraphicType(data.graphictype)
+        setView(data.graphictype)
+    });
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.graphic_configuration)}
+            button1Type="button"
+            buttonText1={t(langKeys.cancel)}
+            handleClickButton1={handleCancelModal}
+            button2Type="button"
+            buttonText2={t(langKeys.accept)}
+            handleClickButton2={handleAcceptModal}
+        >
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.graphic_type)}
+                    className="col-12"
+                    valueDefault={getValues('graphictype')}
+                    error={errors?.graphictype?.message}
+                    onChange={(value) => setValue('graphictype', value?.key)}
+                    data={[{ key: 'BAR', value: 'BAR' }, { key: 'PIE', value: 'PIE' }]}
+                    uset={true}
+                    prefixTranslation="graphic_"
+                    optionDesc="value"
+                    optionValue="key"
+                />
+            </div>
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.graphic_view_by)}
+                    className="col-12"
+                    valueDefault={getValues('column')}
+                    error={errors?.column?.message}
+                    onChange={(value) => setValue('column', value?.key)}
+                    data={columns}
+                    optionDesc="value"
+                    optionValue="key"
+                    uset={true}
+                    prefixTranslation=""
+                />
+            </div>
+        </DialogZyx>
+    )
+}
+
+const RADIAN = Math.PI / 180;
+export const RenderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, value, ...rest }: Dictionary) => {
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return (
+        <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+            {value||""}
+        </text>
+    );
+};
+
+const DetailUniqueContact: React.FC<DetailUniqueContactProps> = ({ row, setViewSelected }) => {
+    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+    const [allParameters, setAllParameters] = useState<Dictionary>({});
+    const mainPaginated = useSelector(state => state.main.mainPaginated);
+    const [totalrow, settotalrow] = useState(0);
+    const [pageCount, setPageCount] = useState(0);
+    const [waitExport, setWaitExport] = useState(false);
+    const resExportData = useSelector(state => state.main.exportData);
+    const dispatch = useDispatch();
+    const { t } = useTranslation();
+    
+    const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
+        setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
+        dispatch(getCollectionPaginated(selUniqueContactsPcc({
+            take: pageSize,
+            skip: pageIndex * pageSize,
+            sorts: sorts,
+            orgid:row.row.orgid,
+            corpid:row.row.corpid,
+            month:row.month,
+            year:row.year,
+            channeltype:row.channeltype,
+            filters: {
+                ...filters,
+            },
+            ...allParameters
+        })))
+    };
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.name),
+                accessor: 'name',
+                width: 'auto',
             },
             {
-                Header: t(langKeys.rundate),
-                accessor: 'rundate',
+                Header: t(langKeys.communicationchannel),
+                accessor: 'channels',
+                width: 'auto',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return <div>{row?.channels?.substring(0,30)}...</div>
+                }
             },
             {
-                Header: t(langKeys.runtime),
-                accessor: 'runtime',
+                Header: t(langKeys.firstContactDate),
+                accessor: 'firstcontact',
+                width: 'auto',
+                type: 'date',
+                sortType: 'datetime',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return row.firstcontact ? convertLocalDate(row.firstcontact).toLocaleString() : ""
+                }
             },
             {
-                Header: t(langKeys.finishconversationdate),
-                accessor: 'finishdate',
+                Header: t(langKeys.lastContactDate),
+                accessor: 'lastcontact',
+                width: 'auto',
+                type: 'date',
+                sortType: 'datetime',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return row.lastcontact ? convertLocalDate(row.lastcontact).toLocaleString() : ""
+                }
             },
             {
-                Header: t(langKeys.firstreplydate),
-                accessor: 'firstreplydate',
+                Header: t(langKeys.phone),
+                accessor: 'phone',
+                width: 'auto',
             },
             {
-                Header: t(langKeys.firstreplytime),
-                accessor: 'firstreplytime',
-            },
-            {
-                Header: `${t(langKeys.contact)}`,
-                accessor: 'contact',
-            },
-            {
-                Header: t(langKeys.channel),
-                accessor: 'channel',
-            },
-            {
-                Header: t(langKeys.origin),
-                accessor: 'origin',
+                Header: t(langKeys.email),
+                accessor: 'email',
+                width: 'auto',
             },
             {
                 Header: t(langKeys.status),
                 accessor: 'status',
-                prefixTranslation: 'status_',
-                Cell: (props: any) => {
-                    const { status } = props.cell.row.original;
-                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
-                }
-            },
-            {
-                Header: `N° ${t(langKeys.transaction)}`,
-                accessor: 'transactionid',
-            },
-            {
-                Header: t(langKeys.group),
-                accessor: 'group',
-            },
-            {
-                Header: t(langKeys.agent),
-                accessor: 'agent',
-            },
-            {
-                Header: t(langKeys.success),
-                accessor: 'success',
-                type: 'boolean',
-                sortType: 'basic',
-                width: 180,
-                maxWidth: 180,
-                Cell: (props: any) => {
-                    const { success } = props.cell.row.original;
-                    return success ? t(langKeys.yes) : "No"
-                }
-            },
-            {
-                Header: t(langKeys.realduration),
-                accessor: 'realduration',
-            },
-            {
-                Header: t(langKeys.classification),
-                accessor: 'classification',
-            },
-            {
-                Header: t(langKeys.log),
-                accessor: 'log',
-            },
-            {
-                Header: t(langKeys.body),
-                accessor: 'body',
-            },
-            {
-                Header: t(langKeys.parameters),
-                accessor: 'parameters',
-            },
-        ],
-        [t]
-    );
-
-    return (
-        <div style={{width: '100%'}}>
-            <div className={classes.containerDetail}>
-                <TableZyx
-                    titlemodule={`${row?.campaign} (${row?.date})` || `${t(langKeys.recordhsmreport)} ${t(langKeys.detail)}`}
-                    ButtonsElement={() => (
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            startIcon={<ClearIcon color="secondary" />}
-                            style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("view-1")}
-                        >{t(langKeys.back)}</Button>
-                    )}
-                    columns={columns}
-                    data={multiDataAux2.data[0]?.data||[]}
-                    download={true}
-                    loading={multiDataAux2.loading}
-                    register={false}
-                    filterGeneral={false}
-                    // fetchData={fetchData}
-                />
-            </div>
-        </div>
-    );
-}
-
-const UniqueContactsReportDetail: FC = () => {
-    const dispatch = useDispatch();
-    const { t } = useTranslation();
-    const multiData = useSelector(state => state.main.multiDataAux);
-    const mainResult = useSelector(state => state.main.mainData);
-    
-    const classes = useStyles()
-    const [viewSelected, setViewSelected] = useState("view-1");
-    const [channelType, setChannelType] = useState("");
-    const [year, setYear] = useState(`${new Date().getFullYear()}`);
-    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
-    const [gridData, setGridData] = useState<any[]>([]);
-
-    const memoryTable = useSelector(state => state.main.memoryTable);
-
-    const [selectedRows, setSelectedRows] = useState<any>({});
-    const [triggerExportPersonalized, setTriggerExportPersonalized] = useState<boolean>(false);
-    const [waitExport, setWaitExport] = useState(false);
-    const resExportData = useSelector(state => state.main.exportData);
-    
-    const columns = React.useMemo(
-        () => [
-            {
-                Header: t(langKeys.client),
-                accessor: 'client',
-                width: 'auto',
-            },
-            {
-                Header: t(langKeys.month_01),
-                accessor: 'month_01',
-                width: 'auto',
-            },
-            {
-                Header: t(langKeys.month_02),
-                accessor: 'month_02',
-                width: 'auto',
-            },
-            {
-                Header: t(langKeys.month_03),
-                accessor: 'month_03',
-                width: 'auto',
-            },
-            {
-                Header: t(langKeys.month_04),
-                accessor: 'month_04',
-                width: 'auto',
-            },
-            {
-                Header: t(langKeys.month_05),
-                accessor: 'month_05',
-                width: 'auto',
-            },
-            {
-                Header: t(langKeys.month_06),
-                accessor: 'month_06',
-                width: 'auto',
-            },
-            {
-                Header: t(langKeys.month_07),
-                accessor: 'month_07',
-                width: 'auto',
-            },
-            {
-                Header: t(langKeys.month_08),
-                accessor: 'month_08',
-                width: 'auto',
-            },
-            {
-                Header: t(langKeys.month_09),
-                accessor: 'month_09',
-                width: 'auto',
-            },
-            {
-                Header: t(langKeys.month_10),
-                accessor: 'month_10',
-                width: 'auto',
-            },
-            {
-                Header: t(langKeys.month_11),
-                accessor: 'month_11',
-                width: 'auto',
-            },
-            {
-                Header: t(langKeys.month_12),
-                accessor: 'month_12',
                 width: 'auto',
             },
         ],
         [t]
     );
-
-    const triggerExportData = () => {
-        if (Object.keys(selectedRows).length === 0) {
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_record_selected)}));
-            return null;
-        }
-        dispatch(exportData(getHSMHistoryReportExport(
-            Object.keys(selectedRows).reduce((ad: any[], d: any) => {
-                ad.push({
-                    ddate: d.split('_')[d.split('_').length - 1],
-                    campaignname: d.split(`_${d.split('_')[d.split('_').length - 1]}`)[0],
-                })
-                return ad;
-            }, [])),
-            `${t(langKeys.report)}`,
-            'excel',
-            true,
-            [
-                {key: 'campaign', alias: t(langKeys.campaign)},
-                {key: 'firstname', alias: t(langKeys.firstname)},
-                {key: 'lastname', alias: t(langKeys.lastname)},
-                {key: 'ticketnum', alias: t(langKeys.ticket)},
-                {key: 'rundate', alias: t(langKeys.rundate)},
-                {key: 'runtime', alias: t(langKeys.runtime)},
-                {key: 'finishdate', alias: t(langKeys.finishconversationdate)},
-                {key: 'firstreplydate', alias: t(langKeys.firstreplydate)},
-                {key: 'firstreplytime', alias: t(langKeys.firstreplytime)},
-                {key: 'contact', alias: t(langKeys.contact)},
-                {key: 'channel', alias: t(langKeys.channel)},
-                {key: 'origin', alias: t(langKeys.origin)},
-                {key: 'status', alias: t(langKeys.status)},
-                {key: 'transactionid', alias: t(langKeys.transaction)},
-                {key: 'group', alias: t(langKeys.group)},
-                {key: 'agent', alias: t(langKeys.agent)},
-                {key: 'success', alias: t(langKeys.success)},
-                {key: 'realduration', alias: t(langKeys.realduration)},
-                {key: 'classification', alias: t(langKeys.classification)},
-                {key: 'log', alias: t(langKeys.log)},
-                {key: 'body', alias: t(langKeys.body)},
-                {key: 'parameters', alias: t(langKeys.parameters)},
-            ]
-        ));
+    
+    const triggerExportData = ({ filters, sorts }: IFetchData) => {
+        const columnsExport = columns.map(x => ({
+            key: x.accessor,
+            alias: x.Header
+        }))
+        dispatch(exportData(getUniqueContactsExport({
+            filters: {
+                ...filters,
+            },
+            sorts,
+            year: row.year,
+            month:row.month,
+            channeltype:row.channeltype,
+            ...allParameters
+        }), "", "excel", false, columnsExport));
         dispatch(showBackdrop(true));
         setWaitExport(true);
     };
-
-    useEffect(() => {
-        if (Object.keys(selectedRows).length === 0) {
-            setTriggerExportPersonalized(false)
-        }
-        else {
-            setTriggerExportPersonalized(true)
-        }
-    }, [selectedRows])
 
     useEffect(() => {
         if (waitExport) {
@@ -365,129 +367,953 @@ const UniqueContactsReportDetail: FC = () => {
                 setWaitExport(false);
                 resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
             } else if (resExportData.error) {
-                const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.blacklist).toLocaleLowerCase() })
+                const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.person).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitExport(false);
             }
         }
     }, [resExportData, waitExport]);
+
+    return (
+        <TablePaginated
+            columns={columns}
+            data={mainPaginated.data}
+            totalrow={totalrow}
+            loading={mainPaginated.loading}
+            pageCount={pageCount}
+            autotrigger={true}
+            download={true}
+            ButtonsElement={() => (
+                <>
+                    <Button
+                        variant="contained"
+                        type="button"
+                        color="primary"
+                        startIcon={<ClearIcon color="secondary" />}
+                        style={{ backgroundColor: "#FB5F5F" }}
+                        onClick={() => setViewSelected("view-1")}>
+                        {t(langKeys.back)}
+                    </Button>
+                </>
+            )}
+            fetchData={fetchData}
+            exportPersonalized={triggerExportData}
+        />
+    )
     
-    function search(){
-        dispatch(showBackdrop(true))
-        dispatch(getCollection(
-            getUniqueContactsSel(
-                {
-                    year: year,
-                    channeltype: channelType,
-                }
-            )
-        ))
-    }
-    useEffect(() => {
-        return () => {
-            dispatch(resetMultiMain());
+}
+
+
+const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,channelType}) => {
+    const dispatch = useDispatch();
+    const { t } = useTranslation();
+    const multiData = useSelector(state => state.main.multiDataAux);
+    const mainResult = useSelector(state => state.main.mainAux);    
+    const [viewSelected, setViewSelected] = useState("view-1");
+    const [view, setView] = useState('GRID');
+    const classes = useStyles()
+    const [gridData, setGridData] = useState<any[]>([]);
+    const [dataGraph, setdataGraph] = useState<any>([]);
+    const [rowSelected, setRowSelected] = useState<any>(null);
+    const [openModal, setOpenModal] = useState(false);
+    const [graphicType, setGraphicType] = useState('BAR');
+
+    const cell = (props: any) => {
+        const column = props.cell.column;
+        const row = props.cell.row.original;
+        if(row.client === "Total"){
+            return <div><b>{row[column.id]}</b></div>
+        }else if(column.id.includes('_')){
+            return <div onClick={()=>handleView(row,column.id.split('_')[1])}>{row[column.id]}</div>
+        }else{
+            return <div>{row[column.id]}</div>
         }
-    }, [])
+    }
+    
+    const handleView = (row: Dictionary, month:number) => {
+        setRowSelected({
+            row,
+            month,
+            year,
+            channeltype: channelType
+        })
+        setViewSelected("view-2");
+    }
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.client),
+                accessor: 'client',
+                width: 'auto',
+                Cell: (props: any) => {
+                    const column = props.cell.column;
+                    const row = props.cell.row.original;
+                    if(row.client === "Total"){
+                        return <div><b>{row[column.id]}</b></div>
+                    }else{
+                        return <div>{row[column.id]}</div>
+                    }
+                }
+            },
+            {
+                Header: t(langKeys.month_01),
+                accessor: 'month_1',
+                width: 'auto',
+                type: 'number',
+                Cell:cell
+            },
+            {
+                Header: t(langKeys.month_02),
+                accessor: 'month_2',
+                width: 'auto',
+                type: 'number',
+                Cell:cell
+            },
+            {
+                Header: t(langKeys.month_03),
+                accessor: 'month_3',
+                width: 'auto',
+                type: 'number',
+                Cell:cell
+            },
+            {
+                Header: t(langKeys.month_04),
+                accessor: 'month_4',
+                width: 'auto',
+                type: 'number',
+                Cell:cell
+            },
+            {
+                Header: t(langKeys.month_05),
+                accessor: 'month_5',
+                width: 'auto',
+                type: 'number',
+                Cell:cell
+            },
+            {
+                Header: t(langKeys.month_06),
+                accessor: 'month_6',
+                width: 'auto',
+                type: 'number',
+                Cell:cell
+            },
+            {
+                Header: t(langKeys.month_07),
+                accessor: 'month_7',
+                width: 'auto',
+                type: 'number',
+                Cell:cell
+            },
+            {
+                Header: t(langKeys.month_08),
+                accessor: 'month_8',
+                width: 'auto',
+                type: 'number',
+                Cell:cell
+            },
+            {
+                Header: t(langKeys.month_09),
+                accessor: 'month_9',
+                width: 'auto',
+                type: 'number',
+                Cell:cell
+            },
+            {
+                Header: t(langKeys.month_10),
+                accessor: 'month_10',
+                width: 'auto',
+                type: 'number',
+                Cell:cell
+            },
+            {
+                Header: t(langKeys.month_11),
+                accessor: 'month_11',
+                width: 'auto',
+                type: 'number',
+                Cell:cell
+            },
+            {
+                Header: t(langKeys.month_12),
+                accessor: 'month_12',
+                width: 'auto',
+                type: 'number',
+                Cell:cell
+            },
+            {
+                Header: <b>{t(langKeys.total)}</b>,
+                accessor: 'total',
+                width: 'auto',
+                type: 'number',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return <b>{row.total}</b>
+                }
+            },
+        ],
+        [t]
+    );
+    
     useEffect(() => {
-        if (!mainResult.loading && mainResult.key === "UFN_REPORT_UNIQUECONTACTS_SEL"){
+        if (!mainResult.loading && mainResult?.key?.includes("UFN_REPORT_UNIQUECONTACTS_SEL")){
+            let mainTotal:any = {
+                client: "Total",
+                month_1: 0, month_2: 0, month_3: 0, month_4: 0, month_5: 0, month_6: 0, month_7: 0, month_8: 0, month_9: 0, month_10: 0, month_11: 0, month_12: 0, total: 0
+            }
             let processedData = mainResult.data.reduce((acc:any,x)=>{
-                let indexField = acc?.findIndex((y:any)=>(y).client===`${x.corpid}-${x.orgid}`)
+                let clientdata = multiData.data[1].data.filter(y=>(x.corpid === y.corpid && x.orgid===y.orgid))[0]
+                let indexField = acc?.findIndex((y:any)=>(y).client===`${clientdata.corpdesc} - ${clientdata.orgdesc}`)                
                 if(indexField<0){
+                    mainTotal[`month_${x.month}`] += x.pcc
+                    mainTotal.total += x.pcc
                     return([...acc,{
-                        client: `${x.corpid}-${x.orgid}`,
-                        month_01: x.month.split('-')[1] === '01'?x.pcc:0,
-                        month_02: x.month.split('-')[1] === '02'?x.pcc:0,
-                        month_03: x.month.split('-')[1] === '03'?x.pcc:0,
-                        month_04: x.month.split('-')[1] === '04'?x.pcc:0,
-                        month_05: x.month.split('-')[1] === '05'?x.pcc:0,
-                        month_06: x.month.split('-')[1] === '06'?x.pcc:0,
-                        month_07: x.month.split('-')[1] === '07'?x.pcc:0,
-                        month_08: x.month.split('-')[1] === '08'?x.pcc:0,
-                        month_09: x.month.split('-')[1] === '09'?x.pcc:0,
-                        month_10: x.month.split('-')[1] === '10'?x.pcc:0,
-                        month_11: x.month.split('-')[1] === '11'?x.pcc:0,
-                        month_12: x.month.split('-')[1] === '12'?x.pcc:0,
+                        client: `${clientdata.corpdesc} - ${clientdata.orgdesc}`,
+                        corpid: x.corpid,
+                        orgid: x.orgid,
+                        month_1: x.month === 1?x.pcc:0,
+                        month_2: x.month === 2?x.pcc:0,
+                        month_3: x.month === 3?x.pcc:0,
+                        month_4: x.month === 4?x.pcc:0,
+                        month_5: x.month === 5?x.pcc:0,
+                        month_6: x.month === 6?x.pcc:0,
+                        month_7: x.month === 7?x.pcc:0,
+                        month_8: x.month === 8?x.pcc:0,
+                        month_9: x.month === 9?x.pcc:0,
+                        month_10: x.month === 10?x.pcc:0,
+                        month_11: x.month === 11?x.pcc:0,
+                        month_12: x.month === 12?x.pcc:0,
+                        total: x.pcc||0
                     }])
                 }else{
-                    acc[indexField][`month_${x.month.split('-')[1]}`] = x.pcc
+                    mainTotal[`month_${x.month}`] += x.pcc
+                    mainTotal.total += x.pcc
+                    acc[indexField][`month_${x.month}`] = x.pcc
+                    acc[indexField].total += x.pcc
                     return acc
                 }
-
             },[])
-            setGridData(processedData||[]);
+            setGridData([...processedData,mainTotal]||[]);
+            setdataGraph(Object.keys(mainTotal).filter(x=>x.includes('_')).reduce((acc:any,x:string, i:number)=>[...acc,{name:t(x),value:mainTotal[x], percentage: mainTotal[x]*100/mainTotal.total, color:COLORS[i]}],[]))
             dispatch(showBackdrop(false));
         }
     }, [mainResult])
 
-    const handleView = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected({ row, edit: false });
-    }
 
     if (viewSelected === "view-1") {
 
         return (
-            <React.Fragment>
-                <div style={{ height: 10 }}></div>
-                    <TableZyx
-                        onClickRow={handleView}    
-                        columns={columns}
-                        data={gridData}
-                        ButtonsElement={() => (
-                            <div className={classes.containerHeader} style={{display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'space-between'}}>
-                                <div style={{display: 'flex', gap: 8}}>                                    
-                                    <FieldSelect
-                                        label={t(langKeys.channeltype)}
-                                        className={classes.filterComponent}
-                                        onChange={(value) => {setChannelType(value?.domainvalue||'')}}
-                                        valueDefault={channelType}
-                                        variant="outlined"
-                                        data={multiData?.data?.[0]?.data||[]}
-                                        optionDesc={"domaindesc"}
-                                        optionValue={"domainvalue"}
+            <div>
+                {view === "GRID" ? (
+                <React.Fragment>
+                    <div style={{ height: 10 }}></div>
+                        <TableZyx   
+                            columns={columns}
+                            data={gridData}
+                            ButtonsElement={() => (
+                                <Box width={1} style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                                    <Button
+                                        className={classes.button}
+                                        variant="contained"
+                                        color="primary"
+                                        disabled={mainResult.loading || !(gridData.length > 0)}
+                                        onClick={() => setOpenModal(true)}
+                                        startIcon={<AssessmentIcon />}
+                                    >
+                                        {t(langKeys.graphic_view)}
+                                    </Button>
+                                </Box>
+                            )}
+                            download={true}
+                            filterGeneral={false}
+                            loading={mainResult.loading}
+                            register={false}
+                        />
+                </React.Fragment>):
+                (<div>
+                    <Box style={{ display: "flex", justifyContent: "flex-end", gap: 8 }} className={classes.containerHeaderItem}>
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            disabled={mainResult.loading || !(gridData.length > 0)}
+                            onClick={() => setOpenModal(true)}
+                            startIcon={<Settings />}
+                        >
+                            {t(langKeys.configuration)}
+                        </Button>
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            onClick={() => setView('GRID')}
+                            startIcon={<ListIcon />}
+                        >
+                            {t(langKeys.grid_view)}
+                        </Button>
+                        <>
+                        {(mainResult.loading) ? (
+                            <div style={{ flex: 1, height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <CircularProgress />
+                            </div>
+                        ) :(graphicType === "BAR" ? (
+                            <div style={{ display: 'flex' }}>
+                                <div style={{ flex: '0 0 70%', height: 500 }}>
+                                    <ResponsiveContainer aspect={4.0 / 2}>
+                                        <BarChart
+                                            data={dataGraph}
+                                            margin={{
+                                                top: 20,
+                                                right: 30,
+                                                left: 20,
+                                                bottom: 5,
+                                            }}
+                                        >
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end" height={160} dy={5} dx={-5} />
+            
+                                            <YAxis />
+                                            <ChartTooltip formatter={(value:any, name:any)=> [value,t(name)]} />
+                                            <Bar dataKey="value" fill="#8884d8" textAnchor="end" stackId="a" type="monotone" ></Bar>
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
+                                <div style={{ overflowX: 'auto' }}>
+                                    <TableResume
+                                        graphicType={graphicType}
+                                        data={dataGraph}
                                     />
-                                    <FieldSelect
-                                        label={t(langKeys.year)}
-                                        style={{ width: 140 }}
-                                        variant="outlined"
-                                        valueDefault={year}
-                                        onChange={(value) => setYear(value?.value)}
-                                        data={dataYears}
-                                        optionDesc="value"
-                                        optionValue="value"
-                                    />
-                                    <div>
-                                        <Button
-                                            disabled={mainResult.loading}
-                                            variant="contained"
-                                            color="primary"
-                                            startIcon={<SearchIcon style={{ color: 'white' }} />}
-                                            style={{ width: 120, backgroundColor: "#55BD84" }}
-                                            onClick={() => search()}
-                                        >{t(langKeys.search)}
-                                        </Button>
-                                    </div>
                                 </div>
                             </div>
-                        )}
-                        download={true}
-                        filterGeneral={false}
-                        loading={mainResult.loading}
-                        register={false}
-                        triggerExportPersonalized={triggerExportPersonalized}
-                        exportPersonalized={triggerExportData}
-                    />
-            </React.Fragment>
+                        ) : (
+                            <div style={{ display: 'flex' }}>
+                                <div style={{ flex: '0 0 65%', height: 500 }}>
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <PieChart>
+                                            <ChartTooltip />
+                                            <Pie
+                                                data={dataGraph}
+                                                dataKey="value"
+                                                labelLine={false}
+                                                label={RenderCustomizedLabel}
+                                                nameKey="name"
+                                                cx="50%"
+                                                cy="50%"
+                                                innerRadius={40}
+                                                fill="#8884d8"
+                                            >
+                                                {dataGraph.map((item:any, i:number) => (
+                                                    <Cell
+                                                        key={item.name}
+                                                        fill={item.color}
+                                                    />
+                                                ))}
+                                            </Pie>
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                </div>
+                                <div style={{ overflowX: 'auto' }}>
+                                    <TableResume
+                                        graphicType={graphicType}
+                                        data={dataGraph}
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                        </>
+                    </Box>
+                </div>
+                )}
+
+                <SummaryGraphic
+                    openModal={openModal}
+                    setOpenModal={setOpenModal}
+                    setGraphicType={setGraphicType}
+                    setView={setView}
+                    columns={[{
+                        value: t(langKeys.month),
+                        key: 'month',
+                    }]}
+                />
+            </div>
         )
     }
     else if (viewSelected === "view-2") {
-        return (
-            <DetailHSMHistoryReport
-                data={rowSelected}
+            return <DetailUniqueContact
+                row={rowSelected}
                 setViewSelected={setViewSelected}
             />
+    } 
+    else
+        return null;
+
+}
+
+
+const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, setViewSelected }) => {
+    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+    const [allParameters, setAllParameters] = useState<Dictionary>({});
+    const mainPaginated = useSelector(state => state.main.mainPaginated);
+    const [totalrow, settotalrow] = useState(0);
+    const [pageCount, setPageCount] = useState(0);
+    const [waitExport, setWaitExport] = useState(false);
+    const resExportData = useSelector(state => state.main.exportData);
+    const dispatch = useDispatch();
+    const { t } = useTranslation();
+    
+    const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
+        setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
+        dispatch(getCollectionPaginated(selUniqueContactsConversation({
+            take: pageSize,
+            skip: pageIndex * pageSize,
+            sorts: sorts,
+            orgid:row.row.orgid,
+            corpid:row.row.corpid,
+            month:row.month,
+            year:row.year,
+            channeltype:row.channeltype,
+            filters: {
+                ...filters,
+            },
+            ...allParameters
+        })))
+    };
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.ticket_number),
+                accessor: 'ticketnum',
+                width: 'auto',
+            },
+            {
+                Header: t(langKeys.startdate),
+                accessor: 'startdate',
+                width: 'auto',
+                type: 'date',
+                sortType: 'date',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return row.startdate ? dateToLocalDate(row.startdate) : ""
+                }
+            },
+            {
+                Header: t(langKeys.starttime),
+                accessor: 'starttime',
+                width: 'auto',
+            },
+            {
+                Header: t(langKeys.enddate),
+                accessor: 'finishdate',
+                width: 'auto',
+                type: 'date',
+                sortType: 'date',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return row.finishdate ? dateToLocalDate(row.finishdate) : ""
+                }
+            },
+            {
+                Header: t(langKeys.finishtime),
+                accessor: 'finishtime',
+                width: 'auto',
+            },
+            {
+                Header: t(langKeys.communicationchannel),
+                accessor: 'channel',
+                width: 'auto',
+            },
+            {
+                Header: t(langKeys.origin),
+                accessor: 'origin',
+                width: 'auto',
+            },
+            {
+                Header: t(langKeys.person),
+                accessor: 'name',
+                width: 'auto',
+            },
+            {
+                Header: t(langKeys.email),
+                accessor: 'email',
+                width: 'auto',
+            },
+            {
+                Header: t(langKeys.phone),
+                accessor: 'phone',
+                width: 'auto',
+            },
+            {
+                Header: t(langKeys.closedby),
+                accessor: 'usertype',//preguntar a nano cual es el campo real
+                width: 'auto',
+            },
+            {
+                Header: t(langKeys.advisor),
+                accessor: 'asesor',
+                width: 'auto',
+            },
+            {
+                Header: t(langKeys.group),
+                accessor: 'usergroup',
+                width: 'auto',
+            },
+            {
+                Header: t(langKeys.closetype),
+                accessor: 'closetype',
+                width: 'auto',
+            },
+            {
+                Header: t(langKeys.ticket_fechahandoff),
+                accessor: 'handoffdate',
+                width: 'auto',
+                type: 'date',
+                sortType: 'date',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return row.handoffdate ? dateToLocalDate(row.handoffdate) : ""
+                }
+            },
+            {
+                Header: t(langKeys.report_productivity_derivationtime),
+                accessor: 'handoofftime',
+                width: 'auto',
+            },
+            {
+                Header: t(langKeys.tmo),
+                accessor: 'tmo',
+                width: 'auto',
+                helpText: t(langKeys.tmotooltip) 
+            },
+            {
+                Header: t(langKeys.tmeAgent),
+                accessor: 'tmeasesor',
+                width: 'auto',
+            },
+            {
+                Header: t(langKeys.report_productivity_holdingholdtime),
+                accessor: 'tdatime',
+                width: 'auto',
+            },
+            {
+                Header: t(langKeys.report_productivity_suspensiontime),
+                accessor: 'pauseduration', //preguntar por el campo
+                width: 'auto',
+            },
+            {
+                Header: t(langKeys.tmr),
+                accessor: 'tmrasesor',
+                width: 'auto',
+                helpText: t(langKeys.tmrtooltip)
+            },
+            {
+                Header: t(langKeys.ticket_balancetimes),
+                accessor: 'balancetimes',
+                type: 'number',
+                width: 'auto',
+            },
+        ],
+        [t]
+    );
+    
+    const triggerExportData = ({ filters, sorts }: IFetchData) => {
+        const columnsExport = columns.map(x => ({
+            key: x.accessor,
+            alias: x.Header
+        }))
+        dispatch(exportData(getUniqueContactsConversationExport({
+            filters: {
+                ...filters,
+            },
+            sorts,
+            year: row.year,
+            month:row.month,
+            channeltype:row.channeltype,
+            ...allParameters
+        }), "", "excel", false, columnsExport));
+        dispatch(showBackdrop(true));
+        setWaitExport(true);
+    };
+
+    useEffect(() => {
+        if (waitExport) {
+            if (!resExportData.loading && !resExportData.error) {
+                dispatch(showBackdrop(false));
+                setWaitExport(false);
+                resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
+            } else if (resExportData.error) {
+                const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.person).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitExport(false);
+            }
+        }
+    }, [resExportData, waitExport]);
+
+    return (
+        <TablePaginated
+            columns={columns}
+            data={mainPaginated.data}
+            totalrow={totalrow}
+            loading={mainPaginated.loading}
+            pageCount={pageCount}
+            autotrigger={true}
+            download={true}
+            ButtonsElement={() => (
+                <>
+                    <Button
+                        variant="contained"
+                        type="button"
+                        color="primary"
+                        startIcon={<ClearIcon color="secondary" />}
+                        style={{ backgroundColor: "#FB5F5F" }}
+                        onClick={() => setViewSelected("view-1")}>
+                        {t(langKeys.back)}
+                    </Button>
+                </>
+            )}
+            fetchData={fetchData}
+            exportPersonalized={triggerExportData}
+        />
+    )
+    
+}
+
+const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year,channelType}) => {
+    const dispatch = useDispatch();
+    const { t } = useTranslation();
+    const multiData = useSelector(state => state.main.multiDataAux);
+    const mainResult = useSelector(state => state.main.mainAux);    
+    const [viewSelected, setViewSelected] = useState("view-1");
+    const [view, setView] = useState('GRID');
+    const classes = useStyles()
+    const [gridData, setGridData] = useState<any[]>([]);
+    const [dataGraph, setdataGraph] = useState<any>([]);
+    const [rowSelected, setRowSelected] = useState<any>(null);
+    const [openModal, setOpenModal] = useState(false);
+    const [graphicType, setGraphicType] = useState('BAR');
+
+    const cell = (props: any) => {
+        const column = props.cell.column;
+        const row = props.cell.row.original;
+        if(row.client === "Total"){
+            return <div><b>{row[column.id]}</b></div>
+        }else if(column.id.includes('_')){
+            return <div onClick={()=>handleView(row,column.id.split('_')[1])}>{row[column.id]}</div>
+        }else{
+            return <div>{row[column.id]}</div>
+        }
+    }
+    
+    const handleView = (row: Dictionary, month:number) => {
+        setRowSelected({
+            row,
+            month,
+            year,
+            channeltype: channelType
+        })
+        setViewSelected("view-2");
+    }
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.client),
+                accessor: 'client',
+                width: 'auto',
+                Cell: (props: any) => {
+                    const column = props.cell.column;
+                    const row = props.cell.row.original;
+                    if(row.client === "Total"){
+                        return <div><b>{row[column.id]}</b></div>
+                    }else{
+                        return <div>{row[column.id]}</div>
+                    }
+                }
+            },
+            {
+                Header: t(langKeys.month_01),
+                accessor: 'month_1',
+                width: 'auto',
+                type: 'number',
+                Cell:cell
+            },
+            {
+                Header: t(langKeys.month_02),
+                accessor: 'month_2',
+                width: 'auto',
+                type: 'number',
+                Cell:cell
+            },
+            {
+                Header: t(langKeys.month_03),
+                accessor: 'month_3',
+                width: 'auto',
+                type: 'number',
+                Cell:cell
+            },
+            {
+                Header: t(langKeys.month_04),
+                accessor: 'month_4',
+                width: 'auto',
+                type: 'number',
+                Cell:cell
+            },
+            {
+                Header: t(langKeys.month_05),
+                accessor: 'month_5',
+                width: 'auto',
+                type: 'number',
+                Cell:cell
+            },
+            {
+                Header: t(langKeys.month_06),
+                accessor: 'month_6',
+                width: 'auto',
+                type: 'number',
+                Cell:cell
+            },
+            {
+                Header: t(langKeys.month_07),
+                accessor: 'month_7',
+                width: 'auto',
+                type: 'number',
+                Cell:cell
+            },
+            {
+                Header: t(langKeys.month_08),
+                accessor: 'month_8',
+                width: 'auto',
+                type: 'number',
+                Cell:cell
+            },
+            {
+                Header: t(langKeys.month_09),
+                accessor: 'month_9',
+                width: 'auto',
+                type: 'number',
+                Cell:cell
+            },
+            {
+                Header: t(langKeys.month_10),
+                accessor: 'month_10',
+                width: 'auto',
+                type: 'number',
+                Cell:cell
+            },
+            {
+                Header: t(langKeys.month_11),
+                accessor: 'month_11',
+                width: 'auto',
+                type: 'number',
+                Cell:cell
+            },
+            {
+                Header: t(langKeys.month_12),
+                accessor: 'month_12',
+                width: 'auto',
+                type: 'number',
+                Cell:cell
+            },
+            {
+                Header: <b>{t(langKeys.total)}</b>,
+                accessor: 'total',
+                width: 'auto',
+                type: 'number',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return <b>{row.total}</b>
+                }
+            },
+        ],
+        [t]
+    );
+    
+    useEffect(() => {
+        if (!mainResult.loading && mainResult?.key?.includes("UFN_REPORT_UNIQUECONTACTS_SEL")){
+            let mainTotal:any = {
+                client: "Total",
+                month_1: 0, month_2: 0, month_3: 0, month_4: 0, month_5: 0, month_6: 0, month_7: 0, month_8: 0, month_9: 0, month_10: 0, month_11: 0, month_12: 0, total: 0
+            }
+            let processedData = mainResult.data.reduce((acc:any,x)=>{
+                let clientdata = multiData.data[1].data.filter(y=>(x.corpid === y.corpid && x.orgid===y.orgid))[0]
+                let indexField = acc?.findIndex((y:any)=>(y).client===`${clientdata.corpdesc} - ${clientdata.orgdesc}`)                
+                if(indexField<0){
+                    mainTotal[`month_${x.month}`] += x.conversation
+                    mainTotal.total += x.conversation
+                    return([...acc,{
+                        client: `${clientdata.corpdesc} - ${clientdata.orgdesc}`,
+                        corpid: x.corpid,
+                        orgid: x.orgid,
+                        month_1: x.month === 1?x.conversation:0,
+                        month_2: x.month === 2?x.conversation:0,
+                        month_3: x.month === 3?x.conversation:0,
+                        month_4: x.month === 4?x.conversation:0,
+                        month_5: x.month === 5?x.conversation:0,
+                        month_6: x.month === 6?x.conversation:0,
+                        month_7: x.month === 7?x.conversation:0,
+                        month_8: x.month === 8?x.conversation:0,
+                        month_9: x.month === 9?x.conversation:0,
+                        month_10: x.month === 10?x.conversation:0,
+                        month_11: x.month === 11?x.conversation:0,
+                        month_12: x.month === 12?x.conversation:0,
+                        total: x.conversation||0
+                    }])
+                }else{
+                    mainTotal[`month_${x.month}`] += x.conversation
+                    mainTotal.total += x.conversation
+                    acc[indexField][`month_${x.month}`] = x.conversation
+                    acc[indexField].total += x.conversation
+                    return acc
+                }
+            },[])
+            setGridData([...processedData,mainTotal]||[]);
+            setdataGraph(Object.keys(mainTotal).filter(x=>x.includes('_')).reduce((acc:any,x:string, i:number)=>[...acc,{name:t(x),value:mainTotal[x], percentage: mainTotal[x]*100/mainTotal.total, color:COLORS[i]}],[]))
+            dispatch(showBackdrop(false));
+        }
+    }, [mainResult])
+
+
+    if (viewSelected === "view-1") {
+
+        return (
+            <div>
+                {view === "GRID" ? (
+                <React.Fragment>
+                    <div style={{ height: 10 }}></div>
+                        <TableZyx   
+                            columns={columns}
+                            data={gridData}
+                            ButtonsElement={() => (
+                                <Box width={1} style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                                    <Button
+                                        className={classes.button}
+                                        variant="contained"
+                                        color="primary"
+                                        disabled={mainResult.loading || !(gridData.length > 0)}
+                                        onClick={() => setOpenModal(true)}
+                                        startIcon={<AssessmentIcon />}
+                                    >
+                                        {t(langKeys.graphic_view)}
+                                    </Button>
+                                </Box>
+                            )}
+                            download={true}
+                            filterGeneral={false}
+                            loading={mainResult.loading}
+                            register={false}
+                        />
+                </React.Fragment>):
+                (<div>
+                    <Box style={{ display: "flex", justifyContent: "flex-end", gap: 8 }} className={classes.containerHeaderItem}>
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            disabled={mainResult.loading || !(gridData.length > 0)}
+                            onClick={() => setOpenModal(true)}
+                            startIcon={<Settings />}
+                        >
+                            {t(langKeys.configuration)}
+                        </Button>
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            onClick={() => setView('GRID')}
+                            startIcon={<ListIcon />}
+                        >
+                            {t(langKeys.grid_view)}
+                        </Button>
+                        <>
+                        {(mainResult.loading) ? (
+                            <div style={{ flex: 1, height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <CircularProgress />
+                            </div>
+                        ) :(graphicType === "BAR" ? (
+                            <div style={{ display: 'flex' }}>
+                                <div style={{ flex: '0 0 70%', height: 500 }}>
+                                    <ResponsiveContainer aspect={4.0 / 2}>
+                                        <BarChart
+                                            data={dataGraph}
+                                            margin={{
+                                                top: 20,
+                                                right: 30,
+                                                left: 20,
+                                                bottom: 5,
+                                            }}
+                                        >
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis dataKey="name" style={{ fontSize: "0.8em" }} angle={315} interval={0} textAnchor="end" height={160} dy={5} dx={-5} />
+            
+                                            <YAxis />
+                                            <ChartTooltip formatter={(value:any, name:any)=> [value,t(name)]} />
+                                            <Bar dataKey="value" fill="#8884d8" textAnchor="end" stackId="a" type="monotone" ></Bar>
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
+                                <div style={{ overflowX: 'auto' }}>
+                                    <TableResume
+                                        graphicType={graphicType}
+                                        data={dataGraph}
+                                    />
+                                </div>
+                            </div>
+                        ) : (
+                            <div style={{ display: 'flex' }}>
+                                <div style={{ flex: '0 0 65%', height: 500 }}>
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <PieChart>
+                                            <ChartTooltip />
+                                            <Pie
+                                                data={dataGraph}
+                                                dataKey="value"
+                                                labelLine={false}
+                                                label={RenderCustomizedLabel}
+                                                nameKey="name"
+                                                cx="50%"
+                                                cy="50%"
+                                                innerRadius={40}
+                                                fill="#8884d8"
+                                            >
+                                                {dataGraph.map((item:any, i:number) => (
+                                                    <Cell
+                                                        key={item.name}
+                                                        fill={item.color}
+                                                    />
+                                                ))}
+                                            </Pie>
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                </div>
+                                <div style={{ overflowX: 'auto' }}>
+                                    <TableResume
+                                        graphicType={graphicType}
+                                        data={dataGraph}
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                        </>
+                    </Box>
+                </div>
+                )}
+
+                <SummaryGraphic
+                    openModal={openModal}
+                    setOpenModal={setOpenModal}
+                    setGraphicType={setGraphicType}
+                    setView={setView}
+                    columns={[{
+                        value: t(langKeys.month),
+                        key: 'month',
+                    }]}
+                />
+            </div>
         )
+    }
+    else if (viewSelected === "view-2") {
+            return <DetailConversationQuantity
+                row={rowSelected}
+                setViewSelected={setViewSelected}
+            />
     } 
     else
         return null;
@@ -495,21 +1321,17 @@ const UniqueContactsReportDetail: FC = () => {
 }
 
 const UniqueContactsReport: FC = () => {
-    const [pageSelected, setPageSelected] = useState(0);    
-    const [companydomain, setcompanydomain] = useState<any>([]);
-    const [groupsdomain, setgroupsdomain] = useState<any>([]);
-    const multiDataAux = useSelector(state => state.main.multiDataAux);
+    const [pageSelected, setPageSelected] = useState(0);   
     const dispatch = useDispatch();
-    useEffect(() => {
-        if(!multiDataAux.loading){
-            setcompanydomain(multiDataAux.data[0]?.data||[]) 
-            setgroupsdomain(multiDataAux.data[1]?.data||[])    
-        }
-    }, [multiDataAux])
+    const classes = useStyles()
+    const { t } = useTranslation();
+    const [channelType, setChannelType] = useState("");
+    const [year, setYear] = useState(`${new Date().getFullYear()}`);
+    const multiData = useSelector(state => state.main.multiDataAux);
     useEffect(() => {
         dispatch(getMultiCollectionAux([
             getValuesFromDomain("TIPOCANAL"),
-            //getValuesFromDomain("GRUPOS")
+            selOrgSimpleList()
         ]))
         return () => {
             dispatch(resetMainAux());
@@ -518,9 +1340,55 @@ const UniqueContactsReport: FC = () => {
             dispatch(resetMultiMainAux2());
         }
     }, [])
-    const { t } = useTranslation();
+    function search(){
+        dispatch(showBackdrop(true))
+        dispatch(getCollectionAux(
+            getUniqueContactsSel(
+                {
+                    year: year,
+                    channeltype: channelType,
+                }
+            )
+        ))
+    }
     return (
-        <Fragment>
+        <Fragment>            
+            <div className={classes.containerHeader} style={{display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'space-between'}}>
+                <div style={{display: 'flex', gap: 8}}>      
+                    <FieldSelect
+                        label={t(langKeys.year)}
+                        style={{ width: 140 }}
+                        variant="outlined"
+                        valueDefault={year}
+                        onChange={(value) => setYear(value?.value)}
+                        data={dataYears}
+                        optionDesc="value"
+                        optionValue="value"
+                    />                            
+                    <FieldMultiSelect
+                        label={t(langKeys.channeltype)}
+                        className={classes.filterComponent}
+                        onChange={(value) => {setChannelType(value.map((o: Dictionary) => o.domainvalue).join())}}
+                        valueDefault={channelType}
+                        variant="outlined"
+                        data={multiData?.data?.[0]?.data||[]}
+                        loading={multiData.loading}
+                        optionDesc={"domaindesc"}
+                        optionValue={"domainvalue"}
+                    />
+                    <div>
+                        <Button
+                            disabled={multiData.loading}
+                            variant="contained"
+                            color="primary"
+                            startIcon={<SearchIcon style={{ color: 'white' }} />}
+                            style={{ width: 120, backgroundColor: "#55BD84" }}
+                            onClick={() => search()}
+                        >{t(langKeys.search)}
+                        </Button>
+                    </div>
+                </div>
+            </div>
             <Tabs
                 value={pageSelected}
                 indicatorColor="primary"
@@ -532,7 +1400,8 @@ const UniqueContactsReport: FC = () => {
                 <AntTab label={t(langKeys.uniquecontacts)}/>
                 <AntTab label={t(langKeys.conversationquantity)}/>
             </Tabs>
-            {pageSelected === 0 && <UniqueContactsReportDetail />}
+            {pageSelected === 0 && <UniqueContactsReportDetail year={year} channelType={channelType}/>}
+            {pageSelected === 1 && <ConversationQuantityReportDetail year={year} channelType={channelType}/>}
         </Fragment>
     )
 }

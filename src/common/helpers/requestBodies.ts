@@ -228,6 +228,11 @@ export const insOrgUser = ({ roleid, orgid, bydefault, labels, groups, channels,
     key: "UFN_ORGUSER_INS",
     parameters: { orgid, roleid, usersupervisor: supervisor, bydefault, labels, groups, channels, status, type, defaultsort: 1, operation, redirect }
 });
+export const selOrgSimpleList = (): IRequestBody => ({
+    method: "UFN_ORG_LST_SIMPLE",
+    key: "UFN_ORG_LST_SIMPLE",
+    parameters: { }
+});
 
 export const insProperty = ({ orgid, communicationchannelid, id, propertyname, propertyvalue, description, status, type, category, domainname, group, level, operation, corpid }: Dictionary): IRequestBody => ({
     method: "UFN_PROPERTY_INS",
@@ -526,6 +531,36 @@ export const getPaginatedTicket = ({ skip, take, filters, sorts, startdate, endd
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
+export const selUniqueContactsPcc = ({ corpid, orgid,year, month, channeltype, skip, take, filters, sorts }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_REPORT_UNIQUECONTACTS_PCC_SEL",
+    methodCount: "UFN_REPORT_UNIQUECONTACTS_PCC_TOTALRECORDS",
+    parameters: {
+        skip,
+        take,
+        filters,
+        sorts,
+        year,
+        month,
+        channeltype:channeltype||'',
+        origin: "uniquecontacts",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+export const selUniqueContactsConversation = ({ corpid, orgid,year, month, channeltype, skip, take, filters, sorts }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_REPORT_UNIQUECONTACTS_CONVERSATION_SEL",
+    methodCount: "UFN_REPORT_UNIQUECONTACTS_CONVERSATION_TOTALRECORDS",
+    parameters: {
+        skip,
+        take,
+        filters,
+        sorts,
+        year:parseInt(year),
+        month:parseInt(month),
+        channeltype:channeltype||'',
+        origin: "uniquecontactsconversation",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
 
 export const getTicketExport = ({ filters, sorts, startdate, enddate, ...allParameters }: Dictionary): IRequestBody => ({
     method: "UFN_CONVERSATIONGRID_EXPORT",
@@ -540,6 +575,34 @@ export const getTicketExport = ({ filters, sorts, startdate, enddate, ...allPara
         usergroup: allParameters['usergroup'] ? allParameters['usergroup'] : "",
         campaignid: allParameters['campaignid'] ? allParameters['campaignid'] : "",
         channel: allParameters['channel'] ? allParameters['channel'] : "",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+
+export const getUniqueContactsExport = ({ filters, sorts, year, month, channeltype }: Dictionary): IRequestBody => ({
+    method: "UFN_REPORT_UNIQUECONTACTS_PCC_EXPORT",
+    key: "UFN_REPORT_UNIQUECONTACTS_PCC_EXPORT",
+    parameters: {
+        origin: "uniquecontacts",
+        filters,
+        sorts,
+        year,
+        month,
+        channeltype,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+
+export const getUniqueContactsConversationExport = ({ filters, sorts, year, month, channeltype }: Dictionary): IRequestBody => ({
+    method: "UFN_REPORT_UNIQUECONTACTS_CONVERSATION_EXPORT",
+    key: "UFN_REPORT_UNIQUECONTACTS_CONVERSATION_EXPORT",
+    parameters: {
+        origin: "uniquecontactsconversation",
+        filters,
+        sorts,
+        year,
+        month,
+        channeltype,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
@@ -3274,7 +3337,7 @@ export const getHSMHistoryList = ({ startdate, enddate }: Dictionary): IRequestB
 })
 export const getUniqueContactsSel = ({ year, channeltype }: Dictionary): IRequestBody => ({
     method: "UFN_REPORT_UNIQUECONTACTS_SEL",
-    key: "UFN_REPORT_UNIQUECONTACTS_SEL",
+    key: `UFN_REPORT_UNIQUECONTACTS_SEL`,
     parameters: {
         year, channeltype,
         offset: (new Date().getTimezoneOffset() / 60) * -1
