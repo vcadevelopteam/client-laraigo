@@ -543,7 +543,7 @@ export const selUniqueContactsConversation = ({ corpid, orgid,year, month, chann
         year:parseInt(year),
         month:parseInt(month),
         channeltype:channeltype||'',
-        origin: "uniquecontacts",
+        origin: "uniquecontactsconversation",
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })

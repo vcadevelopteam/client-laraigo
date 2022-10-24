@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, Fragment, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, Fragment, useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
@@ -275,7 +275,7 @@ const DetailUniqueContact: React.FC<DetailUniqueContactProps> = ({ row, setViewS
                 width: 'auto',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    return <div>{row.channels.substring(0,30)}...</div>
+                    return <div>{row?.channels?.substring(0,30)}...</div>
                 }
             },
             {
@@ -286,7 +286,7 @@ const DetailUniqueContact: React.FC<DetailUniqueContactProps> = ({ row, setViewS
                 sortType: 'datetime',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    return row.lastcontact ? convertLocalDate(row.lastcontact).toLocaleString() : ""
+                    return row.firstcontact ? convertLocalDate(row.firstcontact).toLocaleString() : ""
                 }
             },
             {
@@ -821,7 +821,7 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
             },
             {
                 Header: t(langKeys.closedby),
-                accessor: 'closedby',//preguntar a nano cual es el campo real
+                accessor: 'usertype',//preguntar a nano cual es el campo real
                 width: 'auto',
             },
             {
@@ -868,12 +868,12 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
             },
             {
                 Header: t(langKeys.report_productivity_holdingholdtime),
-                accessor: 'pauseduration',
+                accessor: 'tdatime',
                 width: 'auto',
             },
             {
                 Header: t(langKeys.report_productivity_suspensiontime),
-                accessor: 'suspensiontime', //preguntar por el campo
+                accessor: 'pauseduration', //preguntar por el campo
                 width: 'auto',
             },
             {
@@ -885,6 +885,7 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
             {
                 Header: t(langKeys.ticket_balancetimes),
                 accessor: 'balancetimes',
+                type: 'number',
                 width: 'auto',
             },
         ],
