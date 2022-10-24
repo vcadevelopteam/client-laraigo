@@ -402,6 +402,11 @@ const ImportXmlModal: FC<{ openModal: boolean, setOpenModal: (param: any) => voi
             if (!importResult.loading && !importResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(importResult.code || "success") }))
                 dispatch(showBackdrop(false));
+
+                setValue('url', '');
+                setValue('catalogname', '');
+                setValue('catalogid', '');
+
                 setWaitSave(false);
                 onTrigger();
             }
@@ -469,7 +474,12 @@ const ImportXmlModal: FC<{ openModal: boolean, setOpenModal: (param: any) => voi
             open={openModal}
             title={t(langKeys.importxml)}
             buttonText1={t(langKeys.cancel)}
-            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton1={() => {
+                setValue('url', '');
+                setValue('catalogname', '');
+                setValue('catalogid', '');
+                setOpenModal(false);
+            }}
             buttonText2={t(langKeys.save)}
             handleClickButton2={onSubmit}
             button2Type="submit"
