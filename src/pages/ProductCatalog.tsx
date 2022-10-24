@@ -376,7 +376,7 @@ const ImportXmlModal: FC<{ openModal: boolean, setOpenModal: (param: any) => voi
     const uploadResult = useSelector(state => state.main.uploadFile);
     const user = useSelector(state => state.login.validateToken.user);
 
-    const [checkedFavorite, setCheckedFavorite] = useState(false);
+    const [checkedUrl, setCheckedUrl] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
     const [fileAttachment, setFileAttachment] = useState<File | null>(null);
@@ -495,7 +495,7 @@ const ImportXmlModal: FC<{ openModal: boolean, setOpenModal: (param: any) => voi
                     label={t(langKeys.url)}
                     valueDefault={getValues('url')}
                     error={errors?.url?.message}
-                    disabled={!checkedFavorite}
+                    disabled={checkedUrl}
                     className="col-9"
                     onChange={(value) => setValue('url', value)}
                 />
@@ -503,11 +503,11 @@ const ImportXmlModal: FC<{ openModal: boolean, setOpenModal: (param: any) => voi
                     <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.uploadFile)}</Box>
                     <FormControlLabel
                         style={{ paddingLeft: 10 }}
-                        control={<IOSSwitch checked={checkedFavorite} onChange={(e) => { setCheckedFavorite(e.target.checked); }} />}
+                        control={<IOSSwitch checked={checkedUrl} onChange={(e) => { setCheckedUrl(e.target.checked); }} />}
                         label={""}
                     />
                 </div>
-                {!checkedFavorite && <React.Fragment>
+                {checkedUrl && <React.Fragment>
                     <input
                         accept="text/xml"
                         style={{ display: 'none' }}
