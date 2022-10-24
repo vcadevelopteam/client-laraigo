@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable no-useless-escape */
 /* eslint-disable react-hooks/exhaustive-deps */
 import clsx from 'clsx';

@@ -3,7 +3,7 @@ import React, { FC, Fragment, useEffect, useState } from 'react'; // we need thi
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, DialogZyx, FieldEditMulti, TemplateSwitch, DialogZyxDiv, FieldEditWithSelect } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, DialogZyx, TemplateSwitch, DialogZyxDiv, FieldEditWithSelect } from 'components';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
@@ -424,7 +424,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
     }, [multiData])
 
     const selectionVariableSelect = (e: React.ChangeEvent<any>, value: string) => {
-        const { item, inputkey, inputvalue, range, changer } = variableHandler;
+        const { inputvalue, range, changer } = variableHandler;
         if (range[1] !== -1 && (range[1] > range[0] || range[0] !== -1)) {
             changer(inputvalue.substring(0, range[0] + 2) + value + (inputvalue[range[1] - 2] !== '}' ? '}}' : '') + inputvalue.substring(range[1] - 2));
             setVariableHandler(new VariableHandler());

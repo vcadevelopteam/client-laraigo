@@ -18,7 +18,6 @@ import { Descendant } from "slate";
 import { Dictionary, MultiData } from "@types";
 import { execute, getCollection, getMultiCollection, resetAllMain, uploadFile, cleanMemoryTable, setMemoryTable } from 'store/main/actions';
 import { FieldEdit, FieldEditMulti, FieldSelect, FieldView, TemplateBreadcrumbs, TemplateIcons, TitleDetail } from 'components';
-import { html } from '@codemirror/lang-html';
 import { langKeys } from 'lang/keys';
 import { makeStyles } from '@material-ui/core/styles';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
@@ -415,7 +414,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
     const classes = useStyles();
     const dataCategory = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataLanguage = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const dataChannel = multiData[2] && multiData[2].success ? multiData[2].data.filter(x => x.type != "WHAG") : [];
+    const dataChannel = multiData[2] && multiData[2].success ? multiData[2].data.filter(x => x.type !== "WHAG") : [];
     const addRequest = useSelector(state => state.channel.requestAddTemplate);
     const executeRes = useSelector(state => state.main.execute);
     const uploadResult = useSelector(state => state.main.uploadFile);

@@ -876,7 +876,7 @@ const TableZyx = React.memo(({
                                         column.activeOnHover ?
                                             <th style={{ width: "0px" }} key="header-floating"></th> :
                                             <TableCell key={ii} style={useSelection ? {
-                                                ...(column.width == 'auto' ? {
+                                                ...(column.width === 'auto' ? {
                                                     flex: 1,
                                                 } : {
                                                     minWidth: column.minWidth,

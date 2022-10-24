@@ -172,16 +172,16 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
         console.log(variablecontext)
         const variablesList = item.quickreply.match(/({{)(.*?)(}})/g) || [];
         let myquickreply = item.quickreply
-        .replace("{{numticket}}", ticketSelected?.ticketnum)
-        .replace("{{client_name}}", ticketSelected?.displayname)
-        .replace("{{agent_name}}", user?.firstname + " " + user?.lastname)
+            .replace("{{numticket}}", ticketSelected?.ticketnum)
+            .replace("{{client_name}}", ticketSelected?.displayname)
+            .replace("{{agent_name}}", user?.firstname + " " + user?.lastname)
 
-        variablesList.map((x:any)=>{
-            let variableData = variablecontext?.[x.substring(2,x.length-2)]
-            if(!!variableData){
-                myquickreply = myquickreply.replaceAll(x,variableData.Value)
-            }else{
-                myquickreply = myquickreply.replaceAll(x,"")
+        variablesList.forEach((x: any) => {
+            let variableData = variablecontext?.[x.substring(2, x.length - 2)]
+            if (!!variableData) {
+                myquickreply = myquickreply.replaceAll(x, variableData.Value)
+            } else {
+                myquickreply = myquickreply.replaceAll(x, "")
             }
         })
 
