@@ -122,6 +122,7 @@ export const apiUrls = {
     DEL_USER: `${BASE_URL}/user/delete`,
     GETGEOCODE: `${BASE_URL}/gmaps/geocode`,
     GETLOCATION: `${BASE_URL}/flow/location`,
+    GETVERSION: `${BASE_URL}/check/version`,
     TRIGGERBLOCK: `${BASE_URL}/flow/triggerblock`,
 
 

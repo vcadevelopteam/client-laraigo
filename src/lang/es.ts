@@ -167,6 +167,12 @@ const translation: LangKeys = {
     channel_plural: 'Canales',
 
     configuration: 'Configuración',
+    systeminformation: 'Información del sistema',
+    laraigoappversion: 'Versión Laraigo App',
+    laraigoengineversion: 'Versión Laraigo Engine',
+    deploymentdate: 'Fecha de despliegue',
+    generalhelp: 'Ayuda General',
+    aboutlaraigo: 'Acerca de Laraigo',
     template: 'Plantilla',
     templatedownload: "descargar Template",
     configuration_plural: 'Configuraciones',
