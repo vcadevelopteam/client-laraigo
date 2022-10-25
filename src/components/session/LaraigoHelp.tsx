@@ -13,6 +13,7 @@ import { useDispatch } from "react-redux";
 import { useSelector } from 'hooks';
 import { getVersion } from "store/getversion/actions";
 import { convertLocalDate } from "common/helpers";
+import { LaraigoLogo } from "icons";
 
 const useNotificationMenuStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -96,19 +97,31 @@ const LaraigoHelp: FC<BoxProps> = (boxProps) => {
             <Dialog fullWidth onClose={handleCloseDialog} aria-labelledby="simple-dialog-title" open={openDialog}>
                 
                 <MuiDialogTitle disableTypography className={classes.root}>
-                    <Typography variant="h6" style={{textAlign: 'center'}}><Trans i18nKey={langKeys.systeminformation} /></Typography>
+                    <Typography variant="h5" ><Trans i18nKey={langKeys.systeminformation} /></Typography>
                     <IconButton aria-label="close" className={classes.closeButton} onClick={handleCloseDialog}>
                         <CloseIcon />
                     </IconButton>
                 </MuiDialogTitle>
                 <DialogContent>
-                    <div><Typography variant="subtitle1" ><Trans i18nKey={langKeys.laraigoappversion} /></Typography></div>
-                    <div><Typography variant="subtitle2" style={{textAlign: 'center'}}>{version.build}</Typography></div>
-                    <div><Typography variant="subtitle1" style={{paddingTop: '15px'}}><Trans i18nKey={langKeys.laraigoengineversion} /></Typography></div>
-                    <div><Typography variant="subtitle2" style={{textAlign: 'center'}}>{getVersionData?.getVersion?.data?.version}</Typography></div>
-                    <div><Typography variant="subtitle1" style={{paddingTop: '15px', fontWeight: 'bold'}}><Trans i18nKey={langKeys.deploymentdate} /></Typography></div>
-                    <div><Typography variant="subtitle2" style={{textAlign: 'center'}}></Typography></div>
-                    <div><Typography variant="subtitle2" style={{textAlign: 'center'}}>{getVersionData?.getVersion?.data?.date}</Typography></div>
+                    <div style={{display:"flex"}}>
+                        <div style={{padding: 15, paddingTop:0}}>
+                            <LaraigoLogo style={{ width: 100, height: 100 }} />
+                        </div>
+                        <div style={{width: "80%", paddingLeft:15}}>
+                            <div style={{justifyContent: 'space-between', display: 'flex'}}>
+                                <Typography variant="subtitle1" ><b><Trans i18nKey={langKeys.laraigoappversion} /></b></Typography>
+                                <Typography variant="subtitle2">{version.build}</Typography>
+                            </div>
+                            <div style={{justifyContent: 'space-between', display: 'flex',paddingTop: '15px'}}>
+                                <Typography variant="subtitle1" ><b><Trans i18nKey={langKeys.laraigoengineversion} /></b></Typography>
+                                <Typography variant="subtitle2">{getVersionData?.getVersion?.data?.version}</Typography>
+                            </div>
+                            <div style={{justifyContent: 'space-between', display: 'flex',paddingTop: '15px', paddingBottom: '15px'}}>
+                                <Typography variant="subtitle1" ><b><Trans i18nKey={langKeys.deploymentdate} /></b></Typography>
+                                <Typography variant="subtitle2">{getVersionData?.getVersion?.data?.date}</Typography>
+                            </div>
+                        </div>
+                    </div>
                 </DialogContent>
             </Dialog>
             <IconButton
