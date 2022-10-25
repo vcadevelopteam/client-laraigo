@@ -74,6 +74,9 @@ const LaraigoHelp: FC<BoxProps> = (boxProps) => {
     useEffect(() => {
         dispatch(getVersion())
     }, []);
+    useEffect(() => {
+        console.log(getVersionData)
+    }, [getVersionData]);
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -104,7 +107,8 @@ const LaraigoHelp: FC<BoxProps> = (boxProps) => {
                     <div><Typography variant="subtitle1" style={{paddingTop: '15px'}}><Trans i18nKey={langKeys.laraigoengineversion} /></Typography></div>
                     <div><Typography variant="subtitle2" style={{textAlign: 'center'}}>{getVersionData?.getVersion?.data?.version}</Typography></div>
                     <div><Typography variant="subtitle1" style={{paddingTop: '15px', fontWeight: 'bold'}}><Trans i18nKey={langKeys.deploymentdate} /></Typography></div>
-                    <div><Typography variant="subtitle2" style={{textAlign: 'center'}}>{convertLocalDate(getVersionData?.getVersion?.data?.date||null)}</Typography></div>
+                    <div><Typography variant="subtitle2" style={{textAlign: 'center'}}></Typography></div>
+                    <div><Typography variant="subtitle2" style={{textAlign: 'center'}}>{getVersionData?.getVersion?.data?.date}</Typography></div>
                 </DialogContent>
             </Dialog>
             <IconButton
