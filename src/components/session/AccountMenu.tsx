@@ -13,6 +13,7 @@ import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import { ManageOrganization, BadgeGo, StatusConnection } from 'components';
 import { connectAgentAPI, connectAgentUI, disconnectSocket, emitEvent } from "store/inbox/actions";
 import { disconnectVoxi } from "store/voximplant/actions";
+import { version } from 'common/constants';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -113,6 +114,9 @@ const AccountMenu: FC = () => {
 
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popoverxx' : undefined;
+
+    console.log(version.build)
+
 
     return (
         <div className={classes.root}>
