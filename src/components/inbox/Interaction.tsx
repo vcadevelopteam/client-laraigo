@@ -330,7 +330,12 @@ const Carousel: React.FC<{ carousel: Dictionary[] }> = ({ carousel }) => {
     return (
         <div className={classes.containerCarousel}>
             <div style={{ height: 157 }}>
-                <img src={carousel[pageSelected].mediaUrl} className={classes.imageCardCarousel} alt="logocarousel" />
+                <img
+                    src={carousel[pageSelected].mediaUrl}
+                    className={classes.imageCardCarousel}
+                    alt="logocarousel"
+                    crossOrigin={carousel[pageSelected].mediaUrl.includes('cloud-object-storage') ? 'anonymous' : undefined}
+                />
             </div>
             <div style={{ padding: '12px', wordBreak: 'break-word' }}>
                 <div>
@@ -560,7 +565,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                     [classes.interactionTextAgent]: userType !== 'client',
                 })} style={{ display: 'inline-block' }}>
                     {text}
-                    <div className={classes.containerQuickreply} style={{justifyContent:'space-evenly', display:"flex"}}>
+                    <div className={classes.containerQuickreply} style={{ justifyContent: 'space-evenly', display: "flex" }}>
                         {listButtons.map((item: Dictionary, index: number) => {
                             return <div key={index} className={classes.buttonQuickreply}>{item.text || item.title}
                             </div>
