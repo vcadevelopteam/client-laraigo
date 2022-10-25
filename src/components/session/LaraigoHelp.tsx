@@ -102,13 +102,18 @@ const LaraigoHelp: FC<BoxProps> = (boxProps) => {
                     </IconButton>
                 </MuiDialogTitle>
                 <DialogContent>
-                    <div><Typography variant="subtitle1" ><Trans i18nKey={langKeys.laraigoappversion} /></Typography></div>
-                    <div><Typography variant="subtitle2" style={{textAlign: 'center'}}>{version.build}</Typography></div>
-                    <div><Typography variant="subtitle1" style={{paddingTop: '15px'}}><Trans i18nKey={langKeys.laraigoengineversion} /></Typography></div>
-                    <div><Typography variant="subtitle2" style={{textAlign: 'center'}}>{getVersionData?.getVersion?.data?.version}</Typography></div>
-                    <div><Typography variant="subtitle1" style={{paddingTop: '15px', fontWeight: 'bold'}}><Trans i18nKey={langKeys.deploymentdate} /></Typography></div>
-                    <div><Typography variant="subtitle2" style={{textAlign: 'center'}}></Typography></div>
-                    <div><Typography variant="subtitle2" style={{textAlign: 'center'}}>{getVersionData?.getVersion?.data?.date}</Typography></div>
+                    <div style={{justifyContent: 'space-between', display: 'flex'}}>
+                        <Typography variant="subtitle1" ><b><Trans i18nKey={langKeys.laraigoappversion} /></b></Typography>
+                        <Typography variant="subtitle2">{version.build}</Typography>
+                    </div>
+                    <div style={{justifyContent: 'space-between', display: 'flex',paddingTop: '15px'}}>
+                        <Typography variant="subtitle1" ><b><Trans i18nKey={langKeys.laraigoengineversion} /></b></Typography>
+                        <Typography variant="subtitle2">{getVersionData?.getVersion?.data?.version}</Typography>
+                    </div>
+                    <div style={{justifyContent: 'space-between', display: 'flex',paddingTop: '15px', paddingBottom: '15px'}}>
+                        <Typography variant="subtitle1" ><b><Trans i18nKey={langKeys.deploymentdate} /></b></Typography>
+                        <Typography variant="subtitle2">{getVersionData?.getVersion?.data?.date}</Typography>
+                    </div>
                 </DialogContent>
             </Dialog>
             <IconButton
