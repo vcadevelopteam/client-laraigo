@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, IconButton, Checkbox, Tabs, Avatar, Paper, InputAdornment } from '@material-ui/core';
-import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, RadioGroudFieldEdit, TitleDetail, AntTabPanel, FieldMultiSelect, FieldEditArray } from 'components';
+import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, RadioGroudFieldEdit, TitleDetail, AntTabPanel, FieldMultiSelect, FieldEditArray, FieldMultiSelectVirtualized } from 'components';
 import { RichText } from 'components/fields/RichText';
 import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
@@ -851,12 +851,12 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                         readOnly={isStatusClosed() || iSProcessLoading()}
                                     />
                                 }
-                                <FieldMultiSelect
+                                <FieldMultiSelectVirtualized
                                     label={t(langKeys.product, { count: 2 })}
                                     className={classes.field}
                                     valueDefault={getValues('leadproduct')}
                                     onChange={(v, value2: { action: "remove-option" | "select-option", option: { option: any } }) => {
-                                        const products = v?.map((o: Dictionary) => o['code']).join(',') || '';
+                                        const products = v?.map((o: Dictionary) => o['productid']).join(',') || '';
                                         setValue('leadproduct', products);
 
                                         handleUpdateLeadProducts(
@@ -867,7 +867,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     data={leadProductsDomain.data}
                                     loading={leadProductsDomain.loading}
                                     optionDesc="title"
-                                    optionValue="code"
+                                    optionValue="productid"
                                     error={errors?.leadproduct?.message}
                                 />
                             </Grid>
