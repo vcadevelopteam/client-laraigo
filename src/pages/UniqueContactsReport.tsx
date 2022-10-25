@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, Fragment, useEffect, useState } from 'react';
+import React, { FC, Fragment, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
@@ -24,6 +24,7 @@ import { Box, CircularProgress, Tabs } from '@material-ui/core';
 import { useForm } from 'react-hook-form';
 import { StreetViewPanorama } from '@react-google-maps/api';
 import TablePaginated from 'components/fields/table-paginated';
+import DialogInteractions from 'components/inbox/DialogInteractions';
 
 const COLORS = ["#0f8fe5", "#067713", "#296680", "#fc3617", "#e8187a", "#7cfa57", "#cfbace", "#4cd45f", "#fd5055", "#7e1be4", "#bf1490", "#66c6cf", "#011c3d", "#1a9595", "#4ae2c7", "#515496", "#a2aa65", "#df909c", "#3aa343", "#e0606e"];
 interface RowSelected {
@@ -79,6 +80,11 @@ const useStyles = makeStyles((theme) => ({
         [theme.breakpoints.up('sm')]: {
             display: 'flex',
         }
+    },
+    labellink: {
+        color: '#7721ad',
+        textDecoration: 'underline',
+        cursor: 'pointer'
     },
 }));
 
@@ -318,6 +324,12 @@ const DetailUniqueContact: React.FC<DetailUniqueContactProps> = ({ row, setViewS
         ],
         [t]
     );
+    useEffect(() => {
+        if (!mainPaginated.loading && !mainPaginated.error) {
+            setPageCount(fetchDataAux.pageSize ? Math.ceil(mainPaginated.count / fetchDataAux.pageSize) : 0);
+            settotalrow(mainPaginated.count);
+        }
+    }, [mainPaginated])
     
     const triggerExportData = ({ filters, sorts }: IFetchData) => {
         const columnsExport = columns.map(x => ({
@@ -519,7 +531,7 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                 Cell:cell
             },
             {
-                Header: <b>{t(langKeys.total)}</b>,
+                Header: t(langKeys.total),
                 accessor: 'total',
                 width: 'auto',
                 type: 'number',
@@ -731,12 +743,21 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
     const [allParameters, setAllParameters] = useState<Dictionary>({});
     const mainPaginated = useSelector(state => state.main.mainPaginated);
+    const mainResult = useSelector(state => state.main.mainAux2);
     const [totalrow, settotalrow] = useState(0);
+    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
     const [pageCount, setPageCount] = useState(0);
     const [waitExport, setWaitExport] = useState(false);
     const resExportData = useSelector(state => state.main.exportData);
+    const [openModal, setOpenModal] = useState(false);
+    const classes = useStyles()
     const dispatch = useDispatch();
     const { t } = useTranslation();
+
+    const openDialogInteractions = useCallback((row: any) => {
+        setOpenModal(true);
+        setRowSelected({ ...row, displayname: "" })
+    }, [mainResult]);
     
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
         setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
@@ -761,6 +782,17 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
                 Header: t(langKeys.ticket_number),
                 accessor: 'ticketnum',
                 width: 'auto',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <label
+                            className={classes.labellink}
+                            onClick={() => openDialogInteractions(row)}
+                        >
+                            {row.ticketnum}
+                        </label>
+                    )
+                }
             },
             {
                 Header: t(langKeys.startdate),
@@ -852,7 +884,7 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
             },
             {
                 Header: t(langKeys.report_productivity_derivationtime),
-                accessor: 'handoofftime',
+                accessor: 'handofftime',
                 width: 'auto',
             },
             {
@@ -910,6 +942,12 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
         dispatch(showBackdrop(true));
         setWaitExport(true);
     };
+    useEffect(() => {
+        if (!mainPaginated.loading && !mainPaginated.error) {
+            setPageCount(fetchDataAux.pageSize ? Math.ceil(mainPaginated.count / fetchDataAux.pageSize) : 0);
+            settotalrow(mainPaginated.count);
+        }
+    }, [mainPaginated])
 
     useEffect(() => {
         if (waitExport) {
@@ -927,30 +965,37 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
     }, [resExportData, waitExport]);
 
     return (
-        <TablePaginated
-            columns={columns}
-            data={mainPaginated.data}
-            totalrow={totalrow}
-            loading={mainPaginated.loading}
-            pageCount={pageCount}
-            autotrigger={true}
-            download={true}
-            ButtonsElement={() => (
-                <>
-                    <Button
-                        variant="contained"
-                        type="button"
-                        color="primary"
-                        startIcon={<ClearIcon color="secondary" />}
-                        style={{ backgroundColor: "#FB5F5F" }}
-                        onClick={() => setViewSelected("view-1")}>
-                        {t(langKeys.back)}
-                    </Button>
-                </>
-            )}
-            fetchData={fetchData}
-            exportPersonalized={triggerExportData}
-        />
+        <>
+            <TablePaginated
+                columns={columns}
+                data={mainPaginated.data}
+                totalrow={totalrow}
+                loading={mainPaginated.loading}
+                pageCount={pageCount}
+                autotrigger={true}
+                download={true}
+                ButtonsElement={() => (
+                    <>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => setViewSelected("view-1")}>
+                            {t(langKeys.back)}
+                        </Button>
+                    </>
+                )}
+                fetchData={fetchData}
+                exportPersonalized={triggerExportData}
+            />            
+            <DialogInteractions
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                ticket={rowSelected}
+            />
+        </>
     )
     
 }
@@ -1091,7 +1136,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                 Cell:cell
             },
             {
-                Header: <b>{t(langKeys.total)}</b>,
+                Header: t(langKeys.total),
                 accessor: 'total',
                 width: 'auto',
                 type: 'number',
@@ -1375,8 +1420,8 @@ const UniqueContactsReport: FC = () => {
                 textColor="primary"
                 onChange={(_, value) => setPageSelected(value)}
             >
-                <AntTab label={t(langKeys.uniquecontacts)}/>
-                <AntTab label={t(langKeys.conversationquantity)}/>
+                <AntTab label={t(langKeys.uniquecontacts).toLocaleUpperCase()} style={{fontWeight: 'bold'}}/>
+                <AntTab label={t(langKeys.conversationquantity).toLocaleUpperCase()} style={{fontWeight: 'bold'}}/>
             </Tabs>
             {pageSelected === 0 && <UniqueContactsReportDetail year={year} channelType={channelType}/>}
             {pageSelected === 1 && <ConversationQuantityReportDetail year={year} channelType={channelType}/>}
