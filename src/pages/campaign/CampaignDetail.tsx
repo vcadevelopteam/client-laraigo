@@ -203,6 +203,13 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             }
         }
         else if (['INTERNAL','EXTERNAL'].includes(detaildata.source || '')) {
+            if (detaildata.communicationchanneltype?.startsWith('MAI')) {
+                let splitMessage = message.split('{{');
+                messageVariables.forEach((v, i) => {
+                    splitMessage[i + 1] = splitMessage[i + 1]?.replace(`${v.name}}}`, `${v.text || i + 1}}}`);
+                });
+                message = splitMessage.join('{{');
+            }
             tablevariable.forEach((v: any, i: number) => {
                 subject = subject.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
                 header = header.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
@@ -315,7 +322,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                         personid: 0,
                         personcommunicationchannel: '',
                         personcommunicationchannelowner: p[Object.keys(p)[0]] || '',
-                        type: '',
+                        type: 'EXTERNAL',
                         displayname: '',
                         status: 'ACTIVO',
                         field1: p[Object.keys(p)[0]] || '',
@@ -347,8 +354,10 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                             personid: p.personid || 0,
                             personcommunicationchannel: '',
                             personcommunicationchannelowner: p.email || p.alternativeemail || '',
-                            type: p.type || '',
-                            displayname: p.name || '',
+                            type: detaildata.source || '',
+                            displayname: detaildata.source === 'PERSON'
+                            ? `${p.firstname || ''} ${p.lastname || ''}`.trim()
+                            : detaildata.source === 'LEAD' ? `${p.name || ''}` : '',
                             status: 'ACTIVO',
                             field1: p.email || p.alternativeemail || '',
                             field2: p[messageVariables[0]?.text] || '',
@@ -370,7 +379,6 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                         })
                         return ap;
                     }, []);
-
                 }
                 else {
                     campaignMemberList = detaildata.person?.reduce((ap, p) => {
@@ -379,8 +387,10 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                             personid: p.personid || 0,
                             personcommunicationchannel: '',
                             personcommunicationchannelowner: p.phone || p.alternativephone || '',
-                            type: p.type || '',
-                            displayname: p.name || '',
+                            type: detaildata.source || '',
+                            displayname: detaildata.source === 'PERSON'
+                            ? `${p.firstname || ''} ${p.lastname || ''}`.trim()
+                            : detaildata.source === 'LEAD' ? `${p.name || ''}` : '',
                             status: 'ACTIVO',
                             field1: p.phone || p.alternativephone || '',
                             field2: p[usedTablevariable['field2']] || '',
@@ -462,7 +472,6 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     dispatch(showBackdrop(false));
                     setSave('');
                 }
-
             }
             else if (save === 'MEMBERS') {
                 if (!executeRes.loading && !executeRes.error) {
@@ -519,7 +528,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     setTableVariable(detaildata.selectedColumns?.columns.reduce((ac: any, c: string) => {
                         ac.push({ label: c, description: c, persistent: false })
                         return ac;
-                    }, [{ description: detaildata.selectedColumns.primarykey, persistent: false }]));
+                    }, [{ label: detaildata.selectedColumns.primarykey, description: detaildata.selectedColumns.primarykey, persistent: false }]));
                     break;
                 case 'PERSON':
                     setTableVariable([
