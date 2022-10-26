@@ -3,13 +3,13 @@ import React, { useEffect, useState } from 'react'; // we need this to make JSX 
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { DialogZyx } from 'components';
-import { Dictionary, ICampaign, MultiData, SelectedColumns } from "@types";
+import { Dictionary, ICampaign, IFetchData, MultiData, SelectedColumns } from "@types";
 import TablePaginated from 'components/fields/table-paginated';
 import TableZyx from '../../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { getCampaignMemberSel, campaignPersonSel, uploadExcel } from 'common/helpers';
+import { getCampaignMemberSel, campaignPersonSel, uploadExcel, campaignLeadPersonSel } from 'common/helpers';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
 import { useSelector } from 'hooks';
 import { getCollectionAux, getCollectionPaginatedAux } from 'store/main/actions';
@@ -69,26 +69,46 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     const [selectedColumnsBackup, setSelectedColumnsBackup] = useState<SelectedColumns>(new SelectedColumns());
     const [selectionKey, setSelectionKey] = useState<string| any>(
         detaildata.source === 'EXTERNAL' ? selectedColumns.primarykey :
-        (detaildata.operation === 'INSERT' ? 'personid' : 'campaignmemberid'))
+        detaildata.source === 'PERSON' ? 'personid' :
+        detaildata.source === 'LEAD' ? 'leadid' :
+        'campaignmemberid')
     const [selectedRows, setSelectedRows] = useState<any>(detaildata.selectedRows || {});
     const [allRowsSelected, setAllRowsSelected] = useState<boolean>(false);
 
-    const fetchPersonData = (id: number) => dispatch(getCollectionAux(getCampaignMemberSel(id)));
+    const fetchCampaignInternalData = (id: number) => dispatch(getCollectionAux(getCampaignMemberSel(id)));
 
     const paginatedAuxResult = useSelector(state => state.main.mainPaginatedAux);
     const [fetchDataAux, setfetchDataAux] = useState<any>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
     const [pageCount, setPageCount] = useState(0);
     const [totalrow, settotalrow] = useState(0);
-    const fetchPaginatedData = ({ pageSize, pageIndex, filters, sorts }: any) => {
-        setfetchDataAux({ pageSize, pageIndex, filters, sorts })
-        dispatch(getCollectionPaginatedAux(campaignPersonSel({
-            take: pageSize,
-            skip: pageIndex * pageSize,
-            sorts: sorts,
-            filters: {
-                ...filters,
-            }
-        })))
+    const fetchPaginatedData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
+        setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
+        switch (detaildata.source) {
+            case 'PERSON':
+                dispatch(getCollectionPaginatedAux(campaignPersonSel({
+                    startdate: daterange?.startDate || new Date(new Date().setUTCDate(1)),
+                    enddate: daterange?.endDate || new Date(new Date().getUTCFullYear(), new Date().getUTCMonth() + 1, 0),
+                    take: pageSize,
+                    skip: pageIndex * pageSize,
+                    sorts: sorts,
+                    filters: {
+                        ...filters,
+                    }
+                })))
+                break;
+            case 'LEAD':
+                dispatch(getCollectionPaginatedAux(campaignLeadPersonSel({
+                    startdate: daterange?.startDate || new Date(new Date().setUTCDate(1)),
+                    enddate: daterange?.endDate || new Date(new Date().getUTCFullYear(), new Date().getUTCMonth() + 1, 0),
+                    take: pageSize,
+                    skip: pageIndex * pageSize,
+                    sorts: sorts,
+                    filters: {
+                        ...filters,
+                    }
+                })))
+                break;
+        }
     };
 
     useEffect(() => {
@@ -105,28 +125,40 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     }, [frameProps.checkPage])
     
     useEffect(() => {
-        if (detaildata.operation === 'INSERT') {
-            if (detaildata.source === 'INTERNAL') {
-                fetchPaginatedData(fetchDataAux);
-            }
-        }
-        else if (detaildata.operation === 'UPDATE') {
-            if (detaildata.source === 'INTERNAL') {
-                fetchPersonData(row?.id);
-            }
-            else if (detaildata.source === 'EXTERNAL') {
-                if (detaildata.sourcechanged) {
+        switch (detaildata.source) {
+            case 'INTERNAL':
+                fetchCampaignInternalData(row?.id);
+                break;
+            case 'EXTERNAL':
+                if (detaildata.operation === 'INSERT' && detaildata.sourcechanged) {
                     setHeaders([]);
                     setJsonData([]);
                     setSelectedRows({});
                 }
-            }
+                break;
+            case 'PERSON':
+                if (detaildata.sourcechanged) {
+                    setDetaildata({...detaildata, sourcechanged: false, person: [] });
+                    setJsonData([]);
+                    setSelectedRows({});
+                }
+                fetchPaginatedData(fetchDataAux);
+                break;
+            case 'LEAD':
+                if (detaildata.sourcechanged) {
+                    setDetaildata({...detaildata, sourcechanged: false, person: [] });
+                    setJsonData([]);
+                    setSelectedRows({});
+                }    
+                fetchPaginatedData(fetchDataAux);
+                break;
         }
     }, [])
     
+    // Internal data
     useEffect(() => {
         if (!auxResult.loading && !auxResult.error && auxResult.data.length > 0) {
-            if (detaildata.operation === 'UPDATE' && detaildata.source === 'INTERNAL') {
+            if (detaildata.source === 'INTERNAL') {
                 setJsonData(auxResult.data);
                 setHeaders([
                     { Header: t(langKeys.name), accessor: 'displayname' },
@@ -172,43 +204,76 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
     }, [auxResult]);
 
+    // Person, Lead Data
     useEffect(() => {
         if (!paginatedAuxResult.loading && !paginatedAuxResult.error && paginatedAuxResult.data.length > 0) {
-            if (detaildata.operation === 'INSERT' && detaildata.source === 'INTERNAL') {
-                setPageCount(Math.ceil(paginatedAuxResult.count / fetchDataAux.pageSize));
-                settotalrow(paginatedAuxResult.count);
-                setJsonData(paginatedAuxResult.data);
-                setHeaders([
-                    { Header: t(langKeys.firstname), accessor: 'firstname' },
-                    { Header: t(langKeys.lastname), accessor: 'lastname' },
-                    { Header: t(langKeys.documenttype), accessor: 'documenttype' },
-                    { Header: t(langKeys.documentnumber), accessor: 'documentnumber' },
-                    { Header: t(langKeys.personType), accessor: 'persontype' },
-                    { Header: t(langKeys.phone), accessor: 'phone' },
-                    { Header: t(langKeys.alternativePhone), accessor: 'alternativephone' },
-                    { Header: t(langKeys.email), accessor: 'email' },
-                    { Header: t(langKeys.alternativeEmail), accessor: 'alternativeemail' },
-                    { Header: t(langKeys.birthday), accessor: 'birthday' },
-                    { Header: t(langKeys.gender), accessor: 'genderdesc' },
-                    { Header: t(langKeys.educationLevel), accessor: 'educationleveldesc' },
-                    { Header: t(langKeys.civilStatus), accessor: 'civilstatusdesc' },
-                    { Header: t(langKeys.occupation), accessor: 'occupationdesc' },
-                    { Header: t(langKeys.observation), accessor: 'observation' },
-                ]);
-                setDetaildata({
-                    ...detaildata,
-                    selectedRows: selectedRows,
-                    person: Array.from(
-                        new Map([
-                            ...(detaildata.person || []),
-                            ...jsonData.filter(j => Object.keys(selectedRows).includes('' + j[selectionKey]))
-                        ].map(d => [d['personid'], d])).values())
-                });
-                setFrameProps({...frameProps, valid: {...frameProps.valid, 1: Object.keys(selectedRows).length > 0}});
+            setPageCount(Math.ceil(paginatedAuxResult.count / fetchDataAux.pageSize));
+            settotalrow(paginatedAuxResult.count);
+            setJsonData(paginatedAuxResult.data);
+            switch (detaildata.source) {
+                case 'PERSON':
+                    setHeaders([
+                        { Header: t(langKeys.firstname), accessor: 'firstname' },
+                        { Header: t(langKeys.lastname), accessor: 'lastname' },
+                        { Header: t(langKeys.documenttype), accessor: 'documenttype' },
+                        { Header: t(langKeys.documentnumber), accessor: 'documentnumber' },
+                        { Header: t(langKeys.personType), accessor: 'persontype' },
+                        { Header: t(langKeys.type), accessor: 'type' },
+                        { Header: t(langKeys.phone), accessor: 'phone' },
+                        { Header: t(langKeys.alternativePhone), accessor: 'alternativephone' },
+                        { Header: t(langKeys.email), accessor: 'email' },
+                        { Header: t(langKeys.alternativeEmail), accessor: 'alternativeemail' },
+                        { Header: t(langKeys.lastContactDate), accessor: 'lastcontact' },
+                        { Header: t(langKeys.agent), accessor: 'agent' },
+                        { Header: t(langKeys.opportunity), accessor: 'opportunity' },
+                        { Header: t(langKeys.birthday), accessor: 'birthday' },
+                        { Header: t(langKeys.gender), accessor: 'gender' },
+                        { Header: t(langKeys.educationLevel), accessor: 'educationlevel' },
+                        { Header: t(langKeys.comments), accessor: 'comments' },
+                    ]);
+                    setDetaildata({
+                        ...detaildata,
+                        selectedRows: selectedRows,
+                        person: Array.from(
+                            new Map([
+                                ...(detaildata.person || []),
+                                ...jsonData.filter(j => Object.keys(selectedRows).includes('' + j[selectionKey]))
+                            ].map(d => [d['personid'], d])).values())
+                    });
+                    break;
+                case 'LEAD':
+                    setHeaders([
+                        { Header: t(langKeys.opportunity), accessor: 'opportunity' },
+                        { Header: t(langKeys.lastUpdate), accessor: 'changedate' },
+                        { Header: t(langKeys.name), accessor: 'name' },
+                        { Header: t(langKeys.email), accessor: 'email' },
+                        { Header: t(langKeys.phone), accessor: 'phone' },
+                        { Header: t(langKeys.expected_revenue), accessor: 'expected_revenue' },
+                        { Header: t(langKeys.endDate), accessor: 'date_deadline' },
+                        { Header: t(langKeys.tags), accessor: 'tags' },
+                        { Header: t(langKeys.agent), accessor: 'agent' },
+                        { Header: t(langKeys.priority), accessor: 'priority' },
+                        { Header: t(langKeys.campaign), accessor: 'campaign' },
+                        { Header: t(langKeys.product_plural), accessor: 'products' },
+                        { Header: t(langKeys.phase), accessor: 'phase' },
+                        { Header: t(langKeys.comments), accessor: 'comments' },
+                    ]);
+                    setDetaildata({
+                        ...detaildata,
+                        selectedRows: selectedRows,
+                        person: Array.from(
+                            new Map([
+                                ...(detaildata.person || []),
+                                ...jsonData.filter(j => Object.keys(selectedRows).includes('' + j[selectionKey]))
+                            ].map(d => [d['leadid'], d])).values())
+                    });
+                    break;
             }
+            setFrameProps({...frameProps, valid: {...frameProps.valid, 1: Object.keys(selectedRows).length > 0}});
         }
     }, [paginatedAuxResult]);
 
+    // External Data Logic //
     const handleUpload = async (files: any) => {
         const file = files[0];
         const data = await uploadExcel(file);
@@ -378,6 +443,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             return headers;
         }
     }
+    // External Data Logic //
 
     const changeStep = (step: number) => {
         if (Object.keys(selectedRows).length === 0) {
@@ -386,40 +452,53 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             }
             return false;
         }
-        if (detaildata.operation === 'INSERT' && detaildata.source === 'INTERNAL') {
-            setDetaildata({
-                ...detaildata,
-                selectedRows: selectedRows,
-                person: Array.from(
-                    new Map([
-                        ...(detaildata.person || []),
-                        ...jsonData.filter(j => Object.keys(selectedRows).includes('' + j[selectionKey]))
-                    ].map(d => [d['personid'], d])).values())
-            });
-        }
-        else if (detaildata.operation === 'UPDATE' && detaildata.source === 'INTERNAL') {
-            setDetaildata({
-                ...detaildata,
-                headers: setHeaderTableData(selectedColumns),
-                jsonData: jsonData,
-                selectedColumns: selectedColumns,
-                selectedRows: selectedRows,
-                person: jsonData.map(j => 
-                    Object.keys(selectedRows).includes('' + j[selectionKey]) ? j : {...j, status: 'ELIMINADO'}
-                )
-            });
-        }
-        else if (detaildata.source === 'EXTERNAL') {
-            // Cuando se use el seleccion, se updatea el status de cada person a ELIMINADO
-            setDetaildata({
-                ...detaildata,
-                // Update headers only where upload has used
-                headers: openModal === false ? setHeaderTableData(selectedColumns) : detaildata.headers,
-                jsonData: jsonData,
-                selectedColumns: selectedColumns,
-                selectedRows: selectedRows,
-                person: jsonData.filter(j => Object.keys(selectedRows).includes('' + j[selectionKey]))
-            });
+        switch (detaildata.source) {
+            case 'INTERNAL':
+                setDetaildata({
+                    ...detaildata,
+                    headers: setHeaderTableData(selectedColumns),
+                    jsonData: jsonData,
+                    selectedColumns: selectedColumns,
+                    selectedRows: selectedRows,
+                    person: jsonData.map(j => 
+                        Object.keys(selectedRows).includes('' + j[selectionKey]) ? j : {...j, status: 'ELIMINADO'}
+                    )
+                });
+                break;
+            case 'EXTERNAL':
+                // Cuando se use el seleccion, se updatea el status de cada person a ELIMINADO
+                setDetaildata({
+                    ...detaildata,
+                    // Update headers only where upload has used
+                    headers: openModal === false ? setHeaderTableData(selectedColumns) : detaildata.headers,
+                    jsonData: jsonData,
+                    selectedColumns: selectedColumns,
+                    selectedRows: selectedRows,
+                    person: jsonData.filter(j => Object.keys(selectedRows).includes('' + j[selectionKey]))
+                });
+                break;
+            case 'PERSON':
+                setDetaildata({
+                    ...detaildata,
+                    selectedRows: selectedRows,
+                    person: Array.from(
+                        new Map([
+                            ...(detaildata.person || []),
+                            ...jsonData.filter(j => Object.keys(selectedRows).includes('' + j[selectionKey]))
+                        ].map(d => [d['personid'], d])).values())
+                });
+                break;
+            case 'LEAD':
+                setDetaildata({
+                    ...detaildata,
+                    selectedRows: selectedRows,
+                    person: Array.from(
+                        new Map([
+                            ...(detaildata.person || []),
+                            ...jsonData.filter(j => Object.keys(selectedRows).includes('' + j[selectionKey]))
+                        ].map(d => [d['leadid'], d])).values())
+                });
+                break;
         }
         return true;
     }
@@ -467,13 +546,15 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         <React.Fragment>
             <div className={classes.containerDetail}>
                 {
-                    detaildata.operation === 'INSERT' && detaildata.source === 'INTERNAL' ?
+                    ['PERSON','LEAD'].includes(detaildata?.source || '') ?
                     <TablePaginated
                         columns={headers}
                         data={jsonData}
                         totalrow={totalrow}
                         pageCount={pageCount}
                         loading={paginatedAuxResult.loading}
+                        filterrange={true}
+                        FiltersElement={<></>}
                         fetchData={fetchPaginatedData}
                         useSelection={true}
                         selectionKey={selectionKey}

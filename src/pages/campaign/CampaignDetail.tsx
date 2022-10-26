@@ -268,70 +268,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
 
     const buildingMembers = () => {
         let campaignMemberList: any[] = [];
-        if (detaildata.source === 'EXTERNAL') {
-            campaignMemberList = detaildata.person?.reduce((ap, p) => {
-                ap.push({
-                    id: 0,
-                    personid: 0,
-                    personcommunicationchannel: '',
-                    personcommunicationchannelowner: p[Object.keys(p)[0]] || '',
-                    type: '',
-                    displayname: '',
-                    status: 'ACTIVO',
-                    field1: p[Object.keys(p)[0]] || '',
-                    field2: p[Object.keys(p)[1]] || '',
-                    field3: p[Object.keys(p)[2]] || '',
-                    field4: p[Object.keys(p)[3]] || '',
-                    field5: p[Object.keys(p)[4]] || '',
-                    field6: p[Object.keys(p)[5]] || '',
-                    field7: p[Object.keys(p)[6]] || '',
-                    field8: p[Object.keys(p)[7]] || '',
-                    field9: p[Object.keys(p)[8]] || '',
-                    field10: p[Object.keys(p)[9]] || '',
-                    field11: p[Object.keys(p)[10]] || '',
-                    field12: p[Object.keys(p)[11]] || '',
-                    field13: p[Object.keys(p)[12]] || '',
-                    field14: p[Object.keys(p)[13]] || '',
-                    field15: p[Object.keys(p)[14]] || '',
-                    batchindex: 0,
-                    operation: detaildata.operation
-                })
-                return ap;
-            }, []);
-        }
-        else if (detaildata.source === 'INTERNAL') {
-            if (detaildata.operation === 'INSERT') {
-                campaignMemberList = detaildata.person?.reduce((ap, p) => {
-                    ap.push({
-                        id: 0,
-                        personid: p.personid || 0,
-                        personcommunicationchannel: '',
-                        personcommunicationchannelowner: (detaildata.communicationchanneltype?.startsWith('MAI') ? p.email : p.phone) || '',
-                        type: p.type || '',
-                        displayname: p.name || '',
-                        status: 'ACTIVO',
-                        field1: (detaildata.communicationchanneltype?.startsWith('MAI') ? p.email : p.phone) || '',
-                        field2: p[usedTablevariable['field2']] || '',
-                        field3: p[usedTablevariable['field3']] || '',
-                        field4: p[usedTablevariable['field4']] || '',
-                        field5: p[usedTablevariable['field5']] || '',
-                        field6: p[usedTablevariable['field6']] || '',
-                        field7: p[usedTablevariable['field7']] || '',
-                        field8: p[usedTablevariable['field8']] || '',
-                        field9: p[usedTablevariable['field9']] || '',
-                        field10: p[usedTablevariable['field10']] || '',
-                        field11: p[usedTablevariable['field11']] || '',
-                        field12: p[usedTablevariable['field12']] || '',
-                        field13: p[usedTablevariable['field13']] || '',
-                        field14: p[usedTablevariable['field14']] || '',
-                        field15: p[usedTablevariable['field15']] || '',
-                        batchindex: 0,
-                        operation: detaildata.operation
-                    })
-                    return ap;
-                }, []);
-            }
-            else if (detaildata.operation === 'UPDATE') {
+        switch (detaildata.source) {
+            case 'INTERNAL':
                 campaignMemberList = detaildata.person?.reduce((ap, p) => {
                     ap.push({
                         id: p.campaignmemberid,
@@ -361,7 +299,69 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     })
                     return ap;
                 }, []);
-            }
+                break;
+            case 'EXTERNAL':
+                campaignMemberList = detaildata.person?.reduce((ap, p) => {
+                    ap.push({
+                        id: 0,
+                        personid: 0,
+                        personcommunicationchannel: '',
+                        personcommunicationchannelowner: p[Object.keys(p)[0]] || '',
+                        type: '',
+                        displayname: '',
+                        status: 'ACTIVO',
+                        field1: p[Object.keys(p)[0]] || '',
+                        field2: p[Object.keys(p)[1]] || '',
+                        field3: p[Object.keys(p)[2]] || '',
+                        field4: p[Object.keys(p)[3]] || '',
+                        field5: p[Object.keys(p)[4]] || '',
+                        field6: p[Object.keys(p)[5]] || '',
+                        field7: p[Object.keys(p)[6]] || '',
+                        field8: p[Object.keys(p)[7]] || '',
+                        field9: p[Object.keys(p)[8]] || '',
+                        field10: p[Object.keys(p)[9]] || '',
+                        field11: p[Object.keys(p)[10]] || '',
+                        field12: p[Object.keys(p)[11]] || '',
+                        field13: p[Object.keys(p)[12]] || '',
+                        field14: p[Object.keys(p)[13]] || '',
+                        field15: p[Object.keys(p)[14]] || '',
+                        batchindex: 0,
+                        operation: detaildata.operation
+                    })
+                    return ap;
+                }, []);
+                break;
+            case 'PERSON': case 'LEAD':
+                campaignMemberList = detaildata.person?.reduce((ap, p) => {
+                    ap.push({
+                        id: 0,
+                        personid: p.personid || 0,
+                        personcommunicationchannel: '',
+                        personcommunicationchannelowner: (detaildata.communicationchanneltype?.startsWith('MAI') ? p.email || p.alternativeemail : p.phone || p.alternativephone) || '',
+                        type: p.type || '',
+                        displayname: p.name || '',
+                        status: 'ACTIVO',
+                        field1: (detaildata.communicationchanneltype?.startsWith('MAI') ? p.email || p.alternativeemail : p.phone || p.alternativephone) || '',
+                        field2: p[usedTablevariable['field2']] || '',
+                        field3: p[usedTablevariable['field3']] || '',
+                        field4: p[usedTablevariable['field4']] || '',
+                        field5: p[usedTablevariable['field5']] || '',
+                        field6: p[usedTablevariable['field6']] || '',
+                        field7: p[usedTablevariable['field7']] || '',
+                        field8: p[usedTablevariable['field8']] || '',
+                        field9: p[usedTablevariable['field9']] || '',
+                        field10: p[usedTablevariable['field10']] || '',
+                        field11: p[usedTablevariable['field11']] || '',
+                        field12: p[usedTablevariable['field12']] || '',
+                        field13: p[usedTablevariable['field13']] || '',
+                        field14: p[usedTablevariable['field14']] || '',
+                        field15: p[usedTablevariable['field15']] || '',
+                        batchindex: 0,
+                        operation: detaildata.operation
+                    })
+                    return ap;
+                }, []);
+                break;
         }
         if (detaildata.executiontype === 'SCHEDULED') {
             let batchjsontemp = [...(detaildata.batchjson || [])];
@@ -440,68 +440,103 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
 
     useEffect(() => {
         if (pageSelected === 2) {
-            if (detaildata.operation === 'INSERT' && detaildata.source === 'INTERNAL') {
-                setTableVariable([
-                    { label: t(langKeys.firstname), description: 'firstname', persistent: false },
-                    { label: t(langKeys.lastname), description: 'lastname', persistent: false },
-                    { label: t(langKeys.documenttype), description: 'documenttype', persistent: false },
-                    { label: t(langKeys.documentnumber), description: 'documentnumber', persistent: false },
-                    { label: t(langKeys.personType), description: 'persontype', persistent: false },
-                    { label: t(langKeys.phone), description: 'phone', persistent: false },
-                    { label: t(langKeys.alternativePhone), description: 'alternativephone', persistent: false },
-                    { label: t(langKeys.email), description: 'email', persistent: false },
-                    { label: t(langKeys.alternativeEmail), description: 'alternativeemail', persistent: false },
-                    { label: t(langKeys.birthday), description: 'birthday', persistent: false },
-                    { label: t(langKeys.gender), description: 'genderdesc', persistent: false },
-                    { label: t(langKeys.educationLevel), description: 'educationleveldesc', persistent: false },
-                    { label: t(langKeys.civilStatus), description: 'civilstatusdesc', persistent: false },
-                    { label: t(langKeys.occupation), description: 'occupationdesc', persistent: false },
-                    { label: t(langKeys.observation), description: 'observation', persistent: false },
-                ]);
-            }
-            else if (detaildata.source === 'EXTERNAL') {
-                setTableVariable(detaildata.selectedColumns?.columns.reduce((ac: any, c: string) => {
-                    ac.push({ label: c, description: c, persistent: false })
-                    return ac;
-                }, [{ description: detaildata.selectedColumns.primarykey, persistent: false }]));
-            }
-            else {
-                setTableVariable([
-                    { label: "corpid", description: "corpid", persistent: true },
-                    { label: "orgid", description: "orgid", persistent: true },
-                    { label: "campaignmemberid", description: "campaignmemberid", persistent: true },
-                    { label: "campaignid", description: "campaignid", persistent: true },
-                    { label: "personid", description: "personid", persistent: true },
-                    { label: "status", description: "status", persistent: true },
-                    { label: "globalid", description: "globalid", persistent: true },
-                    { label: "personcommunicationchannel", description: "personcommunicationchannel", persistent: true },
-                    { label: "type", description: "type", persistent: true },
-                    { label: "displayname", description: "displayname", persistent: true },
-                    { label: "personcommunicationchannelowner", description: "personcommunicationchannelowner", persistent: true },
-                    { label: "field1", description: "field1", persistent: true },
-                    { label: "field2", description: "field2", persistent: true },
-                    { label: "field3", description: "field3", persistent: true },
-                    { label: "field4", description: "field4", persistent: true },
-                    { label: "field5", description: "field5", persistent: true },
-                    { label: "field6", description: "field6", persistent: true },
-                    { label: "field7", description: "field7", persistent: true },
-                    { label: "field8", description: "field8", persistent: true },
-                    { label: "field9", description: "field9", persistent: true },
-                    { label: "field10", description: "field10", persistent: true },
-                    { label: "field11", description: "field11", persistent: true },
-                    { label: "field12", description: "field12", persistent: true },
-                    { label: "field13", description: "field13", persistent: true },
-                    { label: "field14", description: "field14", persistent: true },
-                    { label: "field15", description: "field15", persistent: true },
-                    { label: "resultfromsend", description: "resultfromsend", persistent: true },
-                    { label: "batchindex", description: "batchindex", persistent: true }
-                ]);
+            switch (detaildata.source) {
+                case 'INTERNAL':
+                    setTableVariable([
+                        { label: "corpid", description: "corpid", persistent: true },
+                        { label: "orgid", description: "orgid", persistent: true },
+                        { label: "campaignmemberid", description: "campaignmemberid", persistent: true },
+                        { label: "campaignid", description: "campaignid", persistent: true },
+                        { label: "personid", description: "personid", persistent: true },
+                        { label: "status", description: "status", persistent: true },
+                        { label: "globalid", description: "globalid", persistent: true },
+                        { label: "personcommunicationchannel", description: "personcommunicationchannel", persistent: true },
+                        { label: "type", description: "type", persistent: true },
+                        { label: "displayname", description: "displayname", persistent: true },
+                        { label: "personcommunicationchannelowner", description: "personcommunicationchannelowner", persistent: true },
+                        { label: "field1", description: "field1", persistent: true },
+                        { label: "field2", description: "field2", persistent: true },
+                        { label: "field3", description: "field3", persistent: true },
+                        { label: "field4", description: "field4", persistent: true },
+                        { label: "field5", description: "field5", persistent: true },
+                        { label: "field6", description: "field6", persistent: true },
+                        { label: "field7", description: "field7", persistent: true },
+                        { label: "field8", description: "field8", persistent: true },
+                        { label: "field9", description: "field9", persistent: true },
+                        { label: "field10", description: "field10", persistent: true },
+                        { label: "field11", description: "field11", persistent: true },
+                        { label: "field12", description: "field12", persistent: true },
+                        { label: "field13", description: "field13", persistent: true },
+                        { label: "field14", description: "field14", persistent: true },
+                        { label: "field15", description: "field15", persistent: true },
+                        { label: "resultfromsend", description: "resultfromsend", persistent: true },
+                        { label: "batchindex", description: "batchindex", persistent: true }
+                    ]);
+                    break;
+                case 'EXTERNAL':
+                    setTableVariable(detaildata.selectedColumns?.columns.reduce((ac: any, c: string) => {
+                        ac.push({ label: c, description: c, persistent: false })
+                        return ac;
+                    }, [{ description: detaildata.selectedColumns.primarykey, persistent: false }]));
+                    break;
+                case 'PERSON':
+                    setTableVariable([
+                        { label: t(langKeys.firstname), description: 'firstname', persistent: false },
+                        { label: t(langKeys.lastname), description: 'lastname', persistent: false },
+                        { label: t(langKeys.documenttype), description: 'documenttype', persistent: false },
+                        { label: t(langKeys.documentnumber), description: 'documentnumber', persistent: false },
+                        { label: t(langKeys.personType), description: 'persontype', persistent: false },
+                        { label: t(langKeys.type), description: 'type', persistent: false },
+                        { label: t(langKeys.phone), description: 'phone', persistent: false },
+                        { label: t(langKeys.alternativePhone), description: 'alternativephone', persistent: false },
+                        { label: t(langKeys.email), description: 'email', persistent: false },
+                        { label: t(langKeys.alternativeEmail), description: 'alternativeemail', persistent: false },
+                        { label: t(langKeys.lastContactDate), description: 'lastcontact', persistent: false },
+                        { label: t(langKeys.agent), description: 'agent', persistent: false },
+                        { label: t(langKeys.opportunity), description: 'opportunity', persistent: false },
+                        { label: t(langKeys.birthday), description: 'birthday', persistent: false },
+                        { label: t(langKeys.gender), description: 'gender', persistent: false },
+                        { label: t(langKeys.educationLevel), description: 'educationlevel', persistent: false },
+                        { label: t(langKeys.comments), description: 'comments', persistent: false },
+                    ]);
+                    break;
+                case 'LEAD':
+                    setTableVariable([
+                        { label: t(langKeys.opportunity), description: 'opportunity', persistent: false },
+                        { label: t(langKeys.lastUpdate), description: 'changedate', persistent: false },
+                        { label: t(langKeys.name), description: 'name', persistent: false },
+                        { label: t(langKeys.email), description: 'email', persistent: false },
+                        { label: t(langKeys.phone), description: 'phone', persistent: false },
+                        { label: t(langKeys.expected_revenue), description: 'expected_revenue', persistent: false },
+                        { label: t(langKeys.endDate), description: 'date_deadline', persistent: false },
+                        { label: t(langKeys.tags), description: 'tags', persistent: false },
+                        { label: t(langKeys.agent), description: 'agent', persistent: false },
+                        { label: t(langKeys.priority), description: 'priority', persistent: false },
+                        { label: t(langKeys.campaign), description: 'campaign', persistent: false },
+                        { label: t(langKeys.product_plural), description: 'products', persistent: false },
+                        { label: t(langKeys.phase), description: 'phase', persistent: false },
+                        { label: t(langKeys.comments), description: 'comments', persistent: false },
+                    ]);
+                    break;
             }
         }
     }, [pageSelected]);
 
     return (
         <div style={{ width: '100%' }}>
+            <pre>{JSON.stringify({
+                fields: detaildata.fields,
+                operation: detaildata.operation,
+                sourcechanged: detaildata.sourcechanged,
+            },null,2)}</pre>
+            <code style={{overflowWrap: 'break-word'}}>{JSON.stringify({selectedRows: detaildata.selectedRows,})}</code>
+            <br />
+            <code style={{overflowWrap: 'break-word'}}>{JSON.stringify({
+                person: detaildata.person?.map(p => ({
+                    personid: p?.personid,
+                    leadid: p?.leadid
+                })),
+            })}</code>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div>
                     <TemplateBreadcrumbs

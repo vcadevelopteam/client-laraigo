@@ -53,8 +53,10 @@ const dataExecutionType: Dictionary = {
 };
 
 const dataSource: Dictionary = {
-    INTERNAL: 'bdinternal',
-    EXTERNAL: 'bdexternal',
+    INTERNAL: 'datasource_internal',
+    EXTERNAL: 'datasource_external',
+    PERSON: 'datasource_person',
+    LEAD: 'datasource_lead'
 };
 
 const dataCampaignType = [
@@ -274,9 +276,9 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('status', data?.domainvalue || '');
     }
 
-    // const filterDataSource = () => {
-    //     return row !== null ? dictToArrayKV(dataSource) : filterPipe(dictToArrayKV(dataSource), 'key', 'EXTERNAL');
-    // }
+    const filterDataSource = () => {
+        return row !== null ? dictToArrayKV(dataSource) : filterPipe(dictToArrayKV(dataSource), 'key', 'INTERNAL', '!');
+    }
 
     const onChangeSource = (data: Dictionary) => {
         setValue('source', data?.key || '');
@@ -539,7 +541,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             valueDefault={getValues('source')}
                             onChange={onChangeSource}
                             error={errors?.source?.message}
-                            data={dictToArrayKV(dataSource)}
+                            data={filterDataSource()}
                             optionDesc="value"
                             optionValue="key"
                         />
