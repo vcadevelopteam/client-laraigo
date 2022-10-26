@@ -2122,7 +2122,7 @@ export const personInsValidation = ({ id, phone, email, alternativephone, altern
         operation
     },
 });
-export const personImportValidation = ({table}: Dictionary): IRequestBody => ({
+export const personImportValidation = ({ table }: Dictionary): IRequestBody => ({
     method: 'UFN_PERSON_IMPORT_VALIDATION',
     parameters: {
         table
@@ -3058,11 +3058,11 @@ export const getProductCatalogSel = (id: number = 0, category: string = ''): IRe
     }
 })
 
-export const productCatalogIns = ({ id, code, description, descriptiontext, category, status, type, imagereference, notes, title, website, currency, condition, contentid, facebookcatalogid, facebookproductid, facebookcatalogname, unitprice, username, operation }: Dictionary): IRequestBody => ({
+export const productCatalogIns = ({ id, productid, title, link, imagelink, additionalimagelink, brand, condition, availability, category, material, color, pattern, currency, price, saleprice, customlabel1, customlabel2, customlabel3, customlabel4, customlabel5, labels, catalogid, catalogname, description, status, type, operation }: Dictionary): IRequestBody => ({
     method: "UFN_PRODUCTCATALOG_INS",
     key: "UFN_PRODUCTCATALOG_INS",
     parameters: {
-        id, code, description, descriptiontext, category, status, type, imagereference, notes, title, website, currency, condition, contentid, facebookcatalogid, facebookproductid, facebookcatalogname, unitprice, username, operation
+        id, productid, title, link, imagelink, additionalimagelink, brand, condition, availability, category, material, color, pattern, currency, price, saleprice, customlabel1, customlabel2, customlabel3, customlabel4, customlabel5, labels, catalogid, catalogname, description, status, type, operation,
     }
 })
 export const listPaymentCard = ({ corpid, orgid, id }: Dictionary) => ({
@@ -3485,4 +3485,13 @@ export const billingPeriodArtificialIntelligenceInsArray = (corpid: number, orgi
         orgid: orgid,
         table: JSON.stringify(table),
     },
+});
+export const productCatalogInsArray = (catalogid: string, catalogname: string, table: Dictionary[], username: string): IRequestBody => ({
+    method: "UFN_PRODUCTCATALOG_INS_ARRAY",
+    parameters: {
+        catalogid: catalogid,
+        catalogname: catalogname,
+        table: JSON.stringify(table),
+        username: username,
+    }
 });

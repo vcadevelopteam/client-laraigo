@@ -25,6 +25,11 @@ export const langKeys = {
     backgroundColor: "backgroundColor",
     newentity: "newentity",
     textcolor: "textcolor",
+    condition: "condition",
+    saleprice: "saleprice",
+    catalogname: "catalogname",
+    imagelink: "imagelink",
+    additionalimagelink: "additionalimagelink",
     no_event_found: "no event found",
     personrepeatedwarning1: "personrepeatedwarning1",
     personrepeatedwarning2: "personrepeatedwarning2",
@@ -62,6 +67,8 @@ export const langKeys = {
     healthprofessional: "healthprofessional",
     referralchannel: "referralchannel",
     invitation_phone: "invitation_phone",
+    brand: "brand",
+    pattern: "pattern",
     invitation_date: "invitation_date",
     add_classification: "add_classification",
     assistant: "Laraigo Assistant",
@@ -3832,15 +3839,6 @@ export const langKeys = {
 
     go_ticket: 'go_ticket',
 
-    productcatalog_title: 'productcatalog_title',
-    productcatalog_website: 'productcatalog_website',
-    productcatalog_currency: 'productcatalog_currency',
-    productcatalog_condition: 'productcatalog_condition',
-    productcatalog_contentid: 'productcatalog_contentid',
-    productcatalog_facebookcatalogid: 'productcatalog_facebookcatalogid',
-    productcatalog_facebookproductid: 'productcatalog_facebookproductid',
-    productcatalog_facebookcatalogname: 'productcatalog_facebookcatalogname',
-
     channel_facebook: 'channel_facebook',
     channel_messenger: 'channel_messenger',
     channel_instagram: 'channel_instagram',
@@ -4116,6 +4114,13 @@ export const langKeys = {
     aiduplicatealert: "aiduplicatealert",
     aitotalquantity: "aitotalquantity",
     aiminimumquantity: "aiminimumquantity",
+    customlabel: "customlabel",
+    catalogid: "catalogid",
+    productid: "productid",
+    material: "material",
+    website: "website",
+    additionalimage: "additionalimage",
+    importxml: "importxml",
 };
 
 export type LangKeys = typeof langKeys;
