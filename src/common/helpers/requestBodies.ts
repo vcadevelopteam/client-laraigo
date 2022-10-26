@@ -1263,7 +1263,7 @@ export const campaignPersonSel = ({ skip, take, filters, sorts, startdate, endda
         take,
         filters,
         sorts,
-        origin: "person",
+        origin: "campaignperson",
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
@@ -1278,7 +1278,7 @@ export const campaignLeadPersonSel = ({ skip, take, filters, sorts, startdate, e
         take,
         filters,
         sorts,
-        origin: "person",
+        origin: "campaignleadperson",
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });

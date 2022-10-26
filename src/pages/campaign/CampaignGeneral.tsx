@@ -12,9 +12,10 @@ import { Event as EventIcon } from '@material-ui/icons';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { resetMainAux } from 'store/main/actions';
+import { resetCollectionPaginatedAux, resetMainAux } from 'store/main/actions';
 import { useDispatch } from 'react-redux';
 import { FrameProps } from './CampaignDetail';
+import { showSnackbar } from 'store/popus/actions';
 
 interface DetailProps {
     row: Dictionary | null,
@@ -227,7 +228,10 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 data.fields = { ...new SelectedColumns(), ...data.fields };
                 setDetaildata({ ...detaildata, ...data });
                 setFrameProps({ ...frameProps, executeSave: false, checkPage: false, valid: { ...frameProps.valid, 0: valid } });
-                if (valid) {
+                if (frameProps.page === 2 && !frameProps.valid[1]) {
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_person_selected)}));
+                }
+                else if (valid) {
                     setPageSelected(frameProps.page);
                 }
                 if (valid && frameProps.executeSave) {
@@ -281,9 +285,11 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     }
 
     const onChangeSource = (data: Dictionary) => {
+        setValue('message', getValues('message').replace(new RegExp(/{{field[0-9]+}}/, 'g'), '{{???}}'))
         setValue('source', data?.key || '');
         setValue('sourcechanged', true);
         setFrameProps({ ...frameProps, valid: { ...frameProps.valid, 1: false } });
+        dispatch(resetCollectionPaginatedAux())
     }
 
     const filterDataCampaignType = () => {

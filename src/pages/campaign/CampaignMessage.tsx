@@ -208,7 +208,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                 valueDefault={messageVariables[i].text}
                                                 onChange={(value: { description: any; }) => {
                                                     const datatemp = [...messageVariables];
-                                                    datatemp[i].text = value.description;
+                                                    datatemp[i].text = value?.description;
                                                     setMessageVariables(datatemp)
                                                 }}
                                                 data={tablevariable}

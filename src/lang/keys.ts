@@ -1522,6 +1522,7 @@ export const langKeys = {
     invalid_parameter: 'invalid_parameter',
     required_fields_missing: 'required_fields_missing',
     missing_people: 'missing_people',
+    no_person_selected: 'no_person_selected',
     no_record_selected: 'no_record_selected',
     no_records_valid: 'no_records_valid',
     reporttype: 'reporttype',
