@@ -550,39 +550,38 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                 client: "Total",
                 month_1: 0, month_2: 0, month_3: 0, month_4: 0, month_5: 0, month_6: 0, month_7: 0, month_8: 0, month_9: 0, month_10: 0, month_11: 0, month_12: 0, total: 0
             }
-            let processedData = mainResult.data.reduce((acc:any,x)=>{
+            let rawdata: any[] = [];
+            multiData.data[1].data.map((x)=>{
+                rawdata.push({
+                    client: `${x.corpdesc} - ${x.orgdesc}`,
+                    corpid: x.corpid,
+                    orgid: x.orgid,
+                    month_1: 0,
+                    month_2: 0,
+                    month_3: 0,
+                    month_4: 0,
+                    month_5: 0,
+                    month_6: 0,
+                    month_7: 0,
+                    month_8: 0,
+                    month_9: 0,
+                    month_10: 0,
+                    month_11: 0,
+                    month_12: 0,
+                    total: 0
+                })
+            })
+            mainResult.data.map(x=>{
                 let clientdata = multiData.data[1].data.filter(y=>(x.corpid === y.corpid && x.orgid===y.orgid))[0]
-                let indexField = acc?.findIndex((y:any)=>(y).client===`${clientdata.corpdesc} - ${clientdata.orgdesc}`)                
-                if(indexField<0){
+                let indexField = rawdata?.findIndex((y:any)=>(y).client===`${clientdata?.corpdesc} - ${clientdata?.orgdesc}`)   
+                if(!(indexField<0)){
                     mainTotal[`month_${x.month}`] += x.pcc
                     mainTotal.total += x.pcc
-                    return([...acc,{
-                        client: `${clientdata.corpdesc} - ${clientdata.orgdesc}`,
-                        corpid: x.corpid,
-                        orgid: x.orgid,
-                        month_1: x.month === 1?x.pcc:0,
-                        month_2: x.month === 2?x.pcc:0,
-                        month_3: x.month === 3?x.pcc:0,
-                        month_4: x.month === 4?x.pcc:0,
-                        month_5: x.month === 5?x.pcc:0,
-                        month_6: x.month === 6?x.pcc:0,
-                        month_7: x.month === 7?x.pcc:0,
-                        month_8: x.month === 8?x.pcc:0,
-                        month_9: x.month === 9?x.pcc:0,
-                        month_10: x.month === 10?x.pcc:0,
-                        month_11: x.month === 11?x.pcc:0,
-                        month_12: x.month === 12?x.pcc:0,
-                        total: x.pcc||0
-                    }])
-                }else{
-                    mainTotal[`month_${x.month}`] += x.pcc
-                    mainTotal.total += x.pcc
-                    acc[indexField][`month_${x.month}`] = x.pcc
-                    acc[indexField].total += x.pcc
-                    return acc
+                    rawdata[indexField][`month_${x.month}`] = x.pcc
+                    rawdata[indexField].total += x.pcc
                 }
-            },[])
-            setGridData([...processedData,mainTotal]||[]);
+            })
+            setGridData([...rawdata,mainTotal]||[]);
             setdataGraph(Object.keys(mainTotal).filter(x=>x.includes('_')).reduce((acc:any,x:string, i:number)=>[...acc,{name:t(x),value:mainTotal[x], percentage: mainTotal[x]*100/mainTotal.total, color:COLORS[i]}],[]))
             dispatch(showBackdrop(false));
         }
@@ -756,7 +755,7 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
 
     const openDialogInteractions = useCallback((row: any) => {
         setOpenModal(true);
-        setRowSelected({ ...row, displayname: "" })
+        setRowSelected({ ...row, displayname: row?.name||"" })
     }, [mainResult]);
     
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
@@ -1148,51 +1147,48 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
         ],
         [t]
     );
-    
     useEffect(() => {
         if (!mainResult.loading && mainResult?.key?.includes("UFN_REPORT_UNIQUECONTACTS_SEL")){
             let mainTotal:any = {
                 client: "Total",
                 month_1: 0, month_2: 0, month_3: 0, month_4: 0, month_5: 0, month_6: 0, month_7: 0, month_8: 0, month_9: 0, month_10: 0, month_11: 0, month_12: 0, total: 0
             }
-            let processedData = mainResult.data.reduce((acc:any,x)=>{
+            let rawdata: any[] = [];
+            multiData.data[1].data.map((x)=>{
+                rawdata.push({
+                    client: `${x.corpdesc} - ${x.orgdesc}`,
+                    corpid: x.corpid,
+                    orgid: x.orgid,
+                    month_1: 0,
+                    month_2: 0,
+                    month_3: 0,
+                    month_4: 0,
+                    month_5: 0,
+                    month_6: 0,
+                    month_7: 0,
+                    month_8: 0,
+                    month_9: 0,
+                    month_10: 0,
+                    month_11: 0,
+                    month_12: 0,
+                    total: 0
+                })
+            })
+            mainResult.data.map(x=>{
                 let clientdata = multiData.data[1].data.filter(y=>(x.corpid === y.corpid && x.orgid===y.orgid))[0]
-                let indexField = acc?.findIndex((y:any)=>(y).client===`${clientdata.corpdesc} - ${clientdata.orgdesc}`)                
-                if(indexField<0){
+                let indexField = rawdata?.findIndex((y:any)=>(y).client===`${clientdata?.corpdesc} - ${clientdata?.orgdesc}`)   
+                if(!(indexField<0)){
                     mainTotal[`month_${x.month}`] += x.conversation
                     mainTotal.total += x.conversation
-                    return([...acc,{
-                        client: `${clientdata.corpdesc} - ${clientdata.orgdesc}`,
-                        corpid: x.corpid,
-                        orgid: x.orgid,
-                        month_1: x.month === 1?x.conversation:0,
-                        month_2: x.month === 2?x.conversation:0,
-                        month_3: x.month === 3?x.conversation:0,
-                        month_4: x.month === 4?x.conversation:0,
-                        month_5: x.month === 5?x.conversation:0,
-                        month_6: x.month === 6?x.conversation:0,
-                        month_7: x.month === 7?x.conversation:0,
-                        month_8: x.month === 8?x.conversation:0,
-                        month_9: x.month === 9?x.conversation:0,
-                        month_10: x.month === 10?x.conversation:0,
-                        month_11: x.month === 11?x.conversation:0,
-                        month_12: x.month === 12?x.conversation:0,
-                        total: x.conversation||0
-                    }])
-                }else{
-                    mainTotal[`month_${x.month}`] += x.conversation
-                    mainTotal.total += x.conversation
-                    acc[indexField][`month_${x.month}`] = x.conversation
-                    acc[indexField].total += x.conversation
-                    return acc
+                    rawdata[indexField][`month_${x.month}`] = x.conversation
+                    rawdata[indexField].total += x.conversation
                 }
-            },[])
-            setGridData([...processedData,mainTotal]||[]);
+            })
+            setGridData([...rawdata,mainTotal]||[]);
             setdataGraph(Object.keys(mainTotal).filter(x=>x.includes('_')).reduce((acc:any,x:string, i:number)=>[...acc,{name:t(x),value:mainTotal[x], percentage: mainTotal[x]*100/mainTotal.total, color:COLORS[i]}],[]))
             dispatch(showBackdrop(false));
         }
     }, [mainResult])
-
 
     if (viewSelected === "view-1") {
 

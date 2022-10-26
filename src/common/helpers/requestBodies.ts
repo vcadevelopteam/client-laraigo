@@ -528,6 +528,8 @@ export const selUniqueContactsPcc = ({ corpid, orgid,year, month, channeltype, s
         year,
         month,
         channeltype:channeltype||'',
+        corpid,
+        orgid,
         origin: "uniquecontacts",
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
@@ -540,6 +542,8 @@ export const selUniqueContactsConversation = ({ corpid, orgid,year, month, chann
         take,
         filters,
         sorts,
+        corpid,
+        orgid,
         year:parseInt(year),
         month:parseInt(month),
         channeltype:channeltype||'',
