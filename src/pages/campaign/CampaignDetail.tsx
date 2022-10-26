@@ -163,30 +163,43 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         let message = detaildata.message || '';
         if (['PERSON','LEAD'].includes(detaildata.source || '')) {
             if (detaildata.person && detaildata.person?.length > 0) {
-                let localtablevariable = Array.from(new Set([
-                    ...(subject.match(new RegExp(`{{.+?}}`, 'g')) || []),
-                    ...(header.match(new RegExp(`{{.+?}}`, 'g')) || []),
-                    ...(message.match(new RegExp(`{{.+?}}`, 'g')) || [])
-                ]));
-                localtablevariable = localtablevariable.map(x => x.slice(2,-2)).filter(ltv => tablevariable.map((tv: any) => tv.description).includes(ltv) || new RegExp(/field[0-9]+/, 'g').test(ltv));
-                if (Object.keys(usedTablevariable).length > 0) {
-                    Object.values(usedTablevariable).forEach((v: any, i: number) => {
-                        subject = subject.replace(new RegExp(`{{field${i + 2}}}`, 'g'), `{{${v}}}`);
-                        header = header.replace(new RegExp(`{{field${i + 2}}}`, 'g'), `{{${v}}}`);
-                        message = message.replace(new RegExp(`{{field${i + 2}}}`, 'g'), `{{${v}}}`);
+                if (detaildata.communicationchanneltype?.startsWith('MAI')) {
+                    let splitMessage = message.split('{{');
+                    messageVariables.forEach((v, i) => {
+                        splitMessage[i + 1] = splitMessage[i + 1]?.replace(`${v.name}}}`, `${v.text || i + 1}}}`);
                     });
-                    localtablevariable = localtablevariable.map(x => usedTablevariable[x] ? usedTablevariable[x] : x)
+                    message = splitMessage.join('{{');
+                    let localmessageVariables = Array.from(new Map(messageVariables.map(d => [d['text'], d])).values())
+                    localmessageVariables.filter(mv => tablevariable.map(tv => tv.description).includes(mv.text)).forEach((v: any, i: number) => {
+                        message = message.replace(new RegExp(`{{${v.text}}}`, 'g'), `{{field${i + 2}}}`);
+                    });
                 }
-                localtablevariable = localtablevariable.reduce((actv, tv, tvi) => ({
-                    ...actv,
-                    [`field${tvi + 2}`]: tv
-                }), {});
-                setUsedTableVariable(localtablevariable);
-                tablevariable.filter(tv => Object.values(localtablevariable).includes(tv.description)).forEach((v: any, i: number) => {
-                    subject = subject.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
-                    header = header.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
-                    message = message.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
-                });
+                else {
+                    let localtablevariable = Array.from(new Set([
+                        ...(subject.match(new RegExp(`{{.+?}}`, 'g')) || []),
+                        ...(header.match(new RegExp(`{{.+?}}`, 'g')) || []),
+                        ...(message.match(new RegExp(`{{.+?}}`, 'g')) || [])
+                    ]));
+                    localtablevariable = localtablevariable.map(x => x.slice(2,-2)).filter(ltv => tablevariable.map((tv: any) => tv.description).includes(ltv) || new RegExp(/field[0-9]+/, 'g').test(ltv));
+                    if (Object.keys(usedTablevariable).length > 0) {
+                        Object.entries(usedTablevariable).forEach((v: any) => {
+                            subject = subject.replace(new RegExp(`{{${v[0]}}}`, 'g'), `{{${v[1]}}}`);
+                            header = header.replace(new RegExp(`{{${v[0]}}}`, 'g'), `{{${v[1]}}}`);
+                            message = message.replace(new RegExp(`{{${v[0]}}}`, 'g'), `{{${v[1]}}}`);
+                        });
+                        localtablevariable = localtablevariable.map(x => usedTablevariable[x] ? usedTablevariable[x] : x)
+                    }
+                    localtablevariable = localtablevariable.reduce((actv, tv, tvi) => ({
+                        ...actv,
+                        [`field${tvi + 2}`]: tv
+                    }), {});
+                    setUsedTableVariable(localtablevariable);
+                    tablevariable.filter(tv => Object.values(localtablevariable).includes(tv.description)).forEach((v: any, i: number) => {
+                        subject = subject.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
+                        header = header.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
+                        message = message.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
+                    });
+                }
             }
         }
         else if (['INTERNAL','EXTERNAL'].includes(detaildata.source || '')) {
@@ -215,9 +228,9 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.missing_header) }));
             }
             let newmessages = formatMessage();
-            let localsubject = detaildata.communicationchanneltype?.startsWith('MAI') ? detaildata?.subject || '' : newmessages.subject;
-            let localheader = detaildata.communicationchanneltype?.startsWith('MAI') ? detaildata.messagetemplateheader?.value || '' : newmessages.header;
-            let localmessage = detaildata.communicationchanneltype?.startsWith('MAI') ? detaildata?.message || '' : newmessages.message;
+            let localsubject = newmessages.subject || '';
+            let localheader = newmessages.header || '';
+            let localmessage = newmessages.message || '';
             
             let elemVariables: string[] = [];
             let errorIndex = null;
@@ -241,13 +254,6 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
             if (localmessage !== '') {
-                if (detaildata.communicationchanneltype?.startsWith('MAI')) {
-                    let splitMessage = localmessage.split('{{');
-                    messageVariables.forEach((v, i) => {
-                        splitMessage[i + 1] = splitMessage[i + 1]?.replace(`${v.name}}}`, `${v.text}}}`);
-                    });
-                    localmessage = splitMessage.join('{{');
-                }
                 let vars = extractVariables(localmessage)
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
                 if (errorIndex !== -1 || localmessage.includes('{{}}')) {
@@ -334,35 +340,69 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 }, []);
                 break;
             case 'PERSON': case 'LEAD':
-                campaignMemberList = detaildata.person?.reduce((ap, p) => {
-                    ap.push({
-                        id: 0,
-                        personid: p.personid || 0,
-                        personcommunicationchannel: '',
-                        personcommunicationchannelowner: (detaildata.communicationchanneltype?.startsWith('MAI') ? p.email || p.alternativeemail : p.phone || p.alternativephone) || '',
-                        type: p.type || '',
-                        displayname: p.name || '',
-                        status: 'ACTIVO',
-                        field1: (detaildata.communicationchanneltype?.startsWith('MAI') ? p.email || p.alternativeemail : p.phone || p.alternativephone) || '',
-                        field2: p[usedTablevariable['field2']] || '',
-                        field3: p[usedTablevariable['field3']] || '',
-                        field4: p[usedTablevariable['field4']] || '',
-                        field5: p[usedTablevariable['field5']] || '',
-                        field6: p[usedTablevariable['field6']] || '',
-                        field7: p[usedTablevariable['field7']] || '',
-                        field8: p[usedTablevariable['field8']] || '',
-                        field9: p[usedTablevariable['field9']] || '',
-                        field10: p[usedTablevariable['field10']] || '',
-                        field11: p[usedTablevariable['field11']] || '',
-                        field12: p[usedTablevariable['field12']] || '',
-                        field13: p[usedTablevariable['field13']] || '',
-                        field14: p[usedTablevariable['field14']] || '',
-                        field15: p[usedTablevariable['field15']] || '',
-                        batchindex: 0,
-                        operation: detaildata.operation
-                    })
-                    return ap;
-                }, []);
+                if (detaildata.communicationchanneltype?.startsWith('MAI')) {
+                    campaignMemberList = detaildata.person?.reduce((ap, p) => {
+                        ap.push({
+                            id: 0,
+                            personid: p.personid || 0,
+                            personcommunicationchannel: '',
+                            personcommunicationchannelowner: p.email || p.alternativeemail || '',
+                            type: p.type || '',
+                            displayname: p.name || '',
+                            status: 'ACTIVO',
+                            field1: p.email || p.alternativeemail || '',
+                            field2: p[messageVariables[0]?.text] || '',
+                            field3: p[messageVariables[1]?.text] || '',
+                            field4: p[messageVariables[2]?.text] || '',
+                            field5: p[messageVariables[3]?.text] || '',
+                            field6: p[messageVariables[4]?.text] || '',
+                            field7: p[messageVariables[5]?.text] || '',
+                            field8: p[messageVariables[6]?.text] || '',
+                            field9: p[messageVariables[7]?.text] || '',
+                            field10: p[messageVariables[8]?.text] || '',
+                            field11: p[messageVariables[9]?.text] || '',
+                            field12: p[messageVariables[10]?.text] || '',
+                            field13: p[messageVariables[11]?.text] || '',
+                            field14: p[messageVariables[12]?.text] || '',
+                            field15: p[messageVariables[13]?.text] || '',
+                            batchindex: 0,
+                            operation: detaildata.operation
+                        })
+                        return ap;
+                    }, []);
+
+                }
+                else {
+                    campaignMemberList = detaildata.person?.reduce((ap, p) => {
+                        ap.push({
+                            id: 0,
+                            personid: p.personid || 0,
+                            personcommunicationchannel: '',
+                            personcommunicationchannelowner: p.phone || p.alternativephone || '',
+                            type: p.type || '',
+                            displayname: p.name || '',
+                            status: 'ACTIVO',
+                            field1: p.phone || p.alternativephone || '',
+                            field2: p[usedTablevariable['field2']] || '',
+                            field3: p[usedTablevariable['field3']] || '',
+                            field4: p[usedTablevariable['field4']] || '',
+                            field5: p[usedTablevariable['field5']] || '',
+                            field6: p[usedTablevariable['field6']] || '',
+                            field7: p[usedTablevariable['field7']] || '',
+                            field8: p[usedTablevariable['field8']] || '',
+                            field9: p[usedTablevariable['field9']] || '',
+                            field10: p[usedTablevariable['field10']] || '',
+                            field11: p[usedTablevariable['field11']] || '',
+                            field12: p[usedTablevariable['field12']] || '',
+                            field13: p[usedTablevariable['field13']] || '',
+                            field14: p[usedTablevariable['field14']] || '',
+                            field15: p[usedTablevariable['field15']] || '',
+                            batchindex: 0,
+                            operation: detaildata.operation
+                        })
+                        return ap;
+                    }, []);
+                }
                 break;
         }
         if (detaildata.executiontype === 'SCHEDULED') {
