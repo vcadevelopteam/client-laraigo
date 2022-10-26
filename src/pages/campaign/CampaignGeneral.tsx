@@ -319,7 +319,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     }
 
     const filterMessageTemplate = () => {
-        if (getValues('type') == "MAIL") {
+        if (getValues('type') === "MAIL") {
             var mailTemplate = filterPipe(dataMessageTemplate, 'type', getValues('type'));
             var htmlTemplate = filterPipe(dataMessageTemplate, 'type', 'HTML');
 

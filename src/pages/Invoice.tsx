@@ -1,10 +1,11 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useCallback, Fragment, useEffect, useState, useMemo } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { cleanMemoryTable, getCollectionAux, getCollectionAux2, setMemoryTable, uploadFile } from 'store/main/actions';
-import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray, TemplateIcons, IOSSwitch, FieldEditMulti, TemplateSwitchYesNo } from 'components';
+import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray, TemplateIcons, IOSSwitch, FieldEditMulti } from 'components';
 import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, billingReportConversationWhatsApp, billingReportHsmHistory, invoiceRefresh, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent, getBalanceSelSent, getCorpSelVariant, listPaymentCard, paymentCardInsert, uploadExcel, insInvoice, templateMaker, exportExcel, selInvoiceComment, insInvoiceComment, convertLocalDate, localesLaraigo, billingArtificialIntelligenceSel, billingPeriodArtificialIntelligenceSel, billingPeriodArtificialIntelligenceInsArray } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -571,8 +572,10 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
     useEffect(() => {
         if (waitAiBilling) {
             if (multiRes.data[0] && multiRes.data[0].success && multiRes.data[0].data) {
-                if (multiRes.data[0].data[0].type) {
-                    setDataArtificialBilling(multiRes.data[0] && multiRes.data[0].success ? multiRes.data[0].data : []);
+                if (multiRes.data[0].data[0]) {
+                    if (multiRes.data[0].data[0].type) {
+                        setDataArtificialBilling(multiRes.data[0] && multiRes.data[0].success ? multiRes.data[0].data : []);
+                    }
                 }
             }
         }
@@ -773,7 +776,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
             }
 
             if (dataArtificialIntelligence.length > 0) {
-                const uniqueDataArtificialIntelligence = new Set(dataArtificialIntelligence.map(dataRow => dataRow.typeprovider));
+                const uniqueDataArtificialIntelligence = new Set(dataArtificialIntelligence.map(dataRow => dataRow.type && dataRow.provider));
 
                 if (uniqueDataArtificialIntelligence.size < dataArtificialIntelligence.length) {
                     dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.aiduplicatealert) }));
@@ -1876,7 +1879,7 @@ const DetailArtificialIntelligence: React.FC<ModalProps> = ({ index, data: { row
                         <FieldEdit
                             label={t(langKeys.quantity)}
                             className="col-6"
-                            valueDefault={getValues('aiquantity')}
+                            valueDefault={formatNumberNoDecimals(getValues('aiquantity') || 0)}
                             error={errors?.aiquantity?.message}
                             type="number"
                             inputProps={{ step: "any" }}
@@ -1885,7 +1888,7 @@ const DetailArtificialIntelligence: React.FC<ModalProps> = ({ index, data: { row
                         <FieldEdit
                             label={t(langKeys.aicost)}
                             className="col-6"
-                            valueDefault={getValues('aicost')}
+                            valueDefault={formatNumber(getValues('aicost') || 0)}
                             error={errors?.aicost?.message}
                             type="number"
                             inputProps={{ step: "any" }}
