@@ -75,10 +75,7 @@ const LaraigoHelp: FC<BoxProps> = (boxProps) => {
     useEffect(() => {
         dispatch(getVersion())
     }, []);
-    useEffect(() => {
-        console.log(getVersionData)
-    }, [getVersionData]);
-
+    
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
@@ -90,7 +87,13 @@ const LaraigoHelp: FC<BoxProps> = (boxProps) => {
     const handleCloseDialog = () => {
         setOpenDialog(false)
     };
-  
+
+    function formattime(cc: any) {
+        if (!cc)
+            return "";
+        let date= cc.split(' ')[0].split('-')
+        return `${date[2]}/${date[1]}/${date[0]} ${cc.split(' ')[1]}`
+    }
 
     return (
         <Box {...boxProps}>
@@ -118,7 +121,7 @@ const LaraigoHelp: FC<BoxProps> = (boxProps) => {
                             </div>
                             <div style={{justifyContent: 'space-between', display: 'flex',paddingTop: '15px', paddingBottom: '15px'}}>
                                 <Typography variant="subtitle1" ><b><Trans i18nKey={langKeys.deploymentdate} /></b></Typography>
-                                <Typography variant="subtitle2">{getVersionData?.getVersion?.data?.date}</Typography>
+                                <Typography variant="subtitle2">{formattime(getVersionData?.getVersion?.data?.date)}</Typography>
                             </div>
                         </div>
                     </div>
