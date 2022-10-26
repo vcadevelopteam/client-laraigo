@@ -10,37 +10,27 @@ import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { resetMultiMain, getMultiCollectionAux, resetMainAux, resetMultiMainAux, resetMultiMainAux2, getCollection, getCollectionAux, getCollectionPaginated, exportData } from 'store/main/actions';
-import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, LabelList } from 'recharts';
+import { resetMultiMain, getMultiCollectionAux, resetMainAux, resetMultiMainAux, resetMultiMainAux2, getCollectionAux, getCollectionPaginated, exportData, setMemoryTable } from 'store/main/actions';
+import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid } from 'recharts';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { dataYears } from 'common/helpers';
 import ListIcon from '@material-ui/icons/List';
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import ClearIcon from '@material-ui/icons/Clear';
+import Tooltip from '@material-ui/core/Tooltip';
 import {
     Search as SearchIcon, Settings,
 } from '@material-ui/icons';
 import { Box, CircularProgress, Tabs } from '@material-ui/core';
 import { useForm } from 'react-hook-form';
-import { StreetViewPanorama } from '@react-google-maps/api';
+import Zoom from '@material-ui/core/Zoom';
 import TablePaginated from 'components/fields/table-paginated';
 import DialogInteractions from 'components/inbox/DialogInteractions';
 
 const COLORS = ["#0f8fe5", "#067713", "#296680", "#fc3617", "#e8187a", "#7cfa57", "#cfbace", "#4cd45f", "#fd5055", "#7e1be4", "#bf1490", "#66c6cf", "#011c3d", "#1a9595", "#4ae2c7", "#515496", "#a2aa65", "#df909c", "#3aa343", "#e0606e"];
-interface RowSelected {
-    row: Dictionary | null,
-    edit: boolean
-}
-interface DetailHSMHistoryReportProps {
-    data: RowSelected;
-    setViewSelected: (view: string) => void;
-}
 
-const initialRange = {
-    startDate: new Date(new Date().setDate(1)),
-    endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
-    key: 'selection'
-}
+const UNIQUECONTACTS = 'UNIQUECONTACTS';
+
 const useStyles = makeStyles((theme) => ({
     containerHeader: {
         padding: theme.spacing(1),
@@ -85,6 +75,12 @@ const useStyles = makeStyles((theme) => ({
         color: '#7721ad',
         textDecoration: 'underline',
         cursor: 'pointer'
+    },
+    fieldElipsis: {
+        textOverflow:"ellipsis",
+        overflow: "hidden",
+        whiteSpace: "nowrap", 
+        width: 230,
     },
 }));
 
@@ -249,6 +245,7 @@ const DetailUniqueContact: React.FC<DetailUniqueContactProps> = ({ row, setViewS
     const [waitExport, setWaitExport] = useState(false);
     const resExportData = useSelector(state => state.main.exportData);
     const dispatch = useDispatch();
+    const classes = useStyles()
     const { t } = useTranslation();
     
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
@@ -278,10 +275,14 @@ const DetailUniqueContact: React.FC<DetailUniqueContactProps> = ({ row, setViewS
             {
                 Header: t(langKeys.communicationchannel),
                 accessor: 'channels',
-                width: 'auto',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    return <div>{row?.channels?.substring(0,30)}...</div>
+                    <div className={classes.fieldElipsis}>{row?.channels}</div>
+                    return <Tooltip TransitionComponent={Zoom} title={row?.channels}>
+                        <div className={classes.fieldElipsis}>
+                            {row?.channels}
+                        </div>
+                    </Tooltip>
                 }
             },
             {
@@ -408,6 +409,7 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
     const [rowSelected, setRowSelected] = useState<any>(null);
     const [openModal, setOpenModal] = useState(false);
     const [graphicType, setGraphicType] = useState('BAR');
+    const memoryTable = useSelector(state => state.main.memoryTable);
 
     const cell = (props: any) => {
         const column = props.cell.column;
@@ -616,6 +618,9 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                             filterGeneral={false}
                             loading={mainResult.loading}
                             register={false}
+                            pageSizeDefault={UNIQUECONTACTS === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                            initialPageIndex={UNIQUECONTACTS === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                            initialStateFilter={UNIQUECONTACTS === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
                         />
                 </React.Fragment>):
                 (<div>
@@ -852,7 +857,7 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
             },
             {
                 Header: t(langKeys.closedby),
-                accessor: 'usertype',//preguntar a nano cual es el campo real
+                accessor: 'usertype',
                 width: 'auto',
             },
             {
@@ -1012,6 +1017,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
     const [rowSelected, setRowSelected] = useState<any>(null);
     const [openModal, setOpenModal] = useState(false);
     const [graphicType, setGraphicType] = useState('BAR');
+    const memoryTable = useSelector(state => state.main.memoryTable);
 
     const cell = (props: any) => {
         const column = props.cell.column;
@@ -1218,6 +1224,9 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                             filterGeneral={false}
                             loading={mainResult.loading}
                             register={false}
+                            pageSizeDefault={UNIQUECONTACTS === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                            initialPageIndex={UNIQUECONTACTS === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                            initialStateFilter={UNIQUECONTACTS === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
                         />
                 </React.Fragment>):
                 (<div>
@@ -1352,6 +1361,9 @@ const UniqueContactsReport: FC = () => {
             getValuesFromDomain("TIPOCANAL"),
             selOrgSimpleList()
         ]))
+        dispatch(setMemoryTable({
+            id: UNIQUECONTACTS
+        }))
         return () => {
             dispatch(resetMainAux());
             dispatch(resetMultiMain());
