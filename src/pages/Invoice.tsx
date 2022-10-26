@@ -572,8 +572,10 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
     useEffect(() => {
         if (waitAiBilling) {
             if (multiRes.data[0] && multiRes.data[0].success && multiRes.data[0].data) {
-                if (multiRes.data[0].data[0].type) {
-                    setDataArtificialBilling(multiRes.data[0] && multiRes.data[0].success ? multiRes.data[0].data : []);
+                if (multiRes.data[0].data[0]) {
+                    if (multiRes.data[0].data[0].type) {
+                        setDataArtificialBilling(multiRes.data[0] && multiRes.data[0].success ? multiRes.data[0].data : []);
+                    }
                 }
             }
         }
@@ -774,7 +776,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
             }
 
             if (dataArtificialIntelligence.length > 0) {
-                const uniqueDataArtificialIntelligence = new Set(dataArtificialIntelligence.map(dataRow => dataRow.typeprovider));
+                const uniqueDataArtificialIntelligence = new Set(dataArtificialIntelligence.map(dataRow => dataRow.type && dataRow.provider));
 
                 if (uniqueDataArtificialIntelligence.size < dataArtificialIntelligence.length) {
                     dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.aiduplicatealert) }));
@@ -1877,7 +1879,7 @@ const DetailArtificialIntelligence: React.FC<ModalProps> = ({ index, data: { row
                         <FieldEdit
                             label={t(langKeys.quantity)}
                             className="col-6"
-                            valueDefault={getValues('aiquantity')}
+                            valueDefault={formatNumberNoDecimals(getValues('aiquantity') || 0)}
                             error={errors?.aiquantity?.message}
                             type="number"
                             inputProps={{ step: "any" }}
@@ -1886,7 +1888,7 @@ const DetailArtificialIntelligence: React.FC<ModalProps> = ({ index, data: { row
                         <FieldEdit
                             label={t(langKeys.aicost)}
                             className="col-6"
-                            valueDefault={getValues('aicost')}
+                            valueDefault={formatNumber(getValues('aicost') || 0)}
                             error={errors?.aicost?.message}
                             type="number"
                             inputProps={{ step: "any" }}
