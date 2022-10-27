@@ -6,7 +6,7 @@ import { getasesorvsticketsSel, getTicketvsAdviserExport } from 'common/helpers'
 import { IFetchData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { exportData, getCollectionPaginated, resetMultiMain } from 'store/main/actions';
+import { cleanViewChange, exportData, getCollectionPaginated, resetMultiMain, setViewChange } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
 
@@ -23,6 +23,13 @@ const TicketvsAdviser: FC = () => {
     const [waitSave, setWaitSave] = useState(false);
     const [waitExport, setWaitExport] = useState(false);
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+    useEffect(() => {
+        dispatch(setViewChange("report_ticketvsasesor"))
+        return () => {
+            dispatch(cleanViewChange());
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
     
     const columns = React.useMemo(
         () => [

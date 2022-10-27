@@ -550,7 +550,15 @@ export const setMemoryTable = (state: IState, action: IAction): IState => ({
         }
     },
 });
+export const setViewChange = (state: IState, action: IAction): IState => ({
+    ...state,
+    viewChange: action.payload,
+});
 
+export const cleanViewChange = (state: IState): IState => ({
+    ...state,
+    viewChange: "",
+});
 export const cleanMemoryTable = (state: IState): IState => ({
     ...state,
     memoryTable: initialState.memoryTable,

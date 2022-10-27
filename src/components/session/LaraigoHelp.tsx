@@ -12,8 +12,9 @@ import { version } from 'common/constants';
 import { useDispatch } from "react-redux";
 import { useSelector } from 'hooks';
 import { getVersion } from "store/getversion/actions";
-import { convertLocalDate } from "common/helpers";
 import { LaraigoLogo } from "icons";
+import { useLocation } from 'react-router-dom';
+import { viewDocumentation } from "pages/dashboard/constants";
 
 const useNotificationMenuStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -69,8 +70,27 @@ const LaraigoHelp: FC<BoxProps> = (boxProps) => {
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const open = Boolean(anchorEl);
     const [openDialog, setOpenDialog] = useState(false);
+    const [showDocButton, setshowDocButton] = useState(false);
+    const [redirection, setredirection] = useState<any>(null);
     const getVersionData = useSelector(state => state.getversion);
     const dispatch = useDispatch();
+    const location = useLocation();
+    const viewChange = useSelector(state => state.main.viewChange);
+
+    useEffect(() => {
+        if(!!viewChange){debugger
+            let finddocumentation = viewDocumentation.find(x=>x.name===viewChange)
+            setshowDocButton(!!finddocumentation)
+            setredirection(finddocumentation||null)
+        }else{
+            console.log(location)
+            let lengthsplitpath= location.pathname.split('/')
+            console.log(lengthsplitpath[lengthsplitpath.length])
+            let finddocumentation = viewDocumentation.find(x=>x.name===lengthsplitpath[lengthsplitpath.length-1])
+            setshowDocButton(!!finddocumentation)
+            setredirection(finddocumentation||null)
+        }
+    }, [location,viewChange]);
 
     useEffect(() => {
         dispatch(getVersion())
@@ -125,6 +145,10 @@ const LaraigoHelp: FC<BoxProps> = (boxProps) => {
                             </div>
                         </div>
                     </div>
+                    
+                    <div style={{ textAlign: "center",paddingTop: '15px', paddingBottom: '15px'}}>
+                                <Typography variant="subtitle1" ><b>Copyright © Laraigo {new Date().getFullYear()} </b></Typography>
+                            </div>
                 </DialogContent>
             </Dialog>
             <IconButton
@@ -163,15 +187,17 @@ const LaraigoHelp: FC<BoxProps> = (boxProps) => {
                     >
                         <Trans i18nKey={langKeys.generalhelp} />
                     </Button>
-                    <Button
-                        onClick={()=>{window?.open('https://docs-laraigo.gitbook.io/laraigo/contenido/configuracion', '_blank')?.focus();}}
-                        variant="outlined"
-                        color="primary"
-                        fullWidth
-                        style={{ fontWeight: "normal" }}
-                    >
-                        <Trans i18nKey={langKeys.configuration_plural} />
-                    </Button>
+                    {showDocButton &&
+                        <Button
+                            onClick={()=>{window?.open(redirection?.path||"", '_blank')?.focus();}}
+                            variant="outlined"
+                            color="primary"
+                            fullWidth
+                            style={{ fontWeight: "normal" }}
+                        >
+                            <Trans i18nKey={redirection.name} />
+                        </Button>
+                    }
                     <Button
                         variant="outlined"
                         onClick={() => setOpenDialog(true)}
@@ -187,14 +213,3 @@ const LaraigoHelp: FC<BoxProps> = (boxProps) => {
 };
 
 export default LaraigoHelp;
-
-const formatDate = (strDate: string) => {
-    if (!strDate || strDate === '') return '';
-
-    const date = new Date(strDate);
-    const day = date.toLocaleDateString("en-US", { day: '2-digit' });
-    const month = date.toLocaleDateString("en-US", { month: '2-digit' });
-    const year = date.toLocaleDateString("en-US", { year: 'numeric' });
-
-    return `${day}/${month}/${year}`;
-}
