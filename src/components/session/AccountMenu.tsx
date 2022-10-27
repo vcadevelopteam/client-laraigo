@@ -11,9 +11,8 @@ import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import { ManageOrganization, BadgeGo, StatusConnection } from 'components';
-import { connectAgentAPI, connectAgentUI, disconnectSocket, emitEvent } from "store/inbox/actions";
+import { connectAgentUI, disconnectSocket, emitEvent } from "store/inbox/actions";
 import { disconnectVoxi } from "store/voximplant/actions";
-import { version } from 'common/constants';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({

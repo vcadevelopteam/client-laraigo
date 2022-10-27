@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState, Fragment } from "react";
 import { useTranslation } from "react-i18next";
