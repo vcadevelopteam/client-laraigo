@@ -43,13 +43,39 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                 sdk.on(VoxImplant.Events.IncomingCall, (e) => {
                     const headers = (e.call as Call).headers()
                     const supervision = headers["X-supervision"]
-                    console.log("supervision", supervision)
+                    const splitIdentifier = headers["X-identifier"].split("-");
                     if (supervision) {
+                        dispatch({
+                            type: typeVoximplant.INIT_CALL,
+                            payload: {
+                                call: e.call,
+                                type: "SUPERVISION",
+                                number: "",
+                                identifier: headers["X-identifier"],
+                                data: {
+                                    conversationid: parseInt(splitIdentifier[3]),
+                                    ticketnum: splitIdentifier[5],
+                                    personid: parseInt(splitIdentifier[4]),
+                                    communicationchannelid: parseInt(splitIdentifier[2]),
+                                    status: "ASIGNADO",
+                                    imageurldef: "",
+                                    firstconversationdate: "",
+                                    personlastreplydate: "",
+                                    countnewmessages: 1,
+                                    usergroup: "",
+                                    displayname: headers["X-personname"],
+                                    coloricon: "",
+                                    communicationchanneltype: "VOXI",
+                                    lastmessage: "LLAMADA ENTRANTE",
+                                    personcommunicationchannel: `${e.call.number()}_VOXI`,
+                                    communicationchannelsite: headers["X-site"],
+                                    lastreplyuser: "",
+                                }
+                            }
+                        })
                         e.call.answer();
                         return;
                     }
-
-                    const splitIdentifier = headers["X-identifier"].split("-");
 
                     const data: ITicket = {
                         conversationid: parseInt(splitIdentifier[3]),
@@ -225,9 +251,12 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
     } else if (type === typeVoximplant.DISCONNECT) {
         dispatch({ type: typeVoximplant.MANAGE_CONNECTION, payload: { error: true, message: "", loading: false } })
         try {
-            sdk?.disconnect();
+            if (alreadyLoad) {
+                sdk?.disconnect();
+            }
             return
         } catch (error) {
+            console.log("aaaaxxxxx")
             return
         }
     }

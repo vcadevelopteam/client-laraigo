@@ -60,6 +60,10 @@ export const langKeys = {
     redo: "redo",
     city: "city",
     make_call: "make_call",
+    
+    ringing: "ringing",
+    connected_call: "connected_call",
+
     alternativephone: "alternativephone",
     limitgroupreassignment: "limitgroupreassignment",
     waittime: "waittime",

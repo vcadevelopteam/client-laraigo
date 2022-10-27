@@ -29,6 +29,9 @@ const translation: LangKeys = {
     add_classification: "Add classification",
     make_call: "Make call",
 
+    ringing: "ringing",
+    connected_call: "Connected call",
+
     type_service: 'Service Type',
     font: "Font",
     undo: "Undo",

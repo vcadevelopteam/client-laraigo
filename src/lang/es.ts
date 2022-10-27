@@ -1418,6 +1418,10 @@ const translation: LangKeys = {
     close: 'Cerrar',
     closetype: 'Tipo de cierre',
     make_call: "Realizar Llamada",
+
+    ringing: "Timbrando",
+    connected_call: "Llamada conectada",
+
     tipify_ticket: 'Clasificar ticket',
     today: 'Hoy',
     yesterday: 'Ayer',

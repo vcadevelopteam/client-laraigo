@@ -1,61 +1,60 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState } from 'react'
-import { IconButton, Typography } from "@material-ui/core";
+import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'hooks';
 import PersonIcon from '@material-ui/icons/Person';
 import { useDispatch } from 'react-redux';
 import { answerCall, hangupCall, rejectCall, holdCall, muteCall, unmuteCall, setHold } from 'store/voximplant/actions';
-import TextField from '@material-ui/core/TextField';
-import PhoneIcon from '@material-ui/icons/Phone';
-import CallEndIcon from '@material-ui/icons/CallEnd';
-import MicIcon from '@material-ui/icons/Mic';
-import PauseIcon from '@material-ui/icons/Pause';
-import MicOffIcon from '@material-ui/icons/MicOff';
-import { FieldSelect } from 'components';
-import { Card, CardContent } from '@material-ui/core';
-import { convertLocalDate, secondsToTime, getSecondsUntelNow, conversationCallHold } from 'common/helpers';
+import { Card, CardContent, Fab } from '@material-ui/core';
+import { convertLocalDate, secondsToTime, getSecondsUntelNow, conversationCallHold, getTimeBetweenDates, timetoseconds } from 'common/helpers';
 import { langKeys } from 'lang/keys';
 import { execute } from 'store/main/actions';
+import HearingIcon from '@material-ui/icons/Hearing';
+import { IconButton } from '@material-ui/core';
+import IOSSwitch from "components/fields/IOSSwitch";
 
 const ManageCallInfoSupervisor: React.FC = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const phoneinbox = useSelector(state => state.inbox.person.data?.phone);
     const [numberVox, setNumberVox] = useState("");
-    const onholdstate = useSelector(state => state.voximplant.onhold);
-    const onholdstatedate = useSelector(state => state.voximplant.onholddate);
-    const [hold, sethold] = useState(!onholdstate);
+    const resValidateToken = useSelector(state => state.login.validateToken);
     const call = useSelector(state => state.voximplant.call);
-    const statusCall = useSelector(state => state.voximplant.statusCall);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
-    const [date, setdate] = useState<string>(new Date().toISOString());
+    const [supervision, setSupervision] = useState(false)
     const [time, settime] = useState(0);
-    const [timehold, settimehold] = useState(0);
 
-    console.log("callanswereddate", ticketSelected?.callanswereddate)
+
     React.useEffect(() => {
-        if (call?.type === "INBOUND" && statusCall === "CONNECTING") {
-            sethold(true)
-            setNumberVox(call.number.split("@")[0].split(":")?.[1] || "")
-        } else if (call.type === "INBOUND" && statusCall !== "CONNECTING") {
-            setNumberVox(call.number.split("@")[0].split(":")?.[1] || "")
+        if (ticketSelected?.callanswereddate) {
+            if (ticketSelected?.status === "CERRADO") {
+                settime(timetoseconds(getTimeBetweenDates(convertLocalDate(ticketSelected?.callanswereddate), convertLocalDate(ticketSelected?.finishdate))))
+            } else {
+                settime(getSecondsUntelNow(convertLocalDate(ticketSelected?.callanswereddate)));
+            }
         }
-    }, [call, dispatch, statusCall])
-
-    React.useEffect(() => {
-        if (statusCall === "CONNECTED") {
-            const datex = ticketSelected?.callanswereddate || new Date().toISOString();
-            setdate(datex);
-            settime(getSecondsUntelNow(convertLocalDate(datex)));
+        if (call?.data?.conversationid === ticketSelected?.conversationid) {
+            setSupervision(true)
         }
-    }, [statusCall])
+    }, [ticketSelected])
+
+    useEffect(() => {
+        if (supervision) {
+            const { userid, orgid } = resValidateToken.user!!;
+            const url = `${ticketSelected?.commentexternalid}?mode=supervision&user=user${userid}.${orgid}`;
+            fetch(url, { method: 'GET' });
+        } else {
+
+        }
+    }, [supervision])
 
     React.useEffect(() => {
+        if (ticketSelected?.status === "CERRADO") {
+            return;
+        }
         let interval: NodeJS.Timeout | null = null;
-        if (statusCall === "CONNECTED") {
+        if (ticketSelected?.callanswereddate) {
             interval = setTimeout(() => {
-                settime(getSecondsUntelNow(convertLocalDate(date)));
+                settime(getSecondsUntelNow(convertLocalDate(ticketSelected?.callanswereddate)));
             }, 1000)
         } else {
             settime(0)
@@ -65,23 +64,7 @@ const ManageCallInfoSupervisor: React.FC = () => {
                 clearTimeout(interval)
             }
         };
-    }, [time, statusCall, date]);
-
-    React.useEffect(() => {
-        let interval: NodeJS.Timeout | null = null;
-        if (statusCall === "CONNECTED" && !hold) {
-            interval = setTimeout(() => {
-                settimehold(getSecondsUntelNow(convertLocalDate(onholdstatedate)));
-            }, 1000)
-        } else {
-            settimehold(0)
-        }
-        return () => {
-            if (interval) {
-                clearTimeout(interval)
-            }
-        };
-    }, [timehold, hold, statusCall]);
+    }, [time, ticketSelected]);
 
     React.useEffect(() => {
         if (phoneinbox) {
@@ -93,42 +76,30 @@ const ManageCallInfoSupervisor: React.FC = () => {
         <div style={{ width: "100%" }}>
             <Card style={{ maxWidth: "500px" }}>
                 <CardContent>
-                    <div>
-                        <div>
-                            <div style={{ marginLeft: "auto", marginTop: 20, marginRight: "auto", width: "100px", height: "100px", borderRadius: "50%", backgroundColor: "#bdbdbd" }}>
-                                <PersonIcon style={{ color: "white", width: "100px", height: "100px" }} />
+                    {ticketSelected?.status !== "CERRADO" && (
+                        <div style={{ display: "flex", justifyContent: "end" }}>
+                            <div style={{ display: "flex", gap: 4,  }}>
+                                <div>
+                                    Supervisar
+                                </div>
+                                <IOSSwitch checked={supervision} onChange={(e) => setSupervision(e.target.checked)} name="checkedB" />
                             </div>
                         </div>
-                        <div>
-                            <div style={{ width: "100%", textAlign: "center" }}>
-                                {(ticketSelected?.origin === "OUTBOUND") ? t(langKeys.outboundcall) : t(langKeys.inboundcall)}
-                            </div>
-                            {statusCall === "DISCONNECTED" ?
-                                (<div style={{ display: "flex", width: "100%" }}>
-                                    <TextField
-                                        label={t(langKeys.phone)}
-                                        value={numberVox}
-                                        style={{ marginRight: "auto", marginLeft: "auto", width: "400px" }}
-                                        type="number"
-                                        onChange={(e) => setNumberVox(e.target.value)}
-                                        disabled={true}
-                                    />
-                                </div>) : (
-                                    <div style={{ marginLeft: "auto", marginRight: "auto", textAlign: "center", fontSize: "20px", marginTop: 10 }}>
-                                        {numberVox}
-                                    </div>
-                                )
-                            }
-                            {(statusCall === "CONNECTED" && hold) &&
-                                <div style={{ fontSize: "15px", marginLeft: "auto", marginRight: "auto", width: "100px", textAlign: "center" }}>
-                                    {(secondsToTime(time || 0))}
-                                </div>
-                            }
-                            {(statusCall === "CONNECTED" && !hold) &&
-                                <div style={{ fontSize: "15px", marginLeft: "auto", marginRight: "auto", width: "200px", textAlign: "center" }}>
-                                    {t(langKeys.waittime)} {(secondsToTime(getSecondsUntelNow(convertLocalDate(onholdstatedate))))}
-                                </div>
-                            }
+                    )}
+                    <div>
+                        <div style={{ marginLeft: "auto", marginTop: 20, marginRight: "auto", width: "100px", height: "100px", borderRadius: "50%", backgroundColor: "#bdbdbd" }}>
+                            <PersonIcon style={{ color: "white", width: "100px", height: "100px" }} />
+                        </div>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: "column", gap: 4, marginTop: 4 }}>
+                        <div style={{ marginLeft: "auto", marginRight: "auto", textAlign: "center", fontSize: "20px" }}>
+                            {numberVox}
+                        </div>
+                        <div style={{ fontSize: 16, textAlign: "center" }}>
+                            {(secondsToTime(time || 0))}
+                        </div>
+                        <div style={{ width: "100%", textAlign: "center", fontSize: 16 }}>
+                            {(ticketSelected?.origin === "OUTBOUND") ? t(langKeys.outboundcall) : t(langKeys.inboundcall)}
                         </div>
                     </div>
                 </CardContent>
