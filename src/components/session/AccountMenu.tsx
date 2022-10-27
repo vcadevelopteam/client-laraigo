@@ -115,9 +115,6 @@ const AccountMenu: FC = () => {
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popoverxx' : undefined;
 
-    console.log(version.build)
-
-
     return (
         <div className={classes.root}>
             <Button
