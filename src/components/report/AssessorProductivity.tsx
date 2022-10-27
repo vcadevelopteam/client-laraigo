@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useSelector } from 'hooks';
-import { getCollectionAux, getMainGraphic, resetMainAux } from "store/main/actions";
+import { cleanViewChange, getCollectionAux, getMainGraphic, resetMainAux, setViewChange } from "store/main/actions";
 import { getUserProductivityGraphic, getUserProductivitySel } from "common/helpers/requestBodies";
 import { DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect, IOSSwitch } from "components";
 import { makeStyles } from '@material-ui/core/styles';
@@ -146,6 +146,14 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
         loading: false,
         data: []
     })
+
+    useEffect(() => {
+        dispatch(setViewChange("report_userproductivity"))
+        return () => {
+            dispatch(cleanViewChange());
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     const columns = React.useMemo(
         () => [

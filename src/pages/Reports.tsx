@@ -17,7 +17,7 @@ import { TemplateBreadcrumbs, SearchField, FieldSelect, FieldMultiSelect, Skelet
 import { useSelector } from 'hooks';
 import { Dictionary, IFetchData, MultiData, IRequestBody } from "@types";
 import { getReportSel, getReportTemplateSel, getValuesFromDomain, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport, insertReportTemplate, convertLocalDate, getTableOrigin, getReportGraphic, getConversationsWhatsapp, getDateCleaned } from 'common/helpers';
-import { getCollection, getCollectionAux, execute, resetMain, getCollectionPaginated, resetCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetMainAux, getMultiCollectionAux, getMainGraphic } from 'store/main/actions';
+import { getCollection, getCollectionAux, execute, resetMain, getCollectionPaginated, resetCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetMainAux, getMultiCollectionAux, getMainGraphic, cleanViewChange, setViewChange } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
 import { reportsImage } from '../icons/index';
@@ -146,6 +146,15 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
     const [openModal, setOpenModal] = useState(false);
     const [view, setView] = useState('GRID');
 
+    useEffect(() => {
+        dispatch(setViewChange(`report_${row?.origin}`))
+        console.log(`report_${row?.origin}`)
+        return () => {
+            dispatch(cleanViewChange());
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+    
     // const columns = React.useMemo(() => [{ Header: 'null', accessor: 'null', type: 'null' }] as any, []);
     const columns = React.useMemo(() => reportColumns.map(x => {
         switch (x.proargtype) {
@@ -645,6 +654,13 @@ const ReportConversationWhatsapp: FC = () => {
             )
         ]))
     }
+    useEffect(() => {
+        dispatch(setViewChange("report_conversationwhatsapp"))
+        return () => {
+            dispatch(cleanViewChange());
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     useEffect(() => {
         return () => {

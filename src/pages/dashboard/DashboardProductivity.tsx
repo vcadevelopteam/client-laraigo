@@ -4,7 +4,7 @@ import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
 import { langKeys } from "lang/keys";
 import { FC, Fragment, useEffect, useState } from "react";
-import { getMultiCollection, getMultiCollectionAux, getCollectionAux, resetMainAux, resetMultiMainAux } from 'store/main/actions';
+import { getMultiCollection, getMultiCollectionAux, getCollectionAux, resetMainAux, resetMultiMainAux, setViewChange, cleanViewChange } from 'store/main/actions';
 import { Range } from 'react-date-range';
 import clsx from 'clsx';
 import PersonIcon from '@material-ui/icons/Person';
@@ -361,6 +361,13 @@ const DashboardProductivity: FC = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mainResult])
+    useEffect(() => {
+        dispatch(setViewChange("productivity"))
+        return () => {
+            dispatch(cleanViewChange());
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
     useEffect(() => {
         setData({
             dataTMO: "0s",

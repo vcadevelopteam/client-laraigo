@@ -42,7 +42,8 @@ export interface IState {
     uploadFile: IUpload;
     exportData: IUpload;
     exportDynamicData: IUpload;
-    memoryTable: IMemoryTable
+    memoryTable: IMemoryTable;
+    viewChange: string;
 }
 
 export const initialState: IState = {
@@ -66,7 +67,8 @@ export const initialState: IState = {
         page: -1,
         pageSize: -1,
         filters: {}
-    }
+    },
+    viewChange: ""
 };
 
 export default createReducer<IState>(initialState, {
@@ -147,4 +149,6 @@ export default createReducer<IState>(initialState, {
     [actionTypes.RESET_ALL]: caseFunctions.resetAll,
     [actionTypes.SET_MEMORY_TABLE]: caseFunctions.setMemoryTable,
     [actionTypes.CLEAN_MEMORY_TABLE]: caseFunctions.cleanMemoryTable,
+    [actionTypes.VIEWCHANGE]: caseFunctions.setViewChange,
+    [actionTypes.CLEAN_VIEWCHANGE]: caseFunctions.cleanViewChange,
 });

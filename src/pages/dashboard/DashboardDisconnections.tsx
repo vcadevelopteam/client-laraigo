@@ -10,7 +10,7 @@ import { Range } from 'react-date-range';
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis, Pie, PieChart, Legend } from "recharts";
-import { getMultiCollection, getMultiCollectionAux, resetMainAux, resetMultiMainAux } from "store/main/actions";
+import { cleanViewChange, getMultiCollection, getMultiCollectionAux, resetMainAux, resetMultiMainAux, setViewChange } from "store/main/actions";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 
@@ -235,6 +235,13 @@ const DashboardDisconnections: FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    useEffect(() => {
+        dispatch(setViewChange("disconnections"))
+        return () => {
+            dispatch(cleanViewChange());
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
     
     const RADIAN = Math.PI / 180;
     const renderCustomizedLabel = ({cx, cy, midAngle, innerRadius, outerRadius, percent, index,}:Dictionary) => {
