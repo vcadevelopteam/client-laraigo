@@ -4,6 +4,7 @@ import typeInbox from 'store/inbox/actionTypes';
 import * as VoxImplant from 'voximplant-websdk'
 import { CallSettings } from 'voximplant-websdk/Structures';
 import { ITicket } from '@types';
+import { Call } from "voximplant-websdk/Call/Call";
 
 import { emitEvent, connectAgentUI, connectAgentAPI } from 'store/inbox/actions';
 
@@ -40,7 +41,14 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                 })
 
                 sdk.on(VoxImplant.Events.IncomingCall, (e) => {
-                    const headers = e.call?.headers();
+                    const headers = (e.call as Call).headers()
+                    const supervision = headers["X-supervision"]
+                    console.log("supervision", supervision)
+                    if (supervision) {
+                        e.call.answer();
+                        return;
+                    }
+
                     const splitIdentifier = headers["X-identifier"].split("-");
 
                     const data: ITicket = {

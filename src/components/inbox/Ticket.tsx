@@ -119,7 +119,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
     const [dateToClose, setDateToClose] = useState<Date | null>(null)
     const data14 = React.useRef<Dictionary[] | null>(null)
 
-    // const refreshToken = React.useRef<number>(-1)
+    const resValidateToken = useSelector(state => state.login.validateToken);
     const [refreshToken, setRefreshToken] = useState(-1)
 
     const dictAutoClose = useSelector(state => state.login.validateToken.user?.properties?.auto_close);
@@ -245,6 +245,11 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [timeWaiting]);
 
+    const showvox = async () => {
+        const { userid, orgid } = resValidateToken.user!!;
+        const url = `${item.postexternalid}?mode=supervision&user=user${userid}.${orgid}`;
+        fetch(url, { method: 'GET' });
+    }
 
     return (
         <div
@@ -253,6 +258,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
             })}
             onClick={() => {
                 setTicketSelected(item);
+                // showvox()
                 console.log("item.postexternalid", item.postexternalid)
             }}>
             <Badge
