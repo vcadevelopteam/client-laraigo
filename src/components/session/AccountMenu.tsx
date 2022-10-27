@@ -13,7 +13,6 @@ import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import { ManageOrganization, BadgeGo, StatusConnection } from 'components';
 import { connectAgentUI, disconnectSocket, emitEvent } from "store/inbox/actions";
 import { disconnectVoxi } from "store/voximplant/actions";
-import { version } from 'common/constants';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({

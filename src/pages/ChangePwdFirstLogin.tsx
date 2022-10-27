@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { Box, Button, CircularProgress, Container, IconButton, InputAdornment, TextField } from '@material-ui/core';
 import { Visibility, VisibilityOff } from '@material-ui/icons';
@@ -13,7 +14,6 @@ import { logout, setPwdFirsLogin } from 'store/login/actions';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
 import clsx from 'clsx';
-import { showSnackbar } from 'store/popus/actions';
 
 const ChangePwdFirstLogin: FC = () => {
     const classes = useLoginStyles();

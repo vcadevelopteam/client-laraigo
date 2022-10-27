@@ -59,4 +59,5 @@ export const viewDocumentation = [
     {name: 'campaign', path: `https://docs-laraigo.gitbook.io/laraigo/contenido/campanas`},
     {name: 'usersettings', path: `https://docs-laraigo.gitbook.io/laraigo/contenido/configuracion-de-la-cuenta`},
     {name: 'botdesigner', path: `https://docs-laraigo.gitbook.io/laraigo/contenido/disenador-de-bots`},
+    {name: 'configuration', path: `https://docs-laraigo.gitbook.io/laraigo/contenido/configuracion`},
 ];

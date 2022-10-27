@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/iframe-has-title */
 import React, { useState } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
 import { IInteraction, IGroupInteraction, Dictionary } from "@types";

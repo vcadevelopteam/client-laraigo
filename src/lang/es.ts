@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 import { ResourceLanguage } from 'i18next';
 import { LangKeys } from './keys';
 

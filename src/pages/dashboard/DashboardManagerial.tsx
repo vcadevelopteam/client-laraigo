@@ -1139,6 +1139,7 @@ const DashboardManagerial: FC = () => {
         ]));
         funcsearch()
         
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const downloaddata = (tipeoffilter:string) => {

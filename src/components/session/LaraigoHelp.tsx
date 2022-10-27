@@ -3,9 +3,7 @@ import React, { useEffect } from "react";
 import { Button } from "@material-ui/core";
 import { FC, useState } from "react";
 import { langKeys } from "lang/keys";
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import HelpIcon from '@material-ui/icons/Help';
-import CloseIcon from '@material-ui/icons/Close';
 import { Trans } from "react-i18next";
 import DialogContent from '@material-ui/core/DialogContent';
 import { version } from 'common/constants';
@@ -75,7 +73,8 @@ const LaraigoHelp: FC<BoxProps> = (boxProps) => {
             setredirection(finddocumentation || null)
         } else {
             const lengthsplitpath = location.pathname.split('/')
-            const finddocumentation = viewDocumentation.find(x => x.name === lengthsplitpath[lengthsplitpath.length - 1])
+            console.log(lengthsplitpath)
+            const finddocumentation = viewDocumentation.find(x => x.name === lengthsplitpath[lengthsplitpath.length>3? 2:lengthsplitpath.length-1])
             setshowDocButton(!!finddocumentation)
             setredirection(finddocumentation || null)
         }
