@@ -33,6 +33,30 @@ export interface FrameProps {
     executeSave: boolean,
 }
 
+const validateField = (origin: string | undefined, data: any, field: string) => {
+    try {
+        switch (origin) {
+            case 'PERSON':
+                switch (field) {
+                    case 'lastcontact':
+                        return data[field] ? new Date(data[field]).toLocaleString() : '';
+                }
+                break;
+            case 'LEAD':
+                switch (field) {
+                    case 'changedate':
+                    case 'date_deadline':
+                        return data[field] ? new Date(data[field]).toLocaleString() : '';
+                }
+                break;
+        }
+        return data[field] || '';
+    }
+    catch (e) {
+        return data[field] || ''
+    }
+}
+
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
@@ -360,20 +384,20 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                             : detaildata.source === 'LEAD' ? `${p.name || ''}` : '',
                             status: 'ACTIVO',
                             field1: p.email || p.alternativeemail || '',
-                            field2: p[messageVariables[0]?.text] || '',
-                            field3: p[messageVariables[1]?.text] || '',
-                            field4: p[messageVariables[2]?.text] || '',
-                            field5: p[messageVariables[3]?.text] || '',
-                            field6: p[messageVariables[4]?.text] || '',
-                            field7: p[messageVariables[5]?.text] || '',
-                            field8: p[messageVariables[6]?.text] || '',
-                            field9: p[messageVariables[7]?.text] || '',
-                            field10: p[messageVariables[8]?.text] || '',
-                            field11: p[messageVariables[9]?.text] || '',
-                            field12: p[messageVariables[10]?.text] || '',
-                            field13: p[messageVariables[11]?.text] || '',
-                            field14: p[messageVariables[12]?.text] || '',
-                            field15: p[messageVariables[13]?.text] || '',
+                            field2: validateField(detaildata.source, p, messageVariables[0]?.text),
+                            field3: validateField(detaildata.source, p, messageVariables[1]?.text),
+                            field4: validateField(detaildata.source, p, messageVariables[2]?.text),
+                            field5: validateField(detaildata.source, p, messageVariables[3]?.text),
+                            field6: validateField(detaildata.source, p, messageVariables[4]?.text),
+                            field7: validateField(detaildata.source, p, messageVariables[5]?.text),
+                            field8: validateField(detaildata.source, p, messageVariables[6]?.text),
+                            field9: validateField(detaildata.source, p, messageVariables[7]?.text),
+                            field10: validateField(detaildata.source, p, messageVariables[8]?.text),
+                            field11: validateField(detaildata.source, p, messageVariables[9]?.text),
+                            field12: validateField(detaildata.source, p, messageVariables[10]?.text),
+                            field13: validateField(detaildata.source, p, messageVariables[11]?.text),
+                            field14: validateField(detaildata.source, p, messageVariables[12]?.text),
+                            field15: validateField(detaildata.source, p, messageVariables[13]?.text),
                             batchindex: 0,
                             operation: detaildata.operation
                         })
@@ -393,20 +417,20 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                             : detaildata.source === 'LEAD' ? `${p.name || ''}` : '',
                             status: 'ACTIVO',
                             field1: p.phone || p.alternativephone || '',
-                            field2: p[usedTablevariable['field2']] || '',
-                            field3: p[usedTablevariable['field3']] || '',
-                            field4: p[usedTablevariable['field4']] || '',
-                            field5: p[usedTablevariable['field5']] || '',
-                            field6: p[usedTablevariable['field6']] || '',
-                            field7: p[usedTablevariable['field7']] || '',
-                            field8: p[usedTablevariable['field8']] || '',
-                            field9: p[usedTablevariable['field9']] || '',
-                            field10: p[usedTablevariable['field10']] || '',
-                            field11: p[usedTablevariable['field11']] || '',
-                            field12: p[usedTablevariable['field12']] || '',
-                            field13: p[usedTablevariable['field13']] || '',
-                            field14: p[usedTablevariable['field14']] || '',
-                            field15: p[usedTablevariable['field15']] || '',
+                            field2: validateField(detaildata.source, p, usedTablevariable['field2']),
+                            field3: validateField(detaildata.source, p, usedTablevariable['field3']),
+                            field4: validateField(detaildata.source, p, usedTablevariable['field4']),
+                            field5: validateField(detaildata.source, p, usedTablevariable['field5']),
+                            field6: validateField(detaildata.source, p, usedTablevariable['field6']),
+                            field7: validateField(detaildata.source, p, usedTablevariable['field7']),
+                            field8: validateField(detaildata.source, p, usedTablevariable['field8']),
+                            field9: validateField(detaildata.source, p, usedTablevariable['field9']),
+                            field10: validateField(detaildata.source, p, usedTablevariable['field10']),
+                            field11: validateField(detaildata.source, p, usedTablevariable['field11']),
+                            field12: validateField(detaildata.source, p, usedTablevariable['field12']),
+                            field13: validateField(detaildata.source, p, usedTablevariable['field13']),
+                            field14: validateField(detaildata.source, p, usedTablevariable['field14']),
+                            field15: validateField(detaildata.source, p, usedTablevariable['field15']),
                             batchindex: 0,
                             operation: detaildata.operation
                         })
