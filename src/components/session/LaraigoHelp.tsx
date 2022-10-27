@@ -1,5 +1,5 @@
-import { Box, BoxProps, createStyles, Dialog, IconButton, makeStyles, Menu, Theme, Typography } from "@material-ui/core";
-import React,{useEffect} from "react";
+import { Box, BoxProps, createStyles, Dialog, DialogActions, DialogTitle, IconButton, makeStyles, Menu, Theme, Typography } from "@material-ui/core";
+import React, { useEffect } from "react";
 import { Button } from "@material-ui/core";
 import { FC, useState } from "react";
 import { langKeys } from "lang/keys";
@@ -12,7 +12,7 @@ import { version } from 'common/constants';
 import { useDispatch } from "react-redux";
 import { useSelector } from 'hooks';
 import { getVersion } from "store/getversion/actions";
-import { LaraigoLogo } from "icons";
+import { LaraigoOnlyLogo } from "icons";
 import { useLocation } from 'react-router-dom';
 import { viewDocumentation } from "pages/dashboard/constants";
 
@@ -45,7 +45,7 @@ const useNotificationMenuStyles = makeStyles((theme: Theme) =>
         },
         root: {
             margin: 0,
-            padding: theme.spacing(2),
+            // padding: theme.spacing(2),
         },
         closeButton: {
             position: 'absolute',
@@ -55,15 +55,6 @@ const useNotificationMenuStyles = makeStyles((theme: Theme) =>
         },
     }),
 );
-
-const styles = () => ({
-    root: {
-      margin: 0,
-    },
-    closeButton: {
-      position: 'absolute',
-    },
-  });
 
 const LaraigoHelp: FC<BoxProps> = (boxProps) => {
     const classes = useNotificationMenuStyles();
@@ -78,24 +69,24 @@ const LaraigoHelp: FC<BoxProps> = (boxProps) => {
     const viewChange = useSelector(state => state.main.viewChange);
 
     useEffect(() => {
-        if(!!viewChange){debugger
-            let finddocumentation = viewDocumentation.find(x=>x.name===viewChange)
+        if (!!viewChange) {
+            const finddocumentation = viewDocumentation.find(x => x.name === viewChange)
             setshowDocButton(!!finddocumentation)
-            setredirection(finddocumentation||null)
-        }else{
-            console.log(location)
-            let lengthsplitpath= location.pathname.split('/')
-            console.log(lengthsplitpath[lengthsplitpath.length])
-            let finddocumentation = viewDocumentation.find(x=>x.name===lengthsplitpath[lengthsplitpath.length-1])
+            setredirection(finddocumentation || null)
+        } else {
+            const lengthsplitpath = location.pathname.split('/')
+            const finddocumentation = viewDocumentation.find(x => x.name === lengthsplitpath[lengthsplitpath.length - 1])
             setshowDocButton(!!finddocumentation)
-            setredirection(finddocumentation||null)
+            setredirection(finddocumentation || null)
         }
-    }, [location,viewChange]);
+    }, [location, viewChange]);
 
     useEffect(() => {
-        dispatch(getVersion())
-    }, []);
-    
+        if (openDialog) {
+            dispatch(getVersion())
+        }
+    }, [dispatch, openDialog]);
+
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
@@ -111,45 +102,45 @@ const LaraigoHelp: FC<BoxProps> = (boxProps) => {
     function formattime(cc: any) {
         if (!cc)
             return "";
-        let date= cc.split(' ')[0].split('-')
+        let date = cc.split(' ')[0].split('-')
         return `${date[2]}/${date[1]}/${date[0]} ${cc.split(' ')[1]}`
     }
 
     return (
         <Box {...boxProps}>
-            <Dialog fullWidth onClose={handleCloseDialog} aria-labelledby="simple-dialog-title" open={openDialog}>
-                
-                <MuiDialogTitle disableTypography className={classes.root}>
-                    <Typography variant="h5" ><Trans i18nKey={langKeys.systeminformation} /></Typography>
-                    <IconButton aria-label="close" className={classes.closeButton} onClick={handleCloseDialog}>
-                        <CloseIcon />
-                    </IconButton>
-                </MuiDialogTitle>
+            <Dialog fullWidth onClose={handleCloseDialog} aria-labelledby="simple-dialog-title" open={openDialog} maxWidth="xs">
+                <DialogTitle >
+                    <Trans i18nKey={langKeys.systeminformation} />
+                </DialogTitle>
                 <DialogContent>
-                    <div style={{display:"flex"}}>
-                        <div style={{padding: 15, paddingTop:0}}>
-                            <LaraigoLogo style={{ width: 100, height: 100 }} />
+                    <div style={{ display: "flex", gap: 16, width: '100%' }}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <LaraigoOnlyLogo style={{ width: 60, height: 60 }} />
                         </div>
-                        <div style={{width: "80%", paddingLeft:15}}>
-                            <div style={{justifyContent: 'space-between', display: 'flex'}}>
-                                <Typography variant="subtitle1" ><b><Trans i18nKey={langKeys.laraigoappversion} /></b></Typography>
-                                <Typography variant="subtitle2">{version.build}</Typography>
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                            <div style={{ justifyContent: 'space-between', display: 'flex' }}>
+                                <Typography><Trans i18nKey={langKeys.laraigoappversion} /></Typography>
+                                <Typography >{version.build}</Typography>
                             </div>
-                            <div style={{justifyContent: 'space-between', display: 'flex',paddingTop: '15px'}}>
-                                <Typography variant="subtitle1" ><b><Trans i18nKey={langKeys.laraigoengineversion} /></b></Typography>
-                                <Typography variant="subtitle2">{getVersionData?.getVersion?.data?.version}</Typography>
+                            <div style={{ justifyContent: 'space-between', display: 'flex' }}>
+                                <Typography  ><Trans i18nKey={langKeys.laraigoengineversion} /></Typography>
+                                <Typography >{getVersionData?.getVersion?.data?.version}</Typography>
                             </div>
-                            <div style={{justifyContent: 'space-between', display: 'flex',paddingTop: '15px', paddingBottom: '15px'}}>
-                                <Typography variant="subtitle1" ><b><Trans i18nKey={langKeys.deploymentdate} /></b></Typography>
-                                <Typography variant="subtitle2">{formattime(getVersionData?.getVersion?.data?.date)}</Typography>
+                            <div style={{ justifyContent: 'space-between', display: 'flex' }}>
+                                <Typography  ><Trans i18nKey={langKeys.deploymentdate} /></Typography>
+                                <Typography >{formattime(getVersionData?.getVersion?.data?.date)}</Typography>
                             </div>
                         </div>
                     </div>
-                    
-                    <div style={{ textAlign: "center",paddingTop: '15px', paddingBottom: '15px'}}>
-                                <Typography variant="subtitle1" ><b>Copyright © Laraigo {new Date().getFullYear()} </b></Typography>
-                            </div>
+                    <div style={{ marginTop: 20, textAlign: 'center' }}>
+                        <Typography>Copyright © Laraigo {new Date().getFullYear()}</Typography>
+                    </div>
                 </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialog}>
+                        <Trans i18nKey={langKeys.close} />
+                    </Button>
+                </DialogActions>
             </Dialog>
             <IconButton
                 aria-label="bell-notification"
@@ -176,10 +167,10 @@ const LaraigoHelp: FC<BoxProps> = (boxProps) => {
                     role: 'listbox',
                 }}
             >
-                
+
                 <div className={classes.containerPopover}>
                     <Button
-                        onClick={()=>{window?.open('https://docs-laraigo.gitbook.io/laraigo/', '_blank')?.focus();}}
+                        onClick={() => { window?.open('https://docs-laraigo.gitbook.io/laraigo/', '_blank')?.focus(); }}
                         variant="outlined"
                         color="primary"
                         fullWidth
@@ -189,7 +180,7 @@ const LaraigoHelp: FC<BoxProps> = (boxProps) => {
                     </Button>
                     {showDocButton &&
                         <Button
-                            onClick={()=>{window?.open(redirection?.path||"", '_blank')?.focus();}}
+                            onClick={() => { window?.open(redirection?.path || "", '_blank')?.focus(); }}
                             variant="outlined"
                             color="primary"
                             fullWidth
