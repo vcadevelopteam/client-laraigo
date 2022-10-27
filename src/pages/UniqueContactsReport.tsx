@@ -898,6 +898,11 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
                 helpText: t(langKeys.tmotooltip) 
             },
             {
+                Header: `${t(langKeys.advisor)} ${t(langKeys.tmo)}`,
+                accessor: 'tmoasesor',
+                width: 'auto',
+            },
+            {
                 Header: t(langKeys.tmeAgent),
                 accessor: 'tmeasesor',
                 width: 'auto',
