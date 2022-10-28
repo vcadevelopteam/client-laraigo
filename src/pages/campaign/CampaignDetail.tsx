@@ -185,14 +185,17 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         let subject = detaildata.subject || '';
         let header = detaildata.messagetemplateheader?.value || '';
         let message = detaildata.message || '';
+        if (detaildata.communicationchanneltype?.startsWith('MAI')) {
+            let splitMessage = message.split('{{');
+            messageVariables.forEach((v, i) => {
+                splitMessage[i + 1] = splitMessage[i + 1]?.replace(`${v.name}}}`, `${v.text || i + 1}}}`);
+            });
+            message = splitMessage.join('{{');
+        }
         if (['PERSON','LEAD'].includes(detaildata.source || '')) {
             if (detaildata.person && detaildata.person?.length > 0) {
+                // field i + 2 because i + 1 is used for primary key, pccowner
                 if (detaildata.communicationchanneltype?.startsWith('MAI')) {
-                    let splitMessage = message.split('{{');
-                    messageVariables.forEach((v, i) => {
-                        splitMessage[i + 1] = splitMessage[i + 1]?.replace(`${v.name}}}`, `${v.text || i + 1}}}`);
-                    });
-                    message = splitMessage.join('{{');
                     let localmessageVariables = Array.from(new Map(messageVariables.map(d => [d['text'], d])).values())
                     localmessageVariables.filter(mv => tablevariable.map(tv => tv.description).includes(mv.text)).forEach((v: any, i: number) => {
                         message = message.replace(new RegExp(`{{${v.text}}}`, 'g'), `{{field${i + 2}}}`);
@@ -227,27 +230,11 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             }
         }
         else if (['EXTERNAL'].includes(detaildata.source || '')) {
-            if (detaildata.communicationchanneltype?.startsWith('MAI')) {
-                let splitMessage = message.split('{{');
-                messageVariables.forEach((v, i) => {
-                    splitMessage[i + 1] = splitMessage[i + 1]?.replace(`${v.name}}}`, `${v.text || i + 1}}}`);
-                });
-                message = splitMessage.join('{{');
-            }
             tablevariable.forEach((v: any, i: number) => {
                 subject = subject.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
                 header = header.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
                 message = message.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
             });
-        }
-        else if (['INTERNAL'].includes(detaildata.source || '')) {
-            if (detaildata.communicationchanneltype?.startsWith('MAI')) {
-                let splitMessage = message.split('{{');
-                messageVariables.forEach((v, i) => {
-                    splitMessage[i + 1] = splitMessage[i + 1]?.replace(`${v.name}}}`, `${v.text || i + 1}}}`);
-                });
-                message = splitMessage.join('{{');
-            }
         }
         return { subject, header, message }
     }
@@ -527,16 +514,9 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
             switch (detaildata.source) {
                 case 'INTERNAL':
                     setTableVariable([
-                        { label: "corpid", description: "corpid", persistent: true },
-                        { label: "orgid", description: "orgid", persistent: true },
-                        { label: "campaignmemberid", description: "campaignmemberid", persistent: true },
-                        { label: "campaignid", description: "campaignid", persistent: true },
-                        { label: "personid", description: "personid", persistent: true },
-                        { label: "status", description: "status", persistent: true },
-                        { label: "globalid", description: "globalid", persistent: true },
-                        { label: "personcommunicationchannel", description: "personcommunicationchannel", persistent: true },
-                        { label: "type", description: "type", persistent: true },
                         { label: "displayname", description: "displayname", persistent: true },
+                        { label: "type", description: "type", persistent: true },
+                        { label: "status", description: "status", persistent: true },
                         { label: "personcommunicationchannelowner", description: "personcommunicationchannelowner", persistent: true },
                         { label: "field1", description: "field1", persistent: true },
                         { label: "field2", description: "field2", persistent: true },
@@ -553,8 +533,6 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                         { label: "field13", description: "field13", persistent: true },
                         { label: "field14", description: "field14", persistent: true },
                         { label: "field15", description: "field15", persistent: true },
-                        { label: "resultfromsend", description: "resultfromsend", persistent: true },
-                        { label: "batchindex", description: "batchindex", persistent: true }
                     ]);
                     break;
                 case 'EXTERNAL':
