@@ -226,7 +226,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 }
             }
         }
-        else if (['INTERNAL','EXTERNAL'].includes(detaildata.source || '')) {
+        else if (['EXTERNAL'].includes(detaildata.source || '')) {
             if (detaildata.communicationchanneltype?.startsWith('MAI')) {
                 let splitMessage = message.split('{{');
                 messageVariables.forEach((v, i) => {
@@ -239,6 +239,15 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 header = header.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
                 message = message.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
             });
+        }
+        else if (['INTERNAL'].includes(detaildata.source || '')) {
+            if (detaildata.communicationchanneltype?.startsWith('MAI')) {
+                let splitMessage = message.split('{{');
+                messageVariables.forEach((v, i) => {
+                    splitMessage[i + 1] = splitMessage[i + 1]?.replace(`${v.name}}}`, `${v.text || i + 1}}}`);
+                });
+                message = splitMessage.join('{{');
+            }
         }
         return { subject, header, message }
     }

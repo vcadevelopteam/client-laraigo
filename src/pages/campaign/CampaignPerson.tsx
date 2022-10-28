@@ -57,8 +57,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     const [valuefile, setvaluefile] = useState('');
     const [openModal, setOpenModal] = useState<boolean | null>(null);
     const [columnList, setColumnList] = useState<string[]>([]);
-    const [headers, setHeaders] = useState<any[]>(detaildata.source === 'EXTERNAL' ? detaildata.headers || [] : []);
-    const [jsonData, setJsonData] = useState<any[]>(detaildata.source === 'EXTERNAL' ? detaildata.jsonData || [] : []);
+    const [headers, setHeaders] = useState<any[]>(detaildata.source === 'EXTERNAL' && !detaildata.sourcechanged ? detaildata.headers || [] : []);
+    const [jsonData, setJsonData] = useState<any[]>(detaildata.source === 'EXTERNAL' && !detaildata.sourcechanged ? detaildata.jsonData || [] : []);
     const [jsonDataTemp, setJsonDataTemp] = useState<any[]>([]);
     const [selectedColumns, setSelectedColumns] = useState<SelectedColumns>(
         detaildata.selectedColumns
@@ -119,6 +119,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     }, [frameProps.checkPage])
     
     useEffect(() => {
+        // Load Headers
         switch (detaildata.source) {
             case 'INTERNAL':
                 setHeaders([
@@ -204,6 +205,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 ]);
                 break;
         }
+        // Clean selected data on source change
         if (detaildata.sourcechanged) {
             setDetaildata({...detaildata, sourcechanged: false, selectedRows: {}, person: [] });
         }
@@ -276,7 +278,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 return null;
             }
         }
-        // Set olny new records
+        // Set only new records
         setJsonDataTemp(data.filter((d: any) => jsonData.findIndex((j: any) => JSON.stringify(j) === JSON.stringify(d)) === -1));
         // Set actual headers or new headers
         let localColumnList = actualHeaders ? actualHeaders : newHeaders;
@@ -442,7 +444,6 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 });
                 break;
             case 'EXTERNAL':
-                // Cuando se use el seleccion, se updatea el status de cada person a ELIMINADO
                 setDetaildata({
                     ...detaildata,
                     // Update headers only where upload has used
@@ -483,6 +484,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         if (detaildata.source === 'EXTERNAL') {
             return (
                 <React.Fragment>
+                    <span>{t(langKeys.selected_plural)}: </span><b>{Object.keys(selectedRows).length}</b>
                     <input
                         id="upload-file"
                         name="file"
@@ -514,7 +516,9 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             )
         }
         else {
-            return null
+            return <>
+                <span>{t(langKeys.selected_plural)}: </span><b>{Object.keys(selectedRows).length}</b>
+            </>
         }
     }
     
