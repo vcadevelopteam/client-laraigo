@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, Fragment, useEffect, useState } from 'react';
+import React, { FC, Fragment, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
@@ -10,36 +10,27 @@ import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { resetMultiMain, getMultiCollectionAux, resetMainAux, resetMultiMainAux, resetMultiMainAux2, getCollection, getCollectionAux, getCollectionPaginated, exportData } from 'store/main/actions';
-import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, LabelList } from 'recharts';
+import { resetMultiMain, getMultiCollectionAux, resetMainAux, resetMultiMainAux, resetMultiMainAux2, getCollectionAux, getCollectionPaginated, exportData, setMemoryTable } from 'store/main/actions';
+import { XAxis, YAxis, ResponsiveContainer, Tooltip as ChartTooltip, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid } from 'recharts';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { dataYears } from 'common/helpers';
 import ListIcon from '@material-ui/icons/List';
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import ClearIcon from '@material-ui/icons/Clear';
+import Tooltip from '@material-ui/core/Tooltip';
 import {
     Search as SearchIcon, Settings,
 } from '@material-ui/icons';
 import { Box, CircularProgress, Tabs } from '@material-ui/core';
 import { useForm } from 'react-hook-form';
-import { StreetViewPanorama } from '@react-google-maps/api';
+import Zoom from '@material-ui/core/Zoom';
 import TablePaginated from 'components/fields/table-paginated';
+import DialogInteractions from 'components/inbox/DialogInteractions';
 
 const COLORS = ["#0f8fe5", "#067713", "#296680", "#fc3617", "#e8187a", "#7cfa57", "#cfbace", "#4cd45f", "#fd5055", "#7e1be4", "#bf1490", "#66c6cf", "#011c3d", "#1a9595", "#4ae2c7", "#515496", "#a2aa65", "#df909c", "#3aa343", "#e0606e"];
-interface RowSelected {
-    row: Dictionary | null,
-    edit: boolean
-}
-interface DetailHSMHistoryReportProps {
-    data: RowSelected;
-    setViewSelected: (view: string) => void;
-}
 
-const initialRange = {
-    startDate: new Date(new Date().setDate(1)),
-    endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
-    key: 'selection'
-}
+const UNIQUECONTACTS = 'UNIQUECONTACTS';
+
 const useStyles = makeStyles((theme) => ({
     containerHeader: {
         padding: theme.spacing(1),
@@ -79,6 +70,17 @@ const useStyles = makeStyles((theme) => ({
         [theme.breakpoints.up('sm')]: {
             display: 'flex',
         }
+    },
+    labellink: {
+        color: '#7721ad',
+        textDecoration: 'underline',
+        cursor: 'pointer'
+    },
+    fieldElipsis: {
+        textOverflow:"ellipsis",
+        overflow: "hidden",
+        whiteSpace: "nowrap", 
+        width: 230,
     },
 }));
 
@@ -243,6 +245,7 @@ const DetailUniqueContact: React.FC<DetailUniqueContactProps> = ({ row, setViewS
     const [waitExport, setWaitExport] = useState(false);
     const resExportData = useSelector(state => state.main.exportData);
     const dispatch = useDispatch();
+    const classes = useStyles()
     const { t } = useTranslation();
     
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
@@ -272,10 +275,14 @@ const DetailUniqueContact: React.FC<DetailUniqueContactProps> = ({ row, setViewS
             {
                 Header: t(langKeys.communicationchannel),
                 accessor: 'channels',
-                width: 'auto',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    return <div>{row?.channels?.substring(0,30)}...</div>
+                    <div className={classes.fieldElipsis}>{row?.channels}</div>
+                    return <Tooltip TransitionComponent={Zoom} title={row?.channels}>
+                        <div className={classes.fieldElipsis}>
+                            {row?.channels}
+                        </div>
+                    </Tooltip>
                 }
             },
             {
@@ -318,6 +325,12 @@ const DetailUniqueContact: React.FC<DetailUniqueContactProps> = ({ row, setViewS
         ],
         [t]
     );
+    useEffect(() => {
+        if (!mainPaginated.loading && !mainPaginated.error) {
+            setPageCount(fetchDataAux.pageSize ? Math.ceil(mainPaginated.count / fetchDataAux.pageSize) : 0);
+            settotalrow(mainPaginated.count);
+        }
+    }, [mainPaginated])
     
     const triggerExportData = ({ filters, sorts }: IFetchData) => {
         const columnsExport = columns.map(x => ({
@@ -330,6 +343,8 @@ const DetailUniqueContact: React.FC<DetailUniqueContactProps> = ({ row, setViewS
             },
             sorts,
             year: row.year,
+            corpid: row.row.corpid,
+            orgid: row.row.orgid,
             month:row.month,
             channeltype:row.channeltype,
             ...allParameters
@@ -396,6 +411,7 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
     const [rowSelected, setRowSelected] = useState<any>(null);
     const [openModal, setOpenModal] = useState(false);
     const [graphicType, setGraphicType] = useState('BAR');
+    const memoryTable = useSelector(state => state.main.memoryTable);
 
     const cell = (props: any) => {
         const column = props.cell.column;
@@ -519,7 +535,7 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                 Cell:cell
             },
             {
-                Header: <b>{t(langKeys.total)}</b>,
+                Header: t(langKeys.total),
                 accessor: 'total',
                 width: 'auto',
                 type: 'number',
@@ -538,39 +554,38 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                 client: "Total",
                 month_1: 0, month_2: 0, month_3: 0, month_4: 0, month_5: 0, month_6: 0, month_7: 0, month_8: 0, month_9: 0, month_10: 0, month_11: 0, month_12: 0, total: 0
             }
-            let processedData = mainResult.data.reduce((acc:any,x)=>{
+            let rawdata: any[] = [];
+            multiData.data[1].data.map((x)=>{
+                rawdata.push({
+                    client: `${x.corpdesc} - ${x.orgdesc}`,
+                    corpid: x.corpid,
+                    orgid: x.orgid,
+                    month_1: 0,
+                    month_2: 0,
+                    month_3: 0,
+                    month_4: 0,
+                    month_5: 0,
+                    month_6: 0,
+                    month_7: 0,
+                    month_8: 0,
+                    month_9: 0,
+                    month_10: 0,
+                    month_11: 0,
+                    month_12: 0,
+                    total: 0
+                })
+            })
+            mainResult.data.map(x=>{
                 let clientdata = multiData.data[1].data.filter(y=>(x.corpid === y.corpid && x.orgid===y.orgid))[0]
-                let indexField = acc?.findIndex((y:any)=>(y).client===`${clientdata.corpdesc} - ${clientdata.orgdesc}`)                
-                if(indexField<0){
+                let indexField = rawdata?.findIndex((y:any)=>(y).client===`${clientdata?.corpdesc} - ${clientdata?.orgdesc}`)   
+                if(!(indexField<0)){
                     mainTotal[`month_${x.month}`] += x.pcc
                     mainTotal.total += x.pcc
-                    return([...acc,{
-                        client: `${clientdata.corpdesc} - ${clientdata.orgdesc}`,
-                        corpid: x.corpid,
-                        orgid: x.orgid,
-                        month_1: x.month === 1?x.pcc:0,
-                        month_2: x.month === 2?x.pcc:0,
-                        month_3: x.month === 3?x.pcc:0,
-                        month_4: x.month === 4?x.pcc:0,
-                        month_5: x.month === 5?x.pcc:0,
-                        month_6: x.month === 6?x.pcc:0,
-                        month_7: x.month === 7?x.pcc:0,
-                        month_8: x.month === 8?x.pcc:0,
-                        month_9: x.month === 9?x.pcc:0,
-                        month_10: x.month === 10?x.pcc:0,
-                        month_11: x.month === 11?x.pcc:0,
-                        month_12: x.month === 12?x.pcc:0,
-                        total: x.pcc||0
-                    }])
-                }else{
-                    mainTotal[`month_${x.month}`] += x.pcc
-                    mainTotal.total += x.pcc
-                    acc[indexField][`month_${x.month}`] = x.pcc
-                    acc[indexField].total += x.pcc
-                    return acc
+                    rawdata[indexField][`month_${x.month}`] = x.pcc
+                    rawdata[indexField].total += x.pcc
                 }
-            },[])
-            setGridData([...processedData,mainTotal]||[]);
+            })
+            setGridData([...rawdata,mainTotal]||[]);
             setdataGraph(Object.keys(mainTotal).filter(x=>x.includes('_')).reduce((acc:any,x:string, i:number)=>[...acc,{name:t(x),value:mainTotal[x], percentage: mainTotal[x]*100/mainTotal.total, color:COLORS[i]}],[]))
             dispatch(showBackdrop(false));
         }
@@ -605,6 +620,9 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                             filterGeneral={false}
                             loading={mainResult.loading}
                             register={false}
+                            pageSizeDefault={UNIQUECONTACTS === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                            initialPageIndex={UNIQUECONTACTS === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                            initialStateFilter={UNIQUECONTACTS === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
                         />
                 </React.Fragment>):
                 (<div>
@@ -731,12 +749,21 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
     const [allParameters, setAllParameters] = useState<Dictionary>({});
     const mainPaginated = useSelector(state => state.main.mainPaginated);
+    const mainResult = useSelector(state => state.main.mainAux2);
     const [totalrow, settotalrow] = useState(0);
+    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
     const [pageCount, setPageCount] = useState(0);
     const [waitExport, setWaitExport] = useState(false);
     const resExportData = useSelector(state => state.main.exportData);
+    const [openModal, setOpenModal] = useState(false);
+    const classes = useStyles()
     const dispatch = useDispatch();
     const { t } = useTranslation();
+
+    const openDialogInteractions = useCallback((row: any) => {
+        setOpenModal(true);
+        setRowSelected({ ...row, displayname: row?.name||"" })
+    }, [mainResult]);
     
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
         setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
@@ -761,6 +788,17 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
                 Header: t(langKeys.ticket_number),
                 accessor: 'ticketnum',
                 width: 'auto',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <label
+                            className={classes.labellink}
+                            onClick={() => openDialogInteractions(row)}
+                        >
+                            {row.ticketnum}
+                        </label>
+                    )
+                }
             },
             {
                 Header: t(langKeys.startdate),
@@ -821,7 +859,7 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
             },
             {
                 Header: t(langKeys.closedby),
-                accessor: 'usertype',//preguntar a nano cual es el campo real
+                accessor: 'usertype',
                 width: 'auto',
             },
             {
@@ -852,7 +890,7 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
             },
             {
                 Header: t(langKeys.report_productivity_derivationtime),
-                accessor: 'handoofftime',
+                accessor: 'handofftime',
                 width: 'auto',
             },
             {
@@ -860,6 +898,11 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
                 accessor: 'tmo',
                 width: 'auto',
                 helpText: t(langKeys.tmotooltip) 
+            },
+            {
+                Header: `${t(langKeys.advisor)} ${t(langKeys.tmo)}`,
+                accessor: 'tmoasesor',
+                width: 'auto',
             },
             {
                 Header: t(langKeys.tmeAgent),
@@ -902,6 +945,8 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
                 ...filters,
             },
             sorts,
+            corpid: row.row.corpid,
+            orgid: row.row.orgid,
             year: row.year,
             month:row.month,
             channeltype:row.channeltype,
@@ -910,6 +955,12 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
         dispatch(showBackdrop(true));
         setWaitExport(true);
     };
+    useEffect(() => {
+        if (!mainPaginated.loading && !mainPaginated.error) {
+            setPageCount(fetchDataAux.pageSize ? Math.ceil(mainPaginated.count / fetchDataAux.pageSize) : 0);
+            settotalrow(mainPaginated.count);
+        }
+    }, [mainPaginated])
 
     useEffect(() => {
         if (waitExport) {
@@ -927,30 +978,37 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
     }, [resExportData, waitExport]);
 
     return (
-        <TablePaginated
-            columns={columns}
-            data={mainPaginated.data}
-            totalrow={totalrow}
-            loading={mainPaginated.loading}
-            pageCount={pageCount}
-            autotrigger={true}
-            download={true}
-            ButtonsElement={() => (
-                <>
-                    <Button
-                        variant="contained"
-                        type="button"
-                        color="primary"
-                        startIcon={<ClearIcon color="secondary" />}
-                        style={{ backgroundColor: "#FB5F5F" }}
-                        onClick={() => setViewSelected("view-1")}>
-                        {t(langKeys.back)}
-                    </Button>
-                </>
-            )}
-            fetchData={fetchData}
-            exportPersonalized={triggerExportData}
-        />
+        <>
+            <TablePaginated
+                columns={columns}
+                data={mainPaginated.data}
+                totalrow={totalrow}
+                loading={mainPaginated.loading}
+                pageCount={pageCount}
+                autotrigger={true}
+                download={true}
+                ButtonsElement={() => (
+                    <>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => setViewSelected("view-1")}>
+                            {t(langKeys.back)}
+                        </Button>
+                    </>
+                )}
+                fetchData={fetchData}
+                exportPersonalized={triggerExportData}
+            />            
+            <DialogInteractions
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                ticket={rowSelected}
+            />
+        </>
     )
     
 }
@@ -968,6 +1026,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
     const [rowSelected, setRowSelected] = useState<any>(null);
     const [openModal, setOpenModal] = useState(false);
     const [graphicType, setGraphicType] = useState('BAR');
+    const memoryTable = useSelector(state => state.main.memoryTable);
 
     const cell = (props: any) => {
         const column = props.cell.column;
@@ -1091,7 +1150,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                 Cell:cell
             },
             {
-                Header: <b>{t(langKeys.total)}</b>,
+                Header: t(langKeys.total),
                 accessor: 'total',
                 width: 'auto',
                 type: 'number',
@@ -1103,51 +1162,48 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
         ],
         [t]
     );
-    
     useEffect(() => {
         if (!mainResult.loading && mainResult?.key?.includes("UFN_REPORT_UNIQUECONTACTS_SEL")){
             let mainTotal:any = {
                 client: "Total",
                 month_1: 0, month_2: 0, month_3: 0, month_4: 0, month_5: 0, month_6: 0, month_7: 0, month_8: 0, month_9: 0, month_10: 0, month_11: 0, month_12: 0, total: 0
             }
-            let processedData = mainResult.data.reduce((acc:any,x)=>{
+            let rawdata: any[] = [];
+            multiData.data[1].data.map((x)=>{
+                rawdata.push({
+                    client: `${x.corpdesc} - ${x.orgdesc}`,
+                    corpid: x.corpid,
+                    orgid: x.orgid,
+                    month_1: 0,
+                    month_2: 0,
+                    month_3: 0,
+                    month_4: 0,
+                    month_5: 0,
+                    month_6: 0,
+                    month_7: 0,
+                    month_8: 0,
+                    month_9: 0,
+                    month_10: 0,
+                    month_11: 0,
+                    month_12: 0,
+                    total: 0
+                })
+            })
+            mainResult.data.map(x=>{
                 let clientdata = multiData.data[1].data.filter(y=>(x.corpid === y.corpid && x.orgid===y.orgid))[0]
-                let indexField = acc?.findIndex((y:any)=>(y).client===`${clientdata.corpdesc} - ${clientdata.orgdesc}`)                
-                if(indexField<0){
+                let indexField = rawdata?.findIndex((y:any)=>(y).client===`${clientdata?.corpdesc} - ${clientdata?.orgdesc}`)   
+                if(!(indexField<0)){
                     mainTotal[`month_${x.month}`] += x.conversation
                     mainTotal.total += x.conversation
-                    return([...acc,{
-                        client: `${clientdata.corpdesc} - ${clientdata.orgdesc}`,
-                        corpid: x.corpid,
-                        orgid: x.orgid,
-                        month_1: x.month === 1?x.conversation:0,
-                        month_2: x.month === 2?x.conversation:0,
-                        month_3: x.month === 3?x.conversation:0,
-                        month_4: x.month === 4?x.conversation:0,
-                        month_5: x.month === 5?x.conversation:0,
-                        month_6: x.month === 6?x.conversation:0,
-                        month_7: x.month === 7?x.conversation:0,
-                        month_8: x.month === 8?x.conversation:0,
-                        month_9: x.month === 9?x.conversation:0,
-                        month_10: x.month === 10?x.conversation:0,
-                        month_11: x.month === 11?x.conversation:0,
-                        month_12: x.month === 12?x.conversation:0,
-                        total: x.conversation||0
-                    }])
-                }else{
-                    mainTotal[`month_${x.month}`] += x.conversation
-                    mainTotal.total += x.conversation
-                    acc[indexField][`month_${x.month}`] = x.conversation
-                    acc[indexField].total += x.conversation
-                    return acc
+                    rawdata[indexField][`month_${x.month}`] = x.conversation
+                    rawdata[indexField].total += x.conversation
                 }
-            },[])
-            setGridData([...processedData,mainTotal]||[]);
+            })
+            setGridData([...rawdata,mainTotal]||[]);
             setdataGraph(Object.keys(mainTotal).filter(x=>x.includes('_')).reduce((acc:any,x:string, i:number)=>[...acc,{name:t(x),value:mainTotal[x], percentage: mainTotal[x]*100/mainTotal.total, color:COLORS[i]}],[]))
             dispatch(showBackdrop(false));
         }
     }, [mainResult])
-
 
     if (viewSelected === "view-1") {
 
@@ -1177,6 +1233,9 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                             filterGeneral={false}
                             loading={mainResult.loading}
                             register={false}
+                            pageSizeDefault={UNIQUECONTACTS === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                            initialPageIndex={UNIQUECONTACTS === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                            initialStateFilter={UNIQUECONTACTS === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
                         />
                 </React.Fragment>):
                 (<div>
@@ -1311,6 +1370,9 @@ const UniqueContactsReport: FC = () => {
             getValuesFromDomain("TIPOCANAL"),
             selOrgSimpleList()
         ]))
+        dispatch(setMemoryTable({
+            id: UNIQUECONTACTS
+        }))
         return () => {
             dispatch(resetMainAux());
             dispatch(resetMultiMain());
@@ -1375,8 +1437,8 @@ const UniqueContactsReport: FC = () => {
                 textColor="primary"
                 onChange={(_, value) => setPageSelected(value)}
             >
-                <AntTab label={t(langKeys.uniquecontacts)}/>
-                <AntTab label={t(langKeys.conversationquantity)}/>
+                <AntTab label={t(langKeys.uniquecontacts).toLocaleUpperCase()} style={{fontWeight: 'bold'}}/>
+                <AntTab label={t(langKeys.conversationquantity).toLocaleUpperCase()} style={{fontWeight: 'bold'}}/>
             </Tabs>
             {pageSelected === 0 && <UniqueContactsReportDetail year={year} channelType={channelType}/>}
             {pageSelected === 1 && <ConversationQuantityReportDetail year={year} channelType={channelType}/>}

@@ -1,3 +1,4 @@
+/* eslint-disable no-eval */
 /* eslint-disable no-useless-escape */
 import { Dictionary } from "@types";
 // import * as XLSX from 'xlsx';
@@ -41,7 +42,7 @@ export function validateNumbersEqualsConsecutive(text:string, limit:number){
         if (/^\d+$/.test(text.charAt(i))) {
             canxx = 1;
             for (var j = i + 1; j < text.length; j++) {
-                if (text.charAt(i) == text.charAt(j)) {
+                if (text.charAt(i) === text.charAt(j)) {
                     canxx++;
                 }
             }

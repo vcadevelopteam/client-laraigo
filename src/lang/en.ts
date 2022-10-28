@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 import { ResourceLanguage } from 'i18next';
 import { LangKeys } from './keys';
 
@@ -28,6 +29,10 @@ const translation: LangKeys = {
     textcolor: "Text Color",
     add_classification: "Add classification",
     make_call: "Make call",
+
+    ringing: "ringing",
+    connected_call: "Connected call",
+    monitor_call: "Monitor call",
 
     type_service: 'Service Type',
     font: "Font",
@@ -1091,6 +1096,14 @@ const translation: LangKeys = {
     conversationwhatcharge: "Cost for WA conversations",
     interactionquantity: "Number of interactions",
     uniquecontacts: "Unique contacts",
+    systeminformation: 'System information',
+    laraigoappversion: 'Laraigo app version',
+    laraigoengineversion: 'Laraigo engine version',
+    deploymentdate: 'Deployment date',
+    generalhelp: 'General help',
+    aboutlaraigo: 'About Laraigo',
+    dashboardadd: "Create Dashboard",
+    reports: "Reports",
     month_01: "January",
     month_02: "February",
     month_03: "March",
@@ -2882,6 +2895,7 @@ const translation: LangKeys = {
     app_reports: "Reports",
     city: "City",
     app_tickets: "Tickets",
+    tickets: "Tickets",
     latitude: "Latitude",
     longitude: "Longitude",
     typecredit: "Type of credit",
@@ -2894,6 +2908,7 @@ const translation: LangKeys = {
     typecredit_90: "90 day credit",
     app_email_inbox: "Email inbox",
     app_message_inbox: "Message inbox",
+    message_inbox: "Message inbox",
     app_supervisor: "Supervisor",
     app_organizations: "Organizations",
     app_channels: "Channels",
@@ -2915,6 +2930,12 @@ const translation: LangKeys = {
     app_reportdesigner: "Report designer",
     app_ia_services: "AI services",
     app_crm: "CRM",
+    crm: "crm",
+    emojis: "Emojis",
+    tipifications: "Clasifications",
+    domains: "Domains",
+    users: "Users",
+    channels: "Channels",
     app_tipifications: "Classifications",
     app_block: "Block",
     app_outbound_messages: "Outbound messages",

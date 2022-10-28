@@ -13,6 +13,9 @@ export function postSaveUser(requestBody: ITransaction) {
 export function getLocations(requestBody: IRequestBody) {
     return APIManager.post(apiUrls.GETLOCATION, { data: requestBody }, true);
 }
+export function getVersion() {
+    return APIManager.get(apiUrls.GETVERSION, { }, true);
+}
 export function delUser(requestBody: ITransaction) {
     return APIManager.post(apiUrls.DEL_USER, { data: requestBody }, true);
 }

@@ -4,7 +4,7 @@ import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
 import { langKeys } from "lang/keys";
 import { FC, Fragment, useEffect, useState } from "react";
-import { getMultiCollection, getMultiCollectionAux, getCollectionAux } from 'store/main/actions';
+import { getMultiCollection, getMultiCollectionAux, getCollectionAux, setViewChange, cleanViewChange } from 'store/main/actions';
 import { Range } from 'react-date-range';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
@@ -366,6 +366,14 @@ const DashboardManagerial: FC = () => {
         limit: 5,
         bd: false
     });
+
+    useEffect(() => {
+        dispatch(setViewChange("managerial"))
+        return () => {
+            dispatch(cleanViewChange());
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
     useEffect(() => {
         if(bringdataFilters){
             if (mainResultMulti.data.length !== 0) {
@@ -1130,11 +1138,8 @@ const DashboardManagerial: FC = () => {
             getCommChannelLst()
         ]));
         funcsearch()
-
-        // return () => {
-        //     dispatch(resetMain());
-        // };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const downloaddata = (tipeoffilter:string) => {

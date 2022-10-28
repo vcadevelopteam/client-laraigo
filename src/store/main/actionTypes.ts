@@ -76,6 +76,8 @@ const actionType = {
     
     RESET_ALL: 'main/RESET_ALL',
     
+    VIEWCHANGE: 'main/VIEWCHANGE',
+    CLEAN_VIEWCHANGE: 'main/CLEAN_VIEWCHANGE',
     SET_MEMORY_TABLE: 'main/SET_MEMORY_TABLE',
     CLEAN_MEMORY_TABLE: 'main/CLEAN_MEMORY_TABLE',
 };

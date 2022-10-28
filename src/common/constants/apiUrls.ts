@@ -130,6 +130,7 @@ export const apiUrls = {
     WITAIINTENTIMPORT: `${BASE_URL}/witai/intent_import`,
     GETGEOCODE: `${BASE_URL}/gmaps/geocode`,
     GETLOCATION: `${BASE_URL}/flow/location`,
+    GETVERSION: `${BASE_URL}/check/version`,
     TRIGGERBLOCK: `${BASE_URL}/flow/triggerblock`,
 
 

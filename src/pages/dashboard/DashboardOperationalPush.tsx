@@ -12,7 +12,7 @@ import AdbIcon from '@material-ui/icons/Adb';
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { Bar, BarChart, CartesianGrid, Cell, ComposedChart, Legend, Line, Pie, PieChart, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis, Label } from "recharts";
-import { getCollectionAux, getMultiCollection, getMultiCollectionAux, resetMainAux, resetMultiMainAux } from "store/main/actions";
+import { cleanViewChange, getCollectionAux, getMultiCollection, getMultiCollectionAux, resetMainAux, resetMultiMainAux, setViewChange } from "store/main/actions";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import Tooltip from "@material-ui/core/Tooltip"
@@ -203,6 +203,13 @@ const DashboardOperationalPush: FC = () => {
         label: "",
         categoriaHSM: ""
     });
+    useEffect(() => {
+        dispatch(setViewChange("operationalpush"))
+        return () => {
+            dispatch(cleanViewChange());
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
     async function funcsearch() {
         let tosend = {
             startdate: dateRangeCreateDate.startDate,

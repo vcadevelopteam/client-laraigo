@@ -174,7 +174,7 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
             .replace("{{numticket}}", ticketSelected?.ticketnum)
             .replace("{{client_name}}", ticketSelected?.displayname)
             .replace("{{agent_name}}", user?.firstname + " " + user?.lastname)
-
+        // eslint-disable-next-line array-callback-return
         variablesList.forEach((x: any) => {
             let variableData = variablecontext?.[x.substring(2, x.length - 2)]
             if (!!variableData) {

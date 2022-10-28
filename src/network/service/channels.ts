@@ -1,6 +1,6 @@
 
 import { IRequestBody } from '@types';
-import { apiUrls } from '../../common/constants';
+import { apiUrls } from 'common/constants';
 import { APIManager } from '../manager';
 
 export function getPagelist(accessToken: String, appId: String) {

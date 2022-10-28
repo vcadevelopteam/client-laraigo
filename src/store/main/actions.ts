@@ -222,6 +222,11 @@ export const resetCollectionPaginated = (): IActionCall => ({ type: actionTypes.
 export const setMemoryTable = (payload: any): IActionCall => ({ type: actionTypes.SET_MEMORY_TABLE, payload });
 
 export const cleanMemoryTable = (): IActionCall => ({ type: actionTypes.CLEAN_MEMORY_TABLE });
+
+export const setViewChange = (payload: any): IActionCall => ({ type: actionTypes.VIEWCHANGE, payload });
+
+export const cleanViewChange = (): IActionCall => ({ type: actionTypes.CLEAN_VIEWCHANGE });
+
 export const getCollectionPaginatedAux = (requestBody: IRequestBodyPaginated): IActionCall => ({
     callAPI: () => CommonService.mainPaginated(requestBody),
     types: {

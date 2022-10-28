@@ -18,6 +18,7 @@ import leadReducer, { IState as ILead } from './lead/reducer';
 import culqiReducer, { IState as ICulqi } from './culqi/reducer';
 import dashboardReducer, { IState as IDashboard } from './dashboard/reducer';
 import getlocationsReducer, { IState as IGetLocations } from './getlocations/reducer';
+import getversionReducer, { IState as IGetVersion } from './getversion/reducer';
 import subscriptionReducer, { IState as ISubscription } from './subscription/reducer';
 import voximplantReducer, { IState as IVoximplant } from './voximplant/reducer';
 import googleReducer, { IState as IGoogle } from './google/reducer';
@@ -40,6 +41,7 @@ export interface IRootState {
     culqi: ICulqi;
     dashboard: IDashboard;
     getlocations: IGetLocations;
+    getversion: IGetVersion;
     subscription: ISubscription;
     voximplant: IVoximplant;
     google: IGoogle;
@@ -74,6 +76,7 @@ const rootReducer = combineReducers<IRootState>({
     google: googleReducer,
     witai: witaiReducer,
     product: productReducer,
+    getversion: getversionReducer,
 });
 
 export default function configureStore(preloadedState?: IRootState) {

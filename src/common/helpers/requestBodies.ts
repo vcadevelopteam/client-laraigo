@@ -542,6 +542,8 @@ export const selUniqueContactsPcc = ({ corpid, orgid,year, month, channeltype, s
         year,
         month,
         channeltype:channeltype||'',
+        corpid,
+        orgid,
         origin: "uniquecontacts",
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
@@ -554,6 +556,8 @@ export const selUniqueContactsConversation = ({ corpid, orgid,year, month, chann
         take,
         filters,
         sorts,
+        corpid,
+        orgid,
         year:parseInt(year),
         month:parseInt(month),
         channeltype:channeltype||'',
@@ -579,7 +583,7 @@ export const getTicketExport = ({ filters, sorts, startdate, enddate, ...allPara
     }
 });
 
-export const getUniqueContactsExport = ({ filters, sorts, year, month, channeltype }: Dictionary): IRequestBody => ({
+export const getUniqueContactsExport = ({ corpid,orgid,filters, sorts, year, month, channeltype }: Dictionary): IRequestBody => ({
     method: "UFN_REPORT_UNIQUECONTACTS_PCC_EXPORT",
     key: "UFN_REPORT_UNIQUECONTACTS_PCC_EXPORT",
     parameters: {
@@ -588,12 +592,14 @@ export const getUniqueContactsExport = ({ filters, sorts, year, month, channelty
         sorts,
         year,
         month,
+        corpid,
+        orgid,
         channeltype,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
 
-export const getUniqueContactsConversationExport = ({ filters, sorts, year, month, channeltype }: Dictionary): IRequestBody => ({
+export const getUniqueContactsConversationExport = ({ corpid,orgid,filters, sorts, year, month, channeltype }: Dictionary): IRequestBody => ({
     method: "UFN_REPORT_UNIQUECONTACTS_CONVERSATION_EXPORT",
     key: "UFN_REPORT_UNIQUECONTACTS_CONVERSATION_EXPORT",
     parameters: {
@@ -602,6 +608,8 @@ export const getUniqueContactsConversationExport = ({ filters, sorts, year, mont
         sorts,
         year,
         month,
+        corpid,
+        orgid,
         channeltype,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
