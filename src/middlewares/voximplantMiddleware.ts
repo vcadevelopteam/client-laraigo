@@ -211,28 +211,15 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
     } else if (type === typeVoximplant.TRANSFER_CALL ) {
         console.log("executing transfer")
         const { call1, call2Data } = payload;
-        const callSettings2: CallSettings = {
-            number: call2Data.number,
-            video: {
-                sendVideo: false,
-                receiveVideo: false,
-            },
-            customData: call2Data.site
-        }
-        const call2 = sdk?.call(callSettings2);
-        console.log("call1", call1)
-        console.log("call2", call2)
-        
-        call2.on(VoxImplant.CallEvents.Connected, () => {
-            console.log("conected second call", call2);
-            sdk?.transferCall(call1, call2);
-            call2.on(VoxImplant.CallEvents.TransferComplete, () => {
-                console.log("Transfer complete")
-            });
-            call2.on(VoxImplant.CallEvents.TransferFailed, () => {
-                console.log("Transfer failed")
-            });
-        })
+        fetch(call2Data.url, { method: 'GET' }).catch(x => {
+            console.log(x)
+        });
+        call1.on(VoxImplant.CallEvents.TransferComplete, () => {
+            console.log("Transfer complete")
+        });
+        call1.on(VoxImplant.CallEvents.TransferFailed, () => {
+            console.log("Transfer failed")
+        });
         return
     } else if (type === typeVoximplant.HOLD_CALL) {
         const call = payload.call;

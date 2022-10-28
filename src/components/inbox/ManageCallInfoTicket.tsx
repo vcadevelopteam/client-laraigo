@@ -40,7 +40,7 @@ const ManageCallInfoTicket: React.FC = () => {
     const [divertcall, setdivertcall] = useState(false);
     const [advisertodiver, setadvisertodiver] = useState("");
     const agentToReassignList = useSelector(state => state.inbox.agentToReassignList);
-    const { corpid, orgid, sitevoxi, ccidvoxi, userid } = useSelector(state => state.login.validateToken?.user!!);
+    const resValidateToken = useSelector(state => state.login.validateToken?.user!!);
     
     React.useEffect(() => {
         if (call.type === "INBOUND" && statusCall === "CONNECTING") {
@@ -269,9 +269,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                     style={{ marginLeft: "auto", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#7721ad' }}
                                     onClick={() => {
                                         dispatch(transferCall(call.call, {
-                                            number: `user${advisertodiver}.${orgid}`,
-                                            site: `${corpid}-${orgid}-${ccidvoxi}-${ticketSelected?.conversationid}-${ticketSelected?.personid}.${sitevoxi}.${advisertodiver}..username` || "",
-                                            data: call.data
+                                            url: `${ticketSelected?.commentexternalid}?mode=transfer&number=user${advisertodiver}.${resValidateToken.orgid}`,
                                         }))
                                         sethold(true)
                                         setmute(false)
