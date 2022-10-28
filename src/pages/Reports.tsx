@@ -1042,7 +1042,7 @@ const Reports: FC = () => {
                                     component="img"
                                     height="140"
                                     className={classes.media}
-                                    image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'}
+                                    image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/CLARO/72fd542f-719c-4226-89f9-b29c6a46a4d7/reporteKPI.svg'}
                                     title={t(langKeys.kpimanager)}
                                 />
                                 <CardContent>

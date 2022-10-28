@@ -7,7 +7,7 @@ import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useRouteMatch } from 'react-router';
 import {
-    insLead2, adviserSel, getPaginatedPerson as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSel, insArchiveLead, leadHistorySel,
+    insLead2, adviserSel, getPaginatedPersonLead as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSel, insArchiveLead, leadHistorySel,
     getLeadsSel, leadHistoryIns
 } from 'common/helpers';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -39,8 +39,6 @@ import { emojis } from "common/constants/emojis";
 
 const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
 
-const urgencyLevels = ['', 'LOW', 'MEDIUM', 'HIGH']
-
 const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'custom'].map(x => ({ key: x }))
 
 const useLeadFormStyles = makeStyles(theme => ({
@@ -63,6 +61,7 @@ const useLeadFormStyles = makeStyles(theme => ({
     field: {
         margin: theme.spacing(1),
         minHeight: 58,
+        width: "98%"
     },
     titleInput: {
         fontSize: '22px',
@@ -118,6 +117,27 @@ const useLeadFormStyles = makeStyles(theme => ({
     },
 }));
 
+function returnpriority(prio:number) {
+    switch (prio){
+        case 3:
+            return 'HIGH'
+        case 2:
+            return 'MEDIUM'
+        default:
+            return "LOW"
+    }    
+}
+function returnNumberprio(prio:string) {
+    switch (prio){
+        case 'HIGH':
+            return 3
+        case 'MEDIUM':
+            return 2
+        default:
+            return 1
+    }    
+}
+
 export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const classes = useLeadFormStyles();
     const dispatch = useDispatch();
@@ -125,6 +145,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const history = useHistory();
     const match = useRouteMatch<{ id: string, columnid?: string, columnuuid?: string }>();
     const [phasemenu, setphasemenu] = useState<any[]>([])
+    const [prioritycontrol, setprioritycontrol] = useState(1)
     const [values, setValues] = useState<ICrmLead>({
         column_uuid: match.params.columnuuid || '',
         columnid: Number(match.params.columnid),
@@ -197,7 +218,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         });
         register('date_deadline', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('tags', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('personcommunicationchannel', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('personcommunicationchannel');
         register('userid', { validate: (value) => ((value && value > 0) ? true : t(langKeys.field_required) + "") });
         register('columnid', { validate: (value) => ((value !== null && value !== undefined && value !== '') || t(langKeys.field_required) + "") });
         register('leadproduct', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -334,6 +355,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             }));
         } else if (lead.value && edit) {
             setValues(lead.value!);
+            setprioritycontrol(returnNumberprio(lead.value?.priority||""))
             reset({
                 description: lead.value?.description,
                 status: lead.value?.status,
@@ -777,7 +799,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 />
                                 <FieldEdit
                                     label={t(langKeys.expected_revenue)}
-                                    className="flex-1"
+                                    className={classes.field}
                                     valueDefault={getValues('expected_revenue')}
                                     error={errors?.expected_revenue?.message}
                                     type="number"
@@ -918,10 +940,10 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     <Rating
                                         name="simple-controlled"
                                         max={3}
-                                        value={lead.value?.priority === 'LOW' ? 1 : lead.value?.priority === 'MEDIUM' ? 2 : lead.value?.priority === 'HIGH' ? 3 : 1}
+                                        value={prioritycontrol}
                                         onChange={(event, newValue) => {
-                                            const priority = (newValue) ? urgencyLevels[newValue] : 'LOW';
-                                            setValue('priority', priority)
+                                            setValue('priority', returnpriority(newValue||0))
+                                            setprioritycontrol(newValue||0)
                                         }}
                                         readOnly={isStatusClosed() || iSProcessLoading()}
                                     />
@@ -1102,7 +1124,7 @@ const SelectPersonModal: FC<SelectPersonModalProps> = ({ open, onClose, onClick 
             },
             {
                 Header: t(langKeys.name),
-                accessor: 'displayname' as keyof IPerson,
+                accessor: 'name' as keyof IPerson,
             },
             {
                 Header: t(langKeys.email),
@@ -2535,7 +2557,6 @@ interface Options {
 
 const formatDate = (strDate: string = "", options: Options = { withTime: true }) => {
     if (!strDate || strDate === '') return '';
-    console.log("strDate", strDate)
 
     const date = new Date(typeof strDate === "number" ? strDate : strDate.replace("Z", ""));
     // date.setHours(date.getHours() + 5);

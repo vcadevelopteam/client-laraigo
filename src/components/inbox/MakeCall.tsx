@@ -16,7 +16,7 @@ import PhoneForwardedIcon from '@material-ui/icons/PhoneForwarded';
 import PhoneIcon from '@material-ui/icons/Phone';
 import { AntTab, SearchField } from 'components';
 import { IconButton, Tabs } from '@material-ui/core';
-import { conversationOutboundIns, convertLocalDate, secondsToTime, getSecondsUntelNow, conversationCallHold } from 'common/helpers';
+import { conversationOutboundIns, convertLocalDate, getSecondsUntelNow, conversationCallHold } from 'common/helpers';
 import { langKeys } from 'lang/keys';
 import ContactPhoneIcon from '@material-ui/icons/ContactPhone';
 import PhoneCallbackIcon from '@material-ui/icons/PhoneCallback';
@@ -255,7 +255,7 @@ const MakeCall: React.FC = () => {
     React.useEffect(() => {
         if (!resExecute.loading && !resExecute.error) {
             if (resExecute.key === "UFN_CONVERSATION_OUTBOUND_INS") {
-                const { v_conversationid, v_ticketnum, v_personid, v_firstconversationdate, v_personname, v_voximplantrecording, v_personcommunicationchannelowner } = resExecute.data[0]
+                const { v_conversationid, v_ticketnum, v_personid, v_personname, v_voximplantrecording, v_personcommunicationchannelowner } = resExecute.data[0]
                 const data: ITicket = {
                     conversationid: parseInt(v_conversationid),
                     ticketnum: v_ticketnum,
@@ -263,7 +263,7 @@ const MakeCall: React.FC = () => {
                     communicationchannelid: ccidvoxi || 0,
                     status: "ASIGNADO",
                     imageurldef: "",
-                    firstconversationdate: v_firstconversationdate,
+                    firstconversationdate: new Date().toISOString(),
                     personlastreplydate: null,
                     countnewmessages: 0,
                     usergroup: "",

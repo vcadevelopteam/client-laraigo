@@ -10,9 +10,9 @@ import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { setDataUser, wsConnect } from "store/inbox/actions";
 import { voximplantConnect } from "store/voximplant/actions";
-import { getAccessToken } from 'common/helpers';
+import { getAccessToken, removeAuthorizationToken } from 'common/helpers';
 import { Redirect } from 'react-router-dom';
-import { logout, validateToken } from 'store/login/actions';
+import { validateToken } from 'store/login/actions';
 import { useDispatch } from 'react-redux';
 
 const Users = lazy(() => import('pages/Users'));
@@ -90,6 +90,7 @@ const ChangePwdFirstLogin = lazy(() => import('pages/ChangePwdFirstLogin'));
 const CalendarEvent = lazy(() => import('pages/CalendarEvent'));
 const Assistant = lazy(() => import('pages/assistant/Assistant'));
 const Location = lazy(() => import('pages/Location'));
+const SecurityRules = lazy(() => import('pages/SecurityRules'));
 
 const useStyles = makeStyles((theme) => ({
 	main: {
@@ -111,7 +112,6 @@ interface PrivateRouteProps extends Omit<RouteProps, "component"> {
 const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, ...rest }) => {
 	const resValidateToken = useSelector(state => state.login.validateToken);
 	const ignorePwdchangefirstloginValidation = useSelector(state => state.login.ignorePwdchangefirstloginValidation);
-
 	const applications = resValidateToken?.user?.menu;
 	const location = useLocation();
 
@@ -176,7 +176,7 @@ const RouterApp: FC = () => {
 	const dispatch = useDispatch();
 
 	useForcedDisconnection(useCallback(() => {
-		dispatch(logout());
+		removeAuthorizationToken()
 	}, [dispatch]));
 
 	return (
@@ -264,6 +264,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.KPIMANAGER} component={() => <Layout mainClasses={classes.main}><KPIManager /></Layout>} />
 					<ProtectRoute exact path={paths.CALENDAR} component={() => <Layout mainClasses={classes.main}><Calendar /></Layout>} />
 					<ProtectRoute exact path={paths.ASSISTANT} component={() => <Layout mainClasses={classes.main}><Assistant /></Layout>} />
+					<ProtectRoute exact path={paths.SECURITYRULES} component={() => <Layout mainClasses={classes.main}><SecurityRules /></Layout>} />
 					<ProtectRoute exact path={paths.EXTRASLOCATION} component={() => <Layout mainClasses={classes.main}><Location /></Layout>} />
 					<Route exact path={paths.CHNAGE_PWD_FIRST_LOGIN}>
 						<ChangePwdFirstLogin />

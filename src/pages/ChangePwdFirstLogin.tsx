@@ -3,29 +3,80 @@ import { Box, Button, CircularProgress, Container, IconButton, InputAdornment, T
 import { Visibility, VisibilityOff } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import { langKeys } from 'lang/keys';
-import { Trans } from 'react-i18next';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { execute, resetExecute } from 'store/main/actions';
+import { execute, getCollection, resetAllMain, resetExecute } from 'store/main/actions';
 import { Copyright, useStyles as useLoginStyles } from './SignIn';
 import { useHistory } from 'react-router';
-import { changePasswordOnFirstLoginIns } from 'common/helpers';
+import { changePasswordOnFirstLoginIns, getSecurityRules, validateDomainCharacters, validateDomainCharactersSpecials, validateNumbersEqualsConsecutive } from 'common/helpers';
 import { logout, setPwdFirsLogin } from 'store/login/actions';
 import paths from 'common/constants/paths';
+import { Trans, useTranslation } from 'react-i18next';
+import clsx from 'clsx';
+import { showSnackbar } from 'store/popus/actions';
 
 const ChangePwdFirstLogin: FC = () => {
     const classes = useLoginStyles();
     const dispatch = useDispatch();
     const history = useHistory();
+    const { t } = useTranslation();
 
     const [showPassword, setShowPassword] = useState(false);
     const [password, setPassword] = useState('');
     const [repeatPasword, setRepeatPasword] = useState('');
     const [error, setError] = useState(false);
+    const [waiLoading, setWaiLoading] = useState(false);
 
     const resValidateToken = useSelector(state => state.login.validateToken);
     const ignorePwdchangefirstloginValidation = useSelector(state => state.login.ignorePwdchangefirstloginValidation);
     const changePwd = useSelector(state => state.main.execute);
+    const mainResult = useSelector(state => state.main.mainData);
+    const securityRules = mainResult?.data?.[0]
+    const [passwordConditions, setpasswordConditions] = useState({
+        samepassword: false,
+        mincharacters: ("").length >= (securityRules?.mincharacterspwd||0),
+        maxcharacters: ("").length <= (securityRules?.maxcharacterspwd||0),
+        consecutivecharacters: validateNumbersEqualsConsecutive("",securityRules?.numequalconsecutivecharacterspwd||securityRules?.maxcharacterspwd||0),
+        lowercaseletters: validateDomainCharacters("", 'a-z', securityRules?.lowercaseletterspwd||"04"),
+        uppercaseletters: validateDomainCharacters("", 'A-Z', securityRules?.uppercaseletterspwd||"04"),
+        numbers: validateDomainCharacters("", '1-9', securityRules?.numericalcharacterspwd||"04"),
+        specialcharacters: validateDomainCharactersSpecials("", securityRules?.specialcharacterspwd||"04"),
+    });
+
+    const dataFieldSelect = [
+        {name: "Empieza", value: "01"},
+        {name: "Incluye", value: "02"},
+        {name: "Más de 1", value: "03"},
+        {name: "No Considera", value: "04"},
+        {name: "Termina", value: "05"},
+    ]    
+    const fetchData = () => dispatch(getCollection(getSecurityRules()));
+
+    useEffect(() => {
+        setWaiLoading(true)
+        fetchData();
+        return () => {
+            dispatch(resetAllMain());
+        };
+    }, []);
+    
+    useEffect(() => {
+        if (waiLoading) {
+            if (!mainResult.loading && !mainResult.error) {
+                setpasswordConditions({...passwordConditions,
+                    samepassword: false,
+                    mincharacters: "".length >= (securityRules?.mincharacterspwd||0),
+                    maxcharacters: "".length <= (securityRules?.maxcharacterspwd||0),
+                    consecutivecharacters: validateNumbersEqualsConsecutive("",securityRules?.numequalconsecutivecharacterspwd||securityRules?.maxcharacterspwd||0),
+                    lowercaseletters: validateDomainCharacters("", 'a-z', securityRules?.lowercaseletterspwd||"04"),
+                    uppercaseletters: validateDomainCharacters("", 'A-Z', securityRules?.uppercaseletterspwd||"04"),
+                    numbers: validateDomainCharacters("", '1-9', securityRules?.numericalcharacterspwd||"04"),
+                    specialcharacters: validateDomainCharactersSpecials("", securityRules?.specialcharacterspwd||"04"),
+                })
+                setWaiLoading(false)
+            } 
+        }
+    }, [mainResult, waiLoading])
 
     useEffect(() => {
         return () => {
@@ -54,16 +105,15 @@ const ChangePwdFirstLogin: FC = () => {
     }, [changePwd, dispatch]);
 
     const onSubmit = useCallback(() => {
-        if (password !== repeatPasword) {
+        if(!!Object.values(passwordConditions).reduce((acc,x)=>acc*(+ x),1)){
+            setError(false);
+            dispatch(execute({
+                header: changePasswordOnFirstLoginIns(resValidateToken.user?.userid || 0, password),
+                detail: [],
+            }, true));
+        }else{
             setError(true);
-            return;
         }
-
-        setError(false);
-        dispatch(execute({
-            header: changePasswordOnFirstLoginIns(resValidateToken.user?.userid || 0, password),
-            detail: [],
-        }, true));
     }, [resValidateToken.user?.userid, password, repeatPasword, dispatch]);
 
     return (
@@ -94,7 +144,19 @@ const ChangePwdFirstLogin: FC = () => {
                             type={showPassword ? 'text' : 'password'}
                             autoComplete="current-password"
                             value={password}
-                            onChange={e => setPassword(e.target.value.trim())}
+                            onChange={e => {
+                                setpasswordConditions({...passwordConditions,
+                                    samepassword:repeatPasword===e.target.value,
+                                    mincharacters: e.target.value.length >= (securityRules?.mincharacterspwd||0),
+                                    maxcharacters: e.target.value.length <= (securityRules?.maxcharacterspwd||0),
+                                    consecutivecharacters: validateNumbersEqualsConsecutive(e.target.value,securityRules?.numequalconsecutivecharacterspwd||securityRules?.maxcharacterspwd||0),
+                                    lowercaseletters: validateDomainCharacters(e.target.value, 'a-z', securityRules?.lowercaseletterspwd||"04"),
+                                    uppercaseletters: validateDomainCharacters(e.target.value, 'A-Z', securityRules?.uppercaseletterspwd||"04"),
+                                    numbers: validateDomainCharacters(e.target.value, '1-9', securityRules?.numericalcharacterspwd||"04"),
+                                    specialcharacters: validateDomainCharactersSpecials(e.target.value, securityRules?.specialcharacterspwd||"04"),
+                                })
+                                setPassword(e.target.value.trim())
+                            }}
                             error={error}
                             InputProps={{
                                 endAdornment: (
@@ -120,12 +182,50 @@ const ChangePwdFirstLogin: FC = () => {
                             type={showPassword ? 'text' : 'password'}
                             autoComplete="current-password"
                             value={repeatPasword}
-                            onChange={e => setRepeatPasword(e.target.value.trim())}
+                            onChange={e => {                                
+                                setpasswordConditions({...passwordConditions,samepassword:password===e.target.value})
+                                setRepeatPasword(e.target.value.trim())
+                            }}
                             error={error}
                             InputProps={{
                                 readOnly: changePwd.loading,
                             }}
                         />
+                        <div>
+                            <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond1)}</span><span className={clsx(classes.badge, {
+                                [classes.badgeSuccess]: passwordConditions.samepassword,
+                                [classes.badgeFailure]: !passwordConditions.samepassword,
+                            })}>{passwordConditions.samepassword?t(langKeys.yes):t(langKeys.no)}</span></div>
+                            {!!securityRules?.mincharacterspwd && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond2)}</span><span className={clsx(classes.badge, {
+                                [classes.badgeSuccess]: passwordConditions.mincharacters,
+                                [classes.badgeFailure]: !passwordConditions.mincharacters,
+                            })}>{securityRules?.mincharacterspwd}</span></div>}
+                            {!!securityRules?.maxcharacterspwd && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond3)}</span><span className={clsx(classes.badge, {
+                                [classes.badgeSuccess]: passwordConditions.maxcharacters,
+                                [classes.badgeFailure]: !passwordConditions.maxcharacters,
+                            })}>{securityRules?.maxcharacterspwd}</span></div>}
+                            {!!securityRules?.allowsconsecutivenumbers && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond4)}</span><span className={clsx(classes.badge, {
+                                [classes.badgeSuccess]: passwordConditions.consecutivecharacters,
+                                [classes.badgeFailure]: !passwordConditions.consecutivecharacters,
+                            })}>{securityRules?.numequalconsecutivecharacterspwd}</span></div>}
+                            {(securityRules?.lowercaseletterspwd!=="04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond7)}</span><span className={clsx(classes.badge, {
+                                [classes.badgeSuccess]: passwordConditions.lowercaseletters,
+                                [classes.badgeFailure]: !passwordConditions.lowercaseletters,
+                            })}>{dataFieldSelect.filter((x:any)=>x.value===(securityRules?.lowercaseletterspwd||"04"))[0].name}</span></div>}
+                            {(securityRules?.uppercaseletterspwd!=="04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond8)}</span><span className={clsx(classes.badge, {
+                                [classes.badgeSuccess]: passwordConditions.uppercaseletters,
+                                [classes.badgeFailure]: !passwordConditions.uppercaseletters,
+                            })}>{dataFieldSelect.filter((x:any)=>x.value===(securityRules?.uppercaseletterspwd||"04"))[0].name}</span></div>}
+                            {(securityRules?.numericalcharacterspwd!=="04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond9)}</span><span className={clsx(classes.badge, {
+                                [classes.badgeSuccess]: passwordConditions.numbers,
+                                [classes.badgeFailure]: !passwordConditions.numbers,
+                            })}>{dataFieldSelect.filter((x:any)=>x.value===(securityRules?.numericalcharacterspwd||"04"))[0].name}</span></div>}
+                            <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond5)}</span><span className={clsx(classes.badge, {
+                                [classes.badgeSuccess]: passwordConditions.specialcharacters,
+                                [classes.badgeFailure]: !passwordConditions.specialcharacters,
+                            })}>{dataFieldSelect.filter((x:any)=>x.value===(securityRules?.specialcharacterspwd||"04"))[0].name}</span></div>
+                            <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond6)}</span></div>
+                        </div>
                         {!changePwd.loading ?
                             <Button
                                 type="submit"

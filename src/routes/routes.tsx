@@ -13,9 +13,9 @@ import {
     KPIIcon,
     CalendaryIcon,
     RulesIcon,
-    ProductsIcon
-
+    ProductsIcon,
 } from 'icons';
+import LockOpenIcon from '@material-ui/icons/LockOpen';
 import { langKeys } from "lang/keys";
 import { Trans } from "react-i18next";
 
@@ -284,6 +284,13 @@ export const subroutes: RouteConfig[] = [
         tooltip: "",
         path: paths.WHITELIST,
         icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+    },
+    {
+        key: paths.SECURITYRULES,
+        description: <Trans i18nKey={langKeys.securityrules} />,
+        tooltip: <Trans i18nKey={langKeys.securityrules} />,
+        path: paths.SECURITYRULES,
+        icon: (className) => <LockOpenIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
     },
     {
         key: paths.EXTRASLOCATION,

@@ -466,6 +466,7 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     if (channelType === "CHATZ") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "CHAZ") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "MAIL") return <EmailIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "MAII") return <EmailIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "YOUT") return <YoutubeIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "LINE") return <LineIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "SMS") return <SmsIcon width={width} fill={color} stroke={color} height={height} color={color} />
@@ -533,7 +534,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = f
                     setValue(newValue);
                     onChange && onChange(newValue);
                 }}
-                getOptionLabel={option => option ? (uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')) : ''}
+                getOptionLabel={option => option ? (uset && Object.keys(langKeys).includes(prefixTranslation + option[optionDesc]?.toLowerCase()) ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')) : ''}
                 options={dataG}
                 loading={loading}
                 size="small"
@@ -1325,6 +1326,7 @@ interface EditWithSelectProps extends InputProps {
     show: boolean;
     data: Dictionary[];
     datakey: string;
+    datalabel?: string;
     top?: number;
     left?: number;
     onClickSelection: (e: any, value: string) => any
@@ -1332,7 +1334,7 @@ interface EditWithSelectProps extends InputProps {
 }
 
 export const FieldEditWithSelect: React.FC<EditWithSelectProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {},
-    primitive = false, inputProps = {}, show, data, datakey, top = 0, left = 0, onClickSelection, onClickAway }) => {
+    primitive = false, inputProps = {}, show, data, datakey, datalabel, top = 0, left = 0, onClickSelection, onClickAway }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -1350,7 +1352,7 @@ export const FieldEditWithSelect: React.FC<EditWithSelectProps> = ({ label, clas
                     onClick={(e) => onClickSelection(e, data[index][datakey])}
                     divider={true}
                 >
-                    <ListItemText primary={data[index][datakey]} />
+                    <ListItemText primary={data[index][datalabel || datakey]} />
                 </ListItem>
             </React.Fragment>
         );
@@ -1394,7 +1396,7 @@ export const FieldEditWithSelect: React.FC<EditWithSelectProps> = ({ label, clas
                             borderStyle: 'solid',
                             borderWidth: '1px',
                             borderRadius: '5px',
-                            zIndex: 100
+                            zIndex: 9999
                         }}>
                             <FixedSizeList
                                 className="scroll-style-go"

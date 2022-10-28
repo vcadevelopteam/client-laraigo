@@ -6,7 +6,7 @@ import { useHistory, useLocation } from "react-router";
 import paths from "common/constants/paths";
 import {
     VoiceColor,
-    AndroidColor, EmailColor, FacebookColor, FacebookMessengerColor, InstagramColor, IosColor, SmsColor, TelegramColor, TwitterColor, WebMessengerColor, WhatsappColor, TikTokColor, YouTubeColor, LinkedInColor, TeamsColor, BloggerColor
+    AndroidColor, EmailColor, FacebookColor, FacebookMessengerColor, InstagramColor, IosColor, SmsColor, TelegramColor, TwitterColor, WebMessengerColor, WhatsappColor, YouTubeColor, LinkedInColor, TeamsColor, BloggerColor
 } from "icons";
 import { TemplateBreadcrumbs } from "components";
 
@@ -158,11 +158,11 @@ export const ChannelAdd: FC = () => {
             label: t(langKeys.channel_twitterdm),
             onClick: () => { history.push(paths.CHANNELS_ADD_TWITTERDM.path, whatsAppData) },
         },
-        {
+        /*{
             icon: c => <TikTokColor className={c} />,
             label: t(langKeys.channel_tiktok),
             onClick: () => { history.push(paths.CHANNELS_ADD_TIKTOK.path, whatsAppData) },
-        },
+        },*/
         {
             icon: c => <YouTubeColor className={c} />,
             label: t(langKeys.channel_youtube),

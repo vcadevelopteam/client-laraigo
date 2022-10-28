@@ -65,6 +65,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
     const [campaignMembers, setCampaignMembers] = useState<any[]>([]);
 
     const [tablevariable, setTableVariable] = useState<any[]>([]);
+    const [usedTablevariable, setUsedTableVariable] = useState<any>({});
 
     const [frameProps, setFrameProps] = useState<FrameProps>({ executeSave: false, page: 0, checkPage: false, valid: { 0: false, 1: false, 2: false } });
 
@@ -160,7 +161,35 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         let subject = detaildata.subject || '';
         let header = detaildata.messagetemplateheader?.value || '';
         let message = detaildata.message || '';
-        if (detaildata.operation === 'INSERT' || detaildata.source === 'EXTERNAL') {
+        if (detaildata.operation === 'INSERT' && detaildata.source === 'INTERNAL') {
+            if (detaildata.person && detaildata.person?.length > 0) {
+                let localtablevariable = Array.from(new Set([
+                    ...(subject.match(new RegExp(`{{.+?}}`, 'g')) || []),
+                    ...(header.match(new RegExp(`{{.+?}}`, 'g')) || []),
+                    ...(message.match(new RegExp(`{{.+?}}`, 'g')) || [])
+                ]));
+                localtablevariable = localtablevariable.map(x => x.slice(2,-2));
+                if (Object.keys(usedTablevariable).length > 0) {
+                    Object.values(usedTablevariable).forEach((v: any, i: number) => {
+                        subject = subject.replace(new RegExp(`{{field${i + 2}}}`, 'g'), `{{${v}}}`);
+                        header = header.replace(new RegExp(`{{field${i + 2}}}`, 'g'), `{{${v}}}`);
+                        message = message.replace(new RegExp(`{{field${i + 2}}}`, 'g'), `{{${v}}}`);
+                    });
+                    localtablevariable = localtablevariable.map(x => usedTablevariable[x] ? usedTablevariable[x] : x)
+                }
+                localtablevariable = localtablevariable.reduce((actv, tv, tvi) => ({
+                    ...actv,
+                    [`field${tvi + 2}`]: tv
+                }), {});
+                setUsedTableVariable(localtablevariable);
+                tablevariable.filter(tv => Object.values(localtablevariable).includes(tv.description)).forEach((v: any, i: number) => {
+                    subject = subject.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
+                    header = header.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
+                    message = message.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
+                });
+            }
+        }
+        else if (detaildata.operation === 'INSERT' || detaildata.source === 'EXTERNAL') {
             tablevariable.forEach((v: any, i: number) => {
                 subject = subject.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
                 header = header.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
@@ -276,26 +305,26 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     ap.push({
                         id: 0,
                         personid: p.personid || 0,
-                        personcommunicationchannel: p.personcommunicationchannel || '',
-                        personcommunicationchannelowner: p.personcommunicationchannelowner || '',
+                        personcommunicationchannel: '',
+                        personcommunicationchannelowner: (detaildata.communicationchanneltype?.startsWith('MAI') ? p.email : p.phone) || '',
                         type: p.type || '',
                         displayname: p.name || '',
                         status: 'ACTIVO',
-                        field1: p[tablevariable[0]] || '',
-                        field2: p[tablevariable[1]] || '',
-                        field3: p[tablevariable[2]] || '',
-                        field4: p[tablevariable[3]] || '',
-                        field5: p[tablevariable[4]] || '',
-                        field6: p[tablevariable[5]] || '',
-                        field7: '',
-                        field8: '',
-                        field9: '',
-                        field10: '',
-                        field11: '',
-                        field12: '',
-                        field13: '',
-                        field14: '',
-                        field15: '',
+                        field1: (detaildata.communicationchanneltype?.startsWith('MAI') ? p.email : p.phone) || '',
+                        field2: p[usedTablevariable['field2']] || '',
+                        field3: p[usedTablevariable['field3']] || '',
+                        field4: p[usedTablevariable['field4']] || '',
+                        field5: p[usedTablevariable['field5']] || '',
+                        field6: p[usedTablevariable['field6']] || '',
+                        field7: p[usedTablevariable['field7']] || '',
+                        field8: p[usedTablevariable['field8']] || '',
+                        field9: p[usedTablevariable['field9']] || '',
+                        field10: p[usedTablevariable['field10']] || '',
+                        field11: p[usedTablevariable['field11']] || '',
+                        field12: p[usedTablevariable['field12']] || '',
+                        field13: p[usedTablevariable['field13']] || '',
+                        field14: p[usedTablevariable['field14']] || '',
+                        field15: p[usedTablevariable['field15']] || '',
                         batchindex: 0,
                         operation: detaildata.operation
                     })
@@ -413,50 +442,59 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         if (pageSelected === 2) {
             if (detaildata.operation === 'INSERT' && detaildata.source === 'INTERNAL') {
                 setTableVariable([
-                    { description: "personcommunicationchannelowner", persistent: false },
-                    { description: "name", persistent: false },
-                    { description: "personcommunicationchannel", persistent: false },
-                    { description: "type", persistent: false },
-                    { description: "phone", persistent: false },
-                    { description: "email", persistent: false },
+                    { label: t(langKeys.firstname), description: 'firstname', persistent: false },
+                    { label: t(langKeys.lastname), description: 'lastname', persistent: false },
+                    { label: t(langKeys.documenttype), description: 'documenttype', persistent: false },
+                    { label: t(langKeys.documentnumber), description: 'documentnumber', persistent: false },
+                    { label: t(langKeys.personType), description: 'persontype', persistent: false },
+                    { label: t(langKeys.phone), description: 'phone', persistent: false },
+                    { label: t(langKeys.alternativePhone), description: 'alternativephone', persistent: false },
+                    { label: t(langKeys.email), description: 'email', persistent: false },
+                    { label: t(langKeys.alternativeEmail), description: 'alternativeemail', persistent: false },
+                    { label: t(langKeys.birthday), description: 'birthday', persistent: false },
+                    { label: t(langKeys.gender), description: 'genderdesc', persistent: false },
+                    { label: t(langKeys.educationLevel), description: 'educationleveldesc', persistent: false },
+                    { label: t(langKeys.civilStatus), description: 'civilstatusdesc', persistent: false },
+                    { label: t(langKeys.occupation), description: 'occupationdesc', persistent: false },
+                    { label: t(langKeys.observation), description: 'observation', persistent: false },
                 ]);
             }
             else if (detaildata.source === 'EXTERNAL') {
                 setTableVariable(detaildata.selectedColumns?.columns.reduce((ac: any, c: string) => {
-                    ac.push({ description: c, persistent: false })
+                    ac.push({ label: c, description: c, persistent: false })
                     return ac;
                 }, [{ description: detaildata.selectedColumns.primarykey, persistent: false }]));
             }
             else {
                 setTableVariable([
-                    { description: "corpid", persistent: true },
-                    { description: "orgid", persistent: true },
-                    { description: "campaignmemberid", persistent: true },
-                    { description: "campaignid", persistent: true },
-                    { description: "personid", persistent: true },
-                    { description: "status", persistent: true },
-                    { description: "globalid", persistent: true },
-                    { description: "personcommunicationchannel", persistent: true },
-                    { description: "type", persistent: true },
-                    { description: "displayname", persistent: true },
-                    { description: "personcommunicationchannelowner", persistent: true },
-                    { description: "field1", persistent: true },
-                    { description: "field2", persistent: true },
-                    { description: "field3", persistent: true },
-                    { description: "field4", persistent: true },
-                    { description: "field5", persistent: true },
-                    { description: "field6", persistent: true },
-                    { description: "field7", persistent: true },
-                    { description: "field8", persistent: true },
-                    { description: "field9", persistent: true },
-                    { description: "field10", persistent: true },
-                    { description: "field11", persistent: true },
-                    { description: "field12", persistent: true },
-                    { description: "field13", persistent: true },
-                    { description: "field14", persistent: true },
-                    { description: "field15", persistent: true },
-                    { description: "resultfromsend", persistent: true },
-                    { description: "batchindex", persistent: true }
+                    { label: "corpid", description: "corpid", persistent: true },
+                    { label: "orgid", description: "orgid", persistent: true },
+                    { label: "campaignmemberid", description: "campaignmemberid", persistent: true },
+                    { label: "campaignid", description: "campaignid", persistent: true },
+                    { label: "personid", description: "personid", persistent: true },
+                    { label: "status", description: "status", persistent: true },
+                    { label: "globalid", description: "globalid", persistent: true },
+                    { label: "personcommunicationchannel", description: "personcommunicationchannel", persistent: true },
+                    { label: "type", description: "type", persistent: true },
+                    { label: "displayname", description: "displayname", persistent: true },
+                    { label: "personcommunicationchannelowner", description: "personcommunicationchannelowner", persistent: true },
+                    { label: "field1", description: "field1", persistent: true },
+                    { label: "field2", description: "field2", persistent: true },
+                    { label: "field3", description: "field3", persistent: true },
+                    { label: "field4", description: "field4", persistent: true },
+                    { label: "field5", description: "field5", persistent: true },
+                    { label: "field6", description: "field6", persistent: true },
+                    { label: "field7", description: "field7", persistent: true },
+                    { label: "field8", description: "field8", persistent: true },
+                    { label: "field9", description: "field9", persistent: true },
+                    { label: "field10", description: "field10", persistent: true },
+                    { label: "field11", description: "field11", persistent: true },
+                    { label: "field12", description: "field12", persistent: true },
+                    { label: "field13", description: "field13", persistent: true },
+                    { label: "field14", description: "field14", persistent: true },
+                    { label: "field15", description: "field15", persistent: true },
+                    { label: "resultfromsend", description: "resultfromsend", persistent: true },
+                    { label: "batchindex", description: "batchindex", persistent: true }
                 ]);
             }
         }

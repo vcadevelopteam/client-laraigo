@@ -274,9 +274,9 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('status', data?.domainvalue || '');
     }
 
-    const filterDataSource = () => {
-        return row !== null ? dictToArrayKV(dataSource) : filterPipe(dictToArrayKV(dataSource), 'key', 'EXTERNAL');
-    }
+    // const filterDataSource = () => {
+    //     return row !== null ? dictToArrayKV(dataSource) : filterPipe(dictToArrayKV(dataSource), 'key', 'EXTERNAL');
+    // }
 
     const onChangeSource = (data: Dictionary) => {
         setValue('source', data?.key || '');
@@ -319,7 +319,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     }
 
     const filterMessageTemplate = () => {
-        if (getValues('type') == "MAIL") {
+        if (getValues('type') === "MAIL") {
             var mailTemplate = filterPipe(dataMessageTemplate, 'type', getValues('type'));
             var htmlTemplate = filterPipe(dataMessageTemplate, 'type', 'HTML');
 
@@ -539,7 +539,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             valueDefault={getValues('source')}
                             onChange={onChangeSource}
                             error={errors?.source?.message}
-                            data={filterDataSource()}
+                            data={dictToArrayKV(dataSource)}
                             optionDesc="value"
                             optionValue="key"
                         />

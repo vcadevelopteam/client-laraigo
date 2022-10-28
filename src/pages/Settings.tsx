@@ -12,6 +12,7 @@ import { showSnackbar } from 'store/popus/actions';
 import { useHistory } from 'react-router';
 import paths from 'common/constants/paths';
 import InputIcon from '@material-ui/icons/Input';
+import LockOpenIcon from '@material-ui/icons/LockOpen';
 
 interface ItemTileProps extends Omit<BoxProps, 'title'> {
     title: React.ReactNode;
@@ -467,6 +468,21 @@ const Settings: FC = () => {
                                         m={2}
                                     />
                                 </Grid>             
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <ItemTile
+                                        title={<Trans i18nKey={langKeys.securityrules} count={2} />}
+                                        subtitle={<SubtitleText value={1} i18nKey={langKeys.securityrule} />}
+                                        icon={<LockOpenIcon fill="inherit" stroke="inherit" />}
+                                        helpText={
+                                            <HelpText
+                                                i18nKey={langKeys.securityrules}
+                                                count={2}
+                                                onClick={() => history.push(paths.SECURITYRULES)}
+                                            />
+                                        }
+                                        m={2}
+                                    />
+                                </Grid>             
                             </Grid>
                         </Grid>
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
@@ -565,7 +581,7 @@ const Settings: FC = () => {
                                     <ItemTile
                                         title={<Trans i18nKey={langKeys.location} count={2} />}
                                         subtitle={<SubtitleText value={value?.num_location} i18nKey={langKeys.location} />}
-                                        icon={<LocationIcon fill="inherit" stroke="inherit" />}
+                                        icon={<LocationIcon style={{width:"35px", height: "35px"}} fill="inherit" stroke="inherit" />}
                                         helpText={
                                             <HelpText
                                                 i18nKey={langKeys.manageLocation}

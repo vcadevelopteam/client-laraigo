@@ -212,7 +212,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                     setMessageVariables(datatemp)
                                                 }}
                                                 data={tablevariable}
-                                                optionDesc="description"
+                                                optionDesc="label"
                                                 optionValue="description"
                                             />
                                         </React.Fragment>
@@ -235,6 +235,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             }}
                             show={variableHandler.show}
                             data={tablevariableShow}
+                            datalabel="label"
                             datakey="description"
                             top={variableHandler.top}
                             left={variableHandler.left}

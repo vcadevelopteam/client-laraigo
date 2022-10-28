@@ -94,7 +94,7 @@ export const initialState: IState = {
     aNewTicket: null,
     aNewMessage: null,
     hideLogsOnTicket: false,
-    showInfoPanel: false,
+    showInfoPanel: true,
     userType: null,
     wsConnected: false,
     userConnected: !!localStorage.getItem("agentConnected"),
@@ -168,6 +168,10 @@ export default createReducer<IState>(initialState, {
     [actionTypes.DELETE_TICKET]: caseFunctions.deleteTicket,
     [actionTypes.PERSON_SAW_CHAT]: caseFunctions.personSawChat,
     [actionTypes.CONNECT_AGENT_WS]: caseFunctions.connectAgentWS,
+    
+    [actionTypes.UPDATE_EXTERNAL_IDS]: caseFunctions.updateExternalIDs,
+    [actionTypes.ANSWERED_CALL]: caseFunctions.callWasAnswred,
+
     [actionTypes.CONNECT_AGENT_UI]: caseFunctions.connectAgentUI,
 
     [actionTypes.CLOSE_TICKET]: caseFunctions.closeTicket,
