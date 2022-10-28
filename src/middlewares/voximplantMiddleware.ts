@@ -4,6 +4,7 @@ import typeInbox from 'store/inbox/actionTypes';
 import * as VoxImplant from 'voximplant-websdk'
 import { CallSettings } from 'voximplant-websdk/Structures';
 import { ITicket } from '@types';
+import { Call } from "voximplant-websdk/Call/Call";
 
 import { emitEvent, connectAgentUI, connectAgentAPI } from 'store/inbox/actions';
 
@@ -40,8 +41,23 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                 })
 
                 sdk.on(VoxImplant.Events.IncomingCall, (e) => {
-                    const headers = e.call?.headers();
+                    const headers = (e.call as Call).headers()
+                    const supervision = headers["X-supervision"]
                     const splitIdentifier = headers["X-identifier"].split("-");
+
+                    if (supervision) {
+                        dispatch({
+                            type: typeVoximplant.INIT_CALL,
+                            payload: {
+                                call: e.call,
+                                type: "SUPERVISION",
+                                number: "",
+                                identifier: headers["X-identifier"]
+                            }
+                        })
+                        e.call.answer();
+                        return;
+                    }
 
                     const data: ITicket = {
                         conversationid: parseInt(splitIdentifier[3]),
@@ -58,9 +74,10 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                         coloricon: "",
                         communicationchanneltype: "VOXI",
                         lastmessage: "LLAMADA ENTRANTE",
-                        personcommunicationchannel: `${e.call.number()}_VOXI`,
+                        personcommunicationchannel: `${e.call.number().split("@")[0].split(":")?.[1] || ""}_VOXI`,
                         communicationchannelsite: headers["X-site"],
                         lastreplyuser: "",
+                        commentexternalid: headers["X-accessURL"]
                     }
                     //enviar a los otros supervisores
                     dispatch(emitEvent({
@@ -217,9 +234,12 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
     } else if (type === typeVoximplant.DISCONNECT) {
         dispatch({ type: typeVoximplant.MANAGE_CONNECTION, payload: { error: true, message: "", loading: false } })
         try {
-            sdk?.disconnect();
+            if (alreadyLoad) {
+                sdk?.disconnect();
+            }
             return
         } catch (error) {
+            console.log("aaaaxxxxx")
             return
         }
     }

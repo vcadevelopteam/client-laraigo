@@ -17,6 +17,7 @@ const actionType = {
     SET_PHONE_NUMBER: 'voximplant/SET_PHONE_NUMBER',
     SET_HOLD: 'voximplant/SET_HOLD',
     DISCONNECT: 'voximplant/DISCONNECT',
+    RESET_CALL: 'voximplant/RESET_CALL',
 
     GET_CATEGORIES: 'voximplant/GET_CATEGORIES',
     GET_CATEGORIES_FAILURE: 'voximplant/GET_CATEGORIES_FAILURE',

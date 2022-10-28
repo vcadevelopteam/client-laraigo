@@ -330,7 +330,7 @@ export const getTicketsSuccess = (state: IState, action: IAction): IState => {
         return {
             ...state,
             isOnBottom: null,
-            ticketList:  {
+            ticketList: {
                 data: action.payload.data || [],
                 count: action.payload.count,
                 loading: false,
@@ -365,12 +365,12 @@ export const connectAgentWS = (state: IState, action: IAction): IState => {
     const { userType } = state;
 
     if (userType === 'SUPERVISOR') {
-        newAgentList = newAgentList.map(x => x.userid === data.userid ? { 
-            ...x, 
-            isConnected: data.isconnected, 
+        newAgentList = newAgentList.map(x => x.userid === data.userid ? {
+            ...x,
+            isConnected: data.isconnected,
             status: data.isconnected ? "ACTIVO" : "DESCONECTADO",
-            motivetype: data.motive, 
-            userstatustype:  (data.isconnected ? "ACTIVO" : (data.motive ? "INBOX" : "LOGOUT") )
+            motivetype: data.motive,
+            userstatustype: (data.isconnected ? "ACTIVO" : (data.motive ? "INBOX" : "LOGOUT"))
         } : x).sort((a: any, b: any) => (a.isConnected === b.isConnected) ? 0 : a.isConnected ? -1 : 1)
     }
 
@@ -432,7 +432,7 @@ export const resetInboxSupervisor = (state: IState, action: IAction): IState => 
 
 export const newMessageFromClient = (state: IState, action: IAction): IState => {
     const data: INewMessageParams = action.payload;
-    
+
     if (state.role === "SUPERVISOR" && state.holdingBySupervisor === "GRUPO" && data.newConversation && data.userid === 3 && !!state.userGroup) {
         if (!state.userGroup.split(",").includes(data.usergroup || "")) {
             return state;
@@ -578,6 +578,54 @@ export const changeStatusTicketWS = (state: IState, action: IAction): IState => 
             loading: false,
             error: false,
         },
+    };
+}
+
+export const updateExternalIDs = (state: IState, action: IAction): IState => {
+    const { userType } = state;
+
+    if (userType !== 'SUPERVISOR') {
+        return state;
+    }
+
+    return {
+        ...state,
+        ticketSelected: state.ticketSelected?.conversationid === action.payload.conversationid ? {
+            ...state.ticketSelected!!,
+            postexternalid: action.payload.postexternalid,
+            commentexternalid: action.payload.commentexternalid,
+        } : state.ticketSelected,
+        ticketList: {
+            ...state.ticketList,
+            data: state.ticketList.data.map((x: ITicket) => x.conversationid === action.payload.conversationid ? {
+                ...x,
+                postexternalid: action.payload.postexternalid,
+                commentexternalid: action.payload.commentexternalid,
+            } : x)
+        }
+    };
+}
+
+export const callWasAnswred = (state: IState, action: IAction): IState => {
+    const { userType } = state;
+
+    if (userType !== 'SUPERVISOR') {
+        return state;
+    }
+
+    return {
+        ...state,
+        ticketSelected: state.ticketSelected?.conversationid === action.payload.conversationid ? {
+            ...state.ticketSelected!!,
+            callanswereddate: new Date().toISOString(),
+        } : state.ticketSelected,
+        ticketList: {
+            ...state.ticketList,
+            data: state.ticketList.data.map((x: ITicket) => x.conversationid === action.payload.conversationid ? {
+                ...x,
+                callanswereddate: new Date().toISOString(),
+            } : x)
+        }
     };
 }
 

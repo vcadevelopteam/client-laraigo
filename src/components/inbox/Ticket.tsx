@@ -118,10 +118,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
     const multiData = useSelector(state => state.main.multiData);
     const [dateToClose, setDateToClose] = useState<Date | null>(null)
     const data14 = React.useRef<Dictionary[] | null>(null)
-
-    // const refreshToken = React.useRef<number>(-1)
     const [refreshToken, setRefreshToken] = useState(-1)
-
     const dictAutoClose = useSelector(state => state.login.validateToken.user?.properties?.auto_close);
     const secondsToAnwserCall = useSelector(state => state.login.validateToken.user?.properties?.seconds_to_answer_call);
     const statusCall = useSelector(state => state.voximplant?.statusCall);
@@ -245,13 +242,16 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [timeWaiting]);
 
-
+  
     return (
         <div
             className={clsx(classes.containerItemTicket, {
                 [classes.itemSelected]: (ticketSelected?.conversationid === conversationid)
             })}
-            onClick={() => setTicketSelected(item)}>
+            onClick={() => {
+                setTicketSelected(item);
+                // showvox()
+            }}>
             <Badge
                 overlap="circular"
                 anchorOrigin={{ vertical: 'top', horizontal: 'right' }}

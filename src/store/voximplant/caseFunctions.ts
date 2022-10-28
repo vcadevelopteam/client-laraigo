@@ -48,6 +48,13 @@ export const manageStatusCall = (state: IState, action: IAction): IState => {
     }
 }
 
+export const resetCall = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        call: initialState.call
+    }
+}
+
 export const getCategories = (state: IState, action: IAction): IState => ({
     ...state,
     requestGetCategories: {

@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import ItemGroupInteraction from 'components/inbox/Interaction';
 import { SkeletonInteraction } from 'components';
 import ManageCallInfoTicket from './ManageCallInfoTicket';
+import ManageCallInfoSupervisor from './ManageCallInfoSupervisor';
 
 const InteractionsPanel: React.FC<{ classes: any }> = React.memo(({ classes }) => {
 
@@ -59,22 +60,24 @@ const InteractionsPanel: React.FC<{ classes: any }> = React.memo(({ classes }) =
             {(ticketSelected?.conversationid === call.data?.conversationid && !!call?.call && ticketSelected?.status === "ASIGNADO") && (
                 <ManageCallInfoTicket />
             )}
-            {!(ticketSelected?.conversationid === call.data?.conversationid && !!call?.call && ticketSelected?.status === "ASIGNADO") && (groupInteractionList.loading ? <SkeletonInteraction /> :
-                <div style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 8,
-                }}>
-                    {groupInteractionList.data.map((groupInteraction) => (
-                        <ItemGroupInteraction
-                            imageClient={ticketSelected!!.imageurldef}
-                            clientName={ticketSelected!!.displayname}
-                            classes={classes}
-                            groupInteraction={groupInteraction}
-                            key={groupInteraction.interactionid} />
-                    ))}
-                </div>
-            )}
+            {!(ticketSelected?.conversationid === call.data?.conversationid && !!call?.call && ticketSelected?.status === "ASIGNADO") &&
+                (ticketSelected?.communicationchanneltype === "VOXI" ? <ManageCallInfoSupervisor /> :
+                    (groupInteractionList.loading ? <SkeletonInteraction /> :
+                        <div style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 8,
+                        }}>
+                            {groupInteractionList.data.map((groupInteraction) => (
+                                <ItemGroupInteraction
+                                    imageClient={ticketSelected!!.imageurldef}
+                                    clientName={ticketSelected!!.displayname}
+                                    classes={classes}
+                                    groupInteraction={groupInteraction}
+                                    key={groupInteraction.interactionid} />
+                            ))}
+                        </div>)
+                )}
             <div ref={el} />
         </div>
     )
