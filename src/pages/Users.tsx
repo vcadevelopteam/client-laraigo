@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, TemplateSwitchYesNo } from 'components';
-import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText, templateMaker, exportExcel, uploadExcel, array_trimmer, checkUserPaymentPlan } from 'common/helpers';
+import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText, templateMaker, exportExcel, uploadExcel, array_trimmer, checkUserPaymentPlan, getSecurityRules, validateNumbersEqualsConsecutive, validateDomainCharacters, validateDomainCharactersSpecials } from 'common/helpers';
 import { getDomainsByTypename } from 'store/person/actions';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -16,6 +16,7 @@ import { useForm } from 'react-hook-form';
 import Avatar from '@material-ui/core/Avatar';
 import { uploadFile } from 'store/main/actions';
 import ListAltIcon from '@material-ui/icons/ListAlt';
+import clsx from 'clsx';
 import {
     getCollection, resetAllMain, getMultiCollection,
     getCollectionAux, resetMainAux, getMultiCollectionAux
@@ -85,7 +86,32 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 500,
         fontSize: '14px',
         textTransform: 'initial'
-    }
+    },
+    paswordCondition: {
+        textAlign: 'center'
+    },
+    badge: {
+        paddingRight: "0.6em",
+        paddingLeft: "0.6em",
+        borderRadius: "10rem",        
+        display: "inline-block",
+        padding: "0.25em 0.4em",
+        fontSize: "75%",
+        fontWeight: "bold",
+        lineHeight: "1",
+        textAlign: "center",
+        whiteSpace: "nowrap",
+        verticalAlign: "baseline",
+        marginLeft: "10px"
+    },
+    badgeSuccess: {
+        color: "#fff",
+        backgroundColor: "#28a745",
+    },
+    badgeFailure: {
+        color: "#fff",
+        backgroundColor: "#fb5f5f",
+    },
 }));
 const ListItemSkeleton: FC = () => (
     <ListItem style={{ display: 'flex', paddingLeft: 0, paddingRight: 0, paddingBottom: 8 }}>
@@ -406,8 +432,29 @@ interface ModalPasswordProps {
 
 const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, data, parentSetValue }) => {
     const { t } = useTranslation();
+    const classes = useStyles();
+    const dispatch = useDispatch();
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const mainMultiResult = useSelector(state => state.main.multiData);
+    const securityRules = mainMultiResult.data.filter(x=>x.key==="UFN_SECURITYRULES_SEL")?.[0]
+    const [passwordConditions, setpasswordConditions] = useState({
+        samepassword: !!data?.password,
+        mincharacters: (data?.password||"").length >= (securityRules?.data?.[0]?.mincharacterspwd||0),
+        maxcharacters: (data?.password||"").length <= (securityRules?.data?.[0]?.maxcharacterspwd||0),
+        consecutivecharacters: validateNumbersEqualsConsecutive(data?.password||"",securityRules?.data?.[0]?.numequalconsecutivecharacterspwd||securityRules?.data?.[0]?.maxcharacterspwd||0),
+        lowercaseletters: validateDomainCharacters(data?.password||"", 'a-z', securityRules?.data?.[0]?.lowercaseletterspwd||"04"),
+        uppercaseletters: validateDomainCharacters(data?.password||"", 'A-Z', securityRules?.data?.[0]?.uppercaseletterspwd||"04"),
+        numbers: validateDomainCharacters(data?.password||"", '1-9', securityRules?.data?.[0]?.numericalcharacterspwd||"04"),
+        specialcharacters: validateDomainCharactersSpecials(data?.password||"", securityRules?.data?.[0]?.specialcharacterspwd||"04"),
+    });
+    const dataFieldSelect = [
+        {name: "Empieza", value: "01"},
+        {name: "Incluye", value: "02"},
+        {name: "Más de 1", value: "03"},
+        {name: "No Considera", value: "04"},
+        {name: "Termina", value: "05"},
+    ]
 
     const { register, handleSubmit, setValue, getValues, formState: { errors }, trigger, clearErrors } = useForm({
         defaultValues: {
@@ -426,16 +473,9 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
         setValue('change_password_on_login', data?.pwdchangefirstlogin);
     }, [data]);
 
-    const validateSamePassword = (value: string): any => getValues('password') === value;
-
     useEffect(() => {
         register('password', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-        register('confirmpassword', {
-            validate: {
-                validate: (value: any) => (value && value.length) || t(langKeys.field_required),
-                same: (value: any) => validateSamePassword(value) || t(langKeys.password_different)
-            }
-        });
+        register('confirmpassword', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
     }, [])
 
     const setRandomPassword = (value: boolean) => {
@@ -454,13 +494,27 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
         setValue('send_password_by_email', data?.send_password_by_email);
         setValue('change_password_on_login', data?.pwdchangefirstlogin);
         clearErrors();
+        setpasswordConditions({...passwordConditions,
+            samepassword: !!data?.password,
+            mincharacters: (data?.password||"").length >= (securityRules?.data?.[0]?.mincharacterspwd||0),
+            maxcharacters: (data?.password||"").length <= (securityRules?.data?.[0]?.maxcharacterspwd||0),
+            consecutivecharacters: validateNumbersEqualsConsecutive(data?.password||"",securityRules?.data?.[0]?.numequalconsecutivecharacterspwd||securityRules?.data?.[0]?.maxcharacterspwd||0),
+            lowercaseletters: validateDomainCharacters(data?.password||"", 'a-z', securityRules?.data?.[0]?.lowercaseletterspwd||"04"),
+            uppercaseletters: validateDomainCharacters(data?.password||"", 'A-Z', securityRules?.data?.[0]?.uppercaseletterspwd||"04"),
+            numbers: validateDomainCharacters(data?.password||"", '1-9', securityRules?.data?.[0]?.numericalcharacterspwd||"04"),
+            specialcharacters: validateDomainCharactersSpecials(data?.password||"", securityRules?.data?.[0]?.specialcharacterspwd||"04"),
+        })        
     }
 
-    const onSubmitPassword = handleSubmit((data) => {
-        parentSetValue('password', data.password);
-        parentSetValue('send_password_by_email', data.send_password_by_email);
-        parentSetValue('pwdchangefirstlogin', data.change_password_on_login);
-        setOpenModal(false);
+    const onSubmitPassword = handleSubmit((data) => {    
+        if(!!Object.values(passwordConditions).reduce((acc,x)=>acc*(+ x),1)){
+            parentSetValue('password', data.password);
+            parentSetValue('send_password_by_email', data.send_password_by_email);
+            parentSetValue('pwdchangefirstlogin', data.change_password_on_login);
+            setOpenModal(false);
+        }else{
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.invalid_password) }));
+        }
     });
 
     return (
@@ -498,7 +552,19 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
                     className="col-6"
                     valueDefault={getValues('password')}
                     type={showPassword ? 'text' : 'password'}
-                    onChange={(value) => setValue('password', value)}
+                    onChange={(value) => {
+                        setpasswordConditions({...passwordConditions,
+                            samepassword:getValues("confirmpassword")===value,
+                            mincharacters: value.length >= (securityRules?.data?.[0]?.mincharacterspwd||0),
+                            maxcharacters: value.length <= (securityRules?.data?.[0]?.maxcharacterspwd||0),
+                            consecutivecharacters: validateNumbersEqualsConsecutive(value,securityRules?.data?.[0]?.numequalconsecutivecharacterspwd||securityRules?.data?.[0]?.maxcharacterspwd||0),
+                            lowercaseletters: validateDomainCharacters(value, 'a-z', securityRules?.data?.[0]?.lowercaseletterspwd||"04"),
+                            uppercaseletters: validateDomainCharacters(value, 'A-Z', securityRules?.data?.[0]?.uppercaseletterspwd||"04"),
+                            numbers: validateDomainCharacters(value, '1-9', securityRules?.data?.[0]?.numericalcharacterspwd||"04"),
+                            specialcharacters: validateDomainCharactersSpecials(value, securityRules?.data?.[0]?.specialcharacterspwd||"04"),
+                        })
+                        setValue('password', value)
+                    }}
                     error={errors?.password?.message}
                     InputProps={{
                         endAdornment: (
@@ -519,7 +585,10 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
                     className="col-6"
                     valueDefault={getValues('confirmpassword')}
                     type={showConfirmPassword ? 'text' : 'password'}
-                    onChange={(value) => setValue('confirmpassword', value)}
+                    onChange={(value) => {
+                        setpasswordConditions({...passwordConditions,samepassword:getValues("password")===value})
+                        setValue('confirmpassword', value)
+                    }}
                     error={errors?.confirmpassword?.message}
                     InputProps={{
                         endAdornment: (
@@ -535,6 +604,41 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
                         ),
                     }}
                 />
+            </div>
+            <div>
+                <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond1)}</span><span className={clsx(classes.badge, {
+                    [classes.badgeSuccess]: passwordConditions.samepassword,
+                    [classes.badgeFailure]: !passwordConditions.samepassword,
+                })}>{passwordConditions.samepassword?t(langKeys.yes):t(langKeys.no)}</span></div>
+                {!!securityRules?.data?.[0]?.mincharacterspwd && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond2)}</span><span className={clsx(classes.badge, {
+                    [classes.badgeSuccess]: passwordConditions.mincharacters,
+                    [classes.badgeFailure]: !passwordConditions.mincharacters,
+                })}>{securityRules?.data?.[0]?.mincharacterspwd}</span></div>}
+                {!!securityRules?.data?.[0]?.maxcharacterspwd && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond3)}</span><span className={clsx(classes.badge, {
+                    [classes.badgeSuccess]: passwordConditions.maxcharacters,
+                    [classes.badgeFailure]: !passwordConditions.maxcharacters,
+                })}>{securityRules?.data?.[0]?.maxcharacterspwd}</span></div>}
+                {!!securityRules?.data?.[0]?.allowsconsecutivenumbers && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond4)}</span><span className={clsx(classes.badge, {
+                    [classes.badgeSuccess]: passwordConditions.consecutivecharacters,
+                    [classes.badgeFailure]: !passwordConditions.consecutivecharacters,
+                })}>{securityRules?.data?.[0]?.numequalconsecutivecharacterspwd}</span></div>}
+                {(securityRules?.data?.[0]?.lowercaseletterspwd!=="04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond7)}</span><span className={clsx(classes.badge, {
+                    [classes.badgeSuccess]: passwordConditions.lowercaseletters,
+                    [classes.badgeFailure]: !passwordConditions.lowercaseletters,
+                })}>{dataFieldSelect.filter((x:any)=>x.value===(securityRules?.data?.[0]?.lowercaseletterspwd||"04"))[0].name}</span></div>}
+                {(securityRules?.data?.[0]?.uppercaseletterspwd!=="04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond8)}</span><span className={clsx(classes.badge, {
+                    [classes.badgeSuccess]: passwordConditions.uppercaseletters,
+                    [classes.badgeFailure]: !passwordConditions.uppercaseletters,
+                })}>{dataFieldSelect.filter((x:any)=>x.value===(securityRules?.data?.[0]?.uppercaseletterspwd||"04"))[0].name}</span></div>}
+                {(securityRules?.data?.[0]?.numericalcharacterspwd!=="04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond9)}</span><span className={clsx(classes.badge, {
+                    [classes.badgeSuccess]: passwordConditions.numbers,
+                    [classes.badgeFailure]: !passwordConditions.numbers,
+                })}>{dataFieldSelect.filter((x:any)=>x.value===(securityRules?.data?.[0]?.numericalcharacterspwd||"04"))[0].name}</span></div>}
+                <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond5)}</span><span className={clsx(classes.badge, {
+                    [classes.badgeSuccess]: passwordConditions.specialcharacters,
+                    [classes.badgeFailure]: !passwordConditions.specialcharacters,
+                })}>{dataFieldSelect.filter((x:any)=>x.value===(securityRules?.data?.[0]?.specialcharacterspwd||"04"))[0].name}</span></div>
+                <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond6)}</span></div>
             </div>
         </DialogZyx>
     )
@@ -1154,7 +1258,8 @@ const Users: FC = () => {
             getValuesFromDomain("ESTADOORGUSER"), //formulario orguser
             getOrgsByCorp(0), //formulario orguser
             getRolesByOrg(), //formulario orguser
-            getChannelsByOrg(user?.orgid)
+            getChannelsByOrg(user?.orgid),
+            getSecurityRules(),
         ]));
         return () => {
             dispatch(resetAllMain());
@@ -1256,7 +1361,6 @@ const Users: FC = () => {
                     && (f.role === undefined || Object.keys(domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.roleid]: `${d.roleid}` }), {})).includes('' + f.role))
             });
 
-            debugger
             const messageerrors = datainit.filter((f: any) => {
                 return !(f.company === undefined || Object.keys(domains.value?.company?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.company))
                     || !(f.doctype === undefined || Object.keys(domains.value?.docTypes?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.doctype))

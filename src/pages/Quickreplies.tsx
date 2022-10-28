@@ -3,11 +3,11 @@ import React, { FC, Fragment, useEffect, useState } from 'react'; // we need thi
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, DialogZyx, FieldEditMulti, TemplateSwitch, DialogZyxDiv } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, DialogZyx, TemplateSwitch, DialogZyxDiv, FieldEditWithSelect } from 'components';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { getQuickrepliesSel, getValuesFromDomain, insQuickreplies, getValuesForTree, uploadExcel, getParentSel, exportExcel, templateMaker,deleteClassificationTree } from 'common/helpers';
+import { getQuickrepliesSel, getValuesFromDomain, insQuickreplies, getValuesForTree, uploadExcel, getParentSel, exportExcel, templateMaker,deleteClassificationTree, getChatflowVariableSel, filterPipe } from 'common/helpers';
 import { EmojiPickerZyx } from 'components'
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import { Dictionary } from "@types";
@@ -280,16 +280,38 @@ const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary, setValueTmp: (p1
         </>
     )
 };
+class VariableHandler {
+    show: boolean;
+    item: any;
+    inputkey: string;
+    inputvalue: string;
+    range: number[];
+    top: number;
+    left: number;
+    changer: (param:any) => void;
+    constructor() {
+        this.show = false;
+        this.item = null;
+        this.inputkey = '';
+        this.inputvalue = '';
+        this.range = [-1, -1];
+        this.changer = (param) => null;
+        this.top = 0;
+        this.left = 0;
+    }
+}
 
 const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, fetchMultiData,arrayBread }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [selectedlabel, setselectedlabel] = useState(row ? row.classificationdesc : "")
     const [quickreply, setQuickreply] = useState(row ? row.quickreply : "")
+    const [datatoshow, setdatatoShow] = useState<any>(multiData[2] && multiData[2].success ? multiData[2].data : [])
     const executeRes = useSelector(state => state.main.execute);
     const multiDataAuxRes = useSelector(state => state.main.multiDataAux)
     const [anchorEl, setAnchorEl] = useState(null);
     const [onclickdelete, setonclickdelete] = useState<any>(null);
+    const [variableHandler, setVariableHandler] = useState<VariableHandler>(new VariableHandler());
     const open = Boolean(anchorEl);
     const handleCloseMenu = () => {
         setAnchorEl(null);
@@ -304,6 +326,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataClassTotal = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataVariables = multiData[2] && multiData[2].success ? multiData[2].data : [];
 
     
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
@@ -400,6 +423,58 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
         }
     }, [multiData])
 
+    const selectionVariableSelect = (e: React.ChangeEvent<any>, value: string) => {
+        const { inputvalue, range, changer } = variableHandler;
+        if (range[1] !== -1 && (range[1] > range[0] || range[0] !== -1)) {
+            changer(inputvalue.substring(0, range[0] + 2) + value + (inputvalue[range[1] - 2] !== '}' ? '}}' : '') + inputvalue.substring(range[1] - 2));
+            setVariableHandler(new VariableHandler());
+        }
+    }
+
+    const toggleVariableSelect = (e: React.ChangeEvent<any>, item: any, inputkey: string, changefunc: (param:any) => void, filter = true) => {
+        let elem = e.target;
+        if (elem) {
+            let selectionStart = elem.selectionStart || 0;
+            let lines = (elem.value || '').substr(0, selectionStart).split('\n');
+            let row = lines.length - 1;
+            let column = lines[row].length * 3;
+            let startIndex = (elem.value || '').slice(0, selectionStart || 0)?.lastIndexOf('{{');
+            let partialText = '';
+            if (startIndex !== -1) {
+                if (elem.value.slice(startIndex, selectionStart).indexOf(' ') === -1
+                    && elem.value.slice(startIndex, selectionStart).indexOf('}}') === -1
+                    && elem.value[selectionStart - 1] !== '}') {
+                    partialText = elem.value.slice(startIndex + 2, selectionStart);
+                    let rightText = (elem.value || '').slice(selectionStart, elem.value.length);
+                    let selectionEnd = rightText.indexOf('}}') !== -1 ? rightText.indexOf('}}') : 0;
+                    let endIndex = startIndex + partialText.length + selectionEnd + 4;
+                    setVariableHandler({
+                        show: true,
+                        item: item,
+                        inputkey: inputkey,
+                        inputvalue: elem.value,
+                        range: [startIndex, endIndex],
+                        changer: changefunc,
+                        top: 24 + row * 21,
+                        left: column
+                    })
+                    if (filter) {
+                        setdatatoShow(filterPipe(dataVariables, 'variablename', partialText, '%'));
+                    }
+                    else {
+                        setdatatoShow(dataVariables);
+                    }
+                }
+                else {
+                    setVariableHandler(new VariableHandler());
+                }
+            }
+            else {
+                setVariableHandler(new VariableHandler());
+            }
+        }
+    }
+
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
@@ -485,13 +560,25 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                     </div>
                     <div className="row-zyx" style={{ position: 'relative' }}>
                         <>
-                            <FieldEditMulti
+                                
+                            <FieldEditWithSelect
                                 label={t(langKeys.detail)}
                                 className="col-12"
+                                maxLength={1024}
                                 valueDefault={quickreply}
                                 onChange={(value) => setQuickreply(value)}
+                                inputProps={{
+                                    onClick: (e: any) => toggleVariableSelect(e, quickreply, 'variablename', setQuickreply),
+                                    onInput: (e: any) => toggleVariableSelect(e, quickreply, 'variablename', setQuickreply),
+                                }}
+                                show={variableHandler.show}
+                                data={datatoshow}
+                                datakey="variablename"
+                                top={variableHandler.top}
+                                left={variableHandler.left}
+                                onClickSelection={(e, value) => selectionVariableSelect(e, value)}
+                                onClickAway={(variableHandler) => setVariableHandler({ ...variableHandler, show: false })}
                                 error={errors?.quickreply?.message}
-                                maxLength={1024}
                             />
                             <EmojiPickerZyx
                                 emojisIndexed={EMOJISINDEXED} 
@@ -684,7 +771,8 @@ const Quickreplies: FC = () => {
 
     const fetchMultiData = () => dispatch(getMultiCollection([
         getValuesFromDomain("ESTADOGENERICO"),
-        getValuesForTree()
+        getValuesForTree(),
+        getChatflowVariableSel(),
     ]));
 
     useEffect(() => {
@@ -746,14 +834,12 @@ const Quickreplies: FC = () => {
         setinsertexcel(true)
         const file = files[0];
         if (file) {
-            debugger
             let classificationids = Object.keys(mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.description}), {}))
             let data: any = (await uploadExcel(file, undefined) as any[])
                 .filter((d: any) => !['', null, undefined].includes(d.summarize)
                     && !['', null, undefined].includes(d.detail)
                     && classificationids.includes(d.classificationid.toString().trim().split('-')[0].split(' ')[0])
                 );
-            debugger
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
                 dispatch(execute({

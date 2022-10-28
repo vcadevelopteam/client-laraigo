@@ -35,7 +35,6 @@ export interface IPerson {
     birthday: string | null;
     civilstatus?: string; // edit
     civilstatusdesc?: string; // edit
-    address?: string;
     addressreference?: string;
     occupation?: string; // edit
     occupationdesc?: string; // edit
@@ -62,6 +61,9 @@ export interface IPerson {
     // personcommunicationchannel: string;
     havelead: boolean;
     haveclassification: boolean;
+    address?: string;
+    healthprofessional?: string;
+    referralchannel?: string;
 }
 
 export interface IPersonCommunicationChannel {

@@ -101,6 +101,10 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
         setValue('channels.instagram.accesstoken', value?.access_token || "");
     }
 
+    const openviewsteps = () => {
+        window.open("https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/a61f2d61-a974-42e4-b393-481ef8311bb0/Instagram_warning.png", '_blank');
+    }
+
     return (
         <div className={commonClasses.root}>
             {!hasFinished && <InstagramColor className={commonClasses.leadingIcon} />}
@@ -116,6 +120,9 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
             </IconButton>}
             {!hasFinished && <Typography>
                 <Trans i18nKey={langKeys.subscription_instagramconnect} />
+            </Typography>}
+            {!hasFinished && <Typography style={{ color: "#cc3333" }}>
+                <Trans i18nKey={langKeys.instagram_warning}></Trans> <a style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={openviewsteps} rel="noopener noreferrer">[{t(langKeys.view_steps)}]</a>
             </Typography>}
             {hasFinished && <InstagramColor
                 style={{ width: 100, height: 100, alignSelf: 'center' }} />
@@ -175,7 +182,7 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
                             appId: apiUrls.INSTAGRAMAPP,
                             cookie: true,
                             xfbml: true,
-                            version: 'v8.0'
+                            version: 'v15.0'
                         });
                     }}
                     isDisabled={mainResult.loading}

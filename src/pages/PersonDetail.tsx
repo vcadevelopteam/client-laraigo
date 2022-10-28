@@ -518,7 +518,6 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         value={getValues("birthday")}
                                         onChange={e => {
                                             setValue('birthday', e.target.value)
-                                            trigger("birthday")
                                         }}
                                     />
                                 )}
@@ -622,6 +621,60 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         data={domains.value?.groups || []}
                                         optionValue="domainvalue"
                                         optionDesc="domaindesc"
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.address} />}
+                                subtitle={(
+                                    <TextField
+                                        fullWidth
+                                        placeholder={t(langKeys.address)}
+                                        defaultValue={getValues("address")}
+                                        value={getValues("address")}
+                                        onChange={e => {
+                                            setValue('address', e.target.value)
+                                            trigger("address")
+                                        }}
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.healthprofessional} />}
+                                subtitle={(
+                                    <TextField
+                                        fullWidth
+                                        placeholder={t(langKeys.healthprofessional)}
+                                        defaultValue={getValues("healthprofessional")}
+                                        value={getValues("healthprofessional")}
+                                        onChange={e => {
+                                            setValue('healthprofessional', e.target.value)
+                                            trigger("healthprofessional")
+                                        }}
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.referralchannel} />}
+                                subtitle={(
+                                    <TextField
+                                        fullWidth
+                                        placeholder={t(langKeys.referralchannel)}
+                                        defaultValue={getValues("referralchannel")}
+                                        value={getValues("referralchannel")}
+                                        onChange={e => {
+                                            setValue('referralchannel', e.target.value)
+                                            trigger("referralchannel")
+                                        }}
                                     />
                                 )}
                                 m={1}
@@ -1593,6 +1646,9 @@ const PersonDetail: FC = () => {
             civilstatus: person?.civilstatus || '',
             occupation: person?.occupation || '',
             educationlevel: person?.educationlevel || '',
+            address: person?.address || '',
+            healthprofessional: person?.healthprofessional || '',
+            referralchannel: person?.referralchannel || '',
             referringpersonid: person?.referringpersonid || 0,
         } || {},
     });
@@ -1624,6 +1680,9 @@ const PersonDetail: FC = () => {
                 person.civilstatus = '';
                 person.occupation = '';
                 person.educationlevel = '';
+                person.address = '';
+                person.healthprofessional = '';
+                person.referralchannel = '';
                 person.referringpersonid = 0;
 
                 register('firstname', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
@@ -2031,7 +2090,6 @@ const PersonDetail: FC = () => {
                 setOpenModal={setShowLinkPerson}
                 person={person}
                 callback={(newPerson) => {
-                    console.log("newPerson", newPerson)
                     setValue("firstname", newPerson.firstname)
                     trigger("firstname")
                     setValue("lastname", newPerson.lastname)

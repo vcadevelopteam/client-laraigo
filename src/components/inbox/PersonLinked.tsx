@@ -236,6 +236,22 @@ const DialogLinkPerson: React.FC<{
                         <div className={classes.label}>{t(langKeys.educationLevel)}</div>
                         <div className={classes.value}>{personParent?.educationleveldesc}</div>
                     </div>
+                    
+                    
+                    
+                    <div>
+                        <div className={classes.label}>{t(langKeys.address)}</div>
+                        <div className={classes.value}>{personParent?.address}</div>
+                    </div>
+                    <div>
+                        <div className={classes.label}>{t(langKeys.healthprofessional)}</div>
+                        <div className={classes.value}>{personParent?.healthprofessional}</div>
+                    </div>
+                    <div>
+                        <div className={classes.label}>{t(langKeys.referralchannel)}</div>
+                        <div className={classes.value}>{personParent?.referralchannel}</div>
+                    </div>
+                    
                     <div>
                         <div className={classes.label}>{t(langKeys.observation)}</div>
                         <div className={classes.value}>{personParent?.observation}</div>
@@ -525,6 +541,67 @@ const DialogLinkPerson: React.FC<{
                                     <div className={classes.value}>{personChild?.educationleveldesc}</div>
                                 </div>
                             </div>
+
+
+
+                            <div style={{ display: "flex", gap: 8 }}>
+                                {personChild?.address && (
+                                    <div>
+                                        <IconButton size="small" onClick={() => {
+                                            setPersonParent({
+                                                ...personParent!!,
+                                                address: personChild.address
+                                            })
+                                        }}>
+                                            <ArrowUpwardIcon color="action" />
+                                        </IconButton>
+                                    </div>
+                                )}
+                                <div>
+                                    <div className={classes.label}>{t(langKeys.address)}</div>
+                                    <div className={classes.value}>{personChild?.address}</div>
+                                </div>
+                            </div>
+                            <div style={{ display: "flex", gap: 8 }}>
+                                {personChild?.healthprofessional && (
+                                    <div>
+                                        <IconButton size="small" onClick={() => {
+                                            setPersonParent({
+                                                ...personParent!!,
+                                                healthprofessional: personChild.healthprofessional
+                                            })
+                                        }}>
+                                            <ArrowUpwardIcon color="action" />
+                                        </IconButton>
+                                    </div>
+                                )}
+                                <div>
+                                    <div className={classes.label}>{t(langKeys.healthprofessional)}</div>
+                                    <div className={classes.value}>{personChild?.healthprofessional}</div>
+                                </div>
+                            </div>
+                            <div style={{ display: "flex", gap: 8 }}>
+                                {personChild?.referralchannel && (
+                                    <div>
+                                        <IconButton size="small" onClick={() => {
+                                            setPersonParent({
+                                                ...personParent!!,
+                                                referralchannel: personChild.referralchannel
+                                            })
+                                        }}>
+                                            <ArrowUpwardIcon color="action" />
+                                        </IconButton>
+                                    </div>
+                                )}
+                                <div>
+                                    <div className={classes.label}>{t(langKeys.referralchannel)}</div>
+                                    <div className={classes.value}>{personChild?.referralchannel}</div>
+                                </div>
+                            </div>
+
+
+
+
                             <div style={{ display: "flex", gap: 8 }}>
                                 {personChild?.observation && (
                                     <div>

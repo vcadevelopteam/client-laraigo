@@ -8,7 +8,7 @@ import { getCollectionAux2, getMultiCollection, resetMultiMain } from "store/mai
 import { langKeys } from "lang/keys";
 import TableZyx from "components/fields/table-simple";
 import { Button, TextField, } from "@material-ui/core";
-import { getReportKpiOperativoSel, formatNumber, formatNumberNoDecimals, timetoseconds, secondsToDayTime, getUserGroupsSel } from 'common/helpers';
+import { getReportKpiOperativoSel, timetoseconds, secondsToDayTime, getUserGroupsSel } from 'common/helpers';
 import { Search as SearchIcon } from '@material-ui/icons';
 import { FieldSelect } from "components/fields/templates";
 
@@ -137,7 +137,7 @@ const ReportKpiOperativo: FC = () => {
                             props.rows.reduce((sum: any, row: any) => timetoseconds(row.values["tme_avg"]) + sum, 0),
                         [props.rows]
                     )
-                    return <>{props.rows.length != 0 ? secondsToDayTime(total / props.rows.filter((r: any) => r.values["tme_avg"]).length) : ''}</>
+                    return <>{props.rows.length !== 0 ? secondsToDayTime(total / props.rows.filter((r: any) => r.values["tme_avg"]).length) : ''}</>
                 },
             },
             {
@@ -152,7 +152,7 @@ const ReportKpiOperativo: FC = () => {
                             props.rows.reduce((sum: any, row: any) => +row.values["tickets"] + sum, 0),
                         [props.rows]
                     )
-                    return <>{props.rows.length != 0 ? (total).toFixed(0) : ''}</>
+                    return <>{props.rows.length !== 0 ? (total).toFixed(0) : ''}</>
                 },
             },
             {
@@ -167,7 +167,7 @@ const ReportKpiOperativo: FC = () => {
                             props.rows.reduce((sum: any, row: any) => +row.values["eqtmoasesor"] + sum, 0),
                         [props.rows]
                     )
-                    return <>{props.rows.length != 0 ? (total).toFixed(2) : ''}</>
+                    return <>{props.rows.length !== 0 ? (total).toFixed(2) : ''}</>
                 },
             },
             {
@@ -182,7 +182,7 @@ const ReportKpiOperativo: FC = () => {
                             props.rows.reduce((sum: any, row: any) => +row.values["userpause_avg"] + sum, 0),
                         [props.rows]
                     )
-                    return <>{props.rows.length != 0 ? (total).toFixed(2) : ''}</>
+                    return <>{props.rows.filter((r: any) => r.values["userpause_avg"]).length !== 0 ? (total / props.rows.filter((r: any) => r.values["userpause_avg"]).length).toFixed(2) : ''}</>
                 },
             },
             {
@@ -197,7 +197,7 @@ const ReportKpiOperativo: FC = () => {
                             props.rows.reduce((sum: any, row: any) => +row.values["tmoasesor_tickets"] + sum, 0),
                         [props.rows]
                     )
-                    return <>{props.rows.length != 0 ? (total / props.rows.filter((r: any) => r.values["tmoasesor_tickets"]).length).toFixed(2) : ''}</>
+                    return <>{props.rows.length !== 0 ? (total / props.rows.filter((r: any) => r.values["tmoasesor_tickets"]).length).toFixed(2) : ''}</>
                 },
             },
             {
@@ -212,7 +212,7 @@ const ReportKpiOperativo: FC = () => {
                             props.rows.reduce((sum: any, row: any) => +row.values["tickets_eqtmoasesor"] + sum, 0),
                         [props.rows]
                     )
-                    return <>{props.rows.length != 0 ? (total / props.rows.filter((r: any) => r.values["tickets_eqtmoasesor"]).length).toFixed(2) : ''}</>
+                    return <>{props.rows.length !== 0 ? (total / props.rows.filter((r: any) => r.values["tickets_eqtmoasesor"]).length).toFixed(2) : ''}</>
                 },
             },
             {
@@ -227,7 +227,7 @@ const ReportKpiOperativo: FC = () => {
                             props.rows.reduce((sum: any, row: any) => +row.values["tmoasesor_avg"] + sum, 0),
                         [props.rows]
                     )
-                    return <>{props.rows.length != 0 ? (total / props.rows.filter((r: any) => r.values["tmoasesor_avg"]).length).toFixed(2) : ''}</>
+                    return <>{props.rows.length !== 0 ? (total / props.rows.filter((r: any) => r.values["tmoasesor_avg"]).length).toFixed(2) : ''}</>
                 },
             },
         ],

@@ -80,6 +80,31 @@ export const useStyles = makeStyles((theme) => ({
             justifyContent: 'center',
         }
     },
+    paswordCondition: {
+        textAlign: 'center'
+    },
+    badge: {
+        paddingRight: "0.6em",
+        paddingLeft: "0.6em",
+        borderRadius: "10rem",        
+        display: "inline-block",
+        padding: "0.25em 0.4em",
+        fontSize: "75%",
+        fontWeight: "bold",
+        lineHeight: "1",
+        textAlign: "center",
+        whiteSpace: "nowrap",
+        verticalAlign: "baseline",
+        marginLeft: "10px"
+    },
+    badgeSuccess: {
+        color: "#fff",
+        backgroundColor: "#28a745",
+    },
+    badgeFailure: {
+        color: "#fff",
+        backgroundColor: "#fb5f5f",
+    },
 
 }));
 

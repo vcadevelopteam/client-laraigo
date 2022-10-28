@@ -17,8 +17,8 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { updateUserSettings } from 'store/setting/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import clsx from 'clsx';
-import { execute } from 'store/main/actions';
-import { cancelSuscription as cancelSuscriptionFunction, changePlan as changePlanFunction } from 'common/helpers';
+import { execute, getCollection, resetAllMain } from 'store/main/actions';
+import { cancelSuscription as cancelSuscriptionFunction, changePlan as changePlanFunction, getSecurityRules, validateDomainCharacters, validateDomainCharactersSpecials, validateNumbersEqualsConsecutive } from 'common/helpers';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -63,7 +63,33 @@ const useStyles = makeStyles((theme) => ({
     },
     planSelected: {
         backgroundColor: '#e1e1e1'
-    }
+    },
+    paswordCondition: {
+        textAlign: 'center'
+    },
+    badge: {
+        paddingRight: "0.6em",
+        paddingLeft: "0.6em",
+        borderRadius: "10rem",        
+        display: "inline-block",
+        padding: "0.25em 0.4em",
+        fontSize: "75%",
+        fontWeight: "bold",
+        lineHeight: "1",
+        textAlign: "center",
+        whiteSpace: "nowrap",
+        verticalAlign: "baseline",
+        marginLeft: "10px"
+    },
+    badgeSuccess: {
+        color: "#fff",
+        backgroundColor: "#28a745",
+    },
+    badgeFailure: {
+        color: "#fff",
+        backgroundColor: "#fb5f5f",
+    },
+    
 }));
 
 interface DetailProps {
@@ -192,7 +218,26 @@ const ChangePassword: React.FC<DetailProps> = ({ setViewSelected }) => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const user = useSelector(state => state.login.validateToken.user);
     const [waitsave, setwaitsave] = useState(false);
+    const [passwordConditions, setpasswordConditions] = useState({
+        samepassword:false,
+        mincharacters: false,
+        maxcharacters: false,
+        consecutivecharacters: false,
+        lowercaseletters: false,
+        uppercaseletters: false,
+        numbers: false,
+        specialcharacters: false,
+    });
+    const dataFieldSelect = [
+        {name: "Empieza", value: "01"},
+        {name: "Incluye", value: "02"},
+        {name: "Más de 1", value: "03"},
+        {name: "No Considera", value: "04"},
+        {name: "Termina", value: "05"},
+    ]
     const resSetting = useSelector(state => state.setting.setting);
+    const securityRules = useSelector(state => state.main.mainData);
+
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -207,27 +252,10 @@ const ChangePassword: React.FC<DetailProps> = ({ setViewSelected }) => {
     });
     useEffect(() => {
         register('oldpassword', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-        register('password', { validate: (value: any) => validatePassword(value) });
-        register('confirmpassword', {
-            validate: {
-                validate: (value: any) => (value && value.length) || t(langKeys.field_required),
-                same: (value: any) => validateSamePassword(value) || t(langKeys.password_different)
-            }
-        });
+        register('password', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('confirmpassword', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
     }, [])
 
-    const validateSamePassword = (value: string): any => getValues('password') === value;
-
-    const validatePassword = (value: any) => {
-        if (!(value && value.length)) {
-            return t(langKeys.field_required)
-        } else if (value.length < 10 || !(/[a-zA-Z]+[0-9]+.*|[0-9]+[a-zA-Z]+.*/.test(value))) {
-            return t(langKeys.password_not_allowed)
-        }
-        else {
-            return true
-        }
-    }
     useEffect(() => {
         if (waitsave) {
             if (!resSetting.loading && !resSetting.error) {
@@ -244,15 +272,19 @@ const ChangePassword: React.FC<DetailProps> = ({ setViewSelected }) => {
     }, [resSetting])
 
     const onSubmit = handleSubmit((data) => {
-        const callback = () => {
-            setwaitsave(true)
-            dispatch(updateUserSettings(data))
+        if(!!Object.values(passwordConditions).reduce((acc,x)=>acc*(+ x),1)){
+            const callback = () => {
+                setwaitsave(true)
+                dispatch(updateUserSettings(data))
+            }
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_changepassword),
+                callback
+            }))
+        }else{
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.invalid_password) }));
         }
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_changepassword),
-            callback
-        }))
     });
     const arrayBread = [
         { id: "view-1", name: t(langKeys.accountsettings) },
@@ -323,14 +355,26 @@ const ChangePassword: React.FC<DetailProps> = ({ setViewSelected }) => {
                         className="col-6"
                         valueDefault={getValues('password')}
                         type={showPassword ? 'text' : 'password'}
-                        onChange={(value) => setValue('password', value)}
+                        onChange={(value) => {
+                            setpasswordConditions({...passwordConditions,
+                                samepassword:getValues("confirmpassword")===value,
+                                mincharacters: value.length >= (securityRules?.data?.[0]?.mincharacterspwd||0),
+                                maxcharacters: value.length <= (securityRules?.data?.[0]?.maxcharacterspwd||0),
+                                consecutivecharacters: validateNumbersEqualsConsecutive(value,securityRules?.data?.[0]?.numequalconsecutivecharacterspwd||securityRules?.data?.[0]?.maxcharacterspwd||0),
+                                lowercaseletters: validateDomainCharacters(value, 'a-z', securityRules?.data?.[0]?.lowercaseletterspwd||"04"),
+                                uppercaseletters: validateDomainCharacters(value, 'A-Z', securityRules?.data?.[0]?.uppercaseletterspwd||"04"),
+                                numbers: validateDomainCharacters(value, '1-9', securityRules?.data?.[0]?.numericalcharacterspwd||"04"),
+                                specialcharacters: validateDomainCharactersSpecials(value, securityRules?.data?.[0]?.specialcharacterspwd||"04"),
+                            })
+                            setValue('password', value)
+                        }}
                         error={errors?.password?.message}
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
                                     <IconButton
                                         aria-label="toggle password visibility"
-                                        onClick={() => setShowPassword(!showPassword)}
+                                        onClick={() => {setShowPassword(!showPassword)}}
                                         edge="end"
                                     >
                                         {showPassword ? <Visibility /> : <VisibilityOff />}
@@ -344,7 +388,10 @@ const ChangePassword: React.FC<DetailProps> = ({ setViewSelected }) => {
                         className="col-6"
                         valueDefault={getValues('confirmpassword')}
                         type={showConfirmPassword ? 'text' : 'password'}
-                        onChange={(value) => setValue('confirmpassword', value)}
+                        onChange={(value) => {
+                            setpasswordConditions({...passwordConditions,samepassword:getValues("password")===value})
+                            setValue('confirmpassword', value)
+                        }}
                         error={errors?.confirmpassword?.message}
                         InputProps={{
                             endAdornment: (
@@ -360,6 +407,41 @@ const ChangePassword: React.FC<DetailProps> = ({ setViewSelected }) => {
                             ),
                         }}
                     />
+                </div>
+                <div>
+                    <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond1)}</span><span className={clsx(classes.badge, {
+                        [classes.badgeSuccess]: passwordConditions.samepassword,
+                        [classes.badgeFailure]: !passwordConditions.samepassword,
+                    })}>{passwordConditions.samepassword?t(langKeys.yes):t(langKeys.no)}</span></div>
+                    {!!securityRules?.data?.[0]?.mincharacterspwd && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond2)}</span><span className={clsx(classes.badge, {
+                        [classes.badgeSuccess]: passwordConditions.mincharacters,
+                        [classes.badgeFailure]: !passwordConditions.mincharacters,
+                    })}>{securityRules?.data?.[0]?.mincharacterspwd}</span></div>}
+                    {!!securityRules?.data?.[0]?.maxcharacterspwd && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond3)}</span><span className={clsx(classes.badge, {
+                        [classes.badgeSuccess]: passwordConditions.maxcharacters,
+                        [classes.badgeFailure]: !passwordConditions.maxcharacters,
+                    })}>{securityRules?.data?.[0]?.maxcharacterspwd}</span></div>}
+                    {!!securityRules?.data?.[0]?.allowsconsecutivenumbers && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond4)}</span><span className={clsx(classes.badge, {
+                        [classes.badgeSuccess]: passwordConditions.consecutivecharacters,
+                        [classes.badgeFailure]: !passwordConditions.consecutivecharacters,
+                    })}>{securityRules?.data?.[0]?.numequalconsecutivecharacterspwd}</span></div>}
+                    {(securityRules?.data?.[0]?.lowercaseletterspwd!=="04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond7)}</span><span className={clsx(classes.badge, {
+                        [classes.badgeSuccess]: passwordConditions.lowercaseletters,
+                        [classes.badgeFailure]: !passwordConditions.lowercaseletters,
+                    })}>{dataFieldSelect.filter((x:any)=>x.value===(securityRules?.data?.[0]?.lowercaseletterspwd||"04"))[0].name}</span></div>}
+                    {(securityRules?.data?.[0]?.uppercaseletterspwd!=="04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond8)}</span><span className={clsx(classes.badge, {
+                        [classes.badgeSuccess]: passwordConditions.uppercaseletters,
+                        [classes.badgeFailure]: !passwordConditions.uppercaseletters,
+                    })}>{dataFieldSelect.filter((x:any)=>x.value===(securityRules?.data?.[0]?.uppercaseletterspwd||"04"))[0].name}</span></div>}
+                    {(securityRules?.data?.[0]?.numericalcharacterspwd!=="04") && <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond9)}</span><span className={clsx(classes.badge, {
+                        [classes.badgeSuccess]: passwordConditions.numbers,
+                        [classes.badgeFailure]: !passwordConditions.numbers,
+                    })}>{dataFieldSelect.filter((x:any)=>x.value===(securityRules?.data?.[0]?.numericalcharacterspwd||"04"))[0].name}</span></div>}
+                    <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond5)}</span><span className={clsx(classes.badge, {
+                        [classes.badgeSuccess]: passwordConditions.specialcharacters,
+                        [classes.badgeFailure]: !passwordConditions.specialcharacters,
+                    })}>{dataFieldSelect.filter((x:any)=>x.value===(securityRules?.data?.[0]?.specialcharacterspwd||"04"))[0].name}</span></div>
+                    <div className={classes.paswordCondition}><span>{t(langKeys.passwordCond6)}</span></div>
                 </div>
             </div>
         </form>
@@ -530,6 +612,15 @@ const UserSettings: FC = () => {
     const [waitSave, setWaitSave] = useState(false);
     const executeResult = useSelector(state => state.main.execute);
     const [view, setView] = useState('view-1');
+
+    const fetchData = () => dispatch(getCollection(getSecurityRules()));
+
+    useEffect(() => {
+        fetchData();
+        return () => {
+            dispatch(resetAllMain());
+        };
+    }, []);
 
     function changePlan() {
         if (["SUPERADMIN","ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '')) {

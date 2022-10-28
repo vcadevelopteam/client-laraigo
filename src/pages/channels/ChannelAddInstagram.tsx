@@ -77,6 +77,10 @@ export const ChannelAddInstagram: FC = () => {
         window.open("/privacy", '_blank');
     }
 
+    const openviewsteps = () => {
+        window.open("https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/a61f2d61-a974-42e4-b393-481ef8311bb0/Instagram_warning.png", '_blank');
+    }
+
     async function finishreg() {
         setsetins(true);
         dispatch(insertChannel(fields));
@@ -145,6 +149,7 @@ export const ChannelAddInstagram: FC = () => {
                 </Breadcrumbs>
                 <div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.connectinsta)}</div>
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", color: "#cc3333", padding: "20px" }}>{t(langKeys.instagram_warning)} <a style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={openviewsteps} rel="noopener noreferrer">[{t(langKeys.view_steps)}]</a></div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px" }}>{t(langKeys.connectinsta2)}</div>
                     <div style={{ textAlign: "center", padding: "20px", color: "#969ea5" }}>{t(langKeys.connectinsta3)}</div>
                     <FacebookLogin
@@ -161,7 +166,7 @@ export const ChannelAddInstagram: FC = () => {
                                 appId: apiUrls.INSTAGRAMAPP,
                                 cookie: true,
                                 xfbml: true,
-                                version: 'v8.0'
+                                version: 'v15.0'
                             });
                         }}
                         disableMobileRedirect={true}

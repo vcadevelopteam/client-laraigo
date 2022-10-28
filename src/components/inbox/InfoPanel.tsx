@@ -211,6 +211,9 @@ const InfoTab: React.FC = () => {
         register('occupation');
         register('civilstatus');
         register('educationlevel');
+        register('address');
+        register('healthprofessional');
+        register('referralchannel');
 
         dispatch(getMultiCollectionAux([
             getValuesFromDomain("TIPODOCUMENTO"),
@@ -371,6 +374,24 @@ const InfoTab: React.FC = () => {
                             prefixTranslation="type_educationlevel_"
                             error={errors?.educationlevel?.message}
                         />
+                        <FieldEdit
+                            label={t(langKeys.address)}
+                            onChange={(value) => setValue('address', value)}
+                            valueDefault={getValues('address')}
+                            error={errors?.address?.message}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.healthprofessional)}
+                            onChange={(value) => setValue('healthprofessional', value)}
+                            valueDefault={getValues('healthprofessional')}
+                            error={errors?.healthprofessional?.message}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.referralchannel)}
+                            onChange={(value) => setValue('referralchannel', value)}
+                            valueDefault={getValues('referralchannel')}
+                            error={errors?.referralchannel?.message}
+                        />
                         <FieldEditMulti
                             label={t(langKeys.observation)}
                             onChange={(value) => setValue('observation', value)}
@@ -458,6 +479,18 @@ const InfoTab: React.FC = () => {
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.address)}</div>
                         <div>{person?.address}</div>
+                    </div>
+                </div>}
+                {person?.healthprofessional && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.healthprofessional)}</div>
+                        <div>{person?.healthprofessional}</div>
+                    </div>
+                </div>}
+                {person?.referralchannel && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.referralchannel)}</div>
+                        <div>{person?.referralchannel}</div>
                     </div>
                 </div>}
                 {person?.addressreference && <div className={classes.containerName}>

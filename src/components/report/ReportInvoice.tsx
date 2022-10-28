@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState, Fragment } from "react";
 import { useTranslation } from "react-i18next";
@@ -315,14 +316,14 @@ const DetailReportInvoice: React.FC<DetailReportInvoiceProps> = ({ data: { row, 
                     if (commentcontent) {
                         return (<span style={{ color: row["color"] }}><Fragment>
                             <div style={{ display: 'inline-block' }}>
-                                {(commentcontent || '').substring(0, 20)}... <a onClick={(e) => { e.stopPropagation(); openInvoiceComment(row); }} style={{ cursor: 'pointer', textDecoration: 'underline', color: 'blue' }} rel="noreferrer">{t(langKeys.seeMore)}</a>
+                                {(commentcontent || '').substring(0, 50)}... <a href="#" onClick={(e) => { e.stopPropagation(); openInvoiceComment(row); }} style={{ cursor: 'pointer', textDecoration: 'underline', color: 'blue' }} rel="noreferrer">{t(langKeys.seeMore)}</a>
                             </div>
                         </Fragment></span>)
                     }
                     else {
                         return (<span style={{ color: row["color"] }}><Fragment>
                             <div style={{ display: 'inline-block' }}>
-                                <a onClick={(e) => { e.stopPropagation(); openInvoiceComment(row); }} style={{ display: "block", cursor: 'pointer', textDecoration: 'underline', color: 'blue' }} rel="noreferrer">{t(langKeys.seeMore)}</a>
+                                <a href="#" onClick={(e) => { e.stopPropagation(); openInvoiceComment(row); }} style={{ display: "block", cursor: 'pointer', textDecoration: 'underline', color: 'blue' }} rel="noreferrer">{t(langKeys.seeMore)}</a>
                             </div>
                         </Fragment></span>)
                     }

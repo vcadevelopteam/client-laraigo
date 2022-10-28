@@ -147,6 +147,7 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
     const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const user = useSelector(state => state.login.validateToken.user);
+    const variablecontext = useSelector(state => state.inbox.person.data?.variablecontext);
 
     const handleClickAway = () => setOpen(false);
 
@@ -168,11 +169,22 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
 
     const handlerClickItem = (item: Dictionary) => {
         setOpen(false);
-        setText(item.quickreply
+        const variablesList = item.quickreply.match(/({{)(.*?)(}})/g) || [];
+        let myquickreply = item.quickreply
             .replace("{{numticket}}", ticketSelected?.ticketnum)
             .replace("{{client_name}}", ticketSelected?.displayname)
             .replace("{{agent_name}}", user?.firstname + " " + user?.lastname)
-        );
+
+        variablesList.forEach((x: any) => {
+            let variableData = variablecontext?.[x.substring(2, x.length - 2)]
+            if (!!variableData) {
+                myquickreply = myquickreply.replaceAll(x, variableData.Value)
+            } else {
+                myquickreply = myquickreply.replaceAll(x, "")
+            }
+        })
+
+        setText(myquickreply)
     }
 
     return (

@@ -177,7 +177,7 @@ const CatalogProduct: React.FC<{ onlyTime?: string, interactiontext: string, cre
 
     const jsonIntt = JSON.parse(interactiontext);
 
-    if (jsonIntt.Type === "product_list") {
+    if (jsonIntt.Type === "product_list" || jsonIntt.Type === "dynamic") {
         const firstimage = jsonIntt.SectionList?.[0]?.ProductList?.[0]?.ImageReference || "";
         const totalitems = jsonIntt.SectionList.reduce((a: number, i: Dictionary) => a + i.ProductList.length, 0)
 
@@ -330,7 +330,12 @@ const Carousel: React.FC<{ carousel: Dictionary[] }> = ({ carousel }) => {
     return (
         <div className={classes.containerCarousel}>
             <div style={{ height: 157 }}>
-                <img src={carousel[pageSelected].mediaUrl} className={classes.imageCardCarousel} alt="logocarousel" />
+                <img
+                    src={carousel[pageSelected].mediaUrl}
+                    className={classes.imageCardCarousel}
+                    alt="logocarousel"
+                    crossOrigin={carousel[pageSelected].mediaUrl.includes('cloud-object-storage') ? 'anonymous' : undefined}
+                />
             </div>
             <div style={{ padding: '12px', wordBreak: 'break-word' }}>
                 <div>
@@ -429,7 +434,6 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
         setHeight(((ref as any)?.current.contentWindow.document.body.scrollHeight + 20) + "px");
     };
 
-
     if (!interactiontext.trim() || interactiontype === "typing")
         return null;
     if (interactiontype === "text")
@@ -460,6 +464,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                     id={`frame-${interactionid}`}
                     width="100%"
                     height={height}
+                    title="frame1"
                     onLoad={onLoad}
                     style={{ border: 'none' }}
                 >
@@ -481,6 +486,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                         srcDoc={body}
                         id={`frame-${interactionid}`}
                         width="100%"
+                        title="frame2"
                         height={height}
                         onLoad={onLoad}
                         style={{ border: 'none' }}
@@ -552,14 +558,14 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 text = interactiontext.split("&&&")[0];
                 json = interactiontext.split("&&&")[1]
             }
-
+            //debugger
             const listButtons: Dictionary[] = JSON.parse(`[${json}]`);
             return (
                 <div className={clsx(classes.interactionText, {
                     [classes.interactionTextAgent]: userType !== 'client',
                 })} style={{ display: 'inline-block' }}>
                     {text}
-                    <div className={classes.containerQuickreply}>
+                    <div className={classes.containerQuickreply} style={{ justifyContent: 'space-evenly', display: "flex" }}>
                         {listButtons.map((item: Dictionary, index: number) => {
                             return <div key={index} className={classes.buttonQuickreply}>{item.text || item.title}
                             </div>

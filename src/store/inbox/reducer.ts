@@ -94,7 +94,7 @@ export const initialState: IState = {
     aNewTicket: null,
     aNewMessage: null,
     hideLogsOnTicket: false,
-    showInfoPanel: false,
+    showInfoPanel: true,
     userType: null,
     wsConnected: false,
     userConnected: !!localStorage.getItem("agentConnected"),

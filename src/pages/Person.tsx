@@ -3,7 +3,7 @@ import React, { FC, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { FieldEditMulti, FieldSelect, Title } from 'components';
-import { getPaginatedPerson, getPersonExport, exportExcel, templateMaker, uploadExcel, editPersonBody, array_trimmer, convertLocalDate, getColumnsSel, personcommunicationchannelUpdateLockedArrayIns, personImportValidation } from 'common/helpers';
+import { getPaginatedPerson, getPersonExport, exportExcel, templateMaker, uploadExcel, array_trimmer, convertLocalDate, getColumnsSel, personcommunicationchannelUpdateLockedArrayIns, personImportValidation, importPerson } from 'common/helpers';
 import { Dictionary, IPerson, IPersonImport, IFetchData } from "@types";
 import { Box, Button, IconButton, MenuItem } from '@material-ui/core';
 import { WhatsappIcon } from 'icons';
@@ -26,7 +26,6 @@ import { sendHSM } from 'store/inbox/actions';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Menu from '@material-ui/core/Menu';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import { styled } from '@material-ui/core/styles';
 import { getLeadPhases, resetGetLeadPhases } from 'store/lead/actions';
 
 const format = (datex: Date) => new Date(datex.setHours(10)).toISOString().substring(0, 10)
@@ -500,6 +499,18 @@ export const Person: FC = () => {
             }
         },
         {
+            Header: t(langKeys.address),
+            accessor: 'address',
+        },
+        {
+            Header: t(langKeys.healthprofessional),
+            accessor: 'healthprofessional',
+        },
+        {
+            Header: t(langKeys.referralchannel),
+            accessor: 'referralchannel',
+        },
+        {
             Header: t(langKeys.comments),
             accessor: 'datenote',
             Cell: (props: any) => {
@@ -600,7 +611,9 @@ export const Person: FC = () => {
             domains.value?.groups.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
             //domains.value?.channelTypes.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
             //{},
-            //{},
+            {},
+            {},
+            {},
             {}
         ];
         const header = [
@@ -623,13 +636,17 @@ export const Person: FC = () => {
             //'channeltype',
             //'personcommunicationchannel',
             //'personcommunicationchannelowner',
-            'displayname'
+            'displayname',
+            'address',
+            'healthprofessional',
+            'referralchannel',
         ];
         exportExcel(t(langKeys.template), templateMaker(data, header));
     }
 
     const handleUpload = async (files: any) => {
         const file = files?.item(0);
+        files=null
         if (file) {
             let excel: any = await uploadExcel(file, undefined);
             let data: IPersonImport[] = array_trimmer(excel);
@@ -646,14 +663,14 @@ export const Person: FC = () => {
             );
             if (data.length > 0) {
                 let datavalidation = data.reduce((acc:any,x:any)=>[...acc,{phone:x.phone,alternativephone:x.alternativephone,email:x.email,alternativeemail:x.alternativeemail}],[])
-                let table: Dictionary = data.reduce((a: any, d: IPersonImport) => ({
+                let table: Dictionary = data.reduce((a: any, d: IPersonImport,i:number) => ({
                     ...a,
-                    [`${d.documenttype}_${d.documentnumber}`]: {
+                    [`${d.firstname}_${d.lastname}_${i}`]: {
                         personid: 0,
                         firstname: d.firstname || null,
                         lastname: d.lastname || null,
-                        documenttype: d.documenttype,
-                        documentnumber: d.documentnumber,
+                        documenttype: d.documenttype||"",
+                        documentnumber: d.documentnumber||"",
                         persontype: d.persontype || null,
                         type: d.type || '',
                         phone: String(d.phone|| "") ,
@@ -665,6 +682,9 @@ export const Person: FC = () => {
                         educationlevel: d.educationlevel || null,
                         civilstatus: d.civilstatus || null,
                         occupation: d.occupation || null,
+                        address: d.address|| "",
+                        healthprofessional: d.healthprofessional|| "",
+                        referralchannel: d.referralchannel|| "",
                         groups: d.groups || null,
                         status: 'ACTIVO',
                         personstatus: 'ACTIVO',
@@ -674,7 +694,7 @@ export const Person: FC = () => {
                         sex: null,
                         operation: 'INSERT',
                     }
-                }), {});
+                }), {});                
                 setImportData(table)
                 
                 const callback = () => {
@@ -689,12 +709,6 @@ export const Person: FC = () => {
                     question: t(langKeys.confirmation_save),
                     callback
                 }))
-                /*Object.values(table).forEach((p: IPersonImport) => {
-                    dispatch(execute({
-                        header: editPersonBody({ ...p }),
-                        detail: []
-                    }, true));
-                });*/
             }
             else {
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) }));
@@ -711,19 +725,13 @@ export const Person: FC = () => {
                 const callback = () => {
                     setWaitImport(true)
                     dispatch(showBackdrop(true));
-                    Object.values(importData).forEach((p: IPersonImport) => {
-                        dispatch(execute({
-                            header: editPersonBody({ ...p }),
-                            detail: []
-                        }, true));
-                    });
+                    dispatch(execute(importPerson(Object.values(importData))))
                 }
-                if (executeResult?.data[0].phone) phonesexisting = phonesexisting.concat(executeResult.data[0].phone.split(','))
-                if (executeResult?.data[0].alternativephone) phonesexisting = phonesexisting.concat(executeResult.data[0].alternativephone.split(','))
-                if (executeResult?.data[0].email) emailsexisting = emailsexisting.concat(executeResult.data[0].email.split(','))
-                if (executeResult?.data[0].alternativeemail) emailsexisting = emailsexisting.concat(executeResult.data[0].alternativeemail.split(','))
-                if (phonesexisting.length === 0 || emailsexisting.length === 0) {
-                    setWaitValidation(false);
+                if (executeResult?.data[0]?.phone) phonesexisting = phonesexisting.concat(executeResult.data[0].phone.split(','))
+                if (executeResult?.data[0]?.alternativephone) phonesexisting = phonesexisting.concat(executeResult.data[0].alternativephone.split(','))
+                if (executeResult?.data[0]?.email) emailsexisting = emailsexisting.concat(executeResult.data[0].email.split(','))
+                if (executeResult?.data[0]?.alternativeemail) emailsexisting = emailsexisting.concat(executeResult.data[0].alternativeemail.split(','))
+                if (phonesexisting.length === 0 && emailsexisting.length === 0) {
                     callback()
                 } else {
                     let warningmessage = ""
@@ -740,6 +748,7 @@ export const Person: FC = () => {
                         callback: callback
                     }))
                 }
+                setWaitValidation(false);
             } else if (executeResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "error", message: "error" }))
                 dispatch(showBackdrop(false));
@@ -770,7 +779,6 @@ export const Person: FC = () => {
     useEffect(() => {
         if (waitImport) {
             if (!executeResult.loading && !executeResult.error) {
-                debugger
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
                 fetchData(fetchDataAux);
                 dispatch(showBackdrop(false));
