@@ -651,7 +651,6 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
 
     useEffect(() => {
         if (text.substring(0, 2).toLowerCase() === "\\q") {
-            console.log("text", text)
             setTypeHotKey("quickreply")
             setOpenDialogHotKey(true);
             const textToSearch = text.trim().split(text.trim().includes("\\q") ? "\\q" : "\\Q")[1];

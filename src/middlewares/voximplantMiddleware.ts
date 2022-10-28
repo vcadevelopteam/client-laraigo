@@ -44,6 +44,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                     const headers = (e.call as Call).headers()
                     const supervision = headers["X-supervision"]
                     const splitIdentifier = headers["X-identifier"].split("-");
+
                     if (supervision) {
                         dispatch({
                             type: typeVoximplant.INIT_CALL,
@@ -51,26 +52,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                                 call: e.call,
                                 type: "SUPERVISION",
                                 number: "",
-                                identifier: headers["X-identifier"],
-                                data: {
-                                    conversationid: parseInt(splitIdentifier[3]),
-                                    ticketnum: splitIdentifier[5],
-                                    personid: parseInt(splitIdentifier[4]),
-                                    communicationchannelid: parseInt(splitIdentifier[2]),
-                                    status: "ASIGNADO",
-                                    imageurldef: "",
-                                    firstconversationdate: "",
-                                    personlastreplydate: "",
-                                    countnewmessages: 1,
-                                    usergroup: "",
-                                    displayname: headers["X-personname"],
-                                    coloricon: "",
-                                    communicationchanneltype: "VOXI",
-                                    lastmessage: "LLAMADA ENTRANTE",
-                                    personcommunicationchannel: `${e.call.number()}_VOXI`,
-                                    communicationchannelsite: headers["X-site"],
-                                    lastreplyuser: "",
-                                }
+                                identifier: headers["X-identifier"]
                             }
                         })
                         e.call.answer();
@@ -92,9 +74,10 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                         coloricon: "",
                         communicationchanneltype: "VOXI",
                         lastmessage: "LLAMADA ENTRANTE",
-                        personcommunicationchannel: `${e.call.number()}_VOXI`,
+                        personcommunicationchannel: `${e.call.number().split("@")[0].split(":")?.[1] || ""}_VOXI`,
                         communicationchannelsite: headers["X-site"],
                         lastreplyuser: "",
+                        commentexternalid: headers["X-accessURL"]
                     }
                     //enviar a los otros supervisores
                     dispatch(emitEvent({

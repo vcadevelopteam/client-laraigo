@@ -3,14 +3,13 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'hooks';
 import PersonIcon from '@material-ui/icons/Person';
 import { useDispatch } from 'react-redux';
-import { answerCall, hangupCall, rejectCall, holdCall, muteCall, unmuteCall, setHold } from 'store/voximplant/actions';
-import { Card, CardContent, Fab } from '@material-ui/core';
-import { convertLocalDate, secondsToTime, getSecondsUntelNow, conversationCallHold, getTimeBetweenDates, timetoseconds } from 'common/helpers';
+import { hangupCall, resetCall } from 'store/voximplant/actions';
+import { Card, CardContent, Tooltip } from '@material-ui/core';
+import { convertLocalDate, secondsToTime, getSecondsUntelNow, getTimeBetweenDates, timetoseconds } from 'common/helpers';
 import { langKeys } from 'lang/keys';
-import { execute } from 'store/main/actions';
 import HearingIcon from '@material-ui/icons/Hearing';
-import { IconButton } from '@material-ui/core';
-import IOSSwitch from "components/fields/IOSSwitch";
+import ToggleButton from '@material-ui/lab/ToggleButton';
+
 
 const ManageCallInfoSupervisor: React.FC = () => {
     const { t } = useTranslation();
@@ -23,7 +22,6 @@ const ManageCallInfoSupervisor: React.FC = () => {
     const [supervision, setSupervision] = useState(false)
     const [time, settime] = useState(0);
 
-
     React.useEffect(() => {
         if (ticketSelected?.callanswereddate) {
             if (ticketSelected?.status === "CERRADO") {
@@ -32,20 +30,33 @@ const ManageCallInfoSupervisor: React.FC = () => {
                 settime(getSecondsUntelNow(convertLocalDate(ticketSelected?.callanswereddate)));
             }
         }
-        if (call?.data?.conversationid === ticketSelected?.conversationid) {
-            setSupervision(true)
-        }
-    }, [ticketSelected])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ticketSelected?.callanswereddate])
 
     useEffect(() => {
-        if (supervision) {
+        if (call?.identifier) {
+            const conversationid = parseInt(call.identifier.split("-")[3])
+            if (conversationid === ticketSelected?.conversationid) {
+                setSupervision(true)
+            }
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+    const triggerSupervision = () => {
+        if (!supervision) {
+            setSupervision(true)
             const { userid, orgid } = resValidateToken.user!!;
             const url = `${ticketSelected?.commentexternalid}?mode=supervision&user=user${userid}.${orgid}`;
-            fetch(url, { method: 'GET' });
+            fetch(url, { method: 'GET' }).catch(x => {
+                setSupervision(false)
+            });
         } else {
-
+            setSupervision(false)
+            dispatch(hangupCall(call.call));
+            dispatch(resetCall());
         }
-    }, [supervision])
+    }
 
     React.useEffect(() => {
         if (ticketSelected?.status === "CERRADO") {
@@ -78,12 +89,19 @@ const ManageCallInfoSupervisor: React.FC = () => {
                 <CardContent>
                     {ticketSelected?.status !== "CERRADO" && (
                         <div style={{ display: "flex", justifyContent: "end" }}>
-                            <div style={{ display: "flex", gap: 4,  }}>
-                                <div>
-                                    Supervisar
-                                </div>
-                                <IOSSwitch checked={supervision} onChange={(e) => setSupervision(e.target.checked)} name="checkedB" />
-                            </div>
+                            <Tooltip title={t(langKeys.monitor_call) || ""}>
+                                <span>
+                                    <ToggleButton
+                                        value="check"
+                                        disabled={time === 0 || !ticketSelected?.commentexternalid}
+                                        selected={supervision}
+                                        color="primary"
+                                        onChange={triggerSupervision}
+                                    >
+                                        <HearingIcon />
+                                    </ToggleButton>
+                                </span>
+                            </Tooltip>
                         </div>
                     )}
                     <div>
@@ -95,9 +113,15 @@ const ManageCallInfoSupervisor: React.FC = () => {
                         <div style={{ marginLeft: "auto", marginRight: "auto", textAlign: "center", fontSize: "20px" }}>
                             {numberVox}
                         </div>
-                        <div style={{ fontSize: 16, textAlign: "center" }}>
-                            {(secondsToTime(time || 0))}
-                        </div>
+                        {time === 0 ? (
+                            <div style={{ fontSize: 16, textAlign: "center" }}>
+                                {t(langKeys.ringing)}
+                            </div>
+                        ) : (
+                            <div style={{ fontSize: 16, textAlign: "center" }}>
+                                {(secondsToTime(time || 0))}
+                            </div>
+                        )}
                         <div style={{ width: "100%", textAlign: "center", fontSize: 16 }}>
                             {(ticketSelected?.origin === "OUTBOUND") ? t(langKeys.outboundcall) : t(langKeys.inboundcall)}
                         </div>

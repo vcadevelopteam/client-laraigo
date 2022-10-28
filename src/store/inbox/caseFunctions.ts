@@ -617,15 +617,13 @@ export const callWasAnswred = (state: IState, action: IAction): IState => {
         ...state,
         ticketSelected: state.ticketSelected?.conversationid === action.payload.conversationid ? {
             ...state.ticketSelected!!,
-            postexternalid: action.payload.postexternalid,
-            commentexternalid: action.payload.commentexternalid,
+            callanswereddate: new Date().toISOString(),
         } : state.ticketSelected,
         ticketList: {
             ...state.ticketList,
             data: state.ticketList.data.map((x: ITicket) => x.conversationid === action.payload.conversationid ? {
                 ...x,
-                postexternalid: action.payload.postexternalid,
-                commentexternalid: action.payload.commentexternalid,
+                callanswereddate: new Date().toISOString(),
             } : x)
         }
     };

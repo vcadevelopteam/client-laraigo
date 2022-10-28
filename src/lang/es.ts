@@ -1421,6 +1421,7 @@ const translation: LangKeys = {
 
     ringing: "Timbrando",
     connected_call: "Llamada conectada",
+    monitor_call: "Supervisar llamada",
 
     tipify_ticket: 'Clasificar ticket',
     today: 'Hoy',

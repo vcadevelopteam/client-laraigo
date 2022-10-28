@@ -31,6 +31,7 @@ const translation: LangKeys = {
 
     ringing: "ringing",
     connected_call: "Connected call",
+    monitor_call: "Monitor call",
 
     type_service: 'Service Type',
     font: "Font",
