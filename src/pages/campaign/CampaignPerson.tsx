@@ -57,8 +57,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     const [valuefile, setvaluefile] = useState('');
     const [openModal, setOpenModal] = useState<boolean | null>(null);
     const [columnList, setColumnList] = useState<string[]>([]);
-    const [headers, setHeaders] = useState<any[]>([]);
-    const [jsonData, setJsonData] = useState<any[]>([]);
+    const [headers, setHeaders] = useState<any[]>(detaildata.source === 'EXTERNAL' ? detaildata.headers || [] : []);
+    const [jsonData, setJsonData] = useState<any[]>(detaildata.source === 'EXTERNAL' ? detaildata.jsonData || [] : []);
     const [jsonDataTemp, setJsonDataTemp] = useState<any[]>([]);
     const [selectedColumns, setSelectedColumns] = useState<SelectedColumns>(
         detaildata.selectedColumns
