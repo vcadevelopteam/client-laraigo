@@ -343,6 +343,8 @@ const DetailUniqueContact: React.FC<DetailUniqueContactProps> = ({ row, setViewS
             },
             sorts,
             year: row.year,
+            corpid: row.row.corpid,
+            orgid: row.row.orgid,
             month:row.month,
             channeltype:row.channeltype,
             ...allParameters
@@ -943,6 +945,8 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
                 ...filters,
             },
             sorts,
+            corpid: row.row.corpid,
+            orgid: row.row.orgid,
             year: row.year,
             month:row.month,
             channeltype:row.channeltype,
