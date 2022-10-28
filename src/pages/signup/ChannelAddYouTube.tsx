@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react-hooks/exhaustive-deps */
 import clsx from 'clsx';
 
@@ -251,7 +252,7 @@ export const ChannelAddYouTube: FC<{ setOpenWarning: (param: any) => void }> = (
                             </Button>}
                         </div>
                         <div style={{ textAlign: "center", paddingTop: "20px", color: "#969ea5", fontStyle: "italic" }}>{t(langKeys.connectface4)}</div>
-                        <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5" }}><a style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "pointer" }} onClick={openprivacypolicies} rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
+                        <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5" }}><a href="#" style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "pointer" }} onClick={openprivacypolicies} rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
                     </div>
                 </>}
                 {showList && <>

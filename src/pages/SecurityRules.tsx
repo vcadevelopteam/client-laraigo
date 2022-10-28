@@ -67,7 +67,7 @@ const SecurityRules = () => {
         { id: "view-1", name: t(langKeys.securityrules)}
     ];
 
-    const { register, handleSubmit, setValue, getValues,trigger, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             id: 0,
             mincharacterspwd: 8,

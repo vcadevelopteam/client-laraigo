@@ -20,7 +20,6 @@ import {
     WhatsappColor,
     TwitterColor,
     VoiceColor,
-    TikTokColor,
     YouTubeColor,
     LinkedInColor,
     TeamsColor,

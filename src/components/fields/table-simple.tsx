@@ -122,6 +122,7 @@ const useStyles = makeStyles((theme) => ({
         gridGap: theme.spacing(1),
         display: 'grid',
         gridAutoFlow: 'column',
+        alignItems: 'center',
     },
     containerHeader: {
         display: 'block',
@@ -876,7 +877,7 @@ const TableZyx = React.memo(({
                                         column.activeOnHover ?
                                             <th style={{ width: "0px" }} key="header-floating"></th> :
                                             <TableCell key={ii} style={useSelection ? {
-                                                ...(column.width == 'auto' ? {
+                                                ...(column.width === 'auto' ? {
                                                     flex: 1,
                                                 } : {
                                                     minWidth: column.minWidth,

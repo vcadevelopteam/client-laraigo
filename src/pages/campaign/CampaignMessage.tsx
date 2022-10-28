@@ -148,7 +148,11 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         if (detaildata.communicationchanneltype?.startsWith('MAI')) {
             const variablesList = detaildata.message?.match(/({{)(.*?)(}})/g) || [];
             const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
-            setMessageVariables(varaiblesCleaned.map((x: string) => ({ name: x, text: x, type: 'text' })));
+            setMessageVariables(varaiblesCleaned.map((x: string, i: number) => ({
+                name: x,
+                text: messageVariables[i]?.text || x,
+                type: 'text'
+            })));
         }
         else {
             setMessageVariables([]);
@@ -208,7 +212,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                                 valueDefault={messageVariables[i].text}
                                                 onChange={(value: { description: any; }) => {
                                                     const datatemp = [...messageVariables];
-                                                    datatemp[i].text = value.description;
+                                                    datatemp[i].text = value?.description;
                                                     setMessageVariables(datatemp)
                                                 }}
                                                 data={tablevariable}

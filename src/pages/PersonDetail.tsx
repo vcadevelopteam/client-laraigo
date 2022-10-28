@@ -2090,7 +2090,6 @@ const PersonDetail: FC = () => {
                 setOpenModal={setShowLinkPerson}
                 person={person}
                 callback={(newPerson) => {
-                    console.log("newPerson", newPerson)
                     setValue("firstname", newPerson.firstname)
                     trigger("firstname")
                     setValue("lastname", newPerson.lastname)
