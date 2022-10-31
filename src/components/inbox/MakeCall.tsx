@@ -241,7 +241,6 @@ const MakeCall: React.FC = () => {
     const phonenumber = useSelector(state => state.voximplant.phoneNumber);
     const showcall = useSelector(state => state.voximplant.showcall);
     const transferAction = useSelector(state => state.voximplant.transferAction);
-    const originCall = useSelector(state => state.voximplant.originCall);
     const statusCall = useSelector(state => state.voximplant.statusCall);
     const historial = useSelector(state => state.voximplant.requestGetHistory);
     const advisors = useSelector(state => state.voximplant.requestGetAdvisors);
@@ -279,22 +278,7 @@ const MakeCall: React.FC = () => {
                 const identifier = `${corpid}-${orgid}-${ccidvoxi}-${resExecute.data[0].v_conversationid}-${resExecute.data[0].v_personid}.${sitevoxi}.${userid}.${v_voximplantrecording}`;
 
                 dispatch(resetExecute());
-                if (transferAction) {
-                    console.log('Transfer call')
-                    dispatch(transferCall(originCall, {
-                        number: v_personcommunicationchannelowner,
-                        site: `${identifier}.phone` || "",
-                        data
-                    }));
-                }
-                else {
-                    console.log('New call')
-                    dispatch(makeCall({
-                        number: v_personcommunicationchannelowner,
-                        site: identifier || "",
-                        data
-                    }));
-                }
+                dispatch(makeCall({ number: v_personcommunicationchannelowner, site: identifier || "", data }));
                 history.push('/message_inbox');
             }
         } else if (!resExecute.loading && resExecute.error && resExecute.key === "UFN_CONVERSATION_OUTBOUND_INS") {
@@ -336,7 +320,7 @@ const MakeCall: React.FC = () => {
     React.useEffect(() => {
         if (timeWaiting >= 0) {
             if (timeWaiting >= (user?.properties.time_reassign_call || 30) && (call.type === "INBOUND" && statusCall === "CONNECTING")) {
-                dispatch(rejectCall(call.call));
+                dispatch(rejectCall({ call: call.call }));
                 setWaitingDate(null)
                 setTimeWaiting(-1);
                 return;
@@ -560,6 +544,11 @@ const MakeCall: React.FC = () => {
                                                 interactiontype: 'text',
                                                 interactiontext: 'LLAMADA SALIENTE',
                                             })))
+                                        }
+                                        if (statusCall === 'CONNECTED' && transferAction) {
+                                            dispatch(transferCall({
+                                                url: `${ticketSelected?.commentexternalid}?mode=transfer&number=${numberVox}`,
+                                            }))
                                         }
                                     }}
                                 >

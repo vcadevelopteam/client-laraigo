@@ -192,15 +192,29 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         return
     } else if (type === typeVoximplant.ANSWER_CALL) {
         const call = payload.call;
-
         call?.answer();
         dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "CONNECTED" });
         //actualizar la fecha de contestado en la lista de tickets
         dispatch({ type: typeInbox.CALL_CONNECTED, payload: action.payload.conversationid });
         return
     } else if (type === typeVoximplant.REJECT_CALL) {
-        const call = payload;
+        const { call, ticketSelected } = payload;
+        const headers = (call as Call).headers()
         call?.reject();
+        if (headers["X-transfer"]) {
+            dispatch(emitEvent({
+                event: 'deleteTicket',
+                data: {
+                    conversationid: ticketSelected?.conversationid,
+                    ticketnum: ticketSelected?.ticketnum,
+                    status: ticketSelected?.status,
+                    isanswered: ticketSelected?.isAnswered,
+                    usergroup: ticketSelected?.usergroup,
+                    userid: 0, //userType === "AGENT" ? 0 : agentSelected?.userid,
+                    getToken: false //userType === "SUPERVISOR"
+                }
+            }));
+        }
         dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "DISCONNECTED" });
         return
     } else if (type === typeVoximplant.HANGUP_CALL) {
@@ -209,16 +223,9 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "DISCONNECTED" });
         return
     } else if (type === typeVoximplant.TRANSFER_CALL ) {
-        console.log("executing transfer")
-        const { call1, call2Data } = payload;
-        fetch(call2Data.url, { method: 'GET' }).catch(x => {
+        const { url } = payload;
+        fetch(url, { method: 'GET' }).catch(x => {
             console.log(x)
-        });
-        call1.on(VoxImplant.CallEvents.TransferComplete, () => {
-            console.log("Transfer complete")
-        });
-        call1.on(VoxImplant.CallEvents.TransferFailed, () => {
-            console.log("Transfer failed")
         });
         return
     } else if (type === typeVoximplant.HOLD_CALL) {

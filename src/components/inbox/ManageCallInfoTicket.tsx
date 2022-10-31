@@ -189,7 +189,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                     </IconButton>
                                     <IconButton //rejectcall
                                         style={{ marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#fa6262' }}
-                                        onClick={() => dispatch(rejectCall(call.call))}
+                                        onClick={() => dispatch(rejectCall({ call: call.call, ticketSelected }))}
                                     >
                                         <CallEndIcon style={{ color: "white", width: "35px", height: "35px" }} />
                                     </IconButton>
@@ -268,7 +268,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                 <IconButton //divertcall
                                     style={{ marginLeft: "auto", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#7721ad' }}
                                     onClick={() => {
-                                        dispatch(transferCall(call.call, {
+                                        dispatch(transferCall({
                                             url: `${ticketSelected?.commentexternalid}?mode=transfer&number=user${advisertodiver}.${resValidateToken.orgid}`,
                                         }))
                                         sethold(true)

@@ -9,11 +9,11 @@ export const voximplantConnect = (payload: Dictionary): IActionCall => ({ type: 
 
 export const answerCall = (payload?: { call: Call, conversationid: number } | null): IActionCall => ({ type: actionTypes.ANSWER_CALL, payload });
 
-export const rejectCall = (payload?: Call | null): IActionCall => ({ type: actionTypes.REJECT_CALL, payload });
+export const rejectCall = (payload?: { call: Call | null | undefined, ticketSelected?: ITicket | null }): IActionCall => ({ type: actionTypes.REJECT_CALL, payload });
 
 export const hangupCall = (payload?: Call | null): IActionCall => ({ type: actionTypes.HANGUP_CALL, payload });
 
-export const transferCall = (call1?: Call | null, call2Data?: Dictionary): IActionCall => ({ type: actionTypes.TRANSFER_CALL, payload: {call1, call2Data} });
+export const transferCall = (payload: { url: string }): IActionCall => ({ type: actionTypes.TRANSFER_CALL, payload });
 
 export const muteCall = (payload?: Call | null): IActionCall => ({ type: actionTypes.MUTE_CALL, payload });
 
