@@ -4121,6 +4121,11 @@ export const langKeys = {
     website: "website",
     additionalimage: "additionalimage",
     importxml: "importxml",
+    productimportdescription: "productimportdescription",
+    templatexml: "templatexml",
+    templateexcel: "templateexcel",
+    productimportalert: "productimportalert",
+    productimportmissing: "productimportmissing",
 };
 
 export type LangKeys = typeof langKeys;

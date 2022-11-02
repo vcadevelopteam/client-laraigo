@@ -4135,7 +4135,12 @@ const translation: LangKeys = {
     material: "Material",
     website: "Website",
     additionalimage: "Additional Image",
-    importxml: "Import XML",
+    importxml: "Import XML/XLSX",
+    productimportdescription: "You can use both XML and Excel files to import products to Laraigo. The templates for each format can be downloaded here:",
+    templatexml: "XML Template",
+    templateexcel: "Excel Template",
+    productimportalert: "The uploaded file has a wrong format",
+    productimportmissing: "There are empty required fields",
 };
 
 const enResource: ResourceLanguage = {

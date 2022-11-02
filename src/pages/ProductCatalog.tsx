@@ -22,6 +22,7 @@ import Box from '@material-ui/core/Box';
 import { formatNumber } from 'common/helpers';
 import { importXml } from 'store/product/actions';
 import TablePaginated from 'components/fields/table-paginated';
+import { DownloadIcon } from 'icons';
 
 interface RowSelected {
     row: Dictionary | null;
@@ -468,6 +469,7 @@ const ImportXmlModal: FC<{ openModal: boolean, setOpenModal: (param: any) => voi
             url: '',
             catalogname: '',
             catalogid: '',
+            isxml: true,
         }
     });
 
@@ -475,6 +477,7 @@ const ImportXmlModal: FC<{ openModal: boolean, setOpenModal: (param: any) => voi
         register('url', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('catalogname', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('catalogid', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('isxml');
     }, [register]);
 
     useEffect(() => {
@@ -486,6 +489,8 @@ const ImportXmlModal: FC<{ openModal: boolean, setOpenModal: (param: any) => voi
                 setValue('url', '');
                 setValue('catalogname', '');
                 setValue('catalogid', '');
+                setValue('isxml', false);
+                setFileAttachment(null);
 
                 setWaitSave(false);
                 onTrigger();
@@ -499,6 +504,24 @@ const ImportXmlModal: FC<{ openModal: boolean, setOpenModal: (param: any) => voi
     }, [importResult, waitSave])
 
     const onSubmit = handleSubmit((data) => {
+        if (data?.url) {
+            var extension = data?.url.slice((data?.url.lastIndexOf(".") - 1 >>> 0) + 2);
+
+            if (extension?.toUpperCase() !== "XML" && extension?.toUpperCase() !== "XLSX") {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.productimportalert) }));
+            }
+            else {
+                if (extension?.toUpperCase() === "XML") {
+                    setValue('isxml', true);
+                    data.isxml = true;
+                }
+                else {
+                    setValue('isxml', false);
+                    data.isxml = false;
+                }
+            }
+        }
+
         const callback = () => {
             dispatch(importXml(data));
             dispatch(showBackdrop(true));
@@ -558,12 +581,39 @@ const ImportXmlModal: FC<{ openModal: boolean, setOpenModal: (param: any) => voi
                 setValue('url', '');
                 setValue('catalogname', '');
                 setValue('catalogid', '');
+                setValue('isxml', false);
+                setFileAttachment(null);
                 setOpenModal(false);
             }}
             buttonText2={t(langKeys.save)}
             handleClickButton2={onSubmit}
             button2Type="submit"
         >
+            <div className="row-zyx">
+                {t(langKeys.productimportdescription)}
+            </div>
+            <div className="row-zyx">
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignContent: 'center', alignItems: 'center', justifyItems: 'center', justifyContent: 'center' }}>
+                    <Button
+                        disabled={false}
+                        variant="contained"
+                        color="primary"
+                        style={{ width: 150, backgroundColor: "#55BD84" }}
+                        startIcon={<DownloadIcon style={{ color: 'white' }} />}
+                        onClick={() => { window.open("https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/LARAIGO%20-%20ACME/4a2b6056-a8ee-4382-8fec-ee76a6348614/Template%20XML.xml", '_blank'); }}
+                    >{t(langKeys.templatexml)}
+                    </Button>
+                    <Button
+                        disabled={false}
+                        variant="contained"
+                        color="primary"
+                        style={{ width: 160, backgroundColor: "#55BD84" }}
+                        startIcon={<DownloadIcon style={{ color: 'white' }} />}
+                        onClick={() => { window.open("https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/LARAIGO%20-%20ACME/20258d45-e033-44c7-bbae-160c5901bc16/Template%20Excel.xlsx", '_blank'); }}
+                    >{t(langKeys.templateexcel)}
+                    </Button>
+                </div>
+            </div>
             <div className="row-zyx">
                 <FieldEdit
                     label={t(langKeys.catalogname)}
@@ -586,7 +636,7 @@ const ImportXmlModal: FC<{ openModal: boolean, setOpenModal: (param: any) => voi
                     valueDefault={getValues('url')}
                     error={errors?.url?.message}
                     disabled={checkedUrl}
-                    className="col-6"
+                    className="col-9"
                     onChange={(value) => setValue('url', value)}
                 />
                 <div className={"col-3"} style={{ paddingBottom: '3px' }}>
@@ -597,17 +647,9 @@ const ImportXmlModal: FC<{ openModal: boolean, setOpenModal: (param: any) => voi
                         label={""}
                     />
                 </div>
-                <div className={"col-3"} style={{ paddingBottom: '3px' }}>
-                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.uploadFile)}</Box>
-                    <FormControlLabel
-                        style={{ paddingLeft: 10 }}
-                        control={<IOSSwitch checked={checkedUrl} onChange={(e) => { setCheckedUrl(e.target.checked); }} />}
-                        label={""}
-                    />
-                </div>
                 {checkedUrl && <React.Fragment>
                     <input
-                        accept="text/xml"
+                        accept="text/xml, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
                         style={{ display: 'none' }}
                         id="attachmentInput"
                         type="file"

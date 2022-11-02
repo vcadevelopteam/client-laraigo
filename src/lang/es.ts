@@ -4126,7 +4126,12 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     material: "Material",
     website: "Sitio Web",
     additionalimage: "Imagen Adicional",
-    importxml: "Importar XML",
+    importxml: "Importar XML/XLSX",
+    productimportdescription: "Para importar productos a Laraigo puedes utilizar archivos XML o Excel. Las plantillas segun el formato las puedes descargar desde estos botones:",
+    templatexml: "Plantilla XML",
+    templateexcel: "Plantilla Excel",
+    productimportalert: "El archivo cargado no tiene el formato correcto",
+    productimportmissing: "Existen campos obligatorios sin información",
 };
 
 const esResource: ResourceLanguage = {
