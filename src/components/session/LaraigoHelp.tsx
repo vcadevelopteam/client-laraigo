@@ -185,7 +185,7 @@ const LaraigoHelp: FC<BoxProps> = (boxProps) => {
                             fullWidth
                             style={{ fontWeight: "normal" }}
                         >
-                            <Trans i18nKey={redirection.name} />
+                            <Trans i18nKey={redirection.altname} />
                         </Button>
                     }
                     <Button
