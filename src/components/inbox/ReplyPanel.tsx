@@ -174,6 +174,7 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
             .replace("{{numticket}}", ticketSelected?.ticketnum)
             .replace("{{client_name}}", ticketSelected?.displayname)
             .replace("{{agent_name}}", user?.firstname + " " + user?.lastname)
+            .replace("{{user_group}}", ticketSelected?.usergroup)
 
         variablesList.forEach((x: any) => {
             let variableData = variablecontext?.[x.substring(2, x.length - 2)]
@@ -688,7 +689,8 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
         setText(value
             .replace("{{numticket}}", "" + ticketSelected?.ticketnum)
             .replace("{{client_name}}", "" + ticketSelected?.displayname)
-            .replace("{{agent_name}}", user?.firstname + " " + user?.lastname))
+            .replace("{{agent_name}}", user?.firstname + " " + user?.lastname)
+            .replace("{{user_group}}", ticketSelected?.usergroup))
     }
 
     const selectRichResponse = (block: Dictionary) => {
