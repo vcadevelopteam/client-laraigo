@@ -257,7 +257,17 @@ const ManageCallInfoTicket: React.FC = () => {
                                         className="col-12"
                                         valueDefault={advisertodiver}
                                         style={{ marginRight: "auto", marginLeft: "auto", width: "400px" }}
-                                        onChange={(value) => setadvisertodiver(value?.userid || '')}
+                                        onChange={(value) => {
+                                            // setadvisertodiver(value?.userid || '')
+                                            if (value?.userid) {
+                                                dispatch(transferCall({
+                                                    url: `${ticketSelected?.commentexternalid}?mode=transfer&number=user${value.userid}.${resValidateToken.orgid}`,
+                                                }))
+                                                sethold(true)
+                                                setmute(false)
+                                                setdivertcall(false)
+                                            }
+                                        }}
                                         data={agentToReassignList.filter(x => x.hasvoxichannel && x.userid !== agentSelected?.userid && x.status === "ACTIVO")}
                                         optionDesc="displayname"
                                         optionValue="userid"
@@ -265,7 +275,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                 </div>
                             </div>
                             <div style={{ justifyContent: 'center', marginBottom: 12, marginTop: 10, display: "flex" }}>
-                                <IconButton //divertcall
+                                {/* <IconButton
                                     style={{ marginLeft: "auto", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#7721ad' }}
                                     onClick={() => {
                                         dispatch(transferCall({
@@ -276,8 +286,8 @@ const ManageCallInfoTicket: React.FC = () => {
                                     }}
                                 >
                                     <PhoneIcon style={{ color: "white", width: "35px", height: "35px" }} />
-                                </IconButton>
-                                <IconButton //divertcall
+                                </IconButton> */}
+                                <IconButton
                                     style={{ marginLeft: "auto", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#7721ad' }}
                                     onClick={() => {
                                         dispatch(setModalCall(true, true, call.call))

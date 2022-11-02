@@ -300,6 +300,9 @@ const MakeCall: React.FC = () => {
                     conversationid: ticketSelected?.conversationid
                 })))
             }
+            if (ringtone.current) {
+                ringtone.current?.pause();
+            }
         } else if (call.type === "INBOUND" && statusCall === "CONNECTING") {
             setWaitingDate(new Date().toISOString())
             setTimeWaiting(0);
@@ -534,7 +537,7 @@ const MakeCall: React.FC = () => {
                                 <Fab
                                     style={{ gridColumnStart: "col2", fontSize: 20, color: "#707070" }}
                                     color="primary"
-                                    disabled={resExecute.loading || statusCall !== "DISCONNECTED"}
+                                    disabled={resExecute.loading || !["DISCONNECTED","CONNECTED"].includes(statusCall)}
                                     onClick={() => {
                                         if (statusCall === "DISCONNECTED") {
                                             dispatch(execute(conversationOutboundIns({
@@ -549,6 +552,7 @@ const MakeCall: React.FC = () => {
                                             dispatch(transferCall({
                                                 url: `${ticketSelected?.commentexternalid}?mode=transfer&number=${numberVox}`,
                                             }))
+                                            dispatch(setModalCall(false))
                                         }
                                     }}
                                 >

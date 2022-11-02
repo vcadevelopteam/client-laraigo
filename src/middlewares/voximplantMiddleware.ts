@@ -201,6 +201,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         const { call, ticketSelected } = payload;
         const headers = (call as Call).headers()
         call?.reject();
+        dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "DISCONNECTED" });
         if (headers["X-transfer"]) {
             dispatch(emitEvent({
                 event: 'deleteTicket',
@@ -215,7 +216,6 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                 }
             }));
         }
-        dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "DISCONNECTED" });
         return
     } else if (type === typeVoximplant.HANGUP_CALL) {
         const call = payload;
