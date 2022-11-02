@@ -690,7 +690,8 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             .replace("{{numticket}}", "" + ticketSelected?.ticketnum)
             .replace("{{client_name}}", "" + ticketSelected?.displayname)
             .replace("{{agent_name}}", user?.firstname + " " + user?.lastname)
-            .replace("{{user_group}}", ticketSelected?.usergroup))
+            .replace("{{user_group}}", ticketSelected?.usergroup || "")
+        )
     }
 
     const selectRichResponse = (block: Dictionary) => {
