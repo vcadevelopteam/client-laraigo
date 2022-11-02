@@ -4175,6 +4175,18 @@ const translation: LangKeys = {
     aitotalquantity: "Total AI Quantity",
     aiminimumquantity: "Minimum AI Quantity",
     importxml: "Import XML",
+    customlabel: "Custom Label",
+    catalogid: "Catalog ID",
+    productid: "Product ID",
+    material: "Material",
+    website: "Website",
+    additionalimage: "Additional Image",
+    importxml: "Import XML/XLSX",
+    productimportdescription: "You can use both XML and Excel files to import products to Laraigo. The templates for each format can be downloaded here:",
+    templatexml: "XML Template",
+    templateexcel: "Excel Template",
+    productimportalert: "The uploaded file has a wrong format",
+    productimportmissing: "There are empty required fields",
 };
 
 const enResource: ResourceLanguage = {

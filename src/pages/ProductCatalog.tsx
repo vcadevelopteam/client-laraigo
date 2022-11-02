@@ -4,24 +4,25 @@ import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
-import TableZyx from '../components/fields/table-simple';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateIcons, TemplateBreadcrumbs, FieldEdit, FieldSelect, TitleDetail, FieldMultiSelectFreeSolo, DialogZyx, IOSSwitch } from 'components';
-import { getValuesFromDomain, getProductCatalogSel, productCatalogIns } from 'common/helpers';
-import { Dictionary, MultiData } from "@types";
+import { getValuesFromDomain, getPaginatedProductCatalog, productCatalogIns, productCatalogUpdArray } from 'common/helpers';
+import { Dictionary, MultiData, IFetchData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, getMultiCollection, execute, resetAllMain, setMemoryTable, cleanMemoryTable, uploadFile } from 'store/main/actions';
+import { getCollectionPaginated, getMultiCollection, execute, resetAllMain, setMemoryTable, cleanMemoryTable, uploadFile, resetCollectionPaginated } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { Search as SearchIcon, AddCircle, FileCopy, GetApp, Close } from '@material-ui/icons';
+import { Search as SearchIcon, AddCircle, FileCopy, GetApp, Close, Delete } from '@material-ui/icons';
 import { IconButton, CircularProgress, FormControlLabel } from '@material-ui/core';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import { formatNumber } from 'common/helpers';
 import { importXml } from 'store/product/actions';
+import TablePaginated from 'components/fields/table-paginated';
+import { DownloadIcon } from 'icons';
 
 interface RowSelected {
     row: Dictionary | null;
@@ -35,6 +36,8 @@ interface DetailProps {
     fetchData?: () => void;
     arrayBread: any;
 }
+
+const selectionKey = 'productcatalogid';
 
 const useStyles = makeStyles((theme) => ({
     fieldsfilter: {
@@ -75,34 +78,49 @@ const ProductCatalog: FC = () => {
 
     const classes = useStyles();
     const executeResult = useSelector(state => state.main.execute);
+    const mainPaginated = useSelector(state => state.main.mainPaginated);
     const mainResult = useSelector(state => state.main);
     const memoryTable = useSelector(state => state.main.memoryTable);
     const user = useSelector(state => state.login.validateToken.user);
     const superadmin = ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '');
 
     const [openModal, setOpenModal] = useState(false);
-    const [dataCategory, setdataCategory] = useState<Dictionary[]>([]);
-    const [dataMain, setdataMain] = useState({
-        category: ""
-    });
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
+    const [selectedRows, setSelectedRows] = useState<any>({});
+    const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
+    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null });
+    const [pageCount, setPageCount] = useState(0);
+    const [totalrow, settotalrow] = useState(0);
 
     const arrayBread = [
         { id: "view-1", name: t(langKeys.productcatalog) },
     ];
 
-    const fetchData = () => dispatch(getCollection(getProductCatalogSel(0, dataMain.category)));
+    const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
+        setfetchDataAux({ ...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts } });
+        dispatch(getCollectionPaginated(getPaginatedProductCatalog(
+            {
+                startdate: daterange?.startDate!,
+                enddate: daterange?.endDate!,
+                sorts: sorts,
+                filters: filters,
+                take: pageSize,
+                skip: pageIndex * pageSize,
+            }
+        )));
+    };
 
     const onModalSuccess = () => {
         setOpenModal(false);
-        fetchData();
+        fetchData(fetchDataAux);
         setViewSelected("view-1");
     }
 
     useEffect(() => {
-        fetchData();
+        dispatch(resetCollectionPaginated());
+        fetchData(fetchDataAux);
 
         dispatch(getMultiCollection([
             getValuesFromDomain("ESTADOGENERICO"),
@@ -114,13 +132,24 @@ const ProductCatalog: FC = () => {
         }))
 
         return () => {
+            dispatch(resetCollectionPaginated());
             dispatch(cleanMemoryTable());
             dispatch(resetAllMain());
         };
     }, []);
+
     useEffect(() => {
-        console.log(mainResult.mainData.data)
-    }, [mainResult.mainData.data]);
+        if (!mainPaginated.loading && !mainPaginated.error) {
+            setPageCount(Math.ceil(mainPaginated.count / fetchDataAux.pageSize));
+            settotalrow(mainPaginated.count);
+        }
+    }, [mainPaginated]);
+
+    useEffect(() => {
+        if (!(Object.keys(selectedRows).length === 0 && rowWithDataSelected.length === 0)) {
+            setRowWithDataSelected(p => Object.keys(selectedRows).map(x => mainPaginated?.data.find(y => y.productcatalogid === parseInt(x)) || p.find((y) => y.productcatalogid === parseInt(x)) || {}))
+        }
+    }, [selectedRows])
 
     function redirectFunc(view: string) {
         setViewSelected(view)
@@ -130,7 +159,7 @@ const ProductCatalog: FC = () => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
-                fetchData();
+                fetchData(fetchDataAux);
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
@@ -141,18 +170,6 @@ const ProductCatalog: FC = () => {
             }
         }
     }, [executeResult, waitSave])
-
-    useEffect(() => {
-        if (mainResult.multiData != null) {
-            if (mainResult.multiData.data != null) {
-                if (mainResult.multiData.data[1]) {
-                    if (mainResult.multiData.data[1].success) {
-                        setdataCategory(mainResult.multiData.data[1].data);
-                    }
-                }
-            }
-        }
-    }, [mainResult])
 
     const handleRegister = () => {
         setViewSelected("view-2");
@@ -169,9 +186,24 @@ const ProductCatalog: FC = () => {
         setRowSelected({ row, edit: true });
     }
 
-    const handleDuplicate = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected({ row, edit: false });
+    const handleBulkDelete = (dataSelected: Dictionary[]) => {
+        const callback = () => {
+            dispatch(execute(productCatalogUpdArray((dataSelected.reduce((ad: any[], d: any) => {
+                ad.push({
+                    ...d,
+                    status: 'ELIMINADO',
+                })
+                return ad;
+            }, [])), user?.usr || '')));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete),
+            callback
+        }))
     }
 
     const handleDelete = (row: Dictionary) => {
@@ -223,6 +255,18 @@ const ProductCatalog: FC = () => {
                 }
             },
             {
+                Header: t(langKeys.brand),
+                accessor: 'brand'
+            },
+            {
+                Header: t(langKeys.availability),
+                accessor: 'availability'
+            },
+            {
+                Header: t(langKeys.condition),
+                accessor: 'condition'
+            },
+            {
                 Header: t(langKeys.website),
                 accessor: 'link',
                 NoFilter: true,
@@ -233,7 +277,7 @@ const ProductCatalog: FC = () => {
                             className={classes.labellink}
                             onClick={(e) => { e.stopPropagation(); window.open(`${row.link}`, '_blank')?.focus() }}
                         >
-                            {row.link ? t(langKeys.link) : ""}
+                            {row.link ? t(langKeys.website) : ""}
                         </label>
                     )
                 }
@@ -269,12 +313,13 @@ const ProductCatalog: FC = () => {
                 }
             },
             {
-                Header: t(langKeys.status),
-                accessor: 'status',
-                prefixTranslation: 'status_',
+                Header: t(langKeys.saleprice),
+                accessor: 'saleprice',
+                type: 'number',
+                sortType: 'number',
                 Cell: (props: any) => {
-                    const { status } = props.cell.row.original;
-                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+                    const { saleprice } = props.cell.row.original;
+                    return formatNumber(saleprice || 0);
                 }
             },
             {
@@ -289,12 +334,41 @@ const ProductCatalog: FC = () => {
                 Header: t(langKeys.productid),
                 accessor: 'productid'
             },
+            {
+                Header: t(langKeys.status),
+                accessor: 'status',
+                prefixTranslation: 'status_',
+                Cell: (props: any) => {
+                    const { status } = props.cell.row.original;
+                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+                }
+            },
+            {
+                Header: `${t(langKeys.customlabel)} 1`,
+                accessor: 'customlabel1'
+            },
+            {
+                Header: `${t(langKeys.customlabel)} 2`,
+                accessor: 'customlabel2'
+            },
+            {
+                Header: `${t(langKeys.customlabel)} 3`,
+                accessor: 'customlabel3'
+            },
+            {
+                Header: `${t(langKeys.customlabel)} 4`,
+                accessor: 'customlabel4'
+            },
+            {
+                Header: `${t(langKeys.customlabel)} 5`,
+                accessor: 'customlabel5'
+            },
         ],
         []
     );
 
     if (viewSelected === "view-1") {
-        if (mainResult.mainData.error) {
+        if (mainPaginated.error) {
             return <h1>ERROR</h1>;
         }
 
@@ -306,50 +380,57 @@ const ProductCatalog: FC = () => {
                     onTrigger={onModalSuccess}
                 />
                 <Fragment>
-                    <TableZyx
+                    <TablePaginated
                         ButtonsElement={() => (
                             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                                <FieldSelect
-                                    label={t(langKeys.category)}
-                                    className={classes.fieldsfilter}
-                                    valueDefault={dataMain.category}
-                                    variant="outlined"
-                                    onChange={(value) => setdataMain(prev => ({ ...prev, category: value?.domainvalue || "" }))}
-                                    data={dataCategory}
-                                    optionDesc="domaindesc"
-                                    optionValue="domainvalue"
-                                />
                                 <Button
-                                    disabled={mainResult.mainData.loading}
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                                    startIcon={<Delete style={{ color: 'white' }} />}
+                                    onClick={() => {
+                                        handleBulkDelete(rowWithDataSelected);
+                                    }}
+                                >
+                                    {t(langKeys.delete)}
+                                </Button>
+                                <Button
+                                    disabled={mainPaginated.loading}
                                     variant="contained"
                                     color="primary"
                                     style={{ width: 120, backgroundColor: "#55BD84" }}
                                     startIcon={<SearchIcon style={{ color: 'white' }} />}
-                                    onClick={() => fetchData()}
+                                    onClick={() => { fetchData(fetchDataAux) }}
                                 >{t(langKeys.search)}
                                 </Button>
                                 <Button
-                                    disabled={mainResult.mainData.loading}
+                                    disabled={mainPaginated.loading}
                                     variant="contained"
                                     color="primary"
-                                    style={{ width: 140, backgroundColor: "#55BD84" }}
+                                    style={{ width: 120, backgroundColor: "#55BD84" }}
                                     startIcon={<AddCircle style={{ color: 'white' }} />}
                                     onClick={() => { setOpenModal(true) }}
-                                >{t(langKeys.importxml)}
+                                >{t(langKeys.import)}
                                 </Button>
                             </div>
                         )}
                         columns={columns}
-                        titlemodule={t(langKeys.productcatalog, { count: 2 })}
-                        data={mainResult.mainData.data}
-                        download={false}
+                        data={mainPaginated.data}
+                        totalrow={totalrow}
+                        loading={mainPaginated.loading}
+                        pageCount={pageCount}
+                        fetchData={fetchData}
+                        autotrigger={false}
                         onClickRow={handleEdit}
-                        loading={mainResult.mainData.loading}
+                        download={false}
                         register={superadmin}
                         handleRegister={handleRegister}
                         pageSizeDefault={PRODUCTCATALOG === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
                         initialPageIndex={PRODUCTCATALOG === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
                         initialStateFilter={PRODUCTCATALOG === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
+                        useSelection={true}
+                        selectionKey={selectionKey}
+                        setSelectedRows={setSelectedRows}
                     />
                 </Fragment>
             </div>
@@ -361,7 +442,7 @@ const ProductCatalog: FC = () => {
                 data={rowSelected}
                 setViewSelected={redirectFunc}
                 multiData={mainResult.multiData.data}
-                fetchData={fetchData}
+                fetchData={() => fetchData(fetchDataAux)}
                 arrayBread={arrayBread}
             />
         )
@@ -388,6 +469,7 @@ const ImportXmlModal: FC<{ openModal: boolean, setOpenModal: (param: any) => voi
             url: '',
             catalogname: '',
             catalogid: '',
+            isxml: true,
         }
     });
 
@@ -395,6 +477,7 @@ const ImportXmlModal: FC<{ openModal: boolean, setOpenModal: (param: any) => voi
         register('url', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('catalogname', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('catalogid', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('isxml');
     }, [register]);
 
     useEffect(() => {
@@ -406,6 +489,8 @@ const ImportXmlModal: FC<{ openModal: boolean, setOpenModal: (param: any) => voi
                 setValue('url', '');
                 setValue('catalogname', '');
                 setValue('catalogid', '');
+                setValue('isxml', false);
+                setFileAttachment(null);
 
                 setWaitSave(false);
                 onTrigger();
@@ -419,6 +504,24 @@ const ImportXmlModal: FC<{ openModal: boolean, setOpenModal: (param: any) => voi
     }, [importResult, waitSave])
 
     const onSubmit = handleSubmit((data) => {
+        if (data?.url) {
+            var extension = data?.url.slice((data?.url.lastIndexOf(".") - 1 >>> 0) + 2);
+
+            if (extension?.toUpperCase() !== "XML" && extension?.toUpperCase() !== "XLSX") {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.productimportalert) }));
+            }
+            else {
+                if (extension?.toUpperCase() === "XML") {
+                    setValue('isxml', true);
+                    data.isxml = true;
+                }
+                else {
+                    setValue('isxml', false);
+                    data.isxml = false;
+                }
+            }
+        }
+
         const callback = () => {
             dispatch(importXml(data));
             dispatch(showBackdrop(true));
@@ -478,12 +581,39 @@ const ImportXmlModal: FC<{ openModal: boolean, setOpenModal: (param: any) => voi
                 setValue('url', '');
                 setValue('catalogname', '');
                 setValue('catalogid', '');
+                setValue('isxml', false);
+                setFileAttachment(null);
                 setOpenModal(false);
             }}
             buttonText2={t(langKeys.save)}
             handleClickButton2={onSubmit}
             button2Type="submit"
         >
+            <div className="row-zyx">
+                {t(langKeys.productimportdescription)}
+            </div>
+            <div className="row-zyx">
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignContent: 'center', alignItems: 'center', justifyItems: 'center', justifyContent: 'center' }}>
+                    <Button
+                        disabled={false}
+                        variant="contained"
+                        color="primary"
+                        style={{ width: 150, backgroundColor: "#55BD84" }}
+                        startIcon={<DownloadIcon style={{ color: 'white' }} />}
+                        onClick={() => { window.open("https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/LARAIGO%20-%20ACME/4a2b6056-a8ee-4382-8fec-ee76a6348614/Template%20XML.xml", '_blank'); }}
+                    >{t(langKeys.templatexml)}
+                    </Button>
+                    <Button
+                        disabled={false}
+                        variant="contained"
+                        color="primary"
+                        style={{ width: 160, backgroundColor: "#55BD84" }}
+                        startIcon={<DownloadIcon style={{ color: 'white' }} />}
+                        onClick={() => { window.open("https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/LARAIGO%20-%20ACME/20258d45-e033-44c7-bbae-160c5901bc16/Template%20Excel.xlsx", '_blank'); }}
+                    >{t(langKeys.templateexcel)}
+                    </Button>
+                </div>
+            </div>
             <div className="row-zyx">
                 <FieldEdit
                     label={t(langKeys.catalogname)}
@@ -519,7 +649,7 @@ const ImportXmlModal: FC<{ openModal: boolean, setOpenModal: (param: any) => voi
                 </div>
                 {checkedUrl && <React.Fragment>
                     <input
-                        accept="text/xml"
+                        accept="text/xml, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
                         style={{ display: 'none' }}
                         id="attachmentInput"
                         type="file"
@@ -624,8 +754,9 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
         register('link', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('imagelink', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('additionalimagelink');
-        register('condition');
-        register('availability');
+        register('brand', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('condition', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('availability', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('category');
         register('material');
         register('color');
@@ -648,7 +779,6 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
     }, [edit, register]);
 
     const onSubmit = handleSubmit((data) => {
-        console.log("save")
         const callback = () => {
             dispatch(execute(productCatalogIns(data)));
             dispatch(showBackdrop(true));
@@ -765,10 +895,17 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                     <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.website)}
-                            className="col-12"
+                            className="col-6"
                             valueDefault={row?.link || ""}
                             onChange={(value) => setValue('link', value)}
                             error={errors?.link?.message}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.brand)}
+                            className="col-6"
+                            valueDefault={row?.brand || ""}
+                            onChange={(value) => setValue('brand', value)}
+                            error={errors?.brand?.message}
                         />
                     </div>
                     <div className="row-zyx">
