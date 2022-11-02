@@ -479,22 +479,25 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const [undotext, setundotext] = useState<any>([])
     const [redotext, setredotext] = useState<any>([])
 
-
-
     useEffect(() => {
         if ((ticketSelected?.conversationid) !== (previousTicket?.conversationid)) setpreviousTicket(ticketSelected)
         if (ticketSelected?.status !== "ASIGNADO")
             setShowReply(false);
         else if (channelsWhatsapp.includes(ticketSelected!!.communicationchanneltype)) {
-            const hoursWaiting = getSecondsUntelNow(convertLocalDate(ticketSelected?.personlastreplydate)) / 3600;
-            if (hoursWaiting >= 24) {
+            if (!ticketSelected?.personlastreplydate) {
                 setShowReply(false);
             } else {
-                setShowReply(true);
+                const hoursWaiting = getSecondsUntelNow(convertLocalDate(ticketSelected?.personlastreplydate)) / 3600;
+                if (hoursWaiting >= 24) {
+                    setShowReply(false);
+                } else {
+                    setShowReply(true);
+                }
             }
         } else
             setShowReply(true)
     }, [ticketSelected])
+
     useEffect(() => {
         if (ticketSelected?.communicationchanneltype === "MAIL") {
             setBodyobject([{ "type": "paragraph", align: "left", "children": [{ "text": "" }] }])
@@ -517,11 +520,13 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             setText(renderToString(toElement(bodyobject)))
         }
     }, [bodyobject])
+
     useEffect(() => {
         if (flagundo) {
             setflagundo(false)
         }
     }, [undotext])
+
     useEffect(() => {
         if (flagredo) {
             setflagredo(false)

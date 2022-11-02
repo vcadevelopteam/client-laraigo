@@ -469,7 +469,7 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
                     {
                         ...data,
                         lastconversationdate: data.usertype === "client" ? (data.lastconversationdate || new Date().toISOString()) : null,
-                        personlastreplydate: data.usertype === "client" ? (data.personlastreplydate || new Date().toISOString()) : null,
+                        personlastreplydate: data.usertype === "client" ? (new Date().toISOString()) : null,
                         firstconversationdate: data.firstconversationdate || new Date().toISOString(),
                         isAnswered: data.userid === 2
                     },
@@ -483,7 +483,7 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
                     {
                         ...conversation,
                         lastconversationdate: data.usertype === "client" ? (conversation.lastconversationdate || new Date().toISOString()) : null,
-                        personlastreplydate: data.usertype === "client" ? (conversation.personlastreplydate || new Date().toISOString()) : conversation.personlastreplydate,
+                        personlastreplydate: data.usertype === "client" ? (new Date().toISOString()) : conversation.personlastreplydate,
                         lastreplyuser: data.usertype === "agent" ? new Date().toISOString() : conversation.lastreplyuser,
                         countnewmessages: data.usertype === "agent" ? 0 : conversation.countnewmessages + 1,
                         lastmessage: data.typemessage === "text" ? data.lastmessage : data.typemessage.toUpperCase(),
