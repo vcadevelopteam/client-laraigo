@@ -275,7 +275,7 @@ const MakeCall: React.FC = () => {
                     lastreplyuser: "",
                 }
                 dispatch(setModalCall(false));
-                const identifier = `${corpid}-${orgid}-${ccidvoxi}-${resExecute.data[0].v_conversationid}-${resExecute.data[0].v_personid}.${sitevoxi}.${userid}.${v_voximplantrecording}`;
+                const identifier = `${corpid}-${orgid}-${ccidvoxi}-${resExecute.data[0].v_conversationid}-${resExecute.data[0].v_personid}-${v_ticketnum}.${sitevoxi}.${userid}.${v_voximplantrecording}`;
 
                 dispatch(resetExecute());
                 dispatch(makeCall({ number: v_personcommunicationchannelowner, site: identifier || "", data }));
