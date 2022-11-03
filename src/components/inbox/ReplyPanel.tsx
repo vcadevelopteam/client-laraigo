@@ -690,10 +690,22 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     }, [text])
 
     const selectQuickReply = (value: string) => {
-        setText(value
+        const variablesList = value.match(/({{)(.*?)(}})/g) || [];
+        let myquickreply = value
             .replace("{{numticket}}", "" + ticketSelected?.ticketnum)
             .replace("{{client_name}}", "" + ticketSelected?.displayname)
-            .replace("{{agent_name}}", user?.firstname + " " + user?.lastname))
+            .replace("{{agent_name}}", user?.firstname + " " + user?.lastname)
+
+        variablesList.forEach((x: any) => {
+            let variableData = variablecontext?.[x.substring(2, x.length - 2)]
+            if (!!variableData) {
+                myquickreply = myquickreply.replaceAll(x, variableData.Value)
+            } else {
+                myquickreply = myquickreply.replaceAll(x, "")
+            }
+        })
+
+        setText(myquickreply)
     }
 
     const selectRichResponse = (block: Dictionary) => {
