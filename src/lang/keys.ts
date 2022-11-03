@@ -48,6 +48,8 @@ export const langKeys = {
     dashboardadd: "dashboardadd",
     reports: "reports",
     deploymentdate: 'deploymentdate',
+    android_version: 'android_version',
+    ios_version: 'ios_version',
     generalhelp: 'generalhelp',
     aboutlaraigo: 'aboutlaraigo',
     allowconsecutivenumbers: "allowconsecutivenumbers",
