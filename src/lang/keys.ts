@@ -44,6 +44,7 @@ export const langKeys = {
     cancelevent: "cancelevent",
     canceleventtext: "canceleventtext",
     cancelenventerror: "cancelenventerror",
+    sendreminders: 'sendreminders',
     passwordCond8: "passwordCond8",
     passwordCond9: "passwordCond9",
     allowconsecutivenumbers: "allowconsecutivenumbers",

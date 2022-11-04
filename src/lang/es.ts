@@ -1593,6 +1593,7 @@ const translation: LangKeys = {
     unavailable: "Indisponible",
     more_times: "Mas veces",
     select_date_time: " Selecciona un fecha y hora",
+    sendreminders: 'Envío de recordatorios',
     prepare_meeting: "Comparta algo adicional que ayude a prepararse para nuestra reunión.",
     no_event_found: "Ningún evento encontrado",
     invitation_email: "Se ha enviado una invitación de calendario a su dirección de correo electrónico.",

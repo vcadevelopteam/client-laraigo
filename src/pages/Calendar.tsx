@@ -82,6 +82,7 @@ type FormFields = {
     timebeforeeventduration: number,
     timeaftereventunit: string,
     timeaftereventduration: number,
+    statusreminder: string,
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -858,6 +859,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
             timebeforeeventduration: row?.timebeforeeventduration || 0,
             timeaftereventunit: row?.timeaftereventunit || "MINUTE",
             timeaftereventduration: row?.timeaftereventduration || 0,
+            statusreminder: row?.statusreminder || "INACTIVO",
         }
     });
 
@@ -888,6 +890,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         register('timebeforeeventduration', { validate: (value) => Boolean(value >= 0) || String(t(langKeys.field_required)) });
         register('timeaftereventunit', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('timeaftereventduration', { validate: (value) => Boolean(value >= 0) || String(t(langKeys.field_required)) });
+        /*register('statusreminder', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });*/
     }, [register]);
 
     const handleColorChange: ColorChangeHandler = (e) => {
@@ -1045,11 +1048,18 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                 />
                 {operation === "EDIT" && <AntTab
                     label={(
-                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                        <div style={{ display: operation === "EDIT"?'flex':'none', gap: 8, alignItems: 'center' }}>
                             <Trans i18nKey={langKeys.scheduled_events} count={2} />
                         </div>
                     )}
                 />}
+                <AntTab
+                    label={(
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                            <Trans i18nKey={langKeys.sendreminders} count={2} />
+                        </div>
+                    )}
+                />
             </Tabs>
 
             <AntTabPanel index={0} currentIndex={tabIndex}>
@@ -1522,14 +1532,32 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                     </div>
                 </div>
             </AntTabPanel>
-            <div style={{ overflowY: 'auto' }}>
+            {operation === "EDIT" && 
                 <AntTabPanel index={2} currentIndex={tabIndex} >
                     <BookingEvents
                         calendarEventID={row?.calendareventid || 0}
                         event={row!!}
                     />
                 </AntTabPanel>
-            </div>
+            }
+            <AntTabPanel index={operation === "EDIT"?3:2} currentIndex={tabIndex} >
+                <div className={classes.containerDetail}>
+                    <div className="row-zyx" >
+                        <FieldSelect
+                            label={t(langKeys.status)}
+                            className="col-6"
+                            valueDefault={row?.statusreminder || "INACTIVO"}
+                            onChange={(value) => setValue('statusreminder', (value ? value.domainvalue : ""))}
+                            error={errors?.statusreminder?.message}
+                            data={dataStatus}
+                            uset={true}
+                            prefixTranslation="status_"
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
+                    </div>
+                </div>
+            </AntTabPanel>
         </form>
     );
 }

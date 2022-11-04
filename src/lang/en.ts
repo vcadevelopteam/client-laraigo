@@ -911,6 +911,7 @@ const translation: LangKeys = {
     variableconfigurationdetail: 'Variable configuration detail',
     flow: 'Flow',
     color: 'Color',
+    sendreminders: 'Send reminders',
     suspend_ticket: 'Suspend ticket',
     healthprofessional: "Health professional",
     referralchannel: "Referral channel",
