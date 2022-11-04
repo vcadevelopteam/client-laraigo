@@ -117,6 +117,10 @@ const paths = {
         path: '/channels/:id/add/ChannelAddBlogger',
         resolve: (channelId: string | number) => `/channels/${channelId}/add/ChannelAddBlogger`,
     },
+    CHANNELS_ADD_WHATSAPPONBOARDING: {
+        path: '/channels/:id/add/ChannelAddWhatsAppOnboarding',
+        resolve: (channelId: string | number) => `/channels/${channelId}/add/ChannelAddWhatsAppOnboarding`,
+    },
     CHANNELS_EDIT: {
         path: '/channels/edit/:id',
         resolve: (channelId: string | number) => `/channels/edit/${channelId}`,

@@ -4178,6 +4178,12 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     templateexcel: "Plantilla Excel",
     productimportalert: "El archivo cargado no tiene el formato correcto",
     productimportmissing: "Existen campos obligatorios sin información",
+    channel_whatsapponboarding: "Inducción WhatsApp",
+    connect_whatsappnumber: "Conectar Número WhatsApp",
+    connect_yourwhatsappnumber: "Conecta tu número WhatsApp",
+    connect_yourwhatsappnumberdetail: "Presiona el siguiente boton para comenzar el proceso de inducción de WhatsApp. Al final del proceso, deberas habilitar el acceso a todos los números que deseas utilizar en la plataforma Laraigo y seleccionar el que deseas para finalizar la creación de su canal.",
+    select_whatsappnumber: "Selecciona tu Teléfono",
+    linked_whatsappnumber: "Números WhatsApp Enlazados",
 };
 
 const esResource: ResourceLanguage = {

@@ -178,7 +178,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
                             appId: apiUrls.INSTAGRAMAPP,
                             cookie: true,
                             xfbml: true,
-                            version: 'v15.0'
+                            version: apiUrls.FACEBOOKVERSION,
                         });
                     }}
                     isDisabled={mainResult.loading}
