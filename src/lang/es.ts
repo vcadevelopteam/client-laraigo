@@ -1150,6 +1150,7 @@ const translation: LangKeys = {
     result: 'Resultado',
     closing_reason: 'Motivo de cierre',
     reassign: 'Reasignar',
+    cancelenventerror: "Solo se pueden cancelar eventos futuros a la fecha actual.",
     reassign_ticket: 'Reasignar ticket',
     typify: 'Clasificar',
     typify_ticket: 'Clasificar ticket',

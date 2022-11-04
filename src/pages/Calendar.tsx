@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, AntTab, ColorInput, AntTabPanel, DateRangePicker, FieldEditMulti, FieldView } from 'components';
-import { getDateCleaned, insCommentsBooking, getValuesFromDomain, insCalendar, hours, selCalendar, getMessageTemplateLst, getCommChannelLst, getDateToday, selBookingCalendar, dayNames } from 'common/helpers';
+import { getDateCleaned, insCommentsBooking, getValuesFromDomain, insCalendar, hours, selCalendar, getMessageTemplateLst, getCommChannelLst, getDateToday, selBookingCalendar, dayNames, calendarBookingCancel } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -371,24 +371,28 @@ const DialogCancelBooking: React.FC<{
     useEffect(() => {
         if (openModal) {
             reset({
-                comment: booking?.comment || ''
+                comment: ''
             })
-            register('comment', { validate: (value) => ((value && value.length) || t(langKeys.field_required)) });
+            register('comment');
         }
     }, [openModal])
 
     const onSubmit = async () => {
-        const allOk = await trigger();
-        if (allOk) {
-            const data = getValues();
-            const datat = {
-                calendareventid: event.calendareventid,
-                id: booking?.calendarbookingid,
-                comment: data.comment,
+        if(new Date(booking?.monthdate) > new Date()){
+            const allOk = await trigger();
+            if (allOk) {
+                const data = getValues();
+                const datat = {
+                    calendareventid: event.calendareventid,
+                    id: booking?.calendarbookingid,
+                    cancelcomment: data.comment||"",
+                }
+                dispatch(execute(calendarBookingCancel(datat)));
+                setWaitSave(true);
+                dispatch(showBackdrop(true));
             }
-            dispatch(execute(insCommentsBooking(datat)));
-            setWaitSave(true);
-            dispatch(showBackdrop(true));
+        }else{
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.cancelenventerror || "error_unexpected_error") }))
         }
     }
 
@@ -423,7 +427,6 @@ const DialogCancelBooking: React.FC<{
                         className={classes.colInput}
                         onChange={(value) => setValue('comment', value)}
                         maxLength={1024}
-                        error={errors?.comment?.message}
                         variant="outlined"
                     />
                 </div>

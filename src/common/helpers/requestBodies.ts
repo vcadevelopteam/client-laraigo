@@ -2980,6 +2980,16 @@ export const selBookingCalendar = (startdate: string, enddate: string, calendare
     },
 });
 
+export const calendarBookingCancel = ({ calendareventid, id, cancelcomment }: Dictionary) => ({
+    method: "UFN_CALENDARBOOKING_CANCEL",
+    key: "UFN_CALENDARBOOKING_CANCEL",
+    parameters: {
+        calendareventid,
+        id,
+        cancelcomment,
+    },
+});
+
 export const insCommentsBooking = (parameters: Dictionary) => ({
     method: "UFN_CALENDARYBOOKING_COMMENT",
     key: "UFN_CALENDARYBOOKING_COMMENT",
