@@ -40,6 +40,7 @@ export const langKeys = {
     passwordCond5: "passwordCond5",
     passwordCond6: "passwordCond6",
     passwordCond7: "passwordCond7",
+    cancelappointment: "cancelappointment",
     passwordCond8: "passwordCond8",
     passwordCond9: "passwordCond9",
     allowconsecutivenumbers: "allowconsecutivenumbers",

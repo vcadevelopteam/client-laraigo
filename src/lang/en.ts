@@ -919,6 +919,7 @@ const translation: LangKeys = {
     italic: 'Italic',
     underline: 'Underline',
     heading_one: 'Heading one',
+    cancelappointment: "Cancel appointment",
     heading_two: 'Heading two',
     block_quote: 'Block quote',
     numbered_list: 'Numbered list',
