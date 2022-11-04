@@ -175,12 +175,11 @@ const useStyles = makeStyles((theme) => ({
         lineHeight: 1.66,
     },
     itemBooking: {
-        display: 'flex',
-        justifyContent: 'space-between',
         padding: 24,
         backgroundColor: 'white',
         boxShadow: '0 1px 8px 0 rgb(0 0 0 / 8%)',
         cursor: 'pointer',
+        display: 'flex',
         '&:hover': {
             backgroundColor: '#f5f8fa',
         }
@@ -347,6 +346,9 @@ const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = 
     const [bookingSelected, setBookingSelected] = useState<Dictionary | null>(null);
     const [dataBooking, setDataBooking] = useState<Dictionary[]>([])
     const { t } = useTranslation();
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+    const handleClose = () => setAnchorEl(null);
 
     const fetchData = () => dispatch(getCollectionAux(selBookingCalendar(
         dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : "",
@@ -408,28 +410,67 @@ const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = 
                 {dataBooking.map(x => (
                     <div
                         key={x.calendarbookingid}
-                    >
+                    >   
                         {!!x.haveDate && (
                             <div style={{ marginBottom: 16 }}>
                                 {x.dateString}
                             </div>
                         )}
-                        <div
-                            className={classes.itemBooking}
-                            onClick={() => {
-                                setBookingSelected(x);
-                                setOpenDialog(true);
-                            }}
-                        >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                                <div style={{ backgroundColor: x.color, width: 24, height: 24, borderRadius: 12 }}></div>
-                                <div>{x.hourstart.substring(0, 5)} - {x.hourend.substring(0, 5)}</div>
+                            <div
+                                className={classes.itemBooking}
+                                onClick={() => {
+                                    setBookingSelected(x);
+                                    setOpenDialog(true);
+                                }}
+                            >
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <IconButton
+                                    aria-label="more"
+                                    aria-controls="long-menu"
+                                    aria-haspopup="true"
+                                    size="small"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setAnchorEl(e.currentTarget);
+                                    }}
+                                >
+                                    <MoreVertIcon />
+                                </IconButton>
+                                <Menu
+                                    id="menu-appbar"
+                                    anchorEl={anchorEl}
+                                    getContentAnchorEl={null}
+                                    anchorOrigin={{
+                                        vertical: 'bottom',
+                                        horizontal: 'right',
+                                    }}
+                                    transformOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    open={Boolean(anchorEl)}
+                                    onClick={(e) => e.stopPropagation()}
+                                    onClose={handleClose}
+                                >
+                                    <MenuItem onClick={(e) => { }}>
+                                        <ListItemIcon color="inherit">
+                                            <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                                        </ListItemIcon>
+                                        {t(langKeys.cancelappointment)}
+                                    </MenuItem>
+                                </Menu>
                             </div>
-                            <div>
-                                <div>{x?.personname}</div>
-                                <div>Evento: {event?.name}</div>
+                            <div style={{display: 'flex', justifyContent: 'space-between', width: "100%"}}>                                    
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                                    <div style={{ backgroundColor: x.color, width: 24, height: 24, borderRadius: 12 }}></div>
+                                    <div>{x.hourstart.substring(0, 5)} - {x.hourend.substring(0, 5)}</div>
+                                </div>
+                                <div>
+                                    <div>{x?.personname}</div>
+                                    <div>Evento: {event?.name}</div>
+                                </div>
+                                <div></div>
                             </div>
-                            <div></div>
                         </div>
                     </div>
                 ))}
