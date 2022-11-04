@@ -1,9 +1,9 @@
-const ENV = "PRODUCTION";
+const ENV = "DEVELOP";
 
 const APIS_URL = {
     DEVELOP: {
         API: 'https://apix.laraigo.com/api',
-        // WS: 'http://localhost:7070',
+        //WS: 'http://localhost:7070',
         WS: 'https://socket.laraigo.com',
         CHATFLOW: 'https://zyxmelinux2.zyxmeapp.com/zyxme/chatflow',
         FACEBOOKAPP: '367176075182579',
@@ -11,6 +11,8 @@ const APIS_URL = {
         CULQIKEY: 'pk_test_041501e753dcb2f9',
         GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
+        FACEBOOKVERSION: 'v15.0',
+        DIALOG360PARTNERID: 'nPJXndPA',
     },
     TESTING: {
         API: 'https://testapix.laraigo.com/api',
@@ -21,6 +23,8 @@ const APIS_URL = {
         CULQIKEY: 'pk_test_041501e753dcb2f9',
         GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
+        FACEBOOKVERSION: 'v15.0',
+        DIALOG360PARTNERID: 'nPJXndPA',
     },
     PRODUCTION: {
         API: 'https://apiprd.laraigo.com/api',
@@ -31,6 +35,8 @@ const APIS_URL = {
         CULQIKEY: 'pk_test_041501e753dcb2f9',
         GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
+        FACEBOOKVERSION: 'v15.0',
+        DIALOG360PARTNERID: 'nPJXndPA',
     },
     CLARO: {
         API: 'https://claroapi.laraigo.com/api',
@@ -41,6 +47,8 @@ const APIS_URL = {
         CULQIKEY: 'pk_test_041501e753dcb2f9',
         GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
+        FACEBOOKVERSION: 'v15.0',
+        DIALOG360PARTNERID: 'nPJXndPA',
     },
     CLOUD: {
         API: 'https://cloudapi.laraigo.com/api',
@@ -51,6 +59,8 @@ const APIS_URL = {
         CULQIKEY: 'pk_test_041501e753dcb2f9',
         GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
+        FACEBOOKVERSION: 'v15.0',
+        DIALOG360PARTNERID: 'nPJXndPA',
     },
     DEMO: {
         API: 'https://demoapix.laraigo.com/api',
@@ -61,11 +71,13 @@ const APIS_URL = {
         CULQIKEY: 'pk_test_041501e753dcb2f9',
         GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
+        FACEBOOKVERSION: 'v15.0',
+        DIALOG360PARTNERID: 'nPJXndPA',
     },
     LOCAL: {
         API: 'http://localhost:6065/api',
         //API: 'https://apix.laraigo.com/api',
-        // WS: 'http://localhost:7070',
+        //WS: 'http://localhost:7070',
         WS: 'https://socket.laraigo.com',
         CHATFLOW: 'https://zyxmelinux2.zyxmeapp.com/zyxme/chatflow',
         FACEBOOKAPP: '367176075182579',
@@ -73,6 +85,8 @@ const APIS_URL = {
         CULQIKEY: 'pk_test_041501e753dcb2f9',
         GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
+        FACEBOOKVERSION: 'v15.0',
+        DIALOG360PARTNERID: 'nPJXndPA',
     }
 }
 
@@ -84,6 +98,8 @@ const INSTAGRAMAPP = APIS_URL[ENV].INSTAGRAMAPP
 const CULQIKEY = APIS_URL[ENV].CULQIKEY
 const GOOGLECLIENTID_LOGIN = APIS_URL[ENV].GOOGLECLIENTID_LOGIN
 const GOOGLECLIENTID_CHANNEL = APIS_URL[ENV].GOOGLECLIENTID_CHANNEL
+const FACEBOOKVERSION = APIS_URL[ENV].FACEBOOKVERSION
+const DIALOG360PARTNERID = APIS_URL[ENV].DIALOG360PARTNERID
 
 export const apiUrls = {
     WS_URL,
@@ -92,6 +108,8 @@ export const apiUrls = {
     CULQIKEY,
     GOOGLECLIENTID_LOGIN,
     GOOGLECLIENTID_CHANNEL,
+    FACEBOOKVERSION,
+    DIALOG360PARTNERID,
     LOGIN_URL: `${BASE_URL}/auth`,
     CONNECT_INBOX: `${BASE_URL}/auth/connect`,
     CHANGE_ORGANIZATION: `${BASE_URL}/auth/changeorganization`,
@@ -128,6 +146,7 @@ export const apiUrls = {
     INTEGRATION_URL: `${BASE_URL}/load`,
     CHANNELS: `${BASE_URL}/channel`,
     GET_PAGELIST: `${BASE_URL}/channel/getpagelist`,
+    GET_PHONELIST: `${BASE_URL}/channel/getphonelist`,
     VERIFY_CHANNEL: `${BASE_URL}/subscription/get/contract`,
     GET_PAGELISTSUB: `${BASE_URL}/subscription/getpagelist`,
     INSERT_CHANNEL: `${BASE_URL}/channel/insertchannel`,

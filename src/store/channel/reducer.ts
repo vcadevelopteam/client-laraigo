@@ -19,6 +19,7 @@ export interface IState {
     requestSynchronizeTemplate: IRequest;
     requestAddTemplate: IRequest;
     requestDeleteTemplate: IRequest;
+    requestGetPageList: IRequest;
 
     channelList: IListStatePaginated<Dictionary>;
 
@@ -38,6 +39,7 @@ export const initialState: IState = {
     requestSynchronizeTemplate: { ...initialCommon, data: null, loading: false, error: false },
     requestAddTemplate: { ...initialCommon, data: null, loading: false, error: false },
     requestDeleteTemplate: { ...initialCommon, data: null, loading: false, error: false },
+    requestGetPageList: { ...initialCommon, data: null, loading: false, error: false },
 
     channelList: initialListPaginatedState,
 

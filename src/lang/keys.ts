@@ -4116,6 +4116,12 @@ export const langKeys = {
     aiduplicatealert: "aiduplicatealert",
     aitotalquantity: "aitotalquantity",
     aiminimumquantity: "aiminimumquantity",
+    channel_whatsapponboarding: "channel_whatsapponboarding",
+    connect_whatsappnumber: "connect_whatsappnumber",
+    connect_yourwhatsappnumber: "connect_yourwhatsappnumber",
+    connect_yourwhatsappnumberdetail: "connect_yourwhatsappnumberdetail",
+    select_whatsappnumber: "select_whatsappnumber",
+    linked_whatsappnumber: "linked_whatsappnumber",
 };
 
 export type LangKeys = typeof langKeys;

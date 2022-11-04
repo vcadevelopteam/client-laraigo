@@ -64,6 +64,8 @@ export const checkPaymentPlan = (requestBody: IRequestBody): IActionCall => ({
 
 export const resetGetChannelsList = (): IActionCall => ({ type: actionTypes.CHANNELS_RESET });
 
+export const resetGetChannelsSubList = (): IActionCall => ({ type: actionTypes.CHANNELS_RESET });
+
 export const resetChannelInsert = (): IActionCall => ({ type: actionTypes.CHANNELS_INSERTSUCCESS_RESET });
 
 export const insertChannel2 = (payload: IRequestBody<IChatWebAdd>): IActionCall => ({
@@ -254,3 +256,15 @@ export const deleteTemplate = (request: any): IActionCall => ({
 });
 
 export const resetDeleteTemplate = (): IActionCall => ({ type: actionTypes.DELETE_TEMPLATE_RESET });
+
+export const getPhoneList = (request: any): IActionCall => ({
+    callAPI: () => ChannelsService.getPhoneList(request),
+    types: {
+        loading: actionTypes.PHONE_LIST,
+        success: actionTypes.PHONE_LIST_SUCCESS,
+        failure: actionTypes.PHONE_LIST_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetPhoneList = (): IActionCall => ({ type: actionTypes.PHONE_LIST_RESET });

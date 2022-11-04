@@ -74,6 +74,7 @@ const ChannelAddYouTube = lazy(() => import('pages/channels/ChannelAddYouTube'))
 const ChannelAddLinkedIn = lazy(() => import('pages/channels/ChannelAddLinkedIn'));
 const ChannelAddTeams = lazy(() => import('pages/channels/ChannelAddTeams'));
 const ChannelAddBlogger = lazy(() => import('pages/channels/ChannelAddBlogger'));
+const ChannelAddWhatsAppOnboarding = lazy(() => import('pages/channels/ChannelAddWhatsAppOnboarding'));
 const ChannelEdit = lazy(() => import('pages/channels/ChannelEdit'));
 const SignUp = lazy(() => import('pages/signup/SignUp'));
 const BotDesigner = lazy(() => import('pages/BotDesigner'));
@@ -136,7 +137,7 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 				userGroup: resValidateToken.user?.groups || "",
 				role: resValidateToken.user?.roledesc || "",
 			}))
-			
+
 			const { userid, orgid, roledesc, ownervoxi, sitevoxi } = resValidateToken.user!!
 			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM', automaticConnection, fromLogin: automaticConnection, roledesc }));
 			if (sitevoxi && ownervoxi) {
@@ -221,6 +222,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.CHANNELS_ADD_LINKEDIN.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddLinkedIn /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_TEAMS.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddTeams /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_BLOGGER.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddBlogger /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_WHATSAPPONBOARDING.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddWhatsAppOnboarding /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_EDIT.path} component={() => (<Layout mainClasses={classes.main}><ChannelEdit /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_EDIT_CHATWEB.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddChatWeb edit /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_EDIT_WHATSAPP.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddWhatsapp edit /></Layout>)} />

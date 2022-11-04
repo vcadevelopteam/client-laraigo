@@ -4131,6 +4131,12 @@ const translation: LangKeys = {
     aiduplicatealert: "The active AI services must be unique",
     aitotalquantity: "Total AI Quantity",
     aiminimumquantity: "Minimum AI Quantity",
+    channel_whatsapponboarding: "WhatsApp Onboarding",
+    connect_whatsappnumber: "Connect WhatsApp Number",
+    connect_yourwhatsappnumber: "Connect your WhatsApp number",
+    connect_yourwhatsappnumberdetail: "Press this button to start the WhatsApp onboarding process. At the end of the process, you need to allow access to all of the phone numbers that you wish to use in the Laraigo platform and select the one that you will use to finish this particular channel creation.",
+    select_whatsappnumber: "Select your Phone",
+    linked_whatsappnumber: "Linked WhatsApp Phones",
 };
 
 const enResource: ResourceLanguage = {
