@@ -41,6 +41,8 @@ export const langKeys = {
     passwordCond6: "passwordCond6",
     passwordCond7: "passwordCond7",
     cancelappointment: "cancelappointment",
+    cancelevent: "cancelevent",
+    canceleventtext: "canceleventtext",
     passwordCond8: "passwordCond8",
     passwordCond9: "passwordCond9",
     allowconsecutivenumbers: "allowconsecutivenumbers",

@@ -169,6 +169,8 @@ const translation: LangKeys = {
     configuration: 'Configuración',
     template: 'Plantilla',
     templatedownload: "descargar Template",
+    cancelevent: "Cancelar evento",
+    canceleventtext: "Por favor, confirme si desea cancelar este evento. Recuerde que una vez cancelado no podrá revertir la acción.",
     configuration_plural: 'Configuraciones',
 
     eMailInbox: 'Bandeja de correo',

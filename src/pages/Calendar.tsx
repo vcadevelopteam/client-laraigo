@@ -186,6 +186,11 @@ const useStyles = makeStyles((theme) => ({
     },
     colInput: {
         width: '100%'
+    },
+    cancelEventFields: {
+        textAlign: 'center',
+        fontSize: '1.1rem',
+        padding: '5px',
     }
 }));
 
@@ -332,6 +337,120 @@ const DialogBooking: React.FC<{
     )
 }
 
+const DialogCancelBooking: React.FC<{
+    setOpenModal: (param: any) => void;
+    openModal: boolean;
+    event: Dictionary;
+    booking: Dictionary | null;
+    fetchData: () => void
+}> = ({ setOpenModal, openModal, event, booking, fetchData }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const [waitSave, setWaitSave] = useState(false);
+    const classes = useStyles();
+    const saveRes = useSelector(state => state.main.execute);
+    const { register, setValue, getValues, reset, trigger, formState: { errors } } = useForm();
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!saveRes.loading && !saveRes.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_update) }))
+                setOpenModal(false);
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+                fetchData()
+            } else if (saveRes.error) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(saveRes.code || "error_unexpected_error") }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [saveRes, waitSave])
+
+
+    useEffect(() => {
+        if (openModal) {
+            reset({
+                comment: booking?.comment || ''
+            })
+            register('comment', { validate: (value) => ((value && value.length) || t(langKeys.field_required)) });
+        }
+    }, [openModal])
+
+    const onSubmit = async () => {
+        const allOk = await trigger();
+        if (allOk) {
+            const data = getValues();
+            const datat = {
+                calendareventid: event.calendareventid,
+                id: booking?.calendarbookingid,
+                comment: data.comment,
+            }
+            dispatch(execute(insCommentsBooking(datat)));
+            setWaitSave(true);
+            dispatch(showBackdrop(true));
+        }
+    }
+
+    return (
+        <Dialog
+            open={openModal}
+            fullWidth
+            maxWidth="xs"
+        >
+            <DialogTitle>
+                <div style={{textAlign: 'center', fontWeight: 'bold'}}>
+                    {t(langKeys.cancelevent)}
+                </div>
+            </DialogTitle>
+            <DialogContent>
+                <div className={classes.cancelEventFields}>
+                    {event?.name}
+                </div>
+                <div className={classes.cancelEventFields} style={{fontWeight: 'bold'}}>
+                    {booking?.personname}
+                </div>
+                <div className={classes.cancelEventFields}>
+                    {`${booking?.hourstart.substring(0, 5)} - ${booking?.hourend.substring(0, 5)}`}
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingTop:'10px' }}>
+                    <div style={{ fontSize: '1rem'}}>
+                        {t(langKeys.canceleventtext)}
+                    </div>
+                    <FieldEditMulti
+                        label={""}
+                        valueDefault={getValues('comment')}
+                        className={classes.colInput}
+                        onChange={(value) => setValue('comment', value)}
+                        maxLength={1024}
+                        error={errors?.comment?.message}
+                        variant="outlined"
+                    />
+                </div>
+            </DialogContent>
+            <DialogActions>
+                <div style={{display: 'flex', flexDirection: 'row', gap: 16, paddingTop:'10px', width: "100%", padding: "0px 16px 10px"  }}>
+                    <Button
+                        style={{width:"50%"}}
+                        variant="contained"
+                        color="primary"
+                        onClick={onSubmit}
+                    >
+                        {t(langKeys.cancelevent)}
+                    </Button>
+                    <Button 
+                        style={{width:"50%"}}
+                        variant="contained" 
+                        color="secondary" 
+                        onClick={() => setOpenModal(false)}>
+                        {t(langKeys.discard)}
+                    </Button>
+                </div>
+            </DialogActions>
+        </Dialog >
+    )
+}
+
 const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = ({ calendarEventID, event }) => {
     const dispatch = useDispatch();
     const [openDatePicker, setOpenDatePicker] = useState(false);
@@ -343,6 +462,7 @@ const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = 
         key: 'selection',
     });
     const [openDialog, setOpenDialog] = useState(false);
+    const [openDialogCancel, setOpenDialogCancel] = useState(false);
     const [bookingSelected, setBookingSelected] = useState<Dictionary | null>(null);
     const [dataBooking, setDataBooking] = useState<Dictionary[]>([])
     const { t } = useTranslation();
@@ -449,10 +569,10 @@ const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = 
                                         horizontal: 'right',
                                     }}
                                     open={Boolean(anchorEl)}
-                                    onClick={(e) => e.stopPropagation()}
+                                    onClick={(e) => {e.stopPropagation(); setBookingSelected(x);}}
                                     onClose={handleClose}
                                 >
-                                    <MenuItem onClick={(e) => { }}>
+                                    <MenuItem onClick={(e) => { setOpenDialogCancel(true);handleClose()}}>
                                         <ListItemIcon color="inherit">
                                             <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
                                         </ListItemIcon>
@@ -479,6 +599,13 @@ const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = 
                 booking={bookingSelected}
                 setOpenModal={setOpenDialog}
                 openModal={openDialog}
+                event={event}
+                fetchData={fetchData}
+            />
+            <DialogCancelBooking
+                booking={bookingSelected}
+                setOpenModal={setOpenDialogCancel}
+                openModal={openDialogCancel}
                 event={event}
                 fetchData={fetchData}
             />

@@ -920,6 +920,8 @@ const translation: LangKeys = {
     underline: 'Underline',
     heading_one: 'Heading one',
     cancelappointment: "Cancel appointment",
+    cancelevent: "Cancel event",
+    canceleventtext: "Please confirm if you want to cancel this event. Remember that once canceled you will not be able to reverse the action.",
     heading_two: 'Heading two',
     block_quote: 'Block quote',
     numbered_list: 'Numbered list',
