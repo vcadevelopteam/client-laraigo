@@ -167,7 +167,7 @@ const ReportKpiOperativo: FC = () => {
                             props.rows.reduce((sum: any, row: any) => +row.values["eqtmoasesor"] + sum, 0),
                         [props.rows]
                     )
-                    return <>{props.rows.filter((r: any) => r.values["eqtmoasesor"]).length !== 0 ? (total / props.rows.filter((r: any) => r.values["eqtmoasesor"]).length).toFixed(2) : ''}</>
+                    return <>{props.rows.filter((r: any) => r.values["eqtmoasesor"]).length !== 0 ? (total / props.rows.filter((r: any) => r.values["eqtmoasesor"]).length).toFixed(0) : ''}</>
                 },
             },
             {
