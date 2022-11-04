@@ -42,7 +42,7 @@ export const ChannelAddWhatsAppOnboarding: FC = () => {
     const history = useHistory();
     const location = useLocation<whatsAppData>();
     const mainResult = useSelector(state => state.channel.channelList);
-    const numberResult = useSelector(state => state.channel.requestGetPageList);
+    const numberResult = useSelector(state => state.channel.requestGetNumberList);
     const whatsAppData = location.state as whatsAppData | null;
 
     const [channelRegister, setChannelRegister] = useState(true);
@@ -73,7 +73,7 @@ export const ChannelAddWhatsAppOnboarding: FC = () => {
         "type": "WHATSAPP",
     });
     const [allowInsert, setAllowInsert] = useState(false);
-    const [showRegister, setShowRegister] = useState(true);
+    const [showLastStep, setShowLastStep] = useState(false);
     const [numberList, setNumberList] = useState<any>([]);
     const [waitSave, setWaitSave] = useState(false);
     const [waitList, setWaitList] = useState(false);
@@ -97,7 +97,7 @@ export const ChannelAddWhatsAppOnboarding: FC = () => {
             setDialogClient(null);
         }
         if (query.get('channels')) {
-            setDialogChannels(query.get('channel') || null);
+            setDialogChannels(query.get('channels') || null);
         }
         else {
             setDialogChannels(null);
@@ -110,14 +110,13 @@ export const ChannelAddWhatsAppOnboarding: FC = () => {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
                 dispatch(showBackdrop(false));
                 setAllowInsert(false);
-                setShowRegister(false);
                 setWaitSave(false);
+                goBack();
             } else if (!executeResult) {
                 const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setAllowInsert(false);
-                setShowRegister(false);
                 setWaitSave(false);
             }
         }
@@ -132,33 +131,33 @@ export const ChannelAddWhatsAppOnboarding: FC = () => {
 
     useEffect(() => {
         if (waitList) {
-            if (!numberResult.loading && !numberResult.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }))
-                dispatch(showBackdrop(false));
-                setWaitList(false);
-
+            if (!numberResult.loading) {
                 if (numberResult.data) {
-                    setNumberList(numberResult.data || []);
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }))
+                    dispatch(showBackdrop(false));
+                    setWaitList(false);
+
+                    if (numberResult.data) {
+                        setNumberList(numberResult.data || []);
+                    }
+                    else {
+                        setNumberList([]);
+                    }
+                } else {
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(numberResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() }) }))
+                    dispatch(showBackdrop(false));
+                    setWaitList(false);
                 }
-                else {
-                    setNumberList([]);
-                }
-            } else {
-                dispatch(showSnackbar({ show: true, severity: "error", message: t(numberResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() }) }))
-                dispatch(showBackdrop(false));
-                setWaitList(false);
             }
         }
     }, [numberResult, waitList])
 
     useEffect(() => {
-        console.log(`CLIENT: ${JSON.stringify(dialogClient)}`);
-        console.log(`CHANNELS: ${JSON.stringify(dialogChannels)}`);
-
         if (dialogClient && dialogChannels) {
-            dispatch(getPhoneList({ partnerId: apiUrls.DIALOG360PARTNERID, channelList: dialogChannels }));
+            dispatch(getPhoneList({ partnerId: apiUrls.DIALOG360PARTNERID, channelList: ((dialogChannels || '').split("[").join("").split("]").join("")).split(',') }));
             dispatch(showBackdrop(true));
             setWaitList(true);
+            setNumberList([]);
         }
     }, [dialogClient, dialogChannels])
 
@@ -176,6 +175,8 @@ export const ChannelAddWhatsAppOnboarding: FC = () => {
             partialFields.parameters.communicationchannelowner = value?.channelId || "";
             partialFields.service.channelid = value?.channelId || "";
             setFields(partialFields);
+
+            setShowLastStep(true);
         }
         else {
             let partialFields = fields;
@@ -183,12 +184,12 @@ export const ChannelAddWhatsAppOnboarding: FC = () => {
             partialFields.parameters.communicationchannelowner = "";
             partialFields.service.channelid = "";
             setFields(partialFields);
+
+            setShowLastStep(false);
         }
     }
 
     const handleCallback = (callbackEvent: any) => {
-        console.log(`CALLBACK: ${JSON.stringify(callbackEvent)}`);
-
         setDialogClient(null);
         setDialogChannels(null);
 
@@ -232,13 +233,13 @@ export const ChannelAddWhatsAppOnboarding: FC = () => {
                             label={t(langKeys.linked_whatsappnumber)}
                             className="col-6"
                             valueDefault={fields.parameters.communicationchannelowner}
-                            data={mainResult.data}
+                            data={numberList}
                             optionDesc="phone"
                             optionValue="channelId"
                         />
                     </div>
                 </div>
-                {fields.service.channelid && <>
+                {showLastStep && <>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "16px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.commchannelfinishreg)}</div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
@@ -270,17 +271,14 @@ export const ChannelAddWhatsAppOnboarding: FC = () => {
                         </div>
                     </div>
                     <div style={{ paddingLeft: "80%" }}>
-                        {showRegister ?
-                            <Button
-                                onClick={() => { finishRegister() }}
-                                className={classes.button}
-                                disabled={channelRegister || mainResult.loading}
-                                variant="contained"
-                                color="primary"
-                            >{t(langKeys.finishreg)}
-                            </Button>
-                            : null
-                        }
+                        <Button
+                            onClick={() => { finishRegister() }}
+                            className={classes.button}
+                            disabled={channelRegister || mainResult.loading}
+                            variant="contained"
+                            color="primary"
+                        >{t(langKeys.finishreg)}
+                        </Button>
                     </div>
                 </>}
             </div>

@@ -427,19 +427,19 @@ export const deleteTemplateReset = (state: IState): IState => ({
     requestDeleteTemplate: initialState.requestDeleteTemplate,
 })
 
-export const getPageList = (state: IState, action: IAction): IState => ({
+export const getNumberList = (state: IState, action: IAction): IState => ({
     ...state,
-    requestGetPageList: {
-        ...state.requestGetPageList,
+    requestGetNumberList: {
+        ...state.requestGetNumberList,
         error: false,
         loading: true,
     }
 })
 
-export const getPageListFailure = (state: IState, action: IAction): IState => ({
+export const getNumberListFailure = (state: IState, action: IAction): IState => ({
     ...state,
-    requestGetPageList: {
-        ...state.requestGetPageList,
+    requestGetNumberList: {
+        ...state.requestGetNumberList,
         code: action?.payload?.code,
         error: action?.payload?.success ? false : true,
         loading: false,
@@ -447,10 +447,10 @@ export const getPageListFailure = (state: IState, action: IAction): IState => ({
     }
 })
 
-export const getPageListSuccess = (state: IState, action: IAction): IState => ({
+export const getNumberListSuccess = (state: IState, action: IAction): IState => ({
     ...state,
-    requestGetPageList: {
-        ...state.requestGetPageList,
+    requestGetNumberList: {
+        ...state.requestGetNumberList,
         code: action?.payload?.code,
         data: action?.payload?.data,
         error: action?.payload?.success ? false : true,
@@ -459,7 +459,7 @@ export const getPageListSuccess = (state: IState, action: IAction): IState => ({
     }
 })
 
-export const getPageListReset = (state: IState): IState => ({
+export const getNumberListReset = (state: IState): IState => ({
     ...state,
-    requestGetPageList: initialState.requestGetPageList,
+    requestGetNumberList: initialState.requestGetNumberList,
 })
