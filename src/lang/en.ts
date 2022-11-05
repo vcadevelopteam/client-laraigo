@@ -912,6 +912,8 @@ const translation: LangKeys = {
     flow: 'Flow',
     color: 'Color',
     sendreminders: 'Send reminders',
+    remindertype: 'Reminder type',
+    reminderrange: 'Reminder range',
     suspend_ticket: 'Suspend ticket',
     healthprofessional: "Health professional",
     referralchannel: "Referral channel",
