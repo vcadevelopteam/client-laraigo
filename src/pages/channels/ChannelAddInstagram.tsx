@@ -167,7 +167,7 @@ export const ChannelAddInstagram: FC = () => {
                                 appId: apiUrls.INSTAGRAMAPP,
                                 cookie: true,
                                 xfbml: true,
-                                version: 'v15.0'
+                                version: apiUrls.FACEBOOKVERSION,
                             });
                         }}
                         disableMobileRedirect={true}

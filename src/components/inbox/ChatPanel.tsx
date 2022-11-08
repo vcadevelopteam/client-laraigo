@@ -971,7 +971,8 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     const location = useLocation();
     const user = useSelector(state => state.login.validateToken.user);
     const userConnected = useSelector(state => state.inbox.userConnected);
-
+    const propertyAsesorSuspende = user?.roledesc === "ASESOR"? multiData?.data?.filter(x=>x.key==="UFN_PROPERTY_SELBYNAMEASESORSUSPENDE")?.[0]?.data?.[0].propertyvalue === "1": true
+    
     const closeTicket = (newstatus: string) => {
         if (newstatus === "CERRADO") {
             let tipificationproperty = (multiData?.data?.[12]?.data || [{ propertyvalue: "0" }])[0];
@@ -1040,14 +1041,14 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                         </IconButton>
                     </Tooltip>
                 }
-                {(ticketSelected?.status === 'SUSPENDIDO' && ticketSelected?.communicationchanneltype !== "VOXI") &&
+                {(propertyAsesorSuspende && (ticketSelected?.status === 'SUSPENDIDO' && ticketSelected?.communicationchanneltype !== "VOXI")) &&
                     <Tooltip title={t(langKeys.activate_ticket) + ""} arrow placement="top">
                         <IconButton onClick={() => closeTicket("ASIGNADO")}>
                             <PlayArrowIcon width={24} height={24} fill="#8F92A1" />
                         </IconButton>
                     </Tooltip>
                 }
-                {(ticketSelected?.status === 'ASIGNADO' && ticketSelected?.communicationchanneltype !== "VOXI") &&
+                {(propertyAsesorSuspende && (ticketSelected?.status === 'ASIGNADO' && ticketSelected?.communicationchanneltype !== "VOXI")) &&
                     <Tooltip title={t(langKeys.suspend_ticket) + ""} arrow placement="top">
                         <IconButton onClick={() => closeTicket("SUSPENDIDO")}>
                             <PauseIcon width={24} height={24} fill="#8F92A1" />

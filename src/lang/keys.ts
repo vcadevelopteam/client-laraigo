@@ -894,10 +894,12 @@ export const langKeys = {
     report_kpioperativo_tme_avg: "report_kpioperativo_tme_avg",
     report_kpioperativo_tickets: "report_kpioperativo_tickets",
     report_kpioperativo_eqtmoasesor: "report_kpioperativo_eqtmoasesor",
-    report_kpioperativo_userpause_avg: "report_kpioperativo_userpause_avg",
+    report_kpioperativo_userpause_hour_avg: "report_kpioperativo_userpause_hour_avg",
     report_kpioperativo_tmoasesor_tickets: "report_kpioperativo_tmoasesor_tickets",
     report_kpioperativo_tickets_eqtmoasesor: "report_kpioperativo_tickets_eqtmoasesor",
-    report_kpioperativo_tmoasesor_avg: "report_kpioperativo_tmoasesor_avg",
+    report_kpioperativo_tmoasesor_hour_sum: "report_kpioperativo_tmoasesor_hour_sum",
+    report_kpioperativo_tda_hour_avg: "report_kpioperativo_tda_hour_avg",
+    report_kpioperativo_tdats_hour_avg: "report_kpioperativo_tdats_hour_avg",
 
     report_kpioperativo_year_help: "report_kpioperativo_year_help",
     report_kpioperativo_month_help: "report_kpioperativo_month_help",
@@ -907,10 +909,12 @@ export const langKeys = {
     report_kpioperativo_tme_avg_help: "report_kpioperativo_tme_avg_help",
     report_kpioperativo_tickets_help: "report_kpioperativo_tickets_help",
     report_kpioperativo_eqtmoasesor_help: "report_kpioperativo_eqtmoasesor_help",
-    report_kpioperativo_userpause_avg_help: "report_kpioperativo_userpause_avg_help",
+    report_kpioperativo_userpause_hour_avg_help: "report_kpioperativo_userpause_hour_avg_help",
     report_kpioperativo_tmoasesor_tickets_help: "report_kpioperativo_tmoasesor_tickets_help",
     report_kpioperativo_tickets_eqtmoasesor_help: "report_kpioperativo_tickets_eqtmoasesor_help",
-    report_kpioperativo_tmoasesor_avg_help: "report_kpioperativo_tmoasesor_avg_help",
+    report_kpioperativo_tmoasesor_hour_sum_help: "report_kpioperativo_tmoasesor_hour_sum_help",
+    report_kpioperativo_tda_hour_avg_help: "report_kpioperativo_tda_hour_avg_help",
+    report_kpioperativo_tdats_hour_avg_help: "report_kpioperativo_tdats_hour_avg_help",
 
     dateactivity: "dateactivity",
     leadactivity: "leadactivity",
@@ -4174,6 +4178,12 @@ export const langKeys = {
     templateexcel: "templateexcel",
     productimportalert: "productimportalert",
     productimportmissing: "productimportmissing",
+    channel_whatsapponboarding: "channel_whatsapponboarding",
+    connect_whatsappnumber: "connect_whatsappnumber",
+    connect_yourwhatsappnumber: "connect_yourwhatsappnumber",
+    connect_yourwhatsappnumberdetail: "connect_yourwhatsappnumberdetail",
+    select_whatsappnumber: "select_whatsappnumber",
+    linked_whatsappnumber: "linked_whatsappnumber",
 };
 
 export type LangKeys = typeof langKeys;

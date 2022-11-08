@@ -426,3 +426,40 @@ export const deleteTemplateReset = (state: IState): IState => ({
     ...state,
     requestDeleteTemplate: initialState.requestDeleteTemplate,
 })
+
+export const getNumberList = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestGetNumberList: {
+        ...state.requestGetNumberList,
+        error: false,
+        loading: true,
+    }
+})
+
+export const getNumberListFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestGetNumberList: {
+        ...state.requestGetNumberList,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message || 'error_unexpected_error',
+    }
+})
+
+export const getNumberListSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestGetNumberList: {
+        ...state.requestGetNumberList,
+        code: action?.payload?.code,
+        data: action?.payload?.data,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message,
+    }
+})
+
+export const getNumberListReset = (state: IState): IState => ({
+    ...state,
+    requestGetNumberList: initialState.requestGetNumberList,
+})
