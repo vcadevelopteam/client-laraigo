@@ -4,8 +4,6 @@ import RouterApp from 'routes';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import resources from 'lang';
-import { GoogleOAuthProvider } from '@react-oauth/google';
-import { apiUrls } from 'common/constants';
 
 const theme = createTheme({
 	direction: 'ltr',
@@ -77,13 +75,11 @@ i18n.use(initReactI18next).init({
 
 function App() {
 	return (
-		<GoogleOAuthProvider clientId={apiUrls.GOOGLECLIENTID_CHANNEL}>
-			<ThemeProvider theme={theme}>
-				<div className="App">
-					<RouterApp />
-				</div>
-			</ThemeProvider>
-		</GoogleOAuthProvider>
+		<ThemeProvider theme={theme}>
+			<div className="App">
+				<RouterApp />
+			</div>
+		</ThemeProvider>
 	);
 }
 
