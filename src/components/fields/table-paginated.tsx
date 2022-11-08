@@ -411,6 +411,8 @@ const TableZyx = React.memo(({
     selectionKey,
     selectionFilter,
     initialSelectedRows,
+    cleanSelection,
+    setCleanSelection,
     setSelectedRows,
     onClickRow,
     FiltersElement,
@@ -442,6 +444,7 @@ const TableZyx = React.memo(({
         pageOptions,
         pageCount,
         setPageSize,
+        toggleAllRowsSelected,
         state: { pageIndex, pageSize, selectedRowIds },
     } = useTable(
         {
@@ -580,6 +583,14 @@ const TableZyx = React.memo(({
             endDate: dateRange.endDate ? (new Date(dateRange.endDate.setHours(10))).getTime() : null,
         }));
     }
+
+    useEffect(() => {
+        if (cleanSelection) {
+            toggleAllRowsSelected(false)
+            setSelectedRows && setSelectedRows({})
+            setCleanSelection && setCleanSelection(false)
+        }
+    }, [cleanSelection])
 
     useEffect(() => {
         if (pagination?.trigger) {
