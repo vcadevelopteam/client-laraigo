@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, AntTab, ColorInput, AntTabPanel, DateRangePicker, FieldEditMulti, FieldView } from 'components';
+import { TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, AntTab, ColorInput, AntTabPanel, DateRangePicker, FieldEditMulti, FieldView, IOSSwitch } from 'components';
 import { getDateCleaned, insCommentsBooking, getValuesFromDomain, insCalendar, hours, selCalendar, getMessageTemplateLst, getCommChannelLst, getDateToday, selBookingCalendar, dayNames } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -14,7 +14,7 @@ import { langKeys } from 'lang/keys';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { getCollection, getMultiCollection, execute, resetAllMain, getCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { Box, Checkbox, FormControl, FormControlLabel, FormGroup, IconButton, ListItemIcon, Menu, MenuItem, Radio, RadioGroup, Switch, Tabs, TextField, Tooltip } from '@material-ui/core';
+import { Box, Checkbox, FormControl, FormControlLabel, FormGroup, IconButton, ListItemIcon, Menu, MenuItem, Paper, Radio, RadioGroup, Switch, Tabs, TextField, Tooltip } from '@material-ui/core';
 import { Range } from 'react-date-range';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { CalendarIcon, DuplicateIcon } from 'icons';
@@ -35,6 +35,7 @@ import Schedule from 'components/fields/Schedule';
 import AddIcon from '@material-ui/icons/Add';
 import InfoIcon from '@material-ui/icons/Info';
 import ClearIcon from '@material-ui/icons/Clear';
+import CalendarWithInfo from 'components/fields/CalendarWithInfo';
 
 
 interface RowSelected {
@@ -187,7 +188,7 @@ const useStyles = makeStyles((theme) => ({
     },
     colInput: {
         width: '100%'
-    }
+    },
 }));
 
 interface LabelDaysProps {
@@ -346,6 +347,7 @@ const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = 
     const [openDialog, setOpenDialog] = useState(false);
     const [bookingSelected, setBookingSelected] = useState<Dictionary | null>(null);
     const [dataBooking, setDataBooking] = useState<Dictionary[]>([])
+    const [view, setView] = useState<"list" | "calendar">("list")
     const { t } = useTranslation();
 
     const fetchData = () => dispatch(getCollectionAux(selBookingCalendar(
@@ -377,63 +379,87 @@ const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = 
 
     return (
         <div style={{ gap: 16, marginTop: 16, overflowY: 'auto' }}>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', backgroundColor: 'white', padding: 16 }}>
-                <DateRangePicker
-                    open={openDatePicker}
-                    setOpen={setOpenDatePicker}
-                    range={dateRange}
-                    onSelect={setDateRange}
-                >
-                    <Button
-                        disabled={mainAux.loading}
-                        style={{ border: '1px solid #bfbfc0', borderRadius: 4, color: 'rgb(143, 146, 161)' }}
-                        startIcon={<CalendarIcon />}
-                        onClick={() => setOpenDatePicker(!openDatePicker)}
-                    >
-                        {getDateCleaned(dateRange.startDate!) + " - " + getDateCleaned(dateRange.endDate!)}
-                    </Button>
-                </DateRangePicker>
-                <Button
-                    disabled={mainAux.loading}
-                    variant="contained"
-                    color="primary"
-                    startIcon={<SearchIcon style={{ color: 'white' }} />}
-                    style={{ backgroundColor: '#55BD84', width: 120 }}
-                    onClick={fetchData}
-                >
-                    <Trans i18nKey={langKeys.search} />
-                </Button>
+            <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+                <div style={{ display: "flex", alignItems: "center" }}>{view === "list" ? t(langKeys.grid_view) : t(langKeys.calendar)}</div>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                    <IOSSwitch checked={view === "list"} onChange={() => setView(view === "list" ? "calendar" : "list")} name="checkedB" />
+                </div>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, overflowY: 'auto', height: '100%', marginTop: 16 }}>
-                {dataBooking.map(x => (
-                    <div
-                        key={x.calendarbookingid}
-                    >
-                        {!!x.haveDate && (
-                            <div style={{ marginBottom: 16 }}>
-                                {x.dateString}
-                            </div>
-                        )}
-                        <div
-                            className={classes.itemBooking}
-                            onClick={() => {
-                                setBookingSelected(x);
-                                setOpenDialog(true);
-                            }}
+
+            {view === "list" && (
+                <>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', backgroundColor: 'white', padding: 16 }}>
+                        <DateRangePicker
+                            open={openDatePicker}
+                            setOpen={setOpenDatePicker}
+                            range={dateRange}
+                            onSelect={setDateRange}
                         >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                                <div style={{ backgroundColor: x.color, width: 24, height: 24, borderRadius: 12 }}></div>
-                                <div>{x.hourstart.substring(0, 5)} - {x.hourend.substring(0, 5)}</div>
-                            </div>
-                            <div>
-                                <div>{x?.personname}</div>
-                                <div>Evento: {event?.name}</div>
-                            </div>
-                            <div></div>
-                        </div>
+                            <Button
+                                disabled={mainAux.loading}
+                                style={{ border: '1px solid #bfbfc0', borderRadius: 4, color: 'rgb(143, 146, 161)' }}
+                                startIcon={<CalendarIcon />}
+                                onClick={() => setOpenDatePicker(!openDatePicker)}
+                            >
+                                {getDateCleaned(dateRange.startDate!) + " - " + getDateCleaned(dateRange.endDate!)}
+                            </Button>
+                        </DateRangePicker>
+                        <Button
+                            disabled={mainAux.loading}
+                            variant="contained"
+                            color="primary"
+                            startIcon={<SearchIcon style={{ color: 'white' }} />}
+                            style={{ backgroundColor: '#55BD84', width: 120 }}
+                            onClick={fetchData}
+                        >
+                            <Trans i18nKey={langKeys.search} />
+                        </Button>
                     </div>
-                ))}
-            </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, overflowY: 'auto', height: '100%', marginTop: 16 }}>
+                        {dataBooking.map(x => (
+                            <div
+                                key={x.calendarbookingid}
+                            >
+                                {!!x.haveDate && (
+                                    <div style={{ marginBottom: 16 }}>
+                                        {x.dateString}
+                                    </div>
+                                )}
+                                <div
+                                    className={classes.itemBooking}
+                                    onClick={() => {
+                                        setBookingSelected(x);
+                                        setOpenDialog(true);
+                                    }}
+                                >
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                                        <div style={{ backgroundColor: x.color, width: 24, height: 24, borderRadius: 12 }}></div>
+                                        <div>{x.hourstart.substring(0, 5)} - {x.hourend.substring(0, 5)}</div>
+                                    </div>
+                                    <div>
+                                        <div>{x?.personname}</div>
+                                        <div>Evento: {event?.name}</div>
+                                    </div>
+                                    <div></div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </>
+            )}
+            {view === "calendar" && (
+                <div style={{ width: "100%" }}>
+                    <CalendarWithInfo
+                        calendarEventID={calendarEventID}
+                        selectBooking={(item) => {
+                            console.log("item", item)
+                            setBookingSelected(item);
+                            setOpenDialog(true);
+                        }}
+                        booking={event}
+                    />
+                </div>
+            )}
             <DialogBooking
                 booking={bookingSelected}
                 setOpenModal={setOpenDialog}
@@ -1212,7 +1238,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                         </div>
                         {!generalstate.calendarview ? (
                             <div>
-                                <FormControl component="fieldset" className={classes.formControl} style={{ width: "100%" }}>
+                                <FormControl component="fieldset" className={classes.formControl} >
                                     <FormGroup>
                                         <FormControlLabel
                                             style={{ pointerEvents: "none" }}
@@ -1442,6 +1468,8 @@ const IconOptions: React.FC<{
         </>
     )
 }
+
+const dataEmpty: any[] = []
 
 const Calendar: FC = () => {
     const user = useSelector(state => state.login.validateToken.user);
