@@ -773,6 +773,27 @@ export const calculateDateFromMonth = (year: number, month: number) => {
     return [...daysPreviewMonth, ...daysMonth, ...daysNextMonth];
 }
 
+const transDayLocal = (day: Date) => day.getDay() - 1 < 0 ? 6 : day.getDay() - 1;
+
+export const calculateDateFromWeek = (datex: Date) => {
+    const currentDate = new Date(datex.getFullYear(), datex.getMonth(), datex.getDate())
+    
+    const dayCurrent = transDayLocal(currentDate);
+    
+    const firstDayWeek = new Date(currentDate.setDate(currentDate.getDate() - dayCurrent));
+
+    return Array.from(Array(7).keys()).map(x => {
+        const date = new Date(new Date(firstDayWeek).setDate(firstDayWeek.getDate() + x));
+        return {
+            date: date,
+            dateString: date.toISOString().substring(0, 10),
+            dow: date.getDay(),
+            dom: date.getDate(),
+            isToday: currentDate.getTime() === date.getTime(),
+        }
+    })
+}
+
 export const hours = [
     { desc: "00:00", value: "00:00:00" },
     { desc: "00:30", value: "00:30:00" },
@@ -832,6 +853,16 @@ export const dayNames = [
     'thursday',
     'friday',
     'saturday',
+]
+
+export const dayNames2 = [
+    'monday',
+    'tuesday',
+    'wednesday',
+    'thursday',
+    'friday',
+    'saturday',
+    'sunday',
 ]
 
 export const validateIsUrl = (text: string) => {
