@@ -8,3 +8,4 @@ export * as SubscriptionService from './service/subscription';
 export * as DashboardService from './service/dashboard';
 export * as VoximplantService from './service/voximplant';
 export * as GoogleService from './service/google';
+export * as CalendarService from './service/calendar';

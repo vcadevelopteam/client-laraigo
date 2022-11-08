@@ -11,6 +11,7 @@ const APIS_URL = {
         CULQIKEY: 'pk_test_041501e753dcb2f9',
         GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
+        GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
     },
     TESTING: {
         API: 'https://testapix.laraigo.com/api',
@@ -21,6 +22,7 @@ const APIS_URL = {
         CULQIKEY: 'pk_test_041501e753dcb2f9',
         GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
+        GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
     },
     PRODUCTION: {
         API: 'https://apiprd.laraigo.com/api',
@@ -31,6 +33,7 @@ const APIS_URL = {
         CULQIKEY: 'pk_test_041501e753dcb2f9',
         GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
+        GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
     },
     CLARO: {
         API: 'https://claroapi.laraigo.com/api',
@@ -41,6 +44,7 @@ const APIS_URL = {
         CULQIKEY: 'pk_test_041501e753dcb2f9',
         GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
+        GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
     },
     CLOUD: {
         API: 'https://cloudapi.laraigo.com/api',
@@ -51,6 +55,7 @@ const APIS_URL = {
         CULQIKEY: 'pk_test_041501e753dcb2f9',
         GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
+        GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
     },
     DEMO: {
         API: 'https://demoapix.laraigo.com/api',
@@ -61,6 +66,7 @@ const APIS_URL = {
         CULQIKEY: 'pk_test_041501e753dcb2f9',
         GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
+        GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
     },
     LOCAL: {
         API: 'http://localhost:6065/api',
@@ -73,6 +79,7 @@ const APIS_URL = {
         CULQIKEY: 'pk_test_041501e753dcb2f9',
         GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
+        GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
     }
 }
 
@@ -84,6 +91,7 @@ const INSTAGRAMAPP = APIS_URL[ENV].INSTAGRAMAPP
 const CULQIKEY = APIS_URL[ENV].CULQIKEY
 const GOOGLECLIENTID_LOGIN = APIS_URL[ENV].GOOGLECLIENTID_LOGIN
 const GOOGLECLIENTID_CHANNEL = APIS_URL[ENV].GOOGLECLIENTID_CHANNEL
+const GOOGLECLIENTID_CALENDAR = APIS_URL[ENV].GOOGLECLIENTID_CALENDAR
 
 export const apiUrls = {
     WS_URL,
@@ -92,6 +100,7 @@ export const apiUrls = {
     CULQIKEY,
     GOOGLECLIENTID_LOGIN,
     GOOGLECLIENTID_CHANNEL,
+    GOOGLECLIENTID_CALENDAR,
     LOGIN_URL: `${BASE_URL}/auth`,
     CONNECT_INBOX: `${BASE_URL}/auth/connect`,
     CHANGE_ORGANIZATION: `${BASE_URL}/auth/changeorganization`,
@@ -183,4 +192,6 @@ export const apiUrls = {
     DELETE_TEMPLATE: `${BASE_URL}/channel/deletetemplate`,
 
     BILLING_REPORTPDF: `${BASE_URL}/drawpdf`,
+
+    EVENTBOOKING_GOOGLE_LOGIN: `${BASE_URL}/event-booking/googlelogin`,
 };
