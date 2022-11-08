@@ -391,6 +391,7 @@ export const Person: FC = () => {
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [personsSelected, setPersonsSelected] = useState<IPerson[]>([]);
     const [typeTemplate, setTypeTemplate] = useState<"HSM" | "SMS" | "MAIL">('MAIL');
+    const [cleanSelected, setCleanSelected] = useState(false)
 
     const query = useMemo(() => new URLSearchParams(location.search), [location]);
     const params = useQueryParams(query, { ignore: ['channelTypes'] });
@@ -886,6 +887,8 @@ export const Person: FC = () => {
                 setSelectedRows={setSelectedRows}
                 initialSelectedRows={selectedRows}
                 onClickRow={goToPersonDetail}
+                cleanSelection={cleanSelected}
+                setCleanSelection={setCleanSelected}
                 register={true}
                 ButtonsElement={() => (
                     <Button
@@ -937,6 +940,7 @@ export const Person: FC = () => {
                 onSubmitTrigger={() => {
                     console.log("submit!!")
                     setPersonsSelected([]);
+                    setCleanSelected(true)
                     setSelectedRows({})
                 }}
             />
