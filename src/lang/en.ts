@@ -911,6 +911,7 @@ const translation: LangKeys = {
     variableconfigurationdetail: 'Variable configuration detail',
     flow: 'Flow',
     color: 'Color',
+    rescheduleappointment: "Reschedule appointment",
     sendreminders: 'Send reminders',
     remindertype: 'Reminder type',
     reminderrange: 'Reminder range',

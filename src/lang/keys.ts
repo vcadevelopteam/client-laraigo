@@ -25,6 +25,7 @@ export const langKeys = {
     backgroundColor: "backgroundColor",
     newentity: "newentity",
     textcolor: "textcolor",
+    rescheduleappointment: "rescheduleappointment",
     no_event_found: "no event found",
     personrepeatedwarning1: "personrepeatedwarning1",
     personrepeatedwarning2: "personrepeatedwarning2",

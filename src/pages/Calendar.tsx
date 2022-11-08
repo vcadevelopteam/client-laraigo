@@ -23,6 +23,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { RichText, renderToString, toElement } from 'components/fields/RichText';
+import LoopIcon from '@material-ui/icons/Loop';
 import {
     Search as SearchIcon,
 } from '@material-ui/icons';
@@ -587,6 +588,12 @@ const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = 
                                     onClick={(e) => {e.stopPropagation(); setBookingSelected(x);}}
                                     onClose={handleClose}
                                 >
+                                    <MenuItem onClick={(e) => { setOpenDialogCancel(true);handleClose()}}>
+                                        <ListItemIcon color="inherit">
+                                            <LoopIcon width={18} style={{ fill: '#7721AD' }} />
+                                        </ListItemIcon>
+                                        {t(langKeys.rescheduleappointment)}
+                                    </MenuItem>
                                     <MenuItem onClick={(e) => { setOpenDialogCancel(true);handleClose()}}>
                                         <ListItemIcon color="inherit">
                                             <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
