@@ -83,6 +83,18 @@ type FormFields = {
     timebeforeeventduration: number,
     timeaftereventunit: string,
     timeaftereventduration: number,
+    statusreminder: string,
+    remindertype: string,
+    email: string,
+    hsm: string,
+    reminderemailtemplateid: any,
+    reminderemailtemplatename: any,
+    remindervariablesemail: any[],
+    reminderhsmtemplateid: any,
+    reminderhsmtemplatename: any,
+    remindervariableshsm: any[],
+    reminderrange: string,
+    remindervalue: number,
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -176,12 +188,11 @@ const useStyles = makeStyles((theme) => ({
         lineHeight: 1.66,
     },
     itemBooking: {
-        display: 'flex',
-        justifyContent: 'space-between',
         padding: 24,
         backgroundColor: 'white',
         boxShadow: '0 1px 8px 0 rgb(0 0 0 / 8%)',
         cursor: 'pointer',
+        display: 'flex',
         '&:hover': {
             backgroundColor: '#f5f8fa',
         }
@@ -189,6 +200,11 @@ const useStyles = makeStyles((theme) => ({
     colInput: {
         width: '100%'
     },
+    cancelEventFields: {
+        textAlign: 'center',
+        fontSize: '1.1rem',
+        padding: '5px',
+    }
 }));
 
 interface LabelDaysProps {
@@ -334,6 +350,123 @@ const DialogBooking: React.FC<{
     )
 }
 
+const DialogCancelBooking: React.FC<{
+    setOpenModal: (param: any) => void;
+    openModal: boolean;
+    event: Dictionary;
+    booking: Dictionary | null;
+    fetchData: () => void
+}> = ({ setOpenModal, openModal, event, booking, fetchData }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const [waitSave, setWaitSave] = useState(false);
+    const classes = useStyles();
+    const saveRes = useSelector(state => state.main.execute);
+    const { register, setValue, getValues, reset, trigger, formState: { errors } } = useForm();
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!saveRes.loading && !saveRes.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_update) }))
+                setOpenModal(false);
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+                fetchData()
+            } else if (saveRes.error) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(saveRes.code || "error_unexpected_error") }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [saveRes, waitSave])
+
+
+    useEffect(() => {
+        if (openModal) {
+            reset({
+                comment: ''
+            })
+            register('comment');
+        }
+    }, [openModal])
+
+    const onSubmit = async () => {
+        if(new Date(booking?.monthdate) > new Date()){
+            const allOk = await trigger();
+            if (allOk) {
+                const data = getValues();
+                const datat = {
+                    calendareventid: event.calendareventid,
+                    id: booking?.calendarbookingid,
+                    cancelcomment: data.comment||"",
+                }
+                dispatch(execute(calendarBookingCancel(datat)));
+                setWaitSave(true);
+                dispatch(showBackdrop(true));
+            }
+        }else{
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.cancelenventerror || "error_unexpected_error") }))
+        }
+    }
+
+    return (
+        <Dialog
+            open={openModal}
+            fullWidth
+            maxWidth="xs"
+        >
+            <DialogTitle>
+                <div style={{textAlign: 'center', fontWeight: 'bold'}}>
+                    {t(langKeys.cancelevent)}
+                </div>
+            </DialogTitle>
+            <DialogContent>
+                <div className={classes.cancelEventFields}>
+                    {event?.name}
+                </div>
+                <div className={classes.cancelEventFields} style={{fontWeight: 'bold'}}>
+                    {booking?.personname}
+                </div>
+                <div className={classes.cancelEventFields}>
+                    {`${booking?.hourstart.substring(0, 5)} - ${booking?.hourend.substring(0, 5)}`}
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingTop:'10px' }}>
+                    <div style={{ fontSize: '1rem'}}>
+                        {t(langKeys.canceleventtext)}
+                    </div>
+                    <FieldEditMulti
+                        label={""}
+                        valueDefault={getValues('comment')}
+                        className={classes.colInput}
+                        onChange={(value) => setValue('comment', value)}
+                        maxLength={1024}
+                        variant="outlined"
+                    />
+                </div>
+            </DialogContent>
+            <DialogActions>
+                <div style={{display: 'flex', flexDirection: 'row', gap: 16, paddingTop:'10px', width: "100%", padding: "0px 16px 10px"  }}>
+                    <Button
+                        style={{width:"50%"}}
+                        variant="contained"
+                        color="primary"
+                        onClick={onSubmit}
+                    >
+                        {t(langKeys.cancelevent)}
+                    </Button>
+                    <Button 
+                        style={{width:"50%"}}
+                        variant="contained" 
+                        color="secondary" 
+                        onClick={() => setOpenModal(false)}>
+                        {t(langKeys.discard)}
+                    </Button>
+                </div>
+            </DialogActions>
+        </Dialog >
+    )
+}
+
 const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = ({ calendarEventID, event }) => {
     const dispatch = useDispatch();
     const [openDatePicker, setOpenDatePicker] = useState(false);
@@ -345,10 +478,14 @@ const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = 
         key: 'selection',
     });
     const [openDialog, setOpenDialog] = useState(false);
+    const [openDialogCancel, setOpenDialogCancel] = useState(false);
     const [bookingSelected, setBookingSelected] = useState<Dictionary | null>(null);
     const [dataBooking, setDataBooking] = useState<Dictionary[]>([])
     const [view, setView] = useState<"list" | "calendar">("list")
     const { t } = useTranslation();
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+    const handleClose = () => setAnchorEl(null);
 
     const fetchData = () => dispatch(getCollectionAux(selBookingCalendar(
         dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : "",
@@ -419,31 +556,70 @@ const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = 
                         {dataBooking.map(x => (
                             <div
                                 key={x.calendarbookingid}
-                            >
+                            >   
                                 {!!x.haveDate && (
                                     <div style={{ marginBottom: 16 }}>
                                         {x.dateString}
                                     </div>
                                 )}
-                                <div
-                                    className={classes.itemBooking}
-                                    onClick={() => {
-                                        setBookingSelected(x);
-                                        setOpenDialog(true);
+                                    <div
+                                        className={classes.itemBooking}
+                                        onClick={() => {
+                                            setBookingSelected(x);
+                                            setOpenDialog(true);
+                                        }}
+                                    >
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <IconButton
+                                    aria-label="more"
+                                    aria-controls="long-menu"
+                                    aria-haspopup="true"
+                                    size="small"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setAnchorEl(e.currentTarget);
                                     }}
                                 >
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                                        <div style={{ backgroundColor: x.color, width: 24, height: 24, borderRadius: 12 }}></div>
-                                        <div>{x.hourstart.substring(0, 5)} - {x.hourend.substring(0, 5)}</div>
+                                    <MoreVertIcon />
+                                </IconButton>
+                                <Menu
+                                    id="menu-appbar"
+                                    anchorEl={anchorEl}
+                                    getContentAnchorEl={null}
+                                    anchorOrigin={{
+                                        vertical: 'bottom',
+                                        horizontal: 'right',
+                                    }}
+                                    transformOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    open={Boolean(anchorEl)}
+                                    onClick={(e) => {e.stopPropagation(); setBookingSelected(x);}}
+                                    onClose={handleClose}
+                                >
+                                    <MenuItem onClick={(e) => { setOpenDialogCancel(true);handleClose()}}>
+                                        <ListItemIcon color="inherit">
+                                            <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                                        </ListItemIcon>
+                                        {t(langKeys.cancelappointment)}
+                                    </MenuItem>
+                                </Menu>
+                            </div>
+                            <div style={{display: 'flex', justifyContent: 'space-between', width: "100%"}}>                                    
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                                            <div style={{ backgroundColor: x.color, width: 24, height: 24, borderRadius: 12 }}></div>
+                                            <div>{x.hourstart.substring(0, 5)} - {x.hourend.substring(0, 5)}</div>
+                                        </div>
+                                        <div>
+                                            <div>{x?.personname}</div>
+                                            <div>Evento: {event?.name}</div>
+                                        </div>
+                                        <div></div>
                                     </div>
-                                    <div>
-                                        <div>{x?.personname}</div>
-                                        <div>Evento: {event?.name}</div>
-                                    </div>
-                                    <div></div>
                                 </div>
                             </div>
-                        ))}
+                ))}
                     </div>
                 </>
             )}
@@ -464,6 +640,13 @@ const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = 
                 booking={bookingSelected}
                 setOpenModal={setOpenDialog}
                 openModal={openDialog}
+                event={event}
+                fetchData={fetchData}
+            />
+            <DialogCancelBooking
+                booking={bookingSelected}
+                setOpenModal={setOpenDialogCancel}
+                openModal={openDialogCancel}
                 event={event}
                 fetchData={fetchData}
             />
@@ -660,6 +843,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     const dataTemplates = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataChannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const [bodyMessage, setBodyMessage] = useState(row?.messagetemplateid ? (dataTemplates.filter(x => x.id === row.messagetemplateid)[0]?.body || "") : "");
+    const [bodyMessageReminderEmail, setBodyMessageReminderEmail] = useState("");
+    const [bodyMessageReminderHSM, setBodyMessageReminderHSM] = useState("");
     const [showError, setShowError] = useState(false);
     const [generalstate, setgeneralstate] = useState({
         eventcode: row?.code || '',
@@ -689,6 +874,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     };
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const dataRange = multiData[3] && multiData[3].success ? multiData[3].data : [];
 
     const { control, register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm<FormFields>({
         defaultValues: {
@@ -713,6 +899,12 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
             timebeforeeventduration: row?.timebeforeeventduration || 0,
             timeaftereventunit: row?.timeaftereventunit || "MINUTE",
             timeaftereventduration: row?.timeaftereventduration || 0,
+            statusreminder: row?.statusreminder || "INACTIVO",
+            remindertype: row?.remindertype || "",
+            email: row?.email || "",
+            hsm: row?.hsm || "",
+            reminderemailtemplateid: row?.reminderemailtemplateid || "",
+            remindervalue: row?.remindervalue || 0,
         }
     });
 
@@ -743,6 +935,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         register('timebeforeeventduration', { validate: (value) => Boolean(value >= 0) || String(t(langKeys.field_required)) });
         register('timeaftereventunit', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('timeaftereventduration', { validate: (value) => Boolean(value >= 0) || String(t(langKeys.field_required)) });
+        /*register('statusreminder', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });*/
     }, [register]);
 
     const handleColorChange: ColorChangeHandler = (e) => {
@@ -782,6 +975,36 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
             setValue('variables', []);
             setBodyMessage('');
             setValue('hsmtemplateid', 0);
+        }
+    }
+    const onSelectTemplateReminderEmail = (value: Dictionary) => {
+        if (value) {
+            setBodyMessageReminderEmail(value.body);
+            setValue('reminderemailtemplateid', value ? value.id : 0);
+            setValue('reminderemailtemplatename', value ? value.name : '');
+            const variablesList = value.body.match(/({{)(.*?)(}})/g) || [];
+            const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
+            setValue('remindervariablesemail', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
+        } else {
+            setValue('reminderemailtemplatename', '');
+            setValue('remindervariablesemail', []);
+            setBodyMessageReminderEmail('');
+            setValue('reminderemailtemplateid', 0);
+        }
+    }
+    const onSelectTemplateReminderHSM = (value: Dictionary) => {
+        if (value) {
+            setBodyMessageReminderHSM(value.body);
+            setValue('reminderhsmtemplateid', value ? value.id : 0);
+            setValue('reminderhsmtemplatename', value ? value.name : '');
+            const variablesList = value.body.match(/({{)(.*?)(}})/g) || [];
+            const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
+            setValue('remindervariableshsm', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
+        } else {
+            setValue('reminderhsmtemplatename', '');
+            setValue('remindervariableshsm', []);
+            setBodyMessageReminderHSM('');
+            setValue('reminderhsmtemplateid', 0);
         }
     }
 
@@ -905,6 +1128,13 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                         </div>
                     )}
                 />}
+                <AntTab
+                    label={(
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                            <Trans i18nKey={langKeys.sendreminders} count={2} />
+                        </div>
+                    )}
+                />
             </Tabs>
 
             <AntTabPanel index={0} currentIndex={tabIndex}>
@@ -1010,7 +1240,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                             }}
                             error={errors?.notificationtype?.message}
                             data={[
-                                //{ desc: "HSM", val: "HSM" }, 
+                                { desc: "HSM", val: "HSM" }, 
                                 { desc: t(langKeys.email), val: "EMAIL" }
                             ]}
                             optionDesc="desc"
@@ -1377,14 +1607,127 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                     </div>
                 </div>
             </AntTabPanel>
-            <div style={{ overflowY: 'auto' }}>
+            {operation === "EDIT" && 
                 <AntTabPanel index={2} currentIndex={tabIndex} >
                     <BookingEvents
                         calendarEventID={row?.calendareventid || 0}
                         event={row!!}
                     />
                 </AntTabPanel>
-            </div>
+            }
+            <AntTabPanel index={operation === "EDIT"?3:2} currentIndex={tabIndex} >
+                <div className={classes.containerDetail}>
+                    <div className="row-zyx" >
+                        <FieldSelect
+                            label={t(langKeys.status)}
+                            className="col-6"
+                            valueDefault={row?.statusreminder || "INACTIVO"}
+                            onChange={(value) => {setValue('statusreminder', (value?.domainvalue || "")); trigger("statusreminder")}}
+                            error={errors?.statusreminder?.message}
+                            data={dataStatus}
+                            uset={true}
+                            prefixTranslation="status_"
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
+                    </div>
+                    
+                    { getValues("statusreminder") === "ACTIVO" &&
+                        <>
+                            <div className="row-zyx" >
+                                
+                                <FieldSelect
+                                    label={t(langKeys.notificationtype)}
+                                    className="col-6"
+                                    valueDefault={getValues("remindertype")}
+                                    onChange={(value) => {
+                                        setValue('remindertype', (value?.val || ""))
+                                        trigger("remindertype")
+                                    }}
+                                    error={errors?.remindertype?.message}
+                                    data={[
+                                        {desc:"HSM",val:"HSM"},
+                                        {desc:t(langKeys.email),val:"EMAIL"},
+                                        {desc:`HSM + ${t(langKeys.email)}`,val:"EMAIL/HSM"},
+                                    ]}
+                                    optionDesc="desc"
+                                    optionValue="val"
+                                />
+                            </div>
+                            <div className="row-zyx" >
+                                {getValues("remindertype").includes("EMAIL") && 
+                                    <div className="col-6" >
+                                        <FieldSelect
+                                            label={t(langKeys.notificationtemplate)}
+                                            className="col-6"
+                                            valueDefault={getValues('reminderemailtemplateid')}
+                                            error={errors?.reminderemailtemplateid?.message}
+                                            onChange={onSelectTemplateReminderEmail}
+                                            data={dataTemplates.filter(x => x.type === "MAIL")}
+                                            optionDesc="name"
+                                            optionValue="id"
+                                        />
+                                        <React.Fragment>
+                                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                                {t(langKeys.message)}
+                                                <Tooltip title={`${t(langKeys.calendar_messate_tooltip)}`} placement="top-start">
+                                                    <InfoIcon style={{ padding: "5px 0 0 5px" }} />
+                                                </Tooltip>
+                                            </Box>
+                                            <div dangerouslySetInnerHTML={{ __html: bodyMessageReminderEmail }} />
+                                        </React.Fragment>
+                                    </div>
+                                }
+                                {getValues("remindertype").includes("HSM") && 
+                                    <div className="col-6" >
+                                        <FieldSelect
+                                            label={t(langKeys.notificationtemplate)}
+                                            className="col-6"
+                                            valueDefault={getValues('reminderhsmtemplateid')}
+                                            error={errors?.reminderhsmtemplateid?.message}
+                                            onChange={onSelectTemplateReminderHSM}
+                                            data={dataTemplates.filter(x => x.type === "HSM")}
+                                            optionDesc="name"
+                                            optionValue="id"
+                                        />
+                                        <React.Fragment>
+                                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                                {t(langKeys.message)}
+                                                <Tooltip title={`${t(langKeys.calendar_messate_tooltip)}`} placement="top-start">
+                                                    <InfoIcon style={{ padding: "5px 0 0 5px" }} />
+                                                </Tooltip>
+                                            </Box>
+                                            <div dangerouslySetInnerHTML={{ __html: bodyMessageReminderHSM }} />
+                                        </React.Fragment>
+                                    </div>
+                                }
+                            </div>
+                            <div className="row-zyx" >
+                                <FieldSelect
+                                    label={t(langKeys.reminderrange)}
+                                    className="col-6"
+                                    valueDefault={row?.reminderrange || ""}
+                                    onChange={(value) => {setValue('reminderrange', (value?.domainvalue || ""))}}
+                                    error={errors?.reminderrange?.message}
+                                    data={dataRange}
+                                    uset={true}
+                                    prefixTranslation="datarange_"
+                                    optionDesc="domaindesc"
+                                    optionValue="domainvalue"
+                                />
+                                <FieldEdit
+                                    label={t(langKeys.value)}
+                                    className="col-6"
+                                    type='number'
+                                    InputProps={{ inputProps: { min: 0 } }}
+                                    valueDefault={getValues('remindervalue')}
+                                    onChange={(value) => { setValue('remindervalue', value) }}
+                                />
+                            </div>
+                        </>
+                    }
+                </div>
+            </AntTabPanel>
         </form>
     );
 }
@@ -1584,7 +1927,8 @@ const Calendar: FC = () => {
         dispatch(getMultiCollection([
             getValuesFromDomain("ESTADOGENERICO"),
             getMessageTemplateLst(''),
-            getCommChannelLst()
+            getCommChannelLst(),
+            getValuesFromDomain("REPORTEAUTOMATICORANGO"),
         ]));
         return () => {
             dispatch(resetAllMain());

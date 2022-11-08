@@ -169,6 +169,8 @@ const translation: LangKeys = {
     configuration: 'Configuración',
     template: 'Plantilla',
     templatedownload: "descargar Template",
+    cancelevent: "Cancelar evento",
+    canceleventtext: "Por favor, confirme si desea cancelar este evento. Recuerde que una vez cancelado no podrá revertir la acción.",
     configuration_plural: 'Configuraciones',
 
     eMailInbox: 'Bandeja de correo',
@@ -1077,6 +1079,7 @@ const translation: LangKeys = {
     location: 'Ubicación',
     duration: 'Duración',
     notificationtype: 'Tipo de notificación',
+    reminderrange: 'Frecuencia de recordatorio',
     calendar_messate_tooltip: 'Variables disponibles: timeevent, timestart, timeend, eventname, personname, personcontact',
 
     id: 'ID',
@@ -1148,6 +1151,7 @@ const translation: LangKeys = {
     result: 'Resultado',
     closing_reason: 'Motivo de cierre',
     reassign: 'Reasignar',
+    cancelenventerror: "Solo se pueden cancelar eventos futuros a la fecha actual.",
     reassign_ticket: 'Reasignar ticket',
     typify: 'Clasificar',
     typify_ticket: 'Clasificar ticket',
@@ -1590,6 +1594,8 @@ const translation: LangKeys = {
     unavailable: "Indisponible",
     more_times: "Mas veces",
     select_date_time: " Selecciona un fecha y hora",
+    sendreminders: 'Envío de recordatorios',
+    remindertype: 'Tipo de recordatorio',
     prepare_meeting: "Comparta algo adicional que ayude a prepararse para nuestra reunión.",
     no_event_found: "Ningún evento encontrado",
     invitation_email: "Se ha enviado una invitación de calendario a su dirección de correo electrónico.",
