@@ -258,17 +258,19 @@ export const getWhitelistSel = (whitelistid: number): IRequestBody => ({
 export const getSecurityRules = (): IRequestBody => ({
     method: "UFN_SECURITYRULES_SEL",
     key: "UFN_SECURITYRULES_SEL",
-    parameters: { }
+    parameters: {}
 });
 
-export const updSecurityRules = ({ id, mincharacterspwd, maxcharacterspwd, specialcharacterspwd, numericalcharacterspwd, uppercaseletterspwd, lowercaseletterspwd, allowsconsecutivenumbers, numequalconsecutivecharacterspwd, periodvaliditypwd, maxattemptsbeforeblocked, pwddifferentchangelogin,  }: Dictionary): IRequestBody => ({
+export const updSecurityRules = ({ id, mincharacterspwd, maxcharacterspwd, specialcharacterspwd, numericalcharacterspwd, uppercaseletterspwd, lowercaseletterspwd, allowsconsecutivenumbers, numequalconsecutivecharacterspwd, periodvaliditypwd, maxattemptsbeforeblocked, pwddifferentchangelogin, }: Dictionary): IRequestBody => ({
     method: "UFN_SECURITYRULES_UPD",
     key: "UFN_SECURITYRULES_UPD",
-    parameters: { id, mincharacterspwd, maxcharacterspwd, 
-        specialcharacterspwd: specialcharacterspwd||"04", 
-        numericalcharacterspwd: numericalcharacterspwd||"04", 
-        uppercaseletterspwd: uppercaseletterspwd||"04", 
-        lowercaseletterspwd: lowercaseletterspwd||"04", allowsconsecutivenumbers, numequalconsecutivecharacterspwd, periodvaliditypwd, maxattemptsbeforeblocked, pwddifferentchangelogin,  }
+    parameters: {
+        id, mincharacterspwd, maxcharacterspwd,
+        specialcharacterspwd: specialcharacterspwd || "04",
+        numericalcharacterspwd: numericalcharacterspwd || "04",
+        uppercaseletterspwd: uppercaseletterspwd || "04",
+        lowercaseletterspwd: lowercaseletterspwd || "04", allowsconsecutivenumbers, numequalconsecutivecharacterspwd, periodvaliditypwd, maxattemptsbeforeblocked, pwddifferentchangelogin,
+    }
 });
 export const insWhitelist = ({ id, operation, documenttype, phone, documentnumber, usergroup, type, status, username }: Dictionary): IRequestBody => ({
     method: "UFN_WHITELIST_INS",
@@ -3068,6 +3070,16 @@ export const selBookingCalendar = (startdate: string, enddate: string, calendare
     },
 });
 
+export const calendarBookingCancel = ({ calendareventid, id, cancelcomment }: Dictionary) => ({
+    method: "UFN_CALENDARBOOKING_CANCEL",
+    key: "UFN_CALENDARBOOKING_CANCEL",
+    parameters: {
+        calendareventid,
+        id,
+        cancelcomment,
+    },
+});
+
 export const insCommentsBooking = (parameters: Dictionary) => ({
     method: "UFN_CALENDARYBOOKING_COMMENT",
     key: "UFN_CALENDARYBOOKING_COMMENT",
@@ -3137,8 +3149,24 @@ export const getPersonFromBooking = (params: Dictionary): IRequestBody => ({
     method: "QUERY_GET_PERSON_FROM_BOOKING",
     parameters: params
 });
+
+export const getPaginatedProductCatalog = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_PRODUCTCATALOG_SEL",
+    methodCount: "UFN_PRODUCTCATALOG_TOTALRECORDS",
+    parameters: {
+        startdate,
+        enddate,
+        skip,
+        take,
+        filters,
+        sorts,
+        origin: "productcatalog",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+
 export const getProductCatalogSel = (id: number = 0, category: string = ''): IRequestBody => ({
-    method: "UFN_PRODUCTCATALOG_SEL",
+    method: "UFN_PRODUCTCATALOG_SEL_NORMAL",
     parameters: {
         id: id,
         category: category,
@@ -3585,6 +3613,14 @@ export const productCatalogInsArray = (catalogid: string, catalogname: string, t
     parameters: {
         catalogid: catalogid,
         catalogname: catalogname,
+        table: JSON.stringify(table),
+        username: username,
+    }
+});
+
+export const productCatalogUpdArray = (table: Dictionary[], username: string): IRequestBody => ({
+    method: "UFN_PRODUCTCATALOG_UPD_ARRAY",
+    parameters: {
         table: JSON.stringify(table),
         username: username,
     }

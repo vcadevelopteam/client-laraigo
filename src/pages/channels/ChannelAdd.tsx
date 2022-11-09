@@ -144,6 +144,11 @@ export const ChannelAdd: FC = () => {
             onClick: () => { history.push(paths.CHANNELS_ADD_WHATSAPP.path, whatsAppData) },
         },
         {
+            icon: c => <WhatsappColor className={c} />,
+            label: t(langKeys.channel_whatsapponboarding),
+            onClick: () => { history.push(paths.CHANNELS_ADD_WHATSAPPONBOARDING.path, whatsAppData) },
+        },
+        {
             icon: c => <TelegramColor className={c} />,
             label: t(langKeys.channel_telegram),
             onClick: () => { history.push(paths.CHANNELS_ADD_TELEGRAM.path, whatsAppData) },

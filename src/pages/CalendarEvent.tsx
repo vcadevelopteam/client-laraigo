@@ -2,10 +2,10 @@
 import React, { FC, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
-import { Button, IconButton, makeStyles, Typography } from "@material-ui/core";
+import { Button, IconButton, makeStyles, styled, Typography } from "@material-ui/core";
 import { useParams } from 'react-router';
 import { FieldEdit, FieldEditMulti } from "components";
-import { getCollEventBooking } from 'store/main/actions';
+import { getCollEventBooking, resetMain } from 'store/main/actions';
 import { getEventByCode, validateCalendaryBooking, dayNames, calculateDateFromMonth, insBookingCalendar } from 'common/helpers';
 import { Dictionary } from '@types';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -16,7 +16,7 @@ import { langKeys } from 'lang/keys';
 import clsx from 'clsx';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import SaveIcon from '@material-ui/icons/Save';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -24,6 +24,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { useLocation } from "react-router";
 import CalendarZyx from 'components/fields/Calendar';
+import MuiPhoneNumber, { MaterialUiPhoneNumberProps } from 'material-ui-phone-number';
+import { getCountryList } from "store/signup/actions";
 
 interface IDay {
     date: Date;
@@ -39,6 +41,13 @@ interface ITime {
     localddow: number;
     localdday: number;
 }
+
+const CssPhonemui = styled(MuiPhoneNumber)({
+    minHeight: 'unset',
+    '& .MuiInput-underline:after': {
+        borderBottomColor: '#7721ad',
+    },
+});
 
 const useStyles = makeStyles(theme => ({
     back: {
@@ -180,11 +189,14 @@ const TimeDate: FC<{ time: ITime, isSelected: boolean, setTimeSelected: (p: any)
         </div>
     )
 }
+const URL = "https://ipapi.co/json/";
 const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, disabledSubmit: boolean, parameters: Dictionary }> = ({ event, handlerOnSubmit, disabledSubmit, parameters }) => {
     const { t } = useTranslation();
     const classes = useStyles();
+    const [phoneCountry, setPhoneCountry] = useState('');
+    const dispatch = useDispatch();
 
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, getValues,control, formState: { errors } } = useForm({
         defaultValues: {
             name: event?.personname,
             email: event?.email,
@@ -193,16 +205,35 @@ const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, dis
         }
     })
 
+    useEffect(() => {
+        dispatch(getCountryList())
+        try {
+            fetch(URL, { method: "get" })
+                .then((response) => response.json())
+                .then((data) => {
+                    const countryCode = data.country_code.toUpperCase();
+                    setPhoneCountry(countryCode);
+                })
+        }
+        catch (error) {
+            console.error("error");
+        }
+        return () => {
+            dispatch(resetMain());
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     React.useEffect(() => {
         register('notes');
         register('name', { validate: (value) => (!!value && value.length > 0) || (t(langKeys.field_required) + "") });
         register('email', { validate: (value) => event?.notificationtype === "HSM" || !!value || (t(langKeys.field_required) + "") });
-        register('phone');
+        register('phone', { validate: (value) => event?.notificationtype === "HSM" || !!value || (t(langKeys.field_required) + "") });
     }, [register, t, event])
 
 
     const onSubmit = handleSubmit((data) => {
+        debugger
         handlerOnSubmit({ ...data, phone: data.phone?.replace("+", "") })
     });
 
@@ -233,35 +264,35 @@ const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, dis
                         />
                     </div>
                 )}
-                {/* {event.notificationtype === "HSM" && (
-                    <div>
-                        <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}>{t(langKeys.phone)}</div>
-                        <Controller
-                            name="phone"
-                            control={control}
-                            rules={{
-                                validate: (value) => {
-                                    if (value.length === 0) {
-                                        return t(langKeys.field_required) as string;
-                                    } else if (value.length < 10) {
-                                        return t(langKeys.validationphone) as string;
-                                    }
+                {/* {event.notificationtype === "HSM" && (*/}
+                <div>
+                    <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}>{t(langKeys.phone)}</div>
+                    <Controller
+                        name="phone"
+                        control={control}
+                        rules={{
+                            validate: (value) => {
+                                if (value.length === 0) {
+                                    return t(langKeys.field_required) as string;
+                                } else if (value.length < 10) {
+                                    return t(langKeys.validationphone) as string;
                                 }
-                            }}
-                            render={({ field, formState: { errors } }) => (
-                                <CssPhonemui
-                                    {...field}
-                                    variant="outlined"
-                                    fullWidth
-                                    size="small"
-                                    defaultCountry={getValues('phone') ? undefined : phoneCountry.toLowerCase()}
-                                    error={!!errors?.phone}
-                                    helperText={errors?.phone?.message}
-                                />
-                            )}
-                        />
-                    </div>
-                )} */}
+                            }
+                        }}
+                        render={({ field, formState: { errors } }) => (
+                            <CssPhonemui
+                                {...field}
+                                variant="outlined"
+                                fullWidth
+                                size="small"
+                                defaultCountry={getValues('phone') ? undefined : phoneCountry.toLowerCase()}
+                                error={!!errors?.phone}
+                                helperText={errors?.phone?.message}
+                            />
+                        )}
+                    />
+                </div>
+                
                 <div>
                     <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}> {t(langKeys.prepare_meeting)} </div>
                     <FieldEditMulti
