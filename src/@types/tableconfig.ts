@@ -43,6 +43,8 @@ export interface TableConfig {
     selectionKey?: string;
     selectionFilter?: { key: string, value: string };
     initialSelectedRows?: any;
+    cleanSelection?: boolean;
+    setCleanSelection?: (value: boolean) => void;
     setSelectedRows?: (param?: any) => void;
     setDataFiltered?: (param?: any) => void;
     allRowsSelected?: boolean;
