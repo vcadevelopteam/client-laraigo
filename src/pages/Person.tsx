@@ -725,7 +725,6 @@ export const Person: FC = () => {
             }
         }
     }
-
     
     useEffect(() => {
         if (waitValidation) {
@@ -939,9 +938,7 @@ export const Person: FC = () => {
                 type={typeTemplate}
                 onSubmitTrigger={() => {
                     console.log("submit!!")
-                    setPersonsSelected([]);
                     setCleanSelected(true)
-                    setSelectedRows({})
                 }}
             />
         </div>
