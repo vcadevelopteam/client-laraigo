@@ -326,7 +326,13 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataClassTotal = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const dataVariables = multiData[2] && multiData[2].success ? multiData[2].data : [];
+    const extravariables = [
+        {variablename: "numticket"},
+        {variablename: "client_name"},
+        {variablename: "agent_name"},
+        {variablename: "user_group"},
+    ]
+    const dataVariables = multiData[2] && multiData[2].success ? [...multiData[2].data,...extravariables] : [];
 
     
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
