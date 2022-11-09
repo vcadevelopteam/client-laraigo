@@ -411,6 +411,8 @@ const TableZyx = React.memo(({
     selectionKey,
     selectionFilter,
     initialSelectedRows,
+    cleanSelection,
+    setCleanSelection,
     setSelectedRows,
     onClickRow,
     FiltersElement,
@@ -442,6 +444,7 @@ const TableZyx = React.memo(({
         pageOptions,
         pageCount,
         setPageSize,
+        toggleAllRowsSelected,
         state: { pageIndex, pageSize, selectedRowIds },
     } = useTable(
         {
@@ -461,6 +464,17 @@ const TableZyx = React.memo(({
             getRowId: (row, relativeIndex: any, parent: any) => selectionKey
                 ? (parent ? [row[selectionKey], parent].join('.') : row[selectionKey])
                 : (parent ? [parent.id, relativeIndex].join('.') : relativeIndex),
+            stateReducer: (newState, action) => {
+                switch (action.type) {
+                    case 'toggleAllRowsSelected':
+                        return {
+                            ...newState,
+                            selectedRowIds: {},
+                        };
+                    default:
+                        return newState;
+                }
+            }
         },
         useFilters,
         useGlobalFilter,
@@ -582,6 +596,14 @@ const TableZyx = React.memo(({
     }
 
     useEffect(() => {
+        if (cleanSelection) {
+            toggleAllRowsSelected(false)
+            setSelectedRows && setSelectedRows({})
+            setCleanSelection && setCleanSelection(false)
+        }
+    }, [cleanSelection])
+
+    useEffect(() => {
         if (pagination?.trigger) {
             triggertmp()
         }
@@ -635,9 +657,9 @@ const TableZyx = React.memo(({
             {titlemodule && <div className={classes.title}>{titlemodule}</div>}
             <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center">
                 <div className={clsx({
-                        [classes.containerButtons]: !!FiltersElement,
-                        [classes.containerButtonsNoFilters]: !FiltersElement
-                    })}>
+                    [classes.containerButtons]: !!FiltersElement,
+                    [classes.containerButtonsNoFilters]: !FiltersElement
+                })}>
                     {filterrange && (
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                             <DateRangePicker

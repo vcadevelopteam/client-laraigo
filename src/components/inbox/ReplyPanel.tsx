@@ -479,22 +479,25 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const [undotext, setundotext] = useState<any>([])
     const [redotext, setredotext] = useState<any>([])
 
-
-
     useEffect(() => {
         if ((ticketSelected?.conversationid) !== (previousTicket?.conversationid)) setpreviousTicket(ticketSelected)
         if (ticketSelected?.status !== "ASIGNADO")
             setShowReply(false);
         else if (channelsWhatsapp.includes(ticketSelected!!.communicationchanneltype)) {
-            const hoursWaiting = getSecondsUntelNow(convertLocalDate(ticketSelected?.personlastreplydate)) / 3600;
-            if (hoursWaiting >= 24) {
+            if (!ticketSelected?.personlastreplydate) {
                 setShowReply(false);
             } else {
-                setShowReply(true);
+                const hoursWaiting = getSecondsUntelNow(convertLocalDate(ticketSelected?.personlastreplydate)) / 3600;
+                if (hoursWaiting >= 24) {
+                    setShowReply(false);
+                } else {
+                    setShowReply(true);
+                }
             }
         } else
             setShowReply(true)
     }, [ticketSelected])
+
     useEffect(() => {
         if (ticketSelected?.communicationchanneltype === "MAIL") {
             setBodyobject([{ "type": "paragraph", align: "left", "children": [{ "text": "" }] }])
@@ -517,11 +520,13 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             setText(renderToString(toElement(bodyobject)))
         }
     }, [bodyobject])
+
     useEffect(() => {
         if (flagundo) {
             setflagundo(false)
         }
     }, [undotext])
+
     useEffect(() => {
         if (flagredo) {
             setflagredo(false)
@@ -685,10 +690,22 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     }, [text])
 
     const selectQuickReply = (value: string) => {
-        setText(value
+        const variablesList = value.match(/({{)(.*?)(}})/g) || [];
+        let myquickreply = value
             .replace("{{numticket}}", "" + ticketSelected?.ticketnum)
             .replace("{{client_name}}", "" + ticketSelected?.displayname)
-            .replace("{{agent_name}}", user?.firstname + " " + user?.lastname))
+            .replace("{{agent_name}}", user?.firstname + " " + user?.lastname)
+
+        variablesList.forEach((x: any) => {
+            let variableData = variablecontext?.[x.substring(2, x.length - 2)]
+            if (!!variableData) {
+                myquickreply = myquickreply.replaceAll(x, variableData.Value)
+            } else {
+                myquickreply = myquickreply.replaceAll(x, "")
+            }
+        })
+
+        setText(myquickreply)
     }
 
     const selectRichResponse = (block: Dictionary) => {

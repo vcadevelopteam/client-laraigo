@@ -26,7 +26,8 @@ const serviceTypes = [
         type: 'ASSISTANT',
         options: [
             { value: 'RASA', description: 'RASA' },
-            { value: 'WATSON ASSISTANT', description: 'WATSON ASSISTANT' }
+            { value: 'WATSON ASSISTANT', description: 'WATSON ASSISTANT' },
+            { value: 'WIT.AI', description: 'WIT.AI' }
         ]
     },
     {
