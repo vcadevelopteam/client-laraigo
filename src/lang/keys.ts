@@ -48,7 +48,7 @@ export const langKeys = {
     cancelenventerror: "cancelenventerror",
     sendreminders: 'sendreminders',
     remindertype: 'remindertype',
-    reminderrange: 'reminderrange',
+    reminderperiod: 'reminderperiod',
     passwordCond8: "passwordCond8",
     passwordCond9: "passwordCond9",
     allowconsecutivenumbers: "allowconsecutivenumbers",
