@@ -1,0 +1,8 @@
+const actionType = {
+    CALENDAR_GOOGLE_LOGIN: 'calendar/GOOGLE_LOGIN',
+    CALENDAR_GOOGLE_LOGIN_FAILURE: 'calendar/GOOGLE_LOGIN_FAILURE',
+    CALENDAR_GOOGLE_LOGIN_SUCCESS: 'calendar/GOOGLE_LOGIN_SUCCESS',
+    CALENDAR_GOOGLE_LOGIN_RESET: 'calendar/GOOGLE_LOGIN_RESET',
+};
+
+export default actionType;

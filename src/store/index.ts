@@ -24,6 +24,7 @@ import voximplantReducer, { IState as IVoximplant } from './voximplant/reducer';
 import googleReducer, { IState as IGoogle } from './google/reducer';
 import witaiReducer, { IState as IWitai } from './witia/reducer';
 import productReducer, { IState as IProduct } from './product/reducer';
+import calendarReducer, { IState as ICalendar } from './calendar/reducer';
 
 export interface IRootState {
     login: ILogin,
@@ -47,6 +48,7 @@ export interface IRootState {
     google: IGoogle;
     witai: IWitai;
     product: IProduct;
+    calendar: ICalendar;
 }
 
 declare global {
@@ -77,6 +79,7 @@ const rootReducer = combineReducers<IRootState>({
     witai: witaiReducer,
     product: productReducer,
     getversion: getversionReducer,
+    calendar: calendarReducer,
 });
 
 export default function configureStore(preloadedState?: IRootState) {

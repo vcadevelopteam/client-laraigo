@@ -440,7 +440,8 @@ export const CalendarEvent: FC = () => {
             conversationid: ticket.conversationid,
             personid: ticket.personid,
             personname: data.name,
-            personcontact: data.email || data.phone,
+            personcontact: data.phone,
+            personmail: data.email,
             persontimezone: -5.00,
             operation: 'INSERT',
             username: 'admin',
@@ -454,7 +455,8 @@ export const CalendarEvent: FC = () => {
                 { name: "timeend", text: timeSelected?.localendhour },
                 { name: "eventname", text: event?.name },
                 { name: "personname", text: data.name },
-                { name: "personcontact", text: data.email || data.phone },
+                { name: "personcontact", text: data.phone },
+                { name: "personmail", text: data.email },
                 { name: "eventcode", text: eventcode },
             ]
         }
