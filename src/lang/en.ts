@@ -919,6 +919,7 @@ const translation: LangKeys = {
     healthprofessional: "Health professional",
     referralchannel: "Referral channel",
     activate_ticket: 'Activate ticket',
+    successful_cancel_event: "The event has been canceled succesfully",
     bold: 'Bold',
     italic: 'Italic',
     underline: 'Underline',

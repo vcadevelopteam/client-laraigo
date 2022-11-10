@@ -34,6 +34,7 @@ export const langKeys = {
     securityrules: "securityrules",
     securityrule: "securityrule",
     invalid_password: "invalid_password",
+    successful_cancel_event: "successful_cancel_event",
     passwordCond1: "passwordCond1",
     passwordCond2: "passwordCond2",
     passwordCond3: "passwordCond3",
