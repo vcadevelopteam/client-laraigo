@@ -24,7 +24,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Tab, { TabProps } from '@material-ui/core/Tab';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { FormControlLabel, FormHelperText, OutlinedInputProps, Radio, RadioGroup, RadioGroupProps, useTheme, TypographyVariant } from '@material-ui/core';
+import { FormControlLabel, FormHelperText, OutlinedInputProps, Radio, RadioGroup, RadioGroupProps, useTheme, TypographyVariant, InputBase } from '@material-ui/core';
 import { Divider, Grid, ListItem, ListItemText, styled } from '@material-ui/core';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import { Skeleton } from '@material-ui/lab';
@@ -58,6 +58,7 @@ import {
 import { VariableSizeList, FixedSizeList, ListChildComponentProps } from 'react-window';
 import MuiPhoneNumber, { MaterialUiPhoneNumberProps } from 'material-ui-phone-number';
 import InfoIcon from '@material-ui/icons/Info';
+import QuickReactions from "react-quick-reactions";
 
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
@@ -322,7 +323,8 @@ interface InputProps {
     className?: any;
     valueDefault?: any;
     disabled?: boolean;
-
+    emoji?: boolean;
+    hashtag?: boolean;
     onChange?: (param: any, param2?: any | null) => void;
     onBlur?: (param: any, param2?: any | null) => void;
     style?: any;
@@ -436,6 +438,81 @@ export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disable
                     onBlur && onBlur(e.target.value);
                 }}
                 inputProps={inputProps}
+                style={{ border: '1px solid #762AA9' }}
+            />
+            {maxLength !== 0 && <FormHelperText style={{ textAlign: 'right' }}>{maxLength - value.length}/{maxLength}</FormHelperText>}
+        </div>
+    )
+}
+
+export const FieldEditAdvanced: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, inputProps = {}, style = {}, variant = "standard", emoji = false, hashtag = false }) => {
+    const [value, setvalue] = useState("");
+    const [positionStart, setPositionStart] = useState(0);
+    const [positionEnd, setPositionEnd] = useState(0);
+    const [isVisible, setIsVisible] = useState(false);
+    const [insertHashtag, setInsertHashtag] = useState(false);
+
+    useEffect(() => {
+        setvalue(valueDefault || "");
+    }, [valueDefault])
+
+    return (
+        <div className={className}>
+            {label && <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>}
+            {(emoji || hashtag) && <div style={{ display: 'flex', width: '100%', alignItems: 'right', alignContent: 'right', justifyContent: 'flex-end', marginLeft: '6px' }}>
+                {emoji && <QuickReactions
+                    reactionsArray={[
+                        {
+                            name: "Laughing",
+                            content: "😂",
+                        }
+                    ]}
+                    isVisible={isVisible}
+                    onClose={() => setIsVisible(false)}
+                    onClickReaction={(reaction) => {
+                        window.alert(reaction.content);
+                    }}
+                    trigger={
+                        <button
+                            onClick={() => {
+                                setIsVisible(!isVisible);
+                            }}
+                            style={{ border: 'none', width: '28px', height: '28px', backgroundImage: 'url(https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/d710976d-8894-4f37-935b-f4dc102bc294/Emoji.png)', backgroundSize: '28px 28px', cursor: 'pointer' }}
+                        >
+                        </button>
+                    }
+                    placement={'left'}
+                    header={'Emojis'}
+                />}
+                {hashtag && <button
+                    onClick={() => {
+                        setInsertHashtag(!insertHashtag);
+                    }}
+                    style={{ border: 'none', width: '28px', height: '28px', backgroundImage: 'url(https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/ccbdbce8-db2e-4437-b28f-53fa371334a7/Hashtag.png)', backgroundSize: '28px 28px', cursor: 'pointer' }}
+                >
+                </button>}
+            </div>}
+            <InputBase
+                {...fregister}
+                color="primary"
+                fullWidth
+                disabled={disabled}
+                type={type}
+                error={!!error}
+                value={value}
+                multiline
+                minRows={rows}
+                onChange={(e) => {
+                    if (maxLength === 0 || e.target.value.length <= maxLength) {
+                        setvalue(e.target.value);
+                        onChange && onChange(e.target.value);
+                    }
+                }}
+                onBlur={(e) => {
+                    onBlur && onBlur(e.target.value);
+                }}
+                inputProps={inputProps}
+                style={style}
             />
             {maxLength !== 0 && <FormHelperText style={{ textAlign: 'right' }}>{maxLength - value.length}/{maxLength}</FormHelperText>}
         </div>

@@ -91,6 +91,7 @@ const CalendarEvent = lazy(() => import('pages/CalendarEvent'));
 const Assistant = lazy(() => import('pages/assistant/Assistant'));
 const Location = lazy(() => import('pages/Location'));
 const SecurityRules = lazy(() => import('pages/SecurityRules'));
+const PostCreator = lazy(() => import('pages/PostCreator'));
 
 const useStyles = makeStyles((theme) => ({
 	main: {
@@ -136,7 +137,7 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 				userGroup: resValidateToken.user?.groups || "",
 				role: resValidateToken.user?.roledesc || "",
 			}))
-			
+
 			const { userid, orgid, roledesc, ownervoxi, sitevoxi } = resValidateToken.user!!
 			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM', automaticConnection, fromLogin: automaticConnection, roledesc }));
 			if (sitevoxi && ownervoxi) {
@@ -267,6 +268,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.ASSISTANT} component={() => <Layout mainClasses={classes.main}><Assistant /></Layout>} />
 					<ProtectRoute exact path={paths.SECURITYRULES} component={() => <Layout mainClasses={classes.main}><SecurityRules /></Layout>} />
 					<ProtectRoute exact path={paths.EXTRASLOCATION} component={() => <Layout mainClasses={classes.main}><Location /></Layout>} />
+					<ProtectRoute exact path={paths.POSTCREATOR} component={() => (<Layout mainClasses={classes.main}><PostCreator /></Layout>)} />
 					<Route exact path={paths.CHNAGE_PWD_FIRST_LOGIN}>
 						<ChangePwdFirstLogin />
 					</Route>
