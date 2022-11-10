@@ -634,8 +634,8 @@ const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = 
                 <div style={{ width: "100%" }}>
                     <CalendarWithInfo
                         calendarEventID={calendarEventID}
+                        date={dateRange.startDate!!}
                         selectBooking={(item) => {
-                            console.log("item", item)
                             setBookingSelected(item);
                             setOpenDialog(true);
                         }}

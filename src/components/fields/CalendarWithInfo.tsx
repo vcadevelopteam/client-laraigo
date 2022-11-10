@@ -5,7 +5,7 @@ import React, { FC, useCallback, useEffect, useState } from "react";
 import { Dictionary } from "@types";
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import { calculateDateFromWeek,dayNames2, selBookingCalendar } from "common/helpers";
+import { calculateDateFromWeek, dayNames2, selBookingCalendar } from "common/helpers";
 import { useDispatch } from "react-redux";
 import { getCollectionAux } from "store/main/actions";
 import { useSelector } from "hooks";
@@ -187,7 +187,7 @@ const BoxDay: FC<{
     return (
         <div
             className={classes.boxDay}
-            style={{borderBottom: hourDay.hourstart === 23 ? "none" : "1px solid #e1e1e1"}}
+            style={{ borderBottom: hourDay.hourstart === 23 ? "none" : "1px solid #e1e1e1" }}
         >
             {hourDay.data?.map(x => (
                 <div
@@ -206,8 +206,9 @@ const BoxDay: FC<{
 const CalendarWithInfo: FC<{
     calendarEventID: number;
     selectBooking: (p: any) => void;
-    booking: Dictionary
-}> = ({ calendarEventID, selectBooking, }) => {
+    booking: Dictionary;
+    date: Date;
+}> = ({ calendarEventID, selectBooking, date }) => {
     const classes = useScheduleStyles();
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -226,8 +227,8 @@ const CalendarWithInfo: FC<{
     }
 
     useEffect(() => {
-        fetchData(new Date())
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        fetchData(date)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
@@ -242,15 +243,13 @@ const CalendarWithInfo: FC<{
                 }))
             ]), []));
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dataBooking])
 
     const handleChangeWeek = useCallback((manage: number) => {
         const previewDate = new Date(rangeDates[0].date);
-        console.log("previewDate", previewDate)
         fetchData(new Date(previewDate.setDate(previewDate.getDate() + 1 + manage * 7)))
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [rangeDates])
 
     return (
