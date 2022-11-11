@@ -639,6 +639,7 @@ const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = 
                             setBookingSelected(item);
                             setOpenDialog(true);
                         }}
+                        setDateRange={setDateRange}
                         booking={event}
                     />
                 </div>
