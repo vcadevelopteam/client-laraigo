@@ -891,14 +891,15 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         {domainvalue: "week", domaindesc: "week"},
     ];
     const dataVariables = [
-        {domainvalue: "location"},
-        {domainvalue: "eventlink"},
-        {domainvalue: "monthdate"},
-        {domainvalue: "hourstart"},
-        {domainvalue: "hourend"},
-        {domainvalue: "personsame"},
-        {domainvalue: "personcontact"},
-        {domainvalue: "personmail"},
+        {domainvalue: "eventname", domaindesc: "calendar_eventname"},
+        {domainvalue: "eventlocation", domaindesc: "calendar_eventlocation"},
+        {domainvalue: "eventlink", domaindesc: "calendar_eventlink"},
+        {domainvalue: "monthdate", domaindesc: "calendar_monthdate"},
+        {domainvalue: "hourstart", domaindesc: "calendar_hourstart"},
+        {domainvalue: "hourend", domaindesc: "calendar_hourend"},
+        {domainvalue: "personname", domaindesc: "calendar_personname"},
+        {domainvalue: "personcontact", domaindesc: "calendar_personcontact"},
+        {domainvalue: "personmail", domaindesc: "calendar_personmail"},
     ];
 
     const { control, register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm<FormFields>({
@@ -991,8 +992,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     const getvariableValues = ((templateid:any, message:string)=>{
         console.log(message)
         let tempbody = dataTemplates.filter(x => x.id === (templateid||""))[0]?.body || ""
-        let temptemplatevariables = (tempbody.match(/{{/g)||[]).reduce((acc:any,x:any,i:number)=>{return {...acc,[`variable#${i}`]: ``}},{})
-        temptemplatevariables = (message.match(/{{[\w\d]+}}/g)||[]).reduce((acc:any,x:any,i:number)=>{
+        let temptemplatevariables = (tempbody?.match(/{{/g)||[]).reduce((acc:any,x:any,i:number)=>{return {...acc,[`variable#${i}`]: ``}},{})
+        temptemplatevariables = (message?.match(/{{[\w\d]+}}/g)||[]).reduce((acc:any,x:any,i:number)=>{
             let variablevalue = x.replace("{{","").replace("}}","")
             if(!parseInt(variablevalue)){
                 return {...acc,[`variable#${i}`]:x.replace("{{","").replace("}}","")}
@@ -1013,7 +1014,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     const onSelectTemplate = (value: Dictionary) => {
         if (value) {
             setBodyMessage(value.body);
-            setTemplateVariables((value.body.match(/{{/g)||[]).reduce((acc:any,x:any,i:number)=>{return {...acc,[`variable#${i}`]: ``}},{}))
+            setTemplateVariables((value.body?.match(/{{/g)||[]).reduce((acc:any,x:any,i:number)=>{return {...acc,[`variable#${i}`]: ``}},{}))
             setValue('hsmtemplateid', value ? value.id : 0);
             setValue('hsmtemplatename', value ? value.name : '');
         } else {
@@ -1026,7 +1027,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     const onSelectTemplateReminderEmail = (value: Dictionary|null) => {
         if (value) {
             setBodyMessageReminderEmail(value.body);
-            setEmailVariables((value.body.match(/{{/g)||[]).reduce((acc:any,x:any,i:number)=>{return {...acc,[`variable#${i}`]: ``}},{}))
+            setEmailVariables((value.body?.match(/{{/g)||[]).reduce((acc:any,x:any,i:number)=>{return {...acc,[`variable#${i}`]: ``}},{}))
             setValue('remindermailtemplateid', value?.id||0);
             setValue('reminderemailtemplatename', value?.name||'');
         } else {
@@ -1039,7 +1040,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     const onSelectTemplateReminderHSM = (value: Dictionary|null) => {
         if (value) {
             setBodyMessageReminderHSM(value.body);
-            setHsmVariables((value.body.match(/{{/g)||[]).reduce((acc:any,x:any,i:number)=>{return {...acc,[`variable#${i}`]: ``}},{}))
+            setHsmVariables((value.body?.match(/{{/g)||[]).reduce((acc:any,x:any,i:number)=>{return {...acc,[`variable#${i}`]: ``}},{}))
             setValue('reminderhsmtemplateid', value ? value.id : 0);
             setValue('reminderhsmtemplatename', value ? value.name : '');
         } else {
@@ -1349,7 +1350,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                             valueDefault={templateVariables[x]}
                                             onChange={(value)=>{setTemplateVariables({...templateVariables,[x]:value?.domainvalue||""})}}
                                             data={dataVariables}
-                                            optionDesc="domainvalue"
+                                            uset={true}
+                                            optionDesc="domaindesc"
                                             optionValue="domainvalue"
                                         />
                                     </div>)
@@ -1711,6 +1713,9 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                             <div className="row-zyx" >
                                 
                                 <FieldSelect
+                                    fregister={{...register(`remindertype`, {
+                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                    })}}
                                     label={t(langKeys.notificationtype)}
                                     className="col-6"
                                     valueDefault={getValues("remindertype")}
@@ -1734,6 +1739,9 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                 {getValues("remindertype").includes("EMAIL") && 
                                     <div className="col-6" >
                                         <FieldSelect
+                                            fregister={{...register(`remindermailtemplateid`, {
+                                                validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
+                                            })}}
                                             label={t(langKeys.notificationtemplate)}
                                             className="col-6"
                                             valueDefault={getValues('remindermailtemplateid')}
@@ -1757,6 +1765,9 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                 {getValues("remindertype").includes("HSM") && 
                                     <div className="col-6" >
                                         <FieldSelect
+                                            fregister={{...register(`reminderhsmtemplateid`, {
+                                                validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
+                                            })}}
                                             label={t(langKeys.notificationtemplate)}
                                             className="col-6"
                                             valueDefault={getValues('reminderhsmtemplateid')}
@@ -1790,7 +1801,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                                     valueDefault={emailVariables[x]}
                                                     onChange={(value)=>{setEmailVariables({...emailVariables,[x]:value?.domainvalue||""})}}
                                                     data={dataVariables}
-                                                    optionDesc="domainvalue"
+                                                    uset={true}
+                                                    optionDesc="domaindesc"
                                                     optionValue="domainvalue"
                                                 />
                                             </div>)
@@ -1808,7 +1820,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                                     valueDefault={hsmVariables[x]}
                                                     onChange={(value)=>{setHsmVariables({...hsmVariables,[x]:value?.domainvalue||""})}}
                                                     data={dataVariables}
-                                                    optionDesc="domainvalue"
+                                                    uset={true}
+                                                    optionDesc="domaindesc"
                                                     optionValue="domainvalue"
                                                 />
                                             </div>)
@@ -1818,9 +1831,12 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                             </div>
                             <div className="row-zyx" >
                                 <FieldSelect
+                                    fregister={{...register(`reminderperiod`, {
+                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                    })}}
                                     label={t(langKeys.reminderperiod)}
                                     className="col-6"
-                                    valueDefault={row?.reminderperiod || ""}
+                                    valueDefault={getValues('reminderperiod')}
                                     onChange={(value) => {setValue('reminderperiod', (value?.domainvalue || ""))}}
                                     error={errors?.reminderperiod?.message}
                                     data={dataRange}
@@ -1830,12 +1846,16 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                     optionValue="domainvalue"
                                 />
                                 <FieldEdit
+                                    fregister={{...register(`reminderfrecuency`, {
+                                        validate: (value: any) => (value && value >= 0) || t(langKeys.field_required)
+                                    })}}
                                     label={t(langKeys.value)}
                                     className="col-6"
                                     type='number'
                                     InputProps={{ inputProps: { min: 0 } }}
                                     valueDefault={getValues('reminderfrecuency')}
                                     onChange={(value) => { setValue('reminderfrecuency', value) }}
+                                    error={errors?.reminderfrecuency?.message}
                                 />
                             </div>
                         </>
