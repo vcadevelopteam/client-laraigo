@@ -60,4 +60,5 @@ export const viewDocumentation = [
     {name: 'usersettings', altname: 'usersettings', path: `https://docs-laraigo.gitbook.io/laraigo/contenido/configuracion-de-la-cuenta`},
     {name: 'botdesigner', altname: 'botdesigner', path: `https://docs-laraigo.gitbook.io/laraigo/contenido/disenador-de-bots`},
     {name: 'configuration', altname: 'configuration', path: `https://docs-laraigo.gitbook.io/laraigo/contenido/configuracion`},
+    {name: 'variableconfiguration', altname: 'variableconfiguration', path: `https://docs-laraigo.gitbook.io/laraigo/contenido/configuracion-de-variables`},
 ];
