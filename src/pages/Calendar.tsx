@@ -849,7 +849,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
     const dataTemplates = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataChannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
-    const [bodyMessage, setBodyMessage] = useState(row?.messagetemplateid ? (dataTemplates.filter(x => x.id === row.messagetemplateid)[0]?.body || "") : "");
+    const [bodyMessage, setBodyMessage] = useState(dataTemplates.filter(x => x.id === (row?.messagetemplateid||""))[0]?.body || "");
     const [bodyMessageReminderEmail, setBodyMessageReminderEmail] = useState(dataTemplates.filter(x => x.id === (row?.remindermailtemplateid||""))[0]?.body||"");
     const [bodyMessageReminderHSM, setBodyMessageReminderHSM] = useState(dataTemplates.filter(x => x.id === (row?.reminderhsmtemplateid||""))[0]?.body||"");
     const [showError, setShowError] = useState(false);
@@ -922,7 +922,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
             timebeforeeventduration: row?.timebeforeeventduration || 0,
             timeaftereventunit: row?.timeaftereventunit || "MINUTE",
             timeaftereventduration: row?.timeaftereventduration || 0,
-            statusreminder: row?.statusreminder? "ACTIVO": "INACTIVO",
+            statusreminder: row?.reminderenable? "ACTIVO": "INACTIVO",
             remindertype: row?.remindertype || "",
             email: row?.email || "",
             hsm: row?.hsm || "",
@@ -986,6 +986,28 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
             }
         }
     }, [executeRes, waitSave])
+
+    const getvariableValues = ((templateid:any, message:string)=>{
+        console.log(message)
+        let tempbody = dataTemplates.filter(x => x.id === (templateid||""))[0]?.body || ""
+        let temptemplatevariables = (tempbody.match(/{{/g)||[]).reduce((acc:any,x:any,i:number)=>{return {...acc,[`variable#${i}`]: ``}},{})
+        temptemplatevariables = (message.match(/{{[\w\d]+}}/g)||[]).reduce((acc:any,x:any,i:number)=>{
+            let variablevalue = x.replace("{{","").replace("}}","")
+            if(!parseInt(variablevalue)){
+                return {...acc,[`variable#${i}`]:x.replace("{{","").replace("}}","")}
+            }else{
+                return acc
+            }
+        },temptemplatevariables)
+        return temptemplatevariables
+    })
+    useEffect(() => {
+        if(row){
+            setTemplateVariables(getvariableValues(row?.messagetemplateid,row.notificationmessage))
+            setEmailVariables(getvariableValues(row?.remindermailtemplateid,row.remindermailmessage))
+            setHsmVariables(getvariableValues(row?.reminderhsmtemplateid,row.reminderhsmmessage))
+        }
+    }, [row])
     
     const onSelectTemplate = (value: Dictionary) => {
         if (value) {
@@ -1669,8 +1691,11 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                         <FieldSelect
                             label={t(langKeys.status)}
                             className="col-6"
-                            valueDefault={row?.statusreminder || "INACTIVO"}
-                            onChange={(value) => {setValue('statusreminder', (value?.domainvalue || "")); trigger("statusreminder")}}
+                            valueDefault={getValues("statusreminder")}
+                            onChange={(value) => {
+                                setValue('statusreminder', (value?.domainvalue || "")); 
+                                trigger("statusreminder");
+                            }}
                             error={errors?.statusreminder?.message}
                             data={dataStatus}
                             uset={true}
