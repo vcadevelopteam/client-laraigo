@@ -1093,6 +1093,8 @@ const translation: LangKeys = {
     laraigoappversion: 'Laraigo app version',
     laraigoengineversion: 'Laraigo engine version',
     deploymentdate: 'Deployment date',
+    android_version: 'Android Version',
+    ios_version: 'IOS version',
     generalhelp: 'General help',
     aboutlaraigo: 'About Laraigo',
     dashboardadd: "Create Dashboard",

@@ -74,7 +74,7 @@ const LaraigoHelp: FC<BoxProps> = (boxProps) => {
         } else {
             const lengthsplitpath = location.pathname.split('/')
             console.log(lengthsplitpath)
-            const finddocumentation = viewDocumentation.find(x => x.name === lengthsplitpath[lengthsplitpath.length>3? 2:lengthsplitpath.length-1])
+            const finddocumentation = viewDocumentation.find(x => x.name === lengthsplitpath[lengthsplitpath.length > 3 ? 2 : lengthsplitpath.length - 1])
             setshowDocButton(!!finddocumentation)
             setredirection(finddocumentation || null)
         }
@@ -116,7 +116,7 @@ const LaraigoHelp: FC<BoxProps> = (boxProps) => {
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                             <LaraigoOnlyLogo style={{ width: 60, height: 60 }} />
                         </div>
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
                             <div style={{ justifyContent: 'space-between', display: 'flex' }}>
                                 <Typography><Trans i18nKey={langKeys.laraigoappversion} /></Typography>
                                 <Typography >{version.build}</Typography>
@@ -126,8 +126,16 @@ const LaraigoHelp: FC<BoxProps> = (boxProps) => {
                                 <Typography >{getVersionData?.getVersion?.data?.version}</Typography>
                             </div>
                             <div style={{ justifyContent: 'space-between', display: 'flex' }}>
-                                <Typography  ><Trans i18nKey={langKeys.deploymentdate} /></Typography>
+                                <Typography ><Trans i18nKey={langKeys.deploymentdate} /></Typography>
                                 <Typography >{formattime(getVersionData?.getVersion?.data?.date)}</Typography>
+                            </div>
+                            <div style={{ justifyContent: 'space-between', display: 'flex' }}>
+                                <Typography ><Trans i18nKey={langKeys.android_version} /></Typography>
+                                <Typography >{getVersionData?.getVersion?.data?.version_android}</Typography>
+                            </div>
+                            <div style={{ justifyContent: 'space-between', display: 'flex' }}>
+                                <Typography ><Trans i18nKey={langKeys.ios_version} /></Typography>
+                                <Typography >{getVersionData?.getVersion?.data?.version_ios}</Typography>
                             </div>
                         </div>
                     </div>

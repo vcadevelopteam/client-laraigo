@@ -172,6 +172,8 @@ const translation: LangKeys = {
     laraigoappversion: 'Versión Laraigo App',
     laraigoengineversion: 'Versión Laraigo Engine',
     deploymentdate: 'Fecha de despliegue',
+    android_version: 'Versión Android',
+    ios_version: 'Versión IOS',
     generalhelp: 'Ayuda General',
     dashboardadd: "Crear Dashboard",
     reports: "Reportes",
