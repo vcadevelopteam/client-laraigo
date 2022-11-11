@@ -3013,7 +3013,7 @@ export const insCalendar = ({
     timebeforeeventduration, timebeforeeventunit, timeaftereventduration, timeaftereventunit,
     increments,
     operation, reminderperiod,reminderfrecuency,reminderhsmmessage,
-    communicationchannelid,notificationmessage,reminderenable,remindertype,reminderhsmtemplateid,remindermailmessage,remindermailtemplateid
+    communicationchannelid,notificationmessage,reminderenable,remindertype,reminderhsmtemplateid,remindermailmessage,remindermailtemplateid,reminderhsmcommunicationchannelid
 }: Dictionary): IRequestBody => ({
     method: "UFN_CALENDAREVENT_INS",
     key: "UFN_CALENDAREVENT_INS",
@@ -3026,7 +3026,7 @@ export const insCalendar = ({
         availability: JSON.stringify(availability),
         timebeforeeventduration, timebeforeeventunit, timeaftereventduration, timeaftereventunit,
         increments,reminderperiod,reminderfrecuency,
-        reminderhsmtemplateid: reminderhsmtemplateid||0,
+        reminderhsmtemplateid: reminderhsmtemplateid||0,reminderhsmcommunicationchannelid,
         remindermailtemplateid: remindermailtemplateid||0,reminderhsmmessage,
         operation,notificationmessage,reminderenable,remindertype,remindermailmessage,
         communicationchannelid: communicationchannelid || 0

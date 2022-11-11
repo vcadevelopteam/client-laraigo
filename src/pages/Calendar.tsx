@@ -96,6 +96,7 @@ type FormFields = {
     remindervariableshsm: any[],
     reminderperiod: string,
     reminderfrecuency: number,
+    reminderhsmcommunicationchannelid: number,
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -932,6 +933,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
             reminderhsmtemplateid: row?.reminderhsmtemplateid || "",
             reminderperiod: row?.reminderperiod || "",
             reminderfrecuency: row?.reminderfrecuency || 0,
+            reminderhsmcommunicationchannelid: row?.reminderhsmcommunicationchannelid || 0,
         }
     });
 
@@ -955,13 +957,17 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         register('notificationtype');
 
         register('hsmtemplateid', { validate: (value) => getValues("notificationtype") !== "EMAIL" ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
-        register('communicationchannelid');
+        register('communicationchannelid', { validate: (value) => !getValues("remindertype").includes("HSM") ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
         register('durationtype', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('duration', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.field_required)) });
         register('timebeforeeventunit', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('timebeforeeventduration', { validate: (value) => Boolean(value >= 0) || String(t(langKeys.field_required)) });
         register('timeaftereventunit', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('timeaftereventduration', { validate: (value) => Boolean(value >= 0) || String(t(langKeys.field_required)) });
+        register('reminderhsmcommunicationchannelid', { validate: (value) => !getValues("remindertype").includes("HSM") ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
+        register('reminderhsmtemplateid', { validate: (value) => !getValues("remindertype").includes("HSM") ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
+        register('remindermailtemplateid', { validate: (value) => !getValues("remindertype").includes("EMAIL") ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
+        register('remindertype', { validate: (value) => getValues("statusreminder") !== "ACTIVO" ? true : (Boolean(value && value.length) || String(t(langKeys.field_required))) });
         /*register('statusreminder', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });*/
     }, [register]);
 
@@ -1048,6 +1054,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
             setBodyMessageReminderHSM('');
             setHsmVariables({})
             setValue('reminderhsmtemplateid', 0);
+            setValue('reminderhsmcommunicationchannelid', 0);
         }
     }
     const replaceVariables = ((variablesObj:any, messagebody:string)=>{
@@ -1319,7 +1326,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                             className="col-12"
                             valueDefault={getValues('communicationchannelid')}
                             error={errors?.communicationchannelid?.message}
-                            onChange={(value) => setValue('communicationchannelid', value.communicationchannelid)}
+                            onChange={(value) => setValue('communicationchannelid', value?.communicationchannelid||0)}
                             data={dataChannels.filter(x => x.type.startsWith('WHA'))}
                             optionDesc="communicationchanneldesc"
                             optionValue="communicationchannelid"
@@ -1738,6 +1745,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                             <div className="row-zyx" >
                                 {getValues("remindertype").includes("EMAIL") && 
                                     <div className="col-6" >
+                                        <div style={{paddingBottom: 10, fontWeight: "bold", fontSize: "1.1em"}}>{t(langKeys.email)}</div>
                                         <FieldSelect
                                             fregister={{...register(`remindermailtemplateid`, {
                                                 validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
@@ -1764,6 +1772,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                 }
                                 {getValues("remindertype").includes("HSM") && 
                                     <div className="col-6" >
+                                        <div style={{paddingBottom: 10, fontWeight: "bold", fontSize: "1.1em"}}>{t(langKeys.hsm)}</div>
                                         <FieldSelect
                                             fregister={{...register(`reminderhsmtemplateid`, {
                                                 validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
@@ -1777,6 +1786,18 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                             optionDesc="name"
                                             optionValue="id"
                                         />
+                                        <div style={{paddingTop: 10}}>
+                                            <FieldSelect
+                                                label={t(langKeys.communicationchannel)}
+                                                className="col-12"
+                                                valueDefault={getValues('reminderhsmcommunicationchannelid')}
+                                                error={errors?.reminderhsmcommunicationchannelid?.message}
+                                                onChange={(value) => setValue('reminderhsmcommunicationchannelid', value?.communicationchannelid||0)}
+                                                data={dataChannels.filter(x => x.type.startsWith('WHA'))}
+                                                optionDesc="communicationchanneldesc"
+                                                optionValue="communicationchannelid"
+                                            />
+                                        </div>
                                         <React.Fragment>
                                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
                                                 {t(langKeys.message)}
