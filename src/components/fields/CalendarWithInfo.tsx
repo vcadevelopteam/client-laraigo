@@ -208,7 +208,8 @@ const CalendarWithInfo: FC<{
     selectBooking: (p: any) => void;
     booking: Dictionary;
     date: Date;
-}> = ({ calendarEventID, selectBooking, date }) => {
+    setDateRange: (p: any) => void
+}> = ({ calendarEventID, selectBooking, date, setDateRange }) => {
     const classes = useScheduleStyles();
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -309,7 +310,14 @@ const CalendarWithInfo: FC<{
                         <BoxDay
                             key={index}
                             hourDay={day}
-                            handleClick={selectBooking}
+                            handleClick={(e) => {
+                                selectBooking(e);
+                                setDateRange({
+                                    startDate: rangeDates[0].date,
+                                    endDate: rangeDates[1].date,
+                                    key: 'selection',
+                                })
+                            }}
                         />
                     ))}
                 </div>

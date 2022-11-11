@@ -919,7 +919,7 @@ const translation: LangKeys = {
     rescheduleappointment: "Reschedule appointment",
     sendreminders: 'Send reminders',
     remindertype: 'Reminder type',
-    reminderrange: 'Reminder range',
+    reminderperiod: 'Reminder range',
     suspend_ticket: 'Suspend ticket',
     healthprofessional: "Health professional",
     referralchannel: "Referral channel",

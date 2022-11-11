@@ -1101,7 +1101,7 @@ const translation: LangKeys = {
     location: 'Ubicación',
     duration: 'Duración',
     notificationtype: 'Tipo de notificación',
-    reminderrange: 'Frecuencia de recordatorio',
+    reminderperiod: 'Frecuencia de recordatorio',
     calendar_messate_tooltip: 'Variables disponibles: timeevent, timestart, timeend, eventname, personname, personcontact',
 
     id: 'ID',
