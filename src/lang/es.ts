@@ -4187,6 +4187,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     postcreator_publish_draft_description: "Podras ver el borrador en el historial de publicaciones.",
     postcreator_publish_draft_save: "Guardar",
     postcreator_publish_draft_cancel: "Cancelar",
+    postcreator_publish_previewmode: "Modo de Previsualización",
 };
 
 const esResource: ResourceLanguage = {

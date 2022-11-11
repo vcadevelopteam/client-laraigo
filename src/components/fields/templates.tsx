@@ -450,7 +450,6 @@ export const FieldEditAdvanced: React.FC<InputProps> = ({ label, className, disa
     const [positionStart, setPositionStart] = useState(0);
     const [positionEnd, setPositionEnd] = useState(0);
     const [isVisible, setIsVisible] = useState(false);
-    const [insertHashtag, setInsertHashtag] = useState(false);
 
     useEffect(() => {
         setvalue(valueDefault || "");
@@ -463,14 +462,33 @@ export const FieldEditAdvanced: React.FC<InputProps> = ({ label, className, disa
                 {emoji && <QuickReactions
                     reactionsArray={[
                         {
+                            id: "laughing",
                             name: "Laughing",
                             content: "😂",
-                        }
+                        },
+                        {
+                            id: "crying",
+                            name: "Crying",
+                            content: "😢",
+                        },
+                        {
+                            id: "thinking",
+                            name: "Thinking",
+                            content: "🤔",
+                        },
+                        {
+                            id: "screaming",
+                            name: "Screaming",
+                            content: "😱",
+                        },
                     ]}
                     isVisible={isVisible}
                     onClose={() => setIsVisible(false)}
                     onClickReaction={(reaction) => {
-                        window.alert(reaction.content);
+                        if (maxLength === 0 || `${value}${reaction.content}`.length <= maxLength) {
+                            setvalue(`${value}${reaction.content}`);
+                            onChange && onChange(`${value}${reaction.content}`);
+                        }
                     }}
                     trigger={
                         <button
@@ -486,7 +504,10 @@ export const FieldEditAdvanced: React.FC<InputProps> = ({ label, className, disa
                 />}
                 {hashtag && <button
                     onClick={() => {
-                        setInsertHashtag(!insertHashtag);
+                        if (maxLength === 0 || `${value}#`.length <= maxLength) {
+                            setvalue(`${value}#`);
+                            onChange && onChange(`${value}#`);
+                        }
                     }}
                     style={{ border: 'none', width: '28px', height: '28px', backgroundImage: 'url(https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/ccbdbce8-db2e-4437-b28f-53fa371334a7/Hashtag.png)', backgroundSize: '28px 28px', cursor: 'pointer' }}
                 >

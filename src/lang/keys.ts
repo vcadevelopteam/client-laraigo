@@ -4181,6 +4181,7 @@ export const langKeys = {
     postcreator_publish_draft_description: "postcreator_publish_draft_description",
     postcreator_publish_draft_save: "postcreator_publish_draft_save",
     postcreator_publish_draft_cancel: "postcreator_publish_draft_cancel",
+    postcreator_publish_previewmode: "postcreator_publish_previewmode",
 };
 
 export type LangKeys = typeof langKeys;

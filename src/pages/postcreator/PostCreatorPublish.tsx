@@ -3,6 +3,7 @@ import React, { FC, Fragment, useEffect, useState } from "react";
 import TableZyx from "components/fields/table-simple";
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import SaveIcon from '@material-ui/icons/Save';
 
 import { Button, Tabs, TextField } from "@material-ui/core";
 import { getCollection, getMultiCollection, resetMultiMain } from "store/main/actions";
@@ -11,10 +12,20 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useDispatch } from "react-redux";
 import { useSelector } from 'hooks';
 import { useTranslation } from "react-i18next";
-import { AntTab, FieldView, FieldEditAdvanced } from 'components';
+import { AntTab, FieldView, FieldEditAdvanced, FieldSelect } from 'components';
 import { FacebookColor, InstagramColor, TwitterColor, YouTubeColor, LinkedInColor, TikTokColor } from "icons";
+import { Edit, Delete, CameraAlt, PlayCircleOutlineSharp, Facebook, Instagram, YouTube, LinkedIn, Twitter, MusicNote, Timelapse, Save, Send } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
+    button: {
+        fontSize: '14px',
+        fontWeight: 500,
+        padding: 12,
+        textTransform: 'initial',
+        width: 'auto',
+        marginLeft: '4px',
+        marginRight: '4px',
+    },
     containerLeft: {
         [theme.breakpoints.down('xs')]: {
             minWidth: '100vw',
@@ -88,11 +99,9 @@ const PublishText: React.FC<{ dataChannel: any, publishType: string }> = ({ data
 
     const { t } = useTranslation();
 
-    const [filterCheckBox, setFilterCheckBox] = useState({
-        ASIGNADO: false,
-        CERRADO: false,
-        SUSPENDIDO: false
-    })
+    const [customizeType, setCustomizeType] = useState('Facebook');
+    const [checkBox, setCheckBox] = useState(false);
+    const [previewType, setPreviewType] = useState('FACEBOOKPREVIEW');
 
     return (
         <Fragment>
@@ -113,9 +122,9 @@ const PublishText: React.FC<{ dataChannel: any, publishType: string }> = ({ data
                                     <FormControlLabel
                                         control={(
                                             <Checkbox
-                                                checked={true}
+                                                checked={checkBox}
                                                 color="primary"
-                                                onChange={(e) => setFilterCheckBox({ ...filterCheckBox, ASIGNADO: e.target.checked })}
+                                                onChange={(e) => setCheckBox(e.target.checked)}
                                                 name="Facebook" />
                                         )}
                                         label={
@@ -130,9 +139,9 @@ const PublishText: React.FC<{ dataChannel: any, publishType: string }> = ({ data
                                     <FormControlLabel
                                         control={(
                                             <Checkbox
-                                                checked={true}
+                                                checked={checkBox}
                                                 color="primary"
-                                                onChange={(e) => setFilterCheckBox({ ...filterCheckBox, ASIGNADO: e.target.checked })}
+                                                onChange={(e) => setCheckBox(e.target.checked)}
                                                 name="Intagram" />
                                         )}
                                         label={
@@ -147,9 +156,9 @@ const PublishText: React.FC<{ dataChannel: any, publishType: string }> = ({ data
                                     <FormControlLabel
                                         control={(
                                             <Checkbox
-                                                checked={true}
+                                                checked={checkBox}
                                                 color="primary"
-                                                onChange={(e) => setFilterCheckBox({ ...filterCheckBox, ASIGNADO: e.target.checked })}
+                                                onChange={(e) => setCheckBox(e.target.checked)}
                                                 name="LinkedIn" />
                                         )}
                                         label={
@@ -164,9 +173,9 @@ const PublishText: React.FC<{ dataChannel: any, publishType: string }> = ({ data
                                     <FormControlLabel
                                         control={(
                                             <Checkbox
-                                                checked={true}
+                                                checked={checkBox}
                                                 color="primary"
-                                                onChange={(e) => setFilterCheckBox({ ...filterCheckBox, ASIGNADO: e.target.checked })}
+                                                onChange={(e) => setCheckBox(e.target.checked)}
                                                 name="TikTok" />
                                         )}
                                         label={
@@ -181,9 +190,9 @@ const PublishText: React.FC<{ dataChannel: any, publishType: string }> = ({ data
                                     <FormControlLabel
                                         control={(
                                             <Checkbox
-                                                checked={true}
+                                                checked={checkBox}
                                                 color="primary"
-                                                onChange={(e) => setFilterCheckBox({ ...filterCheckBox, ASIGNADO: e.target.checked })}
+                                                onChange={(e) => setCheckBox(e.target.checked)}
                                                 name="Twitter" />
                                         )}
                                         label={
@@ -198,9 +207,9 @@ const PublishText: React.FC<{ dataChannel: any, publishType: string }> = ({ data
                                     <FormControlLabel
                                         control={(
                                             <Checkbox
-                                                checked={true}
+                                                checked={checkBox}
                                                 color="primary"
-                                                onChange={(e) => setFilterCheckBox({ ...filterCheckBox, ASIGNADO: e.target.checked })}
+                                                onChange={(e) => setCheckBox(e.target.checked)}
                                                 name="YouTube" />
                                         )}
                                         label={
@@ -245,7 +254,7 @@ const PublishText: React.FC<{ dataChannel: any, publishType: string }> = ({ data
                             </span>
                         </div>
                         {publishType === 'IMAGE' && <>
-                            <div className="row-zyx">
+                            <div className="row-zyx" style={{ marginBottom: '0px' }}>
                                 <FieldView
                                     className="col-12"
                                     label={''}
@@ -253,9 +262,70 @@ const PublishText: React.FC<{ dataChannel: any, publishType: string }> = ({ data
                                     styles={{ fontWeight: 'bold', color: '#762AA9' }}
                                 />
                             </div>
+                            <div className="row-zyx" style={{ marginBottom: '0px' }}>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '10px' }}>
+                                    <div style={{ display: 'inline-flex', verticalAlign: 'center' }}>
+                                        <div style={{ height: '100%', display: 'flex', alignItems: 'center' }}>
+                                            <img style={{ maxHeight: '60px' }} src="https://1.bp.blogspot.com/-YLDLu1GApmQ/Tm-cKFIKE1I/AAAAAAAAEvQ/bp1zLkKJ6Cg/w1200-h630-p-k-no-nu/Purple+solid+color+backgrounds+1.png"></img>
+                                        </div>
+                                        <div style={{ height: '100%', paddingLeft: '10px', display: 'flex', alignItems: 'center' }}>
+                                            Imagen.jpg<br />480 x 240
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '10px' }}>
+                                    <div style={{ display: 'inline-flex', verticalAlign: 'center' }}>
+                                        <div style={{ height: '100%', display: 'flex', alignItems: 'center' }}>
+                                            <img style={{ maxHeight: '60px' }} src="https://1.bp.blogspot.com/-YLDLu1GApmQ/Tm-cKFIKE1I/AAAAAAAAEvQ/bp1zLkKJ6Cg/w1200-h630-p-k-no-nu/Purple+solid+color+backgrounds+1.png"></img>
+                                        </div>
+                                        <div style={{ height: '100%', paddingLeft: '10px', display: 'flex', alignItems: 'center' }}>
+                                            Imagen.jpg<br />480 x 240
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '10px' }}>
+                                    <div style={{ display: 'inline-flex', verticalAlign: 'center' }}>
+                                        <div style={{ height: '100%', display: 'flex', alignItems: 'center' }}>
+                                            <img style={{ maxHeight: '60px' }} src="https://1.bp.blogspot.com/-YLDLu1GApmQ/Tm-cKFIKE1I/AAAAAAAAEvQ/bp1zLkKJ6Cg/w1200-h630-p-k-no-nu/Purple+solid+color+backgrounds+1.png"></img>
+                                        </div>
+                                        <div style={{ height: '100%', paddingLeft: '10px', display: 'flex', alignItems: 'center' }}>
+                                            Imagen.jpg<br />480 x 240
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row-zyx" style={{ marginTop: '18px', alignItems: 'center', display: 'flex', justifyContent: 'center' }}>
+                                <Button
+                                    className={classes.button}
+                                    variant="contained"
+                                    color="primary"
+                                    type="submit"
+                                    startIcon={<Edit color="secondary" />}
+                                    style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center' }}
+                                >{t(langKeys.postcreator_publish_edit)}
+                                </Button>
+                                <Button
+                                    className={classes.button}
+                                    variant="contained"
+                                    color="primary"
+                                    type="submit"
+                                    startIcon={<Delete color="secondary" />}
+                                    style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center' }}
+                                >{t(langKeys.postcreator_publish_delete)}
+                                </Button>
+                                <Button
+                                    className={classes.button}
+                                    variant="contained"
+                                    color="primary"
+                                    type="submit"
+                                    startIcon={<CameraAlt color="secondary" />}
+                                    style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center' }}
+                                >{t(langKeys.postcreator_publish_addimage)}
+                                </Button>
+                            </div>
                         </>}
                         {publishType === 'VIDEO' && <>
-                            <div className="row-zyx">
+                            <div className="row-zyx" style={{ marginBottom: '0px' }}>
                                 <FieldView
                                     className="col-12"
                                     label={''}
@@ -263,21 +333,259 @@ const PublishText: React.FC<{ dataChannel: any, publishType: string }> = ({ data
                                     styles={{ fontWeight: 'bold', color: '#762AA9' }}
                                 />
                             </div>
+                            <div className="row-zyx" style={{ marginBottom: '0px' }}>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '10px' }}>
+                                    <div style={{ display: 'inline-flex', verticalAlign: 'center' }}>
+                                        <div style={{ height: '100%', display: 'flex', alignItems: 'center' }}>
+                                            <img style={{ maxHeight: '60px' }} src="https://1.bp.blogspot.com/-YLDLu1GApmQ/Tm-cKFIKE1I/AAAAAAAAEvQ/bp1zLkKJ6Cg/w1200-h630-p-k-no-nu/Purple+solid+color+backgrounds+1.png"></img>
+                                        </div>
+                                        <div style={{ height: '100%', paddingLeft: '10px', display: 'flex', alignItems: 'center' }}>
+                                            Video.mp4<br />480 x 240
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row-zyx" style={{ marginTop: '18px', alignItems: 'center', display: 'flex', justifyContent: 'center' }}>
+                                <Button
+                                    className={classes.button}
+                                    variant="contained"
+                                    color="primary"
+                                    type="submit"
+                                    startIcon={<Edit color="secondary" />}
+                                    style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center' }}
+                                >{t(langKeys.postcreator_publish_edit)}
+                                </Button>
+                                <Button
+                                    className={classes.button}
+                                    variant="contained"
+                                    color="primary"
+                                    type="submit"
+                                    startIcon={<Delete color="secondary" />}
+                                    style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center' }}
+                                >{t(langKeys.postcreator_publish_delete)}
+                                </Button>
+                                <Button
+                                    className={classes.button}
+                                    variant="contained"
+                                    color="primary"
+                                    type="submit"
+                                    startIcon={<PlayCircleOutlineSharp color="secondary" />}
+                                    style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center' }}
+                                >{t(langKeys.postcreator_publish_addvideo)}
+                                </Button>
+                            </div>
                         </>}
                     </div>
                 </div>
                 <div className={classes.containerLeft}>
                     <div className={classes.root}>
-                        AYY LMAO
+                        <div className="row-zyx" style={{ alignItems: 'center', display: 'flex', justifyContent: 'center' }}>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                onClick={() => { setCustomizeType('Facebook') }}
+                                startIcon={<Facebook color="secondary" />}
+                                style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                disabled={customizeType === 'Facebook'}
+                            >{t(langKeys.postcreator_publish_facebook)}
+                            </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                onClick={() => { setCustomizeType('Instagram') }}
+                                startIcon={<Instagram color="secondary" />}
+                                style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                disabled={customizeType === 'Instagram'}
+                            >{t(langKeys.postcreator_publish_instagram)}
+                            </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                onClick={() => { setCustomizeType('Twitter') }}
+                                startIcon={<Twitter color="secondary" />}
+                                style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                disabled={customizeType === 'Twitter'}
+                            >{t(langKeys.postcreator_publish_twitter)}
+                            </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                onClick={() => { setCustomizeType('LinkedIn') }}
+                                startIcon={<LinkedIn color="secondary" />}
+                                style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                disabled={customizeType === 'LinkedIn'}
+                            >{t(langKeys.postcreator_publish_linkedin)}
+                            </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                onClick={() => { setCustomizeType('YouTube') }}
+                                startIcon={<YouTube color="secondary" />}
+                                style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                disabled={customizeType === 'YouTube'}
+                            >{t(langKeys.postcreator_publish_youtube)}
+                            </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                onClick={() => { setCustomizeType('TikTok') }}
+                                startIcon={<MusicNote color="secondary" />}
+                                style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                disabled={customizeType === 'TikTok'}
+                            >{t(langKeys.postcreator_publish_tiktok)}
+                            </Button>
+                        </div>
+                        <div className="row-zyx" style={{ marginBottom: '0px', height: '10px' }}>
+                            <FieldView
+                                className="col-12"
+                                label={''}
+                                value={t(langKeys.postcreator_publish_customizepost).replace('#CHANNELTYPE#', customizeType)}
+                                styles={{ fontWeight: 'bold', color: '#762AA9' }}
+                            />
+                        </div>
+                        <div className="row-zyx" style={{ marginBottom: '0px' }}>
+                            <FieldEditAdvanced
+                                className="col-12"
+                                error={''}
+                                label={''}
+                                maxLength={125}
+                                onChange={(value) => { }}
+                                rows={18}
+                                valueDefault={''}
+                                disabled={false}
+                                style={{ border: '1px solid #959595', borderRadius: '4px', marginLeft: '6px', padding: '8px' }}
+                                emoji={true}
+                                hashtag={true}
+                            />
+                        </div>
+                        {customizeType === 'Facebook' && <div className="row-zyx">
+                            <FieldSelect
+                                label={t(langKeys.postcreator_publish_sentiment)}
+                                style={{ width: '100%', paddingLeft: '6px', paddingRight: '6px' }}
+                                valueDefault={''}
+                                variant="outlined"
+                                onChange={(value) => { }}
+                                data={[]}
+                                optionDesc="value"
+                                optionValue="value"
+                            />
+                        </div>}
                     </div>
                 </div>
                 <div className={classes.containerLeft}>
-                    <div className={classes.root}>
-                        AYY LMAO
+                    <div className={classes.root} style={{ backgroundColor: '#EBEBEB' }}>
+                        <div className="row-zyx">
+                            <FieldSelect
+                                label={t(langKeys.postcreator_publish_previewmode)}
+                                style={{ width: '100%', backgroundColor: 'white' }}
+                                valueDefault={previewType}
+                                variant="outlined"
+                                onChange={(value) => { setPreviewType(value?.value) }}
+                                data={[
+                                    {
+                                        description: t(langKeys.postcreator_publish_mockupfacebook),
+                                        value: "FACEBOOKPREVIEW",
+                                    },
+                                    {
+                                        description: t(langKeys.postcreator_publish_mockupinstagram),
+                                        value: "INSTAGRAMPREVIEW",
+                                    },
+                                    {
+                                        description: t(langKeys.postcreator_publish_mockuptwitter),
+                                        value: "TWITTERPREVIEW",
+                                    },
+                                    {
+                                        description: t(langKeys.postcreator_publish_mockuplinkedin),
+                                        value: "LINKEDINPREVIEW",
+                                    },
+                                    {
+                                        description: t(langKeys.postcreator_publish_mockupyoutube),
+                                        value: "YOUTUBEPREVIEW",
+                                    },
+                                    {
+                                        description: t(langKeys.postcreator_publish_mockuptiktok),
+                                        value: "TIKTOKPREVIEW",
+                                    },
+                                ]}
+                                optionDesc="description"
+                                optionValue="value"
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldView
+                                className="col-12"
+                                label={''}
+                                value={t(langKeys.postcreator_publish_preview)}
+                                styles={{ fontWeight: 'bold', color: '#762AA9' }}
+                            />
+                        </div>
+                        {previewType === 'FACEBOOKPREVIEW' && <div className="row-zyx">
+                            <div style={{ width: '90%', marginLeft: 'auto', marginRight: 'auto', marginBottom: '18px', backgroundColor: 'white', borderTopRightRadius: '6px', borderTopLeftRadius: '6px' }}>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '10px', paddingLeft: '18px', paddingTop: '18px' }}>
+                                    <div style={{ display: 'inline-flex', verticalAlign: 'center' }}>
+                                        <div style={{ height: '100%', display: 'flex', alignItems: 'center' }}>
+                                            <img style={{ height: '40px', width: '40px', borderRadius: '50%' }} src="https://1.bp.blogspot.com/-YLDLu1GApmQ/Tm-cKFIKE1I/AAAAAAAAEvQ/bp1zLkKJ6Cg/w1200-h630-p-k-no-nu/Purple+solid+color+backgrounds+1.png"></img>
+                                        </div>
+                                        <div style={{ height: '100%', paddingLeft: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', whiteSpace: 'pre-line' }}>
+                                            <div style={{ display: 'flex', width: '100%', paddingRight: 'auto' }}><b>{t(langKeys.postcreator_publish_officialpage)}</b></div>
+                                            <div style={{ display: 'flex', width: '100%', paddingRight: 'auto' }}>{t(langKeys.postcreator_publish_facebookmockup_time)}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '10px', paddingLeft: '10px', paddingRight: '20px', paddingTop: '10px' }}>
+                                    <div style={{ height: '100%', paddingLeft: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', whiteSpace: 'pre-line' }}>
+                                        <div style={{ display: 'flex', width: '100%', paddingRight: 'auto', textAlign: 'justify', textJustify: 'inter-word' }}>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</div>
+                                    </div>
+                                </div>
+                                <div style={{ maxWidth: '100%' }}>
+                                    <img style={{ width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto' }} src="https://1.bp.blogspot.com/-YLDLu1GApmQ/Tm-cKFIKE1I/AAAAAAAAEvQ/bp1zLkKJ6Cg/w1200-h630-p-k-no-nu/Purple+solid+color+backgrounds+1.png"></img>
+                                </div>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '10px', paddingLeft: '10px', paddingRight: '20px', paddingTop: '10px' }}>
+                                    <div style={{ height: '100%', paddingLeft: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', whiteSpace: 'pre-line' }}>
+                                        <div style={{ display: 'flex', width: '100%', paddingRight: 'auto', textAlign: 'justify', textJustify: 'inter-word' }}>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>}
+                        <div className="row-zyx" style={{ marginTop: '18px', alignItems: 'center', display: 'flex', justifyContent: 'center' }}>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                                startIcon={<Save color="secondary" />}
+                                style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center' }}
+                            >{t(langKeys.postcreator_publish_draft)}
+                            </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                                startIcon={<Timelapse color="secondary" />}
+                                style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center' }}
+                            >{t(langKeys.postcreator_publish_program)}
+                            </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                                startIcon={<Send color="secondary" />}
+                                style={{ backgroundColor: "#11ABF1", display: 'flex', alignItems: 'center' }}
+                            >{t(langKeys.postcreator_publish_publish)}
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </Fragment>
+        </Fragment >
     )
 }
 

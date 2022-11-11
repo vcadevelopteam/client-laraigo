@@ -4196,6 +4196,7 @@ const translation: LangKeys = {
     postcreator_publish_draft_description: "Drafts can be found in your post history.",
     postcreator_publish_draft_save: "Save",
     postcreator_publish_draft_cancel: "Cancel",
+    postcreator_publish_previewmode: "Preview Mode",
 };
 
 const enResource: ResourceLanguage = {
