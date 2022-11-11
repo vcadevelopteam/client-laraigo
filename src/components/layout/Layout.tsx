@@ -14,7 +14,7 @@ import CloseTicketVoxi from 'components/inbox/CloseTicketVoxi';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 
-const drawerWidth = 240;
+const drawerWidth = 260;
 const drawerWidthCompressed = 73;
 const headerHeight = 54;
 
