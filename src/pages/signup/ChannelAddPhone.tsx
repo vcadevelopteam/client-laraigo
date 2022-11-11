@@ -39,7 +39,7 @@ const useChannelAddStyles = makeStyles(theme => ({
         marginRight: "auto",
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
-        width: "50%",
+        width: "80%",
     },
     containerCapacities: {
         background: "#EFEFF4",
