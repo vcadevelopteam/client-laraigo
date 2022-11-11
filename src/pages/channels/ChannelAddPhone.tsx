@@ -45,6 +45,7 @@ const useChannelAddStyles = makeStyles(theme => ({
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
         width: "50%",
+        maxWidth: 400
     },
     containerCapacities: {
         background: "#EFEFF4",
