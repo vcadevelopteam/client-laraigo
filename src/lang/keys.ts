@@ -4143,6 +4143,7 @@ export const langKeys = {
     postcreator_publish_youtube: "postcreator_publish_youtube",
     postcreator_publish_tiktok: "postcreator_publish_tiktok",
     postcreator_publish_sentiment: "postcreator_publish_sentiment",
+    postcreator_publish_activity: "postcreator_publish_activity",
     postcreator_publish_draft: "postcreator_publish_draft",
     postcreator_publish_program: "postcreator_publish_program",
     postcreator_publish_publish: "postcreator_publish_publish",
