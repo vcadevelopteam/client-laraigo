@@ -39,9 +39,10 @@ interface DialogSendTemplateProps {
     openModal: boolean;
     persons: IPerson[];
     type: "HSM" | "MAIL" | "SMS";
+    onSubmitTrigger: () => void;
 }
 
-const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, openModal, persons, type }) => {
+const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, openModal, persons, type, onSubmitTrigger }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitClose, setWaitClose] = useState(false);
@@ -83,8 +84,8 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
+                onSubmitTrigger()
             } else if (sendingRes.error) {
-
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(sendingRes.code || "error_unexpected_error") }))
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
@@ -337,20 +338,29 @@ export const TemplateIcons: React.FC<{
                 onClose={handleClose}
             >
                 {sendHSM &&
-                    <MenuItem onClick={sendHSM}>
+                    <MenuItem onClick={(e) => {
+                        sendHSM(e);
+                        handleClose(e)
+                    }}>
                         <ListItemIcon color="inherit">
                             <WhatsappIcon width={22} style={{ fill: '#7721AD' }} />
                         </ListItemIcon>
                         {t(langKeys.send_hsm)}
                     </MenuItem>
                 }
-                <MenuItem onClick={sendSMS}>
+                <MenuItem onClick={(e) => {
+                    sendSMS(e);
+                    handleClose(e)
+                }}>
                     <ListItemIcon color="inherit">
                         <SmsIcon width={18} style={{ fill: '#7721AD' }} />
                     </ListItemIcon>
                     {t(langKeys.send_sms)}
                 </MenuItem>
-                <MenuItem onClick={sendMAIL}>
+                <MenuItem onClick={(e) => {
+                    sendMAIL(e);
+                    handleClose(e)
+                }}>
                     <ListItemIcon color="inherit">
                         <MailIcon width={18} style={{ fill: '#7721AD' }} />
                     </ListItemIcon>
@@ -360,7 +370,6 @@ export const TemplateIcons: React.FC<{
         </div>
     )
 }
-
 
 export const Person: FC = () => {
     const history = useHistory();
@@ -382,6 +391,7 @@ export const Person: FC = () => {
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [personsSelected, setPersonsSelected] = useState<IPerson[]>([]);
     const [typeTemplate, setTypeTemplate] = useState<"HSM" | "SMS" | "MAIL">('MAIL');
+    const [cleanSelected, setCleanSelected] = useState(false)
 
     const query = useMemo(() => new URLSearchParams(location.search), [location]);
     const params = useQueryParams(query, { ignore: ['channelTypes'] });
@@ -523,7 +533,7 @@ export const Person: FC = () => {
                 )
             }
         },
-    ]), [t]);
+    ]), [t, setPersonsSelected]);
 
     useEffect(() => {
         dispatch(getDomainsByTypename());
@@ -715,7 +725,6 @@ export const Person: FC = () => {
             }
         }
     }
-
     
     useEffect(() => {
         if (waitValidation) {
@@ -875,7 +884,10 @@ export const Person: FC = () => {
                 useSelection={true}
                 selectionKey={selectionKey}
                 setSelectedRows={setSelectedRows}
+                initialSelectedRows={selectedRows}
                 onClickRow={goToPersonDetail}
+                cleanSelection={cleanSelected}
+                setCleanSelection={setCleanSelected}
                 register={true}
                 ButtonsElement={() => (
                     <Button
@@ -924,6 +936,10 @@ export const Person: FC = () => {
                 setOpenModal={setOpenDialogTemplate}
                 persons={personsSelected}
                 type={typeTemplate}
+                onSubmitTrigger={() => {
+                    console.log("submit!!")
+                    setCleanSelected(true)
+                }}
             />
         </div>
     );
