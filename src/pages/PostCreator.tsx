@@ -14,6 +14,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { TemplateBreadcrumbs } from 'components';
 import { useTranslation } from 'react-i18next';
 import { PostCreatorPublish } from 'pages/postcreator/index';
+import PostCreatorHistory from './postcreator/PostCreatorHistory';
 
 const getArrayBread = (temporalName: string, viewName: string) => ([
     { id: "view-1", name: viewName || "Post Creator" },
@@ -229,7 +230,7 @@ const PostCreator: FC = () => {
                         breadcrumbs={getArrayBread(t('postcreator_posthistory'), t(langKeys.postcreator_title))}
                         handleClick={handleSelectedString}
                     />
-                    <PostCreatorPublish />
+                    <PostCreatorHistory />
                 </div>
             </>
         )
