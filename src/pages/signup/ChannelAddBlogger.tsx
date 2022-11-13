@@ -149,7 +149,7 @@ export const ChannelAddBlogger: FC<{ setOpenWarning: (param: any) => void }> = (
         onSuccess: tokenResponse => onGoogleLoginSucess(tokenResponse),
         onError: error => onGoogleLoginFailure(error),
         flow: 'auth-code',
-        scope: 'https://www.googleapis.com/auth/gmail.compose https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/blogger https://www.googleapis.com/auth/blogger.readonly https://www.googleapis.com/auth/drive.readonly',
+        scope: 'https://www.googleapis.com/auth/gmail.compose https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/blogger https://www.googleapis.com/auth/blogger.readonly https://www.googleapis.com/auth/drive.readonly',
     });
 
     const onGoogleLoginSucess = (event: any) => {
