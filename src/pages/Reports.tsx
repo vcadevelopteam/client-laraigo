@@ -41,6 +41,7 @@ import { Search as SearchIcon } from '@material-ui/icons';
 import ReportInvoice from 'components/report/ReportInvoice';
 import TicketvsAdviser from 'components/report/TicketvsAdviser';
 import HSMHistoryReport from './HSMHistoryReport';
+import UniqueContactsReport from './UniqueContactsReport';
 import { CampaignReport } from 'pages/campaign/CampaignReport';
 import ReportKpiOperativo from 'components/report/ReportKpiOperativo';
 
@@ -1096,6 +1097,31 @@ const Reports: FC = () => {
                         </Card>
                     </Grid>
                 )
+            case 'UNIQUECONTACTS':
+                if(user?.roledesc === "SUPERADMIN"){
+                    return (
+                        <Grid item key={"uniquecontactsreport"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
+                            <Card >
+                                <CardActionArea onClick={() => handleSelectedString("uniquecontactsreport")}>
+                                    <CardMedia
+                                        component="img"
+                                        height="140"
+                                        className={classes.media}
+                                        image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/02reportehsm.png"
+                                        title={t(langKeys.uniquecontactsreport)}
+                                    />
+                                    <CardContent>
+                                        <Typography gutterBottom variant="h6" component="div" style={{fontSize: "130%"}}>
+                                            {t(langKeys.uniquecontactsreport)}
+                                        </Typography>
+                                    </CardContent>
+                                </CardActionArea>
+                            </Card>
+                        </Grid>
+                    )
+                }else{
+                    return (<></>)
+                }
             default:
                 return (
                     <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
@@ -1382,6 +1408,18 @@ const Reports: FC = () => {
                         handleClick={handleSelectedString}
                     />
                     <RecordHSMRecord />
+                </div>
+            </>
+        )
+    } else if (viewSelected === "uniquecontactsreport") {
+        return (
+            <>
+                <div style={{ width: '100%' }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={getArrayBread(t('report_uniquecontactsreport'), t(langKeys.report_plural))}
+                        handleClick={handleSelectedString}
+                    />
+                    <UniqueContactsReport />
                 </div>
             </>
         )
