@@ -144,13 +144,12 @@ const PublishedHistory: React.FC<{ dataChannel: any, publishType: string }> = ({
         {historyid: 3,title: "title3", pageofc:"pagina oficial 3",publicationdate: "2021-9-8", scope: 200, interactions: 0, likesandreactions: 85, imgurl:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/640px-Image_created_with_a_mobile_phone.png"},
         {historyid: 4,title: "title4", pageofc:"pagina oficial 4",publicationdate: "2021-9-9", scope: 240, interactions: 0, likesandreactions: 90, imgurl:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/640px-Image_created_with_a_mobile_phone.png"},
     ]
-    const columns = React.useMemo(
-        () => [
+    const columns = React.useMemo(() => [
             {
                 Header: t(langKeys.title),
-                accessor: 'title',
+                accessor: 'historyid',
                 width: "auto",
-                height: "150px",
+                isComponent: true,
                 NoFilter: true,
                 Cell: (props: any) => {
                     const { title,pageofc,imgurl } = props.cell.row.original;
