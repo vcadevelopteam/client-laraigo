@@ -33,6 +33,8 @@ interface Properties {
     holding_by_supervisor: "CANAL" | "GRUPO" | undefined;
     environment: string;
     ringer_volume: number;
+    origin_label: boolean;
+    range_date_filter: number | undefined;
 }
 
 interface Domains {
