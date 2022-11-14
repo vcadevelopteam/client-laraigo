@@ -3,13 +3,13 @@ import React, { useEffect, useState } from 'react'; // we need this to make JSX 
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { DialogZyx } from 'components';
-import { Dictionary, ICampaign, MultiData, SelectedColumns } from "@types";
+import { Dictionary, ICampaign, IFetchData, MultiData, SelectedColumns } from "@types";
 import TablePaginated from 'components/fields/table-paginated';
 import TableZyx from '../../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { getCampaignMemberSel, campaignPersonSel, uploadExcel } from 'common/helpers';
+import { getCampaignMemberSel, campaignPersonSel, uploadExcel, campaignLeadPersonSel, convertLocalDate } from 'common/helpers';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
 import { useSelector } from 'hooks';
 import { getCollectionAux, getCollectionPaginatedAux } from 'store/main/actions';
@@ -57,8 +57,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     const [valuefile, setvaluefile] = useState('');
     const [openModal, setOpenModal] = useState<boolean | null>(null);
     const [columnList, setColumnList] = useState<string[]>([]);
-    const [headers, setHeaders] = useState<any[]>(detaildata.headers || []);
-    const [jsonData, setJsonData] = useState<any[]>(detaildata.jsonData || []);
+    const [headers, setHeaders] = useState<any[]>(detaildata.source === 'EXTERNAL' && !detaildata.sourcechanged ? detaildata.headers || [] : []);
+    const [jsonData, setJsonData] = useState<any[]>(detaildata.source === 'EXTERNAL' && !detaildata.sourcechanged ? detaildata.jsonData || [] : []);
     const [jsonDataTemp, setJsonDataTemp] = useState<any[]>([]);
     const [selectedColumns, setSelectedColumns] = useState<SelectedColumns>(
         detaildata.selectedColumns
@@ -69,26 +69,40 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     const [selectedColumnsBackup, setSelectedColumnsBackup] = useState<SelectedColumns>(new SelectedColumns());
     const [selectionKey, setSelectionKey] = useState<string| any>(
         detaildata.source === 'EXTERNAL' ? selectedColumns.primarykey :
-        (detaildata.operation === 'INSERT' ? 'personid' : 'campaignmemberid'))
-    const [selectedRows, setSelectedRows] = useState<any>(detaildata.selectedRows || {});
+        detaildata.source === 'PERSON' ? 'personid' :
+        detaildata.source === 'LEAD' ? 'leadid' :
+        'campaignmemberid')
+    const [selectedRows, setSelectedRows] = useState<any>(detaildata.sourcechanged ? {} : detaildata.selectedRows || {});
     const [allRowsSelected, setAllRowsSelected] = useState<boolean>(false);
 
-    const fetchPersonData = (id: number) => dispatch(getCollectionAux(getCampaignMemberSel(id)));
+    const fetchCampaignInternalData = (id: number) => dispatch(getCollectionAux(getCampaignMemberSel(id)));
 
     const paginatedAuxResult = useSelector(state => state.main.mainPaginatedAux);
+    const [paginatedWait, setPaginatedWait] = useState(false);
     const [fetchDataAux, setfetchDataAux] = useState<any>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
     const [pageCount, setPageCount] = useState(0);
-    const [totalrow, settotalrow] = useState(0);
-    const fetchPaginatedData = ({ pageSize, pageIndex, filters, sorts }: any) => {
-        setfetchDataAux({ pageSize, pageIndex, filters, sorts })
-        dispatch(getCollectionPaginatedAux(campaignPersonSel({
+    const [totalrow, setTotalRow] = useState(0);
+    const fetchPaginatedData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
+        setPaginatedWait(true);
+        setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
+        const requestBody = {
+            startdate: daterange?.startDate || new Date(new Date().setUTCDate(1)),
+            enddate: daterange?.endDate || new Date(new Date().getUTCFullYear(), new Date().getUTCMonth() + 1, 0),
             take: pageSize,
             skip: pageIndex * pageSize,
             sorts: sorts,
             filters: {
                 ...filters,
             }
-        })))
+        };
+        switch (detaildata.source) {
+            case 'PERSON':
+                dispatch(getCollectionPaginatedAux(campaignPersonSel(requestBody)))
+                break;
+            case 'LEAD':
+                dispatch(getCollectionPaginatedAux(campaignLeadPersonSel(requestBody)))
+                break;
+        }
     };
 
     useEffect(() => {
@@ -105,29 +119,9 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     }, [frameProps.checkPage])
     
     useEffect(() => {
-        if (detaildata.operation === 'INSERT') {
-            if (detaildata.source === 'INTERNAL') {
-                fetchPaginatedData(fetchDataAux);
-            }
-        }
-        else if (detaildata.operation === 'UPDATE') {
-            if (detaildata.source === 'INTERNAL') {
-                fetchPersonData(row?.id);
-            }
-            else if (detaildata.source === 'EXTERNAL') {
-                if (detaildata.sourcechanged) {
-                    setHeaders([]);
-                    setJsonData([]);
-                    setSelectedRows({});
-                }
-            }
-        }
-    }, [])
-    
-    useEffect(() => {
-        if (!auxResult.loading && !auxResult.error && auxResult.data.length > 0) {
-            if (detaildata.operation === 'UPDATE' && detaildata.source === 'INTERNAL') {
-                setJsonData(auxResult.data);
+        // Load Headers
+        switch (detaildata.source) {
+            case 'INTERNAL':
                 setHeaders([
                     { Header: t(langKeys.name), accessor: 'displayname' },
                     { Header: 'PCC', accessor: 'personcommunicationchannelowner' },
@@ -148,7 +142,80 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                     { Header: `${t(langKeys.field)} 13`, accessor: 'field13' },
                     { Header: `${t(langKeys.field)} 14`, accessor: 'field14' },
                     { Header: `${t(langKeys.field)} 15`, accessor: 'field15' }
+                ]);    
+                fetchCampaignInternalData(row?.id);
+                break;
+            case 'EXTERNAL':
+                if (detaildata.operation === 'INSERT' && detaildata.sourcechanged) {
+                    setHeaders([]);
+                }
+                break;
+            case 'PERSON':
+                setHeaders([
+                    { Header: t(langKeys.firstname), accessor: 'firstname' },
+                    { Header: t(langKeys.lastname), accessor: 'lastname' },
+                    { Header: t(langKeys.documenttype), accessor: 'documenttype' },
+                    { Header: t(langKeys.documentnumber), accessor: 'documentnumber' },
+                    { Header: t(langKeys.personType), accessor: 'persontype' },
+                    { Header: t(langKeys.type), accessor: 'type' },
+                    { Header: t(langKeys.phone), accessor: 'phone' },
+                    { Header: t(langKeys.alternativePhone), accessor: 'alternativephone' },
+                    { Header: t(langKeys.email), accessor: 'email' },
+                    { Header: t(langKeys.alternativeEmail), accessor: 'alternativeemail' },
+                    { Header: t(langKeys.lastContactDate), accessor: 'lastcontact', type: 'date',
+                        Cell: (props: any) => {
+                            const row = props.cell.row.original;
+                            return convertLocalDate(row.lastcontact).toLocaleString()
+                        }
+                    },
+                    { Header: t(langKeys.agent), accessor: 'agent' },
+                    { Header: t(langKeys.opportunity), accessor: 'opportunity' },
+                    { Header: t(langKeys.birthday), accessor: 'birthday', type: 'date' },
+                    { Header: t(langKeys.gender), accessor: 'gender' },
+                    { Header: t(langKeys.educationLevel), accessor: 'educationlevel' },
+                    { Header: t(langKeys.comments), accessor: 'comments' },
                 ]);
+                break;
+            case 'LEAD':
+                setHeaders([
+                    { Header: t(langKeys.opportunity), accessor: 'opportunity' },
+                    { Header: t(langKeys.lastUpdate), accessor: 'changedate', type: 'date',
+                        Cell: (props: any) => {
+                            const row = props.cell.row.original;
+                            return convertLocalDate(row.changedate).toLocaleString()
+                        }
+                    },
+                    { Header: t(langKeys.name), accessor: 'name' },
+                    { Header: t(langKeys.email), accessor: 'email' },
+                    { Header: t(langKeys.phone), accessor: 'phone' },
+                    { Header: t(langKeys.expected_revenue), accessor: 'expected_revenue' },
+                    { Header: t(langKeys.endDate), accessor: 'date_deadline', type: 'date',
+                        Cell: (props: any) => {
+                            const row = props.cell.row.original;
+                            return convertLocalDate(row.date_deadline).toLocaleString()
+                        }
+                    },
+                    { Header: t(langKeys.tags), accessor: 'tags' },
+                    { Header: t(langKeys.agent), accessor: 'agent' },
+                    { Header: t(langKeys.priority), accessor: 'priority' },
+                    { Header: t(langKeys.campaign), accessor: 'campaign' },
+                    { Header: t(langKeys.product_plural), accessor: 'products' },
+                    { Header: t(langKeys.phase), accessor: 'phase' },
+                    { Header: t(langKeys.comments), accessor: 'comments' },
+                ]);
+                break;
+        }
+        // Clean selected data on source change
+        if (detaildata.sourcechanged) {
+            setDetaildata({...detaildata, sourcechanged: false, selectedRows: {}, person: [] });
+        }
+    }, [])
+    
+    // Internal data
+    useEffect(() => {
+        if (!auxResult.loading && !auxResult.error && auxResult.data.length > 0) {
+            if (detaildata.source === 'INTERNAL') {
+                setJsonData(auxResult.data);
                 let selectedRowsTemp = {};
                 if (detaildata.selectedRows) {
                     selectedRowsTemp = {...detaildata.selectedRows};
@@ -172,43 +239,19 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
     }, [auxResult]);
 
+    // Person, Lead Data
     useEffect(() => {
-        if (!paginatedAuxResult.loading && !paginatedAuxResult.error && paginatedAuxResult.data.length > 0) {
-            if (detaildata.operation === 'INSERT' && detaildata.source === 'INTERNAL') {
+        if (paginatedWait) {
+            if (!paginatedAuxResult.loading && !paginatedAuxResult.error) {
                 setPageCount(Math.ceil(paginatedAuxResult.count / fetchDataAux.pageSize));
-                settotalrow(paginatedAuxResult.count);
+                setTotalRow(paginatedAuxResult.count);
                 setJsonData(paginatedAuxResult.data);
-                setHeaders([
-                    { Header: t(langKeys.firstname), accessor: 'firstname' },
-                    { Header: t(langKeys.lastname), accessor: 'lastname' },
-                    { Header: t(langKeys.documenttype), accessor: 'documenttype' },
-                    { Header: t(langKeys.documentnumber), accessor: 'documentnumber' },
-                    { Header: t(langKeys.personType), accessor: 'persontype' },
-                    { Header: t(langKeys.phone), accessor: 'phone' },
-                    { Header: t(langKeys.alternativePhone), accessor: 'alternativephone' },
-                    { Header: t(langKeys.email), accessor: 'email' },
-                    { Header: t(langKeys.alternativeEmail), accessor: 'alternativeemail' },
-                    { Header: t(langKeys.birthday), accessor: 'birthday' },
-                    { Header: t(langKeys.gender), accessor: 'genderdesc' },
-                    { Header: t(langKeys.educationLevel), accessor: 'educationleveldesc' },
-                    { Header: t(langKeys.civilStatus), accessor: 'civilstatusdesc' },
-                    { Header: t(langKeys.occupation), accessor: 'occupationdesc' },
-                    { Header: t(langKeys.observation), accessor: 'observation' },
-                ]);
-                setDetaildata({
-                    ...detaildata,
-                    selectedRows: selectedRows,
-                    person: Array.from(
-                        new Map([
-                            ...(detaildata.person || []),
-                            ...jsonData.filter(j => Object.keys(selectedRows).includes('' + j[selectionKey]))
-                        ].map(d => [d['personid'], d])).values())
-                });
-                setFrameProps({...frameProps, valid: {...frameProps.valid, 1: Object.keys(selectedRows).length > 0}});
+                setPaginatedWait(false);
             }
         }
     }, [paginatedAuxResult]);
 
+    // External Data Logic //
     const handleUpload = async (files: any) => {
         const file = files[0];
         const data = await uploadExcel(file);
@@ -235,7 +278,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 return null;
             }
         }
-        // Set olny new records
+        // Set only new records
         setJsonDataTemp(data.filter((d: any) => jsonData.findIndex((j: any) => JSON.stringify(j) === JSON.stringify(d)) === -1));
         // Set actual headers or new headers
         let localColumnList = actualHeaders ? actualHeaders : newHeaders;
@@ -378,48 +421,61 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             return headers;
         }
     }
+    // External Data Logic //
 
     const changeStep = (step: number) => {
         if (Object.keys(selectedRows).length === 0) {
             if (step === 2) {
-                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_record_selected)}));
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_person_selected)}));
             }
             return false;
         }
-        if (detaildata.operation === 'INSERT' && detaildata.source === 'INTERNAL') {
-            setDetaildata({
-                ...detaildata,
-                selectedRows: selectedRows,
-                person: Array.from(
-                    new Map([
-                        ...(detaildata.person || []),
-                        ...jsonData.filter(j => Object.keys(selectedRows).includes('' + j[selectionKey]))
-                    ].map(d => [d['personid'], d])).values())
-            });
-        }
-        else if (detaildata.operation === 'UPDATE' && detaildata.source === 'INTERNAL') {
-            setDetaildata({
-                ...detaildata,
-                headers: setHeaderTableData(selectedColumns),
-                jsonData: jsonData,
-                selectedColumns: selectedColumns,
-                selectedRows: selectedRows,
-                person: jsonData.map(j => 
-                    Object.keys(selectedRows).includes('' + j[selectionKey]) ? j : {...j, status: 'ELIMINADO'}
-                )
-            });
-        }
-        else if (detaildata.source === 'EXTERNAL') {
-            // Cuando se use el seleccion, se updatea el status de cada person a ELIMINADO
-            setDetaildata({
-                ...detaildata,
-                // Update headers only where upload has used
-                headers: openModal === false ? setHeaderTableData(selectedColumns) : detaildata.headers,
-                jsonData: jsonData,
-                selectedColumns: selectedColumns,
-                selectedRows: selectedRows,
-                person: jsonData.filter(j => Object.keys(selectedRows).includes('' + j[selectionKey]))
-            });
+        switch (detaildata.source) {
+            case 'INTERNAL':
+                setDetaildata({
+                    ...detaildata,
+                    headers: setHeaderTableData(selectedColumns),
+                    jsonData: jsonData,
+                    selectedColumns: selectedColumns,
+                    selectedRows: selectedRows,
+                    person: jsonData.map(j => 
+                        Object.keys(selectedRows).includes('' + j[selectionKey]) ? j : {...j, status: 'ELIMINADO'}
+                    )
+                });
+                break;
+            case 'EXTERNAL':
+                setDetaildata({
+                    ...detaildata,
+                    // Update headers only where upload has used
+                    headers: openModal === false ? setHeaderTableData(selectedColumns) : detaildata.headers,
+                    jsonData: jsonData,
+                    selectedColumns: selectedColumns,
+                    selectedRows: selectedRows,
+                    person: jsonData.filter(j => Object.keys(selectedRows).includes('' + j[selectionKey]))
+                });
+                break;
+            case 'PERSON':
+                setDetaildata({
+                    ...detaildata,
+                    selectedRows: selectedRows,
+                    person: Array.from(
+                        new Map([
+                            ...(detaildata.person || []),
+                            ...jsonData
+                        ].map(d => [d['personid'], d])).values()).filter(j => Object.keys(selectedRows).includes('' + j[selectionKey]))
+                });
+                break;
+            case 'LEAD':
+                setDetaildata({
+                    ...detaildata,
+                    selectedRows: selectedRows,
+                    person: Array.from(
+                        new Map([
+                            ...(detaildata.person || []),
+                            ...jsonData
+                        ].map(d => [d['leadid'], d])).values()).filter(j => Object.keys(selectedRows).includes('' + j[selectionKey]))
+                });
+                break;
         }
         return true;
     }
@@ -428,6 +484,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         if (detaildata.source === 'EXTERNAL') {
             return (
                 <React.Fragment>
+                    <span>{t(langKeys.selected_plural)}: </span><b>{Object.keys(selectedRows).length}</b>
                     <input
                         id="upload-file"
                         name="file"
@@ -459,7 +516,9 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             )
         }
         else {
-            return null
+            return <>
+                <span>{t(langKeys.selected_plural)}: </span><b>{Object.keys(selectedRows).length}</b>
+            </>
         }
     }
     
@@ -467,13 +526,18 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         <React.Fragment>
             <div className={classes.containerDetail}>
                 {
-                    detaildata.operation === 'INSERT' && detaildata.source === 'INTERNAL' ?
+                    ['PERSON','LEAD'].includes(detaildata?.source || '') ?
                     <TablePaginated
                         columns={headers}
                         data={jsonData}
                         totalrow={totalrow}
                         pageCount={pageCount}
                         loading={paginatedAuxResult.loading}
+                        filterrange={true}
+                        FiltersElement={<></>}
+                        ButtonsElement={() => <>
+                            <span>{t(langKeys.selected_plural)}: </span><b>{Object.keys(selectedRows).length}</b>
+                         </>}
                         fetchData={fetchPaginatedData}
                         useSelection={true}
                         selectionKey={selectionKey}

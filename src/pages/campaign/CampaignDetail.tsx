@@ -33,6 +33,30 @@ export interface FrameProps {
     executeSave: boolean,
 }
 
+const validateField = (origin: string | undefined, data: any, field: string) => {
+    try {
+        switch (origin) {
+            case 'PERSON':
+                switch (field) {
+                    case 'lastcontact':
+                        return data[field] ? new Date(data[field]).toLocaleString() : '';
+                }
+                break;
+            case 'LEAD':
+                switch (field) {
+                    case 'changedate':
+                    case 'date_deadline':
+                        return data[field] ? new Date(data[field]).toLocaleString() : '';
+                }
+                break;
+        }
+        return data[field] || '';
+    }
+    catch (e) {
+        return data[field] || ''
+    }
+}
+
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
@@ -161,35 +185,51 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         let subject = detaildata.subject || '';
         let header = detaildata.messagetemplateheader?.value || '';
         let message = detaildata.message || '';
-        if (detaildata.operation === 'INSERT' && detaildata.source === 'INTERNAL') {
+        if (detaildata.communicationchanneltype?.startsWith('MAI')) {
+            let splitMessage = message.split('{{');
+            messageVariables.forEach((v, i) => {
+                splitMessage[i + 1] = splitMessage[i + 1]?.replace(`${v.name}}}`, `${v.text || i + 1}}}`);
+            });
+            message = splitMessage.join('{{');
+        }
+        if (['PERSON','LEAD'].includes(detaildata.source || '')) {
             if (detaildata.person && detaildata.person?.length > 0) {
-                let localtablevariable = Array.from(new Set([
-                    ...(subject.match(new RegExp(`{{.+?}}`, 'g')) || []),
-                    ...(header.match(new RegExp(`{{.+?}}`, 'g')) || []),
-                    ...(message.match(new RegExp(`{{.+?}}`, 'g')) || [])
-                ]));
-                localtablevariable = localtablevariable.map(x => x.slice(2,-2));
-                if (Object.keys(usedTablevariable).length > 0) {
-                    Object.values(usedTablevariable).forEach((v: any, i: number) => {
-                        subject = subject.replace(new RegExp(`{{field${i + 2}}}`, 'g'), `{{${v}}}`);
-                        header = header.replace(new RegExp(`{{field${i + 2}}}`, 'g'), `{{${v}}}`);
-                        message = message.replace(new RegExp(`{{field${i + 2}}}`, 'g'), `{{${v}}}`);
+                // field i + 2 because i + 1 is used for primary key, pccowner
+                if (detaildata.communicationchanneltype?.startsWith('MAI')) {
+                    let localmessageVariables = Array.from(new Map(messageVariables.map(d => [d['text'], d])).values())
+                    localmessageVariables.filter(mv => tablevariable.map(tv => tv.description).includes(mv.text)).forEach((v: any, i: number) => {
+                        message = message.replace(new RegExp(`{{${v.text}}}`, 'g'), `{{field${i + 2}}}`);
                     });
-                    localtablevariable = localtablevariable.map(x => usedTablevariable[x] ? usedTablevariable[x] : x)
                 }
-                localtablevariable = localtablevariable.reduce((actv, tv, tvi) => ({
-                    ...actv,
-                    [`field${tvi + 2}`]: tv
-                }), {});
-                setUsedTableVariable(localtablevariable);
-                tablevariable.filter(tv => Object.values(localtablevariable).includes(tv.description)).forEach((v: any, i: number) => {
-                    subject = subject.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
-                    header = header.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
-                    message = message.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
-                });
+                else {
+                    let localtablevariable = Array.from(new Set([
+                        ...(subject.match(new RegExp(`{{.+?}}`, 'g')) || []),
+                        ...(header.match(new RegExp(`{{.+?}}`, 'g')) || []),
+                        ...(message.match(new RegExp(`{{.+?}}`, 'g')) || [])
+                    ]));
+                    localtablevariable = localtablevariable.map(x => x.slice(2,-2)).filter(ltv => tablevariable.map((tv: any) => tv.description).includes(ltv) || new RegExp(/field[0-9]+/, 'g').test(ltv));
+                    if (Object.keys(usedTablevariable).length > 0) {
+                        Object.entries(usedTablevariable).forEach((v: any) => {
+                            subject = subject.replace(new RegExp(`{{${v[0]}}}`, 'g'), `{{${v[1]}}}`);
+                            header = header.replace(new RegExp(`{{${v[0]}}}`, 'g'), `{{${v[1]}}}`);
+                            message = message.replace(new RegExp(`{{${v[0]}}}`, 'g'), `{{${v[1]}}}`);
+                        });
+                        localtablevariable = localtablevariable.map(x => usedTablevariable[x] ? usedTablevariable[x] : x)
+                    }
+                    localtablevariable = localtablevariable.reduce((actv, tv, tvi) => ({
+                        ...actv,
+                        [`field${tvi + 2}`]: tv
+                    }), {});
+                    setUsedTableVariable(localtablevariable);
+                    tablevariable.filter(tv => Object.values(localtablevariable).includes(tv.description)).forEach((v: any, i: number) => {
+                        subject = subject.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
+                        header = header.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
+                        message = message.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 2}}}`);
+                    });
+                }
             }
         }
-        else if (detaildata.operation === 'INSERT' || detaildata.source === 'EXTERNAL') {
+        else if (['EXTERNAL'].includes(detaildata.source || '')) {
             tablevariable.forEach((v: any, i: number) => {
                 subject = subject.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
                 header = header.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
@@ -214,11 +254,16 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 valid = false;
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.missing_header) }));
             }
+            let newmessages = formatMessage();
+            let localsubject = newmessages.subject || '';
+            let localheader = newmessages.header || '';
+            let localmessage = newmessages.message || '';
+            
             let elemVariables: string[] = [];
             let errorIndex = null;
 
             if (detaildata.communicationchanneltype?.startsWith('MAI')) {
-                let vars = extractVariables(detaildata.subject || '');
+                let vars = extractVariables(localsubject);
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
                 if (errorIndex !== -1) {
                     valid = false;
@@ -226,112 +271,40 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 }
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
-            if (detaildata.messagetemplatetype === 'MULTIMEDIA' && (detaildata.messagetemplateheader?.value || '') !== '') {
-                let vars = extractVariables(detaildata.messagetemplateheader?.value || '');
+            if (detaildata.messagetemplatetype === 'MULTIMEDIA' && localheader !== '') {
+                let vars = extractVariables(localheader);
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
-                if (errorIndex !== -1 || (detaildata.messagetemplateheader?.value || '').includes('{{}}')) {
+                if (errorIndex !== -1 || localheader.includes('{{}}')) {
                     valid = false;
                     dispatch(showSnackbar({ show: true, severity: "error", message: `${t(langKeys.invalid_parameter)} ${vars[errorIndex] || '{{}}'}` }));
                 }
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
-            if ((detaildata.message || '') !== '') {
-                if (detaildata.communicationchanneltype?.startsWith('MAI')) {
-                    let splitMessage = (detaildata.message || '').split('{{');
-                    messageVariables.forEach((v, i) => {
-                        splitMessage[i + 1] = splitMessage[i + 1]?.replace(`${v.name}}}`, `${v.text}}}`);
-                    });
-                    detaildata.message = splitMessage.join('{{');
-                }
-                let vars = extractVariables(detaildata.message || '')
+            if (localmessage !== '') {
+                let vars = extractVariables(localmessage)
                 errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
-                if (errorIndex !== -1 || (detaildata.message || '').includes('{{}}')) {
+                if (errorIndex !== -1 || localmessage.includes('{{}}')) {
                     valid = false;
                     dispatch(showSnackbar({ show: true, severity: "error", message: `${t(langKeys.invalid_parameter)} ${vars[errorIndex] || '{{}}'}` }));
                 }
                 elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
             }
+            setDetaildata({
+                ...detaildata,
+                variablereplace: elemVariables,
+                batchjson: detaildata.executiontype === 'SCHEDULED' ? detaildata.batchjson : [],
+                subject: newmessages.subject,
+                messagetemplateheader: { ...detaildata.messagetemplateheader, value: newmessages.header },
+                message: newmessages.message,
+            });
             setFrameProps({ ...frameProps, valid: { ...frameProps.valid, 2: valid } });
-            if (valid) {
-                let newmessages = formatMessage();
-                setDetaildata({
-                    ...detaildata,
-                    variablereplace: elemVariables,
-                    batchjson: detaildata.executiontype === 'SCHEDULED' ? detaildata.batchjson : [],
-                    subject: newmessages.subject,
-                    messagetemplateheader: { ...detaildata.messagetemplateheader, value: newmessages.header },
-                    message: newmessages.message,
-                });
-            }
         }
     }
 
     const buildingMembers = () => {
         let campaignMemberList: any[] = [];
-        if (detaildata.source === 'EXTERNAL') {
-            campaignMemberList = detaildata.person?.reduce((ap, p) => {
-                ap.push({
-                    id: 0,
-                    personid: 0,
-                    personcommunicationchannel: '',
-                    personcommunicationchannelowner: p[Object.keys(p)[0]] || '',
-                    type: '',
-                    displayname: '',
-                    status: 'ACTIVO',
-                    field1: p[Object.keys(p)[0]] || '',
-                    field2: p[Object.keys(p)[1]] || '',
-                    field3: p[Object.keys(p)[2]] || '',
-                    field4: p[Object.keys(p)[3]] || '',
-                    field5: p[Object.keys(p)[4]] || '',
-                    field6: p[Object.keys(p)[5]] || '',
-                    field7: p[Object.keys(p)[6]] || '',
-                    field8: p[Object.keys(p)[7]] || '',
-                    field9: p[Object.keys(p)[8]] || '',
-                    field10: p[Object.keys(p)[9]] || '',
-                    field11: p[Object.keys(p)[10]] || '',
-                    field12: p[Object.keys(p)[11]] || '',
-                    field13: p[Object.keys(p)[12]] || '',
-                    field14: p[Object.keys(p)[13]] || '',
-                    field15: p[Object.keys(p)[14]] || '',
-                    batchindex: 0,
-                    operation: detaildata.operation
-                })
-                return ap;
-            }, []);
-        }
-        else if (detaildata.source === 'INTERNAL') {
-            if (detaildata.operation === 'INSERT') {
-                campaignMemberList = detaildata.person?.reduce((ap, p) => {
-                    ap.push({
-                        id: 0,
-                        personid: p.personid || 0,
-                        personcommunicationchannel: '',
-                        personcommunicationchannelowner: (detaildata.communicationchanneltype?.startsWith('MAI') ? p.email : p.phone) || '',
-                        type: p.type || '',
-                        displayname: p.name || '',
-                        status: 'ACTIVO',
-                        field1: (detaildata.communicationchanneltype?.startsWith('MAI') ? p.email : p.phone) || '',
-                        field2: p[usedTablevariable['field2']] || '',
-                        field3: p[usedTablevariable['field3']] || '',
-                        field4: p[usedTablevariable['field4']] || '',
-                        field5: p[usedTablevariable['field5']] || '',
-                        field6: p[usedTablevariable['field6']] || '',
-                        field7: p[usedTablevariable['field7']] || '',
-                        field8: p[usedTablevariable['field8']] || '',
-                        field9: p[usedTablevariable['field9']] || '',
-                        field10: p[usedTablevariable['field10']] || '',
-                        field11: p[usedTablevariable['field11']] || '',
-                        field12: p[usedTablevariable['field12']] || '',
-                        field13: p[usedTablevariable['field13']] || '',
-                        field14: p[usedTablevariable['field14']] || '',
-                        field15: p[usedTablevariable['field15']] || '',
-                        batchindex: 0,
-                        operation: detaildata.operation
-                    })
-                    return ap;
-                }, []);
-            }
-            else if (detaildata.operation === 'UPDATE') {
+        switch (detaildata.source) {
+            case 'INTERNAL':
                 campaignMemberList = detaildata.person?.reduce((ap, p) => {
                     ap.push({
                         id: p.campaignmemberid,
@@ -361,7 +334,106 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     })
                     return ap;
                 }, []);
-            }
+                break;
+            case 'EXTERNAL':
+                campaignMemberList = detaildata.person?.reduce((ap, p) => {
+                    ap.push({
+                        id: 0,
+                        personid: 0,
+                        personcommunicationchannel: '',
+                        personcommunicationchannelowner: p[Object.keys(p)[0]] || '',
+                        type: 'EXTERNAL',
+                        displayname: '',
+                        status: 'ACTIVO',
+                        field1: p[Object.keys(p)[0]] || '',
+                        field2: p[Object.keys(p)[1]] || '',
+                        field3: p[Object.keys(p)[2]] || '',
+                        field4: p[Object.keys(p)[3]] || '',
+                        field5: p[Object.keys(p)[4]] || '',
+                        field6: p[Object.keys(p)[5]] || '',
+                        field7: p[Object.keys(p)[6]] || '',
+                        field8: p[Object.keys(p)[7]] || '',
+                        field9: p[Object.keys(p)[8]] || '',
+                        field10: p[Object.keys(p)[9]] || '',
+                        field11: p[Object.keys(p)[10]] || '',
+                        field12: p[Object.keys(p)[11]] || '',
+                        field13: p[Object.keys(p)[12]] || '',
+                        field14: p[Object.keys(p)[13]] || '',
+                        field15: p[Object.keys(p)[14]] || '',
+                        batchindex: 0,
+                        operation: detaildata.operation
+                    })
+                    return ap;
+                }, []);
+                break;
+            case 'PERSON': case 'LEAD':
+                if (detaildata.communicationchanneltype?.startsWith('MAI')) {
+                    campaignMemberList = detaildata.person?.reduce((ap, p) => {
+                        ap.push({
+                            id: 0,
+                            personid: p.personid || 0,
+                            personcommunicationchannel: '',
+                            personcommunicationchannelowner: p.email || p.alternativeemail || '',
+                            type: detaildata.source || '',
+                            displayname: detaildata.source === 'PERSON'
+                            ? `${p.firstname || ''} ${p.lastname || ''}`.trim()
+                            : detaildata.source === 'LEAD' ? `${p.name || ''}` : '',
+                            status: 'ACTIVO',
+                            field1: p.email || p.alternativeemail || '',
+                            field2: validateField(detaildata.source, p, messageVariables[0]?.text),
+                            field3: validateField(detaildata.source, p, messageVariables[1]?.text),
+                            field4: validateField(detaildata.source, p, messageVariables[2]?.text),
+                            field5: validateField(detaildata.source, p, messageVariables[3]?.text),
+                            field6: validateField(detaildata.source, p, messageVariables[4]?.text),
+                            field7: validateField(detaildata.source, p, messageVariables[5]?.text),
+                            field8: validateField(detaildata.source, p, messageVariables[6]?.text),
+                            field9: validateField(detaildata.source, p, messageVariables[7]?.text),
+                            field10: validateField(detaildata.source, p, messageVariables[8]?.text),
+                            field11: validateField(detaildata.source, p, messageVariables[9]?.text),
+                            field12: validateField(detaildata.source, p, messageVariables[10]?.text),
+                            field13: validateField(detaildata.source, p, messageVariables[11]?.text),
+                            field14: validateField(detaildata.source, p, messageVariables[12]?.text),
+                            field15: validateField(detaildata.source, p, messageVariables[13]?.text),
+                            batchindex: 0,
+                            operation: detaildata.operation
+                        })
+                        return ap;
+                    }, []);
+                }
+                else {
+                    campaignMemberList = detaildata.person?.reduce((ap, p) => {
+                        ap.push({
+                            id: 0,
+                            personid: p.personid || 0,
+                            personcommunicationchannel: '',
+                            personcommunicationchannelowner: p.phone || p.alternativephone || '',
+                            type: detaildata.source || '',
+                            displayname: detaildata.source === 'PERSON'
+                            ? `${p.firstname || ''} ${p.lastname || ''}`.trim()
+                            : detaildata.source === 'LEAD' ? `${p.name || ''}` : '',
+                            status: 'ACTIVO',
+                            field1: p.phone || p.alternativephone || '',
+                            field2: validateField(detaildata.source, p, usedTablevariable['field2']),
+                            field3: validateField(detaildata.source, p, usedTablevariable['field3']),
+                            field4: validateField(detaildata.source, p, usedTablevariable['field4']),
+                            field5: validateField(detaildata.source, p, usedTablevariable['field5']),
+                            field6: validateField(detaildata.source, p, usedTablevariable['field6']),
+                            field7: validateField(detaildata.source, p, usedTablevariable['field7']),
+                            field8: validateField(detaildata.source, p, usedTablevariable['field8']),
+                            field9: validateField(detaildata.source, p, usedTablevariable['field9']),
+                            field10: validateField(detaildata.source, p, usedTablevariable['field10']),
+                            field11: validateField(detaildata.source, p, usedTablevariable['field11']),
+                            field12: validateField(detaildata.source, p, usedTablevariable['field12']),
+                            field13: validateField(detaildata.source, p, usedTablevariable['field13']),
+                            field14: validateField(detaildata.source, p, usedTablevariable['field14']),
+                            field15: validateField(detaildata.source, p, usedTablevariable['field15']),
+                            batchindex: 0,
+                            operation: detaildata.operation
+                        })
+                        return ap;
+                    }, []);
+                }
+                break;
         }
         if (detaildata.executiontype === 'SCHEDULED') {
             let batchjsontemp = [...(detaildata.batchjson || [])];
@@ -420,7 +492,6 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                     dispatch(showBackdrop(false));
                     setSave('');
                 }
-
             }
             else if (save === 'MEMBERS') {
                 if (!executeRes.loading && !executeRes.error) {
@@ -440,62 +511,75 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
 
     useEffect(() => {
         if (pageSelected === 2) {
-            if (detaildata.operation === 'INSERT' && detaildata.source === 'INTERNAL') {
-                setTableVariable([
-                    { label: t(langKeys.firstname), description: 'firstname', persistent: false },
-                    { label: t(langKeys.lastname), description: 'lastname', persistent: false },
-                    { label: t(langKeys.documenttype), description: 'documenttype', persistent: false },
-                    { label: t(langKeys.documentnumber), description: 'documentnumber', persistent: false },
-                    { label: t(langKeys.personType), description: 'persontype', persistent: false },
-                    { label: t(langKeys.phone), description: 'phone', persistent: false },
-                    { label: t(langKeys.alternativePhone), description: 'alternativephone', persistent: false },
-                    { label: t(langKeys.email), description: 'email', persistent: false },
-                    { label: t(langKeys.alternativeEmail), description: 'alternativeemail', persistent: false },
-                    { label: t(langKeys.birthday), description: 'birthday', persistent: false },
-                    { label: t(langKeys.gender), description: 'genderdesc', persistent: false },
-                    { label: t(langKeys.educationLevel), description: 'educationleveldesc', persistent: false },
-                    { label: t(langKeys.civilStatus), description: 'civilstatusdesc', persistent: false },
-                    { label: t(langKeys.occupation), description: 'occupationdesc', persistent: false },
-                    { label: t(langKeys.observation), description: 'observation', persistent: false },
-                ]);
-            }
-            else if (detaildata.source === 'EXTERNAL') {
-                setTableVariable(detaildata.selectedColumns?.columns.reduce((ac: any, c: string) => {
-                    ac.push({ label: c, description: c, persistent: false })
-                    return ac;
-                }, [{ description: detaildata.selectedColumns.primarykey, persistent: false }]));
-            }
-            else {
-                setTableVariable([
-                    { label: "corpid", description: "corpid", persistent: true },
-                    { label: "orgid", description: "orgid", persistent: true },
-                    { label: "campaignmemberid", description: "campaignmemberid", persistent: true },
-                    { label: "campaignid", description: "campaignid", persistent: true },
-                    { label: "personid", description: "personid", persistent: true },
-                    { label: "status", description: "status", persistent: true },
-                    { label: "globalid", description: "globalid", persistent: true },
-                    { label: "personcommunicationchannel", description: "personcommunicationchannel", persistent: true },
-                    { label: "type", description: "type", persistent: true },
-                    { label: "displayname", description: "displayname", persistent: true },
-                    { label: "personcommunicationchannelowner", description: "personcommunicationchannelowner", persistent: true },
-                    { label: "field1", description: "field1", persistent: true },
-                    { label: "field2", description: "field2", persistent: true },
-                    { label: "field3", description: "field3", persistent: true },
-                    { label: "field4", description: "field4", persistent: true },
-                    { label: "field5", description: "field5", persistent: true },
-                    { label: "field6", description: "field6", persistent: true },
-                    { label: "field7", description: "field7", persistent: true },
-                    { label: "field8", description: "field8", persistent: true },
-                    { label: "field9", description: "field9", persistent: true },
-                    { label: "field10", description: "field10", persistent: true },
-                    { label: "field11", description: "field11", persistent: true },
-                    { label: "field12", description: "field12", persistent: true },
-                    { label: "field13", description: "field13", persistent: true },
-                    { label: "field14", description: "field14", persistent: true },
-                    { label: "field15", description: "field15", persistent: true },
-                    { label: "resultfromsend", description: "resultfromsend", persistent: true },
-                    { label: "batchindex", description: "batchindex", persistent: true }
-                ]);
+            switch (detaildata.source) {
+                case 'INTERNAL':
+                    setTableVariable([
+                        { label: t(langKeys.name), description: "displayname", persistent: true },
+                        { label: "PCC", description: "personcommunicationchannelowner", persistent: true },
+                        { label: t(langKeys.type), description: "type", persistent: true },
+                        { label: t(langKeys.status), description: "status", persistent: true },
+                        { label: `${t(langKeys.field)} 1`, description: "field1", persistent: true },
+                        { label: `${t(langKeys.field)} 2`, description: "field2", persistent: true },
+                        { label: `${t(langKeys.field)} 3`, description: "field3", persistent: true },
+                        { label: `${t(langKeys.field)} 4`, description: "field4", persistent: true },
+                        { label: `${t(langKeys.field)} 5`, description: "field5", persistent: true },
+                        { label: `${t(langKeys.field)} 6`, description: "field6", persistent: true },
+                        { label: `${t(langKeys.field)} 7`, description: "field7", persistent: true },
+                        { label: `${t(langKeys.field)} 8`, description: "field8", persistent: true },
+                        { label: `${t(langKeys.field)} 9`, description: "field9", persistent: true },
+                        { label: `${t(langKeys.field)} 10`, description: "field10", persistent: true },
+                        { label: `${t(langKeys.field)} 11`, description: "field11", persistent: true },
+                        { label: `${t(langKeys.field)} 12`, description: "field12", persistent: true },
+                        { label: `${t(langKeys.field)} 13`, description: "field13", persistent: true },
+                        { label: `${t(langKeys.field)} 14`, description: "field14", persistent: true },
+                        { label: `${t(langKeys.field)} 15`, description: "field15", persistent: true },
+                    ]);
+                    break;
+                case 'EXTERNAL':
+                    setTableVariable(detaildata.selectedColumns?.columns.reduce((ac: any, c: string) => {
+                        ac.push({ label: c, description: c, persistent: false })
+                        return ac;
+                    }, [{ label: detaildata.selectedColumns.primarykey, description: detaildata.selectedColumns.primarykey, persistent: false }]));
+                    break;
+                case 'PERSON':
+                    setTableVariable([
+                        { label: t(langKeys.firstname), description: 'firstname', persistent: false },
+                        { label: t(langKeys.lastname), description: 'lastname', persistent: false },
+                        { label: t(langKeys.documenttype), description: 'documenttype', persistent: false },
+                        { label: t(langKeys.documentnumber), description: 'documentnumber', persistent: false },
+                        { label: t(langKeys.personType), description: 'persontype', persistent: false },
+                        { label: t(langKeys.type), description: 'type', persistent: false },
+                        { label: t(langKeys.phone), description: 'phone', persistent: false },
+                        { label: t(langKeys.alternativePhone), description: 'alternativephone', persistent: false },
+                        { label: t(langKeys.email), description: 'email', persistent: false },
+                        { label: t(langKeys.alternativeEmail), description: 'alternativeemail', persistent: false },
+                        { label: t(langKeys.lastContactDate), description: 'lastcontact', persistent: false },
+                        { label: t(langKeys.agent), description: 'agent', persistent: false },
+                        { label: t(langKeys.opportunity), description: 'opportunity', persistent: false },
+                        { label: t(langKeys.birthday), description: 'birthday', persistent: false },
+                        { label: t(langKeys.gender), description: 'gender', persistent: false },
+                        { label: t(langKeys.educationLevel), description: 'educationlevel', persistent: false },
+                        { label: t(langKeys.comments), description: 'comments', persistent: false },
+                    ]);
+                    break;
+                case 'LEAD':
+                    setTableVariable([
+                        { label: t(langKeys.opportunity), description: 'opportunity', persistent: false },
+                        { label: t(langKeys.lastUpdate), description: 'changedate', persistent: false },
+                        { label: t(langKeys.name), description: 'name', persistent: false },
+                        { label: t(langKeys.email), description: 'email', persistent: false },
+                        { label: t(langKeys.phone), description: 'phone', persistent: false },
+                        { label: t(langKeys.expected_revenue), description: 'expected_revenue', persistent: false },
+                        { label: t(langKeys.endDate), description: 'date_deadline', persistent: false },
+                        { label: t(langKeys.tags), description: 'tags', persistent: false },
+                        { label: t(langKeys.agent), description: 'agent', persistent: false },
+                        { label: t(langKeys.priority), description: 'priority', persistent: false },
+                        { label: t(langKeys.campaign), description: 'campaign', persistent: false },
+                        { label: t(langKeys.product_plural), description: 'products', persistent: false },
+                        { label: t(langKeys.phase), description: 'phase', persistent: false },
+                        { label: t(langKeys.comments), description: 'comments', persistent: false },
+                    ]);
+                    break;
             }
         }
     }, [pageSelected]);

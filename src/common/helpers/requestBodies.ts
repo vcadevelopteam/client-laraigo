@@ -1324,15 +1324,32 @@ export const stopCampaign = ({ campaignid }: Dictionary): IRequestBody => ({
     }
 });
 
-export const campaignPersonSel = ({ skip, take, filters, sorts }: Dictionary): IRequestBodyPaginated => ({
+export const campaignPersonSel = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_CAMPAIGN_PERSON_SEL",
     methodCount: "UFN_CAMPAIGN_PERSON_TOTALRECORDS",
     parameters: {
+        startdate,
+        enddate,
         skip,
         take,
         filters,
         sorts,
-        origin: "person",
+        origin: "campaignperson",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+
+export const campaignLeadPersonSel = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_CAMPAIGN_LEAD_PERSON_SEL",
+    methodCount: "UFN_CAMPAIGN_LEAD_PERSON_TOTALRECORDS",
+    parameters: {
+        startdate,
+        enddate,
+        skip,
+        take,
+        filters,
+        sorts,
+        origin: "campaignleadperson",
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
