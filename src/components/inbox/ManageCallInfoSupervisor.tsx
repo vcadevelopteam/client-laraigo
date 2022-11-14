@@ -5,11 +5,11 @@ import PersonIcon from '@material-ui/icons/Person';
 import { useDispatch } from 'react-redux';
 import { hangupCall, resetCall } from 'store/voximplant/actions';
 import { Card, CardContent, Tooltip } from '@material-ui/core';
-import { convertLocalDate, secondsToTime, getSecondsUntelNow, getTimeBetweenDates, timetoseconds } from 'common/helpers';
+import { convertLocalDate, secondsToTime, getSecondsUntelNow, getTimeBetweenDates, timetoseconds, conversationSupervisionStatus } from 'common/helpers';
 import { langKeys } from 'lang/keys';
 import HearingIcon from '@material-ui/icons/Hearing';
 import ToggleButton from '@material-ui/lab/ToggleButton';
-
+import { execute } from 'store/main/actions';
 
 const ManageCallInfoSupervisor: React.FC = () => {
     const { t } = useTranslation();
@@ -30,7 +30,7 @@ const ManageCallInfoSupervisor: React.FC = () => {
                 settime(getSecondsUntelNow(convertLocalDate(ticketSelected?.callanswereddate)));
             }
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ticketSelected?.callanswereddate])
 
     useEffect(() => {
@@ -40,7 +40,7 @@ const ManageCallInfoSupervisor: React.FC = () => {
                 setSupervision(true)
             }
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const triggerSupervision = () => {
@@ -48,10 +48,21 @@ const ManageCallInfoSupervisor: React.FC = () => {
             setSupervision(true)
             const { userid, orgid } = resValidateToken.user!!;
             const url = `${ticketSelected?.commentexternalid}?mode=supervision&user=user${userid}.${orgid}`;
-            fetch(url, { method: 'GET' }).catch(x => {
-                setSupervision(false)
-            });
+            fetch(url, { method: 'GET' })
+                .catch(() => setSupervision(false))
+                .then(() => {
+                    dispatch(execute(conversationSupervisionStatus({
+                        conversationid: ticketSelected?.conversationid,
+                        status: "ACTIVO",
+                        type: "SUPERVISION"
+                    })));
+                })
         } else {
+            dispatch(execute(conversationSupervisionStatus({
+                conversationid: ticketSelected?.conversationid,
+                status: "INACTIVO",
+                type: "SUPERVISION"
+            })));
             setSupervision(false)
             dispatch(hangupCall(call.call));
             dispatch(resetCall());
