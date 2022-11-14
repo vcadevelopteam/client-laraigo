@@ -337,7 +337,8 @@ const TableZyx = React.memo(({
     initialStateFilter,
     registertext,
     setDataFiltered,
-    useFooter = false
+    useFooter = false,
+    heightWithCheck = 43
 }: TableConfig) => {
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -934,7 +935,7 @@ const TableZyx = React.memo(({
                                         width="auto"
                                         height={window.innerHeight - 470}
                                         itemCount={page.length}
-                                        itemSize={43}
+                                        itemSize={heightWithCheck}
                                     >
                                         {RenderRow}
                                     </FixedSizeList>

@@ -51,6 +51,7 @@ export interface TableConfig {
     setAllRowsSelected?: (value: boolean) => void;
     autotrigger?: boolean;
     toolsFooter?: boolean;
+    heightWithCheck?: number;
     autoRefresh?: { value: boolean, callback: (value: boolean) => void };
     // onClickRow?: (param?: any) => void
     // autoRefresh?: {value: boolean, callback: (value: boolean) => void};
