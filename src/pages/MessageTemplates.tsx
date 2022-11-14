@@ -425,6 +425,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
     const [fileAttachment, setFileAttachment] = useState<File | null>(null);
     const [fileAttachmentTemplate, setFileAttachmentTemplate] = useState<File | null>(null);
     const [htmlEdit, setHtmlEdit] = useState(false);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isNew, setIsNew] = useState(row?.id ? false : true);
     const [isProvider, setIsProvider] = useState(row?.fromprovider ? true : false);
     const [disableInput, setDisableInput] = useState(false);

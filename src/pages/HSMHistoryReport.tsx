@@ -10,7 +10,7 @@ import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { cleanMemoryTable, setMemoryTable, exportData, getMultiCollection, getMultiCollectionAux2, resetMultiMain } from 'store/main/actions';
+import { cleanMemoryTable, setMemoryTable, exportData, getMultiCollection, getMultiCollectionAux2, resetMultiMain, setViewChange, cleanViewChange } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { CalendarIcon } from 'icons';
 import { Range } from 'react-date-range';
@@ -234,6 +234,14 @@ const HSMHistoryReport: FC = () => {
     const [triggerExportPersonalized, setTriggerExportPersonalized] = useState<boolean>(false);
     const [waitExport, setWaitExport] = useState(false);
     const resExportData = useSelector(state => state.main.exportData);
+
+    useEffect(() => {
+        dispatch(setViewChange("hsmhistory"))
+        return () => {
+            dispatch(cleanViewChange());
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
     
     const columns = React.useMemo(
         () => [
