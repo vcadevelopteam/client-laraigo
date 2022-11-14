@@ -3897,7 +3897,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     periodreportrecording: 'Grabación de Llamadas',
     periodreportother: 'Otros',
     T_VOICECHANNEL: 'CANAL DE VOZ',
-    validate_time_filter: "Por favor, seleccione un rango de fechas menor a un mes.",
+    validate_time_filter: "Por favor, seleccione un rango de fechas menor.",
     go_ticket: 'Ir al ticket',
 
     channel_facebook: 'Facebook',
