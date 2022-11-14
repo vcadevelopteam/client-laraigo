@@ -450,14 +450,16 @@ export const CalendarEvent: FC = () => {
             name: data.name,
             parameters: [
                 // { name: "timeevent", text: `${t(dayNames[daySelected!!.dow])}, ${daySelected?.date.getDate()} ${month}, ${daySelected?.date.getFullYear()}` },
-                { name: "timeevent", text: t(langKeys.invitation_date, { month, year: daySelected?.date.getFullYear(), day: t(dayNames[daySelected!!.dow]), date: daySelected?.date.getDate() }) },
-                { name: "timestart", text: timeSelected?.localstarthour },
-                { name: "timeend", text: timeSelected?.localendhour },
                 { name: "eventname", text: event?.name },
+                { name: "eventlocation", text: event?.location },
+                { name: "eventlink", text: event?.eventlink },
+                { name: "eventcode", text: eventcode },
+                { name: "monthdate", text: t(langKeys.invitation_date, { month, year: daySelected?.date.getFullYear(), day: t(dayNames[daySelected!!.dow]), date: daySelected?.date.getDate() }) },
+                { name: "hourstart", text: timeSelected?.localstarthour },
+                { name: "hourend", text: timeSelected?.localendhour },
                 { name: "personname", text: data.name },
                 { name: "personcontact", text: data.phone },
                 { name: "personmail", text: data.email },
-                { name: "eventcode", text: eventcode },
             ]
         }
         dispatch(getCollEventBooking(insBookingCalendar(dataToSend)))

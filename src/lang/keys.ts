@@ -1123,6 +1123,15 @@ export const langKeys = {
     duration: 'duration',
     notificationtype: 'notificationtype',
     calendar_messate_tooltip: 'calendar_messate_tooltip',
+    calendar_eventname: 'calendar_eventname',
+    calendar_eventlocation: 'calendar_eventlocation',
+    calendar_eventlink: 'calendar_eventlink',
+    calendar_monthdate: 'calendar_monthdate',
+    calendar_hourstart: 'calendar_hourstart',
+    calendar_hourend: 'calendar_hourend',
+    calendar_personname: 'calendar_personname',
+    calendar_personcontact: 'calendar_personcontact',
+    calendar_personmail: 'calendar_personmail',
 
 
     no_reply_use_hsm: 'no_reply_use_hsm',
