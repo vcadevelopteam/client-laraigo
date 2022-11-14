@@ -183,4 +183,6 @@ export const apiUrls = {
     DELETE_TEMPLATE: `${BASE_URL}/channel/deletetemplate`,
 
     BILLING_REPORTPDF: `${BASE_URL}/drawpdf`,
+
+    POSTHISTORY_SCHEDULE: `${BASE_URL}/posthistory/schedulepost`,
 };
