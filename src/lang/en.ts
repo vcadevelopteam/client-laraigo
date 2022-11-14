@@ -3879,7 +3879,7 @@ const translation: LangKeys = {
     periodreportrecording: 'Call Recording',
     periodreportother: 'Others',
     T_VOICECHANNEL: 'VOICE CHANNEL',
-    validate_time_filter: "Please select a date range less than one month.",
+    validate_time_filter: "Please select a date range less",
     go_ticket: 'Go to ticket',
 
     productcatalog_title: 'Title',

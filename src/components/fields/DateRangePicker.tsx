@@ -19,7 +19,7 @@ import {
 } from 'date-fns';
 import { useDispatch } from 'react-redux';
 import { showSnackbar } from 'store/popus/actions';
-
+import { useSelector } from 'hooks';
 interface DateRangePickerProps extends Omit<PDateRangePickerProps, 'ranges'> {
     title?: React.ReactNode;
     open: boolean;
@@ -29,18 +29,18 @@ interface DateRangePickerProps extends Omit<PDateRangePickerProps, 'ranges'> {
 }
 
 const defineds = {
-  startOfWeek: startOfWeek(new Date()),
-  endOfWeek: endOfWeek(new Date()),
-  startOfLastWeek: startOfWeek(addDays(new Date(), -7)),
-  endOfLastWeek: endOfWeek(addDays(new Date(), -7)),
-  startOfToday: startOfDay(new Date()),
-  endOfToday: endOfDay(new Date()),
-  startOfYesterday: startOfDay(addDays(new Date(), -1)),
-  endOfYesterday: endOfDay(addDays(new Date(), -1)),
-  startOfMonth: startOfMonth(new Date()),
-  endOfMonth: endOfMonth(new Date()),
-  startOfLastMonth: startOfMonth(addMonths(new Date(), -1)),
-  endOfLastMonth: endOfMonth(addMonths(new Date(), -1)),
+    startOfWeek: startOfWeek(new Date()),
+    endOfWeek: endOfWeek(new Date()),
+    startOfLastWeek: startOfWeek(addDays(new Date(), -7)),
+    endOfLastWeek: endOfWeek(addDays(new Date(), -7)),
+    startOfToday: startOfDay(new Date()),
+    endOfToday: endOfDay(new Date()),
+    startOfYesterday: startOfDay(addDays(new Date(), -1)),
+    endOfYesterday: endOfDay(addDays(new Date(), -1)),
+    startOfMonth: startOfMonth(new Date()),
+    endOfMonth: endOfMonth(new Date()),
+    startOfLastMonth: startOfMonth(addMonths(new Date(), -1)),
+    endOfLastMonth: endOfMonth(addMonths(new Date(), -1)),
 };
 
 const todayRange: Range = { startDate: defineds.startOfToday, endDate: defineds.endOfToday };
@@ -52,8 +52,8 @@ const lastMonthRange: Range = { startDate: defineds.startOfLastMonth, endDate: d
 
 const isSelected = (range: Range, definedRange: Range) => {
     return (
-      isSameDay(range.startDate!, definedRange.startDate!) &&
-      isSameDay(range.endDate!, definedRange.endDate!)
+        isSameDay(range.startDate!, definedRange.startDate!) &&
+        isSameDay(range.endDate!, definedRange.endDate!)
     );
 };
 
@@ -77,44 +77,45 @@ const DateRangePicker: FC<DateRangePickerProps> = (props) => {
     const { t } = useTranslation();
     const [currentRange, setCurrentRange] = useState<Range[]>([range]);
     const [search, setSearch] = useState(true)
+    const rangeDateFilter = useSelector(state => state.login.validateToken.user?.properties?.range_date_filter);
 
     React.useEffect(() => {
         if (open) {
             setSearch(true)
         }
     }, [open])
-    
+
     const staticRanges: StaticRange[] = [
         {
-          label: t(langKeys.today),
-          range: () => todayRange,
-          isSelected: (range) => isSelected(range, todayRange),
+            label: t(langKeys.today),
+            range: () => todayRange,
+            isSelected: (range) => isSelected(range, todayRange),
         },
         {
-          label: t(langKeys.yesterday),
-          range: () => yesterdayRange,
-          isSelected: (range) => isSelected(range, yesterdayRange),
+            label: t(langKeys.yesterday),
+            range: () => yesterdayRange,
+            isSelected: (range) => isSelected(range, yesterdayRange),
         },
-      
+
         {
-          label: t(langKeys.thisWeek),
-          range: () => thisWeekRange,
-          isSelected: (range) => isSelected(range, thisWeekRange),
-        },
-        {
-          label: t(langKeys.lastWeek),
-          range: () => lastWeekRange,
-          isSelected: (range) => isSelected(range, lastWeekRange),
+            label: t(langKeys.thisWeek),
+            range: () => thisWeekRange,
+            isSelected: (range) => isSelected(range, thisWeekRange),
         },
         {
-          label: t(langKeys.thisMonth),
-          range: () => thisMonthRange,
-          isSelected: (range) => isSelected(range, thisMonthRange),
+            label: t(langKeys.lastWeek),
+            range: () => lastWeekRange,
+            isSelected: (range) => isSelected(range, lastWeekRange),
         },
         {
-          label: t(langKeys.lastMonth),
-          range: () => lastMonthRange,
-          isSelected: (range) => isSelected(range, lastMonthRange),
+            label: t(langKeys.thisMonth),
+            range: () => thisMonthRange,
+            isSelected: (range) => isSelected(range, thisMonthRange),
+        },
+        {
+            label: t(langKeys.lastMonth),
+            range: () => lastMonthRange,
+            isSelected: (range) => isSelected(range, lastMonthRange),
         },
     ];
 
@@ -134,14 +135,15 @@ const DateRangePicker: FC<DateRangePickerProps> = (props) => {
                         <PDateRangePicker
                             onChange={(range) => {
                                 const selection = (range as { selection: RangeWithKey }).selection;
-                                
-                                const { startDate, endDate } = selection;
-                                if (startDate?.getMonth() !== endDate?.getMonth()) {
-                                    let difference = endDate!!.getTime() - startDate!!.getTime();
-                                    let days = Math.ceil(difference / (1000 * 3600 * 24));
-                                    if (days > 30) {
-                                        setSearch(false)
-                                        return dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.validate_time_filter) }))
+                                if (rangeDateFilter) {
+                                    const { startDate, endDate } = selection;
+                                    if (startDate?.getMonth() !== endDate?.getMonth()) {
+                                        let difference = endDate!!.getTime() - startDate!!.getTime();
+                                        let days = Math.ceil(difference / (1000 * 3600 * 24));
+                                        if (days > 30 * rangeDateFilter) {
+                                            setSearch(false)
+                                            return dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.validate_time_filter) }))
+                                        }
                                     }
                                 }
                                 setSearch(true)
