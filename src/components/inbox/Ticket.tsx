@@ -243,13 +243,16 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [timeWaiting]);
 
-
+  
     return (
         <div
             className={clsx(classes.containerItemTicket, {
                 [classes.itemSelected]: (ticketSelected?.conversationid === conversationid)
             })}
-            onClick={() => setTicketSelected(item)}>
+            onClick={() => {
+                setTicketSelected(item);
+                // showvox()
+            }}>
             <Badge
                 overlap="circular"
                 anchorOrigin={{ vertical: 'top', horizontal: 'right' }}

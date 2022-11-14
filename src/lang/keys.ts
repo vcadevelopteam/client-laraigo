@@ -97,6 +97,11 @@ export const langKeys = {
     redo: "redo",
     city: "city",
     make_call: "make_call",
+    
+    ringing: "ringing",
+    connected_call: "connected_call",
+    monitor_call: "monitor_call",
+
     alternativephone: "alternativephone",
     limitgroupreassignment: "limitgroupreassignment",
     waittime: "waittime",

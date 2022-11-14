@@ -10,9 +10,9 @@ import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { setDataUser, wsConnect } from "store/inbox/actions";
 import { voximplantConnect } from "store/voximplant/actions";
-import { getAccessToken } from 'common/helpers';
+import { getAccessToken, removeAuthorizationToken } from 'common/helpers';
 import { Redirect } from 'react-router-dom';
-import { logout, validateToken } from 'store/login/actions';
+import { validateToken } from 'store/login/actions';
 import { useDispatch } from 'react-redux';
 
 const Users = lazy(() => import('pages/Users'));
@@ -113,7 +113,6 @@ interface PrivateRouteProps extends Omit<RouteProps, "component"> {
 const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, ...rest }) => {
 	const resValidateToken = useSelector(state => state.login.validateToken);
 	const ignorePwdchangefirstloginValidation = useSelector(state => state.login.ignorePwdchangefirstloginValidation);
-
 	const applications = resValidateToken?.user?.menu;
 	const location = useLocation();
 
@@ -178,7 +177,7 @@ const RouterApp: FC = () => {
 	const dispatch = useDispatch();
 
 	useForcedDisconnection(useCallback(() => {
-		dispatch(logout());
+		removeAuthorizationToken()
 	}, [dispatch]));
 
 	return (

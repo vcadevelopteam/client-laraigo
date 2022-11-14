@@ -62,6 +62,7 @@ export default createReducer<IState>(initialState, {
     [actionTypes.SET_HOLD]: caseFUnctions.setHold,
     [actionTypes.MANAGE_STATUS_CALL]: caseFUnctions.manageStatusCall,
     [actionTypes.MANAGE_CONNECTION]: caseFUnctions.manageConnection,
+    [actionTypes.RESET_CALL]: caseFUnctions.resetCall,
 
     [actionTypes.GET_CATEGORIES]: caseFUnctions.getCategories,
     [actionTypes.GET_CATEGORIES_FAILURE]: caseFUnctions.getCategoriesFailure,
