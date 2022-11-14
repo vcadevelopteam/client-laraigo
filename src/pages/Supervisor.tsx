@@ -432,6 +432,7 @@ const Supervisor: FC = () => {
             getPropertySelByName("TIPIFICACION"),
             getUserChannelSel(),
             getPropertySelByName("ASESORDELEGACION","ASESORDELEGACION"),
+            getPropertySelByName("ASESORSUSPENDE","ASESORSUSPENDE"),
         ]))
         return () => {
             dispatch(resetAllMain());
