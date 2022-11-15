@@ -2,7 +2,7 @@
 import Checkbox from '@material-ui/core/Checkbox';
 import DateFnsUtils from '@date-io/date-fns';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import React, { FC, Fragment, useEffect, useState } from "react";
+import React, { FC, Fragment, useEffect, useState, useCallback } from "react";
 
 import { AccountCircle, CameraAlt, ChatBubble, Delete, Edit, Facebook, Instagram, LinkedIn, MusicNote, PlayCircleOutlineSharp, Replay, Reply, Save, Send, ThumbUp, Timelapse, Twitter, YouTube } from '@material-ui/icons';
 import { AntTab, DialogZyx, FieldEdit, FieldEditAdvanced, FieldSelect, FieldView } from 'components';
@@ -10,7 +10,7 @@ import { Button, Tabs } from "@material-ui/core";
 import { dataActivities, dataFeelings } from 'common/helpers';
 import { Dictionary } from '@types';
 import { FacebookColor, InstagramColor, LinkedInColor, TikTokColor, TwitterColor, YouTubeColor } from "icons";
-import { getCollection, resetAllMain } from 'store/main/actions';
+import { getCollection, resetAllMain, uploadFile } from 'store/main/actions';
 import { getCommChannelLst } from 'common/helpers';
 import { getLocaleDateString, localesLaraigo } from 'common/helpers';
 import { KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -132,12 +132,17 @@ export const PostCreatorPublish: FC = () => {
 }
 
 const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pageMode: string }> = ({ dataChannel, dataRow, pageMode }) => {
+    const dispatch = useDispatch();
+
     const classes = useStyles();
 
     const { t } = useTranslation();
 
+    const uploadResult = useSelector(state => state.main.uploadFile);
+
     const [allowedChannel, setAllowedChannel] = useState<Dictionary[]>([]);
     const [customizeType, setCustomizeType] = useState('');
+    const [fileAttachment, setFileAttachment] = useState<File | null>(null);
     const [openModal, setOpenModal] = useState(false);
     const [previewType, setPreviewType] = useState('FACEBOOKPREVIEW');
     const [showFacebook, setShowFacebook] = useState(false);
@@ -146,6 +151,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
     const [showTikTok, setShowTikTok] = useState(false);
     const [showTwitter, setShowTwitter] = useState(false);
     const [showYouTube, setShowYouTube] = useState(false);
+    const [waitUploadFile, setWaitUploadFile] = useState(false);
 
     const { register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm({
         defaultValues: {
@@ -180,6 +186,48 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
         register('textcustomyoutube');
         register('texttitle', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [register]);
+
+    const handleDeleteMedia = async () => {
+        const input = document.getElementById('attachmentInput') as HTMLInputElement;
+        if (input) {
+            input.value = "";
+        }
+        setFileAttachment(null);
+        var dataAttached = (getValues('mediadata') || []);
+        dataAttached.pop();
+        setValue('mediadata', dataAttached);
+        await trigger('mediadata');
+    }
+
+    const onClickAttachment = useCallback(() => {
+        const input = document.getElementById('attachmentInput');
+        input!.click();
+    }, []);
+
+    const onChangeAttachment = useCallback((files: any) => {
+        const file = files?.item(0);
+        console.log(file);
+        if (file) {
+            setFileAttachment(file);
+            let fileData = new FormData();
+            fileData.append('file', file, file.name);
+            dispatch(uploadFile(fileData));
+            setWaitUploadFile(true);
+        }
+    }, [])
+
+    useEffect(() => {
+        if (waitUploadFile) {
+            if (!uploadResult.loading && !uploadResult.error) {
+                var dataAttached = (getValues('mediadata') || []);
+                dataAttached.push({ url: uploadResult?.url, height: uploadResult?.height, width: uploadResult?.width, filename: uploadResult?.filename, thumbnail: uploadResult?.thumbnail });
+                setValue('mediadata', dataAttached);
+                setWaitUploadFile(false);
+            } else if (uploadResult.error) {
+                setWaitUploadFile(false);
+            }
+        }
+    }, [waitUploadFile, uploadResult])
 
     useEffect(() => {
         setValue('channeldata', []);
@@ -351,43 +399,24 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                     />
                                 </div>
                                 <div className="row-zyx" style={{ marginBottom: '0px' }}>
-                                    <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '10px' }}>
-                                        <div style={{ display: 'inline-flex', verticalAlign: 'center' }}>
-                                            <div style={{ height: '100%', display: 'flex', alignItems: 'center' }}>
-                                                <img alt="" style={{ maxHeight: '60px' }} src="https://1.bp.blogspot.com/-YLDLu1GApmQ/Tm-cKFIKE1I/AAAAAAAAEvQ/bp1zLkKJ6Cg/w1200-h630-p-k-no-nu/Purple+solid+color+backgrounds+1.png"></img>
-                                            </div>
-                                            <div style={{ height: '100%', paddingLeft: '10px', display: 'flex', alignItems: 'center' }}>
-                                                Imagen.jpg<br />480 x 240
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '10px' }}>
-                                        <div style={{ display: 'inline-flex', verticalAlign: 'center' }}>
-                                            <div style={{ height: '100%', display: 'flex', alignItems: 'center' }}>
-                                                <img alt="" style={{ maxHeight: '60px' }} src="https://1.bp.blogspot.com/-YLDLu1GApmQ/Tm-cKFIKE1I/AAAAAAAAEvQ/bp1zLkKJ6Cg/w1200-h630-p-k-no-nu/Purple+solid+color+backgrounds+1.png"></img>
-                                            </div>
-                                            <div style={{ height: '100%', paddingLeft: '10px', display: 'flex', alignItems: 'center' }}>
-                                                Imagen.jpg<br />480 x 240
+                                    {getValues('mediadata')?.map(function (media: any) {
+                                        return <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '10px' }}>
+                                            <div style={{ display: 'inline-flex', verticalAlign: 'center' }}>
+                                                <div style={{ height: '100%', display: 'flex', alignItems: 'center' }}>
+                                                    <img alt="" style={{ maxHeight: '60px' }} src={media.url}></img>
+                                                </div>
+                                                <div style={{ height: '100%', paddingLeft: '10px', display: 'flex', alignItems: 'center' }}>
+                                                    {media.filename}<br />{media.height} x {media.width}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '10px' }}>
-                                        <div style={{ display: 'inline-flex', verticalAlign: 'center' }}>
-                                            <div style={{ height: '100%', display: 'flex', alignItems: 'center' }}>
-                                                <img alt="" style={{ maxHeight: '60px' }} src="https://1.bp.blogspot.com/-YLDLu1GApmQ/Tm-cKFIKE1I/AAAAAAAAEvQ/bp1zLkKJ6Cg/w1200-h630-p-k-no-nu/Purple+solid+color+backgrounds+1.png"></img>
-                                            </div>
-                                            <div style={{ height: '100%', paddingLeft: '10px', display: 'flex', alignItems: 'center' }}>
-                                                Imagen.jpg<br />480 x 240
-                                            </div>
-                                        </div>
-                                    </div>
+                                    })}
                                 </div>
-                                <div className="row-zyx" style={{ marginTop: '18px', alignItems: 'center', display: 'flex', justifyContent: 'center' }}>
+                                <div className="row-zyx" style={{ marginTop: '18px', marginBottom: '10px', alignItems: 'center', display: 'flex', justifyContent: 'center' }}>
                                     <Button
                                         className={classes.button}
                                         variant="contained"
                                         color="primary"
-                                        type="submit"
                                         startIcon={<Edit color="secondary" />}
                                         style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center' }}
                                     >{t(langKeys.postcreator_publish_edit)}
@@ -396,20 +425,30 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         className={classes.button}
                                         variant="contained"
                                         color="primary"
-                                        type="submit"
                                         startIcon={<Delete color="secondary" />}
                                         style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center' }}
+                                        onClick={handleDeleteMedia}
                                     >{t(langKeys.postcreator_publish_delete)}
                                     </Button>
-                                    <Button
-                                        className={classes.button}
-                                        variant="contained"
-                                        color="primary"
-                                        type="submit"
-                                        startIcon={<CameraAlt color="secondary" />}
-                                        style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center' }}
-                                    >{t(langKeys.postcreator_publish_addimage)}
-                                    </Button>
+                                    <React.Fragment>
+                                        <input
+                                            accept="image/*"
+                                            id="attachmentInput"
+                                            onChange={(e) => onChangeAttachment(e.target.files)}
+                                            style={{ display: 'none' }}
+                                            type="file"
+                                        />
+                                        <Button
+                                            className={classes.button}
+                                            color="primary"
+                                            disabled={(waitUploadFile || fileAttachment !== null)}
+                                            onClick={onClickAttachment}
+                                            startIcon={<CameraAlt color="secondary" />}
+                                            style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center' }}
+                                            variant="contained"
+                                        >{t(langKeys.postcreator_publish_addimage)}
+                                        </Button>
+                                    </React.Fragment>
                                 </div>
                             </>}
                             {pageMode === 'VIDEO' && <>
