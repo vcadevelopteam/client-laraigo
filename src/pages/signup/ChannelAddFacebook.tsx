@@ -177,7 +177,7 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
                             appId: apiUrls.FACEBOOKAPP,
                             cookie: true,
                             xfbml: true,
-                            version: 'v15.0'
+                            version: apiUrls.FACEBOOKVERSION,
                         });
                     }}
                     isDisabled={mainResult.loading}

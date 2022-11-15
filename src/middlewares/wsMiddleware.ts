@@ -13,6 +13,8 @@ const eventsListeners = [
     { event: 'forceddisconnect', type: typesInbox.FORCEDDISCONECTION },
     { event: 'changeStatusTicket', type: typesInbox.CHANGE_STATUS_TICKET_WS },
     { event: 'newNotification', type: typesLogin.NEW_NOTIFICATION },
+    { event: 'callWasAnswred', type: typesInbox.ANSWERED_CALL, extra: {} },
+    { event: 'updateExternalIDs', type: typesInbox.UPDATE_EXTERNAL_IDS, extra: {} },
 ]
 
 const socket = io(apiUrls.WS_URL, {
@@ -39,6 +41,7 @@ const callWSMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async
             console.log("load eventsListeners")
             eventsListeners.forEach(({ event, type, extra = {} }) => {
                 socket.on(event, (datatmp) => {
+                    console.log(event, datatmp)
                     dispatch({ type, payload: { ...datatmp, ...extra } })
                 });
             });

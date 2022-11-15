@@ -1,3 +1,4 @@
+/* eslint-disable no-eval */
 /* eslint-disable no-useless-escape */
 import { Dictionary } from "@types";
 // import * as XLSX from 'xlsx';
@@ -1384,7 +1385,7 @@ export function validateNumbersEqualsConsecutive(text: string, limit: number) {
         if (/^\d+$/.test(text.charAt(i))) {
             canxx = 1;
             for (var j = i + 1; j < text.length; j++) {
-                if (text.charAt(i) == text.charAt(j)) {
+                if (text.charAt(i) === text.charAt(j)) {
                     canxx++;
                 }
             }
@@ -1502,7 +1503,7 @@ export function isJson(s: string): boolean {
 }
 
 export function extractVariables(text: string, array: string[] = []): string[] {
-    let rex = new RegExp(/{{[\w\s\u00C0-\u00FF]+?}}/, 'g');
+    let rex = new RegExp(/{{[\?\w\s\u00C0-\u00FF]+?}}/, 'g');
     return Array.from(new Set([...array, ...Array.from(text.matchAll(rex), (m: any[]) => m[0].replace(/[{]{2}/, '').replace(/[}]{2}/, ''))]));
 }
 

@@ -10,7 +10,7 @@ import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { getMainGraphic, getMultiCollection, getMultiCollectionAux2, resetMultiMain } from 'store/main/actions';
+import { cleanViewChange, getMainGraphic, getMultiCollection, getMultiCollectionAux2, resetMultiMain, setViewChange } from 'store/main/actions';
 import { showBackdrop } from 'store/popus/actions';
 import { CalendarIcon } from 'icons';
 import { Range } from 'react-date-range';
@@ -199,6 +199,14 @@ const RecordHSMRecord: FC = () => {
     const [gridData, setGridData] = useState<any[]>([]);
     const [openModal, setOpenModal] = useState(false);
     const [view, setView] = useState('GRID');
+    
+    useEffect(() => {
+        dispatch(setViewChange("recordhsmreport"))
+        return () => {
+            dispatch(cleanViewChange());
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
     
     const columns = React.useMemo(
         () => [

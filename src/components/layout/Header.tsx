@@ -10,6 +10,7 @@ import { useDispatch } from 'react-redux';
 import { setOpenDrawer } from 'store/popus/actions';
 import NotificationMenu from 'components/session/NotificationMenu';
 import { StatusConnection } from 'components';
+import LaraigoHelp from 'components/session/LaraigoHelp';
 
 type IProps = {
     classes: any;
@@ -67,8 +68,9 @@ const Header = ({ classes }: IProps) => {
                         <div className={myClasses.statusConnection}>
                             <StatusConnection />
                         </div>
-                        <AccountMenu />
                         <NotificationMenu />
+                        <AccountMenu />
+                        <LaraigoHelp />
                     </div>
                 </div>
             </Toolbar>

@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { getasesoresbyorgid, getValuesFromDomain, heatmappage1, heatmappage1detail, heatmappage2, heatmappage2detail1, heatmappage2detail2, heatmappage3, heatmappage3detail } from 'common/helpers/requestBodies';
-import { getCollectionAux, getMultiCollection, getMultiCollectionAux, getMultiCollectionAux2, resetMainAux, resetMultiMain, resetMultiMainAux, resetMultiMainAux2 } from 'store/main/actions';
+import { cleanViewChange, getCollectionAux, getMultiCollection, getMultiCollectionAux, getMultiCollectionAux2, resetMainAux, resetMultiMain, resetMultiMainAux, resetMultiMainAux2, setViewChange } from 'store/main/actions';
 import { useSelector } from 'hooks';
 import { Dictionary } from '@types';
 import TableZyx from 'components/fields/table-simple';
@@ -130,6 +130,13 @@ const MainHeatMap: React.FC = () => {
         setOpenModalTicket(true);
         setRowSelected({ ...row, displayname: row.asesor, ticketnum: row.ticketnum })
     }, [mainResult]);
+    useEffect(() => {
+        dispatch(setViewChange("heatmap"))
+        return () => {
+            dispatch(cleanViewChange());
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
     const fetchDetail = (grid: string, column: Dictionary, row: Dictionary, mes: number, year: number) => {
         if (row.hournum!=="TOTAL" && row.hournum!=="PRM" && ((typeof(row[column.id]) === 'number' && row[column.id] > 0)
         || (typeof(row[column.id]) === 'string' && row[column.id] !== '00:00:00')) ) {
