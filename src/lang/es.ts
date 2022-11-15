@@ -4523,6 +4523,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     posthistory_worthless: "Sinvalor",
     posthistory_young: "Joven",
     posthistory_yucky: "Asqueroso",
+    posthistory_missingchannel: "Debes seleccionar al menos un canal",
+    posthistory_missingmedia: "Debes subir al menos un archivo de imagen/video",
+    posthistory_missingdatetime: "Debes ingresar una fecha y hora",
 };
 
 const esResource: ResourceLanguage = {

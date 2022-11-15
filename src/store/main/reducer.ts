@@ -26,7 +26,7 @@ export interface IUpload extends ITemplate {
     url?: string;
     height?: string;
     width?: string;
-    filename?: string;
+    name?: string;
     thumbnail?: string;
 }
 

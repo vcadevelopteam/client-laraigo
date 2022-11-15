@@ -4200,7 +4200,7 @@ const translation: LangKeys = {
     postcreator_publish_program_cancel: "Cancel",
     postcreator_publish_confirm_title: "Confirm Post",
     postcreator_publish_confirm_description: "Select a date and time for your social network posts.",
-    postcreator_publish_confirm_save: "Publicar",
+    postcreator_publish_confirm_save: "Publish",
     postcreator_publish_confirm_draft: "Save as Draft",
     postcreator_publish_draft_title: "Save Draft",
     postcreator_publish_draft_description: "Drafts can be found in your post history.",
@@ -4223,11 +4223,11 @@ const translation: LangKeys = {
     posthistory_fake_exercising_type: "Faking exercising",
     posthistory_feels: "Feels",
     posthistory_gets: "Gets",
-    posthistory_goes_to: "Goes_To",
+    posthistory_goes_to: "Goes to",
     posthistory_golfs: "Golfs",
     posthistory_hikes: "Hikes",
     posthistory_listens: "Listens",
-    posthistory_looks_for: "Looks_For",
+    posthistory_looks_for: "Looks for",
     posthistory_makes: "Makes",
     posthistory_meets: "Meets",
     posthistory_other: "Other",
@@ -4532,6 +4532,9 @@ const translation: LangKeys = {
     posthistory_worthless: "Worthless",
     posthistory_young: "Young",
     posthistory_yucky: "Yucky",
+    posthistory_missingchannel: "You have to select at least one communication channel",
+    posthistory_missingmedia: "You have to upload at least one video/image file",
+    posthistory_missingdatetime: "You have to enter a date and a time",
 };
 
 const enResource: ResourceLanguage = {

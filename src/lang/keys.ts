@@ -4517,6 +4517,9 @@ export const langKeys = {
     posthistory_worthless: "posthistory_worthless",
     posthistory_young: "posthistory_young",
     posthistory_yucky: "posthistory_yucky",
+    posthistory_missingchannel: "posthistory_missingchannel",
+    posthistory_missingmedia: "posthistory_missingmedia",
+    posthistory_missingdatetime: "posthistory_missingdatetime",
 };
 
 export type LangKeys = typeof langKeys;
