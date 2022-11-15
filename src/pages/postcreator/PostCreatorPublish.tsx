@@ -10,7 +10,7 @@ import { Button, Tabs } from "@material-ui/core";
 import { dataActivities, dataFeelings } from 'common/helpers';
 import { Dictionary } from '@types';
 import { FacebookColor, InstagramColor, LinkedInColor, TikTokColor, TwitterColor, YouTubeColor } from "icons";
-import { getCollection, resetAllMain, uploadFile } from 'store/main/actions';
+import { getCollection, resetAllMain, uploadFileMetadata } from 'store/main/actions';
 import { getCommChannelLst } from 'common/helpers';
 import { getLocaleDateString, localesLaraigo } from 'common/helpers';
 import { KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -211,7 +211,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
             setFileAttachment(file);
             let fileData = new FormData();
             fileData.append('file', file, file.name);
-            dispatch(uploadFile(fileData));
+            dispatch(uploadFileMetadata(fileData));
             setWaitUploadFile(true);
         }
     }, [])

@@ -18,6 +18,10 @@ export function uploadFile(data: FormData) {
     return APIManager.post(apiUrls.UPLOAD_FILE, { data }, true);
 }
 
+export function uploadFileMetadata(data: FormData) {
+    return APIManager.post(apiUrls.UPLOAD_FILEMETADATA, { data }, true);
+}
+
 export function exportData(requestBody: IRequestBody) {
     return APIManager.post(apiUrls.EXPORT_DATA, { data: requestBody }, true);
 }
@@ -25,7 +29,7 @@ export function exportData(requestBody: IRequestBody) {
 export function validateToken() {
     return APIManager.get(apiUrls.LOGIN_URL, {}, true);
 }
-export function reeschedulecall(requestBody: Dictionary ) {
+export function reeschedulecall(requestBody: Dictionary) {
     return APIManager.post(apiUrls.REESCHEDULECALL, { data: requestBody }, true);
 }
 
@@ -44,7 +48,7 @@ export function multiMain(requestBody: IRequestBody[]) {
     return APIManager.post(apiUrls.MAIN_MULTI, { data: requestBody }, true);
 }
 export function multiMainPublic(requestBody: string[]) {
-    return APIManager.post(apiUrls.MAIN_MULTI_PUBLIC, { data: {parameters:{domains: requestBody}} }, true);
+    return APIManager.post(apiUrls.MAIN_MULTI_PUBLIC, { data: { parameters: { domains: requestBody } } }, true);
 }
 
 export function mainPaginated(requestBody: IRequestBodyPaginated) {

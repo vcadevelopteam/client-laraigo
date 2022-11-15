@@ -108,6 +108,7 @@ export const apiUrls = {
     MAIN_DYNAMIC_EXPORT: `${BASE_URL}/reportdesigner/export`,
     INTEGRATION: `${BASE_URL}/integration`,
     UPLOAD_FILE: `${BASE_URL}/upload`,
+    UPLOAD_FILEMETADATA: `${BASE_URL}/upload/metadata`,
     EXPORT_DATA: `${BASE_URL}/main/export`,
 
     CLOSE_TICKET: `${BASE_URL}/ticket/close`,
