@@ -98,7 +98,7 @@ const ManageCallInfoSupervisor: React.FC = () => {
         <div style={{ width: "100%" }}>
             <Card style={{ maxWidth: "500px" }}>
                 <CardContent>
-                    {ticketSelected?.status !== "CERRADO" && (
+                    {/* {ticketSelected?.status !== "CERRADO" && (
                         <div style={{ display: "flex", justifyContent: "end" }}>
                             <Tooltip title={t(langKeys.monitor_call) || ""}>
                                 <span>
@@ -114,7 +114,7 @@ const ManageCallInfoSupervisor: React.FC = () => {
                                 </span>
                             </Tooltip>
                         </div>
-                    )}
+                    )} */}
                     <div>
                         <div style={{ marginLeft: "auto", marginTop: 20, marginRight: "auto", width: "100px", height: "100px", borderRadius: "50%", backgroundColor: "#bdbdbd" }}>
                             <PersonIcon style={{ color: "white", width: "100px", height: "100px" }} />
