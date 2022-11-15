@@ -955,7 +955,7 @@ const SavePostModalGeneric: FC<{ modalData: any, modalType: string, openModal: b
         }
 
         const callback = () => {
-            dispatch(schedulePost({ data: modalData, date: modalDate, time: modalTime, type: type }));
+            dispatch(schedulePost({ data: modalData, date: modalDate, time: modalTime, type: type, publication: 'POST' }));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
