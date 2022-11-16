@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useContext, useEffect, useState } from "react";
 import { Typography, IconButton, InputAdornment } from '@material-ui/core';
@@ -182,7 +183,7 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
                             appId: apiUrls.INSTAGRAMAPP,
                             cookie: true,
                             xfbml: true,
-                            version: 'v15.0'
+                            version: apiUrls.FACEBOOKVERSION,
                         });
                     }}
                     isDisabled={mainResult.loading}

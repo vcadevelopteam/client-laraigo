@@ -12,9 +12,11 @@ import { Event as EventIcon } from '@material-ui/icons';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { resetMainAux } from 'store/main/actions';
+import { resetCollectionPaginatedAux, resetMainAux } from 'store/main/actions';
 import { useDispatch } from 'react-redux';
 import { FrameProps } from './CampaignDetail';
+import { showSnackbar } from 'store/popus/actions';
+import { useSelector } from 'hooks';
 
 interface DetailProps {
     row: Dictionary | null,
@@ -53,8 +55,10 @@ const dataExecutionType: Dictionary = {
 };
 
 const dataSource: Dictionary = {
-    INTERNAL: 'bdinternal',
-    EXTERNAL: 'bdexternal',
+    INTERNAL: 'datasource_internal',
+    EXTERNAL: 'datasource_external',
+    PERSON: 'datasource_person',
+    LEAD: 'datasource_lead'
 };
 
 const dataCampaignType = [
@@ -108,6 +112,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const dataChannel = [...multiData[1] && multiData[1].success ? (multiData[1].data || []).filter(x => ((x.type || '').startsWith('WHA') || (x.type || '').startsWith('SMS') || (x.type || '').startsWith('MAI') || (x.type || '').startsWith('VOX'))) : []];
     const dataGroup = [...multiData[2] && multiData[2].success ? multiData[2].data : []];
     const dataMessageTemplate = [...multiData[3] && multiData[3].success ? multiData[3].data : []];
+    const user = useSelector(state => state.login.validateToken.user);
 
     const [openModal, setOpenModal] = useState(false);
 
@@ -162,6 +167,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         register('status', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('source', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('type', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('usergroup', { validate: (value: any) => ((user?.properties?.environment==="CLARO" && ['Gestor de Campañas'].includes(user?.roledesc || ""))? (value && value.length):true) || t(langKeys.field_required) });
     }, [edit, register]);
 
     useEffect(() => {
@@ -225,7 +231,10 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 data.fields = { ...new SelectedColumns(), ...data.fields };
                 setDetaildata({ ...detaildata, ...data });
                 setFrameProps({ ...frameProps, executeSave: false, checkPage: false, valid: { ...frameProps.valid, 0: valid } });
-                if (valid) {
+                if (frameProps.page === 2 && !frameProps.valid[1]) {
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_person_selected)}));
+                }
+                else if (valid) {
                     setPageSelected(frameProps.page);
                 }
                 if (valid && frameProps.executeSave) {
@@ -274,14 +283,16 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('status', data?.domainvalue || '');
     }
 
-    // const filterDataSource = () => {
-    //     return row !== null ? dictToArrayKV(dataSource) : filterPipe(dictToArrayKV(dataSource), 'key', 'EXTERNAL');
-    // }
+    const filterDataSource = () => {
+        return row !== null ? dictToArrayKV(dataSource) : filterPipe(dictToArrayKV(dataSource), 'key', 'INTERNAL', '!');
+    }
 
     const onChangeSource = (data: Dictionary) => {
+        setValue('message', getValues('message').replace(new RegExp(/{{field[0-9]+}}/, 'g'), '{{???}}'))
         setValue('source', data?.key || '');
         setValue('sourcechanged', true);
         setFrameProps({ ...frameProps, valid: { ...frameProps.valid, 1: false } });
+        dispatch(resetCollectionPaginatedAux())
     }
 
     const filterDataCampaignType = () => {
@@ -539,7 +550,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             valueDefault={getValues('source')}
                             onChange={onChangeSource}
                             error={errors?.source?.message}
-                            data={dictToArrayKV(dataSource)}
+                            data={filterDataSource()}
                             optionDesc="value"
                             optionValue="key"
                         />

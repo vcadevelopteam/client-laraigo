@@ -118,14 +118,12 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
     const multiData = useSelector(state => state.main.multiData);
     const [dateToClose, setDateToClose] = useState<Date | null>(null)
     const data14 = React.useRef<Dictionary[] | null>(null)
-
-    // const refreshToken = React.useRef<number>(-1)
     const [refreshToken, setRefreshToken] = useState(-1)
-
     const dictAutoClose = useSelector(state => state.login.validateToken.user?.properties?.auto_close);
+    const dictAutoCloseHolding = useSelector(state => state.login.validateToken.user?.properties?.auto_close_holding);
+    const originLabel = useSelector(state => state.login.validateToken.user?.properties?.origin_label);
     const secondsToAnwserCall = useSelector(state => state.login.validateToken.user?.properties?.seconds_to_answer_call);
     const statusCall = useSelector(state => state.voximplant?.statusCall);
-    const dictAutoCloseHolding = useSelector(state => state.login.validateToken.user?.properties?.auto_close_holding);
     const waitingcustomermessage = useSelector(state => state.login.validateToken.user?.properties?.waiting_customer_message);
     const callVoxiTmp = useSelector(state => state.voximplant.call);
     const [callVoxi, setCallVoxi] = useState<Call | null>(null);
@@ -245,13 +243,16 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [timeWaiting]);
 
-
+  
     return (
         <div
             className={clsx(classes.containerItemTicket, {
                 [classes.itemSelected]: (ticketSelected?.conversationid === conversationid)
             })}
-            onClick={() => setTicketSelected(item)}>
+            onClick={() => {
+                setTicketSelected(item);
+                // showvox()
+            }}>
             <Badge
                 overlap="circular"
                 anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
@@ -306,7 +307,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                             labelOnNegative={t(langKeys.ready_to_close)}
                         />
                     }
-                    {communicationchanneltype !== "VOXI" &&
+                    {(communicationchanneltype !== "VOXI" && originLabel) &&
                         <LabelGo
                             isTimer={false}
                             color={origin === "OUTBOUND" ? "#ffbf00" : "#0000ff"}

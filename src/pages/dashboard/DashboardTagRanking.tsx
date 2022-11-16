@@ -10,7 +10,7 @@ import { Range } from 'react-date-range';
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis, CartesianGrid } from "recharts";
-import { getCollectionAux, getMultiCollection, getMultiCollectionAux, resetMainAux, resetMultiMainAux } from "store/main/actions";
+import { cleanViewChange, getCollectionAux, getMultiCollection, getMultiCollectionAux, resetMainAux, resetMultiMainAux, setViewChange } from "store/main/actions";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import Tooltip from "@material-ui/core/Tooltip"
@@ -234,6 +234,14 @@ const DashboardTagRanking: FC = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mainResult])
+    
+    useEffect(() => {
+        dispatch(setViewChange("tagranking"))
+        return () => {
+            dispatch(cleanViewChange());
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
     useEffect(() => {
         dispatch(getMultiCollection([
             getValuesFromDomain("GRUPOS"),

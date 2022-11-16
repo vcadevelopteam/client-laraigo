@@ -161,7 +161,7 @@ export const uploadFileSuccess = (state: IState, action: IAction): IState => {
             url: action.payload.url,
             height: action.payload.height,
             width: action.payload.width,
-            filename: action.payload.filename,
+            name: action.payload.name,
             thumbnail: action.payload.thumbnail,
             loading: false,
             code: undefined,
@@ -554,7 +554,15 @@ export const setMemoryTable = (state: IState, action: IAction): IState => ({
         }
     },
 });
+export const setViewChange = (state: IState, action: IAction): IState => ({
+    ...state,
+    viewChange: action.payload,
+});
 
+export const cleanViewChange = (state: IState): IState => ({
+    ...state,
+    viewChange: "",
+});
 export const cleanMemoryTable = (state: IState): IState => ({
     ...state,
     memoryTable: initialState.memoryTable,

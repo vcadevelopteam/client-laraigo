@@ -513,7 +513,7 @@ export const FieldEditAdvanced: React.FC<InputProps> = ({ label, className, disa
                 >
                 </button>}
             </div>}
-            <InputBase
+            <TextField
                 {...fregister}
                 color="primary"
                 fullWidth

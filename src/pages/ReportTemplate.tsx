@@ -12,7 +12,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { execute, getCollectionAux } from 'store/main/actions';
+import { cleanViewChange, execute, getCollectionAux, setViewChange } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import { IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
@@ -387,6 +387,14 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
 
     const dataStatus = multiDataAux.data?.[0] && multiDataAux.data?.[0].success ? multiDataAux.data?.[0].data : [];
     const dataTables = multiDataAux.data?.[1] && multiDataAux.data?.[1].success ? multiDataAux.data?.[1].data : [];
+
+    useEffect(() => {
+        dispatch(setViewChange("create_custom_report"))
+        return () => {
+            dispatch(cleanViewChange());
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     useEffect(() => {
         if (!mainAuxRes.error && !mainAuxRes.loading && mainAuxRes.key === "UFN_REPORT_PERSONALIZED_COLUMNS_SEL") {

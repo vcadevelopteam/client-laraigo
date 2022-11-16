@@ -122,6 +122,7 @@ const useStyles = makeStyles((theme) => ({
         gridGap: theme.spacing(1),
         display: 'grid',
         gridAutoFlow: 'column',
+        alignItems: 'center',
     },
     containerHeader: {
         display: 'block',

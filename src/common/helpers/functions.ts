@@ -1,3 +1,4 @@
+/* eslint-disable no-eval */
 /* eslint-disable no-useless-escape */
 import { Dictionary } from "@types";
 // import * as XLSX from 'xlsx';
@@ -45,1306 +46,1306 @@ export const dataMonths = [
 
 export const dataActivities = [
     {
-        "description": "AGREES",
+        "description": "agrees",
         "value": "1267092843327003"
     },
     {
-        "description": "ATTENDS",
+        "description": "attends",
         "value": "668012816568345"
     },
     {
-        "description": "BIKES",
+        "description": "bikes",
         "value": "642337999135827"
     },
     {
-        "description": "BOXES",
+        "description": "boxes",
         "value": "681781771858116"
     },
     {
-        "description": "CALLS",
+        "description": "calls",
         "value": "1226135157422772"
     },
     {
-        "description": "CELEBRATES",
+        "description": "celebrates",
         "value": "742120442490915"
     },
     {
-        "description": "CLIMBS",
+        "description": "climbs",
         "value": "681782675191359"
     },
     {
-        "description": "CONTACTS",
+        "description": "contacts",
         "value": "1294635240572763"
     },
     {
-        "description": "DANCES",
+        "description": "dances",
         "value": "701721669864126"
     },
     {
-        "description": "DISAGREES",
+        "description": "disagrees",
         "value": "1270648612971426"
     },
     {
-        "description": "DRINKS",
+        "description": "drinks",
         "value": "383634741672822"
     },
     {
-        "description": "EATS",
+        "description": "eats",
         "value": "383634705006159"
     },
     {
-        "description": "EXERCISES",
+        "description": "exercises",
         "value": "678359018867058"
     },
     {
-        "description": "FAKE_EXERCISING_TYPE",
+        "description": "fake_exercising_type",
         "value": "718343998201893"
     },
     {
-        "description": "FEELS",
+        "description": "feels",
         "value": "383634835006146"
     },
     {
-        "description": "GETS",
+        "description": "gets",
         "value": "809472139089078"
     },
     {
-        "description": "GOES_TO",
+        "description": "goes_to",
         "value": "556187044417590"
     },
     {
-        "description": "GOLFS",
+        "description": "golfs",
         "value": "681783365191290"
     },
     {
-        "description": "HIKES",
+        "description": "hikes",
         "value": "680527725316854"
     },
     {
-        "description": "LISTENS",
+        "description": "listens",
         "value": "383634868339476"
     },
     {
-        "description": "LOOKS_FOR",
+        "description": "looks_for",
         "value": "601369976565963"
     },
     {
-        "description": "MAKES",
+        "description": "makes",
         "value": "809472309089061"
     },
     {
-        "description": "MEETS",
+        "description": "meets",
         "value": "809471075755851"
     },
     {
-        "description": "OTHER",
+        "description": "other",
         "value": "637142219655405"
     },
     {
-        "description": "PLAYS",
+        "description": "plays",
         "value": "520095228026772"
     },
     {
-        "description": "PRACTICES_YOGA",
+        "description": "practices_yoga",
         "value": "701743366528623"
     },
     {
-        "description": "PREPARES_TO_VOTE",
+        "description": "prepares_to_vote",
         "value": "1500689486634003"
     },
     {
-        "description": "RACES",
+        "description": "races",
         "value": "681783721857921"
     },
     {
-        "description": "RAFTS",
+        "description": "rafts",
         "value": "681784405191186"
     },
     {
-        "description": "READS",
+        "description": "reads",
         "value": "383635058339457"
     },
     {
-        "description": "REGISTERS_TO_VOTE",
+        "description": "registers_to_vote",
         "value": "1503898576313094"
     },
     {
-        "description": "REMEMBERS",
+        "description": "remembers",
         "value": "902228273146797"
     },
     {
-        "description": "RESPONDS_TO",
+        "description": "responds_to",
         "value": "1443817305654555"
     },
     {
-        "description": "RUNS",
+        "description": "runs",
         "value": "642340799135547"
     },
     {
-        "description": "SCUBA_DIVES",
+        "description": "scuba_dives",
         "value": "701743106528649"
     },
     {
-        "description": "SELECTS_VERB",
+        "description": "selects_verb",
         "value": "806115869424705"
     },
     {
-        "description": "SKATEBOARDS",
+        "description": "skateboards",
         "value": "701743266528633"
     },
     {
-        "description": "SKATES",
+        "description": "skates",
         "value": "681784615191165"
     },
     {
-        "description": "SKIS",
+        "description": "skis",
         "value": "681784731857820"
     },
     {
-        "description": "SKYDIVES",
+        "description": "skydives",
         "value": "681784815191145"
     },
     {
-        "description": "SNOWBOARDS",
+        "description": "snowboards",
         "value": "681785285191098"
     },
     {
-        "description": "STREAMS",
+        "description": "streams",
         "value": "1136670953035860"
     },
     {
-        "description": "SUPPORTS",
+        "description": "supports",
         "value": "721170054585954"
     },
     {
-        "description": "SURFS",
+        "description": "surfs",
         "value": "681785361857757"
     },
     {
-        "description": "SWIMS",
+        "description": "swims",
         "value": "681785451857748"
     },
     {
-        "description": "THINKS_ABOUT",
+        "description": "thinks_about",
         "value": "809473052422320"
     },
     {
-        "description": "TRAVELS",
+        "description": "travels",
         "value": "580961725273455"
     },
     {
-        "description": "VOTES",
+        "description": "votes",
         "value": "532534113449550"
     },
     {
-        "description": "WALKS",
+        "description": "walks",
         "value": "681794311856862"
     },
     {
-        "description": "WATCHES",
+        "description": "watches",
         "value": "383634671672829"
     },
     {
-        "description": "WEIGHT_TRAINS",
+        "description": "weight_trains",
         "value": "701743316528628"
     },
     {
-        "description": "WRITES_A_NOVEL_ABOUT",
+        "description": "writes_a_novel_about",
         "value": "906305289405762"
     }
 ];
 
 export const dataFeelings = [
     {
-        "description": "ACCOMPLISHED",
+        "description": "accomplished",
         "value": "136050896551329"
     },
     {
-        "description": "ADVENTUROUS",
+        "description": "adventurous",
         "value": "224113357712800"
     },
     {
-        "description": "AFRAID",
+        "description": "afraid",
         "value": "477377185634506"
     },
     {
-        "description": "AGGRAVATED",
+        "description": "aggravated",
         "value": "496880480349772"
     },
     {
-        "description": "ALIVE",
+        "description": "alive",
         "value": "293001494136243"
     },
     {
-        "description": "ALONE",
+        "description": "alone",
         "value": "467368809976558"
     },
     {
-        "description": "AMAZED",
+        "description": "amazed",
         "value": "480134215368252"
     },
     {
-        "description": "AMAZING",
+        "description": "amazing",
         "value": "387919524627259"
     },
     {
-        "description": "AMUSED",
+        "description": "amused",
         "value": "134212056751013"
     },
     {
-        "description": "ANGRY",
+        "description": "angry",
         "value": "474440915941169"
     },
     {
-        "description": "ANNOYED",
+        "description": "annoyed",
         "value": "297656947028236"
     },
     {
-        "description": "ANXIOUS",
+        "description": "anxious",
         "value": "383436105075371"
     },
     {
-        "description": "APPRECIATED",
+        "description": "appreciated",
         "value": "306190182814450"
     },
     {
-        "description": "ASHAMED",
+        "description": "ashamed",
         "value": "318310054951137"
     },
     {
-        "description": "ASLEEP",
+        "description": "asleep",
         "value": "303442589773009"
     },
     {
-        "description": "AWAKE",
+        "description": "awake",
         "value": "583994558322574"
     },
     {
-        "description": "AWESOME",
+        "description": "awesome",
         "value": "212888755520954"
     },
     {
-        "description": "AWFUL",
+        "description": "awful",
         "value": "188581634613319"
     },
     {
-        "description": "AWKWARD",
+        "description": "awkward",
         "value": "177928135686600"
     },
     {
-        "description": "BAD",
+        "description": "bad",
         "value": "146684115480015"
     },
     {
-        "description": "BEAUTIFUL",
+        "description": "beautiful",
         "value": "112706382231213"
     },
     {
-        "description": "BETRAYED",
+        "description": "betrayed",
         "value": "404280269648178"
     },
     {
-        "description": "BETTER",
+        "description": "better",
         "value": "182865315188048"
     },
     {
-        "description": "BITTER",
+        "description": "bitter",
         "value": "446022422113486"
     },
     {
-        "description": "BLAH",
+        "description": "blah",
         "value": "140035382814582"
     },
     {
-        "description": "BLESSED",
+        "description": "blessed",
         "value": "525497104142297"
     },
     {
-        "description": "BLISSFUL",
+        "description": "blissful",
         "value": "387086391386101"
     },
     {
-        "description": "BLUE",
+        "description": "blue",
         "value": "419290478143195"
     },
     {
-        "description": "BORED",
+        "description": "bored",
         "value": "319023651545197"
     },
     {
-        "description": "BRAVE",
+        "description": "brave",
         "value": "458789517502771"
     },
     {
-        "description": "BROKE",
+        "description": "broke",
         "value": "175661129243188"
     },
     {
-        "description": "BROKEN",
+        "description": "broken",
         "value": "523276417697246"
     },
     {
-        "description": "BUMMED",
+        "description": "bummed",
         "value": "1378774059036900"
     },
     {
-        "description": "BUSY",
+        "description": "busy",
         "value": "542241122475897"
     },
     {
-        "description": "BUTTERFLIES",
+        "description": "butterflies",
         "value": "323850287719041"
     },
     {
-        "description": "CALM",
+        "description": "calm",
         "value": "398469726900244"
     },
     {
-        "description": "CHALLENGED",
+        "description": "challenged",
         "value": "315111361928320"
     },
     {
-        "description": "CHEATED",
+        "description": "cheated",
         "value": "572770509406697"
     },
     {
-        "description": "CHILL",
+        "description": "chill",
         "value": "435107453233854"
     },
     {
-        "description": "CLEAN",
+        "description": "clean",
         "value": "448222258560574"
     },
     {
-        "description": "COLD",
+        "description": "cold",
         "value": "474696702568524"
     },
     {
-        "description": "COMFORTABLE",
+        "description": "comfortable",
         "value": "310743825703427"
     },
     {
-        "description": "COMPLETE",
+        "description": "complete",
         "value": "185781948291090"
     },
     {
-        "description": "CONCERNED",
+        "description": "concerned",
         "value": "763383973675043"
     },
     {
-        "description": "CONFIDENT",
+        "description": "confident",
         "value": "304503342999403"
     },
     {
-        "description": "CONFLICTED",
+        "description": "conflicted",
         "value": "1415854281982190"
     },
     {
-        "description": "CONFUSED",
+        "description": "confused",
         "value": "454085554651356"
     },
     {
-        "description": "CONNECTED",
+        "description": "connected",
         "value": "254652897997221"
     },
     {
-        "description": "CONTENT",
+        "description": "content",
         "value": "175500129263221"
     },
     {
-        "description": "COOL",
+        "description": "cool",
         "value": "522810741064609"
     },
     {
-        "description": "COZY",
+        "description": "cozy",
         "value": "677416365623414"
     },
     {
-        "description": "CRAFTY",
+        "description": "crafty",
         "value": "185043488351934"
     },
     {
-        "description": "CRAPPY",
+        "description": "crappy",
         "value": "448720711855088"
     },
     {
-        "description": "CRAZY",
+        "description": "crazy",
         "value": "261120550681093"
     },
     {
-        "description": "CREATIVE",
+        "description": "creative",
         "value": "723514731011973"
     },
     {
-        "description": "CURIOUS",
+        "description": "curious",
         "value": "439395256134907"
     },
     {
-        "description": "CUTE",
+        "description": "cute",
         "value": "1423895511173360"
     },
     {
-        "description": "DEEP",
+        "description": "deep",
         "value": "232156420251730"
     },
     {
-        "description": "DEFEATED",
+        "description": "defeated",
         "value": "173049629485438"
     },
     {
-        "description": "DELIGHTED",
+        "description": "delighted",
         "value": "241047402726961"
     },
     {
-        "description": "DEPRESSED",
+        "description": "depressed",
         "value": "304415886341920"
     },
     {
-        "description": "DESPERATE",
+        "description": "desperate",
         "value": "495987653841807"
     },
     {
-        "description": "DETERMINED",
+        "description": "determined",
         "value": "481524978563580"
     },
     {
-        "description": "DEVASTATED",
+        "description": "devastated",
         "value": "1436894813190430"
     },
     {
-        "description": "DIFFERENT",
+        "description": "different",
         "value": "362967447132618"
     },
     {
-        "description": "DIRTY",
+        "description": "dirty",
         "value": "176346375845361"
     },
     {
-        "description": "DISAPPOINTED",
+        "description": "disappointed",
         "value": "452141451511412"
     },
     {
-        "description": "DISCOURAGED",
+        "description": "discouraged",
         "value": "312593595513522"
     },
     {
-        "description": "DISGUSTED",
+        "description": "disgusted",
         "value": "196306397222496"
     },
     {
-        "description": "DIZZY",
+        "description": "dizzy",
         "value": "454203404634531"
     },
     {
-        "description": "DONE",
+        "description": "done",
         "value": "1425570984404220"
     },
     {
-        "description": "DOWN",
+        "description": "down",
         "value": "530630090295653"
     },
     {
-        "description": "DRAINED",
+        "description": "drained",
         "value": "103045573200429"
     },
     {
-        "description": "DRUNK",
+        "description": "drunk",
         "value": "523630957654812"
     },
     {
-        "description": "DUMB",
+        "description": "dumb",
         "value": "456698301033363"
     },
     {
-        "description": "ECSTATIC",
+        "description": "ecstatic",
         "value": "440061956059003"
     },
     {
-        "description": "EMBARRASSED",
+        "description": "embarrassed",
         "value": "141310729353005"
     },
     {
-        "description": "EMOTIONAL",
+        "description": "emotional",
         "value": "397384367005610"
     },
     {
-        "description": "EMPOWERED",
+        "description": "empowered",
         "value": "461450543913513"
     },
     {
-        "description": "ENERGIZED",
+        "description": "energized",
         "value": "384499584968015"
     },
     {
-        "description": "ENRAGED",
+        "description": "enraged",
         "value": "447161205364401"
     },
     {
-        "description": "ENTERTAINED",
+        "description": "entertained",
         "value": "213741785474768"
     },
     {
-        "description": "EVIL",
+        "description": "evil",
         "value": "424719750948543"
     },
     {
-        "description": "EXCITED",
+        "description": "excited",
         "value": "308167675961412"
     },
     {
-        "description": "EXHAUSTED",
+        "description": "exhausted",
         "value": "175848009223562"
     },
     {
-        "description": "FABULOUS",
+        "description": "fabulous",
         "value": "225844924256849"
     },
     {
-        "description": "FANTASTIC",
+        "description": "fantastic",
         "value": "380040505422122"
     },
     {
-        "description": "FAT",
+        "description": "fat",
         "value": "518208571552601"
     },
     {
-        "description": "FED_UP",
+        "description": "fed_up",
         "value": "657281157637033"
     },
     {
-        "description": "FESTIVE",
+        "description": "festive",
         "value": "460758320708708"
     },
     {
-        "description": "FINE",
+        "description": "fine",
         "value": "503105606387726"
     },
     {
-        "description": "FLIRTY",
+        "description": "flirty",
         "value": "336850836424731"
     },
     {
-        "description": "FOCUSED",
+        "description": "focused",
         "value": "565795223489339"
     },
     {
-        "description": "FORTUNATE",
+        "description": "fortunate",
         "value": "260039780790007"
     },
     {
-        "description": "FREE",
+        "description": "free",
         "value": "402497769831045"
     },
     {
-        "description": "FREEZING",
+        "description": "freezing",
         "value": "1422663388031100"
     },
     {
-        "description": "FRESH",
+        "description": "fresh",
         "value": "380152055410929"
     },
     {
-        "description": "FROZEN",
+        "description": "frozen",
         "value": "545125512294980"
     },
     {
-        "description": "FRUSTRATED",
+        "description": "frustrated",
         "value": "134525380036694"
     },
     {
-        "description": "FULL",
+        "description": "full",
         "value": "221700014640844"
     },
     {
-        "description": "FUNKY",
+        "description": "funky",
         "value": "440473466019047"
     },
     {
-        "description": "FUNNY",
+        "description": "funny",
         "value": "481480165224794"
     },
     {
-        "description": "FURIOUS",
+        "description": "furious",
         "value": "680290595328899"
     },
     {
-        "description": "GENEROUS",
+        "description": "generous",
         "value": "479384852111869"
     },
     {
-        "description": "GIDDY",
+        "description": "giddy",
         "value": "235901389908205"
     },
     {
-        "description": "GLAD",
+        "description": "glad",
         "value": "405846839495020"
     },
     {
-        "description": "GOOD",
+        "description": "good",
         "value": "102834939889560"
     },
     {
-        "description": "GOOFY",
+        "description": "goofy",
         "value": "222141467963402"
     },
     {
-        "description": "GRATEFUL",
+        "description": "grateful",
         "value": "118365354995398"
     },
     {
-        "description": "GREAT",
+        "description": "great",
         "value": "478653915517976"
     },
     {
-        "description": "GROSS",
+        "description": "gross",
         "value": "499965416702234"
     },
     {
-        "description": "GRUMPY",
+        "description": "grumpy",
         "value": "234279653398171"
     },
     {
-        "description": "GUILTY",
+        "description": "guilty",
         "value": "137611796392379"
     },
     {
-        "description": "HAPPY",
+        "description": "happy",
         "value": "528297480516636"
     },
     {
-        "description": "HEALTHY",
+        "description": "healthy",
         "value": "121929377969929"
     },
     {
-        "description": "HEARTBROKEN",
+        "description": "heartbroken",
         "value": "173736256107087"
     },
     {
-        "description": "HELPLESS",
+        "description": "helpless",
         "value": "524624334228920"
     },
     {
-        "description": "HOMESICK",
+        "description": "homesick",
         "value": "379102322179939"
     },
     {
-        "description": "HONORED",
+        "description": "honored",
         "value": "393785000701594"
     },
     {
-        "description": "HOPEFUL",
+        "description": "hopeful",
         "value": "125401434308511"
     },
     {
-        "description": "HOPELESS",
+        "description": "hopeless",
         "value": "296496940471115"
     },
     {
-        "description": "HORRIBLE",
+        "description": "horrible",
         "value": "572307689451923"
     },
     {
-        "description": "HOT",
+        "description": "hot",
         "value": "481464001906476"
     },
     {
-        "description": "HUMAN",
+        "description": "human",
         "value": "464539273604104"
     },
     {
-        "description": "HUNGOVER",
+        "description": "hungover",
         "value": "380553855372818"
     },
     {
-        "description": "HUNGRY",
+        "description": "hungry",
         "value": "182008128606193"
     },
     {
-        "description": "HURT",
+        "description": "hurt",
         "value": "519942028024389"
     },
     {
-        "description": "HYPER",
+        "description": "hyper",
         "value": "246661122137353"
     },
     {
-        "description": "IGNORED",
+        "description": "ignored",
         "value": "102806669892467"
     },
     {
-        "description": "ILL",
+        "description": "ill",
         "value": "1437827213104290"
     },
     {
-        "description": "IMPATIENT",
+        "description": "impatient",
         "value": "601002259913609"
     },
     {
-        "description": "IMPORTANT",
+        "description": "important",
         "value": "231313840334791"
     },
     {
-        "description": "IMPRESSED",
+        "description": "impressed",
         "value": "492615107512006"
     },
     {
-        "description": "IN_LOVE",
+        "description": "in_love",
         "value": "494709810570459"
     },
     {
-        "description": "INADEQUATE",
+        "description": "inadequate",
         "value": "455437077825793"
     },
     {
-        "description": "INCOMPLETE",
+        "description": "incomplete",
         "value": "460019124035757"
     },
     {
-        "description": "INSECURE",
+        "description": "insecure",
         "value": "316682001780104"
     },
     {
-        "description": "INSPIRED",
+        "description": "inspired",
         "value": "539354326075059"
     },
     {
-        "description": "INSULTED",
+        "description": "insulted",
         "value": "521323164558116"
     },
     {
-        "description": "INVISIBLE",
+        "description": "invisible",
         "value": "140842299401114"
     },
     {
-        "description": "IRRITATED",
+        "description": "irritated",
         "value": "111894762331662"
     },
     {
-        "description": "JEALOUS",
+        "description": "jealous",
         "value": "310567035720031"
     },
     {
-        "description": "JOLLY",
+        "description": "jolly",
         "value": "590889874293829"
     },
     {
-        "description": "JOYFUL",
+        "description": "joyful",
         "value": "477906418922117"
     },
     {
-        "description": "KIND",
+        "description": "kind",
         "value": "121854771312324"
     },
     {
-        "description": "LAME",
+        "description": "lame",
         "value": "128593617299805"
     },
     {
-        "description": "LAZY",
+        "description": "lazy",
         "value": "482688958436815"
     },
     {
-        "description": "LIGHT",
+        "description": "light",
         "value": "473714049334527"
     },
     {
-        "description": "LONELY",
+        "description": "lonely",
         "value": "230944533704180"
     },
     {
-        "description": "LOST",
+        "description": "lost",
         "value": "142029502613380"
     },
     {
-        "description": "LOUSY",
+        "description": "lousy",
         "value": "110822459087083"
     },
     {
-        "description": "LOVED",
+        "description": "loved",
         "value": "123103951186111"
     },
     {
-        "description": "LOVELY",
+        "description": "lovely",
         "value": "446998542016581"
     },
     {
-        "description": "LOW",
+        "description": "low",
         "value": "237303323067212"
     },
     {
-        "description": "LUCKY",
+        "description": "lucky",
         "value": "385225238232619"
     },
     {
-        "description": "MAD",
+        "description": "mad",
         "value": "313728008732470"
     },
     {
-        "description": "MEH",
+        "description": "meh",
         "value": "483614251682491"
     },
     {
-        "description": "MIGHTY",
+        "description": "mighty",
         "value": "568128836535281"
     },
     {
-        "description": "MISCHIEVOUS",
+        "description": "mischievous",
         "value": "264992546982295"
     },
     {
-        "description": "MISERABLE",
+        "description": "miserable",
         "value": "571661296183476"
     },
     {
-        "description": "MISSING",
+        "description": "missing",
         "value": "285090421614547"
     },
     {
-        "description": "MOTIVATED",
+        "description": "motivated",
         "value": "361889323906463"
     },
     {
-        "description": "NAKED",
+        "description": "naked",
         "value": "298451920275666"
     },
     {
-        "description": "NAUGHTY",
+        "description": "naughty",
         "value": "715784015098322"
     },
     {
-        "description": "NAUSEOUS",
+        "description": "nauseous",
         "value": "183806708425669"
     },
     {
-        "description": "NEEDED",
+        "description": "needed",
         "value": "424263620973748"
     },
     {
-        "description": "NEGLECTED",
+        "description": "neglected",
         "value": "300338820078019"
     },
     {
-        "description": "NERDY",
+        "description": "nerdy",
         "value": "1444736239087160"
     },
     {
-        "description": "NERVOUS",
+        "description": "nervous",
         "value": "427487540649756"
     },
     {
-        "description": "NICE",
+        "description": "nice",
         "value": "302627039854817"
     },
     {
-        "description": "NORMAL",
+        "description": "normal",
         "value": "517127961654365"
     },
     {
-        "description": "NOSTALGIC",
+        "description": "nostalgic",
         "value": "122644777898046"
     },
     {
-        "description": "NUMB",
+        "description": "numb",
         "value": "562921890391638"
     },
     {
-        "description": "OFFENDED",
+        "description": "offended",
         "value": "412837252120513"
     },
     {
-        "description": "OK",
+        "description": "ok",
         "value": "355798581182727"
     },
     {
-        "description": "OKAY",
+        "description": "okay",
         "value": "387278094708554"
     },
     {
-        "description": "OLD",
+        "description": "old",
         "value": "460679043988968"
     },
     {
-        "description": "OPTIMISTIC",
+        "description": "optimistic",
         "value": "336949906406031"
     },
     {
-        "description": "OVERWHELMED",
+        "description": "overwhelmed",
         "value": "558247830856788"
     },
     {
-        "description": "PAINED",
+        "description": "pained",
         "value": "398041520273122"
     },
     {
-        "description": "PEACEFUL",
+        "description": "peaceful",
         "value": "112626832239338"
     },
     {
-        "description": "PERFECT",
+        "description": "perfect",
         "value": "570387776308771"
     },
     {
-        "description": "PERPLEXED",
+        "description": "perplexed",
         "value": "579070352142516"
     },
     {
-        "description": "PISSED",
+        "description": "pissed",
         "value": "451402584920300"
     },
     {
-        "description": "PISSED_OFF",
+        "description": "pissed_off",
         "value": "111792392342530"
     },
     {
-        "description": "POSITIVE",
+        "description": "positive",
         "value": "479820725401749"
     },
     {
-        "description": "PRETTY",
+        "description": "pretty",
         "value": "239721439491727"
     },
     {
-        "description": "PRIDE",
+        "description": "pride",
         "value": "424758317631906"
     },
     {
-        "description": "PRIVILEGED",
+        "description": "privileged",
         "value": "574719705877314"
     },
     {
-        "description": "PRODUCTIVE",
+        "description": "productive",
         "value": "419908098077570"
     },
     {
-        "description": "PROFESSIONAL",
+        "description": "professional",
         "value": "508746172492084"
     },
     {
-        "description": "PROUD",
+        "description": "proud",
         "value": "379355252154431"
     },
     {
-        "description": "PUMPED",
+        "description": "pumped",
         "value": "489032947800743"
     },
     {
-        "description": "PUZZLED",
+        "description": "puzzled",
         "value": "236162099884421"
     },
     {
-        "description": "QUALIFIED",
+        "description": "qualified",
         "value": "418307201573307"
     },
     {
-        "description": "READY",
+        "description": "ready",
         "value": "119368284895535"
     },
     {
-        "description": "REFRESHED",
+        "description": "refreshed",
         "value": "223179361150272"
     },
     {
-        "description": "REGRET",
+        "description": "regret",
         "value": "134375570053258"
     },
     {
-        "description": "RELAXED",
+        "description": "relaxed",
         "value": "257237487735977"
     },
     {
-        "description": "RELIEVED",
+        "description": "relieved",
         "value": "144326115717748"
     },
     {
-        "description": "RENEWED",
+        "description": "renewed",
         "value": "262215447237902"
     },
     {
-        "description": "RESTED",
+        "description": "rested",
         "value": "446177835443534"
     },
     {
-        "description": "RESTLESS",
+        "description": "restless",
         "value": "115150618652191"
     },
     {
-        "description": "RICH",
+        "description": "rich",
         "value": "529731510371705"
     },
     {
-        "description": "ROMANTIC",
+        "description": "romantic",
         "value": "426598624132585"
     },
     {
-        "description": "ROUGH",
+        "description": "rough",
         "value": "285541821549499"
     },
     {
-        "description": "SAD",
+        "description": "sad",
         "value": "175710752574432"
     },
     {
-        "description": "SAFE",
+        "description": "safe",
         "value": "501513576535666"
     },
     {
-        "description": "SARCASTIC",
+        "description": "sarcastic",
         "value": "430043350410361"
     },
     {
-        "description": "SATISFIED",
+        "description": "satisfied",
         "value": "235625646568477"
     },
     {
-        "description": "SCARED",
+        "description": "scared",
         "value": "312496145517583"
     },
     {
-        "description": "SECURE",
+        "description": "secure",
         "value": "394357883978959"
     },
     {
-        "description": "SEXY",
+        "description": "sexy",
         "value": "377645925661276"
     },
     {
-        "description": "SHAME",
+        "description": "shame",
         "value": "173748716082652"
     },
     {
-        "description": "SHATTERED",
+        "description": "shattered",
         "value": "572226156127232"
     },
     {
-        "description": "SHOCKED",
+        "description": "shocked",
         "value": "321467047972614"
     },
     {
-        "description": "SHY",
+        "description": "shy",
         "value": "364338266994675"
     },
     {
-        "description": "SICK",
+        "description": "sick",
         "value": "476550682397236"
     },
     {
-        "description": "SILLY",
+        "description": "silly",
         "value": "383853628365632"
     },
     {
-        "description": "SLEEPY",
+        "description": "sleepy",
         "value": "447011778694338"
     },
     {
-        "description": "SMALL",
+        "description": "small",
         "value": "202833099854068"
     },
     {
-        "description": "SMART",
+        "description": "smart",
         "value": "273544029435160"
     },
     {
-        "description": "SNEAKY",
+        "description": "sneaky",
         "value": "1417990221767680"
     },
     {
-        "description": "SORE",
+        "description": "sore",
         "value": "505758512791686"
     },
     {
-        "description": "SORRY",
+        "description": "sorry",
         "value": "134199530067829"
     },
     {
-        "description": "SPECIAL",
+        "description": "special",
         "value": "458612287529287"
     },
     {
-        "description": "SPOILED",
+        "description": "spoiled",
         "value": "555806244488510"
     },
     {
-        "description": "SPOOKY",
+        "description": "spooky",
         "value": "178149542386140"
     },
     {
-        "description": "STOKED",
+        "description": "stoked",
         "value": "228847670625498"
     },
     {
-        "description": "STRANGE",
+        "description": "strange",
         "value": "314827511960085"
     },
     {
-        "description": "STRESSED",
+        "description": "stressed",
         "value": "317729321673351"
     },
     {
-        "description": "STRONG",
+        "description": "strong",
         "value": "379034115519395"
     },
     {
-        "description": "STUCK",
+        "description": "stuck",
         "value": "361696270593406"
     },
     {
-        "description": "STUFFED",
+        "description": "stuffed",
         "value": "362434367185234"
     },
     {
-        "description": "STUPID",
+        "description": "stupid",
         "value": "108452055991606"
     },
     {
-        "description": "SUPER",
+        "description": "super",
         "value": "490506127661127"
     },
     {
-        "description": "SURPRISED",
+        "description": "surprised",
         "value": "123408067820719"
     },
     {
-        "description": "TERRIBLE",
+        "description": "terrible",
         "value": "302564446527376"
     },
     {
-        "description": "THANKFUL",
+        "description": "thankful",
         "value": "443609379021593"
     },
     {
-        "description": "THIRSTY",
+        "description": "thirsty",
         "value": "336824293085938"
     },
     {
-        "description": "THOUGHTFUL",
+        "description": "thoughtful",
         "value": "1376863072561420"
     },
     {
-        "description": "THREATENED",
+        "description": "threatened",
         "value": "459581634101438"
     },
     {
-        "description": "TIPSY",
+        "description": "tipsy",
         "value": "432506746872402"
     },
     {
-        "description": "TIRED",
+        "description": "tired",
         "value": "457215007658974"
     },
     {
-        "description": "TRAPPED",
+        "description": "trapped",
         "value": "203005859835975"
     },
     {
-        "description": "UGLY",
+        "description": "ugly",
         "value": "182045508666558"
     },
     {
-        "description": "UNAPPRECIATED",
+        "description": "unappreciated",
         "value": "528783467139337"
     },
     {
-        "description": "UNCOMFORTABLE",
+        "description": "uncomfortable",
         "value": "510737378958941"
     },
     {
-        "description": "UNDECIDED",
+        "description": "undecided",
         "value": "705949909416373"
     },
     {
-        "description": "UNEASY",
+        "description": "uneasy",
         "value": "129223110569301"
     },
     {
-        "description": "UNHAPPY",
+        "description": "unhappy",
         "value": "141533259331712"
     },
     {
-        "description": "UNIMPORTANT",
+        "description": "unimportant",
         "value": "213398135463020"
     },
     {
-        "description": "UNLOVED",
+        "description": "unloved",
         "value": "322898331158888"
     },
     {
-        "description": "UNSURE",
+        "description": "unsure",
         "value": "199894526861510"
     },
     {
-        "description": "UNWANTED",
+        "description": "unwanted",
         "value": "102812219891392"
     },
     {
-        "description": "UNWELL",
+        "description": "unwell",
         "value": "122931521203254"
     },
     {
-        "description": "UPSET",
+        "description": "upset",
         "value": "305456379574177"
     },
     {
-        "description": "USELESS",
+        "description": "useless",
         "value": "222075591260352"
     },
     {
-        "description": "WANTED",
+        "description": "wanted",
         "value": "343592532414827"
     },
     {
-        "description": "WARM",
+        "description": "warm",
         "value": "122332771262500"
     },
     {
-        "description": "WEAK",
+        "description": "weak",
         "value": "472717649445600"
     },
     {
-        "description": "WEIRD",
+        "description": "weird",
         "value": "305794379521525"
     },
     {
-        "description": "WELCOME",
+        "description": "welcome",
         "value": "133724320118050"
     },
     {
-        "description": "WELCOMED",
+        "description": "welcomed",
         "value": "441356962596309"
     },
     {
-        "description": "WELL",
+        "description": "well",
         "value": "133598250129553"
     },
     {
-        "description": "WET",
+        "description": "wet",
         "value": "591501134250204"
     },
     {
-        "description": "WHOLE",
+        "description": "whole",
         "value": "508892355811724"
     },
     {
-        "description": "WONDERFUL",
+        "description": "wonderful",
         "value": "502842009736003"
     },
     {
-        "description": "WORRIED",
+        "description": "worried",
         "value": "169789739868247"
     },
     {
-        "description": "WORSE",
+        "description": "worse",
         "value": "310182259086056"
     },
     {
-        "description": "WORTHLESS",
+        "description": "worthless",
         "value": "398377870242717"
     },
     {
-        "description": "YOUNG",
+        "description": "young",
         "value": "123868331108076"
     },
     {
-        "description": "YUCKY",
+        "description": "yucky",
         "value": "304257933025750"
     }
 ];
@@ -1384,7 +1385,7 @@ export function validateNumbersEqualsConsecutive(text: string, limit: number) {
         if (/^\d+$/.test(text.charAt(i))) {
             canxx = 1;
             for (var j = i + 1; j < text.length; j++) {
-                if (text.charAt(i) == text.charAt(j)) {
+                if (text.charAt(i) === text.charAt(j)) {
                     canxx++;
                 }
             }
@@ -1502,7 +1503,7 @@ export function isJson(s: string): boolean {
 }
 
 export function extractVariables(text: string, array: string[] = []): string[] {
-    let rex = new RegExp(/{{[\w\s\u00C0-\u00FF]+?}}/, 'g');
+    let rex = new RegExp(/{{[\?\w\s\u00C0-\u00FF]+?}}/, 'g');
     return Array.from(new Set([...array, ...Array.from(text.matchAll(rex), (m: any[]) => m[0].replace(/[{]{2}/, '').replace(/[}]{2}/, ''))]));
 }
 

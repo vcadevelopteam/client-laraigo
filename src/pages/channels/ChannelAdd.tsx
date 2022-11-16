@@ -6,7 +6,7 @@ import { useHistory, useLocation } from "react-router";
 import paths from "common/constants/paths";
 import {
     VoiceColor,
-    AndroidColor, EmailColor, FacebookColor, FacebookMessengerColor, InstagramColor, IosColor, SmsColor, TelegramColor, TwitterColor, WebMessengerColor, WhatsappColor, YouTubeColor, LinkedInColor, TeamsColor, BloggerColor
+    AndroidColor, EmailColor, FacebookColor, FacebookMessengerColor, InstagramColor, IosColor, SmsColor, TelegramColor, TwitterColor, WebMessengerColor, WhatsappColor, /*TikTokColor,*/ YouTubeColor, LinkedInColor, TeamsColor, BloggerColor
 } from "icons";
 import { TemplateBreadcrumbs } from "components";
 
@@ -142,6 +142,11 @@ export const ChannelAdd: FC = () => {
             icon: c => <WhatsappColor className={c} />,
             label: t(langKeys.channel_whatsapp),
             onClick: () => { history.push(paths.CHANNELS_ADD_WHATSAPP.path, whatsAppData) },
+        },
+        {
+            icon: c => <WhatsappColor className={c} />,
+            label: t(langKeys.channel_whatsapponboarding),
+            onClick: () => { history.push(paths.CHANNELS_ADD_WHATSAPPONBOARDING.path, whatsAppData) },
         },
         {
             icon: c => <TelegramColor className={c} />,

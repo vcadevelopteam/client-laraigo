@@ -194,7 +194,7 @@ const PostCreator: FC = () => {
                         breadcrumbs={getArrayBread(t('postcreator_publish'), t(langKeys.postcreator_title))}
                         handleClick={handleSelectedString}
                     />
-                    <PostCreatorPublish />
+                    <PostCreatorPublish setViewSelected={setViewSelected} />
                 </div>
             </>
         )
@@ -206,7 +206,7 @@ const PostCreator: FC = () => {
                         breadcrumbs={getArrayBread(t('postcreator_story'), t(langKeys.postcreator_title))}
                         handleClick={handleSelectedString}
                     />
-                    <PostCreatorPublish />
+                    <PostCreatorPublish setViewSelected={setViewSelected} />
                 </div>
             </>
         )
@@ -218,7 +218,7 @@ const PostCreator: FC = () => {
                         breadcrumbs={getArrayBread(t('postcreator_calendar'), t(langKeys.postcreator_title))}
                         handleClick={handleSelectedString}
                     />
-                    <PostCreatorPublish />
+                    <PostCreatorPublish setViewSelected={setViewSelected} />
                 </div>
             </>
         )

@@ -10,9 +10,9 @@ import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { setDataUser, wsConnect } from "store/inbox/actions";
 import { voximplantConnect } from "store/voximplant/actions";
-import { getAccessToken } from 'common/helpers';
+import { getAccessToken, removeAuthorizationToken } from 'common/helpers';
 import { Redirect } from 'react-router-dom';
-import { logout, validateToken } from 'store/login/actions';
+import { validateToken } from 'store/login/actions';
 import { useDispatch } from 'react-redux';
 
 const Users = lazy(() => import('pages/Users'));
@@ -74,6 +74,7 @@ const ChannelAddYouTube = lazy(() => import('pages/channels/ChannelAddYouTube'))
 const ChannelAddLinkedIn = lazy(() => import('pages/channels/ChannelAddLinkedIn'));
 const ChannelAddTeams = lazy(() => import('pages/channels/ChannelAddTeams'));
 const ChannelAddBlogger = lazy(() => import('pages/channels/ChannelAddBlogger'));
+const ChannelAddWhatsAppOnboarding = lazy(() => import('pages/channels/ChannelAddWhatsAppOnboarding'));
 const ChannelEdit = lazy(() => import('pages/channels/ChannelEdit'));
 const SignUp = lazy(() => import('pages/signup/SignUp'));
 const BotDesigner = lazy(() => import('pages/BotDesigner'));
@@ -113,7 +114,6 @@ interface PrivateRouteProps extends Omit<RouteProps, "component"> {
 const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, ...rest }) => {
 	const resValidateToken = useSelector(state => state.login.validateToken);
 	const ignorePwdchangefirstloginValidation = useSelector(state => state.login.ignorePwdchangefirstloginValidation);
-
 	const applications = resValidateToken?.user?.menu;
 	const location = useLocation();
 
@@ -178,7 +178,7 @@ const RouterApp: FC = () => {
 	const dispatch = useDispatch();
 
 	useForcedDisconnection(useCallback(() => {
-		dispatch(logout());
+		removeAuthorizationToken()
 	}, [dispatch]));
 
 	return (
@@ -222,6 +222,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.CHANNELS_ADD_LINKEDIN.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddLinkedIn /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_TEAMS.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddTeams /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_BLOGGER.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddBlogger /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_WHATSAPPONBOARDING.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddWhatsAppOnboarding /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_EDIT.path} component={() => (<Layout mainClasses={classes.main}><ChannelEdit /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_EDIT_CHATWEB.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddChatWeb edit /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_EDIT_WHATSAPP.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddWhatsapp edit /></Layout>)} />

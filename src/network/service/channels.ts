@@ -1,11 +1,15 @@
 
 import { IRequestBody } from '@types';
-import { apiUrls } from '../../common/constants';
+import { apiUrls } from 'common/constants';
 import { APIManager } from '../manager';
 
 export function getPagelist(accessToken: String, appId: String) {
     const data = { accessToken: accessToken, appId: appId };
     return APIManager.post(apiUrls.GET_PAGELIST, { data }, true);
+}
+
+export function getPhoneList(request: any) {
+    return APIManager.post(apiUrls.GET_PHONELIST, { data: request }, true);
 }
 
 export function getPagelistSub(accessToken: String, appId: String) {
