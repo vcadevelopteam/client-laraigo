@@ -1,23 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import CloseIcon from '@material-ui/icons/Close';
 import React, { FC, useEffect, useState } from "react";
+import TableZyx from "components/fields/table-simple";
 
+import { AntTab, FieldSelect, DateRangePicker, GetIconColor } from 'components';
 import { Avatar, Button, Tabs } from "@material-ui/core";
+import { CalendarIcon } from "icons";
+import { Dictionary, IRequestBody } from "@types";
+import { getCollection, getMultiCollection, resetAllMain } from "store/main/actions";
+import { getDateCleaned } from "common/helpers/functions";
+import { getPostHistorySel, postHistoryIns } from "common/helpers/requestBodies";
 import { langKeys } from "lang/keys";
 import { makeStyles } from '@material-ui/core/styles';
+import { Range } from 'react-date-range';
+import { showBackdrop, showSnackbar } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import { useSelector } from 'hooks';
 import { useTranslation } from "react-i18next";
-import { AntTab,  FieldSelect, DateRangePicker, GetIconColor } from 'components';
-import { CalendarIcon } from "icons";
-import TableZyx from "components/fields/table-simple";
-import { Dictionary, IRequestBody } from "@types";
-import { Range } from 'react-date-range';
-import { getDateCleaned } from "common/helpers/functions";
-import { getCollection, getMultiCollection, resetAllMain } from "store/main/actions";
-import { getPostHistorySel, postHistoryIns } from "common/helpers/requestBodies";
-import CloseIcon from '@material-ui/icons/Close';
-import { showBackdrop, showSnackbar } from "store/popus/actions";
-
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -58,15 +57,10 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
     },
 }));
+
 const selectionKey = 'posthistoryid';
 const PostCreatorHistory: FC = () => {
     const { t } = useTranslation();
-
-    const dispatch = useDispatch();
-
-    const classes = useStyles();
-    const mainResult = useSelector(state => state.main.mainData);
-    const multiResult = useSelector(state => state.main.multiData);
 
     const [pageSelected, setPageSelected] = useState(0);
 
@@ -112,6 +106,7 @@ const initialRange = {
 
 const PublishedHistory: React.FC<{ dataChannel: any, publishType: string }> = ({ dataChannel, publishType }) => {
     const dispatch = useDispatch();
+
     const classes = useStyles();
 
     const mainResult = useSelector(state => state.main);
@@ -127,7 +122,7 @@ const PublishedHistory: React.FC<{ dataChannel: any, publishType: string }> = ({
         type: ""
     });
 
-    const fetchData = () => dispatch(getCollection(getPostHistorySel({type:filters.type, status: publishType, datestart: dateRangeCreateDate.startDate, dateend: dateRangeCreateDate.endDate})));
+    const fetchData = () => dispatch(getCollection(getPostHistorySel({ type: filters.type, status: publishType, datestart: dateRangeCreateDate.startDate, dateend: dateRangeCreateDate.endDate })));
 
     useEffect(() => {
         fetchData();
@@ -136,108 +131,111 @@ const PublishedHistory: React.FC<{ dataChannel: any, publishType: string }> = ({
             dispatch(resetAllMain());
         };
     }, []);
+
     useEffect(() => {
-        if(!mainResult.mainData.loading && !firstCall){
+        if (!mainResult.mainData.loading && !firstCall) {
             fetchData();
         }
     }, [filters]);
+
     useEffect(() => {
-        if(!mainResult.mainData.loading && !firstCall && !openDateRangeCreateDateModal){
+        if (!mainResult.mainData.loading && !firstCall && !openDateRangeCreateDateModal) {
             fetchData();
         }
     }, [openDateRangeCreateDateModal]);
 
     const columns = React.useMemo(() => [
-            {
-                Header: t(langKeys.title),
-                accessor: 'posthistoryid',
-                width: 200,
-                isComponent: true,
-                NoFilter: true,
-                Cell: (props: any) => {
-                    const { texttitle,communicationchanneldesc,medialink,communicationchanneltype } = props.cell.row.original;
-                    return (
-                    <div style={{display:"flex", gap: 5}}>
+        {
+            Header: t(langKeys.title),
+            accessor: 'posthistoryid',
+            width: 200,
+            isComponent: true,
+            NoFilter: true,
+            Cell: (props: any) => {
+                const { texttitle, communicationchanneldesc, medialink, communicationchanneltype } = props.cell.row.original;
+                return (
+                    <div style={{ display: "flex", gap: 5 }}>
                         <div>
                             {(!!medialink?.[0]?.thumbnail) ?
-                                <img width={50} height={50} src={medialink?.[0]?.thumbnail||""}></img>
+                                <img width={50} height={50} src={medialink?.[0]?.thumbnail || ""}></img>
                                 :
-                                <div style={{width:50, height:50,backgroundColor: "#c4c4c4"}}></div>
+                                <div style={{ width: 50, height: 50, backgroundColor: "#c4c4c4" }}></div>
                             }
-                            <div style={{position: "absolute", top: 35,left: 125}}>
-                                <Avatar variant="rounded" style={{width:25,height:25, backgroundColor: "white"}}><GetIconColor channelType={communicationchanneltype} /></Avatar>
+                            <div style={{ position: "absolute", top: 35, left: 125 }}>
+                                <Avatar variant="rounded" style={{ width: 25, height: 25, backgroundColor: "white" }}><GetIconColor channelType={communicationchanneltype} /></Avatar>
                             </div>
                         </div>
                         <div>
-                            <div style={{display:"flex", fontSize: "1.1em"}}>{texttitle}</div>
-                            <div style={{display:"flex", fontSize: "1em", gap:5}}><Avatar style={{width:20,height:20}}/>{communicationchanneldesc}</div>
+                            <div style={{ display: "flex", fontSize: "1.1em" }}>{texttitle}</div>
+                            <div style={{ display: "flex", fontSize: "1em", gap: 5 }}><Avatar style={{ width: 20, height: 20 }} />{communicationchanneldesc}</div>
                         </div>
                     </div>
-                )}
-            },
-            {
-                Header: t(langKeys.publicationdate),
-                accessor: 'publishdate',
-                width: "auto",
-                NoFilter: true,
-                Cell: (props: any) => {
-                    const { publishdate } = props.cell.row.original;
-                    return (
-                        <div style={{height: 31 }}>
-                            {new Date(publishdate).toDateString()}
-                        </div>)
-                }
-            },
-            {
-                Header: t(langKeys.scope),
-                accessor: 'reach',
-                width: "auto",
-                NoFilter: true,
-                Cell: (props: any) => {
-                    const { reach } = props.cell.row.original;
-                    return (
-                        <div style={{height: 45, textAlign: "center" }}>
-                            <div>
-                                {reach||0}
-                            </div>
-                            <div>
-                                {t(langKeys.peoplereached)}
-                            </div>
-                        </div>)
-                }
-            },
-            {
-                Header: t(langKeys.interaction_plural),
-                accessor: 'interactions',
-                width: "auto",
-                NoFilter: true,                
-                Cell: (props: any) => {
-                    const { interactions } = props.cell.row.original;
-                    return (
-                        <div style={{height: 31, textAlign: "center" }}>
-                            {interactions||0}
-                        </div>)
-                }
-            },
-            {
-                Header: t(langKeys.likesandreactions),
-                accessor: 'likesandreactions',
-                width: "auto",
-                NoFilter: true,
-                Cell: (props: any) => {
-                    const { reactions } = props.cell.row.original;
-                    return (
-                        <div style={{height: 45, textAlign: "center" }}>
-                            {Object.keys(reactions||{}).map((x)=>{
-                                return <div>{x.toLocaleUpperCase()}: {reactions[x]} </div>
-                            })}
-                            <div>
-                                {reactions}
-                            </div>
-                        </div>)
-                }
-            },
-        ],
+                )
+            }
+        },
+        {
+            Header: t(langKeys.publicationdate),
+            accessor: 'publishdate',
+            width: "auto",
+            NoFilter: true,
+            Cell: (props: any) => {
+                const { publishdate } = props.cell.row.original;
+                return (
+                    <div style={{ height: 31 }}>
+                        {new Date(publishdate).toDateString()}
+                    </div>)
+            }
+        },
+        {
+            Header: t(langKeys.scope),
+            accessor: 'reach',
+            width: "auto",
+            NoFilter: true,
+            Cell: (props: any) => {
+                const { reach } = props.cell.row.original;
+                return (
+                    <div style={{ height: 45, textAlign: "center" }}>
+                        <div>
+                            {reach || 0}
+                        </div>
+                        <div>
+                            {t(langKeys.peoplereached)}
+                        </div>
+                    </div>)
+            }
+        },
+        {
+            Header: t(langKeys.interaction_plural),
+            accessor: 'interactions',
+            width: "auto",
+            NoFilter: true,
+            Cell: (props: any) => {
+                const { interactions } = props.cell.row.original;
+                return (
+                    <div style={{ height: 31, textAlign: "center" }}>
+                        {interactions || 0}
+                    </div>)
+            }
+        },
+        {
+            Header: t(langKeys.likesandreactions),
+            accessor: 'likesandreactions',
+            width: "auto",
+            NoFilter: true,
+            Cell: (props: any) => {
+                const { reactions } = props.cell.row.original;
+                return (
+                    <div style={{ height: 45, textAlign: "center" }}>
+                        {Object.keys(reactions || {}).map((x) => {
+                            return <div>{x.toLocaleUpperCase()}: {reactions[x]} </div>
+                        })}
+                        <div>
+                            {reactions}
+                        </div>
+                    </div>)
+            }
+        },
+    ],
         []
     );
 
@@ -256,18 +254,19 @@ const PublishedHistory: React.FC<{ dataChannel: any, publishType: string }> = ({
             }
         }
     }, [multiResult, waitDelete])
-    
+
     const handleclose = () => {
-        const todelete = mainResult.mainData.data.filter(x=>Object.keys(selectedRows).includes(`${x[selectionKey]}`))||[]
+        const todelete = mainResult.mainData.data.filter(x => Object.keys(selectedRows).includes(`${x[selectionKey]}`)) || []
         let allRequestBody: IRequestBody[] = [];
         todelete.forEach(x => {
-            allRequestBody.push(postHistoryIns({...x, status: "DELETED", operation: "UPDATE"}))
+            allRequestBody.push(postHistoryIns({ ...x, status: "DELETED", operation: "UPDATE" }))
         });
         setWaitDelete(true);
         dispatch(getMultiCollection(allRequestBody))
     }
+
     return (
-        
+
         <div style={{ height: '100%', width: 'inherit' }}>
             <TableZyx
                 columns={columns}
@@ -277,25 +276,25 @@ const PublishedHistory: React.FC<{ dataChannel: any, publishType: string }> = ({
                 selectionKey={selectionKey}
                 setSelectedRows={setSelectedRows}
                 initialSelectedRows={selectedRows}
-                onClickRow={()=>{}}
+                onClickRow={() => { }}
                 cleanSelection={cleanSelected}
                 setCleanSelection={setCleanSelected}
                 register={false}
                 download={false}
                 loading={mainResult.mainData.loading}
                 ButtonsElement={() => (
-                    <div style={{display:"flex", width: "100%", justifyContent: "space-between", paddingTop: 10}}>
-                        <div style={{display:"flex", gap: 8}}>
+                    <div style={{ display: "flex", width: "100%", justifyContent: "space-between", paddingTop: 10 }}>
+                        <div style={{ display: "flex", gap: 8 }}>
                             <FieldSelect
-                                onChange={(value) => {setfilters({...filters, type: value?.value||""})}}
+                                onChange={(value) => { setfilters({ ...filters, type: value?.value || "" }) }}
                                 size="small"
                                 label={t(langKeys.posttype)}
                                 style={{ maxWidth: 300, minWidth: 200 }}
                                 variant="outlined"
                                 loading={false}
                                 data={[
-                                    {value: "POST"},
-                                    {value: "STORY"},
+                                    { value: "POST" },
+                                    { value: "STORY" },
                                 ]}
                                 optionValue="value"
                                 optionDesc="value"
@@ -304,7 +303,7 @@ const PublishedHistory: React.FC<{ dataChannel: any, publishType: string }> = ({
                             <Button
                                 variant="contained"
                                 color="primary"
-                                disabled={Object.keys(selectedRows).length===0}
+                                disabled={Object.keys(selectedRows).length === 0}
                                 style={{ marginLeft: '5px' }}
                                 onClick={handleclose}
                             >
@@ -312,7 +311,7 @@ const PublishedHistory: React.FC<{ dataChannel: any, publishType: string }> = ({
                             </Button>
 
                         </div>
-                        <div style={{display:"flex"}}>
+                        <div style={{ display: "flex" }}>
                             <DateRangePicker
                                 open={openDateRangeCreateDateModal}
                                 setOpen={setOpenDateRangeCreateDateModal}
@@ -334,6 +333,5 @@ const PublishedHistory: React.FC<{ dataChannel: any, publishType: string }> = ({
         </div>
     )
 }
-
 
 export default PostCreatorHistory;
