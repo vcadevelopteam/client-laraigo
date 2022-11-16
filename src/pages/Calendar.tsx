@@ -389,10 +389,8 @@ const DialogCancelBooking: React.FC<{
                 comment: ''
             })
             register('comment');
+            setValue("comment", "");
         }
-    }, [])
-    useEffect(() => {
-        console.log(booking)
     }, [])
 
     const onSubmit = async () => {
@@ -463,7 +461,7 @@ const DialogCancelBooking: React.FC<{
                         style={{width:"50%"}}
                         variant="contained" 
                         color="secondary" 
-                        onClick={() => setOpenModal(false)}>
+                        onClick={() => {setOpenModal(false); setValue("comment", "")}}>
                         {t(langKeys.discard)}
                     </Button>
                 </div>
