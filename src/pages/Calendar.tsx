@@ -390,7 +390,10 @@ const DialogCancelBooking: React.FC<{
             })
             register('comment');
         }
-    }, [openModal])
+    }, [])
+    useEffect(() => {
+        console.log(booking)
+    }, [])
 
     const onSubmit = async () => {
         if(new Date(booking?.monthdate) > new Date()){
@@ -579,6 +582,7 @@ const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = 
                                     size="small"
                                     onClick={(e) => {
                                         e.stopPropagation();
+                                        setBookingSelected(x);
                                         setAnchorEl(e.currentTarget);
                                     }}
                                 >
@@ -597,7 +601,7 @@ const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = 
                                         horizontal: 'right',
                                     }}
                                     open={Boolean(anchorEl)}
-                                    onClick={(e) => {e.stopPropagation(); setBookingSelected(x);}}
+                                    onClick={(e) => {e.stopPropagation();}}
                                     onClose={handleClose}
                                 >
                                     <MenuItem onClick={(e) => { setOpenDialogCancel(true);handleClose()}}>
@@ -996,7 +1000,6 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
     }, [executeRes, waitSave])
 
     const getvariableValues = ((templateid:any, message:string)=>{
-        console.log(message)
         let tempbody = dataTemplates.filter(x => x.id === (templateid||""))[0]?.body || ""
         let temptemplatevariables = (tempbody?.match(/{{/g)||[]).reduce((acc:any,x:any,i:number)=>{return {...acc,[`variable#${i}`]: ``}},{})
         temptemplatevariables = (message?.match(/{{[\w\d]+}}/g)||[]).reduce((acc:any,x:any,i:number)=>{
