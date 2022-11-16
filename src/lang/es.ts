@@ -1631,6 +1631,7 @@ const translation: LangKeys = {
     ticket_labels: 'Tag',
     ticket_labels_help: 'Tags consultados de izquierda a derecha del ultimo consultado al primero, respectivamente.',
     ticket_tdatime: 'Tiempo de espera antes de atención de asesor',
+    supervisionduration: 'Tiempo de supervisión de llamada',
     ticket_tdatime_help: 'Sumatoria de los tiempos desde que el ticket está en holding hasta que el asesor le brinda la primera respuesta',
 
     selectday: "Seleccione la(s) fecha(s) a las que desea asignar horas específicas",

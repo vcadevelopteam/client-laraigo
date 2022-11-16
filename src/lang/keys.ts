@@ -1845,6 +1845,7 @@ export const langKeys = {
     ticket_labels: 'ticket_labels',
     ticket_labels_help: 'ticket_labels_help',
     ticket_tdatime: 'ticket_tdatime',
+    supervisionduration: 'supervisionduration',
     ticket_tdatime_help: 'ticket_tdatime_help',
 
     dashboard_managerial_tmo_ticketnum: 'dashboard_managerial_tmo_ticketnum',
