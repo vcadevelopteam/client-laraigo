@@ -29,7 +29,7 @@ import { Divider, Grid, ListItem, ListItemText, styled } from '@material-ui/core
 import ListSubheader from '@material-ui/core/ListSubheader';
 import { Skeleton } from '@material-ui/lab';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import { EmojiICon, GifIcon } from 'icons';
+import { AndroidColor, EmailColor, EmojiICon, FacebookColor, FacebookMessengerColor, GifIcon, InstagramColor, IosColor, SmsColor, TeamsColor, TelegramColor, TwitterColor, VoiceColor, WebMessengerColor, WhatsappColor, YouTubeColor } from 'icons';
 import { Picker } from 'emoji-mart'
 import { SearchField } from 'components';
 import CameraAltIcon from '@material-ui/icons/CameraAlt';
@@ -575,6 +575,38 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     if (channelType === "VOXI") return <PhoneIcon width={10} fill={color} stroke={color} height={height} style={{ color, width: 16, height: 16 }} />
 
     return <TelegramIcon style={{ color, width, height }} />
+}
+export const GetIconColor: React.FC<IconProps> = ({ channelType }) => {
+
+    if (channelType === "WHAT") return <WhatsappColor/>
+    if (channelType === "WHAD") return <WhatsappColor/>
+    if (channelType === "WHAG") return <WhatsappColor/>
+    if (channelType === "WHAP") return <WhatsappColor />
+    if (channelType === "WHAC") return <WhatsappColor/>
+    if (channelType === "FBMS") return <FacebookMessengerColor/>
+    if (channelType === "FBDM") return <FacebookMessengerColor/>
+    if (channelType === "FBWA") return <FacebookColor/>
+    if (channelType === "WEBM") return <WebMessengerColor/>
+    if (channelType === "TELE") return <TelegramColor/>
+    if (channelType === "INST") return <InstagramColor/>
+    if (channelType === "INMS") return <InstagramColor/>
+    if (channelType === "INDM") return <InstagramColor/>
+    if (channelType === "ANDR") return <AndroidColor/>
+    if (channelType === "APPL") return <IosColor/>
+    if (channelType === "CHATZ") return <ZyxmeMessengerIcon color='7721AD'/>
+    if (channelType === "CHAZ") return <ZyxmeMessengerIcon color='7721AD'/>
+    if (channelType === "MAIL") return <EmailColor/>
+    if (channelType === "MAII") return <EmailColor/>
+    if (channelType === "YOUT") return <YouTubeColor/>
+    if (channelType === "LINE") return <LineIcon color='7721AD'/>
+    if (channelType === "SMS") return <SmsColor/>
+    if (channelType === "SMSI") return <SmsColor/>
+    if (channelType === "TWIT") return <TwitterColor/>
+    if (channelType === "TWMS") return <TwitterColor/>
+    if (channelType === "TEAM") return <TeamsColor/>
+    if (channelType === "VOXI") return <VoiceColor />
+
+    return <TelegramColor />
 }
 
 export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false }) => {

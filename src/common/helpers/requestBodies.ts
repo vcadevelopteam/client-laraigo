@@ -3057,6 +3057,21 @@ export const getProductCatalogSel = (id: number = 0, category: string = ''): IRe
         all: true
     }
 })
+export const getPostHistorySel = ({status="", type="", datestart=null, dateend=null}:Dictionary) => ({
+    method: "UFN_POSTHISTORY_SEL",
+    parameters: {
+        status,
+        type,
+        datestart,
+        dateend,
+    }
+})
+export const postHistoryIns = ({communicationchannelid, communicationchanneltype, posthistoryid, status, type, publishdate, texttitle, textbody, hashtag, sentiment, activity, mediatype, medialink, operation}:Dictionary) => ({
+    method: "UFN_POSTHISTORY_INS",
+    parameters: {
+        communicationchannelid, communicationchanneltype, posthistoryid, status, type, publishdate, texttitle, textbody, hashtag, sentiment, activity, mediatype, medialink, operation
+    }
+})
 
 export const productCatalogIns = ({ id, code, description, descriptiontext, category, status, type, imagereference, notes, title, website, currency, condition, contentid, facebookcatalogid, facebookproductid, facebookcatalogname, unitprice, username, operation }: Dictionary): IRequestBody => ({
     method: "UFN_PRODUCTCATALOG_INS",
