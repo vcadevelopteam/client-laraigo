@@ -17,7 +17,6 @@ export const setModalCall = (state: IState, action: IAction): IState => {
         ...state,
         showcall: action.payload.showModalCall,
         transferAction: action.payload.transferAction,
-        originCall: action.payload.originCall,
     }
 }
 export const setPhoneNumber = (state: IState, action: IAction): IState => {
@@ -54,6 +53,64 @@ export const resetCall = (state: IState, action: IAction): IState => {
     return {
         ...state,
         call: initialState.call
+    }
+}
+
+export const setTransferAction = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        transferAction: action.payload
+    }
+}
+
+export const initTransferCall = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        call: {
+            ...state.call,
+            transfer: {
+                ...action.payload,
+                statusCall: "CONNECTING",
+                mute: false,
+                hold: false,
+            }
+        }
+    }
+}
+
+export const connectedTransferCall = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        call: {
+            ...state.call,
+            transfer: {
+                ...state.call.transfer,
+                statusCall: "CONNECTED",
+            }
+        }
+    }
+}
+
+export const setTransferCall = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        call: {
+            ...state.call,
+            transfer: {
+                ...state.call.transfer,
+                ...action.payload
+            }
+        }
+    }
+}
+
+export const resetTransferCall = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        call: {
+            ...state.call,
+            transfer: undefined
+        }
     }
 }
 

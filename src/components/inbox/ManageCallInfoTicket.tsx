@@ -1,18 +1,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState } from 'react'
-import { IconButton, Typography } from "@material-ui/core";
+import CloseIcon from '@material-ui/icons/Close';
+import { IconButton, makeStyles, Typography, List, ListItem, ListItemText, ListSubheader, Button } from "@material-ui/core";
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'hooks';
 import PersonIcon from '@material-ui/icons/Person';
 import { useDispatch } from 'react-redux';
-import { answerCall, hangupCall, rejectCall, holdCall, muteCall, unmuteCall, setHold, setModalCall, transferCall } from 'store/voximplant/actions';
+import { answerCall, hangupCall, rejectCall, holdCall, muteCall, unmuteCall, setHold, setModalCall, transferCall, hangupTransferCall, holdTransferCall, muteTransferCall, unmuteTransferCall, connectedTransferCall, completeTransferCall, setTransferAction } from 'store/voximplant/actions';
 import TextField from '@material-ui/core/TextField';
 import PhoneIcon from '@material-ui/icons/Phone';
 import CallEndIcon from '@material-ui/icons/CallEnd';
 import MicIcon from '@material-ui/icons/Mic';
 import PauseIcon from '@material-ui/icons/Pause';
 import MicOffIcon from '@material-ui/icons/MicOff';
-import { FieldSelect } from 'components';
+import { FieldEdit, FieldSelect } from 'components';
 import { Card, CardContent } from '@material-ui/core';
 import { convertLocalDate, secondsToTime, getSecondsUntelNow, conversationCallHold } from 'common/helpers';
 import { langKeys } from 'lang/keys';
@@ -20,8 +21,41 @@ import DialpadIcon from '@material-ui/icons/Dialpad';
 import { execute } from 'store/main/actions';
 import { CallTransferInactiveIcon, CallTransferActiveIcon } from 'icons';
 
+const useStyles = makeStyles((theme) => ({
+    closeButton: {
+        position: 'absolute',
+        top: '10px',
+        right: '10px',
+        border: '#878787 solid',
+        color: '#878787',
+        '&:hover': {
+            border: '#7721AD solid',
+            color: '#7721AD',
+        },
+    },
+    transferListRoot: {
+        width: '100%',
+        height: 160,
+        marginTop: 15,
+        overflow: 'auto',
+    },
+    transferListSubheader: {
+        lineHeight: 'inherit'
+        
+    },
+    transferListItem: {
+        borderRadius: '10px',
+        padding: '0px 10px',
+        '&:hover': {
+            backgroundColor: '#dcdcdc',
+            boxShadow: 'none',
+        },
+    },
+}));
+
 const ManageCallInfoTicket: React.FC = () => {
     const { t } = useTranslation();
+    const classes = useStyles();
     const dispatch = useDispatch();
     const phoneinbox = useSelector(state => state.inbox.person.data?.phone);
     const [numberVox, setNumberVox] = useState("");
@@ -37,10 +71,15 @@ const ManageCallInfoTicket: React.FC = () => {
     const [date, setdate] = useState<string>(new Date().toISOString());
     const [time, settime] = useState(0);
     const [timehold, settimehold] = useState(0);
-    const [divertcall, setdivertcall] = useState(false);
-    const [advisertodiver, setadvisertodiver] = useState("");
-    const agentToReassignList = useSelector(state => state.inbox.agentToReassignList);
     const resValidateToken = useSelector(state => state.login.validateToken?.user!!);
+    
+    // Variables to transfer
+    const agentToReassignList = useSelector(state => state.inbox.agentToReassignList);
+    const transferAction = useSelector(state => state.voximplant.transferAction);
+    // const [transferEnable, setTransferEnable] = useState(false);
+    const [transferUser, setTransferUser] = useState<{userid: number, name: string} | null>(null);
+    const [transferStep, setTransferStep] = useState(1);
+    const [transferFilter, setTransferFilter] = useState("");
     
     React.useEffect(() => {
         if (call.type === "INBOUND" && statusCall === "CONNECTING") {
@@ -59,8 +98,8 @@ const ManageCallInfoTicket: React.FC = () => {
             settime(getSecondsUntelNow(convertLocalDate(datex)));
         }
         if (statusCall !== "CONNECTED") {
-            setdivertcall(false)
-            setadvisertodiver("")
+            dispatch(setTransferAction(false))
+            setTransferUser(null)
         }
     }, [statusCall])
 
@@ -219,17 +258,21 @@ const ManageCallInfoTicket: React.FC = () => {
                                     <div style={{ gridColumnStart: "col3", marginLeft: "auto", marginRight: "10px", width: "60px", textAlign: "center" }}>
                                         <IconButton //transfercall
                                             style={{ width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#bdbdbd' }}
-                                            onClick={() => setdivertcall(!divertcall)}
+                                            disabled={!!call.transfer}
+                                            onClick={() => {
+                                                setTransferStep(1)
+                                                dispatch(setTransferAction(!transferAction))
+                                            }}
                                         >
                                             {
-                                                divertcall
+                                                transferAction
                                                 ? <>
                                                     <CallTransferActiveIcon title="Transferir" style={{ color: "white", width: "35px", height: "35px" }} />
                                                 </>
                                                 : <CallTransferInactiveIcon style={{ color: "white", width: "35px", height: "35px" }} />
                                             }
                                         </IconButton>
-                                        {divertcall && <span style={{ color: '#781baf' }}>{t(langKeys.transfer)}</span>}
+                                        {transferAction && <span style={{ color: '#781baf' }}>{t(langKeys.transfer)}</span>}
                                     </div>
                                     <IconButton //hangupcall
                                         style={{ gridColumnStart: "col4", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#fa6262' }}
@@ -244,62 +287,186 @@ const ManageCallInfoTicket: React.FC = () => {
                     </div>
                 </CardContent>
             </Card>
-            <Card style={{ maxWidth: "500px", marginRight: "auto", marginTop: 50, display: divertcall ? "block" : "none" }}>
+            {call.transfer && <Card style={{ maxWidth: "500px", marginTop: 50 }}>
                 <CardContent>
-                    <>
+                    <div>
                         <div>
-                            <Typography gutterBottom variant="h6" component="div">
-                                {t(langKeys.transfercalltoadvisor)}
-                            </Typography>
-                            <div>
-                                <div style={{ display: "flex", width: "100%", justifyContent: "center", marginTop: 15 }}>
-                                    <FieldSelect
-                                        className="col-12"
-                                        valueDefault={advisertodiver}
-                                        style={{ marginRight: "auto", marginLeft: "auto", width: "400px" }}
-                                        onChange={(value) => {
-                                            // setadvisertodiver(value?.userid || '')
-                                            if (value?.userid) {
-                                                dispatch(transferCall({
-                                                    url: `${ticketSelected?.commentexternalid}?mode=transfer&number=user${value.userid}.${resValidateToken.orgid}`,
-                                                }))
-                                                sethold(true)
-                                                setmute(false)
-                                                setdivertcall(false)
-                                            }
-                                        }}
-                                        data={agentToReassignList.filter(x => x.hasvoxichannel && x.userid !== agentSelected?.userid && x.status === "ACTIVO")}
-                                        optionDesc="displayname"
-                                        optionValue="userid"
-                                    />
-                                </div>
+                            <div style={{ marginLeft: "auto", marginTop: 20, marginRight: "auto", width: "100px", height: "100px", borderRadius: "50%", backgroundColor: "#bdbdbd" }}>
+                                <PersonIcon style={{ color: "white", width: "100px", height: "100px" }} onClick={() => { dispatch(connectedTransferCall(null)) }}/>
                             </div>
-                            <div style={{ justifyContent: 'center', marginBottom: 12, marginTop: 10, display: "flex" }}>
-                                {/* <IconButton
-                                    style={{ marginLeft: "auto", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#7721ad' }}
-                                    onClick={() => {
-                                        dispatch(transferCall({
-                                            url: `${ticketSelected?.commentexternalid}?mode=transfer&number=user${advisertodiver}.${resValidateToken.orgid}`,
-                                        }))
-                                        sethold(true)
-                                        setmute(false)
-                                    }}
+                        </div>
+                        <div>
+                            <div style={{ marginLeft: "auto", marginRight: "auto", textAlign: "center", fontSize: "20px", marginTop: 10 }}>
+                                {call.transfer?.number}
+                            </div>
+                            {(call.transfer?.statusCall === "CONNECTING") &&
+                                <div style={{ fontSize: "15px", marginLeft: "auto", marginRight: "auto", width: "100px", textAlign: "center" }}>
+                                    {t(langKeys.connecting)}
+                                </div>
+                            }
+                            {(call.transfer?.statusCall === "CONNECTED" && call.transfer?.hold) &&
+                                <div style={{ fontSize: "15px", marginLeft: "auto", marginRight: "auto", width: "200px", textAlign: "center" }}>
+                                    {t(langKeys.waittime)} {(secondsToTime(getSecondsUntelNow(convertLocalDate(call.transfer?.holddate))))}
+                                </div>
+                            }
+                        </div>
+                        <div style={{ justifyContent: 'center', marginBottom: 12, marginTop: 10, display: "flex" }}>
+                            <div style={{ display: "grid", width: "100%", gridTemplateColumns: 'auto [col1] 50px 50px [col2] 50px 50px [col3] 50px 50px [col4] 50px auto', }}>
+                                {(call.transfer?.mute || call.transfer?.hold) ? (
+                                    <IconButton //unmuteself
+                                        style={{ gridColumnStart: "col1", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#7721ad' }}
+                                        onClick={() => { dispatch(unmuteTransferCall(call?.call)) }}>
+                                        <MicOffIcon style={{ color: "white", width: "35px", height: "35px" }} />
+                                    </IconButton>
+                                ) : (
+                                    <IconButton //muteself
+                                        style={{ gridColumnStart: "col1", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: call.transfer?.statusCall === "CONNECTED" ? '#55bd84' : '#bdbdbd' }}
+                                        disabled={call.transfer?.statusCall !== "CONNECTED"}
+                                        onClick={() => { dispatch(muteTransferCall(call?.call)) }}>
+                                        <MicIcon style={{ color: "white", width: "35px", height: "35px" }} />
+                                    </IconButton>
+                                )}
+                                <IconButton //holdcall
+                                    style={{ gridColumnStart: "col2", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: call.transfer?.hold && call.transfer?.statusCall === "CONNECTED" ? '#781baf' : '#bdbdbd' }}
+                                    disabled={call.transfer?.statusCall !== "CONNECTED"}
+                                    onClick={() => { dispatch(holdTransferCall({ call: call?.call, hold: call.transfer?.hold }))}}
                                 >
-                                    <PhoneIcon style={{ color: "white", width: "35px", height: "35px" }} />
-                                </IconButton> */}
-                                <IconButton
-                                    style={{ marginLeft: "auto", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#7721ad' }}
-                                    onClick={() => {
-                                        dispatch(setModalCall(true, true, call.call))
-                                        sethold(true)
-                                        setmute(false)
-                                    }}
+                                    <PauseIcon style={{ color: "white", width: "35px", height: "35px" }} />
+                                </IconButton>
+                                <IconButton //transfercall
+                                    style={{ gridColumnStart: "col3", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#bdbdbd' }}
+                                    disabled={true}
                                 >
-                                    <DialpadIcon style={{ color: "white", width: "35px", height: "35px" }} />
+                                    <CallTransferInactiveIcon style={{ color: "white", width: "35px", height: "35px" }} />
+                                </IconButton>
+                                <IconButton //hangupcall
+                                    style={{ gridColumnStart: "col4", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#fa6262' }}
+                                    onClick={() => dispatch(hangupTransferCall(call?.call))}
+                                >
+                                    <CallEndIcon style={{ color: "white", width: "35px", height: "35px" }} />
                                 </IconButton>
                             </div>
                         </div>
-                    </>
+                        <div style={{ justifyContent: 'center', marginBottom: 12, marginTop: 10, display: "flex" }}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                disabled={call.transfer?.statusCall !== "CONNECTED"}
+                                onClick={() => {
+                                    if (call.transfer?.statusCall === "CONNECTED") {
+                                        dispatch(completeTransferCall({ call: call?.call, number: call.transfer?.number }))
+                                    }
+                                }}
+                            >
+                                {t(langKeys.complete_transfer)}
+                            </Button>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>}
+            <Card style={{ maxWidth: "500px", marginRight: "auto", marginTop: 50, display: transferAction ? "block" : "none", position: 'relative' }}>
+                <IconButton
+                    size="small"
+                    className={classes.closeButton}
+                    onClick={() => dispatch(setTransferAction(false))}
+                >
+                    <CloseIcon />
+                </IconButton>
+                <CardContent>
+                    <Typography gutterBottom variant="h6" component="div">
+                        {t(langKeys.transfercall)}
+                    </Typography>
+                    {transferStep === 1 && <div>
+                        <FieldEdit
+                            label={t(langKeys.searcher)}
+                            variant='outlined'
+                            size="small"
+                            valueDefault={transferFilter}
+                            onChange={(value) => {
+                                setTransferFilter(value)
+                            }}
+                        />
+                        <List className={classes.transferListRoot}>
+                            <ListSubheader
+                                disableSticky={true}
+                                className={classes.transferListSubheader}
+                            >
+                                {t(langKeys.user_plural)}
+                            </ListSubheader>
+                            {agentToReassignList.filter(x => x.hasvoxichannel
+                                && x.userid !== agentSelected?.userid
+                                && x.status === "ACTIVO"
+                                && x.displayname.toLowerCase().includes(transferFilter.toLowerCase()))
+                                .map((item, index) => (
+                                <ListItem
+                                    button
+                                    key={`transfer-${index}`}
+                                    className={classes.transferListItem}
+                                    onClick={() => {
+                                        setTransferStep(2)
+                                        setTransferUser({
+                                            userid: item.userid,
+                                            name: item.displayname
+                                        })
+                                    }}
+                                >
+                                    <ListItemText
+                                        primary={item.displayname}
+                                    />
+                                    <ListItemText
+                                        primary={item.userid}
+                                        style={{textAlign: 'right'}}
+                                    />
+                                </ListItem>
+                            ))}
+                        </List>
+                        <div style={{ justifyContent: 'center', marginBottom: 12, marginTop: 10, display: "flex" }}>
+                            <IconButton
+                                style={{ marginLeft: "auto", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#7721ad' }}
+                                onClick={() => {
+                                    dispatch(setModalCall(true, true))
+                                    sethold(true)
+                                    setmute(false)
+                                }}
+                            >
+                                <DialpadIcon style={{ color: "white", width: "35px", height: "35px" }} />
+                            </IconButton>
+                        </div>
+                    </div>}
+                    {transferStep === 2 && <div>
+                        <div>
+                            {t(langKeys.transferto, {from: numberVox, to: transferUser?.name})}
+                        </div>
+                        <div>
+                            <div style={{ marginLeft: "auto", marginTop: 20, marginRight: "auto", width: "100px", height: "100px", borderRadius: "50%", backgroundColor: "#bdbdbd" }}>
+                                <PersonIcon style={{ color: "white", width: "100px", height: "100px" }} />
+                            </div>
+                            <div style={{ fontSize: "15px", marginLeft: "auto", marginRight: "auto", width: "200px", textAlign: "center", marginTop: 10 }}>
+                                {transferUser?.name}
+                            </div>
+                        </div>
+                        <div style={{ justifyContent: 'center', marginBottom: 12, marginTop: 10, display: "flex" }}>
+                            <Button
+                                variant="outlined"
+                                color="primary"
+                                onClick={() => {
+                                    if (transferUser?.userid) {
+                                        dispatch(transferCall({
+                                            url: `${ticketSelected?.commentexternalid}?mode=transfer&number=user${transferUser?.userid}.${resValidateToken.orgid}`,
+                                            conversationid: ticketSelected?.conversationid!!,
+                                            number: `user${transferUser?.userid}.${resValidateToken.orgid}`,
+                                            name: transferUser.name,
+                                        }))
+                                        sethold(true)
+                                        setmute(false)
+                                        dispatch(setTransferAction(false))
+                                    }
+                                }}
+                            >
+                                {t(langKeys.tocall)}
+                            </Button>
+                        </div>
+                    </div>}
                 </CardContent>
             </Card>
         </div>

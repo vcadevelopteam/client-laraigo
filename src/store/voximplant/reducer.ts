@@ -11,8 +11,17 @@ export interface IRequest extends ITemplate {
     msg?: string | null;
 }
 
+export interface ITransfer {
+    name?: string,
+    number?: string,
+    statusCall?: string,
+    mute?: boolean,
+    hold?: boolean,
+    holddate?: string
+}
+
 export interface IState {
-    call: { call?: Call | null, type: string, number: string, identifier: string, data?: ITicket };
+    call: { call?: Call | null, type: string, number: string, identifier: string, data?: ITicket, transfer?: ITransfer };
     connection: { error: boolean; message: string; loading: boolean };
     error: string;
     requestGetCategories: IRequest;
@@ -23,7 +32,6 @@ export interface IState {
     sdk: Client | null;
     showcall: boolean;
     transferAction: boolean,
-    originCall: Call | null,
     phoneNumber: string;
     onhold: boolean;
     onholddate: string;
@@ -36,7 +44,7 @@ export interface IState {
 }
 
 export const initialState: IState = {
-    call: { call: null, type: "", number: "", identifier: "" },
+    call: { call: null, type: "", number: "", identifier: "", transfer: undefined },
     connection: { error: true, message: "", loading: false },
     error: "",
     requestGetCategories: { ...initialCommon, data: null, loading: false, error: false },
@@ -47,7 +55,6 @@ export const initialState: IState = {
     sdk: null,
     showcall: false,
     transferAction: false,
-    originCall: null,
     phoneNumber: "",
     onhold: false,
     onholddate: new Date().toISOString(),
@@ -67,6 +74,12 @@ export default createReducer<IState>(initialState, {
     [actionTypes.MANAGE_STATUS_CALL]: caseFUnctions.manageStatusCall,
     [actionTypes.MANAGE_CONNECTION]: caseFUnctions.manageConnection,
     [actionTypes.RESET_CALL]: caseFUnctions.resetCall,
+
+    [actionTypes.SET_TRANSFER_ACTION]: caseFUnctions.setTransferAction,
+    [actionTypes.INIT_TRANSFER_CALL]: caseFUnctions.initTransferCall,
+    [actionTypes.CONNECTED_TRANSFER_CALL]: caseFUnctions.connectedTransferCall,
+    [actionTypes.SET_TRANSFER_CALL]: caseFUnctions.setTransferCall,
+    [actionTypes.RESET_TRANSFER_CALL]: caseFUnctions.resetTransferCall,
 
     [actionTypes.GET_CATEGORIES]: caseFUnctions.getCategories,
     [actionTypes.GET_CATEGORIES_FAILURE]: caseFUnctions.getCategoriesFailure,

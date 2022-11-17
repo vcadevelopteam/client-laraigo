@@ -10,6 +10,7 @@ import { emitEvent, connectAgentUI, connectAgentAPI } from 'store/inbox/actions'
 
 const sdk = VoxImplant.getInstance();
 let alreadyLoad = false;
+let transfernumber: any = {};
 
 const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async (action) => {
     const { type, payload } = action;
@@ -116,6 +117,42 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                     e.call.on(VoxImplant.CallEvents.Failed, () => {
                         dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "DISCONNECTED" });
                     });
+                    e.call.on(VoxImplant.CallEvents.MessageReceived, (e: any) => {
+                        try {
+                            console.log(e.text)
+                            const message_json = JSON.parse(e.text)
+                            switch (message_json.operation) {
+                                case 'TRANSFER-CONNECTED':
+                                    dispatch({
+                                        type: typeVoximplant.CONNECTED_TRANSFER_CALL,
+                                        payload: {
+                                            call: e.call
+                                        }
+                                    })
+                                    break;
+                                case 'TRANSFER-DISCONNECTED':
+                                    dispatch(emitEvent({
+                                        event: 'deleteTicket',
+                                        data: {
+                                            conversationid: message_json?.conversationid,
+                                            userid: 0, //userType === "AGENT" ? 0 : agentSelected?.userid,
+                                            getToken: false //userType === "SUPERVISOR"
+                                        }
+                                    }));
+                                    break;
+                                case 'TRANSFER-HANGUP': case 'TRANSFER-FAILED':
+                                    if (transfernumber[`${message_json?.conversationid}`] === message_json.number
+                                        || transfernumber === message_json.name
+                                    ) {
+                                        dispatch({ type: typeVoximplant.RESET_TRANSFER_CALL })
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        catch (e) { console.log(e) }
+                    })
                 })
             }
             try {
@@ -189,6 +226,42 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         call.on(VoxImplant.CallEvents.Failed, () => {
             dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "DISCONNECTED" });
         });
+        call.on(VoxImplant.CallEvents.MessageReceived, (e: any) => {
+            try {
+                console.log(e.text)
+                const message_json = JSON.parse(e.text)
+                switch (message_json.operation) {
+                    case 'TRANSFER-CONNECTED':
+                        dispatch({
+                            type: typeVoximplant.CONNECTED_TRANSFER_CALL,
+                            payload: {
+                                call: e.call
+                            }
+                        })
+                        break;
+                    case 'TRANSFER-DISCONNECTED':
+                        dispatch(emitEvent({
+                            event: 'deleteTicket',
+                            data: {
+                                conversationid: message_json?.conversationid,
+                                userid: 0, //userType === "AGENT" ? 0 : agentSelected?.userid,
+                                getToken: false //userType === "SUPERVISOR"
+                            }
+                        }));
+                        break;
+                    case 'TRANSFER-HANGUP': case 'TRANSFER-FAILED':
+                        if (transfernumber[`${message_json?.conversationid}`] === message_json.number
+                            || transfernumber === message_json.name
+                        ) {
+                            dispatch({ type: typeVoximplant.RESET_TRANSFER_CALL })
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+            catch (e) { console.log(e) }
+        })
         return
     } else if (type === typeVoximplant.ANSWER_CALL) {
         const call = payload.call;
@@ -222,12 +295,6 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         call?.hangup();
         dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "DISCONNECTED" });
         return
-    } else if (type === typeVoximplant.TRANSFER_CALL ) {
-        const { url } = payload;
-        fetch(url, { method: 'GET' }).catch(x => {
-            console.log(x)
-        });
-        return
     } else if (type === typeVoximplant.HOLD_CALL) {
         const call = payload.call;
         await call?.setActive(payload.flag);
@@ -239,6 +306,70 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
     } else if (type === typeVoximplant.UNMUTE_CALL) {
         const call = payload;
         call?.unmuteMicrophone();
+        return
+    } else if (type === typeVoximplant.TRANSFER_CALL ) {
+        const { url, number, name, conversationid } = payload;
+        transfernumber[`${conversationid}`] = number;
+        dispatch({
+            type: typeVoximplant.INIT_TRANSFER_CALL,
+            payload: {
+                number: number,
+                name: name,
+            }
+        })
+        fetch(url, { method: 'GET' }).catch(x => {
+            console.log(x)
+        });
+        return
+    } else if (type === typeVoximplant.COMPLETE_TRANSFER_CALL) {
+        const { call, number } = payload;
+        call?.sendMessage(JSON.stringify({
+            operation: 'TRANSFER-COMPLETE',
+            number: number
+        }))
+        return
+    } else if (type === typeVoximplant.HANGUP_TRANSFER_CALL) {
+        const call = payload;
+        call?.sendMessage(JSON.stringify({
+            operation: 'TRANSFER-HANGUP'
+        }))
+        dispatch({ type: typeVoximplant.RESET_TRANSFER_CALL })
+        return
+    } else if (type === typeVoximplant.HOLD_TRANSFER_CALL) {
+        const call = payload.call;
+        dispatch({
+            type: typeVoximplant.SET_TRANSFER_CALL,
+            payload: {
+                hold: !payload.hold,
+                holddate: !payload.hold ? new Date().toISOString() : undefined,
+            }
+        })
+        call?.sendMessage(JSON.stringify({
+            operation: 'TRANSFER-HOLD',
+            hold: !payload.hold
+        }))
+        return
+    } else if (type === typeVoximplant.MUTE_TRANSFER_CALL) {
+        const call = payload;
+        dispatch({
+            type: typeVoximplant.SET_TRANSFER_CALL,
+            payload: { mute: true}
+        })
+        call?.sendMessage(JSON.stringify({
+            operation: 'TRANSFER-MUTE',
+            hold: !payload.hold
+        }))
+        return
+    } else if (type === typeVoximplant.UNMUTE_TRANSFER_CALL) {
+        const call = payload;
+        dispatch({
+            type: typeVoximplant.SET_TRANSFER_CALL,
+            payload: { mute: false}
+        })
+        call?.sendMessage(JSON.stringify({
+            operation: 'TRANSFER-UNMUTE',
+            hold: !payload.hold
+        }))
         return
     } else if (type === typeVoximplant.MANAGE_STATUS_VOX) {
         try {

@@ -551,8 +551,11 @@ const MakeCall: React.FC = () => {
                                         if (statusCall === 'CONNECTED' && transferAction) {
                                             dispatch(transferCall({
                                                 url: `${ticketSelected?.commentexternalid}?mode=transfer&number=${numberVox}`,
+                                                conversationid: ticketSelected?.conversationid!!,
+                                                number: numberVox,
+                                                name: numberVox
                                             }))
-                                            dispatch(setModalCall(false))
+                                            dispatch(setModalCall(false, false))
                                         }
                                     }}
                                 >

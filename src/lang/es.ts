@@ -43,8 +43,12 @@ const translation: LangKeys = {
     withinadaterange: "Rango de fechas",
     errorhours: "Las horas se solapan con otro conjunto de horas",
     errorhoursdontmatch: "Elija una hora de fin más tarde que la hora de inicio",
+    transfercall: "Transferir llamada",
     transfercalltoadvisor: "Transferir llamada a un asesor",
     transfer: "Transferir",
+    transferto: "Transferir {{from}} a {{to}}",
+    complete_transfer: "Completar transferencia",
+    tocall: "Llamar",
 
     type_activitylead_automated: 'Automatizar mensaje',
     type_activitylead_automatedmail: 'Automatizar mensaje Email',
@@ -1017,6 +1021,7 @@ const translation: LangKeys = {
     edit: 'Editar',
     delete: 'Eliminar',
     search: 'Buscar',
+    searcher: 'Buscador',
     refresh: 'Actualizar',
     duplicate: 'Duplicar',
     stop: 'Detener',
@@ -1441,6 +1446,7 @@ const translation: LangKeys = {
     make_call: "Realizar Llamada",
 
     ringing: "Timbrando",
+    connecting: "Conectando...",
     connected_call: "Llamada conectada",
     monitor_call: "Supervisar llamada",
 
