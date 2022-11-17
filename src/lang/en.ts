@@ -4194,6 +4194,7 @@ const translation: LangKeys = {
     postcreator_publish_officialpage: "Official Page",
     postcreator_publish_textrecommendation: "Text guidelines",
     postcreator_publish_textrecommendation01: "Main text: 125 character limit",
+    postcreator_publish_textrecommendation02: "Images and video: For compatibility reasons, the allowed formats are JPEG and MP4",
     postcreator_publish_image: "Image",
     postcreator_publish_video: "Video",
     postcreator_publish_edit: "Edit",

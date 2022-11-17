@@ -106,7 +106,7 @@ export const langKeys = {
     redo: "redo",
     city: "city",
     make_call: "make_call",
-    
+
     ringing: "ringing",
     connected_call: "connected_call",
     monitor_call: "monitor_call",
@@ -4179,6 +4179,7 @@ export const langKeys = {
     postcreator_publish_officialpage: "postcreator_publish_officialpage",
     postcreator_publish_textrecommendation: "postcreator_publish_textrecommendation",
     postcreator_publish_textrecommendation01: "postcreator_publish_textrecommendation01",
+    postcreator_publish_textrecommendation02: "postcreator_publish_textrecommendation02",
     postcreator_publish_image: "postcreator_publish_image",
     postcreator_publish_video: "postcreator_publish_video",
     postcreator_publish_edit: "postcreator_publish_edit",

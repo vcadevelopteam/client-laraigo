@@ -426,6 +426,9 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                     <span>
                                         {t(langKeys.postcreator_publish_textrecommendation01)}
                                     </span>
+                                    <span>
+                                        {t(langKeys.postcreator_publish_textrecommendation02)}
+                                    </span>
                                 </div>
                                 {(pageMode === 'IMAGE' || pageMode === 'VIDEO') && <>
                                     {pageMode === 'IMAGE' && <div className="row-zyx" style={{ marginBottom: '0px' }}>
@@ -478,7 +481,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         </Button>
                                         <React.Fragment>
                                             <input
-                                                accept={pageMode === 'IMAGE' ? "image/*" : "video/*"}
+                                                accept={pageMode === 'IMAGE' ? "image/jpeg" : "video/mp4"}
                                                 id="attachmentInput"
                                                 onChange={(e) => onChangeAttachment(e.target.files)}
                                                 style={{ display: 'none' }}
