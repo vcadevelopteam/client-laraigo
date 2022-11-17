@@ -5,7 +5,7 @@ import React, { FC, useCallback, useEffect, useState } from "react";
 import { Dictionary } from "@types";
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import { calculateDateFromWeek, dayNames2, selBookingCalendar } from "common/helpers";
+import { calculateDateFromWeek, dayNames2, selBookingCalendar, timetomin } from "common/helpers";
 import { useDispatch } from "react-redux";
 import { getCollectionAux } from "store/main/actions";
 import { useSelector } from "hooks";
@@ -34,10 +34,11 @@ const hour24: number[] = Array.from(Array(24).keys())
 
 const useScheduleStyles = makeStyles(theme => ({
     boxDay: {
-        height: 40,
+        height: 41,
         position: "relative",
         borderBottom: '1px solid #e0e0e0',
-        fontSize: 12, color: "white",
+        fontSize: 12,
+        color: "white",
         '&:after': {
             content: '""',
             height: "100%",
@@ -168,15 +169,41 @@ const useScheduleStyles = makeStyles(theme => ({
     itemBooking: {
         wordBreak: "break-word",
         overflow: "hidden",
-        maxWidth: 135,
+        width: 135,
         whiteSpace: "nowrap",
         textOverflow: "ellipsis",
-        height: 35,
-        padding: 4,
-        borderRadius: 5,
-        cursor: "pointer"
+        paddingTop: 1,
+        paddingLeft: 8,
+        fontWeight: "bold",
+        borderRadius: 4,
+        borderLeft: "1px solid white",
+        borderBottom: "2px solid white",
+        cursor: "pointer",
+        zIndex: 2
     }
 }));
+
+const BookingTime: FC<{
+    item: Dictionary;
+    handleClick: (event: any) => void;
+}> = ({ item, handleClick }) => {
+    const classes = useScheduleStyles();
+
+    return (
+        <div
+            className={classes.itemBooking}
+            style={{
+                backgroundColor: item.color || "#e1e1e1",
+                height: `${item.totalTime}%`,
+                position: "absolute",
+                top: `${item.initTime}%`
+            }}
+            title={`${item.name} - ${item.personname}`}
+            onClick={() => handleClick(item)}
+        >{item.personname}</div>
+    )
+}
+
 
 const BoxDay: FC<{
     hourDay: HourDayProp;
@@ -187,18 +214,17 @@ const BoxDay: FC<{
     return (
         <div
             className={classes.boxDay}
-            style={{ borderBottom: hourDay.hourstart === 23 ? "none" : "1px solid #e1e1e1" }}
+            style={{ borderBottom: hourDay.hourstart === 23 ? "none" : "1px solid #e1e1e1", position: "relative" }}
         >
+            {/* <div style={{ maxWidth: 140, display: "flex", width: 130, marginLeft: 10 }}> */}
             {hourDay.data?.map(x => (
-                <div
+                <BookingTime
                     key={x.calendarbookinguuid}
-                    className={classes.itemBooking}
-                    style={{ backgroundColor: x.color || "#e1e1e1" }}
-                    title={`${x.name} - ${x.personname}`}
-                    onClick={(e: any) => handleClick(x)}
-                >{x.personname}</div>
+                    item={x}
+                    handleClick={handleClick}
+                />
             ))}
-
+            {/* </div> */}
         </div>
     )
 }
@@ -234,15 +260,23 @@ const CalendarWithInfo: FC<{
 
     useEffect(() => {
         if (!dataBooking.loading && !dataBooking.error) {
-            setDaysToShow(rangeDates.reduce((acc: HourDayProp[], item: DayProp) => ([
+            const aa = rangeDates.reduce((acc: HourDayProp[], item: DayProp) => ([
                 ...acc,
                 ...Array.from(Array(24).keys()).map(x => ({
                     ...item,
                     hourstart: x,
                     hourend: x + 1,
-                    data: dataBooking.data.filter(y => y.monthdate === item.dateString && parseInt(y.hourstart.split(":")[0]) === x)
+                    data: dataBooking
+                        .data.filter(y => y.monthdate === item.dateString && parseInt(y.hourstart.split(":")[0]) === x)
+                        .map(y => ({
+                            ...y,
+                            totalTime: (timetomin(y.hourend) - timetomin(y.hourstart)) * 100 / 60,
+                            initTime: (parseInt(y.hourstart.split(":")[1])) * 100 / 60,
+                        }))
                 }))
-            ]), []));
+            ]), [])
+            console.log("aa", aa.filter(x => (x.data?.length || 0) > 0))
+            setDaysToShow(aa);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dataBooking])
@@ -295,7 +329,7 @@ const CalendarWithInfo: FC<{
                             return <div key={x}></div>
                         return (
                             <div key={x}>
-                                <div style={{ position: "relative", height: 40 }}>
+                                <div style={{ position: "relative", height: 41 }}>
                                     <div style={{ position: "absolute", top: -1, right: 0 }}>
                                         <div style={{ width: 10, height: 1, backgroundColor: "#e1e1e1" }}></div>
                                     </div>

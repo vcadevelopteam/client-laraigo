@@ -26,6 +26,8 @@ import { useLocation } from "react-router";
 import CalendarZyx from 'components/fields/Calendar';
 import MuiPhoneNumber, { MaterialUiPhoneNumberProps } from 'material-ui-phone-number';
 import { getCountryList } from "store/signup/actions";
+import { manageConfirmation } from 'store/popus/actions';
+import Popus from 'components/layout/Popus';
 
 interface IDay {
     date: Date;
@@ -190,13 +192,18 @@ const TimeDate: FC<{ time: ITime, isSelected: boolean, setTimeSelected: (p: any)
     )
 }
 const URL = "https://ipapi.co/json/";
-const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, disabledSubmit: boolean, parameters: Dictionary }> = ({ event, handlerOnSubmit, disabledSubmit, parameters }) => {
+const FormToSend: FC<{
+    event: Dictionary,
+    handlerOnSubmit: (p: any) => void,
+    disabledSubmit: boolean, parameters: Dictionary,
+    time?: ITime
+}> = ({ event, handlerOnSubmit, disabledSubmit, time = null }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const [phoneCountry, setPhoneCountry] = useState('');
     const dispatch = useDispatch();
 
-    const { register, handleSubmit, setValue, getValues,control, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, getValues, control, formState: { errors } } = useForm({
         defaultValues: {
             name: event?.personname,
             email: event?.email,
@@ -231,10 +238,19 @@ const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, dis
         register('phone', { validate: (value) => event?.notificationtype === "HSM" || !!value || (t(langKeys.field_required) + "") });
     }, [register, t, event])
 
-
     const onSubmit = handleSubmit((data) => {
-        debugger
-        handlerOnSubmit({ ...data, phone: data.phone?.replace("+", "") })
+        if (event.calendarbookingid) {
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_reschedule, {
+                    current_event: new Date(event.bookingdate).toLocaleString(),
+                    new_event: new Date(`${time?.localyeardate} ${time?.localstarthour}`).toLocaleString()
+                }),
+                callback: () => handlerOnSubmit({ ...data, phone: data.phone?.replace("+", "") })
+            }))
+        } else {
+            handlerOnSubmit({ ...data, phone: data.phone?.replace("+", "") })
+        }
     });
 
     return (
@@ -251,20 +267,17 @@ const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, dis
                         error={errors?.name?.message}
                     />
                 </div>
-                {true && (
-                    <div>
-                        <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}>{t(langKeys.email)}</div>
-                        <FieldEdit
-                            size="small"
-                            className={classes.colInput}
-                            variant={'outlined'}
-                            valueDefault={getValues('email')}
-                            onChange={(value: any) => setValue('email', value)}
-                            error={errors?.email?.message}
-                        />
-                    </div>
-                )}
-                {/* {event.notificationtype === "HSM" && (*/}
+                <div>
+                    <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}>{t(langKeys.email)}</div>
+                    <FieldEdit
+                        size="small"
+                        className={classes.colInput}
+                        variant={'outlined'}
+                        valueDefault={getValues('email')}
+                        onChange={(value: any) => setValue('email', value)}
+                        error={errors?.email?.message}
+                    />
+                </div>
                 <div>
                     <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}>{t(langKeys.phone)}</div>
                     <Controller
@@ -272,9 +285,9 @@ const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, dis
                         control={control}
                         rules={{
                             validate: (value) => {
-                                if (value.length === 0) {
+                                if ((value.length || "") === 0) {
                                     return t(langKeys.field_required) as string;
-                                } else if (value.length < 10) {
+                                } else if ((value.length || "") < 10) {
                                     return t(langKeys.validationphone) as string;
                                 }
                             }
@@ -292,7 +305,6 @@ const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, dis
                         )}
                     />
                 </div>
-                
                 <div>
                     <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}> {t(langKeys.prepare_meeting)} </div>
                     <FieldEditMulti
@@ -312,7 +324,7 @@ const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, dis
                         color="primary"
                         disabled={disabledSubmit}
                     >
-                        {t(langKeys.schedule_event)}
+                        {t((event.calendarbookingid ? langKeys.reschedule_event : langKeys.schedule_event))}
                     </Button>
 
                 </div>
@@ -355,6 +367,7 @@ export const CalendarEvent: FC = () => {
         const query = new URLSearchParams(location.search);
         const posibleConversationID = query.get('cid');
         const posiblePersonID = query.get('pid');
+        const posiblecalendarbookinguuid = query.get('booking');
 
         if (posibleConversationID && Number.isInteger(Number(posibleConversationID)) && posiblePersonID && Number.isInteger(Number(posiblePersonID))) {
             personid = Number(posiblePersonID);
@@ -363,7 +376,7 @@ export const CalendarEvent: FC = () => {
                 personid: Number(posiblePersonID)
             })
         }
-        dispatch(getCollEventBooking(getEventByCode(orgid, eventcode, personid)))
+        dispatch(getCollEventBooking(getEventByCode(orgid, eventcode, personid, posiblecalendarbookinguuid)))
     }, [])
 
     const triggerCalculateDate = () => {
@@ -403,7 +416,6 @@ export const CalendarEvent: FC = () => {
                     })));
                 }
             } else {
-                debugger
                 if (resMain.key === "UFN_CALENDARYBOOKING_INS") {
                     const errormessage = t(resMain.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() });
                     setError(errormessage);
@@ -425,13 +437,14 @@ export const CalendarEvent: FC = () => {
 
     const handlerOnSubmit = (data: Dictionary) => {
         const month = t(`month_${((daySelected!!.date.getMonth() + 1) + "").padStart(2, "0")}`)
-        const { corpid, orgid, calendareventid } = event!!;
+        const { corpid, orgid, calendareventid, calendarbookingid } = event!!;
         const dataToSend = {
             corpid,
             orgid,
             calendareventid,
             id: 0,
             description: '',
+            calendarbookingid,
             type: 'NINGUNO',
             status: 'ACTIVO',
             monthdate: timeSelected?.localyeardate,
@@ -540,6 +553,7 @@ export const CalendarEvent: FC = () => {
                             </div>
                             <FormToSend
                                 event={event!!}
+                                time={timeSelected}
                                 handlerOnSubmit={handlerOnSubmit}
                                 disabledSubmit={resMain.loading && !!event}
                                 parameters={{
@@ -590,7 +604,6 @@ export const CalendarEvent: FC = () => {
 
                 </div>
             </div>
-
             <Dialog
                 open={openDialogError}
                 fullWidth
@@ -618,6 +631,7 @@ export const CalendarEvent: FC = () => {
                     </Button>
                 </DialogActions>
             </Dialog >
+            <Popus />
         </div >
     )
 }
