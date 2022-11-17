@@ -14,6 +14,7 @@ import {
     CalendaryIcon,
     RulesIcon,
     ProductsIcon,
+    PostCreatorIcon,
 } from 'icons';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import { langKeys } from "lang/keys";
@@ -54,6 +55,13 @@ export const routes: RouteConfig[] = [
         tooltip: <Trans i18nKey={langKeys.calendar} />,
         path: paths.CALENDAR,
         icon: (className) => <CalendaryIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
+    },
+    {
+        key: paths.POSTCREATOR,
+        description: <Trans i18nKey={langKeys.postcreator} count={2} />, // prop:count for plural purposes
+        tooltip: <Trans i18nKey={langKeys.postcreator} count={2} />,
+        path: paths.POSTCREATOR,
+        icon: (className) => <PostCreatorIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     // {
     //     key: paths.REPORTDESIGNER,
@@ -128,14 +136,14 @@ export const routes: RouteConfig[] = [
         description: <Trans i18nKey={langKeys.billingSetup} />,
         tooltip: <Trans i18nKey={langKeys.billingSetup} />,
         path: paths.BILLING_SETUPS,
-        icon: (className) => <BillingSetupIcon style={{width: 22, height: 22}} className={className} />,
+        icon: (className) => <BillingSetupIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
         key: paths.INVOICE,
         description: <Trans i18nKey={langKeys.invoice} />,
         tooltip: <Trans i18nKey={langKeys.invoice} />,
         path: paths.INVOICE,
-        icon: (className) => <InvoiceIcon style={{width: 22, height: 22}} className={className} />,
+        icon: (className) => <InvoiceIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
         key: paths.CONFIGURATION,

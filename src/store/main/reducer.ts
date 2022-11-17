@@ -24,6 +24,10 @@ export interface IMemoryTable {
 
 export interface IUpload extends ITemplate {
     url?: string;
+    height?: string;
+    width?: string;
+    name?: string;
+    thumbnail?: string;
 }
 
 export interface IState {

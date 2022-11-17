@@ -159,6 +159,10 @@ export const uploadFileSuccess = (state: IState, action: IAction): IState => {
         ...state,
         uploadFile: {
             url: action.payload.url,
+            height: action.payload.height,
+            width: action.payload.width,
+            name: action.payload.name,
+            thumbnail: action.payload.thumbnail,
             loading: false,
             code: undefined,
             error: false,

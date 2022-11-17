@@ -10,7 +10,7 @@ import popusReducer, { IState as IPopus } from './popus/reducer';
 import inboxReducer, { IState as IInbox } from './inbox/reducer';
 import integrationManagerReducer, { IState as IIntegrationManager } from './integrationmanager/reducer';
 import botdesignerReducer, { IState as IBotDesigner } from './botdesigner/reducer';
-import signupReducer, { IState as ISignUp} from './signup/reducer';
+import signupReducer, { IState as ISignUp } from './signup/reducer';
 import personReducer, { IState as IPerson } from './person/reducer';
 import settingReducer, { IState as ISetting } from './setting/reducer';
 import activationUserReducer, { IState as IActivationUser } from './activationuser/reducer';
@@ -25,6 +25,7 @@ import googleReducer, { IState as IGoogle } from './google/reducer';
 import witaiReducer, { IState as IWitai } from './witia/reducer';
 import productReducer, { IState as IProduct } from './product/reducer';
 import calendarReducer, { IState as ICalendar } from './calendar/reducer';
+import postHistoryReducer, { IState as IPostHistory } from './posthistory/reducer';
 
 export interface IRootState {
     login: ILogin,
@@ -49,13 +50,14 @@ export interface IRootState {
     witai: IWitai;
     product: IProduct;
     calendar: ICalendar;
+    postHistory: IPostHistory;
 }
 
 declare global {
     interface Window {
         __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: typeof compose;
     }
-}   
+}
 
 const rootReducer = combineReducers<IRootState>({
     login: loginReducer,
@@ -78,6 +80,7 @@ const rootReducer = combineReducers<IRootState>({
     google: googleReducer,
     witai: witaiReducer,
     product: productReducer,
+    postHistory: postHistoryReducer,
     getversion: getversionReducer,
     calendar: calendarReducer,
 });

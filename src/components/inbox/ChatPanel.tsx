@@ -1208,7 +1208,7 @@ const SearchOnInteraction: React.FC<{ setShowSearcher: (param: any) => void }> =
                 clearTimeout(timeOut.current);
                 timeOut.current = null;
             }
-        }, 300);;
+        }, 300);
     };
 
     return (

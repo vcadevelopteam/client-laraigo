@@ -8,59 +8,60 @@ import typification from '../icons/reports_typification_report.png';
 import user_connections from '../icons/reports_user_connections_report.png';
 
 export const reportsImage = [
-    {
-      name: "reports_conversations_report",
-      image: conversations
-    },
-    {
-      name: "reports_interactions_report",
-      image: interactions
-    },
-    {
-      name: "reports_heat_map",
-      image: heatmap
-    },
-    {
-      name: "reports_productivity_advisors_hour",
-      image: productivity_advisors_hour
-    },
-    {
-      name: "reports_productivity_advisors",
-      image: productivity_advisors
-    },
-    {
-      name: "reports_retry_report",
-      image: retry
-    },
-    {
-      name: "reports_typification_report",
-      image: typification
-    },
-    {
-      name: "reports_user_connections_report",
-      image: user_connections
-    },
-    {
-      name: "reports_conversationwhatsapp_report",
-      image: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/whatsapp_PNG95151.png'
-    },
-    {
-      name: "reports_invoice_report",
-      image: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'
-    },
-    {
-      name: "reports_survey_report",
-      image: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'
-    },
-    {
-      name: "reports_voicecall_report",
-      image: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/3f392517-37c9-4a7e-99e1-9a9505eca6bf/canal_de_voz.svg'
-    }
-  ];
+  {
+    name: "reports_conversations_report",
+    image: conversations
+  },
+  {
+    name: "reports_interactions_report",
+    image: interactions
+  },
+  {
+    name: "reports_heat_map",
+    image: heatmap
+  },
+  {
+    name: "reports_productivity_advisors_hour",
+    image: productivity_advisors_hour
+  },
+  {
+    name: "reports_productivity_advisors",
+    image: productivity_advisors
+  },
+  {
+    name: "reports_retry_report",
+    image: retry
+  },
+  {
+    name: "reports_typification_report",
+    image: typification
+  },
+  {
+    name: "reports_user_connections_report",
+    image: user_connections
+  },
+  {
+    name: "reports_conversationwhatsapp_report",
+    image: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/whatsapp_PNG95151.png'
+  },
+  {
+    name: "reports_invoice_report",
+    image: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'
+  },
+  {
+    name: "reports_survey_report",
+    image: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'
+  },
+  {
+    name: "reports_voicecall_report",
+    image: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/3f392517-37c9-4a7e-99e1-9a9505eca6bf/canal_de_voz.svg'
+  }
+];
 
 export { ReactComponent as DashboardIcon } from 'icons/dashboard.svg';
 export { ReactComponent as Reports2Icon } from 'icons/chart-bar-bargraph.svg';
 export { ReactComponent as ReportsIcon } from 'icons/reports.svg';
+export { ReactComponent as PostCreatorIcon } from 'icons/postcreator.svg';
 export { ReactComponent as TicketIcon } from 'icons/ticket.svg';
 export { ReactComponent as EMailInboxIcon } from 'icons/email-mail-letter.svg';
 export { ReactComponent as MessageInboxIcon } from 'icons/chat-message-password-input.svg';
@@ -211,3 +212,8 @@ export { ReactComponent as CalendaryIcon } from './calendary.svg';
 export { ReactComponent as RulesIcon } from './rules.svg';
 export { ReactComponent as ProductsIcon } from './products.svg';
 export { ReactComponent as CallRecordIcon } from './call-record.svg';
+
+export { ReactComponent as PostCreatorCalendar } from './postcreator-calendar.svg';
+export { ReactComponent as PostCreatorPostHistory } from './postcreator-posthistory.svg';
+export { ReactComponent as PostCreatorPublish } from './postcreator-publish.svg';
+export { ReactComponent as PostCreatorStory } from './postcreator-story.svg';

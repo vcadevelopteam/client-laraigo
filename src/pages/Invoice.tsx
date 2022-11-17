@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { cleanMemoryTable, getCollectionAux, getCollectionAux2, setMemoryTable, uploadFile } from 'store/main/actions';
 import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray, TemplateIcons, IOSSwitch, FieldEditMulti } from 'components';
-import { selInvoice, deleteInvoice, getLocaleDateString, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, billingReportConversationWhatsApp, billingReportHsmHistory, invoiceRefresh, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent, getBalanceSelSent, getCorpSelVariant, listPaymentCard, paymentCardInsert, uploadExcel, insInvoice, templateMaker, exportExcel, selInvoiceComment, insInvoiceComment, convertLocalDate, localesLaraigo, billingArtificialIntelligenceSel, billingPeriodArtificialIntelligenceSel, billingPeriodArtificialIntelligenceInsArray } from 'common/helpers';
+import { selInvoice, deleteInvoice, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, billingReportConversationWhatsApp, billingReportHsmHistory, invoiceRefresh, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent, getBalanceSelSent, getCorpSelVariant, listPaymentCard, paymentCardInsert, uploadExcel, insInvoice, templateMaker, exportExcel, selInvoiceComment, insInvoiceComment, convertLocalDate, billingArtificialIntelligenceSel, billingPeriodArtificialIntelligenceSel, billingPeriodArtificialIntelligenceInsArray } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -31,8 +31,6 @@ import {
     GetApp
 } from '@material-ui/icons';
 import PaymentIcon from '@material-ui/icons/Payment';
-import DateFnsUtils from '@date-io/date-fns';
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import CulqiModal from 'components/fields/CulqiModal';
 import { getCountryList } from 'store/signup/actions';
 import TableContainer from '@material-ui/core/TableContainer';
@@ -115,20 +113,6 @@ function toISOLocalString(date: { getTimezoneOffset: () => number; getTime: () =
     const sign = off < 0 ? '+' : '-';
     off = Math.abs(off);
     return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().slice(0, -1) + sign + z(off / 60 | 0) + ':' + z(off % 60);
-}
-
-export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: any) => void) => {
-    return (
-        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(localesLaraigo())[navigator.language.split('-')[0]]} >
-            <KeyboardDatePicker
-                format={getLocaleDateString()}
-                value={value === '' ? null : value}
-                onChange={(e: any) => handleClickItemMenu(e)}
-                style={{ minWidth: '150px' }}
-                views={["month", "year"]}
-            />
-        </MuiPickersUtilsProvider>
-    )
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -3437,7 +3421,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                                 }
                                 else {
                                     setTotalPay(Math.round(((data?.totalamount || 0) + Number.EPSILON) * 100) / 100);
-                                    setTotalAmount(Math.round(((data?.totalamount || 0) + Number.EPSILON) * 100) / 100);;
+                                    setTotalAmount(Math.round(((data?.totalamount || 0) + Number.EPSILON) * 100) / 100);
                                     setShowCulqi(true);
                                 }
                             }
@@ -6794,7 +6778,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                     var compareamount = (buyAmount || 0) * (exchangeRequest?.exchangerate || 0);
 
                     if (compareamount > mainResult.mainData.data[0].detractionminimum) {
-                        setTotalPay(Math.round(((((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0))) - (((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0))) * (mainResult.mainData.data[0].detraction || 0))) + Number.EPSILON) * 100) / 100);;
+                        setTotalPay(Math.round(((((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0))) - (((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0))) * (mainResult.mainData.data[0].detraction || 0))) + Number.EPSILON) * 100) / 100);
                         setDetractionAlert(true);
                         setDetractionAmount(Math.round((((mainResult.mainData.data[0].detraction || 0) * 100) + Number.EPSILON) * 100) / 100);
                         setPaymentTax(Math.round((((buyAmount || 0) * (mainResult.mainData.data[0].igv || 0)) + Number.EPSILON) * 100) / 100);
