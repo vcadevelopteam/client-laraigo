@@ -3123,11 +3123,11 @@ export const insCalendar = ({
     }
 });
 
-export const getEventByCode = (orgid: number, code: string, personid: number): IRequestBody => ({
+export const getEventByCode = (orgid: number, code: string, personid: number, calendarbookinguuid: string | null | undefined = ""): IRequestBody => ({
     key: "QUERY_EVENT_BY_CODE",
-    method: "QUERY_EVENT_BY_CODE",
+    method: calendarbookinguuid ? "QUERY_EVENT_BY_CODE_WITH_BOOKINGUUID" : "QUERY_EVENT_BY_CODE",
     parameters: {
-        orgid, code, personid
+        orgid, code, personid, calendarbookinguuid
     }
 });
 
