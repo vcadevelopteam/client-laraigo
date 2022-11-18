@@ -394,7 +394,7 @@ const DialogCancelBooking: React.FC<{
     }, [])
 
     const onSubmit = async () => {
-        if (new Date(booking?.monthdate) > new Date()) {
+        if (new Date(booking?.monthdate) >= new Date()) {
             const allOk = await trigger();
             if (allOk) {
                 const data = getValues();
