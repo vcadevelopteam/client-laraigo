@@ -29,7 +29,7 @@ import { Divider, Grid, ListItem, ListItemText, styled } from '@material-ui/core
 import ListSubheader from '@material-ui/core/ListSubheader';
 import { Skeleton } from '@material-ui/lab';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import { AndroidColor, EmailColor, EmojiICon, FacebookColor, FacebookMessengerColor, GifIcon, InstagramColor, IosColor, SmsColor, TeamsColor, TelegramColor, TwitterColor, VoiceColor, WebMessengerColor, WhatsappColor, YouTubeColor } from 'icons';
+import { AndroidColor, EmailColor, EmojiICon, FacebookColor, FacebookMessengerColor, GifIcon, InstagramColor, IosColor, LinkedInColor, SmsColor, TeamsColor, TelegramColor, TwitterColor, VoiceColor, WebMessengerColor, WhatsappColor, YouTubeColor } from 'icons';
 import { Picker } from 'emoji-mart'
 import { SearchField } from 'components';
 import CameraAltIcon from '@material-ui/icons/CameraAlt';
@@ -605,6 +605,7 @@ export const GetIconColor: React.FC<IconProps> = ({ channelType }) => {
     if (channelType === "TWMS") return <TwitterColor/>
     if (channelType === "TEAM") return <TeamsColor/>
     if (channelType === "VOXI") return <VoiceColor />
+    if (channelType === "LNKD") return <LinkedInColor />
 
     return <TelegramColor />
 }
