@@ -126,7 +126,7 @@ const PostCreator: FC = () => {
                                 </CardActionArea>
                             </Card>
                         </Grid>
-                        <Grid item key={"postcreator_story"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
+                        {/*<Grid item key={"postcreator_story"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
                             <Card >
                                 <CardActionArea onClick={() => handleSelectedString("postcreator_story")}>
                                     <CardMedia
@@ -143,7 +143,7 @@ const PostCreator: FC = () => {
                                     </CardContent>
                                 </CardActionArea>
                             </Card>
-                        </Grid>
+                        </Grid>*/}
                         <Grid item key={"postcreator_calendar"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
                             <Card >
                                 <CardActionArea onClick={() => handleSelectedString("postcreator_calendar")}>

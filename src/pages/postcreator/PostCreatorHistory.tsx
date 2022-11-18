@@ -22,30 +22,30 @@ const useStyles = makeStyles((theme) => ({
     button: {
         fontSize: '14px',
         fontWeight: 500,
+        marginLeft: '4px',
+        marginRight: '4px',
         padding: 12,
         textTransform: 'initial',
         width: 'auto',
-        marginLeft: '4px',
-        marginRight: '4px',
     },
     containerLeft: {
         [theme.breakpoints.down('xs')]: {
             minWidth: '100vw',
             height: '100vh',
         },
-        flex: 1,
-        overflowY: 'auto',
-        margin: 4,
         border: '1px solid #762AA9',
         borderRadius: '4px',
+        flex: 1,
+        margin: 4,
         marginBottom: '28px',
+        overflowY: 'auto',
     },
     itemDate: {
-        minHeight: 40,
-        height: 40,
         border: '1px solid #bfbfc0',
         borderRadius: 4,
-        color: 'rgb(143, 146, 161)'
+        color: 'rgb(143, 146, 161)',
+        height: 40,
+        minHeight: 40,
     },
     root: {
         backgroundColor: 'white',
@@ -68,12 +68,12 @@ const PostCreatorHistory: FC = () => {
         <React.Fragment>
             <div style={{ width: '100%' }}>
                 <Tabs
-                    value={pageSelected}
                     indicatorColor="primary"
-                    variant="fullWidth"
+                    onChange={(_, value) => setPageSelected(value)}
                     style={{ border: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
                     textColor="primary"
-                    onChange={(_, value) => setPageSelected(value)}
+                    value={pageSelected}
+                    variant="fullWidth"
                 >
                     <AntTab label={t(langKeys.published)} />
                     <AntTab label={t(langKeys.history_scheduled)} />
@@ -81,17 +81,17 @@ const PostCreatorHistory: FC = () => {
                 </Tabs>
                 {pageSelected === 0 &&
                     <div style={{ marginTop: 4 }}>
-                        <PublishedHistory dataChannel={null} publishType={'PUBLISHED'} />
+                        <PublishedHistory publishType={'PUBLISHED'} />
                     </div>
                 }
                 {pageSelected === 1 &&
                     <div style={{ marginTop: 4 }}>
-                        <PublishedHistory dataChannel={null} publishType={'SCHEDULED'} />
+                        <PublishedHistory publishType={'SCHEDULED'} />
                     </div>
                 }
                 {pageSelected === 2 &&
                     <div style={{ marginTop: 4 }}>
-                        <PublishedHistory dataChannel={null} publishType={'DRAFT'} />
+                        <PublishedHistory publishType={'DRAFT'} />
                     </div>
                 }
             </div>
@@ -99,34 +99,34 @@ const PostCreatorHistory: FC = () => {
     )
 }
 const initialRange = {
-    startDate: new Date(new Date().setDate(1)),
     endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
-    key: 'selection'
+    key: 'selection',
+    startDate: new Date(new Date().setDate(1)),
 }
 
-const PublishedHistory: React.FC<{ dataChannel: any, publishType: string }> = ({ dataChannel, publishType }) => {
+const PublishedHistory: React.FC<{ publishType: string }> = ({ publishType }) => {
     const dispatch = useDispatch();
 
-    const classes = useStyles();
-
-    const mainResult = useSelector(state => state.main);
     const { t } = useTranslation();
-    const [selectedRows, setSelectedRows] = useState<Dictionary>({});
-    const [cleanSelected, setCleanSelected] = useState(false)
-    const [firstCall, setfirstCall] = useState(true)
-    const [waitDelete, setWaitDelete] = useState(false)
-    const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
-    const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
+
+    const classes = useStyles();
+    const mainResult = useSelector(state => state.main);
     const multiResult = useSelector(state => state.main.multiData);
-    const [filters, setfilters] = useState<any>({
-        type: ""
-    });
+
+    const [cleanSelected, setCleanSelected] = useState(false);
+    const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
+    const [filters, setfilters] = useState<any>({ type: "" });
+    const [firstCall, setfirstCall] = useState(true);
+    const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
+    const [selectedRows, setSelectedRows] = useState<Dictionary>({});
+    const [waitDelete, setWaitDelete] = useState(false);
 
     const fetchData = () => dispatch(getCollection(getPostHistorySel({ type: filters.type, status: publishType, datestart: dateRangeCreateDate.startDate, dateend: dateRangeCreateDate.endDate })));
 
     useEffect(() => {
         fetchData();
-        setfirstCall(false)
+        setfirstCall(false);
+
         return () => {
             dispatch(resetAllMain());
         };
@@ -146,20 +146,20 @@ const PublishedHistory: React.FC<{ dataChannel: any, publishType: string }> = ({
 
     const columns = React.useMemo(() => [
         {
-            Header: t(langKeys.title),
             accessor: 'posthistoryid',
-            width: 200,
+            Header: t(langKeys.title),
             isComponent: true,
             NoFilter: true,
+            width: 200,
             Cell: (props: any) => {
                 const { texttitle, communicationchanneldesc, medialink, communicationchanneltype } = props.cell.row.original;
                 return (
                     <div style={{ display: "flex", gap: 5 }}>
                         <div>
                             {(!!medialink?.[0]?.thumbnail) ?
-                                <img width={50} height={50} src={medialink?.[0]?.thumbnail || ""}></img>
+                                <img loading='eager' alt="" width={50} height={50} src={medialink?.[0]?.thumbnail || ""}></img>
                                 :
-                                <div style={{ width: 50, height: 50, backgroundColor: "#c4c4c4" }}></div>
+                                <img loading='eager' alt="" width={50} height={50} src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/41ba0151-31c6-4992-88b0-7d528db01de8/textonly.png"></img>
                             }
                             <div style={{ position: "absolute", top: 35, left: 125 }}>
                                 <Avatar variant="rounded" style={{ width: 25, height: 25, backgroundColor: "white" }}><GetIconColor channelType={communicationchanneltype} /></Avatar>
@@ -235,20 +235,17 @@ const PublishedHistory: React.FC<{ dataChannel: any, publishType: string }> = ({
                     </div>)
             }
         },
-    ],
-        []
-    );
+    ], []);
 
     useEffect(() => {
         if (waitDelete) {
             if (!multiResult.loading && !multiResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
-                fetchData();
                 dispatch(showBackdrop(false));
                 setWaitDelete(false);
+                fetchData();
             } else if (multiResult.error) {
-                const errormessage = t(multiResult.code || "error_unexpected_error", { module: t(langKeys.corporation_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(multiResult.code || "error_unexpected_error", { module: t(langKeys.corporation_plural).toLocaleLowerCase() }) }))
                 dispatch(showBackdrop(false));
                 setWaitDelete(false);
             }
@@ -256,67 +253,65 @@ const PublishedHistory: React.FC<{ dataChannel: any, publishType: string }> = ({
     }, [multiResult, waitDelete])
 
     const handleclose = () => {
-        const todelete = mainResult.mainData.data.filter(x => Object.keys(selectedRows).includes(`${x[selectionKey]}`)) || []
+        const toDelete = mainResult.mainData.data.filter(x => Object.keys(selectedRows).includes(`${x[selectionKey]}`)) || [];
         let allRequestBody: IRequestBody[] = [];
-        todelete.forEach(x => {
-            allRequestBody.push(postHistoryIns({ ...x, status: "DELETED", operation: "UPDATE" }))
+        toDelete.forEach(x => {
+            allRequestBody.push(postHistoryIns({ ...x, status: "DELETED", operation: "UPDATE" }));
         });
         setWaitDelete(true);
-        dispatch(getMultiCollection(allRequestBody))
+        dispatch(getMultiCollection(allRequestBody));
     }
 
     return (
-
         <div style={{ height: '100%', width: 'inherit' }}>
             <TableZyx
+                cleanSelection={cleanSelected}
                 columns={columns}
                 data={mainResult.mainData.data}
-                heightWithCheck={65}
-                useSelection={true}
-                selectionKey={selectionKey}
-                setSelectedRows={setSelectedRows}
-                initialSelectedRows={selectedRows}
-                onClickRow={() => { }}
-                cleanSelection={cleanSelected}
-                setCleanSelection={setCleanSelected}
-                register={false}
                 download={false}
+                heightWithCheck={65}
+                initialSelectedRows={selectedRows}
                 loading={mainResult.mainData.loading}
+                onClickRow={() => { }}
+                register={false}
+                selectionKey={selectionKey}
+                setCleanSelection={setCleanSelected}
+                setSelectedRows={setSelectedRows}
+                useSelection={true}
                 ButtonsElement={() => (
                     <div style={{ display: "flex", width: "100%", justifyContent: "space-between", paddingTop: 10 }}>
                         <div style={{ display: "flex", gap: 8 }}>
                             <FieldSelect
-                                onChange={(value) => { setfilters({ ...filters, type: value?.value || "" }) }}
-                                size="small"
-                                label={t(langKeys.posttype)}
-                                style={{ maxWidth: 300, minWidth: 200 }}
-                                variant="outlined"
-                                loading={false}
                                 data={[
                                     { value: "POST" },
                                     { value: "STORY" },
                                 ]}
-                                optionValue="value"
+                                label={t(langKeys.posttype)}
+                                loading={false}
+                                onChange={(value) => { setfilters({ ...filters, type: value?.value || "" }) }}
                                 optionDesc="value"
+                                optionValue="value"
+                                size="small"
+                                style={{ maxWidth: 300, minWidth: 200 }}
                                 valueDefault={filters.type}
+                                variant="outlined"
                             />
                             <Button
-                                variant="contained"
                                 color="primary"
                                 disabled={Object.keys(selectedRows).length === 0}
-                                style={{ marginLeft: '5px' }}
                                 onClick={handleclose}
+                                style={{ marginLeft: '5px' }}
+                                variant="contained"
                             >
-                                <CloseIcon />{t(langKeys.close)}
+                                <CloseIcon />{t(langKeys.delete)}
                             </Button>
-
                         </div>
                         <div style={{ display: "flex" }}>
                             <DateRangePicker
-                                open={openDateRangeCreateDateModal}
-                                setOpen={setOpenDateRangeCreateDateModal}
-                                range={dateRangeCreateDate}
                                 onSelect={setDateRangeCreateDate}
+                                open={openDateRangeCreateDateModal}
+                                range={dateRangeCreateDate}
+                                setOpen={setOpenDateRangeCreateDateModal}
                             >
                                 <Button
                                     className={classes.itemDate}
