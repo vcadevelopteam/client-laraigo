@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState } from 'react'
 import CloseIcon from '@material-ui/icons/Close';
-import { IconButton, makeStyles, Typography, List, ListItem, ListItemText, ListSubheader, Button } from "@material-ui/core";
+import { ClickAwayListener, IconButton, makeStyles, Typography, List, ListItem, ListItemText, ListSubheader, Button } from "@material-ui/core";
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'hooks';
 import PersonIcon from '@material-ui/icons/Person';
@@ -20,6 +20,7 @@ import { langKeys } from 'lang/keys';
 import DialpadIcon from '@material-ui/icons/Dialpad';
 import { execute } from 'store/main/actions';
 import { CallTransferInactiveIcon, CallTransferActiveIcon } from 'icons';
+import Dial from './Dial';
 
 const useStyles = makeStyles((theme) => ({
     closeButton: {
@@ -80,6 +81,7 @@ const ManageCallInfoTicket: React.FC = () => {
     const [transferUser, setTransferUser] = useState<{userid: number, name: string} | null>(null);
     const [transferStep, setTransferStep] = useState(1);
     const [transferFilter, setTransferFilter] = useState("");
+    const [openDial, setOpenDial] = useState(false);
     
     React.useEffect(() => {
         if (call.type === "INBOUND" && statusCall === "CONNECTING") {
@@ -153,6 +155,10 @@ const ManageCallInfoTicket: React.FC = () => {
         sethold(!hold)
         dispatch(setHold(hold))
     }
+
+    const handleClickAway = () => {
+        setOpenDial(false)
+    };
 
     return (
         <div style={{ width: "100%" }}>
@@ -260,6 +266,8 @@ const ManageCallInfoTicket: React.FC = () => {
                                             style={{ width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#bdbdbd' }}
                                             disabled={!!call.transfer}
                                             onClick={() => {
+                                                setTransferUser(null)
+                                                setTransferFilter("")
                                                 setTransferStep(1)
                                                 dispatch(setTransferAction(!transferAction))
                                             }}
@@ -365,109 +373,139 @@ const ManageCallInfoTicket: React.FC = () => {
                 </CardContent>
             </Card>}
             <Card style={{ maxWidth: "500px", marginRight: "auto", marginTop: 50, display: transferAction ? "block" : "none", position: 'relative' }}>
-                <IconButton
-                    size="small"
-                    className={classes.closeButton}
-                    onClick={() => dispatch(setTransferAction(false))}
-                >
-                    <CloseIcon />
-                </IconButton>
-                <CardContent>
-                    <Typography gutterBottom variant="h6" component="div">
-                        {t(langKeys.transfercall)}
-                    </Typography>
-                    {transferStep === 1 && <div>
-                        <FieldEdit
-                            label={t(langKeys.searcher)}
-                            variant='outlined'
-                            size="small"
-                            valueDefault={transferFilter}
-                            onChange={(value) => {
-                                setTransferFilter(value)
-                            }}
-                        />
-                        <List className={classes.transferListRoot}>
-                            <ListSubheader
-                                disableSticky={true}
-                                className={classes.transferListSubheader}
-                            >
-                                {t(langKeys.user_plural)}
-                            </ListSubheader>
-                            {agentToReassignList.filter(x => x.hasvoxichannel
-                                && x.userid !== agentSelected?.userid
-                                && x.status === "ACTIVO"
-                                && x.displayname.toLowerCase().includes(transferFilter.toLowerCase()))
-                                .map((item, index) => (
-                                <ListItem
-                                    button
-                                    key={`transfer-${index}`}
-                                    className={classes.transferListItem}
+                {transferStep === 1 && <>
+                    <IconButton
+                        size="small"
+                        className={classes.closeButton}
+                        onClick={() => {
+                            dispatch(setTransferAction(false))
+                        }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                    <CardContent>
+                        <Typography gutterBottom variant="h6" component="div">
+                            {t(langKeys.transfercall)}
+                        </Typography>
+                        <div>
+                            <FieldEdit
+                                label={t(langKeys.searcher)}
+                                variant='outlined'
+                                size="small"
+                                valueDefault={transferFilter}
+                                onChange={(value) => {
+                                    setTransferFilter(value)
+                                }}
+                            />
+                            <List className={classes.transferListRoot}>
+                                <ListSubheader
+                                    disableSticky={true}
+                                    className={classes.transferListSubheader}
+                                >
+                                    {t(langKeys.user_plural)}
+                                </ListSubheader>
+                                {agentToReassignList.filter(x => x.hasvoxichannel
+                                    && x.userid !== agentSelected?.userid
+                                    && x.status === "ACTIVO"
+                                    && x.displayname.toLowerCase().includes(transferFilter.toLowerCase()))
+                                    .map((item, index) => (
+                                    <ListItem
+                                        button
+                                        key={`transfer-${index}`}
+                                        className={classes.transferListItem}
+                                        onClick={() => {
+                                            setTransferStep(2)
+                                            setTransferUser({
+                                                userid: item.userid,
+                                                name: item.displayname
+                                            })
+                                        }}
+                                    >
+                                        <ListItemText
+                                            primary={item.displayname}
+                                        />
+                                        <ListItemText
+                                            primary={item.userid}
+                                            style={{textAlign: 'right'}}
+                                        />
+                                    </ListItem>
+                                ))}
+                            </List>
+                            <div style={{ justifyContent: 'center', marginBottom: 12, marginTop: 10, display: "flex" }}>
+                                <ClickAwayListener onClickAway={handleClickAway}>
+                                    <div>
+                                        <IconButton
+                                            style={{ marginLeft: "auto", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#7721ad' }}
+                                            onClick={() => {
+                                                setOpenDial(true)
+                                                // dispatch(setModalCall(true))
+                                                // sethold(true)
+                                                // setmute(false)
+                                            }}
+                                        >
+                                            <DialpadIcon style={{ color: "white", width: "35px", height: "35px" }} />
+                                        </IconButton>
+                                        <Dial
+                                            open={openDial}
+                                            setOpen={setOpenDial}
+                                        />
+                                    </div>
+                                </ClickAwayListener>
+                            </div>
+                        </div>
+                    </CardContent>
+                </>}
+                    {transferStep === 2 && <>
+                    <IconButton
+                        size="small"
+                        className={classes.closeButton}
+                        onClick={() => {
+                            setTransferStep(1)
+                            setTransferUser(null)
+                        }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                    <CardContent>
+                        <Typography gutterBottom variant="h6" component="div">
+                            {t(langKeys.transfercall)}
+                        </Typography>
+                        <div>
+                            <div>
+                                {t(langKeys.transferto, {from: numberVox, to: transferUser?.name})}
+                            </div>
+                            <div>
+                                <div style={{ marginLeft: "auto", marginTop: 20, marginRight: "auto", width: "100px", height: "100px", borderRadius: "50%", backgroundColor: "#bdbdbd" }}>
+                                    <PersonIcon style={{ color: "white", width: "100px", height: "100px" }} />
+                                </div>
+                                <div style={{ fontSize: "15px", marginLeft: "auto", marginRight: "auto", width: "200px", textAlign: "center", marginTop: 10 }}>
+                                    {transferUser?.name}
+                                </div>
+                            </div>
+                            <div style={{ justifyContent: 'center', marginBottom: 12, marginTop: 10, display: "flex" }}>
+                                <Button
+                                    variant="outlined"
+                                    color="primary"
                                     onClick={() => {
-                                        setTransferStep(2)
-                                        setTransferUser({
-                                            userid: item.userid,
-                                            name: item.displayname
-                                        })
+                                        if (transferUser?.userid) {
+                                            dispatch(transferCall({
+                                                url: `${ticketSelected?.commentexternalid}?mode=transfer&number=user${transferUser?.userid}.${resValidateToken.orgid}`,
+                                                conversationid: ticketSelected?.conversationid!!,
+                                                number: `user${transferUser?.userid}.${resValidateToken.orgid}`,
+                                                name: transferUser.name,
+                                            }))
+                                            sethold(true)
+                                            setmute(false)
+                                            dispatch(setTransferAction(false))
+                                        }
                                     }}
                                 >
-                                    <ListItemText
-                                        primary={item.displayname}
-                                    />
-                                    <ListItemText
-                                        primary={item.userid}
-                                        style={{textAlign: 'right'}}
-                                    />
-                                </ListItem>
-                            ))}
-                        </List>
-                        <div style={{ justifyContent: 'center', marginBottom: 12, marginTop: 10, display: "flex" }}>
-                            <IconButton
-                                style={{ marginLeft: "auto", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#7721ad' }}
-                                onClick={() => {
-                                    dispatch(setModalCall(true, true))
-                                    sethold(true)
-                                    setmute(false)
-                                }}
-                            >
-                                <DialpadIcon style={{ color: "white", width: "35px", height: "35px" }} />
-                            </IconButton>
-                        </div>
-                    </div>}
-                    {transferStep === 2 && <div>
-                        <div>
-                            {t(langKeys.transferto, {from: numberVox, to: transferUser?.name})}
-                        </div>
-                        <div>
-                            <div style={{ marginLeft: "auto", marginTop: 20, marginRight: "auto", width: "100px", height: "100px", borderRadius: "50%", backgroundColor: "#bdbdbd" }}>
-                                <PersonIcon style={{ color: "white", width: "100px", height: "100px" }} />
-                            </div>
-                            <div style={{ fontSize: "15px", marginLeft: "auto", marginRight: "auto", width: "200px", textAlign: "center", marginTop: 10 }}>
-                                {transferUser?.name}
+                                    {t(langKeys.tocall)}
+                                </Button>
                             </div>
                         </div>
-                        <div style={{ justifyContent: 'center', marginBottom: 12, marginTop: 10, display: "flex" }}>
-                            <Button
-                                variant="outlined"
-                                color="primary"
-                                onClick={() => {
-                                    if (transferUser?.userid) {
-                                        dispatch(transferCall({
-                                            url: `${ticketSelected?.commentexternalid}?mode=transfer&number=user${transferUser?.userid}.${resValidateToken.orgid}`,
-                                            conversationid: ticketSelected?.conversationid!!,
-                                            number: `user${transferUser?.userid}.${resValidateToken.orgid}`,
-                                            name: transferUser.name,
-                                        }))
-                                        sethold(true)
-                                        setmute(false)
-                                        dispatch(setTransferAction(false))
-                                    }
-                                }}
-                            >
-                                {t(langKeys.tocall)}
-                            </Button>
-                        </div>
-                    </div>}
-                </CardContent>
+                    </CardContent>
+                </>}
             </Card>
         </div>
     )

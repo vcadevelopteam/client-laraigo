@@ -548,15 +548,15 @@ const MakeCall: React.FC = () => {
                                                 interactiontext: 'LLAMADA SALIENTE',
                                             })))
                                         }
-                                        if (statusCall === 'CONNECTED' && transferAction) {
-                                            dispatch(transferCall({
-                                                url: `${ticketSelected?.commentexternalid}?mode=transfer&number=${numberVox}`,
-                                                conversationid: ticketSelected?.conversationid!!,
-                                                number: numberVox,
-                                                name: numberVox
-                                            }))
-                                            dispatch(setModalCall(false, false))
-                                        }
+                                        // if (statusCall === 'CONNECTED' && transferAction) {
+                                        //     dispatch(transferCall({
+                                        //         url: `${ticketSelected?.commentexternalid}?mode=transfer&number=${numberVox}`,
+                                        //         conversationid: ticketSelected?.conversationid!!,
+                                        //         number: numberVox,
+                                        //         name: numberVox
+                                        //     }))
+                                        //     dispatch(setModalCall(false, false))
+                                        // }
                                     }}
                                 >
                                     <PhoneIcon style={{ color: "white", width: "35px", height: "35px" }} />

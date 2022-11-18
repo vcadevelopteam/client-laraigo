@@ -16,7 +16,7 @@ export const setModalCall = (state: IState, action: IAction): IState => {
     return {
         ...state,
         showcall: action.payload.showModalCall,
-        transferAction: action.payload.transferAction,
+        // transferAction: action.payload.transferAction,
     }
 }
 export const setPhoneNumber = (state: IState, action: IAction): IState => {
