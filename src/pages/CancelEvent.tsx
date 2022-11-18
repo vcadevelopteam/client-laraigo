@@ -2,18 +2,17 @@
 import React, { FC, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
-import { Button, makeStyles } from "@material-ui/core";
+import { Button, makeStyles, Snackbar, Typography } from "@material-ui/core";
 import { useParams } from 'react-router';
 import { FieldEditMulti } from "components";
-import { execute, getCollection, resetAllMain } from 'store/main/actions';
+import { execute, getCollEventBooking, resetAllMain } from 'store/main/actions';
 import { calendarBookingCancel, calendarBookingSelOne } from 'common/helpers';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import NotFound from './NotFound';
+import Alert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles(theme => ({
     back: {
@@ -53,16 +52,21 @@ const useStyles = makeStyles(theme => ({
 
 export const CancelEvent: FC = () => {
     const dispatch = useDispatch();
-    const { corpid, orgid, calendareventid, calendarbookingid }: any = useParams();
+    const { corpid, orgid, calendareventid, calendarbookinguuid }: any = useParams();
     const classes = useStyles();
     const { t } = useTranslation();
     const [waitSave, setWaitSave] = useState(false);
     const [successCancel, setSuccessCancel] = useState(false);
     const [waitFind, setWaitFind] = useState(false);
     const [exists, setexists] = useState(true);
-    const mainResult = useSelector(state => state.main);
+    const mainResult = useSelector(state =>  state.main.mainEventBooking);
     const saveRes = useSelector(state => state.main.execute);
     const [cancelcomment, setCancelcomment] = useState("");
+    const [showSnackbar, setshowSnackbar] = React.useState({
+        open: false,
+        severity: "success",
+        msg: ""
+    });
     const [data, setData] = useState({
         hourend: "",
         hourstart: "",
@@ -70,10 +74,15 @@ export const CancelEvent: FC = () => {
         personcontact: "",
         personname: "",
         monthdate: "",
+        calendarbookingid: "",
     });
+    const handleClose = () => {
+        setshowSnackbar({ ...showSnackbar, open: false });
+    };
+    
 
-    const fetchData = () => dispatch(getCollection(calendarBookingSelOne({
-        corpid, orgid, calendareventid, id: calendarbookingid
+    const fetchData = () => dispatch(getCollEventBooking(calendarBookingSelOne({
+        corpid, orgid, calendareventid, id: calendarbookinguuid
     })));
 
     useEffect(() => {
@@ -86,23 +95,28 @@ export const CancelEvent: FC = () => {
     
     useEffect(() => {
         if(waitFind){
-            if(!mainResult.mainData.error && !mainResult.mainData.loading){
-                if(mainResult.mainData.data.length>0){
-                    setData({
-                        hourend: mainResult?.mainData?.data?.[0]?.hourend||"",
-                        hourstart: mainResult?.mainData?.data?.[0]?.hourstart||"",
-                        name: mainResult?.mainData?.data?.[0]?.name||"",
-                        personcontact: mainResult?.mainData?.data?.[0]?.personcontact||"",
-                        personname: mainResult?.mainData?.data?.[0]?.personname||"",
-                        monthdate: mainResult?.mainData?.data?.[0]?.monthdate||"",
-                    })
-                    setWaitFind(false)
+            if(!mainResult.loading){
+                if(!mainResult.error){
+                    if(mainResult.data.length>0){
+                        setData({
+                            hourend: mainResult?.data?.[0]?.hourend||"",
+                            hourstart: mainResult?.data?.[0]?.hourstart||"",
+                            name: mainResult?.data?.[0]?.name||"",
+                            personcontact: mainResult?.data?.[0]?.personcontact||"",
+                            personname: mainResult?.data?.[0]?.personname||"",
+                            monthdate: mainResult?.data?.[0]?.monthdate||"",
+                            calendarbookingid: mainResult?.data?.[0]?.calendarbookingid||"",
+                        })
+                        setWaitFind(false)
+                    }else{
+                        setexists(false)
+                    }
                 }else{
                     setexists(false)
                 }
             }
         }
-    }, [mainResult.mainData.data])
+    }, [mainResult])
     
     useEffect(() => {
         if (waitSave) {
@@ -112,11 +126,9 @@ export const CancelEvent: FC = () => {
                 setTimeout(function() {
                     window.close()
                 }, 8000);
-                dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (saveRes.error) {
-                dispatch(showSnackbar({ show: true, severity: "error", message: t(saveRes.code || "error_unexpected_error") }))
-                dispatch(showBackdrop(false));
+                setshowSnackbar({ open: true, severity: "error", msg: t(saveRes.code || "error_unexpected_error") })
                 setWaitSave(false);
             }
         }
@@ -124,36 +136,56 @@ export const CancelEvent: FC = () => {
     useEffect(() => {
         if (waitSave) {
             if (!saveRes.loading && !saveRes.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_cancel_event) }))
-                dispatch(showBackdrop(false));
+                setshowSnackbar({ open: true, severity: "success", msg: t(langKeys.successful_cancel_event) })
                 setWaitSave(false);
             } else if (saveRes.error) {
-                dispatch(showSnackbar({ show: true, severity: "error", message: t(saveRes.code || "error_unexpected_error") }))
-                dispatch(showBackdrop(false));
+                setshowSnackbar({ open: true, severity: "error", msg: t(saveRes.code || "error_unexpected_error") })
                 setWaitSave(false);
             }
         }
     }, [saveRes, waitSave])
 
     const onSubmit = async () => {
-        debugger
         if(new Date(data?.monthdate) > new Date()){
             const datat = {
                 calendareventid: calendareventid,
-                id: calendarbookingid,
+                id: data?.calendarbookingid,
                 cancelcomment: cancelcomment||"",
             }
             dispatch(execute(calendarBookingCancel(datat)));
             setWaitSave(true);
-            dispatch(showBackdrop(true));
         }else{
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.cancelenventerror || "error_unexpected_error") }))
+            setshowSnackbar({ open: true, severity: "error", msg: t(langKeys.cancelenventerror || "error_unexpected_error") })
         }
     }
     if(exists){
         if(!successCancel){
             return (
                 <div className={classes.back}>
+                    {showSnackbar.severity === "error" &&
+                        <Snackbar
+                            anchorOrigin={{ vertical:'top', horizontal:'right' }}
+                            open={showSnackbar.open}
+                            onClose={handleClose}
+                            message={showSnackbar.msg}
+                        >
+                            <Alert onClose={handleClose} severity="error">
+                                {showSnackbar.msg}
+                            </Alert>
+                        </Snackbar>
+                    }
+                    {showSnackbar.severity === "success" &&
+                        <Snackbar
+                            anchorOrigin={{ vertical:'top', horizontal:'right' }}
+                            open={showSnackbar.open}
+                            onClose={handleClose}
+                            message={showSnackbar.msg}
+                        >
+                            <Alert onClose={handleClose} severity="success">
+                                {showSnackbar.msg}
+                            </Alert>
+                        </Snackbar>
+                    }
                     <div className={classes.container}>
                         <DialogTitle>
                             <div style={{textAlign: 'center', fontWeight: 'bold'}}>
@@ -214,7 +246,9 @@ export const CancelEvent: FC = () => {
         }
     }else{
         return (
-            <NotFound />
+            <div className={classes.back}>
+                <Typography variant="h5">{t(langKeys.no_event_found)}</Typography>
+            </div>
         )
     }
 }

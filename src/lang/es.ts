@@ -1654,6 +1654,7 @@ const translation: LangKeys = {
     remindertype: 'Tipo de recordatorio',
     prepare_meeting: "Comparta algo adicional que ayude a prepararse para nuestra reunión.",
     no_event_found: "Ningún evento encontrado",
+    no_booking_found: "Ningún reserva encontrada",
     invitation_email: "Se ha enviado una invitación de calendario a su dirección de correo electrónico.",
     invitation_phone: "Se ha enviado una invitación de calendario a su teléfono registrado.",
     schedule_event: "Programar evento",

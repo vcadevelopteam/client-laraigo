@@ -34,8 +34,8 @@ const paths = {
         resolve: (orgid: number, eventcode: string) => `/events/${orgid}/${eventcode}`,
     },
     CANCEL_EVENT: {
-        path: "/cancelevent/:corpid/:orgid/:calendareventid/:calendarbookingid",
-        resolve: (corpid: number, orgid: number, calendareventid: number, calendarbookingid: number) => `/events/${corpid}/${orgid}/${calendareventid}/${calendarbookingid}`,
+        path: "/cancelevent/:corpid/:orgid/:calendareventid/:calendarbookinguuid",
+        resolve: (corpid: number, orgid: number, calendareventid: number, calendarbookinguuid: string) => `/events/${corpid}/${orgid}/${calendareventid}/${calendarbookinguuid}`,
     },
     LOCATION: {
         path: "/getLocations/:token",
