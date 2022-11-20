@@ -1,10 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import ClearIcon from '@material-ui/icons/Clear';
 import CloseIcon from '@material-ui/icons/Close';
 import React, { FC, Fragment, useEffect, useState, useCallback } from "react";
 import TableZyx from "components/fields/table-simple";
+import DateFnsUtils from '@date-io/date-fns';
 
-import { dataActivities, dataFeelings } from 'common/helpers';
-import { AntTab, FieldSelect, DateRangePicker, GetIconColor, FieldView, FieldEdit, FieldEditAdvanced } from 'components';
+import { KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { dataActivities, dataFeelings, getLocaleDateString, localesLaraigo } from 'common/helpers';
+import { AntTab, FieldSelect, DateRangePicker, GetIconColor, FieldView, FieldEdit, FieldEditAdvanced, TemplateBreadcrumbs } from 'components';
 import { Avatar, Button, Tabs } from "@material-ui/core";
 import { CalendarIcon } from "icons";
 import { Dictionary, IRequestBody } from "@types";
@@ -20,6 +23,7 @@ import { useSelector } from 'hooks';
 import { useTranslation } from "react-i18next";
 import { useForm } from 'react-hook-form';
 import { AccountCircle, CameraAlt, ChatBubble, Delete, Facebook, Instagram, LinkedIn, MusicNote, PlayCircleOutlineSharp, Replay, Reply, Save, Send, ThumbUp, Timelapse, Twitter, YouTube } from '@material-ui/icons';
+import { FacebookColor, InstagramColor, LinkedInColor, TikTokColor, TwitterColor, YouTubeColor } from "icons";
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -360,9 +364,6 @@ const PublishedHistoryDetail: React.FC<{ data: { row: Dictionary | null, edit: b
     const uploadResult = useSelector(state => state.main.uploadFile);
 
     const [fileAttachment, setFileAttachment] = useState<File | null>(null);
-    const [modalData, setModalData] = useState<any>(null);
-    const [modalType, setModalType] = useState('');
-    const [openModal, setOpenModal] = useState(false);
     const [previewType, setPreviewType] = useState('');
     const [waitUploadFile, setWaitUploadFile] = useState(false);
     const [customizeType, setCustomizeType] = useState('');
@@ -387,6 +388,38 @@ const PublishedHistoryDetail: React.FC<{ data: { row: Dictionary | null, edit: b
             operation: row ? 'UPDATE' : 'INSERT',
         }
     });
+
+    React.useEffect(() => {
+        if (row) {
+            if (row?.communicationchanneltype) {
+                switch (row?.communicationchanneltype) {
+                    case "FBWA":
+                        setPreviewType('FACEBOOKPREVIEW');
+                        break;
+
+                    case "INST":
+                        setPreviewType('INSTAGRAMPREVIEW');
+                        break;
+
+                    case "LNKD":
+                        setPreviewType('LINKEDINPREVIEW');
+                        break;
+
+                    case "TKTK":
+                        setPreviewType('TIKTOKPREVIEW');
+                        break;
+
+                    case "YOUT":
+                        setPreviewType('YOUTUBEPREVIEW');
+                        break;
+
+                    case "TWIT":
+                        setPreviewType('TWITTERPREVIEW');
+                        break;
+                }
+            }
+        }
+    }, [row]);
 
     React.useEffect(() => {
         register('corpid');
@@ -425,8 +458,7 @@ const PublishedHistoryDetail: React.FC<{ data: { row: Dictionary | null, edit: b
             return;
         }
 
-        setModalData(data);
-        setOpenModal(true);
+
     });
 
     const onClickAttachment = useCallback(() => {
@@ -468,10 +500,52 @@ const PublishedHistoryDetail: React.FC<{ data: { row: Dictionary | null, edit: b
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit} style={{ width: '100%' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '10px', paddingBottom: '10px' }}>
+                    <div>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={[
+                                { id: "view-1", name: t(langKeys.postcreator_posthistory) },
+                                { id: "view-2", name: t(langKeys.postcreator_posthistorydetail) }
+                            ]}
+                            handleClick={setViewSelected}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => setViewSelected("view-1")}
+                        >{t(langKeys.back)}</Button>
+                    </div>
+                </div>
                 <Fragment>
                     <div style={{ display: "flex", flexDirection: 'row', height: '100%', overflow: 'overlay', flexWrap: 'wrap' }}>
                         <div className={classes.containerLeft}>
                             <div className={classes.root}>
+                                <div className="row-zyx" style={{ marginBottom: '0px' }}>
+                                    <FieldView
+                                        className="col-12"
+                                        label={''}
+                                        value={t(langKeys.postcreator_publish_pages)}
+                                        styles={{ fontWeight: 'bold', color: '#762AA9' }}
+                                    />
+                                </div>
+                                <div className="row-zyx">
+                                    <div style={{ width: '100%', flex: '50%' }}>
+                                        <div style={{ display: 'inline-flex', alignItems: 'center' }}>
+                                            {getValues('communicationchanneltype') === 'FBWA' && <FacebookColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
+                                            {getValues('communicationchanneltype') === 'INST' && <InstagramColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
+                                            {getValues('communicationchanneltype') === 'LNKD' && <LinkedInColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
+                                            {getValues('communicationchanneltype') === 'TKTK' && <TikTokColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
+                                            {getValues('communicationchanneltype') === 'TWIT' && <TwitterColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
+                                            {getValues('communicationchanneltype') === 'YOUT' && <YouTubeColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
+                                            <span>{row?.communicationchanneldesc || ''}</span>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div className="row-zyx" style={{ marginBottom: '0px', paddingLeft: '6px' }}>
                                     <FieldEdit
                                         className="col-12"
@@ -593,6 +667,14 @@ const PublishedHistoryDetail: React.FC<{ data: { row: Dictionary | null, edit: b
                         </div>
                         <div className={classes.containerLeft}>
                             <div className={classes.root}>
+                                <div className="row-zyx">
+                                    <FieldView
+                                        className="col-12"
+                                        label={''}
+                                        value={t(langKeys.postcreator_publish_customizemode)}
+                                        styles={{ fontWeight: 'bold', color: '#762AA9' }}
+                                    />
+                                </div>
                                 <div className="row-zyx" style={{ alignItems: 'center', display: 'flex', justifyContent: 'center' }}>
                                     {getValues('communicationchanneltype') === "FBWA" && <Button
                                         className={classes.button}
@@ -713,6 +795,54 @@ const PublishedHistoryDetail: React.FC<{ data: { row: Dictionary | null, edit: b
                         <div className={classes.containerLeft}>
                             <div className={classes.root} style={{ backgroundColor: '#EBEBEB' }}>
                                 <div className="row-zyx">
+                                    <FieldView
+                                        className="col-12"
+                                        label={''}
+                                        value={t(langKeys.postcreator_publish_date)}
+                                        styles={{ fontWeight: 'bold', color: '#762AA9' }}
+                                    />
+                                </div>
+                                <div className="row-zyx">
+                                    <React.Fragment>
+                                        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(localesLaraigo() as any)[navigator.language.split('-')[0]]}>
+                                            <KeyboardDatePicker
+                                                className="col-6"
+                                                format={getLocaleDateString()}
+                                                invalidDateMessage={t(langKeys.invalid_date_format)}
+                                                label={t(langKeys.date)}
+                                                value={getValues('publishdate')}
+                                                onChange={(e: any) => {
+                                                    setValue('publishdate', e);
+                                                    trigger('publishdate');
+                                                }}
+                                            />
+                                        </MuiPickersUtilsProvider>
+                                        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(localesLaraigo())[navigator.language.split('-')[0]]}>
+                                            <KeyboardTimePicker
+                                                ampm={false}
+                                                className="col-6"
+                                                error={false}
+                                                format="HH:mm:ss"
+                                                label={t(langKeys.time)}
+                                                value={getValues('publishdate')}
+                                                views={['hours', 'minutes', 'seconds']}
+                                                onChange={(e: any) => {
+                                                    setValue('publishdate', e);
+                                                    trigger('publishdate');
+                                                }}
+                                            />
+                                        </MuiPickersUtilsProvider>
+                                    </React.Fragment>
+                                </div>
+                                <div className="row-zyx">
+                                    <FieldView
+                                        className="col-12"
+                                        label={''}
+                                        value={t(langKeys.postcreator_publish_preview)}
+                                        styles={{ fontWeight: 'bold', color: '#762AA9' }}
+                                    />
+                                </div>
+                                <div className="row-zyx">
                                     <FieldSelect
                                         label={t(langKeys.postcreator_publish_previewmode)}
                                         style={{ width: '100%', backgroundColor: 'white' }}
@@ -747,14 +877,6 @@ const PublishedHistoryDetail: React.FC<{ data: { row: Dictionary | null, edit: b
                                         ]}
                                         optionDesc="description"
                                         optionValue="value"
-                                    />
-                                </div>
-                                <div className="row-zyx">
-                                    <FieldView
-                                        className="col-12"
-                                        label={''}
-                                        value={t(langKeys.postcreator_publish_preview)}
-                                        styles={{ fontWeight: 'bold', color: '#762AA9' }}
                                     />
                                 </div>
                                 {previewType === 'FACEBOOKPREVIEW' && <div className="row-zyx">
@@ -929,8 +1051,8 @@ const PublishedHistoryDetail: React.FC<{ data: { row: Dictionary | null, edit: b
                                         startIcon={<Save color="secondary" />}
                                         style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         type="submit"
-                                        onClick={() => { setModalType('DRAFT') }}
-                                    >{t(langKeys.postcreator_publish_draft)}
+                                        onClick={() => { setValue('status', 'DRAFT') }}
+                                    >{t(langKeys.postcreator_publish_confirm_draft)}
                                     </Button>
                                     <Button
                                         className={classes.button}
@@ -939,18 +1061,8 @@ const PublishedHistoryDetail: React.FC<{ data: { row: Dictionary | null, edit: b
                                         startIcon={<Timelapse color="secondary" />}
                                         style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         type="submit"
-                                        onClick={() => { setModalType('PROGRAM') }}
-                                    >{t(langKeys.postcreator_publish_program)}
-                                    </Button>
-                                    <Button
-                                        className={classes.button}
-                                        variant="contained"
-                                        color="primary"
-                                        startIcon={<Send color="secondary" />}
-                                        style={{ backgroundColor: "#11ABF1", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
-                                        type="submit"
-                                        onClick={() => { setModalType('PUBLISH') }}
-                                    >{t(langKeys.postcreator_publish_publish)}
+                                        onClick={() => { setValue('status', 'SCHEDULED') }}
+                                    >{t(langKeys.postcreator_publish_confirm_save)}
                                     </Button>
                                 </div>
                             </div>

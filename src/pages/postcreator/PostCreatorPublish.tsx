@@ -504,6 +504,14 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                         </div>
                         <div className={classes.containerLeft}>
                             <div className={classes.root}>
+                                <div className="row-zyx">
+                                    <FieldView
+                                        className="col-12"
+                                        label={''}
+                                        value={t(langKeys.postcreator_publish_customizemode)}
+                                        styles={{ fontWeight: 'bold', color: '#762AA9' }}
+                                    />
+                                </div>
                                 <div className="row-zyx" style={{ alignItems: 'center', display: 'flex', justifyContent: 'center' }}>
                                     {showFacebook && <Button
                                         className={classes.button}
@@ -689,6 +697,14 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                         <div className={classes.containerLeft}>
                             <div className={classes.root} style={{ backgroundColor: '#EBEBEB' }}>
                                 <div className="row-zyx">
+                                    <FieldView
+                                        className="col-12"
+                                        label={''}
+                                        value={t(langKeys.postcreator_publish_preview)}
+                                        styles={{ fontWeight: 'bold', color: '#762AA9' }}
+                                    />
+                                </div>
+                                <div className="row-zyx">
                                     <FieldSelect
                                         label={t(langKeys.postcreator_publish_previewmode)}
                                         style={{ width: '100%', backgroundColor: 'white' }}
@@ -723,14 +739,6 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         ]}
                                         optionDesc="description"
                                         optionValue="value"
-                                    />
-                                </div>
-                                <div className="row-zyx">
-                                    <FieldView
-                                        className="col-12"
-                                        label={''}
-                                        value={t(langKeys.postcreator_publish_preview)}
-                                        styles={{ fontWeight: 'bold', color: '#762AA9' }}
                                     />
                                 </div>
                                 {previewType === 'FACEBOOKPREVIEW' && <div className="row-zyx">
