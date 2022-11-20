@@ -30,7 +30,7 @@ const CloseTicketVoxi: React.FC = () => {
     const [waitClose, setWaitClose] = useState(false);
     const [motive, setmotive] = useState("");
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
-    
+
     React.useEffect(() => {
         if (showModalVoxi > 0) {
             setOpenModal(true)
@@ -38,32 +38,22 @@ const CloseTicketVoxi: React.FC = () => {
         }
     }, [showModalVoxi])
 
-     useEffect(() => {
-         if (waitTipify) {
-             if (!tipifyRes.loading && !tipifyRes.error) {
-                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_tipify_ticket) }))
-                 dispatch(showBackdrop(false));
-                 setWaitTipify(false);
-             } else if (tipifyRes.error) {
-                 const message = t(tipifyRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
-
-                 dispatch(showSnackbar({ show: true, severity: "error", message }))
-                 dispatch(showBackdrop(false));
-                 setWaitTipify(false);
-             }
-         }
-     }, [tipifyRes, waitTipify])
+    useEffect(() => {
+        if (waitTipify) {
+            if (!tipifyRes.loading) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_tipify_ticket) }))
+                dispatch(showBackdrop(false));
+                setWaitTipify(false);
+            }
+        }
+    }, [tipifyRes, waitTipify])
 
     useEffect(() => {
         if (waitClose) {
-            if (!tipifyRes.loading && !tipifyRes.error) {
+            if (!tipifyRes.loading) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_close_ticket) }))
                 setOpenModal(false);
                 dispatch(resetShowModal())
-                dispatch(showBackdrop(false));
-                setWaitClose(false);
-            } else if (tipifyRes.error) {
-                dispatch(showSnackbar({ show: true, severity: "error", message: t(tipifyRes.code || "error_unexpected_error") }))
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
             }
@@ -88,20 +78,20 @@ const CloseTicketVoxi: React.FC = () => {
             register('path1');
             register('reschedulingdate');
             register('observation');
-            if(multiData?.data[2]?.data[0].propertyvalue==="1" && modalview==="view-1"){
-                register('classificationid1', { validate: (value:any) => (((value && value > 0) || t(langKeys.field_required)) )});
+            if (multiData?.data[2]?.data[0].propertyvalue === "1" && modalview === "view-1") {
+                register('classificationid1', { validate: (value: any) => (((value && value > 0) || t(langKeys.field_required))) });
 
-            }else{
+            } else {
                 register('classificationid1');
             }
-            if(modalview==="view-2"){
+            if (modalview === "view-2") {
                 register('motive', { validate: (value) => ((value && value.length) || t(langKeys.field_required)) });
-            }else{
+            } else {
                 register('motive');
             }
 
         }
-    }, [openModal,modalview])
+    }, [openModal, modalview])
 
     useEffect(() => {
         setmodalview('view-1')
@@ -120,7 +110,7 @@ const CloseTicketVoxi: React.FC = () => {
         else
             dispatch(resetGetTipificationLevel2())
     }
-    
+
     const onChangeTipificationLevel2 = (value: Dictionary) => {
         setValue('classificationid2', value ? value.classificationid : '');
         setValue('path2', value ? value.path : '');
@@ -138,7 +128,7 @@ const CloseTicketVoxi: React.FC = () => {
     }
 
     const onSubmitClassification = handleSubmit((data) => {
-        if(data.classificationid1){
+        if (data.classificationid1) {
 
             dispatch(showBackdrop(true));
             dispatch(execute(insertClassificationConversation(callVoxiTmp?.data?.conversationid!!, data.classificationid3 || data.classificationid2 || data.classificationid1, '', 'INSERT')))
@@ -148,22 +138,22 @@ const CloseTicketVoxi: React.FC = () => {
     });
 
     const onSubmit = handleSubmit((data) => {
-        
-        if(motive === "LLAMADAREPROGRAMDA"){
+
+        if (motive === "LLAMADAREPROGRAMDA") {
             debugger
-            if(data.reschedulingdate){
-                if(new Date(data.reschedulingdate).getTime() > new Date().getTime()){
+            if (data.reschedulingdate) {
+                if (new Date(data.reschedulingdate).getTime() > new Date().getTime()) {
                     const dd: Dictionary = {
                         conversationid: callVoxiTmp?.data?.conversationid!!,
                         motive: data.motive,
-                        obs: data.observation||"",
+                        obs: data.observation || "",
                         ticketnum: callVoxiTmp?.data?.ticketnum!!,
                         personcommunicationchannel: callVoxiTmp?.data?.personcommunicationchannel!!,
                         communicationchannelid: callVoxiTmp?.data?.communicationchannelid!!,
                         personid: callVoxiTmp?.data?.personid,
                     }
                     dispatch(checkPaymentPlan({
-                        parameters:{
+                        parameters: {
                             firstname: callVoxiTmp?.data?.displayname,
                             lastname: "",
                             phone: callVoxiTmp?.data?.personcommunicationchannel.split(':')[1].split("@")[0],
@@ -175,28 +165,28 @@ const CloseTicketVoxi: React.FC = () => {
                     dispatch(showBackdrop(true));
                     dispatch(execute(conversationCloseUpd(dd)));
                     setWaitClose(true)
-                }else{
+                } else {
                     dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.error_rescheduling_date) }))
                 }
-            }else{
+            } else {
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.invalid_rescheduling_date) }))
             }
-        }else{
+        } else {
             const dd: Dictionary = {
                 conversationid: callVoxiTmp?.data?.conversationid!!,
                 motive: data.motive,
-                obs: data.observation||"",
+                obs: data.observation || "",
                 ticketnum: callVoxiTmp?.data?.ticketnum!!,
                 personcommunicationchannel: callVoxiTmp?.data?.personcommunicationchannel!!,
                 communicationchannelid: callVoxiTmp?.data?.communicationchannelid!!,
                 personid: callVoxiTmp?.data?.personid,
             }
-    
+
             dispatch(showBackdrop(true));
             dispatch(execute(conversationCloseUpd(dd)));
             setWaitClose(true)
         }
-        
+
     });
 
     return (
@@ -207,12 +197,12 @@ const CloseTicketVoxi: React.FC = () => {
                 maxWidth={"xs"}>
                 <DialogTitle>
                     <div style={{ overflow: 'hidden', wordBreak: 'break-word', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginRight: 120 }}>
-                        {callVoxiTmp.data?.displayname} - {modalview === "view-1"?t(langKeys.tipify_ticket):t(langKeys.close_ticket)}
+                        {callVoxiTmp.data?.displayname} - {modalview === "view-1" ? t(langKeys.tipify_ticket) : t(langKeys.close_ticket)}
                     </div>
                 </DialogTitle>
                 <DialogContent style={{ padding: 0 }}>
                     {modalview === "view-1" &&
-                        <div className="row-zyx" style={{paddingLeft: 24,paddingRight: 8}}>
+                        <div className="row-zyx" style={{ paddingLeft: 24, paddingRight: 8 }}>
                             <FieldSelect
                                 label={`${t(langKeys.tipification)} ${t(langKeys.level)} 1`}
                                 className="col-12"
@@ -248,14 +238,14 @@ const CloseTicketVoxi: React.FC = () => {
                         </div>
                     }
                     {modalview === "view-2" &&
-                        <div className="row-zyx" style={{paddingLeft: 24,paddingRight: 8}}>
+                        <div className="row-zyx" style={{ paddingLeft: 24, paddingRight: 8 }}>
                             <FieldSelect
                                 label={t(langKeys.ticket_reason)}
                                 className="col-12"
                                 valueDefault={getValues('motive')}
-                                onChange={(value) => {setValue('motive', value ? value.domainvalue : ''); setmotive(value ? value.domainvalue : '')}}
+                                onChange={(value) => { setValue('motive', value ? value.domainvalue : ''); setmotive(value ? value.domainvalue : '') }}
                                 error={errors?.motive?.message}
-                                data={[...(multiData?.data?.[0]?.data || [] ),{domaindesc: "Llamada reprogramada", domainvalue: "LLAMADAREPROGRAMDA"}]}
+                                data={[...(multiData?.data?.[0]?.data || []), { domaindesc: "Llamada reprogramada", domainvalue: "LLAMADAREPROGRAMDA" }]}
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
                             />
@@ -266,7 +256,7 @@ const CloseTicketVoxi: React.FC = () => {
                                 onChange={(value) => setValue('obs', value)}
                                 maxLength={1024}
                             />
-                            {motive === "LLAMADAREPROGRAMDA" &&<>
+                            {motive === "LLAMADAREPROGRAMDA" && <>
                                 <FieldEdit
                                     label={t(langKeys.reschedulingdate)}
                                     valueDefault={getValues('reschedulingdate')}
@@ -279,25 +269,25 @@ const CloseTicketVoxi: React.FC = () => {
                     }
                 </DialogContent>
                 <DialogActions>
-                    
-                {modalview === "view-1" &&
-                    <>
-                        <Button
-                            onClick={onSubmitClassification}
-                        >
-                            {t(langKeys.next)}
-                        </Button>
-                    </>
-                }
-                {modalview === "view-2" &&
-                    <>
-                        <Button
-                            onClick={onSubmit}
-                        >
-                            {t(langKeys.close)}
-                        </Button>
-                    </>
-                }
+
+                    {modalview === "view-1" &&
+                        <>
+                            <Button
+                                onClick={onSubmitClassification}
+                            >
+                                {t(langKeys.next)}
+                            </Button>
+                        </>
+                    }
+                    {modalview === "view-2" &&
+                        <>
+                            <Button
+                                onClick={onSubmit}
+                            >
+                                {t(langKeys.close)}
+                            </Button>
+                        </>
+                    }
                 </DialogActions>
             </Dialog>
         </>
