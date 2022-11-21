@@ -2989,6 +2989,15 @@ export const calendarBookingCancel = ({ calendareventid, id, cancelcomment }: Di
         cancelcomment,
     },
 });
+export const calendarBookingCancel2 = ({ corpid, orgid,calendareventid, id, cancelcomment }: Dictionary) => ({
+    method: "UFN_CALENDARBOOKING_CANCEL",
+    key: "UFN_CALENDARBOOKING_CANCEL",
+    parameters: {corpid, orgid,
+        calendareventid,
+        id,
+        cancelcomment,
+    },
+});
 export const calendarBookingSelOne = ({ corpid, orgid, calendareventid, id }: Dictionary) => ({
     method: "UFN_CALENDARBOOKING_SEL_ONE",
     key: "UFN_CALENDARBOOKING_SEL_ONE",
