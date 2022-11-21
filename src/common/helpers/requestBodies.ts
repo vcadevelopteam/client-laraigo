@@ -3086,6 +3086,7 @@ export const calendarBookingCancel2 = ({ corpid, orgid,calendareventid, id, canc
         calendareventid,
         id,
         cancelcomment,
+        username: "",
     },
 });
 export const calendarBookingSelOne = ({ corpid, orgid, calendareventid, id }: Dictionary) => ({
