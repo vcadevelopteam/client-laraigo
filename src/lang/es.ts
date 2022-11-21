@@ -4599,6 +4599,9 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     connect_yourwhatsappnumberdetail: "Presiona el siguiente boton para comenzar el proceso de inducción de WhatsApp. Al final del proceso, deberas habilitar el acceso a todos los números que deseas utilizar en la plataforma Laraigo y seleccionar el que deseas para finalizar la creación de su canal.",
     select_whatsappnumber: "Selecciona tu Teléfono",
     linked_whatsappnumber: "Números WhatsApp Enlazados",
+    postcreatorcalendar_monthly: "Vista Mensual",
+    postcreatorcalendar_weekly: "Vista Semanal",
+    more_items: "mas...",
 };
 
 const esResource: ResourceLanguage = {

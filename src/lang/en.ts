@@ -4607,6 +4607,9 @@ const translation: LangKeys = {
     connect_yourwhatsappnumberdetail: "Press this button to start the WhatsApp onboarding process. At the end of the process, you need to allow access to all of the phone numbers that you wish to use in the Laraigo platform and select the one that you will use to finish this particular channel creation.",
     select_whatsappnumber: "Select your Phone",
     linked_whatsappnumber: "Linked WhatsApp Phones",
+    postcreatorcalendar_monthly: "Monthly View",
+    postcreatorcalendar_weekly: "Weekly View",
+    more_items: "more...",
 };
 
 const enResource: ResourceLanguage = {

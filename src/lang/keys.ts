@@ -4592,6 +4592,9 @@ export const langKeys = {
     connect_yourwhatsappnumberdetail: "connect_yourwhatsappnumberdetail",
     select_whatsappnumber: "select_whatsappnumber",
     linked_whatsappnumber: "linked_whatsappnumber",
+    postcreatorcalendar_monthly: "postcreatorcalendar_monthly",
+    postcreatorcalendar_weekly: "postcreatorcalendar_weekly",
+    more_items: "more_items",
 };
 
 export type LangKeys = typeof langKeys;
