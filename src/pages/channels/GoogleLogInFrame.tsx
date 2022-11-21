@@ -32,6 +32,7 @@ export const GoogleLogInFrame: FC<GoogleLogInFrameProps> = ({ setWaitExchange })
         flow: 'auth-code',
         scope: 'https://www.googleapis.com/auth/gmail.compose \
         https://www.googleapis.com/auth/youtube.readonly \
+        https://www.googleapis.com/auth/youtube.upload \
         https://www.googleapis.com/auth/youtube.force-ssl \
         https://www.googleapis.com/auth/drive.file \
         https://www.googleapis.com/auth/gmail.readonly \
