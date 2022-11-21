@@ -6,7 +6,7 @@ import { Button, makeStyles, Snackbar, Typography } from "@material-ui/core";
 import { useParams } from 'react-router';
 import { FieldEditMulti } from "components";
 import { execute, getCollEventBooking, resetAllMain } from 'store/main/actions';
-import { calendarBookingCancel, calendarBookingSelOne } from 'common/helpers';
+import { calendarBookingCancel2, calendarBookingSelOne } from 'common/helpers';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -147,11 +147,12 @@ export const CancelEvent: FC = () => {
     const onSubmit = async () => {
         if(new Date(data?.monthdate).setUTCHours(0,0,0,0) >= new Date().setUTCHours(0,0,0,0)){
             const datat = {
+                corpid, orgid,
                 calendareventid: calendareventid,
                 id: data?.calendarbookingid,
                 cancelcomment: cancelcomment||"",
             }
-            dispatch(getCollEventBooking(calendarBookingCancel(datat)));
+            dispatch(getCollEventBooking(calendarBookingCancel2(datat)));
             setWaitSave(true);
         }else{
             setshowSnackbar({ open: true, severity: "error", msg: t(langKeys.cancelenventerror || "error_unexpected_error") })
