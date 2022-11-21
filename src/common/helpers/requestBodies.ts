@@ -231,7 +231,7 @@ export const insOrgUser = ({ roleid, orgid, bydefault, labels, groups, channels,
 export const selOrgSimpleList = (): IRequestBody => ({
     method: "UFN_ORG_LST_SIMPLE",
     key: "UFN_ORG_LST_SIMPLE",
-    parameters: { }
+    parameters: {}
 });
 
 export const insProperty = ({ orgid, communicationchannelid, id, propertyname, propertyvalue, description, status, type, category, domainname, group, level, operation, corpid }: Dictionary): IRequestBody => ({
@@ -258,17 +258,19 @@ export const getWhitelistSel = (whitelistid: number): IRequestBody => ({
 export const getSecurityRules = (): IRequestBody => ({
     method: "UFN_SECURITYRULES_SEL",
     key: "UFN_SECURITYRULES_SEL",
-    parameters: { }
+    parameters: {}
 });
 
-export const updSecurityRules = ({ id, mincharacterspwd, maxcharacterspwd, specialcharacterspwd, numericalcharacterspwd, uppercaseletterspwd, lowercaseletterspwd, allowsconsecutivenumbers, numequalconsecutivecharacterspwd, periodvaliditypwd, maxattemptsbeforeblocked, pwddifferentchangelogin,  }: Dictionary): IRequestBody => ({
+export const updSecurityRules = ({ id, mincharacterspwd, maxcharacterspwd, specialcharacterspwd, numericalcharacterspwd, uppercaseletterspwd, lowercaseletterspwd, allowsconsecutivenumbers, numequalconsecutivecharacterspwd, periodvaliditypwd, maxattemptsbeforeblocked, pwddifferentchangelogin, }: Dictionary): IRequestBody => ({
     method: "UFN_SECURITYRULES_UPD",
     key: "UFN_SECURITYRULES_UPD",
-    parameters: { id, mincharacterspwd, maxcharacterspwd, 
-        specialcharacterspwd: specialcharacterspwd||"04", 
-        numericalcharacterspwd: numericalcharacterspwd||"04", 
-        uppercaseletterspwd: uppercaseletterspwd||"04", 
-        lowercaseletterspwd: lowercaseletterspwd||"04", allowsconsecutivenumbers, numequalconsecutivecharacterspwd, periodvaliditypwd, maxattemptsbeforeblocked, pwddifferentchangelogin,  }
+    parameters: {
+        id, mincharacterspwd, maxcharacterspwd,
+        specialcharacterspwd: specialcharacterspwd || "04",
+        numericalcharacterspwd: numericalcharacterspwd || "04",
+        uppercaseletterspwd: uppercaseletterspwd || "04",
+        lowercaseletterspwd: lowercaseletterspwd || "04", allowsconsecutivenumbers, numequalconsecutivecharacterspwd, periodvaliditypwd, maxattemptsbeforeblocked, pwddifferentchangelogin,
+    }
 });
 export const insWhitelist = ({ id, operation, documenttype, phone, documentnumber, usergroup, type, status, username }: Dictionary): IRequestBody => ({
     method: "UFN_WHITELIST_INS",
@@ -531,7 +533,7 @@ export const getPaginatedTicket = ({ skip, take, filters, sorts, startdate, endd
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
-export const selUniqueContactsPcc = ({ corpid, orgid,year, month, channeltype, skip, take, filters, sorts }: Dictionary): IRequestBodyPaginated => ({
+export const selUniqueContactsPcc = ({ corpid, orgid, year, month, channeltype, skip, take, filters, sorts }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_REPORT_UNIQUECONTACTS_PCC_SEL",
     methodCount: "UFN_REPORT_UNIQUECONTACTS_PCC_TOTALRECORDS",
     parameters: {
@@ -541,14 +543,14 @@ export const selUniqueContactsPcc = ({ corpid, orgid,year, month, channeltype, s
         sorts,
         year,
         month,
-        channeltype:channeltype||'',
+        channeltype: channeltype || '',
         corpid,
         orgid,
         origin: "uniquecontacts",
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
-export const selUniqueContactsConversation = ({ corpid, orgid,year, month, channeltype, skip, take, filters, sorts }: Dictionary): IRequestBodyPaginated => ({
+export const selUniqueContactsConversation = ({ corpid, orgid, year, month, channeltype, skip, take, filters, sorts }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_REPORT_UNIQUECONTACTS_CONVERSATION_SEL",
     methodCount: "UFN_REPORT_UNIQUECONTACTS_CONVERSATION_TOTALRECORDS",
     parameters: {
@@ -558,9 +560,9 @@ export const selUniqueContactsConversation = ({ corpid, orgid,year, month, chann
         sorts,
         corpid,
         orgid,
-        year:parseInt(year),
-        month:parseInt(month),
-        channeltype:channeltype||'',
+        year: parseInt(year),
+        month: parseInt(month),
+        channeltype: channeltype || '',
         origin: "uniquecontactsconversation",
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
@@ -583,7 +585,7 @@ export const getTicketExport = ({ filters, sorts, startdate, enddate, ...allPara
     }
 });
 
-export const getUniqueContactsExport = ({ corpid,orgid,filters, sorts, year, month, channeltype }: Dictionary): IRequestBody => ({
+export const getUniqueContactsExport = ({ corpid, orgid, filters, sorts, year, month, channeltype }: Dictionary): IRequestBody => ({
     method: "UFN_REPORT_UNIQUECONTACTS_PCC_EXPORT",
     key: "UFN_REPORT_UNIQUECONTACTS_PCC_EXPORT",
     parameters: {
@@ -599,7 +601,7 @@ export const getUniqueContactsExport = ({ corpid,orgid,filters, sorts, year, mon
     }
 });
 
-export const getUniqueContactsConversationExport = ({ corpid,orgid,filters, sorts, year, month, channeltype }: Dictionary): IRequestBody => ({
+export const getUniqueContactsConversationExport = ({ corpid, orgid, filters, sorts, year, month, channeltype }: Dictionary): IRequestBody => ({
     method: "UFN_REPORT_UNIQUECONTACTS_CONVERSATION_EXPORT",
     key: "UFN_REPORT_UNIQUECONTACTS_CONVERSATION_EXPORT",
     parameters: {
@@ -2210,7 +2212,7 @@ export const personInsValidation = ({ id, phone, email, alternativephone, altern
         operation
     },
 });
-export const personImportValidation = ({table}: Dictionary): IRequestBody => ({
+export const personImportValidation = ({ table }: Dictionary): IRequestBody => ({
     method: 'UFN_PERSON_IMPORT_VALIDATION',
     parameters: {
         table
@@ -3145,7 +3147,7 @@ export const getProductCatalogSel = (id: number = 0, category: string = ''): IRe
         all: true
     }
 })
-export const getPostHistorySel = ({status="", type="", datestart=null, dateend=null}:Dictionary) => ({
+export const getPostHistorySel = ({ status = "", type = "", datestart = null, dateend = null }: Dictionary) => ({
     method: "UFN_POSTHISTORY_SEL",
     parameters: {
         status,
@@ -3154,7 +3156,7 @@ export const getPostHistorySel = ({status="", type="", datestart=null, dateend=n
         dateend,
     }
 })
-export const postHistoryIns = ({communicationchannelid, communicationchanneltype, posthistoryid, status, type, publishdate, texttitle, textbody, hashtag, sentiment, activity, mediatype, medialink, operation}:Dictionary) => ({
+export const postHistoryIns = ({ communicationchannelid, communicationchanneltype, posthistoryid, status, type, publishdate, texttitle, textbody, hashtag, sentiment, activity, mediatype, medialink, operation }: Dictionary) => ({
     method: "UFN_POSTHISTORY_INS",
     parameters: {
         communicationchannelid, communicationchanneltype, posthistoryid, status, type, publishdate, texttitle, textbody, hashtag, sentiment, activity, mediatype, medialink, operation
@@ -3168,6 +3170,7 @@ export const productCatalogIns = ({ id, code, description, descriptiontext, cate
         id, code, description, descriptiontext, category, status, type, imagereference, notes, title, website, currency, condition, contentid, facebookcatalogid, facebookproductid, facebookcatalogname, unitprice, username, operation
     }
 })
+
 export const listPaymentCard = ({ corpid, orgid, id }: Dictionary) => ({
     method: "UFN_PAYMENTCARD_LST",
     key: "UFN_PAYMENTCARD_LST",
@@ -3256,8 +3259,8 @@ export const conversationSupervisionStatus = ({ conversationid, status, type }: 
     method: "UFN_CONVERSATION_SUPERVISIONSTATUS",
     key: "UFN_CONVERSATION_SUPERVISIONSTATUS",
     parameters: {
-        conversationid, 
-        status, 
+        conversationid,
+        status,
         type
     },
 });
