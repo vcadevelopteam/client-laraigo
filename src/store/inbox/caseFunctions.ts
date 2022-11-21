@@ -585,9 +585,9 @@ export const changeStatusTicketWS = (state: IState, action: IAction): IState => 
 export const updateExternalIDs = (state: IState, action: IAction): IState => {
     const { userType } = state;
 
-    if (userType !== 'SUPERVISOR') {
-        return state;
-    }
+    // if (userType !== 'SUPERVISOR') {
+    //     return state;
+    // }
 
     return {
         ...state,

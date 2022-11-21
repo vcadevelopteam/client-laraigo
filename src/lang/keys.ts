@@ -129,6 +129,7 @@ export const langKeys = {
     make_call: "make_call",
 
     ringing: "ringing",
+    connecting: "connecting",
     connected_call: "connected_call",
     monitor_call: "monitor_call",
 
@@ -163,7 +164,12 @@ export const langKeys = {
     emittername: "emittername",
     enter_details: "enter_details",
     confirm: "confirm",
+    transfercall: "transfercall",
     transfercalltoadvisor: "transfercalltoadvisor",
+    transfer: "transfer",
+    transferto: "transferto",
+    complete_transfer: "complete_transfer",
+    tocall: "tocall",
     noname: "noname",
     copyLink: "copyLink",
     actionplan: 'actionplan',
@@ -1408,6 +1414,7 @@ export const langKeys = {
     edit: 'edit',
     delete: 'delete',
     search: 'search',
+    searcher: 'searcher',
     duplicate: 'duplicate',
     advance_search: 'advance_search',
     search_inbox: 'search_inbox',

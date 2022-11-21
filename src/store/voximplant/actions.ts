@@ -9,7 +9,7 @@ export const voximplantConnect = (payload: Dictionary): IActionCall => ({ type: 
 
 export const answerCall = (payload?: { call: Call, conversationid: number } | null): IActionCall => ({ type: actionTypes.ANSWER_CALL, payload });
 
-export const rejectCall = (payload?: Call | null): IActionCall => ({ type: actionTypes.REJECT_CALL, payload });
+export const rejectCall = (payload?: { call: Call | null | undefined, ticketSelected?: ITicket | null }): IActionCall => ({ type: actionTypes.REJECT_CALL, payload });
 
 export const hangupCall = (payload?: Call | null): IActionCall => ({ type: actionTypes.HANGUP_CALL, payload });
 
@@ -21,9 +21,28 @@ export const holdCall = (payload?: Dictionary): IActionCall => ({ type: actionTy
 
 export const resetCall = (): IActionCall => ({ type: actionTypes.RESET_CALL });
 
+export const setTransferAction = (payload?: boolean): IActionCall => ({ type: actionTypes.SET_TRANSFER_ACTION, payload });
+
+export const transferCall = (payload: { url: string, name: string, number: string, conversationid: number }): IActionCall => ({ type: actionTypes.TRANSFER_CALL, payload });
+
+export const connectedTransferCall = (payload?: Call | null): IActionCall => ({ type: actionTypes.CONNECTED_TRANSFER_CALL, payload });
+
+export const completeTransferCall = (payload?: { call?: Call | null, number?: string }): IActionCall => ({ type: actionTypes.COMPLETE_TRANSFER_CALL, payload });
+
+export const hangupTransferCall = (payload?: Call | null): IActionCall => ({ type: actionTypes.HANGUP_TRANSFER_CALL, payload });
+
+export const muteTransferCall = (payload?: Call | null): IActionCall => ({ type: actionTypes.MUTE_TRANSFER_CALL, payload });
+
+export const unmuteTransferCall = (payload?: Call | null): IActionCall => ({ type: actionTypes.UNMUTE_TRANSFER_CALL, payload });
+
+export const holdTransferCall = (payload?: { call?: Call | null, hold?: boolean }): IActionCall => ({ type: actionTypes.HOLD_TRANSFER_CALL, payload });
+
+export const resetTransferCall = (): IActionCall => ({ type: actionTypes.RESET_TRANSFER_CALL });
+
 export const makeCall = (payload: { number: string, site: string, data: ITicket }): IActionCall => ({ type: actionTypes.MAKE_CALL, payload });
 
-export const setModalCall = (payload?: Boolean): IActionCall => ({ type: actionTypes.SET_MODAL_CALL, payload });
+export const setModalCall = (showModalCall?: Boolean, transferAction?: boolean ): IActionCall => ({ type: actionTypes.SET_MODAL_CALL, payload: { showModalCall, transferAction }});
+
 export const setPhoneNumber = (payload?: string): IActionCall => ({ type: actionTypes.SET_PHONE_NUMBER, payload });
 
 export const setHold = (payload?: Boolean): IActionCall => ({ type: actionTypes.SET_HOLD, payload });
