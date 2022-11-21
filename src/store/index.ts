@@ -23,6 +23,7 @@ import subscriptionReducer, { IState as ISubscription } from './subscription/red
 import voximplantReducer, { IState as IVoximplant } from './voximplant/reducer';
 import googleReducer, { IState as IGoogle } from './google/reducer';
 import postHistoryReducer, { IState as IPostHistory } from './posthistory/reducer';
+import calendarReducer, { IState as ICalendar } from './calendar/reducer';
 
 export interface IRootState {
     login: ILogin,
@@ -45,6 +46,7 @@ export interface IRootState {
     voximplant: IVoximplant;
     google: IGoogle;
     postHistory: IPostHistory;
+    calendar: ICalendar;
 }
 
 declare global {
@@ -74,6 +76,7 @@ const rootReducer = combineReducers<IRootState>({
     google: googleReducer,
     postHistory: postHistoryReducer,
     getversion: getversionReducer,
+    calendar: calendarReducer,
 });
 
 export default function configureStore(preloadedState?: IRootState) {

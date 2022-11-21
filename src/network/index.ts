@@ -9,3 +9,4 @@ export * as DashboardService from './service/dashboard';
 export * as VoximplantService from './service/voximplant';
 export * as GoogleService from './service/google';
 export * as PostHistoryService from './service/posthistory';
+export * as CalendarService from './service/calendar';
