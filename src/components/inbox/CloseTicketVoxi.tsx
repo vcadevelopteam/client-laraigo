@@ -33,8 +33,10 @@ const CloseTicketVoxi: React.FC = () => {
 
     React.useEffect(() => {
         if (showModalVoxi > 0) {
-            setOpenModal(true)
-            setmotive("");
+            if (callVoxiTmp?.data?.conversationid) {
+                setOpenModal(true)
+                setmotive("");
+            }
         }
     }, [showModalVoxi])
 
