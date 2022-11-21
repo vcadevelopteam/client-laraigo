@@ -313,7 +313,7 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value:an
                     heightWithCheck={65}
                     initialSelectedRows={selectedRows}
                     loading={mainResult.mainData.loading}
-                    onClickRow={handleView}
+                    onClickRow={publishType==="SCHEDULED"?()=>{}:handleView}
                     register={false}
                     selectionKey={selectionKey}
                     setCleanSelection={setCleanSelected}
@@ -483,11 +483,27 @@ const PublishedHistoryDetail: React.FC<{ data: { row: Dictionary | null, edit: b
 
     useEffect(() => {
         if (waitOperation) {
-            if (!executeRes.loading && !executeRes.error) {
+                if (!executeRes.loading && !executeRes.error) {
+                    let message = ""
+                switch (statuspost) {
+                    case "DRAFT":
+                        message = t(langKeys.successsavedraft) + ""
+                        break;
+                    case "SCHEDULED":
+                        message = t(langKeys.successpublish) + ""
+                        break;
+                
+                    case "DELETED":
+                        message = t(langKeys.successful_delete) + ""
+                        break;
+                    
+                    default:
+                        break;
+                }
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
-                setViewSelected("view-1")
+                setViewSelected("bet-1")
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.postcreator_posthistory).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
@@ -498,11 +514,27 @@ const PublishedHistoryDetail: React.FC<{ data: { row: Dictionary | null, edit: b
     }, [executeRes, waitOperation])
 
     const onSubmit = handleSubmit((data) => {
-        let message = data?.status === "DRAFT"? t(langKeys.confirmationsavedraft) : t(langKeys.confirmationpublish)
+        let message = ""
+        switch (data?.status) {
+            case "DRAFT":
+                message = t(langKeys.confirmationsavedraft) + ""
+                break;
+            case "SCHEDULED":
+                message = t(langKeys.confirmationpublish) + ""
+                break;
+        
+            case "DELETED":
+                message = t(langKeys.confirmationpostdelete) + ""
+                break;
+            
+            default:
+                break;
+        }
         setstatuspost(data?.status)
         const callback = () => {
             debugger            
             setWaitOperation(true);
+            dispatch(showBackdrop(true));
             dispatch(execute(postHistoryIns({ ...data, medialink: JSON.stringify(data.medialink), operation: "UPDATE" })));
         }
         dispatch(manageConfirmation({
@@ -1106,6 +1138,16 @@ const PublishedHistoryDetail: React.FC<{ data: { row: Dictionary | null, edit: b
                                         type="submit"
                                         onClick={() => { setValue('status', 'SCHEDULED') }}
                                     >{t(langKeys.postcreator_publish_confirm_save)}
+                                    </Button>
+                                    <Button
+                                        className={classes.button}
+                                        color="primary"
+                                        type="submit"
+                                        onClick={() => { setValue('status', 'DELETED') }}
+                                        style={{ backgroundColor: "#fb5f5f", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                        variant="contained"
+                                    >
+                                        <CloseIcon />{t(langKeys.delete)}
                                     </Button>
                                 </div>
                             </div>
