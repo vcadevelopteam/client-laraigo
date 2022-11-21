@@ -147,7 +147,7 @@ const PublishedHistory: React.FC<{ dataChannel: any, publishType: string }> = ({
     const columns = React.useMemo(() => [
         {
             Header: t(langKeys.title),
-            accessor: 'posthistoryid',
+            accessor: 'texttitle',
             width: 200,
             isComponent: true,
             NoFilter: true,
