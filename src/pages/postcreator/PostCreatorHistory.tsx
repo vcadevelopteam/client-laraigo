@@ -313,7 +313,7 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value:an
                     heightWithCheck={65}
                     initialSelectedRows={selectedRows}
                     loading={mainResult.mainData.loading}
-                    onClickRow={publishType==="SCHEDULED"?()=>{}:handleView}
+                    onClickRow={publishType==="PUBLISHED"?()=>{}:handleView}
                     register={false}
                     selectionKey={selectionKey}
                     setCleanSelection={setCleanSelected}
