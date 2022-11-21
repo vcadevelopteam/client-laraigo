@@ -394,7 +394,8 @@ const DialogCancelBooking: React.FC<{
     }, [])
 
     const onSubmit = async () => {
-        if (new Date(booking?.monthdate) >= new Date()) {
+        if (new Date(booking?.monthdate).setUTCHours(0,0,0,0) >= new Date().setUTCHours(0,0,0,0)) {
+            debugger
             const allOk = await trigger();
             if (allOk) {
                 const data = getValues();
