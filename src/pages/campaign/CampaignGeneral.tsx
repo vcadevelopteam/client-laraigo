@@ -288,7 +288,9 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     }
 
     const onChangeSource = (data: Dictionary) => {
-        setValue('message', getValues('message').replace(new RegExp(/{{field[0-9]+}}/, 'g'), '{{???}}'))
+        if (['PERSON','LEAD'].includes(getValues('source'))) {
+            setValue('message', getValues('message').replace(new RegExp(/{{field[0-9]+}}/, 'g'), '{{???}}'))
+        }
         setValue('source', data?.key || '');
         setValue('sourcechanged', true);
         setFrameProps({ ...frameProps, valid: { ...frameProps.valid, 1: false } });
