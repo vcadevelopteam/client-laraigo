@@ -133,6 +133,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
     const [timeWaiting, setTimeWaiting] = useState(-1);
     const [waitingDate, setWaitingDate] = useState<string | null>(null);
 
+    console.log("callVoxiTmp", callVoxiTmp)
     useEffect(() => {
         if (callVoxiTmp && callVoxiTmp.call && callVoxiTmp.data?.conversationid === conversationid && item.status === "ASIGNADO") {
             setCallVoxi(callVoxiTmp.call);
