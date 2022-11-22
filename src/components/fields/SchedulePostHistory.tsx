@@ -11,11 +11,11 @@ import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { FacebookColor, InstagramColor, LinkedInColor, TikTokColor, TwitterColor, YouTubeColor } from "icons";
 import { FC, useCallback, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-
 interface ScheduleInputProps {
     data: Dictionary[];
     notPreviousDays?: boolean;
+    setViewSelected: (view: string) => void;
+    setDataSelected: (view: any) => void;
 }
 
 interface DayInputProps {
@@ -219,8 +219,7 @@ const makeData = (year: number, month: number, schedule: Dictionary[]) => {
     }));
 }
 
-const SchedulePostHistory: FC<ScheduleInputProps> = ({ notPreviousDays = true, data }) => {
-    const dispatch = useDispatch();
+const SchedulePostHistory: FC<ScheduleInputProps> = ({ notPreviousDays = true, data, setViewSelected, setDataSelected }) => {
 
     const { t } = useTranslation();
 
@@ -250,7 +249,7 @@ const SchedulePostHistory: FC<ScheduleInputProps> = ({ notPreviousDays = true, d
     }, [dateCurrent])
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'row', height: '100%' }}>
+        <div style={{ display: 'flex', flexDirection: 'row', height: '100%'}}>
             <div className={classes.container}>
                 <div className={classes.containerInfo}>
                     <div>
@@ -287,7 +286,7 @@ const SchedulePostHistory: FC<ScheduleInputProps> = ({ notPreviousDays = true, d
             </div>
             <div style={{ border: '1px solid #e0e0e0', backgroundColor: '#FFFFFF', marginLeft: '6px', width: '100%' }}>
                 {daySelected && <div>
-                    <div className={classes.containerInfo}>
+                    <div className={classes.containerInfo} style={{minWidth: 300, }}>
                         <div>
                             <div className={classes.containerInfoTitle}>
                                 {daySelected.dateString}
@@ -312,9 +311,10 @@ const SchedulePostHistory: FC<ScheduleInputProps> = ({ notPreviousDays = true, d
                             </div>
                         </div>
                     </div>
-                    <div style={{ overflowY: 'scroll' }}>
+                    <div style={{ overflowY: 'scroll', minWidth: 300, height: 700  }}>
                         {daySelected.data?.map((postdata) => (
-                            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', overflow: 'auto', margin: '16px', border: '1px solid #762AA9', borderRadius: '8px' }}>
+                            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', cursor:'pointer',overflow: 'auto', margin: '16px', border: '1px solid #762AA9', borderRadius: '8px' }}
+                                onClick={()=>{setDataSelected({row: postdata, edit:true});setViewSelected("bet-2")}}>
                                 <div style={{ maxWidth: '50%', flex: '1 1 50%', wordBreak: 'break-word', padding: '10px' }}>
                                     <b>{new Date(postdata.publishdate).toLocaleTimeString()?.slice(0, 5)}</b>
                                     <h3>{postdata.texttitle}</h3>

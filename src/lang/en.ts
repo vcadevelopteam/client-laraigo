@@ -4213,7 +4213,7 @@ const translation: LangKeys = {
     postcreator_story: "Create Story",
     postcreator_calendar: "Calendar",
     postcreator_posthistory: "Post History",
-    postcreator_posthistorydetail: "Post History Detail",
+    postcreator_posthistorydetail: "Post Detail",
     postcreator_publish_text: "Publish Text",
     postcreator_publish_textimage: "Publish Image and Text",
     postcreator_publish_textvideo: "Publish Video and Text",

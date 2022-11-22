@@ -215,10 +215,6 @@ const PostCreator: FC = () => {
         return (
             <>
                 <div style={{ width: '100%' }}>
-                    <TemplateBreadcrumbs
-                        breadcrumbs={getArrayBread(t('postcreator_calendar'), t(langKeys.postcreator_title))}
-                        handleClick={handleSelectedString}
-                    />
                     <PostCreatorCalendar setViewSelected={setViewSelected} />
                 </div>
             </>
