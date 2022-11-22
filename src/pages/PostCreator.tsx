@@ -227,11 +227,7 @@ const PostCreator: FC = () => {
         return (
             <>
                 <div style={{ width: '100%' }}>
-                    <TemplateBreadcrumbs
-                        breadcrumbs={getArrayBread(t('postcreator_posthistory'), t(langKeys.postcreator_title))}
-                        handleClick={handleSelectedString}
-                    />
-                    <PostCreatorHistory />
+                    <PostCreatorHistory setViewSelected={setViewSelected}  />
                 </div>
             </>
         )
