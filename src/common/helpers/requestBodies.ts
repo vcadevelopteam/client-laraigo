@@ -3301,6 +3301,14 @@ export const conversationOutboundIns = ({ number, communicationchannelid, person
         personcommunicationchannelowner
     },
 });
+export const conversationOutboundValidate = ({ number, communicationchannelid }: Dictionary) => ({
+    method: "UFN_CONVERSATION_OUTBOUND_VALIDATE",
+    key: "UFN_CONVERSATION_OUTBOUND_VALIDATE",
+    parameters: {
+        personcommunicationchannel: `${number}_VOXI`,
+        communicationchannelid,
+    },
+});
 export const conversationSupervisionStatus = ({ conversationid, status, type }: Dictionary) => ({
     method: "UFN_CONVERSATION_SUPERVISIONSTATUS",
     key: "UFN_CONVERSATION_SUPERVISIONSTATUS",

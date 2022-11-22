@@ -33,12 +33,20 @@ export const setHold = (state: IState, action: IAction): IState => {
     }
 }
 export const initCall = (state: IState, action: IAction): IState => {
-
     return {
         ...state,
         call: action.payload,
         onhold: false,
         statusCall: "CONNECTING"
+    }
+}
+export const modifyCall = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        call: {
+            ...state.call,
+            data: (action.payload.personcommunicationchannel === state.call.data?.personcommunicationchannel ? action.payload : state.call.data)
+        },
     }
 }
 

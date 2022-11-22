@@ -68,6 +68,7 @@ export const initialState: IState = {
 
 export default createReducer<IState>(initialState, {
     [actionTypes.INIT_CALL]: caseFUnctions.initCall,
+    [actionTypes.MODIFY_CALL]: caseFUnctions.modifyCall,
     [actionTypes.SET_MODAL_CALL]: caseFUnctions.setModalCall,
     [actionTypes.SET_PHONE_NUMBER]: caseFUnctions.setPhoneNumber,
     [actionTypes.SET_HOLD]: caseFUnctions.setHold,

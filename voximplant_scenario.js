@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 // Enable ACD module
 require(Modules.ACD);
 require(Modules.Player);
@@ -115,12 +116,12 @@ function cleanExpiration(time) {
     return VoxEngine.RecordExpireTime.DEFAULT;
 }
 
-function createTicket(callback) {
+function createTicket(content, callback) {
     const bodyZyx = {
         "platformType": "VOXI",
         "personId": callerid,
         "type": "text",
-        "content": "LLAMADA ENTRANTE",
+        "content": content,
         "siteId": site,
         "postId": sessionID,
         "commentId": accessURL,
@@ -158,6 +159,54 @@ function createTicket(callback) {
         ]
     })
 }
+
+function createTicket2(callback) {
+    const splitIdentifier = identifier.split("-");
+
+    const body = {
+        "communicationchanneltype": "VOXI",
+        "personcommunicationchannel": `${callerid}_VOXI`,
+        "communicationchannelsite": site,
+        "corpid": parseInt(splitIdentifier[0]),
+        "orgid": parseInt(splitIdentifier[1]),
+        "communicationchannelid": parseInt(splitIdentifier[2]),
+        "conversationid": 0,
+        "userid": lastagentid,
+        "lastuserid": lastagentid,
+        "personid": 0,
+        "typeinteraction": "NINGUNO",
+        "typemessage": "text",
+        "lastmessage": "LLAMADA SALIENTE",
+        "postexternalid": sessionID,
+        "commentexternalid": sessionID,
+        "newConversation":  true,
+        "status": "ASIGNADO",
+        "origin": "OUTBOUND"
+    }
+    //externalid es el pccowner
+    Net.httpRequest(`${URL_SERVICES}voximplant/createticket`, (res) => {
+        Logger.write("voximplant: createticket2: " + res.text);
+        const result = JSON.parse(res.text);
+
+        if (result.Success != true) {
+            callback(null)
+        } else {
+            identifier = result.Result.split("#")[0]
+            personName = result.Result.split("#")[1];
+			
+			conversationid = identifier?.split("-")[3];
+
+            callback(identifier)
+        }
+    }, {
+        method: "POST",
+        postData: JSON.stringify(body),
+        headers: [
+            "Content-Type: application/json;charset=utf-8"
+        ]
+    })
+}
+
 function closeTicket(motive) {
     const splitIdentifier = identifier.split("-");
     const bodyClose = {
@@ -212,27 +261,27 @@ function reasignAgent(agentid) {
     })
 }
 
-function saveSessionID() {
-    const body = {
-        identifier,
-        callerid,
-        site,
-        platformtype: "VOXI",
-        sessionid: sessionID,
-        accessurl: accessURL,
-        agentid: lastagentid
-    }
-    Logger.write("saveSessionID-body: " + JSON.stringify(body));
-    Net.httpRequest(`${URL_SERVICES}voximplant/savesessionid`, (res) => {
-        Logger.write("saveSessionID-res: " + res.text);
-    }, {
-        method: "POST",
-        postData: JSON.stringify(body),
-        headers: [
-            "Content-Type: application/json;charset=utf-8"
-        ]
-    })
-}
+						  
+				  
+				   
+				 
+			 
+							 
+							 
+							 
+							
+	 
+																
+																		 
+													   
+		
+					   
+									   
+				  
+														  
+		 
+	  
+ 
 
 function sendInteraction(type, text) {
     const splitIdentifier = identifier.split("-");
@@ -275,11 +324,11 @@ function handleInboundCall(e) {
         e.call.addEventListener(CallEvents.Failed, () => cleanup("LLAMADA FALLIDA"));
         e.call.addEventListener(CallEvents.Disconnected, () => cleanup("DESCONECTADO POR CLIENTE"));
         // Answer call
-        createTicket(() => {
+        createTicket("LLAMADA ENTRANTE", () => {
             e.call.answer();
             if (red.recording) {
                 e.call.record({
-                    transcribe: true,
+                    transcribe: false,
                     language: ASRLanguage.SPANISH_ES,
                     name: identifier + ".mp3",
                     contentDispositionFilename: identifier + ".mp3",
@@ -299,10 +348,11 @@ function handleInboundCall(e) {
             return
         }
 
+        identifier = e.customData.split(".")[0];
         site = e.customData.split(".")[1];
         lastagentid = parseInt(e.customData.split(".")[2]);
-        identifier = e.customData.split(".")[0];
-        conversationid = identifier?.split("-")[3];
+												
+												   
         callerid = e.destination.replace("+", "");
 
         const identiff = e.customData.split(".")[3];
@@ -317,43 +367,62 @@ function handleInboundCall(e) {
         } catch (e) { }
 
         //outbound call
-        if (/^\d+$/.test(e.destination.replace("+", ""))) {
-            originalCall = VoxEngine.callPSTN(e.destination, site); // Call del cliente
-        } else { // es una llamada interna (entre asesores o anexos)
-            originalCall = VoxEngine.callUser(e.destination, e.callerid); // Call del cliente
-        }
+        createTicket2((identiff) => {
+            if (!identiff) {
+                Logger.write("voximplant: cant create ticket on outbound");
+                return
+            }
+            if (/^\d+$/.test(e.destination.replace("+", ""))) {
+                originalCall = VoxEngine.callPSTN(e.destination, site);
+            } else { // es una llamada interna (entre asesores o anexos)
+                originalCall = VoxEngine.callUser(e.destination, e.callerid);
+            }
 
-        saveSessionID()
+					   
 
-        originalCall.addEventListener(CallEvents.Connected, (e) => {
-            sendInteraction("LOG", "CLIENTE CONTESTÓ LA LLAMADA")
-        });
+            // saveSessionID()
+																  
+		   
 
-        if (red.recording) {
-            e.call.record({
-                transcribe: true,
-                language: ASRLanguage.SPANISH_ES,
-                name: identifier + ".mp3",
-                contentDispositionFilename: identifier + ".mp3",
-                recordNamePrefix: "" + site,
-                hd_audio: ((red.recordingquality || "default") === "default" ? undefined : red.recordingquality === "hd"),
-                lossless: ((red.recordingquality || "default") === "default" ? undefined : red.recordingquality === "lossless"),
-                expire: cleanExpiration(red.recordingstorage)
-            })
-        }
+            originalCall.addEventListener(CallEvents.Connected, (e) => {
+                sendInteraction("LOG", "CLIENTE CONTESTÓ LA LLAMADA")
+            });
+												 
+										  
+																
+											
+																														  
+																																
+															 
+			  
+		 
 
-        VoxEngine.easyProcess(e.call, originalCall);
-        originalCall.removeEventListener(CallEvents.Disconnected);
-        e.call.removeEventListener(CallEvents.Disconnected);
+            if (red.recording) {
+                e.call.record({
+                    transcribe: false,
+                    language: ASRLanguage.SPANISH_ES,
+                    name: identifier + ".mp3",
+                    contentDispositionFilename: identifier + ".mp3",
+                    recordNamePrefix: "" + site,
+                    hd_audio: ((red.recordingquality || "default") === "default" ? undefined : red.recordingquality === "hd"),
+                    lossless: ((red.recordingquality || "default") === "default" ? undefined : red.recordingquality === "lossless"),
+                    expire: cleanExpiration(red.recordingstorage)
+                })
+            }
 
-        originalCall.addEventListener(CallEvents.Failed, () => cleanup("LLAMADA FALLIDA"));
-        originalCall.addEventListener(CallEvents.Disconnected, () => cleanup("DESCONECTADO POR CLIENTE"));
+            VoxEngine.easyProcess(e.call, originalCall);
+			originalCall.removeEventListener(CallEvents.Disconnected);
+			e.call.removeEventListener(CallEvents.Disconnected);
 
-        e.call.addEventListener(CallEvents.Failed, () => cleanup("LLAMADA FALLIDA"));
-        e.call.addEventListener(CallEvents.Disconnected, () => cleanup("DESCONECTADO POR ASESOR"));
+			originalCall.addEventListener(CallEvents.Failed, () => cleanup("LLAMADA FALLIDA"));
+            originalCall.addEventListener(CallEvents.Disconnected, () => cleanup("DESCONECTADO POR CLIENTE"));
 
-        originalCall2 = e.call; // Call del agente
-        holdCall(e.call, originalCall)
+            e.call.addEventListener(CallEvents.Failed, () => cleanup("LLAMADA FALLIDA"));
+            e.call.addEventListener(CallEvents.Disconnected, () => cleanup("DESCONECTADO POR ASESOR"));
+											 
+            originalCall2 = e.call; // Call del agente
+			holdCall(e.call, originalCall)
+        })
     };
 
 }
