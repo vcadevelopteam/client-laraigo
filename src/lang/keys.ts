@@ -1093,7 +1093,10 @@ export const langKeys = {
     calendar_personname: 'calendar_personname',
     calendar_personcontact: 'calendar_personcontact',
     calendar_personmail: 'calendar_personmail',
-
+    calendar_confirmation_disconnect: 'calendar_confirmation_disconnect',
+    connection_to_calendars: 'connection_to_calendars',
+    connect: 'connect',
+    disconnect: 'disconnect',
 
     no_reply_use_hsm: 'no_reply_use_hsm',
 

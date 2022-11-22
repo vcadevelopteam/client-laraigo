@@ -754,6 +754,10 @@ const translation: LangKeys = {
     calendar_personname: 'Person name',
     calendar_personcontact: 'Person contact',
     calendar_personmail: 'Person mail',
+    calendar_confirmation_disconnect: 'Do you want to disconnect your calendar?',
+    connection_to_calendars: 'Connection to calendars',
+    connect: 'Connect',
+    disconnect: 'Disconnect',
 
     supplier: "Supplier",
     id: 'ID',
