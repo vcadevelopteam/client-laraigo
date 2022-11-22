@@ -6,7 +6,7 @@ import { Button, makeStyles, Snackbar, Typography } from "@material-ui/core";
 import { useParams } from 'react-router';
 import { FieldEditMulti } from "components";
 import { execute, getCollEventBooking, resetAllMain } from 'store/main/actions';
-import { calendarBookingCancel, calendarBookingSelOne } from 'common/helpers';
+import { calendarBookingCancel2, calendarBookingSelOne } from 'common/helpers';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -60,7 +60,6 @@ export const CancelEvent: FC = () => {
     const [waitFind, setWaitFind] = useState(false);
     const [exists, setexists] = useState(true);
     const mainResult = useSelector(state =>  state.main.mainEventBooking);
-    const saveRes = useSelector(state => state.main.execute);
     const [cancelcomment, setCancelcomment] = useState("");
     const [showSnackbar, setshowSnackbar] = React.useState({
         open: false,
@@ -121,38 +120,39 @@ export const CancelEvent: FC = () => {
     useEffect(() => {
         if (waitSave) {
             dispatch(calendarBookingSelOne)
-            if (!saveRes.loading && !saveRes.error) {
+            if (!mainResult.loading && !mainResult.error) {
                 setSuccessCancel(true)
                 setTimeout(function() {
                     window.close()
                 }, 8000);
                 setWaitSave(false);
-            } else if (saveRes.error) {
-                setshowSnackbar({ open: true, severity: "error", msg: t(saveRes.code || "error_unexpected_error") })
+            } else if (mainResult.error) {
+                setshowSnackbar({ open: true, severity: "error", msg: t(mainResult.code || "error_unexpected_error") })
                 setWaitSave(false);
             }
         }
     }, [])
     useEffect(() => {
         if (waitSave) {
-            if (!saveRes.loading && !saveRes.error) {
+            if (!mainResult.loading && !mainResult.error) {
                 setshowSnackbar({ open: true, severity: "success", msg: t(langKeys.successful_cancel_event) })
                 setWaitSave(false);
-            } else if (saveRes.error) {
-                setshowSnackbar({ open: true, severity: "error", msg: t(saveRes.code || "error_unexpected_error") })
+            } else if (mainResult.error) {
+                setshowSnackbar({ open: true, severity: "error", msg: t(mainResult.code || "error_unexpected_error") })
                 setWaitSave(false);
             }
         }
-    }, [saveRes, waitSave])
+    }, [mainResult, waitSave])
 
     const onSubmit = async () => {
-        if(new Date(data?.monthdate) >= new Date()){
+        if(new Date(data?.monthdate).setUTCHours(0,0,0,0) >= new Date().setUTCHours(0,0,0,0)){
             const datat = {
+                corpid, orgid,
                 calendareventid: calendareventid,
                 id: data?.calendarbookingid,
                 cancelcomment: cancelcomment||"",
             }
-            dispatch(execute(calendarBookingCancel(datat)));
+            dispatch(getCollEventBooking(calendarBookingCancel2(datat)));
             setWaitSave(true);
         }else{
             setshowSnackbar({ open: true, severity: "error", msg: t(langKeys.cancelenventerror || "error_unexpected_error") })
