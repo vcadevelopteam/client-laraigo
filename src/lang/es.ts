@@ -4602,6 +4602,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     postcreatorcalendar_monthly: "Vista Mensual",
     postcreatorcalendar_weekly: "Vista Semanal",
     more_items: "mas...",
+    posthistorycalendar_selectdate: "Selecciona un día para ver su detalle",
 };
 
 const esResource: ResourceLanguage = {

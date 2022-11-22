@@ -11,6 +11,7 @@ import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { FacebookColor, InstagramColor, LinkedInColor, TikTokColor, TwitterColor, YouTubeColor } from "icons";
 import { FC, useCallback, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 
 interface ScheduleInputProps {
     data: Dictionary[];
@@ -19,7 +20,7 @@ interface ScheduleInputProps {
 
 interface DayInputProps {
     day: DayProp;
-    handleClick: (event: any, day: DayProp) => void;
+    handleClick: (day: DayProp) => void;
     notPreviousDays?: boolean;
 }
 
@@ -44,8 +45,8 @@ const useScheduleStyles = makeStyles(theme => ({
     },
     boxDayHover: {
         '&:hover': {
-            backgroundColor: '#eef5ff',
-            border: '2px solid #5593ff',
+            backgroundColor: '#E4E1E8',
+            border: '2px solid #762AA9',
             padding: 6,
         },
         cursor: 'pointer',
@@ -55,8 +56,8 @@ const useScheduleStyles = makeStyles(theme => ({
             color: '#767676'
         },
         '&:hover': {
-            backgroundColor: '#eef5ff',
-            border: '2px solid #5593ff',
+            backgroundColor: '#E4E1E8',
+            border: '2px solid #762AA9',
             padding: 6,
         },
         backgroundColor: '#dbdbdb3d',
@@ -156,7 +157,7 @@ const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays, handleClick }) => {
 
     return (
         <div
-            onClick={(e: any) => handleClick(e, day)}
+            onClick={(e: any) => handleClick(day)}
             className={clsx(classes.boxDay, {
                 [classes.boxDayHover]: !day.isDayPreview,
                 [classes.boxDayForbidden]: notPreviousDays && day.isDayPreview,
@@ -219,6 +220,8 @@ const makeData = (year: number, month: number, schedule: Dictionary[]) => {
 }
 
 const SchedulePostHistory: FC<ScheduleInputProps> = ({ notPreviousDays = true, data }) => {
+    const dispatch = useDispatch();
+
     const { t } = useTranslation();
 
     const classes = useScheduleStyles();
@@ -227,6 +230,7 @@ const SchedulePostHistory: FC<ScheduleInputProps> = ({ notPreviousDays = true, d
     const [dates, setDates] = useState<Dictionary[]>([]);
     const [daySelected, setDaySelected] = useState<DayProp | undefined>(undefined);
     const [daysToShow, setDaysToShow] = useState<DayProp[]>([]);
+    const [currentIndex, setCurrentIndex] = useState(0);
 
     const handleClick = (day: DayProp) => {
         setDaySelected(day);
@@ -246,7 +250,7 @@ const SchedulePostHistory: FC<ScheduleInputProps> = ({ notPreviousDays = true, d
     }, [dateCurrent])
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'row' }}>
+        <div style={{ display: 'flex', flexDirection: 'row', height: '100%' }}>
             <div className={classes.container}>
                 <div className={classes.containerInfo}>
                     <div>
@@ -275,16 +279,63 @@ const SchedulePostHistory: FC<ScheduleInputProps> = ({ notPreviousDays = true, d
                         <BoxDay
                             key={index}
                             day={day}
-                            handleClick={handleClick}
+                            handleClick={() => { handleClick(day); setCurrentIndex(index); }}
                             notPreviousDays={notPreviousDays}
                         />
                     ))}
                 </div>
             </div>
-            <div style={{ border: '1px solid #e0e0e0', backgroundColor: '#FFFFFF', marginLeft: '6px', height: '100%', width: '100px' }}>
-                <div>asdasdaas</div>
+            <div style={{ border: '1px solid #e0e0e0', backgroundColor: '#FFFFFF', marginLeft: '6px', width: '100%' }}>
+                {daySelected && <div>
+                    <div className={classes.containerInfo}>
+                        <div>
+                            <div className={classes.containerInfoTitle}>
+                                {daySelected.dateString}
+                            </div>
+                        </div>
+                        <div className={classes.containerButtons}>
+                            <div className={classes.buttonMonth} onClick={() => {
+                                if (daysToShow[currentIndex - 1]) {
+                                    setDaySelected(daysToShow[currentIndex - 1]);
+                                    setCurrentIndex(currentIndex - 1);
+                                }
+                            }}>
+                                <NavigateBeforeIcon />
+                            </div>
+                            <div className={classes.buttonMonth} style={{ borderLeft: '1px solid #e0e0e0' }} onClick={() => {
+                                if (daysToShow[currentIndex - 1]) {
+                                    setDaySelected(daysToShow[currentIndex + 1]);
+                                    setCurrentIndex(currentIndex + 1);
+                                }
+                            }}>
+                                <NavigateNextIcon />
+                            </div>
+                        </div>
+                    </div>
+                    <div style={{ overflowY: 'scroll' }}>
+                        {daySelected.data?.map((postdata) => (
+                            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', overflow: 'auto', margin: '16px', border: '1px solid #762AA9', borderRadius: '8px' }}>
+                                <div style={{ maxWidth: '50%', flex: '1 1 50%', wordBreak: 'break-word', padding: '10px' }}>
+                                    <b>{new Date(postdata.publishdate).toLocaleTimeString()?.slice(0, 5)}</b>
+                                    <h3>{postdata.texttitle}</h3>
+                                    <h4>{postdata.textbody}</h4>
+                                    {postdata.communicationchanneltype === 'FBWA' && <FacebookColor style={{ width: '22px', height: '22px' }} />}
+                                    {postdata.communicationchanneltype === 'INST' && <InstagramColor style={{ width: '22px', height: '22px' }} />}
+                                    {postdata.communicationchanneltype === 'LNKD' && <LinkedInColor style={{ width: '22px', height: '22px' }} />}
+                                    {postdata.communicationchanneltype === 'TKTK' && <TikTokColor style={{ width: '22px', height: '22px' }} />}
+                                    {postdata.communicationchanneltype === 'TWIT' && <TwitterColor style={{ width: '22px', height: '22px' }} />}
+                                    {postdata.communicationchanneltype === 'YOUT' && <YouTubeColor style={{ width: '22px', height: '22px' }} />}
+                                </div>
+                                {postdata.medialink?.[0]?.thumbnail && <img loading='eager' alt="" style={{ maxWidth: '50%', flex: '1 1 50%', wordBreak: 'break-word' }} src={postdata.medialink?.[0]?.thumbnail || ""}></img>}
+                            </div>
+                        ))}
+                    </div>
+                </div>}
+                {!daySelected && <div>
+                    <h3 style={{ margin: '8px', color: '#762AA9' }}>{t(langKeys.posthistorycalendar_selectdate)}</h3>
+                </div>}
             </div>
-        </div>
+        </div >
     )
 }
 

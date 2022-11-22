@@ -4610,6 +4610,7 @@ const translation: LangKeys = {
     postcreatorcalendar_monthly: "Monthly View",
     postcreatorcalendar_weekly: "Weekly View",
     more_items: "more...",
+    posthistorycalendar_selectdate: "Select a day to see its detail",
 };
 
 const enResource: ResourceLanguage = {
