@@ -42,9 +42,9 @@ const ManageCallInfoTicket: React.FC = () => {
         if (call.type === "INBOUND" && statusCall === "CONNECTING") {
             sethold(true)
             setmute(false)
-            setNumberVox(call.number.split("@")[0].split(":")?.[1] || "")
+            setNumberVox(call.number)
         } else if (call.type === "INBOUND" && statusCall !== "CONNECTING") {
-            setNumberVox(call.number.split("@")[0].split(":")?.[1] || "")
+            setNumberVox(call.number)
         }
     }, [call, dispatch, statusCall])
 

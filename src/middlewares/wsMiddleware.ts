@@ -2,9 +2,12 @@ import io from 'socket.io-client';
 import { apiUrls } from 'common/constants';
 import { Middleware, Dispatch } from 'redux';
 import typesInbox from 'store/inbox/actionTypes';
+import typesVoximplant from 'store/voximplant/actionTypes';
 import typesLogin from 'store/login/actionTypes';
 
 const eventsListeners = [
+    { event: 'deleteTicket', type: typesVoximplant.MODIFY_CALL },
+
     { event: 'deleteTicket', type: typesInbox.DELETE_TICKET },
     { event: 'connectAgent', type: typesInbox.CONNECT_AGENT_WS },
     { event: 'newMessageFromClient', type: typesInbox.NEW_MESSAGE_FROM_CLIENT, extra: {} },
@@ -42,6 +45,9 @@ const callWSMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async
             eventsListeners.forEach(({ event, type, extra = {} }) => {
                 socket.on(event, (datatmp) => {
                     console.log(event, datatmp)
+                    if (event === "newMessageFromClient" && datatmp?.origin === "OUTBOUND" && datatmp?.communicationchanneltype === "VOXI") {
+                        dispatch({ type: typesVoximplant.MODIFY_CALL, payload: datatmp })
+                    }
                     dispatch({ type, payload: { ...datatmp, ...extra } })
                 });
             });

@@ -16,7 +16,7 @@ import PhoneForwardedIcon from '@material-ui/icons/PhoneForwarded';
 import PhoneIcon from '@material-ui/icons/Phone';
 import { AntTab, SearchField } from 'components';
 import { IconButton, Tabs } from '@material-ui/core';
-import { conversationOutboundIns, convertLocalDate, getSecondsUntelNow, conversationCallHold } from 'common/helpers';
+import { conversationOutboundValidate, convertLocalDate, getSecondsUntelNow, conversationCallHold } from 'common/helpers';
 import { langKeys } from 'lang/keys';
 import ContactPhoneIcon from '@material-ui/icons/ContactPhone';
 import PhoneCallbackIcon from '@material-ui/icons/PhoneCallback';
@@ -252,12 +252,12 @@ const MakeCall: React.FC = () => {
 
     React.useEffect(() => {
         if (!resExecute.loading && !resExecute.error) {
-            if (resExecute.key === "UFN_CONVERSATION_OUTBOUND_INS") {
-                const { v_conversationid, v_ticketnum, v_personid, v_personname, v_voximplantrecording, v_personcommunicationchannelowner } = resExecute.data[0]
+            if (resExecute.key === "UFN_CONVERSATION_OUTBOUND_VALIDATE") {
+                const { v_personname, v_voximplantrecording } = resExecute.data[0]
                 const data: ITicket = {
-                    conversationid: parseInt(v_conversationid),
-                    ticketnum: v_ticketnum,
-                    personid: parseInt(v_personid),
+                    conversationid: 0,
+                    ticketnum: "",
+                    personid: 0,
                     communicationchannelid: ccidvoxi || 0,
                     status: "ASIGNADO",
                     imageurldef: "",
@@ -265,19 +265,19 @@ const MakeCall: React.FC = () => {
                     personlastreplydate: null,
                     countnewmessages: 0,
                     usergroup: "",
-                    displayname: v_personname || v_personcommunicationchannelowner,
+                    displayname: v_personname,
                     coloricon: '',
                     communicationchanneltype: "VOXI",
                     lastmessage: "LLAMADA SALIENTE",
-                    personcommunicationchannel: `${v_personcommunicationchannelowner}_VOXI`,
+                    personcommunicationchannel: `${numberVox}_VOXI`,
                     communicationchannelsite: sitevoxi || "",
                     lastreplyuser: "",
                 }
                 dispatch(setModalCall(false));
-                const identifier = `${corpid}-${orgid}-${ccidvoxi}-${resExecute.data[0].v_conversationid}-${resExecute.data[0].v_personid}.${sitevoxi}.${userid}.${v_voximplantrecording}`;
+                const identifier = `${corpid}-${orgid}-${ccidvoxi}-0-0-.${sitevoxi}.${userid}.${v_voximplantrecording}`;
 
                 dispatch(resetExecute());
-                dispatch(makeCall({ number: v_personcommunicationchannelowner, site: identifier || "", data }));
+                dispatch(makeCall({ number: numberVox, site: identifier, data }));
                 history.push('/message_inbox');
             }
         } else if (!resExecute.loading && resExecute.error && resExecute.key === "UFN_CONVERSATION_OUTBOUND_INS") {
@@ -415,12 +415,9 @@ const MakeCall: React.FC = () => {
                                         if (statusCall === "DISCONNECTED" && !waiting2) {
                                             setwaiting2(true)
                                             setNumberVox(e.phone)
-                                            dispatch(execute(conversationOutboundIns({
+                                            dispatch(execute(conversationOutboundValidate({
                                                 number: e.phone,
-                                                communicationchannelid: ccidvoxi,
-                                                personcommunicationchannelowner: e.personcommunicationchannelowner,
-                                                interactiontype: 'text',
-                                                interactiontext: 'LLAMADA SALIENTE'
+                                                communicationchannelid: ccidvoxi
                                             })))
                                         }
                                     }}
@@ -536,12 +533,9 @@ const MakeCall: React.FC = () => {
                                     disabled={resExecute.loading || statusCall !== "DISCONNECTED"}
                                     onClick={() => {
                                         if (statusCall === "DISCONNECTED") {
-                                            dispatch(execute(conversationOutboundIns({
+                                            dispatch(execute(conversationOutboundValidate({
                                                 number: numberVox,
-                                                communicationchannelid: ccidvoxi,
-                                                personcommunicationchannelowner: numberVox,
-                                                interactiontype: 'text',
-                                                interactiontext: 'LLAMADA SALIENTE',
+                                                communicationchannelid: ccidvoxi
                                             })))
                                         }
                                     }}
@@ -565,12 +559,9 @@ const MakeCall: React.FC = () => {
                                         if (statusCall === "DISCONNECTED" && !waiting2) {
                                             setwaiting2(true)
                                             setNumberVox(e.phone)
-                                            dispatch(execute(conversationOutboundIns({
+                                            dispatch(execute(conversationOutboundValidate({
                                                 number: e.phone,
-                                                communicationchannelid: ccidvoxi,
-                                                personcommunicationchannelowner: e.personcommunicationchannelowner,
-                                                interactiontype: 'text',
-                                                interactiontext: 'LLAMADA SALIENTE'
+                                                communicationchannelid: ccidvoxi
                                             })))
                                         }
                                     }}

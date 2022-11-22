@@ -2,6 +2,7 @@ const actionType = {
     INIT_SDK: 'voximplant/INIT_SDK',
     MAKE_CALL: 'voximplant/MAKE_CALL',
     INIT_CALL: 'voximplant/INIT_CALL',
+    MODIFY_CALL: 'voximplant/MODIFY_CALL',
     MANAGE_STATUS_CALL: 'voximplant/MANAGE_STATUS_CALL',
     MANAGE_STATUS_VOX: 'voximplant/MANAGE_STATUS_VOX',
 
