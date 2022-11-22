@@ -1236,7 +1236,7 @@ export const callConnected = (state: IState, action: IAction): IState => ({
     ...state,
     ticketList: {
         ...state.ticketList,
-        data: state.ticketList.data.map(x => x.conversationid === action.payload ? { ...x, callanswereddate: new Date().toISOString() } : x)
+        data: state.ticketList.data.map(x => x.personcommunicationchannel === action.payload ? { ...x, callanswereddate: new Date().toISOString() } : x)
     }
 });
 
