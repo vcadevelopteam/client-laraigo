@@ -217,3 +217,4 @@ export { ReactComponent as PostCreatorCalendar } from './postcreator-calendar.sv
 export { ReactComponent as PostCreatorPostHistory } from './postcreator-posthistory.svg';
 export { ReactComponent as PostCreatorPublish } from './postcreator-publish.svg';
 export { ReactComponent as PostCreatorStory } from './postcreator-story.svg';
+export { ReactComponent as GoogleCalendarIcon } from './google-calendar-2020.svg';

@@ -1105,6 +1105,10 @@ const translation: LangKeys = {
     calendar_personname: 'Nombre de la persona',
     calendar_personcontact: 'Contacto de la persona',
     calendar_personmail: 'Correo de la persona',
+    calendar_confirmation_disconnect: '¿Desea desconectar el calendario?',
+    connection_to_calendars: 'Conexión a calendarios',
+    connect: 'Conectar',
+    disconnect: 'Desconectar',
 
     id: 'ID',
     newmessagetemplate: 'Nueva plantilla de comunicación',

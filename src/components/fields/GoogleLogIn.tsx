@@ -18,12 +18,13 @@ const useStyles = makeStyles(theme => ({
 }));
 
 interface GoogleLogInProps {
+    label?: string;
     scope: string;
-    googleDispatch: (param: any) => void;
+    googleDispatch: (param?: any) => void;
     data: {id: number, [key: string]: any};
 }
 
-export const GoogleLogIn: FC<GoogleLogInProps> = ({ scope, googleDispatch, data }) => {
+export const GoogleLogIn: FC<GoogleLogInProps> = ({ label, scope, googleDispatch, data }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const classes = useStyles();
@@ -40,9 +41,9 @@ export const GoogleLogIn: FC<GoogleLogInProps> = ({ scope, googleDispatch, data 
     const onGoogleLoginSucess = (event: any) => {
         if (event) {
             if (event.code) {
-                dispatch(googleDispatch({ ...event, id: data.id }));
-                dispatch(showBackdrop(true));
                 setWaitExchange(true);
+                dispatch(showBackdrop(true));
+                googleDispatch(event);
             }
         }
     }
@@ -76,7 +77,7 @@ export const GoogleLogIn: FC<GoogleLogInProps> = ({ scope, googleDispatch, data 
         variant="contained"
         color="primary"
     >
-        {t(langKeys.login_with_google)}
+        {label ? label : t(langKeys.login_with_google)}
     </Button>
 };
 

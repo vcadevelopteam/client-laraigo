@@ -17,7 +17,7 @@ import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/acti
 import { Box, Checkbox, FormControl, FormControlLabel, FormGroup, IconButton, ListItemIcon, Menu, MenuItem, Radio, RadioGroup, Switch, Tabs, TextField, Tooltip } from '@material-ui/core';
 import { Range } from 'react-date-range';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
-import { CalendarIcon, DuplicateIcon } from 'icons';
+import { CalendarIcon, DuplicateIcon, GoogleCalendarIcon } from 'icons';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -37,6 +37,10 @@ import AddIcon from '@material-ui/icons/Add';
 import InfoIcon from '@material-ui/icons/Info';
 import ClearIcon from '@material-ui/icons/Clear';
 import CalendarWithInfo from 'components/fields/CalendarWithInfo';
+import { apiUrls } from 'common/constants';
+import GoogleLogIn from 'components/fields/GoogleLogIn';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import { calendarGoogleDisconnect, calendarGoogleLogIn, calendarGoogleValidate, resetCalendarGoogle } from 'store/calendar/actions';
 
 
 interface RowSelected {
@@ -206,6 +210,46 @@ const useStyles = makeStyles((theme) => ({
         textAlign: 'center',
         fontSize: '1.1rem',
         padding: '5px',
+    },
+    integrationIcon: {
+        width: '50px',
+        height: '50px'
+    },
+    integrationRow: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        alignItems: "center",
+        gap: '10px 64px',
+    },
+    integrationItem: {
+        flexGrow: 1,
+        display: 'flex',
+        justifyContent: "space-between",
+        alignItems: "center",
+        gap: '16px',
+    },
+    integrationText: {
+        flexGrow: 1,
+        display: 'flex',
+        flexWrap: 'wrap',
+        alignItems: "center",
+        gap: '5px 32px',
+    },
+    integrationTitle: {
+        flexBasis: '200px',
+        fontSize: '20px',
+    },
+    integrationDescription: {
+        flexBasis: '250px',
+        fontSize: '16px',
+        color: '#989898',
+    },
+    integrationButton: {
+        padding: 12,
+        fontWeight: 500,
+        fontSize: '14px',
+        textTransform: 'initial',
+        width: "180px"
     }
 }));
 
@@ -1016,6 +1060,13 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
             setTemplateVariables(getvariableValues(row?.messagetemplateid, row.notificationmessage))
             setEmailVariables(getvariableValues(row?.remindermailtemplateid, row.remindermailmessage))
             setHsmVariables(getvariableValues(row?.reminderhsmtemplateid, row.reminderhsmmessage))
+            if (row?.credentialsdate) {
+                dispatch(calendarGoogleValidate({ id: row?.calendareventid }))
+                setWaitGoogleValidate(true)
+            }
+        }
+        return () => {
+            dispatch(resetCalendarGoogle());
         }
     }, [row])
 
@@ -1126,6 +1177,66 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
         { id: "view-2", name: t(langKeys.calendar_detail) }
     ];
     const { sun, mon, tue, wed, thu, fri, sat } = state;
+
+    const [calendarGoogleActive, setCalendarGoogleActive] = useState(row?.credentialsdate);
+    const resCalendarGoogleValidate = useSelector(state => state.calendar.requestGoogleValidate);
+    const resCalendarGoogleLogIn = useSelector(state => state.calendar.requestGoogleLogIn);
+    const resCalendarGoogleDisconnect = useSelector(state => state.calendar.requestGoogleDisconnect);
+    const [waitGoogleValidate, setWaitGoogleValidate] = useState(false);
+    const [waitGoogleLogIn, setWaitGoogleLogIn] = useState(false);
+    const [waitGoogleDisconnect, setWaitGoogleDisconnect] = useState(false);
+
+    const googleConfirmDisconnect = (id: number) => {
+        const callback = () => {
+            dispatch(calendarGoogleDisconnect({ id }))
+            dispatch(showBackdrop(true));
+            setWaitGoogleDisconnect(true);  
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.calendar_confirmation_disconnect),
+            callback
+        }))
+    }
+
+    useEffect(() => {
+        if (waitGoogleValidate) {
+            if (!resCalendarGoogleValidate.loading) {
+                setWaitGoogleValidate(false)
+                if (!resCalendarGoogleValidate.error) {
+                    setCalendarGoogleActive(true)
+                }
+                else {
+                    setCalendarGoogleActive(false)
+                }
+            }
+        }
+    }, [resCalendarGoogleValidate])
+
+    useEffect(() => {
+        if (waitGoogleLogIn) {
+            if (!resCalendarGoogleLogIn.loading) {
+                setWaitGoogleLogIn(false)
+                if (!resCalendarGoogleLogIn.error) {
+                    setCalendarGoogleActive(true)
+                }
+            }
+        }
+    }, [resCalendarGoogleLogIn])
+
+    useEffect(() => {
+        if (waitGoogleDisconnect) {
+            if (!resCalendarGoogleDisconnect.loading) {
+                setWaitGoogleDisconnect(false)
+                dispatch(showBackdrop(false))
+                if (!resCalendarGoogleDisconnect.error) {
+                    setCalendarGoogleActive(false)
+                }
+            }
+        }
+    }, [resCalendarGoogleDisconnect])
+
     return (
         <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -1185,13 +1296,6 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                         </div>
                     )}
                 />
-                {operation === "EDIT" && <AntTab
-                    label={(
-                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                            <Trans i18nKey={langKeys.scheduled_events} count={2} />
-                        </div>
-                    )}
-                />}
                 <AntTab
                     label={(
                         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -1199,6 +1303,20 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                         </div>
                     )}
                 />
+                {operation === "EDIT" && <AntTab
+                    label={(
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                            <Trans i18nKey={langKeys.connection_to_calendars} count={2} />
+                        </div>
+                    )}
+                />}
+                {operation === "EDIT" && <AntTab
+                    label={(
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                            <Trans i18nKey={langKeys.scheduled_events} count={2} />
+                        </div>
+                    )}
+                />}
             </Tabs>
 
             <AntTabPanel index={0} currentIndex={tabIndex}>
@@ -1534,9 +1652,9 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                     </div>
 
                     <div className="row-zyx">
-                        <div style={{ display: "grid", gridTemplateColumns: "[first] 200px [line2] auto [col2] 200px [end]" }} >
-                            <Box style={{ gridColumnStart: "first" }} fontWeight={500} lineHeight="18px" fontSize={20} mb={1} color="textPrimary">{t(langKeys.availability)}</Box>
-                            <div style={{ gridColumnStart: "col2" }}>
+                        <div style={{ display: "flex", width: "50%", justifyContent: "space-between", alignItems: "center" }} >
+                            <Box fontWeight={500} lineHeight="18px" fontSize={20} mb={1} color="textPrimary">{t(langKeys.availability)}</Box>
+                            <div>
                                 <FormControlLabel
                                     disabled={getValues("intervals").some(x => (x.overlap || -1) !== -1)}
                                     control={<Switch
@@ -1688,15 +1806,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                     </div>
                 </div>
             </AntTabPanel>
-            {operation === "EDIT" &&
-                <AntTabPanel index={2} currentIndex={tabIndex} >
-                    <BookingEvents
-                        calendarEventID={row?.calendareventid || 0}
-                        event={row!!}
-                    />
-                </AntTabPanel>
-            }
-            <AntTabPanel index={operation === "EDIT" ? 3 : 2} currentIndex={tabIndex} >
+            <AntTabPanel index={2} currentIndex={tabIndex} >
                 <div className={classes.containerDetail}>
                     <div className="row-zyx" >
                         <FieldSelect
@@ -1894,6 +2004,60 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                     }
                 </div>
             </AntTabPanel>
+            {operation === "EDIT" &&
+                <AntTabPanel index={3} currentIndex={tabIndex} >
+                    <div className={classes.containerDetail}>
+                        <div className={classes.integrationRow}>
+                            <div className={classes.integrationItem}>
+                                <div>
+                                    <GoogleCalendarIcon className={classes.integrationIcon} />
+                                </div>
+                                <div className={classes.integrationText}>
+                                    <div className={classes.integrationTitle}>
+                                        Google Calendar
+                                    </div>
+                                    <div className={classes.integrationDescription}>
+                                        Gmail - G Suit
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                {calendarGoogleActive ?
+                                    <Button
+                                        className={classes.integrationButton}
+                                        variant="contained"
+                                        disabled={resCalendarGoogleValidate.loading}
+                                        color="primary"
+                                        onClick={() => googleConfirmDisconnect(row?.calendareventid)}
+                                    >
+                                        {t(langKeys.disconnect)} 
+                                    </Button>
+                                    :
+                                    <GoogleOAuthProvider clientId={apiUrls.GOOGLECLIENTID_CALENDAR}>
+                                        <GoogleLogIn
+                                            label="Conectar"
+                                            scope={'https://www.googleapis.com/auth/calendar.readonly'}
+                                            googleDispatch={(e) => {
+                                                dispatch(calendarGoogleLogIn({ ...e, id: row?.calendareventid }))
+                                                setWaitGoogleLogIn(true);
+                                            }}
+                                            data={{id: row?.calendareventid, data_code: row?.code }}
+                                        />
+                                    </GoogleOAuthProvider>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </AntTabPanel>
+            }
+            {operation === "EDIT" &&
+                <AntTabPanel index={4} currentIndex={tabIndex} >
+                    <BookingEvents
+                        calendarEventID={row?.calendareventid || 0}
+                        event={row!!}
+                    />
+                </AntTabPanel>
+            }
         </form>
     );
 }
