@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import CalendarGeneric from 'components/fields/CalendarGeneric';
+import CalendarPostHistory from 'components/fields/CalendarPostHistory';
 import SchedulePostHistory from 'components/fields/SchedulePostHistory';
 import React, { FC, useEffect, useState } from "react";
 
@@ -26,7 +26,6 @@ const PostCreatorCalendar: FC<{ setViewSelected: (id: string) => void }> = ({ se
     const [dataPublication, setDataPublication] = useState<Dictionary[]>([]);
     const [filters, setfilters] = useState<any>({ type: "", status: "" });
     const [firstCall, setfirstCall] = useState(true);
-    const [data, setData] = useState<any>(null);
     const [pageSelected, setPageSelected] = useState(0);
     const [dateRange, setDateRange] = useState<Range>({
         startDate: getDateToday(),
@@ -99,14 +98,10 @@ const PostCreatorCalendar: FC<{ setViewSelected: (id: string) => void }> = ({ se
                 {pageSelected === 1 &&
                     <div style={{ marginTop: 4 }}>
                         <div style={{ width: "100%" }}>
-                            <CalendarGeneric
-                                calendarEventID={0}
+                            <CalendarPostHistory
+                                data={dataPublication}
                                 date={dateRange.startDate!!}
-                                selectBooking={(item) => {
-                                    console.log(item);
-                                }}
                                 setDateRange={setDateRange}
-                                booking={data}
                             />
                         </div>
                     </div>

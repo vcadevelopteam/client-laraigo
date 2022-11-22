@@ -2,14 +2,12 @@ import React, { FC, useCallback, useEffect, useState } from "react";
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 
-import { calculateDateFromWeek, dayNames2, selBookingCalendar, timetomin } from "common/helpers";
+import { calculateDateFromWeek, dayNames2, timetomin } from "common/helpers";
 import { Dictionary } from "@types";
-import { getCollectionAux } from "store/main/actions";
 import { langKeys } from 'lang/keys';
 import { makeStyles } from "@material-ui/core";
-import { useDispatch } from "react-redux";
-import { useSelector } from "hooks";
 import { useTranslation } from 'react-i18next';
+import { getFormattedDate } from "common/helpers";
 
 interface HourDayProp {
     data?: Dictionary[]
@@ -221,55 +219,46 @@ const BoxDay: FC<{ hourDay: HourDayProp; handleClick: (event: any) => void; }> =
     )
 }
 
-const CalendarGeneric: FC<{ calendarEventID: number; selectBooking: (p: any) => void; booking: Dictionary; date: Date; setDateRange: (p: any) => void }> = ({ calendarEventID, selectBooking, date, setDateRange }) => {
-    const dispatch = useDispatch();
-
+const CalendarPostHistory: FC<{ data: Dictionary[], date: Date; setDateRange: (p: any) => void }> = ({ data, date, setDateRange }) => {
     const { t } = useTranslation();
 
-    const dataBooking = useSelector(state => state.main.mainAux);
     const classes = useScheduleStyles();
 
     const [daysToShow, setDaysToShow] = useState<HourDayProp[]>([]);
     const [rangeDates, setRangeDates] = useState<DayProp[]>([]);
 
-    const fetchData = (newStartDate: Date) => {
+    const updateDateRange = (newStartDate: Date) => {
         const newRangeDates = calculateDateFromWeek(newStartDate) as DayProp[];
-        dispatch(getCollectionAux(selBookingCalendar(
-            newRangeDates[0].dateString,
-            newRangeDates[6].dateString || "",
-            calendarEventID,
-        )))
         setRangeDates(newRangeDates);
     }
 
     useEffect(() => {
-        fetchData(date);
+        updateDateRange(date);
     }, [])
 
     useEffect(() => {
-        if (!dataBooking.loading && !dataBooking.error) {
+        if (data) {
             const aa = rangeDates.reduce((acc: HourDayProp[], item: DayProp) => ([
                 ...acc,
                 ...Array.from(Array(24).keys()).map(x => ({
                     ...item,
                     hourstart: x,
                     hourend: x + 1,
-                    data: dataBooking
-                        .data.filter(y => y.monthdate === item.dateString && parseInt(y.hourstart.split(":")[0]) === x)
+                    data: data?.filter(y => getFormattedDate(new Date(y.publishdate)) === item.dateString && parseInt(new Date(y.publishdate).toLocaleDateString().split(":")[0]) === x)
                         .map(y => ({
                             ...y,
-                            totalTime: (timetomin(y.hourend) - timetomin(y.hourstart)) * 100 / 60,
-                            initTime: (parseInt(y.hourstart.split(":")[1])) * 100 / 60,
+                            totalTime: (timetomin(new Date(y.publishdate).toLocaleDateString()) - timetomin(new Date(y.publishdate).toLocaleDateString())) * 100 / 60,
+                            initTime: (parseInt(new Date(y.publishdate).toLocaleDateString().split(":")[1])) * 100 / 60,
                         }))
                 }))
             ]), [])
             setDaysToShow(aa);
         }
-    }, [dataBooking])
+    }, [data])
 
     const handleChangeWeek = useCallback((manage: number) => {
         const previewDate = new Date(rangeDates[0].date);
-        fetchData(new Date(previewDate.setDate(previewDate.getDate() + 1 + manage * 7)));
+        updateDateRange(new Date(previewDate.setDate(previewDate.getDate() + 1 + manage * 7)));
     }, [rangeDates])
 
     return (
@@ -330,7 +319,6 @@ const CalendarGeneric: FC<{ calendarEventID: number; selectBooking: (p: any) => 
                             key={index}
                             hourDay={day}
                             handleClick={(e) => {
-                                selectBooking(e);
                                 setDateRange({
                                     startDate: rangeDates[0].date,
                                     endDate: rangeDates[1].date,
@@ -345,4 +333,4 @@ const CalendarGeneric: FC<{ calendarEventID: number; selectBooking: (p: any) => 
     )
 }
 
-export default CalendarGeneric;
+export default CalendarPostHistory;
