@@ -532,6 +532,7 @@ const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = 
     const [view, setView] = useState<"list" | "calendar">("list")
     const { t } = useTranslation();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const user = useSelector(state => state.login.validateToken.user);
 
     const handleClose = () => setAnchorEl(null);
 
@@ -562,7 +563,6 @@ const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = 
         }
     }, [mainAux])
 
-    console.log("event", event)
     return (
         <div style={{ gap: 16, marginTop: 16, overflowY: 'auto' }}>
             <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
@@ -647,7 +647,7 @@ const BookingEvents: React.FC<{ calendarEventID: number, event: Dictionary }> = 
                                             onClose={handleClose}
                                         >
                                             <MenuItem onClick={(e) => {
-                                                const url = new URL(`events/1/${event.code}?booking=${x.calendarbookinguuid}`, window.location.origin)
+                                                const url = new URL(`events/${user?.orgid}/${event.code}?booking=${x.calendarbookinguuid}`, window.location.origin)
                                                 console.log("url", url)
                                                 window.open(url.href, '_blank');
                                              }}>
@@ -2017,7 +2017,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                         Google Calendar
                                     </div>
                                     <div className={classes.integrationDescription}>
-                                        Gmail - G Suit
+                                        Gmail - G Suite
                                     </div>
                                 </div>
                             </div>
