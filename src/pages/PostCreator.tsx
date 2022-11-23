@@ -223,7 +223,7 @@ const PostCreator: FC = () => {
         return (
             <>
                 <div style={{ width: '100%' }}>
-                    <PostCreatorHistory setViewSelected={setViewSelected}  />
+                    <PostCreatorHistory setViewSelected={setViewSelected} />
                 </div>
             </>
         )

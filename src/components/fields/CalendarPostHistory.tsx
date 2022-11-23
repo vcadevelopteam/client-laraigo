@@ -202,7 +202,7 @@ const BoxDay: FC<{ hourDay: HourDayProp; handleClick: (event: any) => void; }> =
     )
 }
 
-const CalendarPostHistory: FC<{ data: Dictionary[], date: Date; setDateRange: (p: any) => void }> = ({ data, date, setDateRange }) => {
+const CalendarPostHistory: FC<{ data: Dictionary[], date: Date; setDateRange: (p: any) => void; setViewSelected: (view: string) => void; setDataSelected: (view: any) => void; }> = ({ data, date, setDateRange, setViewSelected, setDataSelected }) => {
     const { t } = useTranslation();
 
     const classes = useScheduleStyles();
@@ -356,9 +356,10 @@ const CalendarPostHistory: FC<{ data: Dictionary[], date: Date; setDateRange: (p
                             </div>
                         </div>
                     </div>
-                    <div style={{ overflowY: 'scroll' }}>
+                    <div style={{ overflowY: 'scroll', minWidth: 300, height: 700 }}>
                         {daySelected.data?.map((postdata) => (
-                            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', overflow: 'auto', margin: '16px', border: '1px solid #762AA9', borderRadius: '8px' }}>
+                            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', cursor: 'pointer', overflow: 'auto', margin: '16px', border: '1px solid #762AA9', borderRadius: '8px' }}
+                                onClick={() => { setDataSelected({ row: postdata, edit: true }); setViewSelected("bet-2") }}>
                                 <div style={{ maxWidth: '50%', flex: '1 1 50%', wordBreak: 'break-word', padding: '10px' }}>
                                     <b>{new Date(postdata.publishdate).toLocaleTimeString()?.slice(0, 5)}</b>
                                     <h3>{postdata.texttitle}</h3>
@@ -376,7 +377,7 @@ const CalendarPostHistory: FC<{ data: Dictionary[], date: Date; setDateRange: (p
                     </div>
                 </div>}
                 {!daySelected && <div>
-                    <h3 style={{ margin: '8px', color: '#762AA9' }}>{t(langKeys.posthistorycalendar_selectdate)}</h3>
+                    <h3 style={{ margin: '8px', color: '#762AA9' }}>{t(langKeys.posthistorycalendar_selectitem)}</h3>
                 </div>}
             </div>
         </div>

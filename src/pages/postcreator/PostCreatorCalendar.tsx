@@ -72,7 +72,7 @@ const PostCreatorCalendar: FC<{ setViewSelected: (id: string) => void }> = ({ se
     const classes = useStyles();
 
     const [dataPublication, setDataPublication] = useState<Dictionary[]>([]);
-    const [filters, setfilters] = useState<any>({ type: "", status: "",communicationchannelid: 0 });
+    const [filters, setfilters] = useState<any>({ type: "", status: "", communicationchannelid: 0 });
     const [dataselected, setdataselected] = useState<any>({ row: "", edit: true });
     const [firstCall, setfirstCall] = useState(true);
     const [pageSelected, setPageSelected] = useState(0);
@@ -85,13 +85,13 @@ const PostCreatorCalendar: FC<{ setViewSelected: (id: string) => void }> = ({ se
         key: 'selection',
     });
     const handleSelectedString = (key: string) => {
-        if(key.includes("view")){
+        if (key.includes("view")) {
             setViewSelected(key);
-        }else if (key==="bet-1"){
+        } else if (key === "bet-1") {
             setArrayBread(getArrayBread(t('postcreator_calendar'), t(langKeys.postcreator_title)));
             setdataselected({ row: "", edit: true })
             setBetweenViews(key)
-        }else{
+        } else {
             let temparraybread = getArrayBread(t('postcreator_calendar'), t(langKeys.postcreator_title))
             setArrayBread([...temparraybread, { id: "bet-2", name: t(langKeys.postcreator_posthistorydetail) }])
             setBetweenViews(key)
@@ -106,11 +106,11 @@ const PostCreatorCalendar: FC<{ setViewSelected: (id: string) => void }> = ({ se
     }
 
     useEffect(() => {
-        if (betweenViews==="bet-1"){
+        if (betweenViews === "bet-1") {
             setArrayBread(getArrayBread(t('postcreator_calendar'), t(langKeys.postcreator_title)));
         }
     }, [betweenViews]);
-    
+
     useEffect(() => {
         fetchData();
         setfirstCall(false);
@@ -158,7 +158,7 @@ const PostCreatorCalendar: FC<{ setViewSelected: (id: string) => void }> = ({ se
                         <AntTab label={t(langKeys.postcreatorcalendar_monthly)} />
                         <AntTab label={t(langKeys.postcreatorcalendar_weekly)} />
                     </Tabs>
-                    <div style={{paddingTop: 8, display: 'flex', justifyContent: 'space-between', width: '100%'}}>
+                    <div style={{ paddingTop: 8, display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                         <div>
                             <FieldSelect
                                 data={multiResult?.data?.[0]?.data || []}
@@ -173,7 +173,7 @@ const PostCreatorCalendar: FC<{ setViewSelected: (id: string) => void }> = ({ se
                                 variant="outlined"
                             />
                         </div>
-                        <div style={{ display: 'flex', gap: 8}}>
+                        <div style={{ display: 'flex', gap: 8 }}>
                             <Button
                                 className={classes.button}
                                 color="primary"
@@ -214,6 +214,8 @@ const PostCreatorCalendar: FC<{ setViewSelected: (id: string) => void }> = ({ se
                                     data={dataPublication}
                                     date={dateRange.startDate!!}
                                     setDateRange={setDateRange}
+                                    setViewSelected={handleSelectedString}
+                                    setDataSelected={setdataselected}
                                 />
                             </div>
                         </div>

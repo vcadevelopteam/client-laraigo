@@ -216,4 +216,6 @@ export const apiUrls = {
 
     POSTHISTORY_SCHEDULE: `${BASE_URL}/posthistory/schedulepost`,
     EVENTBOOKING_GOOGLE_LOGIN: `${BASE_URL}/event-booking/googlelogin`,
+    EVENTBOOKING_GOOGLE_DISCONNECT: `${BASE_URL}/event-booking/googlelogin`,
+    EVENTBOOKING_GOOGLE_VALIDATE: `${BASE_URL}/event-booking/googlelogin`,
 };

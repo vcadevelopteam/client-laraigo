@@ -68,20 +68,20 @@ const selectionKey = 'posthistoryid';
 const PostCreatorHistory: FC<{ setViewSelected: (id: string) => void }> = ({ setViewSelected }) => {
     const { t } = useTranslation();
 
-    const [pageSelected, setPageSelected] = useState(2);
+    const [pageSelected, setPageSelected] = useState(0);
     const [betweenViews, setBetweenViews] = useState("bet-1");
     const [arrayBread, setArrayBread] = useState<any>(getArrayBread(t('postcreator_posthistory'), t(langKeys.postcreator_title)));
     const handleSelectedString = (key: string) => {
-        if(key.includes("view")){
+        if (key.includes("view")) {
             setViewSelected(key);
-        }else if (key==="bet-1"){
+        } else if (key === "bet-1") {
             setArrayBread(getArrayBread(t('postcreator_posthistory'), t(langKeys.postcreator_title)));
             setBetweenViews(key)
-        }else{
+        } else {
             setBetweenViews(key)
         }
     }
-    
+
     return (
         <React.Fragment>
             <TemplateBreadcrumbs
@@ -89,7 +89,7 @@ const PostCreatorHistory: FC<{ setViewSelected: (id: string) => void }> = ({ set
                 handleClick={handleSelectedString}
             />
             <div style={{ width: '100%' }}>
-                {betweenViews==="bet-1" &&
+                {betweenViews === "bet-1" &&
                     <Tabs
                         indicatorColor="primary"
                         onChange={(_, value) => setPageSelected(value)}
@@ -105,17 +105,17 @@ const PostCreatorHistory: FC<{ setViewSelected: (id: string) => void }> = ({ set
                 }
                 {pageSelected === 0 &&
                     <div style={{ marginTop: 4 }}>
-                        <PublishedHistory publishType={'PUBLISHED'} setArrayBread={setArrayBread} betweenViews={betweenViews} setBetweenViews={setBetweenViews}/>
+                        <PublishedHistory publishType={'PUBLISHED'} setArrayBread={setArrayBread} betweenViews={betweenViews} setBetweenViews={setBetweenViews} />
                     </div>
                 }
                 {pageSelected === 1 &&
                     <div style={{ marginTop: 4 }}>
-                        <PublishedHistory publishType={'SCHEDULED'} setArrayBread={setArrayBread} betweenViews={betweenViews} setBetweenViews={setBetweenViews}/>
+                        <PublishedHistory publishType={'SCHEDULED'} setArrayBread={setArrayBread} betweenViews={betweenViews} setBetweenViews={setBetweenViews} />
                     </div>
                 }
                 {pageSelected === 2 &&
                     <div style={{ marginTop: 4 }}>
-                        <PublishedHistory publishType={'DRAFT'} setArrayBread={setArrayBread} betweenViews={betweenViews} setBetweenViews={setBetweenViews}/>
+                        <PublishedHistory publishType={'DRAFT'} setArrayBread={setArrayBread} betweenViews={betweenViews} setBetweenViews={setBetweenViews} />
                     </div>
                 }
             </div>
@@ -128,7 +128,7 @@ const initialRange = {
     startDate: new Date(new Date().setDate(1)),
 }
 
-const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value:any)=> void,betweenViews:any,setBetweenViews: (value:any)=> void}> = ({ publishType, setArrayBread,betweenViews,setBetweenViews }) => {
+const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value: any) => void, betweenViews: any, setBetweenViews: (value: any) => void }> = ({ publishType, setArrayBread, betweenViews, setBetweenViews }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -254,9 +254,6 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value:an
                         {Object.keys(reactions || {}).map((x) => {
                             return <div>{x.toLocaleUpperCase()}: {reactions[x]} </div>
                         })}
-                        <div>
-                            {reactions}
-                        </div>
                     </div>)
             }
         },
@@ -281,7 +278,7 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value:an
         const toDelete = mainResult.mainData.data.filter(x => Object.keys(selectedRows).includes(`${x[selectionKey]}`)) || [];
         let allRequestBody: IRequestBody[] = [];
         toDelete.forEach(x => {
-            allRequestBody.push(postHistoryIns({ ...x, medialink: JSON.stringify(x.medialink),status: "DELETED", operation: "UPDATE" }));
+            allRequestBody.push(postHistoryIns({ ...x, medialink: JSON.stringify(x.medialink), status: "DELETED", operation: "UPDATE" }));
         });
         setWaitDelete(true);
         dispatch(showBackdrop(true));
@@ -306,7 +303,7 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value:an
                     heightWithCheck={65}
                     initialSelectedRows={selectedRows}
                     loading={mainResult.mainData.loading}
-                    onClickRow={publishType==="PUBLISHED"?()=>{}:handleView}
+                    onClickRow={publishType === "PUBLISHED" ? () => { } : handleView}
                     register={false}
                     selectionKey={selectionKey}
                     setCleanSelection={setCleanSelected}

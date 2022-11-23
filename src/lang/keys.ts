@@ -4604,6 +4604,7 @@ export const langKeys = {
     postcreatorcalendar_weekly: "postcreatorcalendar_weekly",
     more_items: "more_items",
     posthistorycalendar_selectdate: "posthistorycalendar_selectdate",
+    posthistorycalendar_selectitem: "posthistorycalendar_selectitem",
 };
 
 export type LangKeys = typeof langKeys;
