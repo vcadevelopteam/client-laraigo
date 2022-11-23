@@ -78,7 +78,7 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
     const applications = useSelector(state => state.login?.validateToken?.user?.menu);
     const dispatch = useDispatch();
     const showcall = useSelector(state => state.voximplant.showcall);
-    const statusCall = useSelector(state => state.voximplant.statusCall);
+    const calls = useSelector(state => state.voximplant.calls);
     const voxiConnection = useSelector(state => state.voximplant.connection);    
     const location = useLocation();
     const userConnected = useSelector(state => state.inbox.userConnected);
@@ -128,7 +128,7 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
                         <IconButton 
                             style={{ marginLeft: "auto", marginTop: 40, marginRight: "auto", width: 80, height: 80, borderRadius: "50%", backgroundColor: showcall ? "#7721ad" : "#bdbdbd" }}
                             onClick={() => voxiConnection.error? dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) })):dispatch(setModalCall(true))}
-                            disabled={statusCall !== "DISCONNECTED"}
+                            disabled={calls.some(call => call.statusCall === "CONNECTED")}
                         >
                             <WifiCalling style={{ color: "white", width: "80px", height: "80px" }} />
                             <Typography gutterBottom variant="h6" component="div">

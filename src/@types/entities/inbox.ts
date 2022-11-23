@@ -1,4 +1,5 @@
 import { Dictionary } from '@types';
+import { Call } from 'voximplant-websdk/Call/Call';
 import { ITicket } from './ticket'
 
 export interface ICloseTicketsParams {
@@ -87,4 +88,14 @@ export interface IConnectAgentUIParams {
     connect: boolean;
     description?: string | null;
     motive?: string | null;
+}
+
+export interface ICallGo {
+    call?: Call | null;
+    type: string;
+    number: string;
+    identifier: string;
+    statusCall: string;
+    onhold?: boolean;
+    onholddate?: string;
 }

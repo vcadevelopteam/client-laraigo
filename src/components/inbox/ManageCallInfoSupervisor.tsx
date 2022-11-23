@@ -17,7 +17,7 @@ const ManageCallInfoSupervisor: React.FC = () => {
     const phoneinbox = useSelector(state => state.inbox.person.data?.phone);
     const [numberVox, setNumberVox] = useState("");
     const resValidateToken = useSelector(state => state.login.validateToken);
-    const call = useSelector(state => state.voximplant.call);
+    const calls = useSelector(state => state.voximplant.calls);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const [supervision, setSupervision] = useState(false)
     const [time, settime] = useState(0);
@@ -65,7 +65,7 @@ const ManageCallInfoSupervisor: React.FC = () => {
             })));
             setSupervision(false)
             dispatch(hangupCall(call.call));
-            dispatch(resetCall());
+            dispatch(resetCall(ticketSelected?.personcommunicationchannel.split("_")[0] || ""));
         }
     }
 

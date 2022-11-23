@@ -2,7 +2,7 @@ import { Call } from 'voximplant-websdk/Call/Call';
 import { CallEvents } from 'voximplant-websdk/Call/CallEvents';
 import { Client } from 'voximplant-websdk/Client';
 import { createReducer, initialCommon } from "common/helpers";
-import { ITemplate, ITicket } from "@types";
+import { ICallGo, ITemplate, ITicket } from "@types";
 
 import * as caseFUnctions from './caseFunctions';
 import actionTypes from "./actionTypes";
@@ -13,15 +13,7 @@ export interface IRequest extends ITemplate {
 }
 
 export interface IState {
-    call: {
-        call?: Call | null,
-        type: string,
-        number: string,
-        identifier: string
-        statusCall: string,
-    };
-    onhold: boolean;
-    onholddate: string;
+    calls: ICallGo[];
 
     connection: { error: boolean; message: string; loading: boolean };
     error: string;
@@ -41,7 +33,8 @@ export interface IState {
 }
 
 export const initialState: IState = {
-    call: { call: null, type: "", number: "", identifier: "", statusCall: "DISCONNECTED", },
+    // call: { call: null, type: "", number: "", identifier: "", statusCall: "DISCONNECTED", },
+    calls: [],
     connection: { error: true, message: "", loading: false },
     error: "",
     requestGetCategories: { ...initialCommon, data: null, loading: false, error: false },
@@ -51,8 +44,8 @@ export const initialState: IState = {
     requestGetAdvisors: { ...initialCommon, data: null, loading: false, error: false },
     showcall: false,
     phoneNumber: "",
-    onhold: false,
-    onholddate: new Date().toISOString(),
+    // onhold: false,
+    // onholddate: new Date().toISOString(),
     requestGetMaximumConsumption: { ...initialCommon, data: null, loading: false, error: false },
     requestTransferAccountBalance: { ...initialCommon, data: null, loading: false, error: false },
     requestGetAccountBalance: { ...initialCommon, data: null, loading: false, error: false },
@@ -62,7 +55,7 @@ export const initialState: IState = {
 
 export default createReducer<IState>(initialState, {
     [actionTypes.INIT_CALL]: caseFUnctions.initCall,
-    [actionTypes.MODIFY_CALL]: caseFUnctions.modifyCall,
+    // [actionTypes.MODIFY_CALL]: caseFUnctions.modifyCall,
     [actionTypes.SET_MODAL_CALL]: caseFUnctions.setModalCall,
     [actionTypes.SET_PHONE_NUMBER]: caseFUnctions.setPhoneNumber,
     [actionTypes.SET_HOLD]: caseFUnctions.setHold,

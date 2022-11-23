@@ -1,16 +1,14 @@
 import { IAction } from "@types";
 import { initialState, IState } from "./reducer";
 
-export const manageConnection = (state: IState, action: IAction): IState => {
-    return {
-        ...state,
-        connection: {
-            error: action.payload.error,
-            message: action.payload.message,
-            loading: action.payload.loading
-        }
+export const manageConnection = (state: IState, action: IAction): IState => ({
+    ...state,
+    connection: {
+        error: action.payload.error,
+        message: action.payload.message,
+        loading: action.payload.loading
     }
-};
+});
 
 export const setModalCall = (state: IState, action: IAction): IState => {
     return {
@@ -18,49 +16,47 @@ export const setModalCall = (state: IState, action: IAction): IState => {
         showcall: action.payload,
     }
 }
-export const setPhoneNumber = (state: IState, action: IAction): IState => {
-    return {
-        ...state,
-        phoneNumber: action.payload,
-    }
-}
-export const setHold = (state: IState, action: IAction): IState => {
-    return {
-        ...state,
+export const setPhoneNumber = (state: IState, action: IAction): IState => ({
+    ...state,
+    phoneNumber: action.payload,
+})
+
+export const setHold = (state: IState, action: IAction): IState => ({
+    ...state,
+    calls: state.calls.map(x => x.statusCall === "CONNECTED" && x.number === action.payload.number ? ({
+        ...x,
         onholddate: new Date().toISOString(),
         onhold: action.payload,
-    }
-}
-export const initCall = (state: IState, action: IAction): IState => {
-    return {
-        ...state,
-        call: action.payload,
-        onhold: false,
-    }
-}
-export const modifyCall = (state: IState, action: IAction): IState => {
-    return {
-        ...state,
-        call: {
-            ...state.call,
-            // data: (action.payload.personcommunicationchannel === state.call.data?.personcommunicationchannel ? action.payload : state.call.data)
-        },
-    }
-}
+    }) : x),
+})
 
-export const manageStatusCall = (state: IState, action: IAction): IState => {
-    return {
-        ...state,
-        statusCall: action.payload
-    }
-}
+export const initCall = (state: IState, action: IAction): IState => ({
+    ...state,
+    calls: [...state.calls, action.payload]
+})
 
-export const resetCall = (state: IState, action: IAction): IState => {
-    return {
-        ...state,
-        call: initialState.call
-    }
-}
+// export const modifyCall = (state: IState, action: IAction): IState => {
+//     return {
+//         ...state,
+//         call: {
+//             ...state.call,
+//             // data: (action.payload.personcommunicationchannel === state.call.data?.personcommunicationchannel ? action.payload : state.call.data)
+//         },
+//     }
+// }
+
+export const manageStatusCall = (state: IState, action: IAction): IState => ({
+    ...state,
+    calls: state.calls.map(x => x.statusCall === "CONNECTED" && x.number === action.payload.number ? ({
+        ...x,
+        statusCall: action.payload.status
+    }) : x)
+})
+
+export const resetCall = (state: IState, action: IAction): IState => ({
+    ...state,
+    calls: state.calls.filter(x => x.statusCall === "CONNECTED" && x.number === action.payload)
+})
 
 export const getCategories = (state: IState, action: IAction): IState => ({
     ...state,

@@ -7,7 +7,7 @@ import { ITicket } from '@types';
 import { Call } from "voximplant-websdk/Call/Call";
 import { emitEvent, connectAgentUI, connectAgentAPI } from 'store/inbox/actions';
 
-const cleanNumber = (number: string | null) => number?.includes("@") ? number?.split("@")[0].split(":")?.[1] : number;
+const cleanNumber = (number: string | null) => number?.includes("@") ? number?.split("@")[0].split(":")?.[1] : (number?.includes("_") ? number?.split("_")[0] : number);
 const sdk = VoxImplant.getInstance();
 let alreadyLoad = false;
 
@@ -184,33 +184,37 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         return
     } else if (type === typeVoximplant.ANSWER_CALL) {
         const call = payload.call;
-        const number = payload.number;
-
+        const number = cleanNumber(payload.number);
         call?.answer();
         dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: { status: "DISCONNECTED", number } });
         //actualizar la fecha de contestado en la lista de tickets
         dispatch({ type: typeInbox.CALL_CONNECTED, payload: action.payload.conversationid });
         return
     } else if (type === typeVoximplant.REJECT_CALL) {
-        const call = payload;
+        const call = payload.call;
+        const number = cleanNumber(payload.number);
         call?.reject();
-        dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "DISCONNECTED" });
+        dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: { status: "DISCONNECTED", number } });
         return
     } else if (type === typeVoximplant.HANGUP_CALL) {
-        const call = payload;
+        const call = payload.call;
+        const number = cleanNumber(payload.number);
         call?.hangup();
-        dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "DISCONNECTED" });
+        dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: { status: "DISCONNECTED", number } });
         return
     } else if (type === typeVoximplant.HOLD_CALL) {
         const call = payload.call;
+        const number = cleanNumber(payload.number);
         await call?.setActive(payload.flag);
         return
     } else if (type === typeVoximplant.MUTE_CALL) {
-        const call = payload;
+        const call = payload.call;
+        const number = cleanNumber(payload.number);
         call?.muteMicrophone();
         return
     } else if (type === typeVoximplant.UNMUTE_CALL) {
-        const call = payload;
+        const call = payload.call;
+        const number = cleanNumber(payload.number);
         call?.unmuteMicrophone();
         return
     } else if (type === typeVoximplant.MANAGE_STATUS_VOX) {

@@ -19,7 +19,7 @@ export const unmuteCall = (payload?: { call: Call, number?: string }): IActionCa
 
 export const holdCall = (payload?: { call: Call, number?: string, flag: boolean }): IActionCall => ({ type: actionTypes.HOLD_CALL, payload });
 
-export const resetCall = (): IActionCall => ({ type: actionTypes.RESET_CALL });
+export const resetCall = (payload: string): IActionCall => ({ type: actionTypes.RESET_CALL, payload });
 
 export const makeCall = (payload: { number: string, site: string }): IActionCall => ({ type: actionTypes.MAKE_CALL, payload });
 
