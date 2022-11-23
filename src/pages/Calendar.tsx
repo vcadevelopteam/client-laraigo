@@ -2017,7 +2017,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                                         Google Calendar
                                     </div>
                                     <div className={classes.integrationDescription}>
-                                        Gmail - G Suit
+                                        Gmail - G Suite
                                     </div>
                                 </div>
                             </div>

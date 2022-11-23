@@ -194,4 +194,6 @@ export const apiUrls = {
     BILLING_REPORTPDF: `${BASE_URL}/drawpdf`,
 
     EVENTBOOKING_GOOGLE_LOGIN: `${BASE_URL}/event-booking/googlelogin`,
+    EVENTBOOKING_GOOGLE_DISCONNECT: `${BASE_URL}/event-booking/googledisconnect`,
+    EVENTBOOKING_GOOGLE_VALIDATE: `${BASE_URL}/event-booking/googlevalidate`,
 };
