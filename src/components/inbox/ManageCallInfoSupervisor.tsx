@@ -34,11 +34,8 @@ const ManageCallInfoSupervisor: React.FC = () => {
     }, [ticketSelected?.callanswereddate])
 
     useEffect(() => {
-        if (call?.identifier) {
-            const conversationid = parseInt(call.identifier.split("-")[3])
-            if (conversationid === ticketSelected?.conversationid) {
-                setSupervision(true)
-            }
+        if (calls.some(call => `${call.number}_VOX` === ticketSelected?.personcommunicationchannel && call.statusCall !== "DISCONNECTED" && call.type === "SUPERVISION")) {
+            setSupervision(true)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -64,7 +61,8 @@ const ManageCallInfoSupervisor: React.FC = () => {
                 type: "SUPERVISION"
             })));
             setSupervision(false)
-            dispatch(hangupCall(call.call));
+            const call = calls.find(call => `${call.number}_VOX` === ticketSelected?.personcommunicationchannel && call.statusCall !== "DISCONNECTED" && call.type === "SUPERVISION")
+            dispatch(hangupCall({call: call?.call!!, number: call?.number}));
             dispatch(resetCall(ticketSelected?.personcommunicationchannel.split("_")[0] || ""));
         }
     }

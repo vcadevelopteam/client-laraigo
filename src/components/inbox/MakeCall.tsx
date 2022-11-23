@@ -159,6 +159,7 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
         }
     }),
 );
+
 function yesterdayOrToday(datadate: Date, t: any) {
     const date = new Date(datadate)
     const yesterday = new Date();
@@ -172,7 +173,6 @@ function yesterdayOrToday(datadate: Date, t: any) {
         return formatDate(String(datadate))
     }
 }
-
 
 interface NotificaionMenuItemProps {
     title: React.ReactNode;
@@ -233,20 +233,22 @@ const MakeCall: React.FC = () => {
     const resExecute = useSelector(state => state.main.execute);
     const [pageSelected, setPageSelected] = useState(1);
     const [filter, setfilter] = useState("");
-    const call = useSelector(state => state.voximplant.call);
-    const [timeWaiting, setTimeWaiting] = useState(-1);
-    const [waitingDate, setWaitingDate] = useState<string | null>(null);
+    // const call = useSelector(state => state.voximplant.call);
+    const calls = useSelector(state => state.voximplant.calls);
+    // const [timeWaiting, setTimeWaiting] = useState(-1);
+    // const [waitingDate, setWaitingDate] = useState<string | null>(null);
     const user = useSelector(state => state.login.validateToken.user);
     const ringtone = React.useRef<HTMLAudioElement>(null);
     const phonenumber = useSelector(state => state.voximplant.phoneNumber);
     const showcall = useSelector(state => state.voximplant.showcall);
-    const statusCall = useSelector(state => state.voximplant.statusCall);
+    // const callInLine = useSelector(state => state.voximplant.callInLine);
+    const [callInLine, setCallInLine] = useState(true)
     const historial = useSelector(state => state.voximplant.requestGetHistory);
     const advisors = useSelector(state => state.voximplant.requestGetAdvisors);
     const [waiting2, setwaiting2] = useState(false)
-    const onholdstate = useSelector(state => state.voximplant.onhold);
-    const onholdstatedate = useSelector(state => state.voximplant.onholddate);
-    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    // const onholdstate = useSelector(state => state.voximplant.onhold);
+    // const onholdstatedate = useSelector(state => state.voximplant.onholddate);
+    // const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const { corpid, orgid, sitevoxi, ccidvoxi, userid } = useSelector(state => state.login.validateToken?.user!!);
     const history = useHistory();
 
@@ -273,49 +275,48 @@ const MakeCall: React.FC = () => {
 
     //ring when the customer call
     React.useEffect(() => {
-        if (statusCall === "DISCONNECTED" && !!ticketSelected) {
-            if (onholdstate) {
-                const timeToAdd = getSecondsUntelNow(convertLocalDate(onholdstatedate))
-                dispatch(execute(conversationCallHold({
-                    holdtime: timeToAdd,
-                    conversationid: ticketSelected?.conversationid
-                })))
-            }
-        } else if (call.type === "INBOUND" && statusCall === "CONNECTING") {
-            setWaitingDate(new Date().toISOString())
-            setTimeWaiting(0);
+        const connecting = calls.some(call => call.type === "INBOUND" && call.statusCall === "CONNECTING");
+        setCallInLine(calls.some(call => call.statusCall !== "DISCONNECTED"));
+        if (connecting) {
             ringtone.current?.pause();
             if (ringtone.current) {
                 ringtone.current.volume = (user?.properties?.ringer_volume || 100) / 100
                 ringtone.current.currentTime = 0;
             }
             ringtone.current?.play();
-
-        } else if (call.type === "INBOUND" && statusCall !== "CONNECTING") {
+        } else {
             ringtone.current?.pause();
         }
-    }, [call, statusCall])
-
+        // if (callInLine === "DISCONNECTED" && !!ticketSelected) {
+        //     if (onholdstate) {
+        //         const timeToAdd = getSecondsUntelNow(convertLocalDate(onholdstatedate))
+        //         dispatch(execute(conversationCallHold({
+        //             holdtime: timeToAdd,
+        //             conversationid: ticketSelected?.conversationid
+        //         })))
+        //     }
+        // }
+    }, [calls])
 
     //reassign if the call overload time limit
-    React.useEffect(() => {
-        if (timeWaiting >= 0) {
-            if (timeWaiting >= (user?.properties.time_reassign_call || 30) && (call.type === "INBOUND" && statusCall === "CONNECTING")) {
-                dispatch(rejectCall(call.call));
-                setWaitingDate(null)
-                setTimeWaiting(-1);
-                return;
-            }
-            if (call.type === "INBOUND" && statusCall === "CONNECTING") {
-                setTimeout(() => {
-                    setTimeWaiting(getSecondsUntelNow(convertLocalDate(waitingDate)));
-                }, 1000)
-            } else {
-                setTimeWaiting(-1);
-            }
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [timeWaiting]);
+    // React.useEffect(() => {
+    //     if (timeWaiting >= 0) {
+    //         if (timeWaiting >= (user?.properties.time_reassign_call || 30) && (call.type === "INBOUND" && callInLine === "CONNECTING")) {
+    //             dispatch(rejectCall(call.call));
+    //             setWaitingDate(null)
+    //             setTimeWaiting(-1);
+    //             return;
+    //         }
+    //         if (call.type === "INBOUND" && callInLine === "CONNECTING") {
+    //             setTimeout(() => {
+    //                 setTimeWaiting(getSecondsUntelNow(convertLocalDate(waitingDate)));
+    //             }, 1000)
+    //         } else {
+    //             setTimeWaiting(-1);
+    //         }
+    //     }
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [timeWaiting]);
 
     React.useEffect(() => {
         if (showcall && pageSelected === 2) {
@@ -394,7 +395,7 @@ const MakeCall: React.FC = () => {
                             }).map((e: any, i: number) => (
                                 <NotificaionMenuItem
                                     onClick={() => {
-                                        if (statusCall === "DISCONNECTED" && !waiting2) {
+                                        if (!callInLine && !waiting2) {
                                             setwaiting2(true)
                                             setNumberVox(e.phone)
                                             dispatch(execute(conversationOutboundValidate({
@@ -419,7 +420,7 @@ const MakeCall: React.FC = () => {
                                 <TextField
                                     label={t(langKeys.phone)}
                                     value={numberVox}
-                                    disabled={resExecute.loading || statusCall !== "DISCONNECTED"}
+                                    disabled={resExecute.loading || callInLine}
                                     style={{ marginRight: "auto", marginLeft: "auto", width: "400px", marginBottom: 25 }}
                                     onInput={(e: any) => {
                                         let val = e.target.value.replace(/[^0-9*#]/g, "")
@@ -512,9 +513,9 @@ const MakeCall: React.FC = () => {
                                 <Fab
                                     style={{ gridColumnStart: "col2", fontSize: 20, color: "#707070" }}
                                     color="primary"
-                                    disabled={resExecute.loading || statusCall !== "DISCONNECTED"}
+                                    disabled={resExecute.loading || callInLine}
                                     onClick={() => {
-                                        if (statusCall === "DISCONNECTED") {
+                                        if (!callInLine) {
                                             dispatch(execute(conversationOutboundValidate({
                                                 number: numberVox,
                                                 communicationchannelid: ccidvoxi
@@ -538,7 +539,7 @@ const MakeCall: React.FC = () => {
                             {historial?.loading ? <ListItemSkeleton /> : historial.data?.map((e: any, i: number) => (
                                 <NotificaionMenuItem
                                     onClick={() => {
-                                        if (statusCall === "DISCONNECTED" && !waiting2) {
+                                        if (!callInLine && !waiting2) {
                                             setwaiting2(true)
                                             setNumberVox(e.phone)
                                             dispatch(execute(conversationOutboundValidate({

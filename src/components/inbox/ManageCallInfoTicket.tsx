@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { IconButton, Typography } from "@material-ui/core";
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'hooks';
@@ -18,18 +18,21 @@ import { convertLocalDate, secondsToTime, getSecondsUntelNow, conversationCallHo
 import { langKeys } from 'lang/keys';
 import DialpadIcon from '@material-ui/icons/Dialpad';
 import { execute } from 'store/main/actions';
+import { ICallGo } from '@types';
 
 const ManageCallInfoTicket: React.FC = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-    const phoneinbox = useSelector(state => state.inbox.person.data?.phone);
-    const [numberVox, setNumberVox] = useState("");
-    const onholdstate = useSelector(state => state.voximplant.onhold);
-    const onholdstatedate = useSelector(state => state.voximplant.onholddate);
-    const [hold, sethold] = useState(!onholdstate);
+    // const phoneinbox = useSelector(state => state.inbox.person.data?.phone);
+    // const [numberVox, setNumberVox] = useState("");
+    // const onholdstate = useSelector(state => state.voximplant.onhold);
+    // const onholdstatedate = useSelector(state => state.voximplant.onholddate);
+    const [hold, sethold] = useState(false);
     const [mute, setmute] = useState(false);
-    const call = useSelector(state => state.voximplant.call);
-    const statusCall = useSelector(state => state.voximplant.statusCall);
+    const [call, setCall] = useState<ICallGo | undefined>(undefined);
+
+    // const call = useSelector(state => state.voximplant.call);
+    // const statusCall = useSelector(state => state.voximplant.statusCall);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const [date, setdate] = useState<string>(new Date().toISOString());
     const [time, settime] = useState(0);
@@ -37,32 +40,39 @@ const ManageCallInfoTicket: React.FC = () => {
     const [divertcall, setdivertcall] = useState(false);
     const [advisertodiver, setadvisertodiver] = useState("");
     const agentToReassignList = useSelector(state => state.inbox.agentToReassignList);
+    const calls = useSelector(state => state.voximplant.calls);
+
+    useEffect(() => {
+        const call = calls.find(call => `${call.number}_VOX` === ticketSelected?.personcommunicationchannel && call.statusCall !== "DISCONNECTED")
+        sethold(!call?.onholddate)
+        setCall(call)
+    }, [calls])
 
     React.useEffect(() => {
-        if (call.type === "INBOUND" && statusCall === "CONNECTING") {
+        if (call?.type === "INBOUND" && call?.statusCall === "CONNECTING") {
             sethold(true)
             setmute(false)
-            setNumberVox(call.number)
-        } else if (call.type === "INBOUND" && statusCall !== "CONNECTING") {
-            setNumberVox(call.number)
+            // setNumberVox(call.number)
+        } else if (call?.type === "INBOUND" && call?.statusCall !== "CONNECTING") {
+            // setNumberVox(call.number)
         }
-    }, [call, dispatch, statusCall])
+    }, [call?.type, dispatch, call?.statusCall])
 
     React.useEffect(() => {
-        if (statusCall === "CONNECTED") {
+        if (call?.statusCall === "CONNECTED") {
             const datex = ticketSelected?.callanswereddate || new Date().toISOString();
             setdate(datex);
             settime(getSecondsUntelNow(convertLocalDate(datex)));
         }
-        if (statusCall !== "CONNECTED") {
+        if (call?.statusCall !== "CONNECTED") {
             setdivertcall(false)
             setadvisertodiver("")
         }
-    }, [statusCall])
+    }, [call?.statusCall])
 
     React.useEffect(() => {
         let interval: NodeJS.Timeout | null = null;
-        if (statusCall === "CONNECTED") {
+        if (call?.statusCall === "CONNECTED") {
             interval = setTimeout(() => {
                 settime(getSecondsUntelNow(convertLocalDate(date)));
             }, 1000)
@@ -74,13 +84,13 @@ const ManageCallInfoTicket: React.FC = () => {
                 clearTimeout(interval)
             }
         };
-    }, [time, statusCall, date]);
+    }, [time, call?.statusCall, date]);
 
     React.useEffect(() => {
         let interval: NodeJS.Timeout | null = null;
-        if (statusCall === "CONNECTED" && !hold) {
+        if (call?.statusCall === "CONNECTED" && !hold) {
             interval = setTimeout(() => {
-                settimehold(getSecondsUntelNow(convertLocalDate(onholdstatedate)));
+                settimehold(getSecondsUntelNow(convertLocalDate(call?.onholddate)));
             }, 1000)
         } else {
             settimehold(0)
@@ -90,23 +100,23 @@ const ManageCallInfoTicket: React.FC = () => {
                 clearTimeout(interval)
             }
         };
-    }, [timehold, hold, statusCall]);
+    }, [timehold, hold, call?.statusCall]);
 
-    React.useEffect(() => {
-        if (phoneinbox) {
-            setNumberVox(phoneinbox)
-        }
-    }, [phoneinbox])
+    // React.useEffect(() => {
+    //     if (phoneinbox) {
+    //         setNumberVox(phoneinbox)
+    //     }
+    // }, [phoneinbox])
 
     const triggerHold = () => {
-        if (onholdstate) {
-            const timeToAdd = getSecondsUntelNow(convertLocalDate(onholdstatedate))
+        if (call?.onhold) {
+            const timeToAdd = getSecondsUntelNow(convertLocalDate(call?.onholddate))
             dispatch(execute(conversationCallHold({
                 holdtime: timeToAdd,
                 conversationid: ticketSelected?.conversationid
             })))
         }
-        dispatch(holdCall({ call: call.call!!, flag: !hold, number: ticketSelected?.personcommunicationchannel }));
+        dispatch(holdCall({ call: call?.call!!, flag: !hold, number: ticketSelected?.personcommunicationchannel }));
         sethold(!hold)
         dispatch(setHold(hold))
     }
@@ -122,45 +132,44 @@ const ManageCallInfoTicket: React.FC = () => {
                             </div>
                         </div>
                         <div>
-                            {(call.type === "OUTBOUND" && statusCall === "CONNECTING") && (
+                            {(call?.type === "OUTBOUND" && call?.statusCall === "CONNECTING") && (
                                 <div style={{ width: "100%", textAlign: "center" }}>
                                     {t(langKeys.outboundcall)}
                                 </div>
                             )}
-                            {(call.type === "INBOUND" && statusCall === "CONNECTING") && (
+                            {(call?.type === "INBOUND" && call?.statusCall === "CONNECTING") && (
                                 <div style={{ width: "100%", textAlign: "center" }}>
                                     {t(langKeys.inboundcall)}
                                 </div>
                             )}
-                            {statusCall === "DISCONNECTED" ?
+                            {call?.statusCall === "DISCONNECTED" ?
                                 (<div style={{ display: "flex", width: "100%" }}>
                                     <TextField
                                         label={t(langKeys.phone)}
-                                        value={numberVox}
+                                        value={call?.number}
                                         style={{ marginRight: "auto", marginLeft: "auto", width: "400px" }}
                                         type="number"
-                                        onChange={(e) => setNumberVox(e.target.value)}
                                         disabled={true}
                                     />
                                 </div>) : (
                                     <div style={{ marginLeft: "auto", marginRight: "auto", textAlign: "center", fontSize: "20px", marginTop: 10 }}>
-                                        {numberVox}
+                                        {call?.number}
                                     </div>
                                 )
                             }
-                            {(statusCall === "CONNECTED" && hold) &&
+                            {(call?.statusCall === "CONNECTED" && hold) &&
                                 <div style={{ fontSize: "15px", marginLeft: "auto", marginRight: "auto", width: "100px", textAlign: "center" }}>
                                     {(secondsToTime(time || 0))}
                                 </div>
                             }
-                            {(statusCall === "CONNECTED" && !hold) &&
+                            {(call?.statusCall === "CONNECTED" && !hold) &&
                                 <div style={{ fontSize: "15px", marginLeft: "auto", marginRight: "auto", width: "200px", textAlign: "center" }}>
-                                    {t(langKeys.waittime)} {(secondsToTime(getSecondsUntelNow(convertLocalDate(onholdstatedate))))}
+                                    {t(langKeys.waittime)} {(secondsToTime(getSecondsUntelNow(convertLocalDate(call?.onholddate))))}
                                 </div>
                             }
                         </div>
                         <div style={{ justifyContent: 'center', marginBottom: 12, marginTop: 10, display: "flex" }}>
-                            {(call.type === "OUTBOUND" && statusCall === "CONNECTING") && (
+                            {(call?.type === "OUTBOUND" && call?.statusCall === "CONNECTING") && (
                                 <IconButton //rejectcall
                                     style={{ marginLeft: "auto", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#fa6262' }}
                                     onClick={() => {
@@ -173,7 +182,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                     <CallEndIcon style={{ color: "white", width: "35px", height: "35px" }} />
                                 </IconButton>
                             )}
-                            {(call.type === "INBOUND" && statusCall === "CONNECTING") && (
+                            {(call?.type === "INBOUND" && call?.statusCall === "CONNECTING") && (
                                 <>
                                     <IconButton //answercall
                                         style={{ marginLeft: "10px", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#55bd84' }}
@@ -191,7 +200,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                     </IconButton>
                                 </>
                             )}
-                            {statusCall === "CONNECTED" && (
+                            {call?.statusCall === "CONNECTED" && (
                                 <div style={{ display: "grid", width: "100%", gridTemplateColumns: 'auto [col1] 50px 50px [col2] 50px 50px [col4] 50px auto', }}>
                                     {(mute || !hold) ? (
                                         <IconButton //unmuteself

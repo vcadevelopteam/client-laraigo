@@ -23,7 +23,7 @@ export const setPhoneNumber = (state: IState, action: IAction): IState => ({
 
 export const setHold = (state: IState, action: IAction): IState => ({
     ...state,
-    calls: state.calls.map(x => x.statusCall === "CONNECTED" && x.number === action.payload.number ? ({
+    calls: state.calls.map(x => x.statusCall !== "DISCONNECTED" && x.number === action.payload.number ? ({
         ...x,
         onholddate: new Date().toISOString(),
         onhold: action.payload,
@@ -32,7 +32,8 @@ export const setHold = (state: IState, action: IAction): IState => ({
 
 export const initCall = (state: IState, action: IAction): IState => ({
     ...state,
-    calls: [...state.calls, action.payload]
+    calls: [...state.calls, action.payload],
+    callOnLine: true
 })
 
 // export const modifyCall = (state: IState, action: IAction): IState => {
@@ -45,17 +46,21 @@ export const initCall = (state: IState, action: IAction): IState => ({
 //     }
 // }
 
-export const manageStatusCall = (state: IState, action: IAction): IState => ({
-    ...state,
-    calls: state.calls.map(x => x.statusCall === "CONNECTED" && x.number === action.payload.number ? ({
+export const manageStatusCall = (state: IState, action: IAction): IState => {
+    const newcalls = state.calls.map(x => x.statusCall !== "DISCONNECTED" && x.number === action.payload.number ? ({
         ...x,
         statusCall: action.payload.status
     }) : x)
-})
+    return {
+        ...state,
+        callOnLine: newcalls.some(call => call.statusCall !== "DISCONNECTED"),
+        calls: newcalls
+    }
+}
 
 export const resetCall = (state: IState, action: IAction): IState => ({
     ...state,
-    calls: state.calls.filter(x => x.statusCall === "CONNECTED" && x.number === action.payload)
+    calls: state.calls.filter(x => x.statusCall !== "DISCONNECTED" && x.number === action.payload)
 })
 
 export const getCategories = (state: IState, action: IAction): IState => ({

@@ -91,7 +91,7 @@ export interface IConnectAgentUIParams {
 }
 
 export interface ICallGo {
-    call?: Call | null;
+    call: Call;
     type: string;
     number: string;
     identifier: string;

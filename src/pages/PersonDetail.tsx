@@ -785,7 +785,7 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
     const classes = useChannelItemStyles();
     const dispatch = useDispatch();
     const voxiConnection = useSelector(state => state.voximplant.connection);
-    const statusCall = useSelector(state => state.voximplant.statusCall);
+    const callOnLine = useSelector(state => state.voximplant.callOnLine);
     const userConnected = useSelector(state => state.inbox.userConnected);
     const [waitUnLink, setWaitUnLink] = useState(false);
     const unLinkRes = useSelector(state => state.main.execute);
@@ -864,7 +864,7 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                             <label className={classes.propTitle}>{<Trans i18nKey={langKeys.personIdentifier} />}</label>
                             <div style={{ height: 4 }} />
                             <div style={{ display: "flex" }}>
-                                {(!voxiConnection.error && !voxiConnection.loading && statusCall !== "CONNECTED" && userConnected && statusCall !== "CONNECTING" && (channel.type.includes("WHA") || channel.type.includes("VOXI"))) &&
+                                {(!voxiConnection.error && !voxiConnection.loading && userConnected && !callOnLine && (channel.type.includes("WHA") || channel.type.includes("VOXI"))) &&
                                     <IconButton
                                         className={classes.buttonphone}
                                         onClick={() => { dispatch(setPhoneNumber(channel.personcommunicationchannelowner.replaceAll('+', ''))); dispatch(setModalCall(true)) }}

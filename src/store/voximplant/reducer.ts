@@ -19,7 +19,7 @@ export interface IState {
     error: string;
     phoneNumber: string; //phone to call on dial
     showcall: boolean; //show dial to call
-
+    callOnLine: boolean;
     requestGetCategories: IRequest;
     requestGetCountryStates: IRequest;
     requestGetRegions: IRequest;
@@ -37,6 +37,7 @@ export const initialState: IState = {
     calls: [],
     connection: { error: true, message: "", loading: false },
     error: "",
+    callOnLine: false,
     requestGetCategories: { ...initialCommon, data: null, loading: false, error: false },
     requestGetCountryStates: { ...initialCommon, data: null, loading: false, error: false },
     requestGetRegions: { ...initialCommon, data: null, loading: false, error: false },
