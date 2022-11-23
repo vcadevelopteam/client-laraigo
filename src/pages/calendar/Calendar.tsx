@@ -30,6 +30,7 @@ import CalendarReminders from './CalendarReminders';
 import CalendarConnections from './CalendarConnections';
 import CalendarScheduledEvents from './CalendarScheduledEvents';
 import { ICalendarFormFields } from './ICalendar';
+import EventIcon from '@material-ui/icons/Event';
 
 const dataVariables = [
     { domainvalue: "eventname", domaindesc: "calendar_eventname" },
@@ -386,13 +387,6 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                         </div>
                     )}
                 />}
-                {operation === "EDIT" && <AntTab
-                    label={(
-                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                            <Trans i18nKey={langKeys.scheduled_events} count={2} />
-                        </div>
-                    )}
-                />}
             </Tabs>
 
             <AntTabPanel index={0} currentIndex={tabIndex}>
@@ -459,14 +453,6 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                         row={row}
                         calendarGoogleActive={calendarGoogleActive}
                         setCalendarGoogleActive={setCalendarGoogleActive}
-                    />
-                </AntTabPanel>
-            }
-            {operation === "EDIT" &&
-                <AntTabPanel index={4} currentIndex={tabIndex} >
-                    <CalendarScheduledEvents
-                        calendarEventID={row?.calendareventid || 0}
-                        event={row!!}
                     />
                 </AntTabPanel>
             }
@@ -561,6 +547,11 @@ const Calendar: FC = () => {
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
 
+    const arrayBread = [
+        { id: "view-1", name: t(langKeys.calendar) },
+        { id: "view-3", name: t(langKeys.scheduled_events) }
+    ];
+
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, operation: "" });
     const [waitSave, setWaitSave] = useState(false);
@@ -584,6 +575,10 @@ const Calendar: FC = () => {
     const handleDuplicate = (row: Dictionary) => {
         setViewSelected("view-2");
         setRowSelected({ row, operation: "DUPLICATE" });
+    }
+    const handleScheduledEvents = (row: Dictionary) => {
+        setViewSelected("view-3");
+        setRowSelected({ row, operation: "VIEW" });
     }
 
     const handleDelete = (row: Dictionary) => {
@@ -624,6 +619,28 @@ const Calendar: FC = () => {
                                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.linkcopysuccesfull) }))
                             }}
                         />
+                    )
+                }
+            },
+            {
+                Header: t(langKeys.scheduled_events),
+                accessor: 'scheduled_events',
+                NoFilter: true,
+                isComponent: true,
+                minWidth: 60,
+                width: '1%',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <IconButton
+                            color="primary"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleScheduledEvents(row);
+                            }}
+                        >
+                            <EventIcon />
+                        </IconButton>
                     )
                 }
             },
@@ -717,8 +734,45 @@ const Calendar: FC = () => {
                 fetchData={fetchData}
             />
         )
-    } else
+    }
+    else if (viewSelected === "view-3") {
+        return (
+            <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={arrayBread}
+                            handleClick={(view) => {
+                                setViewSelected(view);
+                            }}
+                        />
+                        <TitleDetail
+                            title={rowSelected?.row?.name}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => {
+                                setViewSelected("view-1")
+                            }}
+                        >{t(langKeys.back)}</Button>
+                    </div>
+                </div>
+                <CalendarScheduledEvents
+                    calendarEventID={rowSelected.row?.calendareventid || 0}
+                    event={rowSelected.row!!}
+                />
+            </div>
+        )
+    }
+    else {
         return null;
+    }
 }
 
 export default Calendar;

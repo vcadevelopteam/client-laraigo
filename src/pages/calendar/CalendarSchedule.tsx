@@ -8,7 +8,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { langKeys } from 'lang/keys';
 import { Control, FieldErrors, UseFormGetValues, UseFormRegister, UseFormSetValue, UseFormTrigger } from 'react-hook-form';
 import { useFieldArray } from 'react-hook-form';
-import { Box, Checkbox, FormControl, FormControlLabel, FormGroup, IconButton, Radio, RadioGroup, Switch, TextField } from '@material-ui/core';
+import { Box, Checkbox, FormControl, FormControlLabel, FormGroup, IconButton, Radio, RadioGroup, Switch, TextField, Typography } from '@material-ui/core';
 import { Range } from 'react-date-range';
 import { CalendarIcon } from 'icons';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -22,6 +22,19 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
         background: '#fff',
+    },
+    containerDescription: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        paddingBottom: '10px',
+    },
+    containerDescriptionTitle: {
+        fontSize: 24
+    },
+    containerDescriptionSubtitle: {
+        fontSize: 14,
+        fontWeight: 500
     },
     root: {
         width: "100%",
@@ -300,6 +313,16 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
 
     return (
         <div className={classes.containerDetail}>
+            <div className="row-zyx">
+                <div className={classes.containerDescription}>
+                    <Typography className={classes.containerDescriptionTitle} color="primary">
+                        {t(langKeys.calendar_schedule_title)}
+                    </Typography>
+                    <Typography className={classes.containerDescriptionSubtitle} color="textPrimary">
+                        {t(langKeys.calendar_schedule_subtitle)}
+                    </Typography>
+                </div>
+            </div>
             <div style={{ display: 'flex', flexWrap: "wrap", gap: 16 }} >
                 <div style={{ flex: 1, minWidth: 250 }}>
                     <div className="col-12" style={{ padding: 5 }}>

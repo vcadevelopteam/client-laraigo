@@ -1097,6 +1097,15 @@ export const langKeys = {
     connection_to_calendars: 'connection_to_calendars',
     connect: 'connect',
     disconnect: 'disconnect',
+    preview: 'preview',
+    calendar_general_title: 'calendar_general_title',
+    calendar_general_subtitle: 'calendar_general_subtitle',
+    calendar_schedule_title: 'calendar_schedule_title',
+    calendar_schedule_subtitle: 'calendar_schedule_subtitle',
+    calendar_reminders_title: 'calendar_reminders_title',
+    calendar_reminders_subtitle: 'calendar_reminders_subtitle',
+    calendar_connections_title: 'calendar_connections_title',
+    calendar_connections_subtitle: 'calendar_connections_subtitle',
 
     no_reply_use_hsm: 'no_reply_use_hsm',
 

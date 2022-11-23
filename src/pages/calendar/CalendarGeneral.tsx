@@ -7,12 +7,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { FieldErrors, UseFormGetValues, UseFormSetValue, UseFormTrigger } from 'react-hook-form';
-import { Box, TextField, Tooltip } from '@material-ui/core';
+import { Box, IconButton, TextField, Tooltip, Typography } from '@material-ui/core';
 import { RichText } from 'components/fields/RichText';
 import { Descendant } from 'slate';
 import { ColorChangeHandler } from 'react-color';
 import InfoIcon from '@material-ui/icons/Info';
 import { ICalendarFormFields } from './ICalendar';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -20,6 +21,19 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
         background: '#fff',
     },
+    containerDescription: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        paddingBottom: '10px',
+    },
+    containerDescriptionTitle: {
+        fontSize: 24
+    },
+    containerDescriptionSubtitle: {
+        fontSize: 14,
+        fontWeight: 500
+    }
 }));
 
 interface CalendarGeneralProps {
@@ -100,6 +114,16 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
     return (
         <div className={classes.containerDetail}>
             <div className="row-zyx">
+                <div className={classes.containerDescription}>
+                    <Typography className={classes.containerDescriptionTitle} color="primary">
+                        {t(langKeys.calendar_general_title)}
+                    </Typography>
+                    <Typography className={classes.containerDescriptionSubtitle} color="textPrimary">
+                        {t(langKeys.calendar_general_subtitle)}
+                    </Typography>
+                </div>
+            </div>
+            <div className="row-zyx">
                 <div className="col-6">
                     <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">{t(langKeys.eventcode)}</Box>
                     <TextField
@@ -164,7 +188,25 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                     className="col-6"
                     value={`${eventURL.host}${eventURL.pathname}`}
                 />
-                <a className='col-6' href={eventURL.href} target="_blank" rel="noreferrer">{t(langKeys.seeagendapage)}</a>
+                <a
+                    className='col-6'
+                    href={eventURL.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        textDecoration: "none",
+                    }}
+                >
+                    <IconButton 
+                        color="primary"
+                        title={t(langKeys.seeagendapage)}
+                    >
+                        <VisibilityIcon />
+                    </IconButton>
+                    <span>{t(langKeys.preview)}</span>
+                </a>
             </div>
             <div className="row-zyx" >
                 <div className="col-6">

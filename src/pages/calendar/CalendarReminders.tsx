@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { FieldErrors, UseFormGetValues, UseFormRegister, UseFormSetValue, UseFormTrigger } from 'react-hook-form';
-import { Box, Tooltip } from '@material-ui/core';
+import { Box, Tooltip, Typography } from '@material-ui/core';
 import InfoIcon from '@material-ui/icons/Info';
 import { ICalendarFormFields } from './ICalendar';
 
@@ -16,6 +16,19 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
         background: '#fff',
     },
+    containerDescription: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        paddingBottom: '10px',
+    },
+    containerDescriptionTitle: {
+        fontSize: 24
+    },
+    containerDescriptionSubtitle: {
+        fontSize: 14,
+        fontWeight: 500
+    }
 }));
 
 interface CalendarRemindersProps {
@@ -108,6 +121,16 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
     
     return (
         <div className={classes.containerDetail}>
+            <div className="row-zyx">
+                <div className={classes.containerDescription}>
+                    <Typography className={classes.containerDescriptionTitle} color="primary">
+                        {t(langKeys.calendar_reminders_title)}
+                    </Typography>
+                    <Typography className={classes.containerDescriptionSubtitle} color="textPrimary">
+                        {t(langKeys.calendar_reminders_subtitle)}
+                    </Typography>
+                </div>
+            </div>
             <div className="row-zyx" >
                 <FieldSelect
                     label={t(langKeys.status)}

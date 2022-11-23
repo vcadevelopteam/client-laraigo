@@ -13,12 +13,26 @@ import { apiUrls } from 'common/constants';
 import GoogleLogIn from 'components/fields/GoogleLogIn';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { calendarGoogleDisconnect, calendarGoogleLogIn } from 'store/calendar/actions';
+import { Typography } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
         background: '#fff',
+    },
+    containerDescription: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        paddingBottom: '10px',
+    },
+    containerDescriptionTitle: {
+        fontSize: 24
+    },
+    containerDescriptionSubtitle: {
+        fontSize: 14,
+        fontWeight: 500
     },
     integrationIcon: {
         width: '50px',
@@ -126,6 +140,16 @@ const CalendarConnections: React.FC<CalendarConnectionsProps> = ({
     
     return (
         <div className={classes.containerDetail}>
+            <div className="row-zyx">
+                <div className={classes.containerDescription}>
+                    <Typography className={classes.containerDescriptionTitle} color="primary">
+                        {t(langKeys.calendar_connections_title)}
+                    </Typography>
+                    <Typography className={classes.containerDescriptionSubtitle} color="textPrimary">
+                        {t(langKeys.calendar_connections_subtitle)}
+                    </Typography>
+                </div>
+            </div>
             <div className={classes.integrationRow}>
                 <div className={classes.integrationItem}>
                     <div>

@@ -393,7 +393,7 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
                             <Trans i18nKey={langKeys.search} />
                         </Button>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, overflowY: 'auto', height: '100%', marginTop: 16 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, overflowY: 'auto', marginTop: 16 }}>
                         {dataBooking.map(x => (
                             <div key={x.calendarbookingid}>
                                 {!!x.haveDate && (
