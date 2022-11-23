@@ -11,19 +11,25 @@ import { AntTab, FieldSelect, DateRangePicker, GetIconColor, FieldView, FieldEdi
 import { Avatar, Button, Tabs } from "@material-ui/core";
 import { CalendarIcon } from "icons";
 import { Dictionary, IRequestBody } from "@types";
-import { getCollection, getMultiCollection, resetAllMain, uploadFileMetadata } from "store/main/actions";
+import { execute, getCollection, getMultiCollection, resetAllMain, uploadFileMetadata } from "store/main/actions";
 import { getDateCleaned } from "common/helpers/functions";
 import { getPostHistorySel, postHistoryIns } from "common/helpers/requestBodies";
 import { langKeys } from "lang/keys";
 import { makeStyles } from '@material-ui/core/styles';
 import { Range } from 'react-date-range';
-import { showBackdrop, showSnackbar } from "store/popus/actions";
+import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import { useSelector } from 'hooks';
 import { useTranslation } from "react-i18next";
 import { useForm } from 'react-hook-form';
 import { AccountCircle, CameraAlt, ChatBubble, Delete, Facebook, Instagram, LinkedIn, MusicNote, PlayCircleOutlineSharp, Replay, Reply, Save, Send, ThumbUp, Timelapse, Twitter, YouTube } from '@material-ui/icons';
 import { FacebookColor, InstagramColor, LinkedInColor, TikTokColor, TwitterColor, YouTubeColor } from "icons";
+
+
+const getArrayBread = (temporalName: string, viewName: string) => ([
+    { id: "view-1", name: viewName || "Post Creator" },
+    { id: "bet-1", name: temporalName }
+]);
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -66,39 +72,57 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const selectionKey = 'posthistoryid';
-const PostCreatorHistory: FC = () => {
+const PostCreatorHistory: FC<{ setViewSelected: (id: string) => void }> = ({ setViewSelected }) => {
     const { t } = useTranslation();
 
     const [pageSelected, setPageSelected] = useState(0);
-
+    const [betweenViews, setBetweenViews] = useState("bet-1");
+    const [arrayBread, setArrayBread] = useState<any>(getArrayBread(t('postcreator_posthistory'), t(langKeys.postcreator_title)));
+    const handleSelectedString = (key: string) => {
+        if(key.includes("view")){
+            setViewSelected(key);
+        }else if (key==="bet-1"){
+            setArrayBread(getArrayBread(t('postcreator_posthistory'), t(langKeys.postcreator_title)));
+            setBetweenViews(key)
+        }else{
+            setBetweenViews(key)
+        }
+    }
+    
     return (
         <React.Fragment>
+            <TemplateBreadcrumbs
+                breadcrumbs={arrayBread}
+                handleClick={handleSelectedString}
+            />
             <div style={{ width: '100%' }}>
-                <Tabs
-                    indicatorColor="primary"
-                    onChange={(_, value) => setPageSelected(value)}
-                    style={{ border: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
-                    textColor="primary"
-                    value={pageSelected}
-                    variant="fullWidth"
-                >
-                    <AntTab label={t(langKeys.published)} />
-                    <AntTab label={t(langKeys.history_scheduled)} />
-                    <AntTab label={t(langKeys.drafts)} />
-                </Tabs>
+                {betweenViews==="bet-1" &&
+                    <Tabs
+                        indicatorColor="primary"
+                        onChange={(_, value) => setPageSelected(value)}
+                        style={{ border: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
+                        textColor="primary"
+                        value={pageSelected}
+                        variant="fullWidth"
+                    >
+                        <AntTab label={t(langKeys.published)} />
+                        <AntTab label={t(langKeys.history_scheduled)} />
+                        <AntTab label={t(langKeys.drafts)} />
+                    </Tabs>
+                }
                 {pageSelected === 0 &&
                     <div style={{ marginTop: 4 }}>
-                        <PublishedHistory publishType={'PUBLISHED'} />
+                        <PublishedHistory publishType={'PUBLISHED'} setArrayBread={setArrayBread} betweenViews={betweenViews} setBetweenViews={setBetweenViews}/>
                     </div>
                 }
                 {pageSelected === 1 &&
                     <div style={{ marginTop: 4 }}>
-                        <PublishedHistory publishType={'SCHEDULED'} />
+                        <PublishedHistory publishType={'SCHEDULED'} setArrayBread={setArrayBread} betweenViews={betweenViews} setBetweenViews={setBetweenViews}/>
                     </div>
                 }
                 {pageSelected === 2 &&
                     <div style={{ marginTop: 4 }}>
-                        <PublishedHistory publishType={'DRAFT'} />
+                        <PublishedHistory publishType={'DRAFT'} setArrayBread={setArrayBread} betweenViews={betweenViews} setBetweenViews={setBetweenViews}/>
                     </div>
                 }
             </div>
@@ -111,7 +135,7 @@ const initialRange = {
     startDate: new Date(new Date().setDate(1)),
 }
 
-const PublishedHistory: React.FC<{ publishType: string }> = ({ publishType }) => {
+const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value:any)=> void,betweenViews:any,setBetweenViews: (value:any)=> void}> = ({ publishType, setArrayBread,betweenViews,setBetweenViews }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -127,7 +151,6 @@ const PublishedHistory: React.FC<{ publishType: string }> = ({ publishType }) =>
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [waitDelete, setWaitDelete] = useState(false);
-    const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<{ row: Dictionary | null, edit: boolean }>({ row: null, edit: false });
 
     const fetchData = () => dispatch(getCollection(getPostHistorySel({ type: filters.type, status: publishType, datestart: dateRangeCreateDate.startDate, dateend: dateRangeCreateDate.endDate })));
@@ -155,11 +178,11 @@ const PublishedHistory: React.FC<{ publishType: string }> = ({ publishType }) =>
 
     const columns = React.useMemo(() => [
         {
-            accessor: 'posthistoryid',
             Header: t(langKeys.title),
+            accessor: 'texttitle',
+            width: 200,
             isComponent: true,
             NoFilter: true,
-            width: 200,
             Cell: (props: any) => {
                 const { texttitle, communicationchanneldesc, medialink, communicationchanneltype } = props.cell.row.original;
                 return (
@@ -265,18 +288,21 @@ const PublishedHistory: React.FC<{ publishType: string }> = ({ publishType }) =>
         const toDelete = mainResult.mainData.data.filter(x => Object.keys(selectedRows).includes(`${x[selectionKey]}`)) || [];
         let allRequestBody: IRequestBody[] = [];
         toDelete.forEach(x => {
-            allRequestBody.push(postHistoryIns({ ...x, status: "DELETED", operation: "UPDATE" }));
+            allRequestBody.push(postHistoryIns({ ...x, medialink: JSON.stringify(x.medialink),status: "DELETED", operation: "UPDATE" }));
         });
         setWaitDelete(true);
+        dispatch(showBackdrop(true));
         dispatch(getMultiCollection(allRequestBody));
     }
 
     const handleView = (row: Dictionary) => {
-        setViewSelected("view-2");
+        setBetweenViews("bet-2");
+        let temparraybread = getArrayBread(t('postcreator_posthistory'), t(langKeys.postcreator_title))
+        setArrayBread([...temparraybread, { id: "bet-2", name: t(langKeys.postcreator_posthistorydetail) }])
         setRowSelected({ row: row, edit: false });
     }
 
-    if (viewSelected === "view-1") {
+    if (betweenViews === "bet-1") {
         return (
             <div style={{ height: '100%', width: 'inherit' }}>
                 <TableZyx
@@ -287,7 +313,7 @@ const PublishedHistory: React.FC<{ publishType: string }> = ({ publishType }) =>
                     heightWithCheck={65}
                     initialSelectedRows={selectedRows}
                     loading={mainResult.mainData.loading}
-                    onClickRow={handleView}
+                    onClickRow={publishType==="PUBLISHED"?()=>{}:handleView}
                     register={false}
                     selectionKey={selectionKey}
                     setCleanSelection={setCleanSelected}
@@ -347,7 +373,7 @@ const PublishedHistory: React.FC<{ publishType: string }> = ({ publishType }) =>
         return (
             <PublishedHistoryDetail
                 data={rowSelected}
-                setViewSelected={setViewSelected}
+                setViewSelected={setBetweenViews}
                 fetchData={fetchData}
             />
         )
@@ -366,7 +392,10 @@ const PublishedHistoryDetail: React.FC<{ data: { row: Dictionary | null, edit: b
     const [fileAttachment, setFileAttachment] = useState<File | null>(null);
     const [previewType, setPreviewType] = useState('');
     const [waitUploadFile, setWaitUploadFile] = useState(false);
+    const [waitOperation, setWaitOperation] = useState(false);
     const [customizeType, setCustomizeType] = useState('');
+    const [statuspost, setstatuspost] = useState('');
+    const executeRes = useSelector(state => state.main.execute);
 
     const { register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm({
         defaultValues: {
@@ -452,12 +481,67 @@ const PublishedHistoryDetail: React.FC<{ data: { row: Dictionary | null, edit: b
         await trigger('medialink');
     }
 
-    const onSubmit = handleSubmit((data) => {
-        if ((data.mediatype.length === 0 || !data.mediatype) && data.mediatype !== "TEXT") {
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.posthistory_missingmedia) }));
-            return;
+    useEffect(() => {
+        if (waitOperation) {
+                if (!executeRes.loading && !executeRes.error) {
+                    let message = ""
+                switch (statuspost) {
+                    case "DRAFT":
+                        message = t(langKeys.successsavedraft) + ""
+                        break;
+                    case "SCHEDULED":
+                        message = t(langKeys.successpublish) + ""
+                        break;
+                
+                    case "DELETED":
+                        message = t(langKeys.successful_delete) + ""
+                        break;
+                    
+                    default:
+                        break;
+                }
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                fetchData && fetchData();
+                dispatch(showBackdrop(false));
+                setViewSelected("bet-1")
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.postcreator_posthistory).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                setWaitOperation(false);
+                dispatch(showBackdrop(false));
+            }
         }
+    }, [executeRes, waitOperation])
 
+    const onSubmit = handleSubmit((data) => {
+        let message = ""
+        switch (data?.status) {
+            case "DRAFT":
+                message = t(langKeys.confirmationsavedraft) + ""
+                break;
+            case "SCHEDULED":
+                message = t(langKeys.confirmationpublish) + ""
+                break;
+        
+            case "DELETED":
+                message = t(langKeys.confirmationpostdelete) + ""
+                break;
+            
+            default:
+                break;
+        }
+        setstatuspost(data?.status)
+        const callback = () => {
+            debugger            
+            setWaitOperation(true);
+            dispatch(showBackdrop(true));
+            dispatch(execute(postHistoryIns({ ...data, medialink: JSON.stringify(data.medialink), operation: "UPDATE" })));
+        }
+        dispatch(manageConfirmation({
+            visible: true,
+            question: message,
+            callback
+        }))
 
     });
 
@@ -500,24 +584,15 @@ const PublishedHistoryDetail: React.FC<{ data: { row: Dictionary | null, edit: b
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit} style={{ width: '100%' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '10px', paddingBottom: '10px' }}>
-                    <div>
-                        <TemplateBreadcrumbs
-                            breadcrumbs={[
-                                { id: "view-1", name: t(langKeys.postcreator_posthistory) },
-                                { id: "view-2", name: t(langKeys.postcreator_posthistorydetail) }
-                            ]}
-                            handleClick={setViewSelected}
-                        />
-                    </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                <div style={{ display: 'flex', justifyContent: 'end', paddingTop: '10px', paddingBottom: '10px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
                         <Button
                             variant="contained"
                             type="button"
                             color="primary"
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("view-1")}
+                            onClick={() => setViewSelected("bet-1")}
                         >{t(langKeys.back)}</Button>
                     </div>
                 </div>
@@ -1063,6 +1138,16 @@ const PublishedHistoryDetail: React.FC<{ data: { row: Dictionary | null, edit: b
                                         type="submit"
                                         onClick={() => { setValue('status', 'SCHEDULED') }}
                                     >{t(langKeys.postcreator_publish_confirm_save)}
+                                    </Button>
+                                    <Button
+                                        className={classes.button}
+                                        color="primary"
+                                        type="submit"
+                                        onClick={() => { setValue('status', 'DELETED') }}
+                                        style={{ backgroundColor: "#fb5f5f", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                        variant="contained"
+                                    >
+                                        <CloseIcon />{t(langKeys.delete)}
                                     </Button>
                                 </div>
                             </div>
