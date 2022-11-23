@@ -3193,13 +3193,14 @@ export const getProductCatalogSel = (id: number = 0, category: string = ''): IRe
         all: true
     }
 })
-export const getPostHistorySel = ({ status = "", type = "", datestart = null, dateend = null }: Dictionary) => ({
+export const getPostHistorySel = ({ status = "", communicationchannelid = 0, type = "", datestart = null, dateend = null }: Dictionary) => ({
     method: "UFN_POSTHISTORY_SEL",
     parameters: {
         status,
         type,
         datestart,
         dateend,
+        communicationchannelid,
     }
 })
 export const postHistoryIns = ({ communicationchannelid, communicationchanneltype, posthistoryid, status, type, publishdate, texttitle, textbody, hashtag, sentiment, activity, mediatype, medialink, operation }: Dictionary) => ({

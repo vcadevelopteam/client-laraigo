@@ -2116,13 +2116,19 @@ export const calculateDateFromMonth = (year: number, month: number) => {
     return [...daysPreviewMonth, ...daysMonth, ...daysNextMonth];
 }
 
+export const getFormattedDate = (date: Date) => {
+    const offset = date.getTimezoneOffset();
+    date = new Date(date.getTime() - (offset * 60 * 1000));
+    return date.toISOString().split('T')[0];
+}
+
 const transDayLocal = (day: Date) => day.getDay() - 1 < 0 ? 6 : day.getDay() - 1;
 
 export const calculateDateFromWeek = (datex: Date) => {
     const currentDate = new Date(datex.getFullYear(), datex.getMonth(), datex.getDate())
-    
+
     const dayCurrent = transDayLocal(currentDate);
-    
+
     const firstDayWeek = new Date(currentDate.setDate(currentDate.getDate() - dayCurrent));
 
     return Array.from(Array(7).keys()).map(x => {

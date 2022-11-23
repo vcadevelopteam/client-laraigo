@@ -221,8 +221,10 @@ export const apiUrls = {
     DELETE_TEMPLATE: `${BASE_URL}/channel/deletetemplate`,
 
     BILLING_REPORTPDF: `${BASE_URL}/drawpdf`,
-
+    
     PRODUCT_IMPORT: `${BASE_URL}/product/import`,
-    EVENTBOOKING_GOOGLE_LOGIN: `${BASE_URL}/event-booking/googlelogin`,
     POSTHISTORY_SCHEDULE: `${BASE_URL}/posthistory/schedulepost`,
+    EVENTBOOKING_GOOGLE_LOGIN: `${BASE_URL}/event-booking/googlelogin`,
+    EVENTBOOKING_GOOGLE_DISCONNECT: `${BASE_URL}/event-booking/googlelogin`,
+    EVENTBOOKING_GOOGLE_VALIDATE: `${BASE_URL}/event-booking/googlelogin`,
 };

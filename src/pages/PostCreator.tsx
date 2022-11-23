@@ -7,6 +7,8 @@ import CardMedia from '@material-ui/core/CardMedia';
 import Grid from '@material-ui/core/Grid';
 
 import Typography from '@material-ui/core/Typography';
+import PostCreatorHistory from './postcreator/PostCreatorHistory';
+import PostCreatorCalendar from './postcreator/PostCreatorCalendar';
 
 import { FC, useState } from 'react';
 import { langKeys } from 'lang/keys';
@@ -14,7 +16,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import { TemplateBreadcrumbs } from 'components';
 import { useTranslation } from 'react-i18next';
 import { PostCreatorPublish } from 'pages/postcreator/index';
-import PostCreatorHistory from './postcreator/PostCreatorHistory';
 
 const getArrayBread = (temporalName: string, viewName: string) => ([
     { id: "view-1", name: viewName || "Post Creator" },
@@ -214,11 +215,7 @@ const PostCreator: FC = () => {
         return (
             <>
                 <div style={{ width: '100%' }}>
-                    <TemplateBreadcrumbs
-                        breadcrumbs={getArrayBread(t('postcreator_calendar'), t(langKeys.postcreator_title))}
-                        handleClick={handleSelectedString}
-                    />
-                    <PostCreatorPublish setViewSelected={setViewSelected} />
+                    <PostCreatorCalendar setViewSelected={setViewSelected} />
                 </div>
             </>
         )
@@ -226,7 +223,7 @@ const PostCreator: FC = () => {
         return (
             <>
                 <div style={{ width: '100%' }}>
-                    <PostCreatorHistory setViewSelected={setViewSelected}  />
+                    <PostCreatorHistory setViewSelected={setViewSelected} />
                 </div>
             </>
         )

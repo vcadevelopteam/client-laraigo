@@ -51,13 +51,13 @@ export const langKeys = {
     securityrule: "securityrule",
     peoplereached: "peoplereached",
     invalid_password: "invalid_password",
-    successful_cancel_event: "successful_cancel_event",
     likesandreactions: "likesandreactions",
     confirmationsavedraft: "confirmationsavedraft",
     confirmationpublish: "confirmationpublish",
     publicationdate: "publicationdate",
     scope: "scope",
     like: "like",
+    successful_cancel_event: "successful_cancel_event",
     passwordCond1: "passwordCond1",
     passwordCond2: "passwordCond2",
     passwordCond3: "passwordCond3",
@@ -1154,7 +1154,10 @@ export const langKeys = {
     calendar_personname: 'calendar_personname',
     calendar_personcontact: 'calendar_personcontact',
     calendar_personmail: 'calendar_personmail',
-
+    calendar_confirmation_disconnect: 'calendar_confirmation_disconnect',
+    connection_to_calendars: 'connection_to_calendars',
+    connect: 'connect',
+    disconnect: 'disconnect',
 
     no_reply_use_hsm: 'no_reply_use_hsm',
 
@@ -4621,6 +4624,11 @@ export const langKeys = {
     connect_yourwhatsappnumberdetail: "connect_yourwhatsappnumberdetail",
     select_whatsappnumber: "select_whatsappnumber",
     linked_whatsappnumber: "linked_whatsappnumber",
+    postcreatorcalendar_monthly: "postcreatorcalendar_monthly",
+    postcreatorcalendar_weekly: "postcreatorcalendar_weekly",
+    more_items: "more_items",
+    posthistorycalendar_selectdate: "posthistorycalendar_selectdate",
+    posthistorycalendar_selectitem: "posthistorycalendar_selectitem",
 };
 
 export type LangKeys = typeof langKeys;

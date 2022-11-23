@@ -761,6 +761,10 @@ const translation: LangKeys = {
     calendar_personname: 'Person name',
     calendar_personcontact: 'Person contact',
     calendar_personmail: 'Person mail',
+    calendar_confirmation_disconnect: 'Do you want to disconnect your calendar?',
+    connection_to_calendars: 'Connection to calendars',
+    connect: 'Connect',
+    disconnect: 'Disconnect',
 
     supplier: "Supplier",
     id: 'ID',
@@ -935,8 +939,8 @@ const translation: LangKeys = {
     healthprofessional: "Health professional",
     referralchannel: "Referral channel",
     activate_ticket: 'Activate ticket',
-    successful_cancel_event: "The event has been canceled succesfully",
     posttype: "Post type",
+    successful_cancel_event: "The event has been canceled succesfully",
     bold: 'Bold',
     published: "Published",
     drafts: "Drafts",
@@ -4236,7 +4240,7 @@ const translation: LangKeys = {
     postcreator_story: "Create Story",
     postcreator_calendar: "Calendar",
     postcreator_posthistory: "Post History",
-    postcreator_posthistorydetail: "Post History Detail",
+    postcreator_posthistorydetail: "Post Detail",
     postcreator_publish_text: "Publish Text",
     postcreator_publish_textimage: "Publish Image and Text",
     postcreator_publish_textvideo: "Publish Video and Text",
@@ -4635,6 +4639,11 @@ const translation: LangKeys = {
     connect_yourwhatsappnumberdetail: "Press this button to start the WhatsApp onboarding process. At the end of the process, you need to allow access to all of the phone numbers that you wish to use in the Laraigo platform and select the one that you will use to finish this particular channel creation.",
     select_whatsappnumber: "Select your Phone",
     linked_whatsappnumber: "Linked WhatsApp Phones",
+    postcreatorcalendar_monthly: "Monthly View",
+    postcreatorcalendar_weekly: "Weekly View",
+    more_items: "more...",
+    posthistorycalendar_selectdate: "Select a day to see its detail",
+    posthistorycalendar_selectitem: "Select an item to see its detail",
 };
 
 const enResource: ResourceLanguage = {
