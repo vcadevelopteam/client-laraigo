@@ -1269,7 +1269,7 @@ const ChatPanel: React.FC<{ classes: any }> = React.memo(({ classes }) => {
             <InteractionsPanel
                 classes={classes}
             />
-            {(!(ticketSelected?.conversationid === call.data?.conversationid && !!call?.call)) && (
+            {(!(ticketSelected?.personcommunicationchannel === `${call.number}_VOXI` && !!call?.call)) && (
                 <ReplyPanel
                     classes={classes} />
             )}

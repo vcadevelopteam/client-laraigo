@@ -1,4 +1,5 @@
 import { Call } from 'voximplant-websdk/Call/Call';
+import { CallEvents } from 'voximplant-websdk/Call/CallEvents';
 import { Client } from 'voximplant-websdk/Client';
 import { createReducer, initialCommon } from "common/helpers";
 import { ITemplate, ITicket } from "@types";
@@ -12,20 +13,26 @@ export interface IRequest extends ITemplate {
 }
 
 export interface IState {
-    call: { call?: Call | null, type: string, number: string, identifier: string, data?: ITicket };
+    call: {
+        call?: Call | null,
+        type: string,
+        number: string,
+        identifier: string
+        statusCall: string,
+    };
+    onhold: boolean;
+    onholddate: string;
+
     connection: { error: boolean; message: string; loading: boolean };
     error: string;
+    phoneNumber: string; //phone to call on dial
+    showcall: boolean; //show dial to call
+
     requestGetCategories: IRequest;
     requestGetCountryStates: IRequest;
     requestGetRegions: IRequest;
     requestGetHistory: IRequest;
     requestGetAdvisors: IRequest;
-    sdk: Client | null;
-    showcall: boolean;
-    phoneNumber: string;
-    onhold: boolean;
-    onholddate: string;
-    statusCall: string;
     requestGetMaximumConsumption: IRequest;
     requestTransferAccountBalance: IRequest;
     requestGetAccountBalance: IRequest;
@@ -34,7 +41,7 @@ export interface IState {
 }
 
 export const initialState: IState = {
-    call: { call: null, type: "", number: "", identifier: "" },
+    call: { call: null, type: "", number: "", identifier: "", statusCall: "DISCONNECTED", },
     connection: { error: true, message: "", loading: false },
     error: "",
     requestGetCategories: { ...initialCommon, data: null, loading: false, error: false },
@@ -42,12 +49,10 @@ export const initialState: IState = {
     requestGetRegions: { ...initialCommon, data: null, loading: false, error: false },
     requestGetHistory: { ...initialCommon, data: null, loading: false, error: false },
     requestGetAdvisors: { ...initialCommon, data: null, loading: false, error: false },
-    sdk: null,
     showcall: false,
     phoneNumber: "",
     onhold: false,
     onholddate: new Date().toISOString(),
-    statusCall: "DISCONNECTED",
     requestGetMaximumConsumption: { ...initialCommon, data: null, loading: false, error: false },
     requestTransferAccountBalance: { ...initialCommon, data: null, loading: false, error: false },
     requestGetAccountBalance: { ...initialCommon, data: null, loading: false, error: false },

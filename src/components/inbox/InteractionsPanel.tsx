@@ -57,10 +57,10 @@ const InteractionsPanel: React.FC<{ classes: any }> = React.memo(({ classes }) =
             backgroundSize: '210px',
             zIndex: 1200
         }}>
-            {(ticketSelected?.conversationid === call.data?.conversationid && !!call?.call && ticketSelected?.status === "ASIGNADO") && (
+            {(ticketSelected?.personcommunicationchannel === `${call.number}_VOXI` && !!call?.call && ticketSelected?.status === "ASIGNADO") && (
                 <ManageCallInfoTicket />
             )}
-            {!(ticketSelected?.conversationid === call.data?.conversationid && !!call?.call && ticketSelected?.status === "ASIGNADO") &&
+            {!(ticketSelected?.personcommunicationchannel === `${call.number}_VOXI` && !!call?.call && ticketSelected?.status === "ASIGNADO") &&
                 (ticketSelected?.communicationchanneltype === "VOXI" ? <ManageCallInfoSupervisor /> :
                     (groupInteractionList.loading ? <SkeletonInteraction /> :
                         <div style={{

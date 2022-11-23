@@ -5,9 +5,9 @@ import * as VoxImplant from 'voximplant-websdk'
 import { CallSettings } from 'voximplant-websdk/Structures';
 import { ITicket } from '@types';
 import { Call } from "voximplant-websdk/Call/Call";
-
 import { emitEvent, connectAgentUI, connectAgentAPI } from 'store/inbox/actions';
 
+const cleanNumber = (number: string | null) => number?.includes("@") ? number?.split("@")[0].split(":")?.[1] : number;
 const sdk = VoxImplant.getInstance();
 let alreadyLoad = false;
 
@@ -44,7 +44,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                     const headers = (e.call as Call).headers()
                     const supervision = headers["X-supervision"]
                     const splitIdentifier = headers["X-identifier"].split("-");
-
+                    const number = cleanNumber(e.call.number());
                     if (supervision) {
                         dispatch({
                             type: typeVoximplant.INIT_CALL,
@@ -74,7 +74,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                         coloricon: "",
                         communicationchanneltype: "VOXI",
                         lastmessage: "LLAMADA ENTRANTE",
-                        personcommunicationchannel: `${e.call.number().split("@")[0].split(":")?.[1] || ""}_VOXI`,
+                        personcommunicationchannel: `${number}_VOXI`,
                         communicationchannelsite: headers["X-site"],
                         lastreplyuser: "",
                         commentexternalid: headers["X-accessURL"]
@@ -96,9 +96,9 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                         payload: {
                             call: e.call,
                             type: "INBOUND",
-                            number: e.call.number().split("@")[0].split(":")?.[1],
+                            number: cleanNumber(number),
                             identifier: headers["X-identifier"],
-                            data
+                            status: "CONNECTING"
                         }
                     })
                     //agregar el ticket con el control de llamada
@@ -111,10 +111,10 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                     })
 
                     e.call.on(VoxImplant.CallEvents.Disconnected, () => {
-                        dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "DISCONNECTED" });
+                        dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: { status: "DISCONNECTED", number } });
                     });
                     e.call.on(VoxImplant.CallEvents.Failed, () => {
-                        dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "DISCONNECTED" });
+                        dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: { status: "DISCONNECTED", number } });
                     });
                 })
             }
@@ -163,28 +163,31 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
             payload: {
                 call,
                 type: "OUTBOUND",
-                number: payload.number, 
-                data: action.payload.data
+                number: payload.number
             }
         })
 
-        call.on(VoxImplant.CallEvents.Connected, () => {
-            dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "CONNECTED" });
+        call.on(VoxImplant.CallEvents.Connected, (e) => {
+            const number = cleanNumber(e?.call?.number());
+            dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: { status: "CONNECTED", number } });
             //actualizar la fecha de contestado en la lista de tickets
             dispatch({ type: typeInbox.CALL_CONNECTED, payload: action.payload.data.personcommunicationchannel });
         });
-        call.on(VoxImplant.CallEvents.Disconnected, () => {
-            dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "DISCONNECTED" });
+        call.on(VoxImplant.CallEvents.Disconnected, (e) => {
+            const number = cleanNumber(e?.call?.number());
+            dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: { status: "DISCONNECTED", number } });
         });
-        call.on(VoxImplant.CallEvents.Failed, () => {
-            dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "DISCONNECTED" });
+        call.on(VoxImplant.CallEvents.Failed, (e) => {
+            const number = cleanNumber(e?.call?.number());
+            dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: { status: "DISCONNECTED", number } });
         });
         return
     } else if (type === typeVoximplant.ANSWER_CALL) {
         const call = payload.call;
+        const number = payload.number;
 
         call?.answer();
-        dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: "CONNECTED" });
+        dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: { status: "DISCONNECTED", number } });
         //actualizar la fecha de contestado en la lista de tickets
         dispatch({ type: typeInbox.CALL_CONNECTED, payload: action.payload.conversationid });
         return

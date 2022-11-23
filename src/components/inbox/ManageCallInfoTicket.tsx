@@ -106,7 +106,7 @@ const ManageCallInfoTicket: React.FC = () => {
                 conversationid: ticketSelected?.conversationid
             })))
         }
-        dispatch(holdCall({ call: call.call, flag: !hold }));
+        dispatch(holdCall({ call: call.call!!, flag: !hold, number: ticketSelected?.personcommunicationchannel }));
         sethold(!hold)
         dispatch(setHold(hold))
     }
@@ -167,7 +167,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                         // dispatch(holdCall({ call: call.call, flag: true }));
                                         sethold(true)
                                         setmute(false)
-                                        dispatch(hangupCall(call.call))
+                                        dispatch(hangupCall({ call: call.call!!, number: ticketSelected?.personcommunicationchannel }))
                                     }}
                                 >
                                     <CallEndIcon style={{ color: "white", width: "35px", height: "35px" }} />
@@ -178,14 +178,14 @@ const ManageCallInfoTicket: React.FC = () => {
                                     <IconButton //answercall
                                         style={{ marginLeft: "10px", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#55bd84' }}
                                         onClick={() => {
-                                            dispatch(answerCall({ call: call.call!!, conversationid: ticketSelected?.conversationid!! }))
+                                            dispatch(answerCall({ call: call.call!!, number: ticketSelected?.personcommunicationchannel }))
                                         }}
                                     >
                                         <PhoneIcon style={{ color: "white", width: "35px", height: "35px" }} />
                                     </IconButton>
                                     <IconButton //rejectcall
                                         style={{ marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#fa6262' }}
-                                        onClick={() => dispatch(rejectCall(call.call))}
+                                        onClick={() => dispatch(rejectCall({ call: call.call!!, number: ticketSelected?.personcommunicationchannel }))}
                                     >
                                         <CallEndIcon style={{ color: "white", width: "35px", height: "35px" }} />
                                     </IconButton>
@@ -196,13 +196,13 @@ const ManageCallInfoTicket: React.FC = () => {
                                     {(mute || !hold) ? (
                                         <IconButton //unmuteself
                                             style={{ gridColumnStart: "col1", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#7721ad' }}
-                                            onClick={() => { dispatch(unmuteCall(call.call)); setmute(false) }}>
+                                            onClick={() => { dispatch(unmuteCall({ call: call.call!!, number: ticketSelected?.personcommunicationchannel })); setmute(false) }}>
                                             <MicOffIcon style={{ color: "white", width: "35px", height: "35px" }} />
                                         </IconButton>
                                     ) : (
                                         <IconButton //muteself
                                             style={{ gridColumnStart: "col1", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#55bd84' }}
-                                            onClick={() => { dispatch(muteCall(call.call)); setmute(true) }}>
+                                            onClick={() => { dispatch(muteCall({ call: call.call!!, number: ticketSelected?.personcommunicationchannel })); setmute(true) }}>
                                             <MicIcon style={{ color: "white", width: "35px", height: "35px" }} />
                                         </IconButton>
                                     )}
@@ -214,7 +214,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                     </IconButton>
                                     <IconButton //hangupcall
                                         style={{ gridColumnStart: "col4", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#fa6262' }}
-                                        onClick={() => dispatch(hangupCall(call.call))}
+                                        onClick={() => dispatch(hangupCall({ call: call.call!!, number: ticketSelected?.personcommunicationchannel }))}
                                     >
                                         <CallEndIcon style={{ color: "white", width: "35px", height: "35px" }} />
                                     </IconButton>

@@ -253,31 +253,13 @@ const MakeCall: React.FC = () => {
     React.useEffect(() => {
         if (!resExecute.loading && !resExecute.error) {
             if (resExecute.key === "UFN_CONVERSATION_OUTBOUND_VALIDATE") {
-                const { v_personname, v_voximplantrecording } = resExecute.data[0]
-                const data: ITicket = {
-                    conversationid: 0,
-                    ticketnum: "",
-                    personid: 0,
-                    communicationchannelid: ccidvoxi || 0,
-                    status: "ASIGNADO",
-                    imageurldef: "",
-                    firstconversationdate: new Date().toISOString(),
-                    personlastreplydate: null,
-                    countnewmessages: 0,
-                    usergroup: "",
-                    displayname: v_personname,
-                    coloricon: '',
-                    communicationchanneltype: "VOXI",
-                    lastmessage: "LLAMADA SALIENTE",
-                    personcommunicationchannel: `${numberVox}_VOXI`,
-                    communicationchannelsite: sitevoxi || "",
-                    lastreplyuser: "",
-                }
+                const { v_voximplantrecording } = resExecute.data[0]
+                
                 dispatch(setModalCall(false));
                 const identifier = `${corpid}-${orgid}-${ccidvoxi}-0-0-.${sitevoxi}.${userid}.${v_voximplantrecording}`;
 
                 dispatch(resetExecute());
-                dispatch(makeCall({ number: numberVox, site: identifier, data }));
+                dispatch(makeCall({ number: numberVox, site: identifier }));
                 history.push('/message_inbox');
             }
         } else if (!resExecute.loading && resExecute.error && resExecute.key === "UFN_CONVERSATION_OUTBOUND_INS") {

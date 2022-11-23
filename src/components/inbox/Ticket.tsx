@@ -110,7 +110,7 @@ const SmallAvatar = styled(Avatar)(() => ({
     fontSize: 11,
 }));
 
-const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { conversationid, call, personlastreplydate, origin, communicationchanneltype, lastmessage, displayname, imageurldef, ticketnum, firstconversationdate, finishdate, countnewmessages, status, communicationchannelid, lastreplyuser, lastconversationdate } }) => {
+const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { conversationid, call, personlastreplydate, origin, communicationchanneltype, lastmessage, displayname, imageurldef, ticketnum, firstconversationdate, finishdate, countnewmessages, status, communicationchannelid, lastreplyuser, lastconversationdate, personcommunicationchannel } }) => {
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const localclasses = useStyles({ color: "red" });
     const agentSelected = useSelector(state => state.inbox.agentSelected);
@@ -134,7 +134,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
     const [waitingDate, setWaitingDate] = useState<string | null>(null);
 
     useEffect(() => {
-        if (callVoxiTmp && callVoxiTmp.call && callVoxiTmp.data?.conversationid === conversationid && item.status === "ASIGNADO") {
+        if (callVoxiTmp && callVoxiTmp.call && `${callVoxiTmp.number}_VOXI` === item.personcommunicationchannel && item.status === "ASIGNADO") {
             setCallVoxi(callVoxiTmp.call);
         } else {
             setCallVoxi(null);
@@ -227,7 +227,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
         if (timeWaiting >= 0 && (secondsToAnwserCall || 0) > 0) {
 
             if (timeWaiting >= (secondsToAnwserCall || 0) && (callVoxiTmp.type === "INBOUND" && statusCall === "CONNECTING")) {
-                dispatch(answerCall({ call: callVoxi!!, conversationid }));
+                dispatch(answerCall({ call: callVoxi!!, number: personcommunicationchannel }));
                 setWaitingDate(null);
                 setTimeWaiting(-1);
                 return;
@@ -243,7 +243,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [timeWaiting]);
 
-  
+
     return (
         <div
             className={clsx(classes.containerItemTicket, {
@@ -322,7 +322,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                         style={{ width: "35px", height: "35px", borderRadius: "50%", backgroundColor: '#55bd84' }}
                         onClick={(e) => {
                             e.stopPropagation();
-                            dispatch(answerCall({ call: callVoxi!!, conversationid }));
+                            dispatch(answerCall({ call: callVoxi!!, number: personcommunicationchannel }));
                         }}
                     >
                         <PhoneCallbackIcon className={localclasses.iconcall} />
@@ -345,7 +345,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                         style={{ width: "35px", height: "35px", borderRadius: "50%", backgroundColor: 'rgb(180, 26, 26)' }}
                         onClick={(e) => {
                             e.stopPropagation();
-                            dispatch(hangupCall(callVoxi));
+                            dispatch(hangupCall({ call: callVoxi!!, number: personcommunicationchannel }));
                         }}
                     >
                         <CallEndIcon style={{ color: "white", width: "30px", height: "30px" }} />
