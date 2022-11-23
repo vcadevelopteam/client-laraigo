@@ -291,14 +291,12 @@ const MakeCall: React.FC = () => {
 
     //ring when the customer call
     React.useEffect(() => {
-        if (statusCall === "DISCONNECTED" && !!ticketSelected) {
-            if (onholdstate) {
-                const timeToAdd = getSecondsUntelNow(convertLocalDate(onholdstatedate))
-                dispatch(execute(conversationCallHold({
-                    holdtime: timeToAdd,
-                    conversationid: ticketSelected?.conversationid
-                })))
-            }
+        if (statusCall === "DISCONNECTED" && !!ticketSelected && onholdstate) {
+            const timeToAdd = getSecondsUntelNow(convertLocalDate(onholdstatedate))
+            dispatch(execute(conversationCallHold({
+                holdtime: timeToAdd,
+                conversationid: ticketSelected?.conversationid
+            })))
         } else if (call.type === "INBOUND" && statusCall === "CONNECTING") {
             setWaitingDate(new Date().toISOString())
             setTimeWaiting(0);
