@@ -1082,6 +1082,8 @@ export const langKeys = {
     newcalendar: 'newcalendar',
     location: 'location',
     duration: 'duration',
+    notification: 'notification',
+    reminder: 'reminder',
     notificationtype: 'notificationtype',
     calendar_messate_tooltip: 'calendar_messate_tooltip',
     calendar_eventname: 'calendar_eventname',
