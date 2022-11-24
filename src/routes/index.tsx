@@ -52,7 +52,7 @@ const UserSettings = lazy(() => import('pages/UserSettings'));
 const Invoice = lazy(() => import('pages/Invoice'));
 const KPIManager = lazy(() => import('pages/KPIManager'));
 const GetLocations = lazy(() => import('pages/GetLocations'));
-const Calendar = lazy(() => import('pages/Calendar'));
+const Calendar = lazy(() => import('pages/calendar/Calendar'));
 const AutomatizationRules = lazy(() => import('pages/AutomatizationRules'));
 const Channels = lazy(() => import('pages/channels/Channels'));
 const ChannelAdd = lazy(() => import('pages/channels/ChannelAdd'));
