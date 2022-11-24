@@ -79,12 +79,18 @@ const useStyles = makeStyles((theme) => ({
 interface CalendarConnectionsProps {
     row: Dictionary | null;
 
+    dataGrid: any[];
+    setDataGrid: (value: any[]) => void;
+
     calendarGoogleActive: boolean;
     setCalendarGoogleActive: (value: boolean) => void;
 }
 
 const CalendarConnections: React.FC<CalendarConnectionsProps> = ({
     row,
+
+    dataGrid,
+    setDataGrid,
 
     calendarGoogleActive,
     setCalendarGoogleActive
@@ -116,6 +122,14 @@ const CalendarConnections: React.FC<CalendarConnectionsProps> = ({
     useEffect(() => {
         if (waitGoogleLogIn) {
             if (!resCalendarGoogleLogIn.loading) {
+                setDataGrid(
+                    dataGrid.map(dg => ({
+                        ...dg,
+                        credentialsdate: dg.calendareventid === row?.calendareventid
+                        ? new Date().toISOString()
+                        : dg.credentialsdate
+                    }))
+                )
                 setWaitGoogleLogIn(false)
                 if (!resCalendarGoogleLogIn.error) {
                     setCalendarGoogleActive(true)
@@ -128,6 +142,14 @@ const CalendarConnections: React.FC<CalendarConnectionsProps> = ({
     useEffect(() => {
         if (waitGoogleDisconnect) {
             if (!resCalendarGoogleDisconnect.loading) {
+                setDataGrid(
+                    dataGrid.map(dg => ({
+                        ...dg,
+                        credentialsdate: dg.calendareventid === row?.calendareventid
+                        ? null
+                        : dg.credentialsdate
+                    }))
+                )
                 setWaitGoogleDisconnect(false)
                 dispatch(showBackdrop(false))
                 if (!resCalendarGoogleDisconnect.error) {
@@ -171,6 +193,7 @@ const CalendarConnections: React.FC<CalendarConnectionsProps> = ({
                             variant="contained"
                             disabled={resCalendarGoogleValidate.loading}
                             color="primary"
+                            style={{ backgroundColor: "#FB5F5F" }}
                             onClick={() => googleConfirmDisconnect(row?.calendareventid)}
                         >
                             {t(langKeys.disconnect)} 
