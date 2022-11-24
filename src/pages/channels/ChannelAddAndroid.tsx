@@ -36,6 +36,7 @@ export const ChannelAddAndroid: FC = () => {
     const [showClose, setShowClose] = useState(false);
     const [showScript, setShowScript] = useState(false);
     const [integrationId, setIntegrationId] = useState('');
+    const [view, setView] = useState('view-2');
     const mainResult = useSelector(state => state.channel.channelList);
     const executeResult = useSelector(state => state.channel.successinsert);
     const history = useHistory();
@@ -118,7 +119,9 @@ export const ChannelAddAndroid: FC = () => {
                     {t(langKeys.previoustext)}
                 </Link>
             </Breadcrumbs>
-            <div>
+            {view === "view-1" && <>
+            </>}
+            {view === "view-2" && <><div>
                 <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.commchannelfinishreg)}</div>
                 <div className="row-zyx">
                     <div className="col-3"></div>
@@ -197,7 +200,7 @@ export const ChannelAddAndroid: FC = () => {
             <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}>
                 {t(langKeys.androidstep2)}
             </div>
-            <div style={{ display: showScript ? 'flex' : 'none', height: 20 }} />
+            <div style={{ display: showScript ? 'flex' : 'none', height: 20 }} /></>}
         </div>
     )
 }
