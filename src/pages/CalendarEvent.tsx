@@ -268,17 +268,6 @@ const FormToSend: FC<{
                     />
                 </div>
                 <div>
-                    <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}>{t(langKeys.email)}</div>
-                    <FieldEdit
-                        size="small"
-                        className={classes.colInput}
-                        variant={'outlined'}
-                        valueDefault={getValues('email')}
-                        onChange={(value: any) => setValue('email', value)}
-                        error={errors?.email?.message}
-                    />
-                </div>
-                <div>
                     <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}>{t(langKeys.phone)}</div>
                     <Controller
                         name="phone"
@@ -303,6 +292,17 @@ const FormToSend: FC<{
                                 helperText={errors?.phone?.message}
                             />
                         )}
+                    />
+                </div>
+                <div>
+                    <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}>{t(langKeys.email)}</div>
+                    <FieldEdit
+                        size="small"
+                        className={classes.colInput}
+                        variant={'outlined'}
+                        valueDefault={getValues('email')}
+                        onChange={(value: any) => setValue('email', value)}
+                        error={errors?.email?.message}
                     />
                 </div>
                 <div>

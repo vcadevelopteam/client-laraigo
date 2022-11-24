@@ -66,7 +66,6 @@ const DialogBooking: React.FC<{
     const classes = useStyles();
     const saveRes = useSelector(state => state.main.execute);
     const { register, setValue, getValues, reset, trigger, formState: { errors } } = useForm();
-
     useEffect(() => {
         if (waitSave) {
             if (!saveRes.loading && !saveRes.error) {
@@ -111,7 +110,7 @@ const DialogBooking: React.FC<{
         <Dialog
             open={openModal}
             fullWidth
-            maxWidth="xs"
+            maxWidth="sm"
         >
             <DialogTitle>
                 {booking?.personname}
@@ -121,24 +120,14 @@ const DialogBooking: React.FC<{
                     <div style={{ display: 'flex', gap: 8 }}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                             <div style={{ backgroundColor: booking?.color, width: 24, height: 24, borderRadius: 12 }}></div>
-                            <FieldView
-                                label={t(langKeys.event)}
-                                value={event?.name}
-                                className={classes.colInput}
-                            />
-                            <FieldView
-                                label={t(langKeys.location)}
-                                value={event?.location}
-                                className={classes.colInput}
-                            />
-                            <div className={classes.colInput}>
-                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                                    {t(langKeys.description)}
-                                </Box>
-                                <Box lineHeight="20px" fontSize={15} color="textPrimary">
-                                    <div dangerouslySetInnerHTML={{ __html: event?.description }} />
-                                </Box>
-                            </div>
+                            {/*
+                                <div className={classes.colInput}>
+                                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                        {t(langKeys.note)}
+                                    </Box>
+                                    <Box lineHeight="20px" fontSize={15} color="textPrimary" style={{ overflowWrap: "anywhere" }}>{booking?.notes}</Box>
+                                </div>
+                             */}
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                             <FieldView
@@ -146,17 +135,63 @@ const DialogBooking: React.FC<{
                                 value={`${booking?.hourstart.substring(0, 5)} - ${booking?.hourend.substring(0, 5)}`}
                                 className={classes.colInput}
                             />
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                             <FieldView
-                                label={t(langKeys.person)}
+                                label={t(langKeys.clientname)}
                                 value={booking?.personname}
                                 className={classes.colInput}
                             />
-                            <div className={classes.colInput}>
-                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                                    {t(langKeys.note)}
-                                </Box>
-                                <Box lineHeight="20px" fontSize={15} color="textPrimary" style={{ overflowWrap: "anywhere" }}>{booking?.notes}</Box>
-                            </div>
+                        </div>
+                    </div>
+                    <div style={{ display: 'flex', flex: 1, width: '100%' }}>
+                        <FieldView
+                            label={t(langKeys.event)}
+                            value={event?.name}
+                            className={classes.colInput}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                            <FieldView
+                                label={t(langKeys.email)}
+                                value={booking?.personcontact}
+                                className={classes.colInput}
+                            />
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+                            <FieldView
+                                label={t(langKeys.location)}
+                                value={event?.location}
+                                className={classes.colInput}
+                            />
+                        </div>
+                    </div>
+                    <div style={{ display: 'flex', flex: 1, width: '100%', paddingTop: 16 }}>
+                        <FieldView
+                            label={t(langKeys.event)}
+                            value={event?.name}
+                            className={classes.colInput}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', flex: 1, width: '100%' }}>
+                        <div className={classes.colInput}>
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                {t(langKeys.description)}
+                            </Box>
+                            <Box lineHeight="20px" fontSize={15} color="textPrimary">
+                                <div dangerouslySetInnerHTML={{ __html: event?.description }} />
+                            </Box>
+                        </div>
+                    </div>
+                    <div style={{ display: 'flex', flex: 1, width: '100%' }}>
+                        <div className={classes.colInput}>
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                {t(langKeys.note)}
+                            </Box>
+                            <Box lineHeight="20px" fontSize={15} color="textPrimary" style={{ overflowWrap: "anywhere" }}>{booking?.notes}</Box>
                         </div>
                     </div>
                     <FieldEditMulti
