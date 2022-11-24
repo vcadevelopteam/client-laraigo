@@ -98,7 +98,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                             type: "INBOUND",
                             number: cleanNumber(number),
                             identifier: headers["X-identifier"],
-                            status: "CONNECTING"
+                            statusCall: "CONNECTING"
                         }
                     })
                     //agregar el ticket con el control de llamada

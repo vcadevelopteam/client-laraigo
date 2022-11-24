@@ -275,6 +275,7 @@ const MakeCall: React.FC = () => {
 
     //ring when the customer call
     React.useEffect(() => {
+        console.log("calls", calls)
         const connecting = calls.some(call => call.type === "INBOUND" && call.statusCall === "CONNECTING");
         setCallInLine(calls.some(call => call.statusCall !== "DISCONNECTED"));
         if (connecting) {
@@ -287,36 +288,7 @@ const MakeCall: React.FC = () => {
         } else {
             ringtone.current?.pause();
         }
-        // if (callInLine === "DISCONNECTED" && !!ticketSelected) {
-        //     if (onholdstate) {
-        //         const timeToAdd = getSecondsUntelNow(convertLocalDate(onholdstatedate))
-        //         dispatch(execute(conversationCallHold({
-        //             holdtime: timeToAdd,
-        //             conversationid: ticketSelected?.conversationid
-        //         })))
-        //     }
-        // }
     }, [calls])
-
-    //reassign if the call overload time limit
-    // React.useEffect(() => {
-    //     if (timeWaiting >= 0) {
-    //         if (timeWaiting >= (user?.properties.time_reassign_call || 30) && (call.type === "INBOUND" && callInLine === "CONNECTING")) {
-    //             dispatch(rejectCall(call.call));
-    //             setWaitingDate(null)
-    //             setTimeWaiting(-1);
-    //             return;
-    //         }
-    //         if (call.type === "INBOUND" && callInLine === "CONNECTING") {
-    //             setTimeout(() => {
-    //                 setTimeWaiting(getSecondsUntelNow(convertLocalDate(waitingDate)));
-    //             }, 1000)
-    //         } else {
-    //             setTimeWaiting(-1);
-    //         }
-    //     }
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [timeWaiting]);
 
     React.useEffect(() => {
         if (showcall && pageSelected === 2) {
