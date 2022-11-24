@@ -498,6 +498,8 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                         />
                     </div>
                 </div>
+            </div>
+            <div className="row-zyx">
                 {!generalstate.calendarview ? (
                     <div>
                         <FormControl component="fieldset" className={classes.formControl} >

@@ -77,13 +77,22 @@ interface MultiData {
 }
 
 interface DetailCalendarProps {
+    dataGrid: any[],
+    setDataGrid: (value: any[]) => void;
     data: RowSelected;
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
     fetchData: (id?: number) => void;
 }
 
-const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation }, setViewSelected, multiData, fetchData }) => {
+const DetailCalendar: React.FC<DetailCalendarProps> = ({
+    dataGrid,
+    setDataGrid,
+    data: { row, operation },
+    setViewSelected,
+    multiData,
+    fetchData
+}) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const classes = useStyles();
@@ -392,23 +401,15 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
             <AntTabPanel index={0} currentIndex={tabIndex}>
                 <CalendarGeneral
                     row={row}
-                    dataVariables={dataVariables}
                     dataStatus={dataStatus}
-                    dataTemplates={dataTemplates}
-                    dataChannels={dataChannels}
                     setValue={setValue}
                     getValues={getValues}
-                    trigger={trigger}
                     errors={errors}
                     generalstate={generalstate}
                     setgeneralstate={setgeneralstate}
                     showError={showError}
-                    templateVariables={templateVariables}
-                    setTemplateVariables={setTemplateVariables}
                     bodyobject={bodyobject}
                     setBodyobject={setBodyobject}
-                    bodyMessage={bodyMessage}
-                    setBodyMessage={setBodyMessage}
                 />
             </AntTabPanel>
             <AntTabPanel index={1} currentIndex={tabIndex}>
@@ -437,6 +438,10 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                     trigger={trigger}
                     errors={errors}
 
+                    templateVariables={templateVariables}
+                    setTemplateVariables={setTemplateVariables}
+                    bodyMessage={bodyMessage}
+                    setBodyMessage={setBodyMessage}
                     emailVariables={emailVariables}
                     setEmailVariables={setEmailVariables}
                     bodyMessageReminderEmail={bodyMessageReminderEmail}
@@ -451,6 +456,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({ data: { row, operation 
                 <AntTabPanel index={3} currentIndex={tabIndex}>
                     <CalendarConnections
                         row={row}
+                        dataGrid={dataGrid}
+                        setDataGrid={setDataGrid}
                         calendarGoogleActive={calendarGoogleActive}
                         setCalendarGoogleActive={setCalendarGoogleActive}
                     />
@@ -558,7 +565,7 @@ const Calendar: FC = () => {
     const [dataGrid, setDataGrid] = useState<any[]>([]);
 
     useEffect(() => {
-        let data = mainResult.mainData.data
+        let data = [...mainResult.mainData.data]
         data = data.map(x => ({ ...x, fullduration: x.timeduration + " " + t((langKeys as any)[`${x.timeunit?.toLowerCase()}${x.timeduration > 1 ? '_plural' : ''}`]) }))
         setDataGrid(data)
     }, [mainResult.mainData.data])
@@ -728,6 +735,8 @@ const Calendar: FC = () => {
     else if (viewSelected === "view-2") {
         return (
             <DetailCalendar
+                dataGrid={dataGrid}
+                setDataGrid={setDataGrid}
                 data={rowSelected}
                 setViewSelected={setViewSelected}
                 multiData={mainResult.multiData.data}

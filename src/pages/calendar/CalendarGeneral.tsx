@@ -6,12 +6,11 @@ import { Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { FieldErrors, UseFormGetValues, UseFormSetValue, UseFormTrigger } from 'react-hook-form';
-import { Box, IconButton, TextField, Tooltip, Typography } from '@material-ui/core';
+import { FieldErrors, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
+import { Box, IconButton, TextField, Typography } from '@material-ui/core';
 import { RichText } from 'components/fields/RichText';
 import { Descendant } from 'slate';
 import { ColorChangeHandler } from 'react-color';
-import InfoIcon from '@material-ui/icons/Info';
 import { ICalendarFormFields } from './ICalendar';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 
@@ -38,50 +37,34 @@ const useStyles = makeStyles((theme) => ({
 
 interface CalendarGeneralProps {
     row: Dictionary | null;
-    dataVariables: {domainvalue: string, domaindesc: string}[];
 
     dataStatus: Dictionary[];
-    dataTemplates: Dictionary[];
-    dataChannels: Dictionary[];
 
     setValue: UseFormSetValue<ICalendarFormFields>;
     getValues: UseFormGetValues<ICalendarFormFields>;
-    trigger: UseFormTrigger<ICalendarFormFields>;
     errors: FieldErrors<ICalendarFormFields>;
 
     generalstate: any,
     setgeneralstate: (value: any) => void;
     showError: boolean;
-    templateVariables: any;
-    setTemplateVariables: (value: any) => void;
     bodyobject: Descendant[];
     setBodyobject: (value: Descendant[]) => void;
-    bodyMessage: any;
-    setBodyMessage: (value: any) => void;
 }
 
 const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
     row,
-    dataVariables,
     
     dataStatus,
-    dataTemplates,
-    dataChannels,
 
     setValue,
     getValues,
-    trigger,
     errors,
 
     generalstate,
     setgeneralstate,
     showError,
-    templateVariables,
-    setTemplateVariables,
     bodyobject,
     setBodyobject,
-    bodyMessage,
-    setBodyMessage
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -96,20 +79,7 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
         setValue('color', e.hex);
     }
 
-    const onSelectTemplate = (value: Dictionary) => {
-        if (value) {
-            setBodyMessage(value.body);
-            setTemplateVariables((value.body?.match(/{{/g) || []).reduce((acc: any, x: any, i: number) => { return { ...acc, [`variable#${i}`]: `` } }, {}))
-            setValue('hsmtemplateid', value ? value.id : 0);
-            setValue('hsmtemplatename', value ? value.name : '');
-        }
-        else {
-            setValue('hsmtemplatename', '');
-            setBodyMessage('');
-            setTemplateVariables({})
-            setValue('hsmtemplateid', 0);
-        }
-    }
+    
     
     return (
         <div className={classes.containerDetail}>
@@ -205,7 +175,7 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                     >
                         <VisibilityIcon />
                     </IconButton>
-                    <span>{t(langKeys.preview)}</span>
+                    <span>{t(langKeys.seeagendapage)}</span>
                 </a>
             </div>
             <div className="row-zyx" >
@@ -227,84 +197,6 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />
-            </div>
-            <div className="row-zyx" >
-                <FieldSelect
-                    label={t(langKeys.notificationtype)}
-                    className="col-6"
-                    valueDefault={getValues("notificationtype")}
-                    onChange={(value) => {
-                        setValue('notificationtype', (value?.val || ""))
-                        setValue('hsmtemplateid', 0)
-                        setValue('communicationchannelid', 0)
-                        trigger('notificationtype')
-                        onSelectTemplate({ id: 0, name: '', body: '' })
-                    }}
-                    error={errors?.notificationtype?.message}
-                    data={[
-                        { desc: "HSM", val: "HSM" },
-                        { desc: t(langKeys.email), val: "EMAIL" }
-                    ]}
-                    optionDesc="desc"
-                    optionValue="val"
-                />
-                {!!getValues("notificationtype") && <FieldSelect
-                    label={t(langKeys.notificationtemplate)}
-                    className="col-6"
-                    valueDefault={getValues('hsmtemplateid')}
-                    error={errors?.hsmtemplateid?.message}
-                    onChange={onSelectTemplate}
-                    data={dataTemplates.filter(x => x.type === (getValues("notificationtype") === "EMAIL" ? "MAIL" : getValues("notificationtype")))}
-                    optionDesc="name"
-                    optionValue="id"
-                />}
-            </div>
-            {getValues("notificationtype") === 'HSM' && <div className="row-zyx" >
-                <FieldSelect
-                    label={t(langKeys.communicationchannel)}
-                    className="col-12"
-                    valueDefault={getValues('communicationchannelid')}
-                    error={errors?.communicationchannelid?.message}
-                    onChange={(value) => setValue('communicationchannelid', value?.communicationchannelid || 0)}
-                    data={dataChannels.filter(x => x.type.startsWith('WHA'))}
-                    optionDesc="communicationchanneldesc"
-                    optionValue="communicationchannelid"
-                />
-            </div>}
-            <div className="row-zyx" >
-                {/*getValues("notificationtype") === 'HSM' && <FieldView
-                    className="col-6"
-                    label={t(langKeys.message)}
-                    value={bodyMessage}
-                    tooltip={`${t(langKeys.calendar_messate_tooltip)}`}
-                />*/}
-                {getValues("notificationtype") && <React.Fragment>
-                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                        {t(langKeys.message)}
-                        <Tooltip title={`${t(langKeys.calendar_messate_tooltip)}`} placement="top-start">
-                            <InfoIcon style={{ padding: "5px 0 0 5px" }} />
-                        </Tooltip>
-                    </Box>
-                    <div dangerouslySetInnerHTML={{ __html: bodyMessage }} />
-                    <div className="col-6" >
-                        {Object.keys(templateVariables).map((x, i) => {
-                            return (
-                                <div key={`templateVariables-${i + 1}`} style={{ paddingTop: 10 }}>
-                                    <FieldSelect
-                                        label={`Variable #${i + 1}`}
-                                        className="col-6"
-                                        valueDefault={templateVariables[x]}
-                                        onChange={(value) => { setTemplateVariables({ ...templateVariables, [x]: value?.domainvalue || "" }) }}
-                                        data={dataVariables}
-                                        uset={true}
-                                        optionDesc="domaindesc"
-                                        optionValue="domainvalue"
-                                    />
-                                </div>)
-                        })}
-                    </div>
-                </React.Fragment>
-                }
             </div>
         </div>
     )
