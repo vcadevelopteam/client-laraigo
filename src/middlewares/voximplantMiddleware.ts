@@ -171,7 +171,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
             const number = cleanNumber(e?.call?.number());
             dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: { status: "CONNECTED", number } });
             //actualizar la fecha de contestado en la lista de tickets
-            dispatch({ type: typeInbox.CALL_CONNECTED, payload: action.payload.data.personcommunicationchannel });
+            dispatch({ type: typeInbox.CALL_CONNECTED, payload: `${number}_VOXI` });
         });
         call.on(VoxImplant.CallEvents.Disconnected, (e) => {
             const number = cleanNumber(e?.call?.number());
@@ -186,7 +186,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         const call = payload.call;
         const number = cleanNumber(payload.number);
         call?.answer();
-        dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: { status: "DISCONNECTED", number } });
+        dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: { status: "CONNECTED", number } });
         //actualizar la fecha de contestado en la lista de tickets
         dispatch({ type: typeInbox.CALL_CONNECTED, payload: action.payload.conversationid });
         return

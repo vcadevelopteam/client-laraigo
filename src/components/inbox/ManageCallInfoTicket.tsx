@@ -43,7 +43,7 @@ const ManageCallInfoTicket: React.FC = () => {
     const calls = useSelector(state => state.voximplant.calls);
 
     useEffect(() => {
-        const call = calls.find(call => `${call.number}_VOX` === ticketSelected?.personcommunicationchannel && call.statusCall !== "DISCONNECTED")
+        const call = calls.find(call => `${call.number}_VOXI` === ticketSelected?.personcommunicationchannel && call.statusCall !== "DISCONNECTED")
         sethold(!call?.onholddate)
         setCall(call)
     }, [calls])
