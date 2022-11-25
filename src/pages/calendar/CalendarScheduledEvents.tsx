@@ -120,14 +120,6 @@ const DialogBooking: React.FC<{
                     <div style={{ display: 'flex', gap: 8 }}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                             <div style={{ backgroundColor: booking?.color, width: 24, height: 24, borderRadius: 12 }}></div>
-                            {/*
-                                <div className={classes.colInput}>
-                                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                                        {t(langKeys.note)}
-                                    </Box>
-                                    <Box lineHeight="20px" fontSize={15} color="textPrimary" style={{ overflowWrap: "anywhere" }}>{booking?.notes}</Box>
-                                </div>
-                             */}
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                             <FieldView
