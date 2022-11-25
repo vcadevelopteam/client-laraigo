@@ -10,7 +10,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { execute, getCollectionAux } from 'store/main/actions';
+import { execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import { Box, IconButton, ListItemIcon, Menu, MenuItem } from '@material-ui/core';
 import { Range } from 'react-date-range';
@@ -368,6 +368,12 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
         dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : "",
         calendarEventID
     )))
+
+    useEffect(() => {
+        return () => {
+            dispatch(resetMainAux())
+        }
+    }, [])
 
     useEffect(() => {
         if (!mainAux.error && !mainAux.loading && mainAux.key === "UFN_CALENDARBOOKING_REPORT") {
