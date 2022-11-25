@@ -751,6 +751,8 @@ const translation: LangKeys = {
     location: 'Location',
     duration: 'Duration',
     notification: 'Notification',
+    event_schedule_notification: 'Event schedule notification',
+    next_event_notification: 'Next event notification',
     reminder: 'Reminder{{n}}',
     notificationtype: 'Notification type',
     calendar_messate_tooltip: 'Available variables: timeevent, timestart, timeend, eventname, eventlocation, eventlink, personname, personcontact, personmail',

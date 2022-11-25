@@ -1144,6 +1144,8 @@ export const langKeys = {
     location: 'location',
     duration: 'duration',
     notification: 'notification',
+    event_schedule_notification: 'event_schedule_notification',
+    next_event_notification: 'next_event_notification',
     reminder: 'reminder',
     notificationtype: 'notificationtype',
     calendar_messate_tooltip: 'calendar_messate_tooltip',
