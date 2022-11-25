@@ -7,11 +7,15 @@ import { AccountMenu } from 'components';
 import { IconButton, makeStyles } from '@material-ui/core';
 import { Menu } from '@material-ui/icons';
 import { useDispatch } from 'react-redux';
-import { setOpenDrawer } from 'store/popus/actions';
+import { manageConfirmation, setOpenDrawer } from 'store/popus/actions';
 import NotificationMenu from 'components/session/NotificationMenu';
 import { StatusConnection } from 'components';
 import LaraigoHelp from 'components/session/LaraigoHelp';
 import { ICallGo } from '@types';
+import { GetIcon } from 'components'
+import { ArrowDropDownIcon } from "icons";
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import { answerCall } from 'store/voximplant/actions';
 
 type IProps = {
     classes: any;
@@ -43,31 +47,158 @@ const useToolbarStyles = makeStyles(theme => ({
     }
 }));
 
+const callStyles = makeStyles(theme => ({
+    root: {
+        borderRadius: 8,
+        padding: "3px 5px",
+        backgroundColor: "#ecf8a2",
+        cursor: "pointer",
+        fontSize: 12,
+        gap: 4,
+        display: "flex",
+        alignItems: "center",
+        lineHeight: 1,
+        color: "#000",
+        width: 245,
+        '&:hover': {
+            backgroundColor: '#dff552',
+        },
+    },
+    callExtra: {
+        borderRadius: 8,
+        padding: "3px 5px",
+        backgroundColor: "#ecf8a2",
+        cursor: "pointer",
+        fontSize: 12,
+        gap: 4,
+        display: "flex",
+        alignItems: "center",
+        height: 20,
+        lineHeight: 1,
+        color: "#000",
+        width: 100,
+        justifyContent: "space-between",
+        '&:hover': {
+            backgroundColor: '#dff552',
+        },
+    },
+    containerCalls: {
+        display: "flex",
+        gap: 8,
+        height: 20,
+        alignItems: "center",
+        color: "#000",
+        marginLeft: 20,
+        marginRight: 20,
+        // maxWidth: 400
+    }
+}));
+
 const CallBlock: React.FC<{ call: ICallGo }> = ({ call }) => {
+    const classes = callStyles();
+    const dispatch = useDispatch();
+    const calls = useSelector(state => state.voximplant.calls);
+
+    const handlerOnClick = () => {
+        const callConnected = calls.find(calltmp => calltmp.statusCall === "CONNECTED")
+        
+        if (callConnected) {
+            dispatch(manageConfirmation({
+                visible: true,
+                question: "Tiene una llamada activa, desea de todas maneras contestar",
+                callback: () => {
+                    dispatch(answerCall({
+                        call: call.call,
+                        number: call.number,
+                        callComplete: call,
+                        method: "simultaneous"
+                    }));
+                }
+            }))
+        } else {
+            dispatch(answerCall({
+                call: call.call,
+                number: call.number,
+                callComplete: call,
+                method: "simultaneous"
+            }));
+        }
+    }
 
     return (
-        <div style={{ border: "1px solid #e1e1e1", borderRadius: 4, padding: "2px 6px" }}>
-            {call.number}
+        <div
+            className={classes.root}
+            title="Contestar llamada"
+            onClick={handlerOnClick}
+        >
+            <GetIcon channelType={"VOXI"} width={10} height={10} />
+            <div>
+                {call.number} - {(!!call.name && call.name !== call.number) ? call.name : "Número desconocido"}
+            </div>
         </div>
     )
 }
 
 const ContainerCalls: React.FC = () => {
+    const classes = callStyles();
     const calls = useSelector(state => state.voximplant.calls);
-    const [callsCleaned, setCallsCleaned] = useState<ICallGo[]>([])
+    const [openCallsExtra, setOpenCallsExtra] = React.useState(false);
+    const [callsCleaned, setCallsCleaned] = useState<ICallGo[]>([]);
+    const [callsExtra, setCallsExtra] = useState<ICallGo[]>([]);
 
     useEffect(() => {
-        console.log("callsxx", calls)
-        setCallsCleaned(calls.filter(call => call.method === "simultaneous"));
+        const callsToShow = calls.filter(call => call.method === "simultaneous" && call.statusCall === "CONNECTING").slice(0, 2);
+        if (calls.length > 2) {
+            setCallsExtra(callsToShow.slice(2, callsToShow.length))
+        }
+        setCallsCleaned(callsToShow);
     }, [calls])
 
+    const handleClickAway = () => setOpenCallsExtra(false);
+
+    if (callsCleaned.length === 0)
+        return <span></span>;
+
     return (
-        <div style={{ display: "flex", gap: 8, height: 20, alignItems: "center", color: "#000", marginLeft: 20, marginRight: 20 }}>
+        <div className={classes.containerCalls}>
             {callsCleaned.map(call => (
                 <CallBlock
+                    key={call.identifier}
                     call={call}
                 />
             ))}
+            <ClickAwayListener onClickAway={handleClickAway}>
+                <span style={{ position: "relative" }}>
+                    {(callsExtra.length > 0) && (
+                        <div
+                            className={classes.callExtra}
+                            onClick={() => setOpenCallsExtra(true)}
+                        >
+                            {callsExtra.length} llamadas
+                            <ArrowDropDownIcon />
+                        </div>
+                    )}
+                    {openCallsExtra && (
+                        <div style={{
+                            position: 'absolute',
+                            top: 20,
+                            width: 300,
+                            maxHeight: 400,
+                            zIndex: 1201,
+                            backgroundColor: 'white',
+                            padding: 4,
+                            boxShadow: '0 1px 2px 0 rgb(16 35 47 / 15%)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                        }}>
+                            <div style={{ color: "#000" }}>aaaaaaa</div>
+                            <div style={{ color: "#000" }}>vvv</div>
+                        </div>
+                    )}
+                </span>
+            </ClickAwayListener>
+
+
         </div>
     )
 }
@@ -94,7 +225,7 @@ const Header = ({ classes }: IProps) => {
                 />
                 {/* <div style={{ width: 73, display: openDrawer ? 'none' : 'block' }} /> */}
                 <div style={{ width: '100%', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, width: "100%", alignItems: "center" }}>
                         <ContainerCalls />
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                             <div className={myClasses.statusConnection}>

@@ -46,14 +46,12 @@ const ManageCallInfoTicket: React.FC = () => {
         const call = calls.find(call => `${call.number}_VOXI` === ticketSelected?.personcommunicationchannel && call.statusCall !== "DISCONNECTED")
         sethold(!call?.onholddate)
         setCall(call)
-    }, [calls])
+    }, [])
 
     React.useEffect(() => {
         if (call?.type === "INBOUND" && call?.statusCall === "CONNECTING") {
             sethold(true)
             setmute(false)
-            // setNumberVox(call.number)
-        } else if (call?.type === "INBOUND" && call?.statusCall !== "CONNECTING") {
             // setNumberVox(call.number)
         }
     }, [call?.type, dispatch, call?.statusCall])
@@ -102,12 +100,6 @@ const ManageCallInfoTicket: React.FC = () => {
         };
     }, [timehold, hold, call?.statusCall]);
 
-    // React.useEffect(() => {
-    //     if (phoneinbox) {
-    //         setNumberVox(phoneinbox)
-    //     }
-    // }, [phoneinbox])
-
     const triggerHold = () => {
         if (call?.onhold) {
             const timeToAdd = getSecondsUntelNow(convertLocalDate(call?.onholddate))
@@ -118,7 +110,7 @@ const ManageCallInfoTicket: React.FC = () => {
         }
         dispatch(holdCall({ call: call?.call!!, flag: !hold, number: ticketSelected?.personcommunicationchannel }));
         sethold(!hold)
-        dispatch(setHold(hold))
+        dispatch(setHold({ hold, number: call?.number }))
     }
 
     return (

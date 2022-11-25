@@ -1,5 +1,5 @@
 import { Call } from "voximplant-websdk/Call/Call";
-import { Dictionary, IActionCall, ITicket } from "@types";
+import { Dictionary, IActionCall, ICallGo, ITicket } from "@types";
 import { CommonService, VoximplantService } from "network";
 
 import actionTypes from "./actionTypes";
@@ -7,7 +7,7 @@ import { getConversationSelVoxi, getAdvisorListVoxi } from "common/helpers";
 
 export const voximplantConnect = (payload: Dictionary): IActionCall => ({ type: actionTypes.INIT_SDK, payload });
 
-export const answerCall = (payload?: { call: Call, number?: string }): IActionCall => ({ type: actionTypes.ANSWER_CALL, payload });
+export const answerCall = (payload?: { call: Call, number?: string, callComplete?: ICallGo, method?: string }): IActionCall => ({ type: actionTypes.ANSWER_CALL, payload });
 
 export const rejectCall = (payload?: { call: Call, number?: string }): IActionCall => ({ type: actionTypes.REJECT_CALL, payload });
 
@@ -26,7 +26,7 @@ export const makeCall = (payload: { number: string, site: string }): IActionCall
 export const setModalCall = (payload?: Boolean): IActionCall => ({ type: actionTypes.SET_MODAL_CALL, payload });
 export const setPhoneNumber = (payload?: string): IActionCall => ({ type: actionTypes.SET_PHONE_NUMBER, payload });
 
-export const setHold = (payload?: Boolean): IActionCall => ({ type: actionTypes.SET_HOLD, payload });
+export const setHold = (payload: { hold: boolean, number?: string }): IActionCall => ({ type: actionTypes.SET_HOLD, payload });
 
 export const manageStatusVox = (payload: boolean): IActionCall => ({ type: actionTypes.MANAGE_STATUS_VOX, payload });
 

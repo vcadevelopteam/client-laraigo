@@ -95,7 +95,12 @@ export interface ICallGo {
     type: string;
     method?: string;
     number: string;
-    identifier: string;
+    name: string;
+    site?: string; //ticket
+    accessURL?: string; //ticket
+    initCallDate?: string; //ticket
+    personAnswerCallDate?: string; //ticket
+    identifier: string; 
     statusCall: string;
     onhold?: boolean;
     onholddate?: string;
