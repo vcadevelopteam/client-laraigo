@@ -10,7 +10,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { execute, getCollectionAux } from 'store/main/actions';
+import { execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import { Box, IconButton, ListItemIcon, Menu, MenuItem } from '@material-ui/core';
 import { Range } from 'react-date-range';
@@ -249,7 +249,7 @@ const DialogCancelBooking: React.FC<{
     }, [])
 
     const onSubmit = async () => {
-        if (new Date(booking?.monthdate).setUTCHours(0,0,0,0) >= new Date().setUTCHours(0,0,0,0)) {
+        if (new Date(booking?.monthdate).setUTCHours(0, 0, 0, 0) >= new Date().setUTCHours(0, 0, 0, 0)) {
             debugger
             const allOk = await trigger();
             if (allOk) {
@@ -362,6 +362,12 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
     )))
 
     useEffect(() => {
+        return () => {
+            dispatch(resetMainAux())
+        }
+    }, [])
+
+    useEffect(() => {
         if (!mainAux.error && !mainAux.loading && mainAux.key === "UFN_CALENDARBOOKING_REPORT") {
             const bookingDates = Object.values(mainAux.data.reduce((acc, item) => ({
                 ...acc,
@@ -449,39 +455,6 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
                                         >
                                             <MoreVertIcon />
                                         </IconButton>
-                                        <Menu
-                                            id="menu-appbar"
-                                            anchorEl={anchorEl}
-                                            // getContentAnchorEl={null}
-                                            anchorOrigin={{
-                                                vertical: 'bottom',
-                                                horizontal: 'right',
-                                            }}
-                                            transformOrigin={{
-                                                vertical: 'top',
-                                                horizontal: 'right',
-                                            }}
-                                            open={Boolean(anchorEl)}
-                                            onClick={(e) => { e.stopPropagation(); }}
-                                            onClose={handleClose}
-                                        >
-                                            <MenuItem onClick={(e) => {
-                                                const url = new URL(`events/${user?.orgid}/${event.code}?booking=${x.calendarbookinguuid}`, window.location.origin)
-                                                console.log("url", url)
-                                                window.open(url.href, '_blank');
-                                             }}>
-                                                <ListItemIcon color="inherit">
-                                                    <LoopIcon width={18} style={{ fill: '#7721AD' }} />
-                                                </ListItemIcon>
-                                                {t(langKeys.rescheduleappointment)}
-                                            </MenuItem>
-                                            <MenuItem onClick={(e) => { setOpenDialogCancel(true); handleClose() }}>
-                                                <ListItemIcon color="inherit">
-                                                    <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
-                                                </ListItemIcon>
-                                                {t(langKeys.cancelappointment)}
-                                            </MenuItem>
-                                        </Menu>
                                     </div>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', width: "100%" }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -497,6 +470,39 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
                                 </div>
                             </div>
                         ))}
+                        <Menu
+                            id="menu-appbar"
+                            anchorEl={anchorEl}
+                            // getContentAnchorEl={null}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'right',
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            open={Boolean(anchorEl)}
+                            onClick={(e) => { e.stopPropagation(); }}
+                            onClose={handleClose}
+                        >
+                            <MenuItem onClick={(e) => {
+                                const url = new URL(`events/${user?.orgid}/${event.code}?booking=${bookingSelected?.calendarbookinguuid}`, window.location.origin)
+                                console.log("url", url)
+                                window.open(url.href, '_blank');
+                            }}>
+                                <ListItemIcon color="inherit">
+                                    <LoopIcon width={18} style={{ fill: '#7721AD' }} />
+                                </ListItemIcon>
+                                {t(langKeys.rescheduleappointment)}
+                            </MenuItem>
+                            <MenuItem onClick={(e) => { setOpenDialogCancel(true); handleClose() }}>
+                                <ListItemIcon color="inherit">
+                                    <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                                </ListItemIcon>
+                                {t(langKeys.cancelappointment)}
+                            </MenuItem>
+                        </Menu>
                     </div>
                 </>
             )}
