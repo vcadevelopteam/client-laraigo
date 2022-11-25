@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import Toolbar from '@material-ui/core/Toolbar';
 import AppBar from '@material-ui/core/AppBar';
@@ -11,6 +11,7 @@ import { setOpenDrawer } from 'store/popus/actions';
 import NotificationMenu from 'components/session/NotificationMenu';
 import { StatusConnection } from 'components';
 import LaraigoHelp from 'components/session/LaraigoHelp';
+import { ICallGo } from '@types';
 
 type IProps = {
     classes: any;
@@ -42,6 +43,35 @@ const useToolbarStyles = makeStyles(theme => ({
     }
 }));
 
+const CallBlock: React.FC<{ call: ICallGo }> = ({ call }) => {
+
+    return (
+        <div style={{ border: "1px solid #e1e1e1", borderRadius: 4, padding: "2px 6px" }}>
+            {call.number}
+        </div>
+    )
+}
+
+const ContainerCalls: React.FC = () => {
+    const calls = useSelector(state => state.voximplant.calls);
+    const [callsCleaned, setCallsCleaned] = useState<ICallGo[]>([])
+
+    useEffect(() => {
+        console.log("callsxx", calls)
+        setCallsCleaned(calls.filter(call => call.method === "simultaneous"));
+    }, [calls])
+
+    return (
+        <div style={{ display: "flex", gap: 8, height: 20, alignItems: "center", color: "#000", marginLeft: 20, marginRight: 20 }}>
+            {callsCleaned.map(call => (
+                <CallBlock
+                    call={call}
+                />
+            ))}
+        </div>
+    )
+}
+
 const Header = ({ classes }: IProps) => {
     const dispatch = useDispatch();
     const myClasses = useToolbarStyles();
@@ -63,14 +93,17 @@ const Header = ({ classes }: IProps) => {
                     alt="logo"
                 />
                 {/* <div style={{ width: 73, display: openDrawer ? 'none' : 'block' }} /> */}
-                <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                        <div className={myClasses.statusConnection}>
-                            <StatusConnection />
+                <div style={{ width: '100%', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+                        <ContainerCalls />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                            <div className={myClasses.statusConnection}>
+                                <StatusConnection />
+                            </div>
+                            <NotificationMenu />
+                            <AccountMenu />
+                            <LaraigoHelp />
                         </div>
-                        <NotificationMenu />
-                        <AccountMenu />
-                        <LaraigoHelp />
                     </div>
                 </div>
             </Toolbar>

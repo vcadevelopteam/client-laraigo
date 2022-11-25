@@ -42,6 +42,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
 
                 sdk.on(VoxImplant.Events.IncomingCall, (e) => {
                     const headers = (e.call as Call).headers()
+                    const method = headers["X-method"]
                     const supervision = headers["X-supervision"]
                     const splitIdentifier = headers["X-identifier"].split("-");
                     const number = cleanNumber(e.call.number());
@@ -51,44 +52,54 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                             payload: {
                                 call: e.call,
                                 type: "SUPERVISION",
-                                number: "",
+                                number: number,
                                 identifier: headers["X-identifier"]
                             }
                         })
                         e.call.answer();
                         return;
                     }
-
-                    const data: ITicket = {
-                        conversationid: parseInt(splitIdentifier[3]),
-                        ticketnum: splitIdentifier[5],
-                        personid: parseInt(splitIdentifier[4]),
-                        communicationchannelid: parseInt(splitIdentifier[2]),
-                        status: "ASIGNADO",
-                        imageurldef: "",
-                        firstconversationdate: headers["X-createdatecall"],
-                        personlastreplydate: new Date().toISOString(),
-                        countnewmessages: 1,
-                        usergroup: "",
-                        displayname: headers["X-personname"],
-                        coloricon: "",
-                        communicationchanneltype: "VOXI",
-                        lastmessage: "LLAMADA ENTRANTE",
-                        personcommunicationchannel: `${number}_VOXI`,
-                        communicationchannelsite: headers["X-site"],
-                        lastreplyuser: "",
-                        commentexternalid: headers["X-accessURL"]
-                    }
-                    //enviar a los otros supervisores
-                    dispatch(emitEvent({
-                        event: 'newCallTicket',
-                        data: {
-                            ...data,
-                            newuserid: 0,
-                            orpid: parseInt(splitIdentifier[0]),
-                            orgid: parseInt(splitIdentifier[1]),
+                    if (method !== "simultaneous") {
+                        const data: ITicket = {
+                            conversationid: parseInt(splitIdentifier[3]),
+                            ticketnum: splitIdentifier[5],
+                            personid: parseInt(splitIdentifier[4]),
+                            communicationchannelid: parseInt(splitIdentifier[2]),
+                            status: "ASIGNADO",
+                            imageurldef: "",
+                            firstconversationdate: headers["X-createdatecall"],
+                            personlastreplydate: new Date().toISOString(),
+                            countnewmessages: 1,
+                            usergroup: "",
+                            displayname: headers["X-personname"],
+                            coloricon: "",
+                            communicationchanneltype: "VOXI",
+                            lastmessage: "LLAMADA ENTRANTE",
+                            personcommunicationchannel: `${number}_VOXI`,
+                            communicationchannelsite: headers["X-site"],
+                            lastreplyuser: "",
+                            commentexternalid: headers["X-accessURL"]
                         }
-                    }));
+                        //enviar a los otros supervisores
+                        dispatch(emitEvent({
+                            event: 'newCallTicket',
+                            data: {
+                                ...data,
+                                newuserid: 0,
+                                orpid: parseInt(splitIdentifier[0]),
+                                orgid: parseInt(splitIdentifier[1]),
+                            }
+                        }));
+
+                        //agregar el ticket con el control de llamada
+                        dispatch({
+                            type: typeInbox.NEW_TICKET_CALL,
+                            payload: {
+                                ...data,
+                                call: e.call
+                            }
+                        })
+                    }
 
                     //iniciar la llamada en managecall
                     dispatch({
@@ -98,15 +109,8 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                             type: "INBOUND",
                             number: cleanNumber(number),
                             identifier: headers["X-identifier"],
-                            statusCall: "CONNECTING"
-                        }
-                    })
-                    //agregar el ticket con el control de llamada
-                    dispatch({
-                        type: typeInbox.NEW_TICKET_CALL,
-                        payload: {
-                            ...data,
-                            call: e.call
+                            statusCall: "CONNECTING",
+                            method: method
                         }
                     })
 
@@ -204,17 +208,17 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         return
     } else if (type === typeVoximplant.HOLD_CALL) {
         const call = payload.call;
-        const number = cleanNumber(payload.number);
+        // const number = cleanNumber(payload.number);
         await call?.setActive(payload.flag);
         return
     } else if (type === typeVoximplant.MUTE_CALL) {
         const call = payload.call;
-        const number = cleanNumber(payload.number);
+        // const number = cleanNumber(payload.number);
         call?.muteMicrophone();
         return
     } else if (type === typeVoximplant.UNMUTE_CALL) {
         const call = payload.call;
-        const number = cleanNumber(payload.number);
+        // const number = cleanNumber(payload.number);
         call?.unmuteMicrophone();
         return
     } else if (type === typeVoximplant.MANAGE_STATUS_VOX) {
