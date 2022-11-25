@@ -163,7 +163,8 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
             payload: {
                 call,
                 type: "OUTBOUND",
-                number: payload.number
+                number: payload.number,
+                statusCall: "CONNECTING"
             }
         })
 
