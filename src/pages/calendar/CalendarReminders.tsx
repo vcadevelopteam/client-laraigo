@@ -174,11 +174,15 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                 onChange={handleAccordion(0)}
             >
                 <AccordionSummary
-                    aria-controls='panel1a-content'
                     expandIcon={<ExpandMoreIcon />}
-                    id='panel1a-header'
+                    aria-controls='panel-notification-content'
+                    id='panel-notification-header'
                 >
-                    <Typography>{t(langKeys.notification)}</Typography>
+                    <Typography
+                        style={{fontWeight: 'bold', flexBasis: '100%'}}
+                    >
+                        {t(langKeys.event_schedule_notification)}
+                    </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <div style={{ width: '100%' }}>
@@ -272,11 +276,23 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                 onChange={handleAccordion(1)}
             >
                 <AccordionSummary
-                    aria-controls='panel1a-content'
                     expandIcon={<ExpandMoreIcon />}
-                    id='panel1a-header'
+                    aria-controls='panel-reminder-content'
+                    id='panel-reminder-header'
                 >
-                    <Typography>{t(langKeys.reminder)}</Typography>
+                    <Typography
+                        style={{fontWeight: 'bold', flexBasis: '100%'}}
+                    >
+                        {t(langKeys.next_event_notification)}
+                    </Typography>
+                    <Typography>
+                        {
+                            (getValues("statusreminder") === 'ACTIVO'
+                            ? t(langKeys.active)
+                            : t(langKeys.inactive)
+                            ).toUpperCase()
+                        }
+                    </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <div style={{ width: '100%' }}>

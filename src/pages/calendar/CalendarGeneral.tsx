@@ -3,7 +3,7 @@ import React, { useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { FieldEdit, FieldSelect, ColorInput, FieldView } from 'components';
 import { Dictionary } from "@types";
-import { makeStyles } from '@material-ui/core/styles';
+import { withStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { FieldErrors, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
@@ -13,6 +13,8 @@ import { Descendant } from 'slate';
 import { ColorChangeHandler } from 'react-color';
 import { ICalendarFormFields } from './ICalendar';
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import Tooltip from '@material-ui/core/Tooltip';
+import EventPreview from 'images/event_preview.jpg';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -34,6 +36,15 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 500
     }
 }));
+
+const PreviewTooltip = withStyles((theme: Theme) => ({
+    tooltip: {
+      backgroundColor: '#f5f5f9',
+      color: 'rgba(0, 0, 0, 0.87)',
+      fontSize: theme.typography.pxToRem(12),
+      border: '1px solid #dadde9',
+    },
+}))(Tooltip);
 
 interface CalendarGeneralProps {
     row: Dictionary | null;
@@ -79,8 +90,6 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
         setValue('color', e.hex);
     }
 
-    
-    
     return (
         <div className={classes.containerDetail}>
             <div className="row-zyx">
@@ -158,25 +167,38 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                     className="col-6"
                     value={`${eventURL.host}${eventURL.pathname}`}
                 />
-                <a
-                    className='col-6'
-                    href={eventURL.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        textDecoration: "none",
-                    }}
+                <PreviewTooltip
+                    title={
+                        <React.Fragment>
+                            <img
+                                src={EventPreview}
+                                style={{
+                                    height: '150px',
+                                    width: 'auto'
+                                }} alt="preview" />
+                        </React.Fragment>
+                    }
                 >
-                    <IconButton 
-                        color="primary"
-                        title={t(langKeys.seeagendapage)}
+                    <a
+                        className='col-6'
+                        href={eventURL.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            textDecoration: "none",
+                        }}
                     >
-                        <VisibilityIcon />
-                    </IconButton>
-                    <span>{t(langKeys.seeagendapage)}</span>
-                </a>
+                        <IconButton 
+                            color="primary"
+                            title={t(langKeys.seeagendapage)}
+                        >
+                            <VisibilityIcon />
+                        </IconButton>
+                        <span>{t(langKeys.seeagendapage)}</span>
+                    </a>
+                </PreviewTooltip>
             </div>
             <div className="row-zyx" >
                 <div className="col-6">

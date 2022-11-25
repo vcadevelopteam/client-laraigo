@@ -1079,6 +1079,8 @@ const translation: LangKeys = {
     location: 'Ubicación',
     duration: 'Duración',
     notification: 'Notificación',
+    event_schedule_notification: 'Notificación de programacion de eventos',
+    next_event_notification: 'Notificación de próximo evento',
     reminder: 'Recordatorio{{n}}',
     notificationtype: 'Tipo de notificación',
     reminderperiod: 'Frecuencia de recordatorio',
