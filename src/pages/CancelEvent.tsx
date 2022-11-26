@@ -145,7 +145,7 @@ export const CancelEvent: FC = () => {
     }, [mainResult, waitSave])
 
     const onSubmit = async () => {
-        if(new Date(data?.monthdate).setUTCHours(0,0,0,0) >= new Date().setUTCHours(0,0,0,0)){
+        if(new Date(data?.monthdate).setUTCHours() >= new Date().setUTCHours()){
             const datat = {
                 corpid, orgid,
                 calendareventid: calendareventid,
