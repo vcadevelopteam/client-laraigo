@@ -10,7 +10,7 @@ import { emitEvent, connectAgentUI, connectAgentAPI } from 'store/inbox/actions'
 const cleanNumber = (number: string | null) => number?.includes("@") ? number?.split("@")[0].split(":")?.[1] : (number?.includes("_") ? number?.split("_")[0] : number);
 const sdk = VoxImplant.getInstance();
 let alreadyLoad = false;
-let transfernumber: any = {};
+let transferdata: any = {};
 
 const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async (action) => {
     const { type, payload } = action;
@@ -47,6 +47,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                     const supervision = headers["X-supervision"]
                     const splitIdentifier = headers["X-identifier"].split("-");
                     const number = cleanNumber(e.call.number());
+                    console.log(`IncomingCall-number: ${number}`)
                     const name = headers["X-personname"] || number;
 
                     if (supervision) {
@@ -129,14 +130,16 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                     });
                     e.call.on(VoxImplant.CallEvents.MessageReceived, (e: any) => {
                         try {
-                            console.log(e.text)
+                            const number = cleanNumber(e?.call?.number());
+                            console.log(`MessageReceived-text: ${e.text}`)
                             const message_json = JSON.parse(e.text)
                             switch (message_json.operation) {
                                 case 'TRANSFER-CONNECTED':
                                     dispatch({
                                         type: typeVoximplant.CONNECTED_TRANSFER_CALL,
                                         payload: {
-                                            call: e.call
+                                            number,
+                                            call: e.call,
                                         }
                                     })
                                     break;
@@ -151,10 +154,15 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                                     }));
                                     break;
                                 case 'TRANSFER-HANGUP': case 'TRANSFER-FAILED':
-                                    if (transfernumber[`${message_json?.conversationid}`] === message_json.number
-                                        || transfernumber === message_json.name
+                                    if (transferdata[`${message_json?.conversationid}`] === message_json.tranfernumber
+                                        || transferdata[`${message_json?.conversationid}`] === message_json.tranfername
                                     ) {
-                                        dispatch({ type: typeVoximplant.RESET_TRANSFER_CALL })
+                                        dispatch({
+                                            type: typeVoximplant.RESET_TRANSFER_CALL,
+                                            payload: {
+                                                number,
+                                            }
+                                        })
                                     }
                                     break;
                                 default:
@@ -231,14 +239,16 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         });
         call.on(VoxImplant.CallEvents.MessageReceived, (e: any) => {
             try {
-                console.log(e.text)
+                const number = cleanNumber(e?.call?.number());
+                console.log(`MessageReceived-text: ${e.text}`)
                 const message_json = JSON.parse(e.text)
                 switch (message_json.operation) {
                     case 'TRANSFER-CONNECTED':
                         dispatch({
                             type: typeVoximplant.CONNECTED_TRANSFER_CALL,
                             payload: {
-                                call: e.call
+                                number,
+                                call: e.call,
                             }
                         })
                         break;
@@ -253,10 +263,15 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                         }));
                         break;
                     case 'TRANSFER-HANGUP': case 'TRANSFER-FAILED':
-                        if (transfernumber[`${message_json?.conversationid}`] === message_json.number
-                            || transfernumber === message_json.name
+                        if (transferdata[`${message_json?.conversationid}`] === message_json.tranfernumber
+                            || transferdata[`${message_json?.conversationid}`] === message_json.tranfername
                         ) {
-                            dispatch({ type: typeVoximplant.RESET_TRANSFER_CALL })
+                            dispatch({
+                                type: typeVoximplant.RESET_TRANSFER_CALL,
+                                payload: {
+                                    number,
+                                }
+                            })
                         }
                         break;
                     default:
@@ -364,13 +379,15 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         call?.unmuteMicrophone();
         return
     } else if (type === typeVoximplant.TRANSFER_CALL ) {
-        const { url, number, name, conversationid } = payload;
-        transfernumber[`${conversationid}`] = number;
+        const { url, number, transfernumber, transfername, conversationid } = payload;
+        const cleannumber = cleanNumber(number);
+        transferdata[`${conversationid}`] = transfernumber;
         dispatch({
             type: typeVoximplant.INIT_TRANSFER_CALL,
             payload: {
-                number: number,
-                name: name,
+                number: cleannumber,
+                transfernumber: transfernumber,
+                transfername: transfername,
             }
         })
         fetch(url, { method: 'GET' }).catch(x => {
@@ -386,16 +403,24 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         return
     } else if (type === typeVoximplant.HANGUP_TRANSFER_CALL) {
         const call = payload;
+        const number = cleanNumber(call?.number());
         call?.sendMessage(JSON.stringify({
             operation: 'TRANSFER-HANGUP'
         }))
-        dispatch({ type: typeVoximplant.RESET_TRANSFER_CALL })
+        dispatch({
+            type: typeVoximplant.RESET_TRANSFER_CALL,
+            payload: {
+                number,
+            }
+        })
         return
     } else if (type === typeVoximplant.HOLD_TRANSFER_CALL) {
         const call = payload.call;
+        const number = cleanNumber(call?.number());
         dispatch({
             type: typeVoximplant.SET_TRANSFER_CALL,
             payload: {
+                number,
                 hold: !payload.hold,
                 holddate: !payload.hold ? new Date().toISOString() : undefined,
             }
@@ -407,9 +432,13 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         return
     } else if (type === typeVoximplant.MUTE_TRANSFER_CALL) {
         const call = payload;
+        const number = cleanNumber(call?.number());
         dispatch({
             type: typeVoximplant.SET_TRANSFER_CALL,
-            payload: { mute: true}
+            payload: {
+                number,
+                mute: true
+            }
         })
         call?.sendMessage(JSON.stringify({
             operation: 'TRANSFER-MUTE',
@@ -418,9 +447,13 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         return
     } else if (type === typeVoximplant.UNMUTE_TRANSFER_CALL) {
         const call = payload;
+        const number = cleanNumber(call?.number());
         dispatch({
             type: typeVoximplant.SET_TRANSFER_CALL,
-            payload: { mute: false}
+            payload: {
+                number,
+                mute: false
+            }
         })
         call?.sendMessage(JSON.stringify({
             operation: 'TRANSFER-UNMUTE',

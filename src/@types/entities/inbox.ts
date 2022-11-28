@@ -91,8 +91,9 @@ export interface IConnectAgentUIParams {
 }
 
 export interface ITransfer {
-    name?: string,
     number?: string,
+    transfername?: string,
+    transfernumber?: string,
     statusCall?: string,
     mute?: boolean,
     hold?: boolean,

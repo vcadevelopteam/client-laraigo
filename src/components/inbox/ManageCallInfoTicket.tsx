@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'hooks';
 import PersonIcon from '@material-ui/icons/Person';
 import { useDispatch } from 'react-redux';
-import { answerCall, hangupCall, rejectCall, holdCall, muteCall, unmuteCall, setHold, setModalCall, transferCall, hangupTransferCall, holdTransferCall, muteTransferCall, unmuteTransferCall, connectedTransferCall, completeTransferCall, setTransferAction } from 'store/voximplant/actions';
+import { answerCall, hangupCall, rejectCall, holdCall, muteCall, unmuteCall, setHold, setModalCall, transferCall, hangupTransferCall, holdTransferCall, muteTransferCall, unmuteTransferCall, completeTransferCall, setTransferAction } from 'store/voximplant/actions';
 import TextField from '@material-ui/core/TextField';
 import PhoneIcon from '@material-ui/icons/Phone';
 import CallEndIcon from '@material-ui/icons/CallEnd';
@@ -304,17 +304,17 @@ const ManageCallInfoTicket: React.FC = () => {
                     </div>
                 </CardContent>
             </Card>
-            {call?.transfer && <Card style={{ maxWidth: "500px", marginTop: 50 }}>
+            {call?.transfer?.transfernumber && <Card style={{ maxWidth: "500px", marginTop: 50 }}>
                 <CardContent>
                     <div>
                         <div>
                             <div style={{ marginLeft: "auto", marginTop: 20, marginRight: "auto", width: "100px", height: "100px", borderRadius: "50%", backgroundColor: "#bdbdbd" }}>
-                                <PersonIcon style={{ color: "white", width: "100px", height: "100px" }} onClick={() => { dispatch(connectedTransferCall(null)) }}/>
+                                <PersonIcon style={{ color: "white", width: "100px", height: "100px" }}/>
                             </div>
                         </div>
                         <div>
                             <div style={{ marginLeft: "auto", marginRight: "auto", textAlign: "center", fontSize: "20px", marginTop: 10 }}>
-                                {call.transfer?.number}
+                                {call.transfer?.transfernumber}
                             </div>
                             {(call.transfer?.statusCall === "CONNECTING") &&
                                 <div style={{ fontSize: "15px", marginLeft: "auto", marginRight: "auto", width: "100px", textAlign: "center" }}>
@@ -371,7 +371,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                 disabled={call.transfer?.statusCall !== "CONNECTED"}
                                 onClick={() => {
                                     if (call.transfer?.statusCall === "CONNECTED") {
-                                        dispatch(completeTransferCall({ call: call?.call, number: call.transfer?.number }))
+                                        dispatch(completeTransferCall({ call: call?.call, number: call.transfer?.transfernumber }))
                                     }
                                 }}
                             >
@@ -499,9 +499,10 @@ const ManageCallInfoTicket: React.FC = () => {
                                         if (transferUser?.userid) {
                                             dispatch(transferCall({
                                                 url: `${ticketSelected?.commentexternalid}?mode=transfer&number=user${transferUser?.userid}.${resValidateToken.orgid}`,
+                                                number: ticketSelected?.personcommunicationchannel,
                                                 conversationid: ticketSelected?.conversationid!!,
-                                                number: `user${transferUser?.userid}.${resValidateToken.orgid}`,
-                                                name: transferUser.name,
+                                                transfernumber: `user${transferUser?.userid}.${resValidateToken.orgid}`,
+                                                transfername: transferUser.name,
                                             }))
                                             sethold(true)
                                             setmute(false)

@@ -23,9 +23,7 @@ export const resetCall = (payload: string): IActionCall => ({ type: actionTypes.
 
 export const setTransferAction = (payload?: boolean): IActionCall => ({ type: actionTypes.SET_TRANSFER_ACTION, payload });
 
-export const transferCall = (payload: { url: string, name: string, number: string, conversationid: number }): IActionCall => ({ type: actionTypes.TRANSFER_CALL, payload });
-
-export const connectedTransferCall = (payload?: Call | null): IActionCall => ({ type: actionTypes.CONNECTED_TRANSFER_CALL, payload });
+export const transferCall = (payload: { url: string, number?: string, transfername: string, transfernumber: string, conversationid: number }): IActionCall => ({ type: actionTypes.TRANSFER_CALL, payload });
 
 export const completeTransferCall = (payload?: { call?: Call | null, number?: string }): IActionCall => ({ type: actionTypes.COMPLETE_TRANSFER_CALL, payload });
 
@@ -36,8 +34,6 @@ export const muteTransferCall = (payload?: Call | null): IActionCall => ({ type:
 export const unmuteTransferCall = (payload?: Call | null): IActionCall => ({ type: actionTypes.UNMUTE_TRANSFER_CALL, payload });
 
 export const holdTransferCall = (payload?: { call?: Call | null, hold?: boolean }): IActionCall => ({ type: actionTypes.HOLD_TRANSFER_CALL, payload });
-
-export const resetTransferCall = (): IActionCall => ({ type: actionTypes.RESET_TRANSFER_CALL });
 
 export const makeCall = (payload: { number: string, site: string }): IActionCall => ({ type: actionTypes.MAKE_CALL, payload });
 

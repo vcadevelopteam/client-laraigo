@@ -116,12 +116,12 @@ function cleanExpiration(time) {
     return VoxEngine.RecordExpireTime.DEFAULT;
 }
 
-function createTicket(callback) {
+function createTicket(content, callback) {
     const bodyZyx = {
         "platformType": "VOXI",
         "personId": callerid,
         "type": "text",
-        "content": "LLAMADA ENTRANTE",
+        "content": content,
         "siteId": site,
         "postId": sessionID,
         "commentId": accessURL,
@@ -262,28 +262,6 @@ function reasignAgent(agentid) {
     })
 }
 
-function saveSessionID() {
-    const body = {
-        identifier,
-        callerid,
-        site,
-        platformtype: "VOXI",
-        sessionid: sessionID,
-        accessurl: accessURL,
-        agentid: lastagentid
-    }
-    Logger.write("saveSessionID-body: " + JSON.stringify(body));
-    Net.httpRequest(`${URL_SERVICES}voximplant/savesessionid`, (res) => {
-        Logger.write("saveSessionID-res: " + res.text);
-    }, {
-        method: "POST",
-        postData: JSON.stringify(body),
-        headers: [
-            "Content-Type: application/json;charset=utf-8"
-        ]
-    })
-}
-
 function sendInteraction(type, text) {
     const splitIdentifier = identifier.split("-");
     const body = {
@@ -353,10 +331,9 @@ function handleInboundCall(e) {
             return
         }
 
+        identifier = e.customData.split(".")[0];
         site = e.customData.split(".")[1];
         lastagentid = parseInt(e.customData.split(".")[2]);
-        identifier = e.customData.split(".")[0];
-        conversationid = identifier?.split("-")[3];
         callerid = e.destination.replace("+", "");
 
         const identiff = e.customData.split(".")[3];
@@ -371,41 +348,47 @@ function handleInboundCall(e) {
         } catch (e) { }
 
         //outbound call
-        if (/^\d+$/.test(e.destination.replace("+", ""))) {
-            originalCall = VoxEngine.callPSTN(e.destination, site); // Call del cliente
-        } else { // es una llamada interna (entre asesores o anexos)
-            originalCall = VoxEngine.callUser(e.destination, e.callerid); // Call del cliente
-        }
+        createTicket2((identiff) => {
+            if (!identiff) {
+                Logger.write("voximplant: cant create ticket on outbound");
+                return
+            }
+            if (/^\d+$/.test(e.destination.replace("+", ""))) {
+                originalCall = VoxEngine.callPSTN(e.destination, site);
+            } else { // es una llamada interna (entre asesores o anexos)
+                originalCall = VoxEngine.callUser(e.destination, e.callerid);
+            }
 
-        originalCall.addEventListener(CallEvents.Connected, (e) => {
-            sendInteraction("LOG", "CLIENTE CONTESTÓ LA LLAMADA")
-        });
+            originalCall.addEventListener(CallEvents.Connected, (e) => {
+                sendInteraction("LOG", "CLIENTE CONTESTÓ LA LLAMADA")
+            });
 
-        if (red.recording) {
-            e.call.record({
-                transcribe: true,
-                language: ASRLanguage.SPANISH_ES,
-                name: identifier + ".mp3",
-                contentDispositionFilename: identifier + ".mp3",
-                recordNamePrefix: "" + site,
-                hd_audio: ((red.recordingquality || "default") === "default" ? undefined : red.recordingquality === "hd"),
-                lossless: ((red.recordingquality || "default") === "default" ? undefined : red.recordingquality === "lossless"),
-                expire: cleanExpiration(red.recordingstorage)
-            })
-        }
+            if (red.recording) {
+                e.call.record({
+                    transcribe: false,
+                    language: ASRLanguage.SPANISH_ES,
+                    name: identifier + ".mp3",
+                    contentDispositionFilename: identifier + ".mp3",
+                    recordNamePrefix: "" + site,
+                    hd_audio: ((red.recordingquality || "default") === "default" ? undefined : red.recordingquality === "hd"),
+                    lossless: ((red.recordingquality || "default") === "default" ? undefined : red.recordingquality === "lossless"),
+                    expire: cleanExpiration(red.recordingstorage)
+                })
+            }
 
-        VoxEngine.easyProcess(e.call, originalCall);
-        originalCall.removeEventListener(CallEvents.Disconnected);
-        e.call.removeEventListener(CallEvents.Disconnected);
+            VoxEngine.easyProcess(e.call, originalCall);
+            originalCall.removeEventListener(CallEvents.Disconnected);
+            e.call.removeEventListener(CallEvents.Disconnected);
 
-        originalCall.addEventListener(CallEvents.Failed, () => cleanup("LLAMADA FALLIDA"));
-        originalCall.addEventListener(CallEvents.Disconnected, () => cleanup("DESCONECTADO POR CLIENTE"));
+            originalCall.addEventListener(CallEvents.Failed, () => cleanup("LLAMADA FALLIDA"));
+            originalCall.addEventListener(CallEvents.Disconnected, () => cleanup("DESCONECTADO POR CLIENTE"));
 
-        e.call.addEventListener(CallEvents.Failed, () => cleanup("LLAMADA FALLIDA"));
-        e.call.addEventListener(CallEvents.Disconnected, () => cleanup("DESCONECTADO POR ASESOR"));
+            e.call.addEventListener(CallEvents.Failed, () => cleanup("LLAMADA FALLIDA"));
+            e.call.addEventListener(CallEvents.Disconnected, () => cleanup("DESCONECTADO POR ASESOR"));
 
-        originalCall2 = e.call; // Call del agente
-        holdCall(e.call, originalCall)
+            originalCall2 = e.call; // Call del agente
+            holdCall(e.call, originalCall)
+        })
     };
 }
 
@@ -681,8 +664,9 @@ function transferOnConnect(event, call2) {
         call2.sendMessage(JSON.stringify({
             operation: "TRANSFER-HANGUP",
             conversationid: conversationid,
-            number: e.call.callerid(),
-            name: e.call.displayName(),
+            number: e.call.number(),
+            tranfernumber: e.call.callerid(),
+            tranfername: e.call.displayName(),
         }));
         transferCall = null;
     });
@@ -695,43 +679,46 @@ function transferOnFailed(event, call2) {
     call2.sendMessage(JSON.stringify({
         operation: "TRANSFER-FAILED",
         conversationid: conversationid,
-        number: event.call.callerid(),
-        name: event.call.displayName(),
+        number: event.call.number(),
+        tranfernumber: event.call.callerid(),
+        tranfername: event.call.displayName(),
     }));
     transferCall = null;
 }
 
 function transferOperations(event) {
     // 2rd leg event
-    const message_json = JSON.parse(event.text);
-    switch (message_json.operation) {
-        case 'TRANSFER-COMPLETE':
-            transferComplete(message_json)
-            break;
-        case 'TRANSFER-HANGUP':
-            transferCall.sendMessage(JSON.stringify({
-                operation: "TRANSFER-DISCONNECTED",
-                conversationid: conversationid
-            }));
-            transferCall.hangup();
-            break;
-        case 'TRANSFER-HOLD':
-            if (message_json.hold) {
-                transferCall.stopMediaTo(originalCall2)
+    if (transferCall) {
+        const message_json = JSON.parse(event.text);
+        switch (message_json.operation) {
+            case 'TRANSFER-COMPLETE':
+                transferComplete(message_json)
+                break;
+            case 'TRANSFER-HANGUP':
+                transferCall.sendMessage(JSON.stringify({
+                    operation: "TRANSFER-DISCONNECTED",
+                    conversationid: conversationid
+                }));
+                transferCall.hangup();
+                break;
+            case 'TRANSFER-HOLD':
+                if (message_json.hold) {
+                    transferCall.stopMediaTo(originalCall2)
+                    originalCall2.stopMediaTo(transferCall)
+                }
+                else {
+                    VoxEngine.sendMediaBetween(transferCall, originalCall2);
+                }
+                break;
+            case 'TRANSFER-MUTE':
                 originalCall2.stopMediaTo(transferCall)
-            }
-            else {
-                VoxEngine.sendMediaBetween(transferCall, originalCall2);
-            }
-            break;
-        case 'TRANSFER-MUTE':
-            originalCall2.stopMediaTo(transferCall)
-            break;
-        case 'TRANSFER-UNMUTE':
-            originalCall2.sendMediaTo(transferCall)
-            break;
-        default:
-            break;
+                break;
+            case 'TRANSFER-UNMUTE':
+                originalCall2.sendMediaTo(transferCall)
+                break;
+            default:
+                break;
+        }
     }
 }
 
