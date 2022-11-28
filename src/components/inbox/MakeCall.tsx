@@ -275,19 +275,25 @@ const MakeCall: React.FC = () => {
 
     //ring when the customer call
     React.useEffect(() => {
-        console.log("calls", calls)
-        const connecting = calls.some(call => call.type === "INBOUND" && call.statusCall === "CONNECTING");
-        setCallInLine(calls.some(call => call.statusCall !== "DISCONNECTED"));
-        if (connecting) {
+        const isConnected = calls.some(call => call.statusCall === "CONNECTED");
+
+        if (isConnected) {
             ringtone.current?.pause();
-            if (ringtone.current) {
-                ringtone.current.volume = (user?.properties?.ringer_volume || 100) / 100
-                ringtone.current.currentTime = 0;
-            }
-            ringtone.current?.play();
         } else {
-            ringtone.current?.pause();
+            const connecting = calls.some(call => call.type === "INBOUND" && call.statusCall === "CONNECTING");
+            setCallInLine(calls.some(call => call.statusCall !== "DISCONNECTED"));
+            if (connecting) {
+                ringtone.current?.pause();
+                if (ringtone.current) {
+                    ringtone.current.volume = (user?.properties?.ringer_volume || 100) / 100
+                    ringtone.current.currentTime = 0;
+                }
+                ringtone.current?.play();
+            } else {
+                ringtone.current?.pause();
+            }
         }
+
     }, [calls])
 
     React.useEffect(() => {

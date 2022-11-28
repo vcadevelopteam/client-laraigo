@@ -197,6 +197,8 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         const call = payload.call;
         const method = payload.method;
         const number = cleanNumber(payload.number);
+        console.log("payload", payload)
+        console.log("payload", number)
         call?.answer();
         dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: { status: "CONNECTED", number } });
 

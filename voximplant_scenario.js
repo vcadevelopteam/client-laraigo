@@ -13,7 +13,7 @@ let conf;
 
 var request,
     origin,
-    methodCall = "simultaneous",
+    callMethod = "SIMULTANEO",
     originalCall,
     originalCall2,
     inboundCalls = [],
@@ -149,6 +149,7 @@ function createTicket(content, callback) {
         messageBusy = result.Properties?.MessageBusy || messageBusy;
         welcomeTone = result.Properties?.WelcomeTone || welcomeTone;
         holdTone = result.Properties?.HoldTone || holdTone;
+        callMethod = result.Properties?.CallMethod || callMethod;
 
         Logger.write("voximplant: createticket: " + res.text);
         callback(result.NewConversation)
@@ -572,7 +573,7 @@ function handleACDQueue() {
 
 // Call connected
 function handleCallConnected(e) {
-    if (methodCall === "simultaneous") {
+    if (callMethod === "SIMULTANEO") {
         handleSimultaneousCall()
     } else {
         handleACDQueue()

@@ -33,6 +33,7 @@ const ManageCallInfoTicket: React.FC = () => {
 
     // const call = useSelector(state => state.voximplant.call);
     // const statusCall = useSelector(state => state.voximplant.statusCall);
+    const firstLoad = React.useRef(true);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const [date, setdate] = useState<string>(new Date().toISOString());
     const [time, settime] = useState(0);
@@ -44,9 +45,12 @@ const ManageCallInfoTicket: React.FC = () => {
 
     useEffect(() => {
         const call = calls.find(call => `${call.number}_VOXI` === ticketSelected?.personcommunicationchannel && call.statusCall !== "DISCONNECTED")
-        sethold(!call?.onholddate)
+        if (firstLoad.current) {
+            firstLoad.current = false
+            sethold(!call?.onholddate);
+        }
         setCall(call)
-    }, [])
+    }, [calls])
 
     React.useEffect(() => {
         if (call?.type === "INBOUND" && call?.statusCall === "CONNECTING") {
@@ -61,8 +65,7 @@ const ManageCallInfoTicket: React.FC = () => {
             const datex = ticketSelected?.callanswereddate || new Date().toISOString();
             setdate(datex);
             settime(getSecondsUntelNow(convertLocalDate(datex)));
-        }
-        if (call?.statusCall !== "CONNECTED") {
+        } else {
             setdivertcall(false)
             setadvisertodiver("")
         }
@@ -180,6 +183,10 @@ const ManageCallInfoTicket: React.FC = () => {
                                         style={{ marginLeft: "10px", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#55bd84' }}
                                         onClick={() => {
                                             dispatch(answerCall({ call: call.call!!, number: ticketSelected?.personcommunicationchannel }))
+                                            setCall({
+                                                ...call,
+                                                statusCall: "CONNECTED"
+                                            })
                                         }}
                                     >
                                         <PhoneIcon style={{ color: "white", width: "35px", height: "35px" }} />
