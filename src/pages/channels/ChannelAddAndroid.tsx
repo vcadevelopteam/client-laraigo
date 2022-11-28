@@ -18,6 +18,7 @@ import clsx from 'clsx';
 import { Close, CloudUpload } from "@material-ui/icons";
 import InfoIcon from '@material-ui/icons/Info';
 import { IAndroidSDKAdd } from "@types";
+import { ColorChangeHandler } from "react-color";
 
 interface TabPanelProps {
     value: string;
@@ -180,7 +181,160 @@ const getImgUrl = (file: File | string | null): string | null => {
 
 export const AndroidExtra: FC = () => {return <></>}
 export const AndroidForm: FC = () => {return <></>}
-export const AndroidColor: FC = () => {return <></>}
+export const AndroidColor: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn<IAndroidSDKAdd>}> = ({setTabIndex,form}) => {    
+    const classes = useChannelAddStyles();
+    const { setValue, getValues } = form;
+    const { t } = useTranslation();
+    const [headerColor, setHeaderColor] = useState(getValues('color.header'));
+    const [backgroundColor, setBackgroundColor] = useState(getValues('color.background'));
+    const [borderColor, setBorderColor] = useState(getValues('color.border'));
+    const [clientMessageColor, setClientMessageColor] = useState(getValues('color.client'));
+    const [botMessageColor, setBotMessageColor] = useState(getValues('color.bot'));
+
+    const handleHeaderColorChange: ColorChangeHandler = (e) => {
+        setHeaderColor(e.hex);
+        setValue('color.header', e.hex);
+    }
+
+    const handleBackgroundColorChange: ColorChangeHandler = (e) => {
+        setBackgroundColor(e.hex);
+        setValue('color.background', e.hex);
+    }
+
+    const handleBorderColorChange: ColorChangeHandler = (e) => {
+        setBorderColor(e.hex);
+        setValue('color.border', e.hex);
+    }
+
+    const handleClientMessageColorChange: ColorChangeHandler = (e) => {
+        setClientMessageColor(e.hex);
+        setValue('color.client', e.hex);
+    }
+
+    const handleBotMessageColorChange: ColorChangeHandler = (e) => {
+        setBotMessageColor(e.hex);
+        setValue('color.bot', e.hex);
+    }
+
+    return <>
+        <div style={{ display: 'flex', width: "100%" }}>
+            <div style={{width: "50%", minWidth: 500, borderRight: "2px solid #76acdc", padding: 10}}>
+                <Grid container direction="row">
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <Grid container direction="column">
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{padding:10}}>
+                                <Grid container direction="row">
+                                    <Grid item xs={1} sm={1} md={1} lg={1} xl={1}></Grid>
+                                    <Grid item xs={8} sm={8} md={8} lg={8} xl={8}>
+                                        <label className={classes.text}>
+                                            <Trans i18nKey={langKeys.chatHeader} />
+                                            <Tooltip title={`${t(langKeys.chatHeaderTooltip)}`} placement="top-start">
+                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            </Tooltip>
+                                        </label>
+                                    </Grid>
+                                    <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
+                                        <ColorInput hex={headerColor} onChange={handleHeaderColorChange} />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{padding:10}}>
+                                <Grid container direction="row">
+                                    <Grid item xs={1} sm={1} md={1} lg={1} xl={1}></Grid>
+                                    <Grid item xs={8} sm={8} md={8} lg={8} xl={8}>
+                                        <label className={classes.text}>
+                                            <Trans i18nKey={langKeys.chatBackground} />
+                                            <Tooltip title={`${t(langKeys.chatBackgroundTooltip)}`} placement="top-start">
+                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            </Tooltip>
+                                        </label>
+                                    </Grid>
+                                    <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
+                                        <ColorInput hex={backgroundColor} onChange={handleBackgroundColorChange} />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{padding:10}}>
+                                <Grid container direction="row">
+                                    <Grid item xs={1} sm={1} md={1} lg={1} xl={1}></Grid>
+                                    <Grid item xs={8} sm={8} md={8} lg={8} xl={8}>
+                                        <label className={classes.text}>
+                                            <Trans i18nKey={langKeys.chatBorder} />
+                                            <Tooltip title={`${t(langKeys.chatBorderTooltip)}`} placement="top-start">
+                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            </Tooltip>
+                                        </label>
+                                    </Grid>
+                                    <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
+                                        <ColorInput hex={borderColor} onChange={handleBorderColorChange} />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{padding:10}}>
+                                <Grid container direction="row">
+                                    <Grid item xs={1} sm={1} md={1} lg={1} xl={1}></Grid>
+                                    <Grid item xs={8} sm={8} md={8} lg={8} xl={8}>
+                                        <label className={classes.text}>
+                                            <Trans i18nKey={langKeys.clientMessage} count={2} />
+                                        </label>
+                                        <Tooltip title={`${t(langKeys.clientMessageColorTooltip)}`} placement="top-start">
+                                            <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                        </Tooltip>
+                                    </Grid>
+                                    <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
+                                        <ColorInput hex={clientMessageColor} onChange={handleClientMessageColorChange} />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{padding:10}}>
+                                <Grid container direction="row">
+                                    <Grid item xs={1} sm={1} md={1} lg={1} xl={1}></Grid>
+                                    <Grid item xs={8} sm={8} md={8} lg={8} xl={8}>
+                                        <label className={classes.text}>
+                                            <Trans i18nKey={langKeys.botMessage} count={2} />
+                                            <Tooltip title={`${t(langKeys.botMessageTooltip)}`} placement="top-start">
+                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            </Tooltip>
+                                        </label>
+                                    </Grid>
+                                    <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
+                                        <ColorInput hex={botMessageColor} onChange={handleBotMessageColorChange} />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </div>
+            <div style={{width: "50%", minWidth: 500, display:"flex", paddingLeft: 24, paddingBottom: 24, flexDirection: 'column', gap: 8}}>
+                <div style={{ display: 'flex', width: "100%", flexDirection: 'column' }} className={classes.tab}>
+                    <div style={{padding:20, margin:"20px 20px 0 20px", display:"flex", width:"calc(100% - 40px)", height: 75, border: '1px solid', borderRadius: "6px 6px 0 0 ", backgroundColor: headerColor, borderColor: borderColor}}>
+                        <Avatar src={getImgUrl(getValues('interface.iconheader'))||""}  style={{width: 35, height: 35, border: '0.1px solid lightgray' }}/>
+                        <div style={{height: "100%", width: "100%",  paddingLeft: 25, fontSize: "1.1em", paddingTop: 5}}>{getValues('interface.chattitle')}</div>
+                    </div>
+                    <div style={{padding:5, margin:"0 20px", display:"flex", width:"calc(100% - 40px)", height: 45, border: '1px solid', backgroundColor: headerColor, borderColor: borderColor}}>  
+                        <div style={{height: "100%", width: "100%",  textAlign: 'center', fontSize: "1em", paddingTop: 5}}>{getValues('interface.chatsubtitle')}</div>
+                    </div>
+                    <div style={{padding:5, margin:"0 20px", display:"flex", width:"calc(100% - 40px)", height: 'calc(100% - 160px)', border: '1px solid', flexDirection: 'column', borderRadius: "0 0 6px 6px", backgroundColor: backgroundColor, borderColor: borderColor}}>  
+                        <div style={{fontSize: "0.8em", paddingTop: 5, width: 50, textAlign: 'center',whiteSpace: "initial", wordWrap: 'break-word'}}>{getValues('extra.botnametext')}</div>
+                        <div style={{display:"flex", height: "auto", paddingLeft: 10, }}>
+                            <Avatar src={getImgUrl(getValues('interface.iconbot'))||""}  style={{width: 30, height: 30, border: '0.1px solid', borderColor: borderColor }}/>
+                            <div style={{height: "auto", width: "80%", border:"1px solid", borderColor: borderColor, backgroundColor: botMessageColor, borderRadius: 8,  marginLeft: 10, padding:10, fontSize: "1.1em", paddingTop: 5}}>Te saluda {getValues('extra.botnametext')||"bot"}. en qúe puedo ayudarte</div>
+                        </div>
+                        <div style={{height: "auto", width: "80%", border:"1px solid", borderColor: borderColor, borderRadius: 8, backgroundColor: clientMessageColor,  marginLeft: "20%", marginTop: 10, padding:10, fontSize: "1.1em", paddingTop: 5}}>Hola</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <Button
+            variant="contained"
+            color="primary"
+            style={{width: "100%", backgroundColor: "#7721ad", padding: 10}}
+            onClick={()=>setTabIndex('1')}>
+            {t(langKeys.next)}
+        </Button>
+    </>
+}
 export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn<IAndroidSDKAdd>}> = ({setTabIndex,form}) => {    
     const classes = useChannelAddStyles();
     const { setValue, getValues, formState: { errors } } = form;
@@ -188,7 +342,7 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
     const [enable, setEnable] = useState(getValues('bubble.active'));
     const [msgTooltip, setMsgTooltip] = useState(getValues('bubble.messagebubble'));
     const [chatTittle, setchatTittle] = useState(getValues('interface.chattitle'));
-    const [chatSubtittle, setchatSubtittle] = useState(getValues('interface.chattitle'));
+    const [chatSubtittle, setchatSubtittle] = useState(getValues('interface.chatsubtitle'));
     const [botnametext, setbotnametext] = useState(getValues('extra.botnametext'));
     const [msgTooltipIMGPosition, setMsgTooltipIMGPosition] = useState({
         right: document?.getElementById("msgtooltip")?.clientWidth||0,
@@ -635,6 +789,7 @@ export const ChannelAddAndroidDetail: FC<{form: UseFormReturn<IAndroidSDKAdd>}> 
             <Tabs
                 value={tabIndex}
                 className={classes.tabs}
+                onChange={(_, i: string) => setTabIndex(i)}
                 TabIndicatorProps={{ style: { display: 'none' } }}
             >
                 <Tab className={clsx(classes.tab, tabIndex === "0" && classes.activetab)} label={<Trans i18nKey={langKeys.chatinterface} />} value="0" />
@@ -644,7 +799,7 @@ export const ChannelAddAndroidDetail: FC<{form: UseFormReturn<IAndroidSDKAdd>}> 
             </Tabs>
         </AppBar>
         <TabPanel value="0" index={tabIndex}><AndroidInterface  form={form} setTabIndex={setTabIndex}/></TabPanel>
-        <TabPanel value="1" index={tabIndex}><AndroidColor/></TabPanel>
+        <TabPanel value="1" index={tabIndex}><AndroidColor form={form} setTabIndex={setTabIndex}/></TabPanel>
         <TabPanel value="2" index={tabIndex}><AndroidForm/></TabPanel>
         <TabPanel value="3" index={tabIndex}><AndroidExtra/></TabPanel>
     </>
