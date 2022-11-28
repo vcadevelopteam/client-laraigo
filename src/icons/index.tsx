@@ -211,3 +211,5 @@ export { ReactComponent as CalendaryIcon } from './calendary.svg';
 export { ReactComponent as RulesIcon } from './rules.svg';
 export { ReactComponent as ProductsIcon } from './products.svg';
 export { ReactComponent as CallRecordIcon } from './call-record.svg';
+export { ReactComponent as CallTransferActiveIcon } from './call-transfer-active.svg';
+export { ReactComponent as CallTransferInactiveIcon } from './call-transfer-inactive.svg';

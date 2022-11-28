@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'hooks';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { useDispatch } from 'react-redux';
-import { makeCall, setModalCall, getHistory, geAdvisors, rejectCall, setPhoneNumber } from 'store/voximplant/actions';
+import { makeCall, setModalCall, getHistory, geAdvisors, rejectCall, setPhoneNumber, transferCall } from 'store/voximplant/actions';
 import TextField from '@material-ui/core/TextField';
 import PhoneForwardedIcon from '@material-ui/icons/PhoneForwarded';
 import PhoneIcon from '@material-ui/icons/Phone';
@@ -240,6 +240,7 @@ const MakeCall: React.FC = () => {
     const ringtone = React.useRef<HTMLAudioElement>(null);
     const phonenumber = useSelector(state => state.voximplant.phoneNumber);
     const showcall = useSelector(state => state.voximplant.showcall);
+    const transferAction = useSelector(state => state.voximplant.transferAction);
     const statusCall = useSelector(state => state.voximplant.statusCall);
     const historial = useSelector(state => state.voximplant.requestGetHistory);
     const advisors = useSelector(state => state.voximplant.requestGetAdvisors);
@@ -274,7 +275,7 @@ const MakeCall: React.FC = () => {
                     lastreplyuser: "",
                 }
                 dispatch(setModalCall(false));
-                const identifier = `${corpid}-${orgid}-${ccidvoxi}-0-0-.${sitevoxi}.${userid}.${v_voximplantrecording}`;
+                const identifier = `${corpid}-${orgid}-${ccidvoxi}-${resExecute.data[0].v_conversationid}-${resExecute.data[0].v_personid}-${v_ticketnum}.${sitevoxi}.${userid}.${v_voximplantrecording}`;
 
                 dispatch(resetExecute());
                 dispatch(makeCall({ number: numberVox, site: identifier, data }));
@@ -291,12 +292,17 @@ const MakeCall: React.FC = () => {
 
     //ring when the customer call
     React.useEffect(() => {
-        if (statusCall === "DISCONNECTED" && !!ticketSelected && onholdstate) {
-            const timeToAdd = getSecondsUntelNow(convertLocalDate(onholdstatedate))
-            dispatch(execute(conversationCallHold({
-                holdtime: timeToAdd,
-                conversationid: ticketSelected?.conversationid
-            })))
+        if (statusCall === "DISCONNECTED" && !!ticketSelected) {
+            if (onholdstate) {
+                const timeToAdd = getSecondsUntelNow(convertLocalDate(onholdstatedate))
+                dispatch(execute(conversationCallHold({
+                    holdtime: timeToAdd,
+                    conversationid: ticketSelected?.conversationid
+                })))
+            }
+            if (ringtone.current) {
+                ringtone.current?.pause();
+            }
         } else if (call.type === "INBOUND" && statusCall === "CONNECTING") {
             setWaitingDate(new Date().toISOString())
             setTimeWaiting(0);
@@ -317,7 +323,7 @@ const MakeCall: React.FC = () => {
     React.useEffect(() => {
         if (timeWaiting >= 0) {
             if (timeWaiting >= (user?.properties.time_reassign_call || 30) && (call.type === "INBOUND" && statusCall === "CONNECTING")) {
-                dispatch(rejectCall(call.call));
+                dispatch(rejectCall({ call: call.call }));
                 setWaitingDate(null)
                 setTimeWaiting(-1);
                 return;
@@ -347,7 +353,7 @@ const MakeCall: React.FC = () => {
     React.useEffect(() => {
         if (showcall) {
             setwaiting2(false)
-            setNumberVox(personData?.data?.phone || phonenumber || "")
+            setNumberVox(transferAction ? "" : personData?.data?.phone || phonenumber || "")
             dispatch(setPhoneNumber(""))
         } else {
             setPageSelected(1)
@@ -528,7 +534,7 @@ const MakeCall: React.FC = () => {
                                 <Fab
                                     style={{ gridColumnStart: "col2", fontSize: 20, color: "#707070" }}
                                     color="primary"
-                                    disabled={resExecute.loading || statusCall !== "DISCONNECTED"}
+                                    disabled={resExecute.loading || !["DISCONNECTED","CONNECTED"].includes(statusCall)}
                                     onClick={() => {
                                         if (statusCall === "DISCONNECTED") {
                                             dispatch(execute(conversationOutboundValidate({
@@ -536,6 +542,15 @@ const MakeCall: React.FC = () => {
                                                 communicationchannelid: ccidvoxi
                                             })))
                                         }
+                                        // if (statusCall === 'CONNECTED' && transferAction) {
+                                        //     dispatch(transferCall({
+                                        //         url: `${ticketSelected?.commentexternalid}?mode=transfer&number=${numberVox}`,
+                                        //         conversationid: ticketSelected?.conversationid!!,
+                                        //         number: numberVox,
+                                        //         name: numberVox
+                                        //     }))
+                                        //     dispatch(setModalCall(false, false))
+                                        // }
                                     }}
                                 >
                                     <PhoneIcon style={{ color: "white", width: "35px", height: "35px" }} />

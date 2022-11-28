@@ -31,6 +31,7 @@ const translation: LangKeys = {
     make_call: "Make call",
 
     ringing: "ringing",
+    connecting: "Connecting...",
     connected_call: "Connected call",
     monitor_call: "Monitor call",
 
@@ -702,6 +703,7 @@ const translation: LangKeys = {
     sendinvoice: "Are you sure to send the invoice?",
     delete: 'Delete',
     search: 'Search',
+    searcher: 'Searcher',
     refresh: 'Refresh',
     duplicate: 'Duplicate',
     stop: 'Stop',
@@ -2973,7 +2975,12 @@ const translation: LangKeys = {
     type_activitylead_automated: 'Automate message',
     type_activitylead_automatedmail: 'Automate message email',
     type_activitylead_automatedhsm: 'Automate message hsm',
+    transfercall: "Transfer call",
     transfercalltoadvisor: "Transfer call to advisor",
+    transfer: "Transfer",
+    transferto: "Transfer {{from}} to {{to}}",
+    complete_transfer: "Complete transfer",
+    tocall: "Call",
     duein: "Due in",
     type_activitylead_automatedsms: 'Automate message sms',
     'type_activitylead_call for demo': 'Call for demo',
