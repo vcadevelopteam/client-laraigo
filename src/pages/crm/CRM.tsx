@@ -463,7 +463,7 @@ const CRM: FC = () => {
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [waitExport, setWaitExport] = useState(false);
   const voxiConnection = useSelector(state => state.voximplant.connection);
-  const statusCall = useSelector(state => state.voximplant.statusCall);
+  const callOnLine = useSelector(state => state.voximplant.callOnLine);
   const userConnected = useSelector(state => state.inbox.userConnected);
   const [allParameters, setAllParametersPrivate] = useState<{ contact: string, channel: string, asesorid: number }>({
     // asesorid: otherParams.asesorid || mainMulti.data[2]?.data?.map(d => d.userid).includes(user?.userid) ? (user?.userid || 0) : 0,
@@ -692,7 +692,7 @@ const CRM: FC = () => {
                       color="action" 
                     />
                   </IconButton>
-                  {(!voxiConnection.error && !voxiConnection.loading && statusCall!=="CONNECTED" && userConnected && statusCall!=="CONNECTING" && !!row.phone) &&
+                  {(!voxiConnection.error && !voxiConnection.loading && userConnected && !callOnLine && !!row.phone) &&
                     <IconButton
                       aria-label="more"
                       aria-controls="long-menu"
@@ -718,7 +718,7 @@ const CRM: FC = () => {
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [voxiConnection,statusCall]
+    [voxiConnection, callOnLine]
   );
 
   const fetchGridData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {

@@ -20,7 +20,7 @@ const CloseTicketVoxi: React.FC = () => {
     const dispatch = useDispatch();
     const [openModal, setOpenModal] = useState(false);
     const showModalVoxi = useSelector(state => state.inbox.showModalClose);
-    const callVoxiTmp = useSelector(state => state.voximplant.call);
+    const ticketToClose = useSelector(state => state.inbox.ticketToClose);
     const multiData = useSelector(state => state.main.multiDataAux2);
     const tipificationLevel2 = useSelector(state => state.inbox.tipificationsLevel2);
     const tipificationLevel3 = useSelector(state => state.inbox.tipificationsLevel3);
@@ -33,7 +33,7 @@ const CloseTicketVoxi: React.FC = () => {
 
     React.useEffect(() => {
         if (showModalVoxi > 0) {
-            if (callVoxiTmp?.data?.conversationid) {
+            if (ticketToClose?.conversationid) {
                 setOpenModal(true)
                 setmotive("");
             }
@@ -133,7 +133,7 @@ const CloseTicketVoxi: React.FC = () => {
         if (data.classificationid1) {
 
             dispatch(showBackdrop(true));
-            dispatch(execute(insertClassificationConversation(callVoxiTmp?.data?.conversationid!!, data.classificationid3 || data.classificationid2 || data.classificationid1, '', 'INSERT')))
+            dispatch(execute(insertClassificationConversation(ticketToClose?.conversationid!!, data.classificationid3 || data.classificationid2 || data.classificationid1, '', 'INSERT')))
             setWaitTipify(true)
         }
         setmodalview("view-2")
@@ -146,20 +146,20 @@ const CloseTicketVoxi: React.FC = () => {
             if (data.reschedulingdate) {
                 if (new Date(data.reschedulingdate).getTime() > new Date().getTime()) {
                     const dd: Dictionary = {
-                        conversationid: callVoxiTmp?.data?.conversationid!!,
+                        conversationid: ticketToClose?.conversationid!!,
                         motive: data.motive,
                         obs: data.observation || "",
-                        ticketnum: callVoxiTmp?.data?.ticketnum!!,
-                        personcommunicationchannel: callVoxiTmp?.data?.personcommunicationchannel!!,
-                        communicationchannelid: callVoxiTmp?.data?.communicationchannelid!!,
-                        personid: callVoxiTmp?.data?.personid,
+                        ticketnum: ticketToClose?.ticketnum!!,
+                        personcommunicationchannel: ticketToClose?.personcommunicationchannel!!,
+                        communicationchannelid: ticketToClose?.communicationchannelid!!,
+                        personid: ticketToClose?.personid,
                     }
                     dispatch(checkPaymentPlan({
                         parameters: {
-                            firstname: callVoxiTmp?.data?.displayname,
+                            firstname: ticketToClose?.displayname,
                             lastname: "",
-                            phone: callVoxiTmp?.data?.personcommunicationchannel.split(':')[1].split("@")[0],
-                            communicationchannelid: callVoxiTmp?.data?.communicationchannelid,
+                            phone: ticketToClose?.personcommunicationchannel.split(':')[1].split("@")[0],
+                            communicationchannelid: ticketToClose?.communicationchannelid,
                             datetime: new Date(data.reschedulingdate).getTime()
                         }
                     }))
@@ -175,13 +175,13 @@ const CloseTicketVoxi: React.FC = () => {
             }
         } else {
             const dd: Dictionary = {
-                conversationid: callVoxiTmp?.data?.conversationid!!,
+                conversationid: ticketToClose?.conversationid!!,
                 motive: data.motive,
                 obs: data.observation || "",
-                ticketnum: callVoxiTmp?.data?.ticketnum!!,
-                personcommunicationchannel: callVoxiTmp?.data?.personcommunicationchannel!!,
-                communicationchannelid: callVoxiTmp?.data?.communicationchannelid!!,
-                personid: callVoxiTmp?.data?.personid,
+                ticketnum: ticketToClose?.ticketnum!!,
+                personcommunicationchannel: ticketToClose?.personcommunicationchannel!!,
+                communicationchannelid: ticketToClose?.communicationchannelid!!,
+                personid: ticketToClose?.personid,
             }
 
             dispatch(showBackdrop(true));
@@ -199,7 +199,7 @@ const CloseTicketVoxi: React.FC = () => {
                 maxWidth={"xs"}>
                 <DialogTitle>
                     <div style={{ overflow: 'hidden', wordBreak: 'break-word', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginRight: 120 }}>
-                        {callVoxiTmp.data?.displayname} - {modalview === "view-1" ? t(langKeys.tipify_ticket) : t(langKeys.close_ticket)}
+                        {ticketToClose?.displayname} - {modalview === "view-1" ? t(langKeys.tipify_ticket) : t(langKeys.close_ticket)}
                     </div>
                 </DialogTitle>
                 <DialogContent style={{ padding: 0 }}>

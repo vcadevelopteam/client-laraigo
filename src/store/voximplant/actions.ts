@@ -1,5 +1,5 @@
 import { Call } from "voximplant-websdk/Call/Call";
-import { Dictionary, IActionCall, ITicket } from "@types";
+import { Dictionary, IActionCall, ICallGo, ITicket } from "@types";
 import { CommonService, VoximplantService } from "network";
 
 import actionTypes from "./actionTypes";
@@ -7,19 +7,19 @@ import { getConversationSelVoxi, getAdvisorListVoxi } from "common/helpers";
 
 export const voximplantConnect = (payload: Dictionary): IActionCall => ({ type: actionTypes.INIT_SDK, payload });
 
-export const answerCall = (payload?: { call: Call, conversationid: number } | null): IActionCall => ({ type: actionTypes.ANSWER_CALL, payload });
+export const answerCall = (payload?: { call: Call, number?: string, callComplete?: ICallGo, method?: string }): IActionCall => ({ type: actionTypes.ANSWER_CALL, payload });
 
-export const rejectCall = (payload?: { call: Call | null | undefined, ticketSelected?: ITicket | null }): IActionCall => ({ type: actionTypes.REJECT_CALL, payload });
+export const rejectCall = (payload?: { call: Call, number?: string, ticketSelected?: ITicket | null }): IActionCall => ({ type: actionTypes.REJECT_CALL, payload });
 
-export const hangupCall = (payload?: Call | null): IActionCall => ({ type: actionTypes.HANGUP_CALL, payload });
+export const hangupCall = (payload?: { call: Call, number?: string }): IActionCall => ({ type: actionTypes.HANGUP_CALL, payload });
 
-export const muteCall = (payload?: Call | null): IActionCall => ({ type: actionTypes.MUTE_CALL, payload });
+export const muteCall = (payload?: { call: Call, number?: string }): IActionCall => ({ type: actionTypes.MUTE_CALL, payload });
 
-export const unmuteCall = (payload?: Call | null): IActionCall => ({ type: actionTypes.UNMUTE_CALL, payload });
+export const unmuteCall = (payload?: { call: Call, number?: string }): IActionCall => ({ type: actionTypes.UNMUTE_CALL, payload });
 
-export const holdCall = (payload?: Dictionary): IActionCall => ({ type: actionTypes.HOLD_CALL, payload });
+export const holdCall = (payload?: { call: Call, number?: string, flag: boolean }): IActionCall => ({ type: actionTypes.HOLD_CALL, payload });
 
-export const resetCall = (): IActionCall => ({ type: actionTypes.RESET_CALL });
+export const resetCall = (payload: string): IActionCall => ({ type: actionTypes.RESET_CALL, payload });
 
 export const setTransferAction = (payload?: boolean): IActionCall => ({ type: actionTypes.SET_TRANSFER_ACTION, payload });
 
@@ -39,13 +39,13 @@ export const holdTransferCall = (payload?: { call?: Call | null, hold?: boolean 
 
 export const resetTransferCall = (): IActionCall => ({ type: actionTypes.RESET_TRANSFER_CALL });
 
-export const makeCall = (payload: { number: string, site: string, data: ITicket }): IActionCall => ({ type: actionTypes.MAKE_CALL, payload });
+export const makeCall = (payload: { number: string, site: string }): IActionCall => ({ type: actionTypes.MAKE_CALL, payload });
 
 export const setModalCall = (showModalCall?: Boolean, transferAction?: boolean ): IActionCall => ({ type: actionTypes.SET_MODAL_CALL, payload: { showModalCall, transferAction }});
 
 export const setPhoneNumber = (payload?: string): IActionCall => ({ type: actionTypes.SET_PHONE_NUMBER, payload });
 
-export const setHold = (payload?: Boolean): IActionCall => ({ type: actionTypes.SET_HOLD, payload });
+export const setHold = (payload: { hold: boolean, number?: string }): IActionCall => ({ type: actionTypes.SET_HOLD, payload });
 
 export const manageStatusVox = (payload: boolean): IActionCall => ({ type: actionTypes.MANAGE_STATUS_VOX, payload });
 
