@@ -348,7 +348,7 @@ const CalendarWithInfo: FC<{
                                 selectBooking(e);
                                 setDateRange({
                                     startDate: rangeDates[0].date,
-                                    endDate: rangeDates[1].date,
+                                    endDate: rangeDates[6].date,
                                     key: 'selection',
                                 })
                             }}
