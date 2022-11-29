@@ -27,7 +27,7 @@ export const setHold = (state: IState, action: IAction): IState => ({
     calls: state.calls.map(x => x.statusCall !== "DISCONNECTED" && x.number === action.payload.number ? ({
         ...x,
         onholddate: new Date().toISOString(),
-        onhold: action.payload,
+        onhold: action.payload.hold,
     }) : x),
 })
 
@@ -36,16 +36,6 @@ export const initCall = (state: IState, action: IAction): IState => ({
     calls: [...state.calls, action.payload],
     callOnLine: true
 })
-
-// export const modifyCall = (state: IState, action: IAction): IState => {
-//     return {
-//         ...state,
-//         call: {
-//             ...state.call,
-//             // data: (action.payload.personcommunicationchannel === state.call.data?.personcommunicationchannel ? action.payload : state.call.data)
-//         },
-//     }
-// }
 
 export const manageStatusCall = (state: IState, action: IAction): IState => {
     const newcalls = state.calls.map(x => x.statusCall !== "DISCONNECTED" && x.number === action.payload.number ? ({

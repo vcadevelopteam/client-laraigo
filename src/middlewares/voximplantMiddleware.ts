@@ -360,9 +360,29 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         return
     } else if (type === typeVoximplant.HANGUP_CALL) {
         const call = payload.call;
+        const ticketSelected = payload.ticketSelected;
         const number = cleanNumber(payload.number);
+        console.log("hangup call", ticketSelected)
         call?.hangup();
         dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: { status: "DISCONNECTED", number } });
+        if (ticketSelected) {
+            const headers = (call as Call).headers()
+            if (headers["X-transfer"]) {
+                dispatch(emitEvent({
+                    event: 'deleteTicket',
+                    data: {
+                        conversationid: ticketSelected?.conversationid,
+                        ticketnum: ticketSelected?.ticketnum,
+                        status: ticketSelected?.status,
+                        isanswered: ticketSelected?.isAnswered,
+                        usergroup: ticketSelected?.usergroup,
+                        userid: 0, //userType === "AGENT" ? 0 : agentSelected?.userid,
+                        getToken: false //userType === "SUPERVISOR"
+                    }
+                }));
+            }
+            console.log("hangup call", "finish")
+        }
         return
     } else if (type === typeVoximplant.HOLD_CALL) {
         const call = payload.call;

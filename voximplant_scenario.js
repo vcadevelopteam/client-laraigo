@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 // Enable ACD module
 require(Modules.ACD);
 require(Modules.Player);
