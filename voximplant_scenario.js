@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 // Enable ACD module
 require(Modules.ACD);
 require(Modules.Player);
@@ -13,6 +12,7 @@ let conf;
 
 var request,
     origin,
+    callMethod = "SIMULTANEO",
     originalCall,
     originalCall2,
     inboundCalls = [],
@@ -148,9 +148,10 @@ function createTicket(content, callback) {
         messageBusy = result.Properties?.MessageBusy || messageBusy;
         welcomeTone = result.Properties?.WelcomeTone || welcomeTone;
         holdTone = result.Properties?.HoldTone || holdTone;
+        callMethod = result.Properties?.CallMethod || callMethod;
 
         Logger.write("voximplant: createticket: " + res.text);
-        callback()
+        callback(result.NewConversation)
     }, {
         method: "POST",
         postData: JSON.stringify(bodyZyx),
@@ -179,7 +180,7 @@ function createTicket2(callback) {
         "lastmessage": "LLAMADA SALIENTE",
         "postexternalid": sessionID,
         "commentexternalid": sessionID,
-        "newConversation":  true,
+        "newConversation": true,
         "status": "ASIGNADO",
         "origin": "OUTBOUND"
     }
@@ -188,13 +189,13 @@ function createTicket2(callback) {
         Logger.write("voximplant: createticket2: " + res.text);
         const result = JSON.parse(res.text);
 
-        if (result.Success != true) {
+        if (result.Success !== true) {
             callback(null)
         } else {
             identifier = result.Result.split("#")[0]
             personName = result.Result.split("#")[1];
-			
-			conversationid = identifier?.split("-")[3];
+
+            conversationid = identifier?.split("-")[3];
 
             callback(identifier)
         }
@@ -261,28 +262,6 @@ function reasignAgent(agentid) {
     })
 }
 
-						  
-				  
-				   
-				 
-			 
-							 
-							 
-							 
-							
-	 
-																
-																		 
-													   
-		
-					   
-									   
-				  
-														  
-		 
-	  
- 
-
 function sendInteraction(type, text) {
     const splitIdentifier = identifier.split("-");
     const body = {
@@ -312,23 +291,27 @@ function sendInteraction(type, text) {
 }
 // Handle inbound call
 function handleInboundCall(e) {
-    if (e.headers["VI-Client-Type"] == "pstn") { //si la llamada viene de un número de la red pública es atendido por la cola acd.
+    if (e.headers["VI-Client-Type"] === "pstn") { //si la llamada viene de un número de la red pública es atendido por la cola acd.
         origin = origin || 'INBOUND';
         originalCall = e.call; // Call del cliente
         callerid = e.callerid;
         site = e.destination;
-
         // Add event listeners
         e.call.addEventListener(CallEvents.Connected, handleCallConnected);
         e.call.addEventListener(CallEvents.PlaybackFinished, handlePlaybackFinished);
         e.call.addEventListener(CallEvents.Failed, () => cleanup("LLAMADA FALLIDA"));
         e.call.addEventListener(CallEvents.Disconnected, () => cleanup("DESCONECTADO POR CLIENTE"));
         // Answer call
-        createTicket("LLAMADA ENTRANTE", () => {
+        createTicket("LLAMADA ENTRANTE", (newConversation) => {
+            if (!newConversation) {
+                //Existe una llamada en curso
+                originalCall.hangup()
+                return;
+            }
             e.call.answer();
             if (red.recording) {
                 e.call.record({
-                    transcribe: false,
+                    transcribe: true,
                     language: ASRLanguage.SPANISH_ES,
                     name: identifier + ".mp3",
                     contentDispositionFilename: identifier + ".mp3",
@@ -351,8 +334,6 @@ function handleInboundCall(e) {
         identifier = e.customData.split(".")[0];
         site = e.customData.split(".")[1];
         lastagentid = parseInt(e.customData.split(".")[2]);
-												
-												   
         callerid = e.destination.replace("+", "");
 
         const identiff = e.customData.split(".")[3];
@@ -378,25 +359,10 @@ function handleInboundCall(e) {
                 originalCall = VoxEngine.callUser(e.destination, e.callerid);
             }
 
-					   
-
-            // saveSessionID()
-																  
-		   
-
             originalCall.addEventListener(CallEvents.Connected, (e) => {
                 sendInteraction("LOG", "CLIENTE CONTESTÓ LA LLAMADA")
             });
 												 
-										  
-																
-											
-																														  
-																																
-															 
-			  
-		 
-
             if (red.recording) {
                 e.call.record({
                     transcribe: false,
@@ -411,21 +377,21 @@ function handleInboundCall(e) {
             }
 
             VoxEngine.easyProcess(e.call, originalCall);
-			originalCall.removeEventListener(CallEvents.Disconnected);
-			e.call.removeEventListener(CallEvents.Disconnected);
+            originalCall.removeEventListener(CallEvents.Disconnected);
+            e.call.removeEventListener(CallEvents.Disconnected);
 
-			originalCall.addEventListener(CallEvents.Failed, () => cleanup("LLAMADA FALLIDA"));
+            originalCall.addEventListener(CallEvents.Failed, () => cleanup("LLAMADA FALLIDA"));
             originalCall.addEventListener(CallEvents.Disconnected, () => cleanup("DESCONECTADO POR CLIENTE"));
 
             e.call.addEventListener(CallEvents.Failed, () => cleanup("LLAMADA FALLIDA"));
             e.call.addEventListener(CallEvents.Disconnected, () => cleanup("DESCONECTADO POR ASESOR"));
-											 
+
             originalCall2 = e.call; // Call del agente
-			holdCall(e.call, originalCall)
+            holdCall(e.call, originalCall)
         })
     };
-
 }
+
 function holdCall(a, b) {
     a.addEventListener(CallEvents.OnHold, function (e) {
         holdplayer = VoxEngine.createURLPlayer(holdTone, true, true);
@@ -471,7 +437,8 @@ function handleSpreadCall() {
             "X-createdatecall": new Date().toISOString(),
             "X-site": site,
             "X-personname": personName,
-            "X-accessURL": accessURL
+            "X-accessURL": accessURL,
+            "X-method": "simultaneous",
         })
         incall.addEventListener(CallEvents.Connected, (e) => {
             Logger.write("spreadCall-Connected: " + JSON.stringify(e));
@@ -585,6 +552,10 @@ function handleACDQueue() {
     });
     request.addEventListener(ACDEvents.OperatorFailed, function (acdevent) {
         Logger.write("ACDEvents-OperatorFailed: " + JSON.stringify(acdevent));
+        Logger.write("eventACD-OperatorCallAttempt: " + JSON.stringify(acdevent));
+        setTimeout(() => {
+            request.getStatus()
+        }, 1000)
     });
     // No operators are available
     request.addEventListener(ACDEvents.Offline, function (acdevent) {
@@ -601,40 +572,48 @@ function handleACDQueue() {
 
 // Call connected
 function handleCallConnected(e) {
-    handleACDQueue()
-	// Net.httpRequest(`${URL_APILARAIGO}voximplant/getChildrenAccounts`, (res1) => {
-        // Logger.write("handleCallConnected: " + res1.text);
-        // const laraigo_res = JSON.parse(res1.text).result;
-        // const api_key = laraigo_res?.[0]?.api_key;
-        // if (api_key) {
-            // Logger.write("handleCallConnected-accountID: " + accountID);
-            // Logger.write("handleCallConnected-applicationID: " + applicationID);
-            // Net.httpRequest(`${URL_APIVOXIMPLANT}GetUsers/?account_id=${accountID}&application_id=${applicationID}&api_key=${api_key}&user_active=true&count=20&with_skills=true&with_queues=true&acd_status=READY`, (res2) => {
-                // Logger.write("handleCallConnected-GetUsers: " + res2.text);
-                // const voxi_res = JSON.parse(res2.text).result;
-                // if (voxi_res.length === 0) {
-                    // closeTicket("NO HAY ASESORES")
-                    // VoxEngine.terminate();
-                // }
-                // else {
-                    // userQueueData = voxi_res.filter(user => user.acd_queues.map(aq => aq.acd_queue_name.split('.')?.[1]).includes('laraigo'))
-                    // userQueueLength = Math.ceil(userQueueData.length / userQueueLimit);
-                    // handleSpreadCall()
-                // }
-            // }, { method: "GET" })
-        // }
-        // else {
-            // handleACDQueue()
-        // }
-    // }, {
-        // method: "POST",
-        // postData: JSON.stringify({
-            // child_account_id: accountID
-        // }),
-        // headers: [
-            // "Content-Type: application/json;charset=utf-8"
-        // ]
-    // });
+    if (callMethod === "SIMULTANEO") {
+        handleSimultaneousCall()
+    } else {
+        handleACDQueue()
+    }
+}
+
+function handleSimultaneousCall() {
+    Net.httpRequest(`${URL_APILARAIGO}voximplant/getChildrenAccounts`, (res1) => {
+        Logger.write("handleCallConnected: " + res1.text);
+        const laraigo_res = JSON.parse(res1.text).result;
+        const api_key = laraigo_res?.[0]?.api_key;
+        if (api_key) {
+            Logger.write("handleCallConnected-accountID: " + accountID);
+            Logger.write("handleCallConnected-applicationID: " + applicationID);
+            Net.httpRequest(`${URL_APIVOXIMPLANT}GetUsers/?account_id=${accountID}&application_id=${applicationID}&api_key=${api_key}&user_active=true&count=20&with_skills=true&with_queues=true&acd_status=READY`, (res2) => {
+                Logger.write("handleCallConnected-GetUsers: " + res2.text);
+                const voxi_res = JSON.parse(res2.text).result;
+                if (voxi_res.length === 0) {
+                    closeTicket("NO HAY ASESORES")
+                    VoxEngine.terminate();
+                }
+                else {
+                    userQueueData = voxi_res.filter(user => user.acd_queues.map(aq => aq.acd_queue_name.split('.')?.[1]).includes('laraigo'))
+                    userQueueLength = Math.ceil(userQueueData.length / userQueueLimit);
+                    originalCall.say(messageWelcome, VoiceList.Amazon.es_MX_Mia);
+                    handleSpreadCall()
+                }
+            }, { method: "GET" })
+        }
+        else {
+            handleACDQueue()
+        }
+    }, {
+        method: "POST",
+        postData: JSON.stringify({
+            child_account_id: accountID
+        }),
+        headers: [
+            "Content-Type: application/json;charset=utf-8"
+        ]
+    });
 }
 
 function transferTrigger(number) {
@@ -685,8 +664,9 @@ function transferOnConnect(event, call2) {
         call2.sendMessage(JSON.stringify({
             operation: "TRANSFER-HANGUP",
             conversationid: conversationid,
-            number: e.call.callerid(),
-            name: e.call.displayName(),
+            number: e.call.number(),
+            tranfernumber: e.call.callerid(),
+            tranfername: e.call.displayName(),
         }));
         transferCall = null;
     });
@@ -699,43 +679,46 @@ function transferOnFailed(event, call2) {
     call2.sendMessage(JSON.stringify({
         operation: "TRANSFER-FAILED",
         conversationid: conversationid,
-        number: event.call.callerid(),
-        name: event.call.displayName(),
+        number: event.call.number(),
+        tranfernumber: event.call.callerid(),
+        tranfername: event.call.displayName(),
     }));
     transferCall = null;
 }
 
 function transferOperations(event) {
     // 2rd leg event
-    const message_json = JSON.parse(event.text);
-    switch (message_json.operation) {
-        case 'TRANSFER-COMPLETE':
-            transferComplete(message_json)
-            break;
-        case 'TRANSFER-HANGUP':
-            transferCall.sendMessage(JSON.stringify({
-                operation: "TRANSFER-DISCONNECTED",
-                conversationid: conversationid 
-            }));    
-            transferCall.hangup();
-            break;
-        case 'TRANSFER-HOLD':
-            if (message_json.hold) {
-                transferCall.stopMediaTo(originalCall2)
+    if (transferCall) {
+        const message_json = JSON.parse(event.text);
+        switch (message_json.operation) {
+            case 'TRANSFER-COMPLETE':
+                transferComplete(message_json)
+                break;
+            case 'TRANSFER-HANGUP':
+                transferCall.sendMessage(JSON.stringify({
+                    operation: "TRANSFER-DISCONNECTED",
+                    conversationid: conversationid
+                }));
+                transferCall.hangup();
+                break;
+            case 'TRANSFER-HOLD':
+                if (message_json.hold) {
+                    transferCall.stopMediaTo(originalCall2)
+                    originalCall2.stopMediaTo(transferCall)
+                }
+                else {
+                    VoxEngine.sendMediaBetween(transferCall, originalCall2);
+                }
+                break;
+            case 'TRANSFER-MUTE':
                 originalCall2.stopMediaTo(transferCall)
-            }
-            else {
-                VoxEngine.sendMediaBetween(transferCall, originalCall2);
-            }
-            break;
-        case 'TRANSFER-MUTE':
-            originalCall2.stopMediaTo(transferCall)
-            break;
-        case 'TRANSFER-UNMUTE':
-            originalCall2.sendMediaTo(transferCall)
-            break;
-        default:
-            break;
+                break;
+            case 'TRANSFER-UNMUTE':
+                originalCall2.sendMediaTo(transferCall)
+                break;
+            default:
+                break;
+        }
     }
 }
 

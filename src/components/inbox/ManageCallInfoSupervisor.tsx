@@ -17,7 +17,7 @@ const ManageCallInfoSupervisor: React.FC = () => {
     const phoneinbox = useSelector(state => state.inbox.person.data?.phone);
     const [numberVox, setNumberVox] = useState("");
     const resValidateToken = useSelector(state => state.login.validateToken);
-    const call = useSelector(state => state.voximplant.call);
+    const calls = useSelector(state => state.voximplant.calls);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const [supervision, setSupervision] = useState(false)
     const [time, settime] = useState(0);
@@ -34,11 +34,8 @@ const ManageCallInfoSupervisor: React.FC = () => {
     }, [ticketSelected?.callanswereddate])
 
     useEffect(() => {
-        if (call?.identifier) {
-            const conversationid = parseInt(call.identifier.split("-")[3])
-            if (conversationid === ticketSelected?.conversationid) {
-                setSupervision(true)
-            }
+        if (calls.some(call => `${call.number}_VOXI` === ticketSelected?.personcommunicationchannel && call.statusCall !== "DISCONNECTED" && call.type === "SUPERVISION")) {
+            setSupervision(true)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -64,8 +61,9 @@ const ManageCallInfoSupervisor: React.FC = () => {
                 type: "SUPERVISION"
             })));
             setSupervision(false)
-            dispatch(hangupCall(call.call));
-            dispatch(resetCall());
+            const call = calls.find(call => `${call.number}_VOXI` === ticketSelected?.personcommunicationchannel && call.statusCall !== "DISCONNECTED" && call.type === "SUPERVISION")
+            dispatch(hangupCall({call: call?.call!!, number: call?.number}));
+            dispatch(resetCall(ticketSelected?.personcommunicationchannel.split("_")[0] || ""));
         }
     }
 

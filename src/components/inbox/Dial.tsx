@@ -159,9 +159,10 @@ const Dial: React.FC<DialProps> = ({ open, setOpen }) => {
                             onClick={() => {
                                 dispatch(transferCall({
                                     url: `${ticketSelected?.commentexternalid}?mode=transfer&number=${numberVox}`,
+                                    number: ticketSelected?.personcommunicationchannel,
                                     conversationid: ticketSelected?.conversationid!!,
-                                    number: numberVox,
-                                    name: numberVox
+                                    transfernumber: numberVox,
+                                    transfername: numberVox
                                 }))
                                 dispatch(setTransferAction(false))
                                 setOpen(false)

@@ -1,7 +1,8 @@
 import { Call } from 'voximplant-websdk/Call/Call';
+import { CallEvents } from 'voximplant-websdk/Call/CallEvents';
 import { Client } from 'voximplant-websdk/Client';
 import { createReducer, initialCommon } from "common/helpers";
-import { ITemplate, ITicket } from "@types";
+import { ICallGo, ITemplate, ITicket } from "@types";
 
 import * as caseFUnctions from './caseFunctions';
 import actionTypes from "./actionTypes";
@@ -11,31 +12,19 @@ export interface IRequest extends ITemplate {
     msg?: string | null;
 }
 
-export interface ITransfer {
-    name?: string,
-    number?: string,
-    statusCall?: string,
-    mute?: boolean,
-    hold?: boolean,
-    holddate?: string
-}
-
 export interface IState {
-    call: { call?: Call | null, type: string, number: string, identifier: string, data?: ITicket, transfer?: ITransfer };
+    calls: ICallGo[];
     connection: { error: boolean; message: string; loading: boolean };
     error: string;
+    phoneNumber: string; //phone to call on dial
+    showcall: boolean; //show dial to call
+    callOnLine: boolean;
     requestGetCategories: IRequest;
     requestGetCountryStates: IRequest;
     requestGetRegions: IRequest;
     requestGetHistory: IRequest;
     requestGetAdvisors: IRequest;
-    sdk: Client | null;
-    showcall: boolean;
     transferAction: boolean,
-    phoneNumber: string;
-    onhold: boolean;
-    onholddate: string;
-    statusCall: string;
     requestGetMaximumConsumption: IRequest;
     requestTransferAccountBalance: IRequest;
     requestGetAccountBalance: IRequest;
@@ -44,21 +33,21 @@ export interface IState {
 }
 
 export const initialState: IState = {
-    call: { call: null, type: "", number: "", identifier: "", transfer: undefined },
+    // call: { call: null, type: "", number: "", identifier: "", statusCall: "DISCONNECTED", },
+    calls: [],
     connection: { error: true, message: "", loading: false },
     error: "",
+    callOnLine: false,
     requestGetCategories: { ...initialCommon, data: null, loading: false, error: false },
     requestGetCountryStates: { ...initialCommon, data: null, loading: false, error: false },
     requestGetRegions: { ...initialCommon, data: null, loading: false, error: false },
     requestGetHistory: { ...initialCommon, data: null, loading: false, error: false },
     requestGetAdvisors: { ...initialCommon, data: null, loading: false, error: false },
-    sdk: null,
     showcall: false,
     transferAction: false,
     phoneNumber: "",
-    onhold: false,
-    onholddate: new Date().toISOString(),
-    statusCall: "DISCONNECTED",
+    // onhold: false,
+    // onholddate: new Date().toISOString(),
     requestGetMaximumConsumption: { ...initialCommon, data: null, loading: false, error: false },
     requestTransferAccountBalance: { ...initialCommon, data: null, loading: false, error: false },
     requestGetAccountBalance: { ...initialCommon, data: null, loading: false, error: false },
@@ -68,7 +57,7 @@ export const initialState: IState = {
 
 export default createReducer<IState>(initialState, {
     [actionTypes.INIT_CALL]: caseFUnctions.initCall,
-    [actionTypes.MODIFY_CALL]: caseFUnctions.modifyCall,
+    // [actionTypes.MODIFY_CALL]: caseFUnctions.modifyCall,
     [actionTypes.SET_MODAL_CALL]: caseFUnctions.setModalCall,
     [actionTypes.SET_PHONE_NUMBER]: caseFUnctions.setPhoneNumber,
     [actionTypes.SET_HOLD]: caseFUnctions.setHold,

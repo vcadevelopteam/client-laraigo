@@ -45,9 +45,9 @@ const callWSMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async
             eventsListeners.forEach(({ event, type, extra = {} }) => {
                 socket.on(event, (datatmp) => {
                     console.log(event, datatmp)
-                    if (event === "newMessageFromClient" && datatmp?.origin === "OUTBOUND" && datatmp?.communicationchanneltype === "VOXI") {
-                        dispatch({ type: typesVoximplant.MODIFY_CALL, payload: datatmp })
-                    }
+                    // if (event === "newMessageFromClient" && datatmp?.origin === "OUTBOUND" && datatmp?.communicationchanneltype === "VOXI") {
+                    //     dispatch({ type: typesVoximplant.MODIFY_CALL, payload: datatmp })
+                    // }
                     dispatch({ type, payload: { ...datatmp, ...extra } })
                 });
             });

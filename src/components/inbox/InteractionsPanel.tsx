@@ -11,7 +11,7 @@ import ManageCallInfoSupervisor from './ManageCallInfoSupervisor';
 const InteractionsPanel: React.FC<{ classes: any }> = React.memo(({ classes }) => {
 
     const dispatch = useDispatch();
-    const call = useSelector(state => state.voximplant.call);
+    const calls = useSelector(state => state.voximplant.calls);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const groupInteractionList = useSelector(state => state.inbox.interactionList);
     const loadingInteractions = useSelector(state => state.inbox.interactionList.loading);
@@ -57,10 +57,10 @@ const InteractionsPanel: React.FC<{ classes: any }> = React.memo(({ classes }) =
             backgroundSize: '210px',
             zIndex: 1200
         }}>
-            {(ticketSelected?.conversationid === call.data?.conversationid && !!call?.call && ticketSelected?.status === "ASIGNADO") && (
+            {(calls.some(call => call.statusCall !== "DISCONNECTED" && ticketSelected?.personcommunicationchannel === `${call.number}_VOXI`) && ticketSelected?.status === "ASIGNADO") && (
                 <ManageCallInfoTicket />
             )}
-            {!(ticketSelected?.conversationid === call.data?.conversationid && !!call?.call && ticketSelected?.status === "ASIGNADO") &&
+            {!(calls.some(call => call.statusCall !== "DISCONNECTED" && ticketSelected?.personcommunicationchannel === `${call.number}_VOXI`) && ticketSelected?.status === "ASIGNADO") &&
                 (ticketSelected?.communicationchanneltype === "VOXI" ? <ManageCallInfoSupervisor /> :
                     (groupInteractionList.loading ? <SkeletonInteraction /> :
                         <div style={{

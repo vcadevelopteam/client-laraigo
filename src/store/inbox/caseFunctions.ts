@@ -653,6 +653,7 @@ export const deleteTicket = (state: IState, action: IAction): IState => {
 
     let newticketList = [...state.ticketList.data];
     let newAgentList = [...state.agentList.data];
+    let ticketToClose = null;
     let newTicketSelected = state.ticketSelected ? { ...state.ticketSelected } : null;
     let showModalClose = state.showModalClose;
     const { agentSelected, userType } = state;
@@ -672,6 +673,7 @@ export const deleteTicket = (state: IState, action: IAction): IState => {
         const ticket = newticketList.find(x => x.conversationid === data.conversationid);
         if (ticket) {
             if (newTicketSelected?.conversationid === data.conversationid) {
+                ticketToClose = ticket;
                 newTicketSelected = null;
             }
             if (ticket.communicationchanneltype === "VOXI" && userType === 'AGENT' && data.closedTicket) {
@@ -692,6 +694,7 @@ export const deleteTicket = (state: IState, action: IAction): IState => {
             ...state.person,
             data: newTicketSelected ? state.person.data : null
         },
+        ticketToClose: showModalClose === state.showModalClose ? null : ticketToClose,
         showModalClose: showModalClose,
         agentList: {
             data: newAgentList,
