@@ -66,6 +66,7 @@ const DialogBooking: React.FC<{
     const classes = useStyles();
     const saveRes = useSelector(state => state.main.execute);
     const { register, setValue, getValues, reset, trigger, formState: { errors } } = useForm();
+    console.log(booking)
     useEffect(() => {
         if (waitSave) {
             if (!saveRes.loading && !saveRes.error) {
@@ -147,7 +148,7 @@ const DialogBooking: React.FC<{
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
                             <FieldView
                                 label={t(langKeys.email)}
-                                value={booking?.personcontact}
+                                value={booking?.personmail}
                                 className={classes.colInput}
                             />
                         </div>
