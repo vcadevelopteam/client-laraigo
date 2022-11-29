@@ -16,6 +16,8 @@ import { GetIcon } from 'components'
 import { ArrowDropDownIcon } from "icons";
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { answerCall } from 'store/voximplant/actions';
+import { useTranslation } from 'react-i18next';
+import { langKeys } from 'lang/keys';
 
 type IProps = {
     classes: any;
@@ -101,7 +103,7 @@ const CallBlock: React.FC<{ call: ICallGo }> = ({ call }) => {
 
     const handlerOnClick = () => {
         const callConnected = calls.find(calltmp => calltmp.statusCall === "CONNECTED")
-        
+
         if (callConnected) {
             dispatch(manageConfirmation({
                 visible: true,
@@ -145,11 +147,13 @@ const ContainerCalls: React.FC = () => {
     const [openCallsExtra, setOpenCallsExtra] = React.useState(false);
     const [callsCleaned, setCallsCleaned] = useState<ICallGo[]>([]);
     const [callsExtra, setCallsExtra] = useState<ICallGo[]>([]);
+    const { t } = useTranslation();
 
     useEffect(() => {
-        const callsToShow = calls.filter(call => call.method === "simultaneous" && call.statusCall === "CONNECTING").slice(0, 2);
+        const calls1 = calls.filter(call => call.method === "simultaneous" && call.statusCall === "CONNECTING");
+        const callsToShow = calls1.slice(0, 2);
         if (calls.length > 2) {
-            setCallsExtra(callsToShow.slice(2, callsToShow.length))
+            setCallsExtra(calls1.slice(2, calls1.length))
         }
         setCallsCleaned(callsToShow);
     }, [calls])
@@ -161,9 +165,9 @@ const ContainerCalls: React.FC = () => {
 
     return (
         <div className={classes.containerCalls}>
-            {callsCleaned.map(call => (
+            {callsCleaned.map((call, i) => (
                 <CallBlock
-                    key={call.identifier}
+                    key={i}
                     call={call}
                 />
             ))}
@@ -174,7 +178,7 @@ const ContainerCalls: React.FC = () => {
                             className={classes.callExtra}
                             onClick={() => setOpenCallsExtra(true)}
                         >
-                            {callsExtra.length} llamadas
+                            {callsExtra.length} {t(langKeys.type_activitylead_call)} {callsExtra.length > 1 ? "s" : ""}
                             <ArrowDropDownIcon />
                         </div>
                     )}
@@ -186,13 +190,18 @@ const ContainerCalls: React.FC = () => {
                             maxHeight: 400,
                             zIndex: 1201,
                             backgroundColor: 'white',
-                            padding: 4,
+                            padding: 8,
+                            gap: 4,
                             boxShadow: '0 1px 2px 0 rgb(16 35 47 / 15%)',
                             display: 'flex',
                             flexDirection: 'column',
                         }}>
-                            <div style={{ color: "#000" }}>aaaaaaa</div>
-                            <div style={{ color: "#000" }}>vvv</div>
+                            {callsExtra.map((call, i) => (
+                                <CallBlock
+                                    key={i}
+                                    call={call}
+                                />
+                            ))}
                         </div>
                     )}
                 </span>
