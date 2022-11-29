@@ -118,6 +118,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                             statusCall: "CONNECTING",
                             method: method,
                             initCallDate: headers["X-createdatecall"],
+                            accessURL: headers["X-accessURL"],
                             personAnswerCallDate: new Date().toISOString()
                         }
                     })
