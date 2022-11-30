@@ -601,6 +601,7 @@ const TableZyx = React.memo(({
             setSelectedRows && setSelectedRows({})
             setCleanSelection && setCleanSelection(false)
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cleanSelection])
 
     useEffect(() => {

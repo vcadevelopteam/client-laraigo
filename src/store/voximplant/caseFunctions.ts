@@ -26,7 +26,7 @@ export const setHold = (state: IState, action: IAction): IState => ({
     ...state,
     calls: state.calls.map(x => x.statusCall !== "DISCONNECTED" && x.number === action.payload.number ? ({
         ...x,
-        onholddate: new Date().toISOString(),
+        onholddate: action.payload.hold ? (x.onholddate ? x.onholddate : new Date().toISOString()) : "",
         onhold: action.payload.hold,
     }) : x),
 })
@@ -72,6 +72,16 @@ export const initTransferCall = (state: IState, action: IAction): IState => {
                 mute: false,
                 hold: false,
             }
+        }): x),
+    }
+}
+
+export const setMute = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        calls: state.calls.map(x => x.statusCall !== "DISCONNECTED" && x.number === (action.payload?.number || "").split("_")[0] ? ({
+            ...x,
+            mute: action.payload.mute
         }): x),
     }
 }

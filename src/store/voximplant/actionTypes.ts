@@ -30,6 +30,7 @@ const actionType = {
     SET_MODAL_CALL: 'voximplant/SET_MODAL_CALL',
     SET_PHONE_NUMBER: 'voximplant/SET_PHONE_NUMBER',
     SET_HOLD: 'voximplant/SET_HOLD',
+    SET_MUTE: 'voximplant/SET_MUTE',
     DISCONNECT: 'voximplant/DISCONNECT',
     RESET_CALL: 'voximplant/RESET_CALL',
 

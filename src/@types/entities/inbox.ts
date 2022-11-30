@@ -113,6 +113,7 @@ export interface ICallGo {
     identifier: string; 
     statusCall: string;
     onhold?: boolean;
+    mute?: boolean;
     onholddate?: string;
     transfer?: ITransfer;
 }

@@ -15,7 +15,7 @@ import { ICallGo } from '@types';
 import { GetIcon } from 'components'
 import { ArrowDropDownIcon } from "icons";
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import { answerCall } from 'store/voximplant/actions';
+import { answerCall, holdCall, setHold } from 'store/voximplant/actions';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 
@@ -100,15 +100,20 @@ const CallBlock: React.FC<{ call: ICallGo }> = ({ call }) => {
     const classes = callStyles();
     const dispatch = useDispatch();
     const calls = useSelector(state => state.voximplant.calls);
+    const { t } = useTranslation();
 
     const handlerOnClick = () => {
         const callConnected = calls.find(calltmp => calltmp.statusCall === "CONNECTED")
 
         if (callConnected) {
+
             dispatch(manageConfirmation({
                 visible: true,
-                question: "Tiene una llamada activa, desea de todas maneras contestar",
+                question: t(langKeys.question_call_busy),
                 callback: () => {
+                    dispatch(holdCall({ call: callConnected.call, flag: false, number: callConnected.number }));
+                    dispatch(setHold({ hold: true, number: callConnected.number }))
+
                     dispatch(answerCall({
                         call: call.call,
                         number: call.number,

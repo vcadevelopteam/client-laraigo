@@ -1471,6 +1471,7 @@ const translation: LangKeys = {
     close: 'Cerrar',
     closetype: 'Tipo de cierre',
     make_call: "Realizar Llamada",
+    question_call_busy: "Tiene una llamada activa. ¿desea de todas maneras contestar?",
 
     ringing: "Timbrando",
     connecting: "Conectando...",

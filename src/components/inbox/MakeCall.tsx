@@ -10,20 +10,19 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'hooks';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { useDispatch } from 'react-redux';
-import { makeCall, setModalCall, getHistory, geAdvisors, rejectCall, setPhoneNumber, transferCall } from 'store/voximplant/actions';
+import { makeCall, setModalCall, getHistory, geAdvisors, setPhoneNumber } from 'store/voximplant/actions';
 import TextField from '@material-ui/core/TextField';
 import PhoneForwardedIcon from '@material-ui/icons/PhoneForwarded';
 import PhoneIcon from '@material-ui/icons/Phone';
 import { AntTab, SearchField } from 'components';
 import { IconButton, Tabs } from '@material-ui/core';
-import { conversationOutboundValidate, convertLocalDate, getSecondsUntelNow, conversationCallHold } from 'common/helpers';
+import { conversationOutboundValidate } from 'common/helpers';
 import { langKeys } from 'lang/keys';
 import ContactPhoneIcon from '@material-ui/icons/ContactPhone';
 import PhoneCallbackIcon from '@material-ui/icons/PhoneCallback';
 import BackspaceIcon from '@material-ui/icons/Backspace';
 import clsx from 'clsx';
 import { execute, resetExecute } from 'store/main/actions';
-import { ITicket } from '@types';
 import { ListItemSkeleton } from 'components';
 import { showSnackbar } from 'store/popus/actions';
 import PersonIcon from '@material-ui/icons/Person';
@@ -233,23 +232,16 @@ const MakeCall: React.FC = () => {
     const resExecute = useSelector(state => state.main.execute);
     const [pageSelected, setPageSelected] = useState(1);
     const [filter, setfilter] = useState("");
-    // const call = useSelector(state => state.voximplant.call);
     const calls = useSelector(state => state.voximplant.calls);
-    // const [timeWaiting, setTimeWaiting] = useState(-1);
-    // const [waitingDate, setWaitingDate] = useState<string | null>(null);
     const user = useSelector(state => state.login.validateToken.user);
     const ringtone = React.useRef<HTMLAudioElement>(null);
     const phonenumber = useSelector(state => state.voximplant.phoneNumber);
     const showcall = useSelector(state => state.voximplant.showcall);
     const transferAction = useSelector(state => state.voximplant.transferAction);
-    // const callInLine = useSelector(state => state.voximplant.callInLine);
     const [callInLine, setCallInLine] = useState(true)
     const historial = useSelector(state => state.voximplant.requestGetHistory);
     const advisors = useSelector(state => state.voximplant.requestGetAdvisors);
     const [waiting2, setwaiting2] = useState(false)
-    // const onholdstate = useSelector(state => state.voximplant.onhold);
-    // const onholdstatedate = useSelector(state => state.voximplant.onholddate);
-    // const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const { corpid, orgid, sitevoxi, ccidvoxi, userid } = useSelector(state => state.login.validateToken?.user!!);
     const history = useHistory();
 
