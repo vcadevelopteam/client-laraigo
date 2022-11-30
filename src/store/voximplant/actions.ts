@@ -11,7 +11,7 @@ export const answerCall = (payload?: { call: Call, number?: string, callComplete
 
 export const rejectCall = (payload?: { call: Call, number?: string, ticketSelected?: ITicket | null }): IActionCall => ({ type: actionTypes.REJECT_CALL, payload });
 
-export const hangupCall = (payload?: { call: Call, number?: string }): IActionCall => ({ type: actionTypes.HANGUP_CALL, payload });
+export const hangupCall = (payload?: { call: Call, number?: string, ticketSelected?: ITicket | null }): IActionCall => ({ type: actionTypes.HANGUP_CALL, payload });
 
 export const muteCall = (payload?: { call: Call, number?: string }): IActionCall => ({ type: actionTypes.MUTE_CALL, payload });
 

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 // Enable ACD module
 require(Modules.ACD);
 require(Modules.Player);
@@ -409,6 +410,12 @@ function holdCall(a, b) {
 // Terminate call and session
 function cleanup(motive) {
     Logger.write("cleanup-inTransfer: " + JSON.stringify(inTransfer));
+    if (motive === "DESCONECTADO POR CLIENTE" && transferCall) {
+        transferCall.sendMessage(JSON.stringify({
+            operation: "TRANSFER-DISCONNECTED",
+            conversationid: conversationid
+        }));
+    }
     if (inTransfer) {
         inTransfer = null;
     }
@@ -654,12 +661,16 @@ function transferOnConnect(event, call2) {
     Logger.write("transfer-connected: " + JSON.stringify(event));
     // Send audio between 2nd, 3er leg
     VoxEngine.sendMediaBetween(event.call, call2);
+    holdCall(event.call, call2);
     // Advise transfer complete to 2nd leg
     call2.sendMessage(JSON.stringify({
         operation: "TRANSFER-CONNECTED"
     }));
     event.call.addEventListener(CallEvents.Disconnected, (e) => {
         Logger.write("transfer-Disconnected: " + JSON.stringify(e));
+        if (holdplayer) {
+            holdplayer.stop();
+        }
         // Advise transfer disconnected to 2nd leg
         call2.sendMessage(JSON.stringify({
             operation: "TRANSFER-HANGUP",
@@ -700,6 +711,7 @@ function transferOperations(event) {
                     conversationid: conversationid
                 }));
                 transferCall.hangup();
+                transferCall = null;
                 break;
             case 'TRANSFER-HOLD':
                 if (message_json.hold) {

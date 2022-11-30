@@ -59,17 +59,9 @@ const ManageCallInfoTicket: React.FC = () => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
-    // const phoneinbox = useSelector(state => state.inbox.person.data?.phone);
-    // const [numberVox, setNumberVox] = useState("");
-    // const onholdstate = useSelector(state => state.voximplant.onhold);
-    // const onholdstatedate = useSelector(state => state.voximplant.onholddate);
-    const [hold, sethold] = useState(false);
+    // const [hold, sethold] = useState(false);
     const [mute, setmute] = useState(false);
     const [call, setCall] = useState<ICallGo | undefined>(undefined);
-
-    // const call = useSelector(state => state.voximplant.call);
-    // const statusCall = useSelector(state => state.voximplant.statusCall);
-    const firstLoad = React.useRef(true);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const [date, setdate] = useState<string>(new Date().toISOString());
@@ -90,16 +82,26 @@ const ManageCallInfoTicket: React.FC = () => {
 
     useEffect(() => {
         const call = calls.find(call => `${call.number}_VOXI` === ticketSelected?.personcommunicationchannel && call.statusCall !== "DISCONNECTED")
-        if (firstLoad.current) {
-            firstLoad.current = false
-            sethold(!call?.onholddate);
+        
+        if (!call) {
+            return;
+        }
+        // sethold(!call?.onhold);
+
+        setCall(call)
+    }, [ticketSelected?.conversationid])
+
+    useEffect(() => {
+        const call = calls.find(call => `${call.number}_VOXI` === ticketSelected?.personcommunicationchannel && call.statusCall !== "DISCONNECTED")
+        if (!call) {
+            return;
         }
         setCall(call)
     }, [calls])
 
     React.useEffect(() => {
         if (call?.type === "INBOUND" && call?.statusCall === "CONNECTING") {
-            sethold(true)
+            // sethold(true)
             setmute(false)
             // setNumberVox(call.number)
         }
@@ -133,21 +135,21 @@ const ManageCallInfoTicket: React.FC = () => {
         };
     }, [time, call?.statusCall, date]);
 
-    React.useEffect(() => {
-        let interval: NodeJS.Timeout | null = null;
-        if (call?.statusCall === "CONNECTED" && !hold) {
-            interval = setTimeout(() => {
-                settimehold(getSecondsUntelNow(convertLocalDate(call?.onholddate)));
-            }, 1000)
-        } else {
-            settimehold(0)
-        }
-        return () => {
-            if (interval) {
-                clearTimeout(interval)
-            }
-        };
-    }, [timehold, hold, call?.statusCall]);
+    // React.useEffect(() => {
+    //     let interval: NodeJS.Timeout | null = null;
+    //     if (call?.statusCall === "CONNECTED" && call?.onhold) {
+    //         interval = setTimeout(() => {
+    //             settimehold(getSecondsUntelNow(convertLocalDate(call?.onholddate)));
+    //         }, 1000)
+    //     } else {
+    //         settimehold(0)
+    //     }
+    //     return () => {
+    //         if (interval) {
+    //             clearTimeout(interval)
+    //         }
+    //     };
+    // }, [timehold, call?.onhold, call?.statusCall]);
 
     const triggerHold = () => {
         if (call?.onhold) {
@@ -157,9 +159,10 @@ const ManageCallInfoTicket: React.FC = () => {
                 conversationid: ticketSelected?.conversationid
             })))
         }
-        dispatch(holdCall({ call: call?.call!!, flag: !hold, number: ticketSelected?.personcommunicationchannel }));
-        sethold(!hold)
-        dispatch(setHold({ hold, number: call?.number }))
+        console.log("newhold", !call?.onhold)
+        dispatch(holdCall({ call: call?.call!!, flag: !!call?.onhold, number: ticketSelected?.personcommunicationchannel }));
+        // sethold(!!call?.onhold)
+        dispatch(setHold({ hold: !call?.onhold, number: call?.number }))
     }
 
     const handleClickAway = () => {
@@ -202,12 +205,12 @@ const ManageCallInfoTicket: React.FC = () => {
                                     </div>
                                 )
                             }
-                            {(call?.statusCall === "CONNECTED" && hold) &&
+                            {(call?.statusCall === "CONNECTED" && !call?.onhold) &&
                                 <div style={{ fontSize: "15px", marginLeft: "auto", marginRight: "auto", width: "100px", textAlign: "center" }}>
                                     {(secondsToTime(time || 0))}
                                 </div>
                             }
-                            {(call?.statusCall === "CONNECTED" && !hold) &&
+                            {(call?.statusCall === "CONNECTED" && call?.onhold) &&
                                 <div style={{ fontSize: "15px", marginLeft: "auto", marginRight: "auto", width: "200px", textAlign: "center" }}>
                                     {t(langKeys.waittime)} {(secondsToTime(getSecondsUntelNow(convertLocalDate(call?.onholddate))))}
                                 </div>
@@ -219,9 +222,9 @@ const ManageCallInfoTicket: React.FC = () => {
                                     style={{ marginLeft: "auto", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#fa6262' }}
                                     onClick={() => {
                                         // dispatch(holdCall({ call: call.call, flag: true }));
-                                        sethold(true)
+                                        // sethold(true)
                                         setmute(false)
-                                        dispatch(hangupCall({ call: call.call!!, number: ticketSelected?.personcommunicationchannel }))
+                                        dispatch(hangupCall({ call: call.call!!, number: ticketSelected?.personcommunicationchannel, ticketSelected }))
                                     }}
                                 >
                                     <CallEndIcon style={{ color: "white", width: "35px", height: "35px" }} />
@@ -251,7 +254,7 @@ const ManageCallInfoTicket: React.FC = () => {
                             )}
                             {call?.statusCall === "CONNECTED" && (
                                 <div style={{ display: "grid", width: "100%", gridTemplateColumns: 'auto [col1] 50px 50px [col2] 50px 50px [col3] 50px 50px [col4] 50px auto', }}>
-                                    {(mute || !hold) ? (
+                                    {(mute || call?.onhold) ? (
                                         <IconButton //unmuteself
                                             style={{ gridColumnStart: "col1", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#7721ad' }}
                                             onClick={() => { dispatch(unmuteCall({ call: call.call!!, number: ticketSelected?.personcommunicationchannel })); setmute(false) }}>
@@ -265,7 +268,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                         </IconButton>
                                     )}
                                     <IconButton //holdcall
-                                        style={{ gridColumnStart: "col2", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: hold ? '#bdbdbd' : '#781baf' }}
+                                        style={{ gridColumnStart: "col2", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: !call?.onhold ? '#bdbdbd' : '#781baf' }}
                                         onClick={triggerHold}
                                     >
                                         <PauseIcon style={{ color: "white", width: "35px", height: "35px" }} />
@@ -293,7 +296,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                     </div>
                                     <IconButton //hangupcall
                                         style={{ gridColumnStart: "col4", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#fa6262' }}
-                                        onClick={() => dispatch(hangupCall({ call: call.call!!, number: ticketSelected?.personcommunicationchannel }))}
+                                        onClick={() => dispatch(hangupCall({ call: call.call!!, number: ticketSelected?.personcommunicationchannel, ticketSelected }))}
                                     >
                                         <CallEndIcon style={{ color: "white", width: "35px", height: "35px" }} />
                                     </IconButton>
@@ -504,7 +507,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                                 transfernumber: `user${transferUser?.userid}.${resValidateToken.orgid}`,
                                                 transfername: transferUser.name,
                                             }))
-                                            sethold(true)
+                                            // sethold(true)
                                             setmute(false)
                                             dispatch(setTransferAction(false))
                                         }
