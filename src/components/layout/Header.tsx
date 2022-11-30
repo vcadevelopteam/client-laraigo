@@ -178,7 +178,7 @@ const ContainerCalls: React.FC = () => {
                             className={classes.callExtra}
                             onClick={() => setOpenCallsExtra(true)}
                         >
-                            {callsExtra.length} {t(langKeys.type_activitylead_call)} {callsExtra.length > 1 ? "s" : ""}
+                            {callsExtra.length} {t(langKeys.type_activitylead_call)}{callsExtra.length > 1 ? "s" : ""}
                             <ArrowDropDownIcon />
                         </div>
                     )}
