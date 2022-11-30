@@ -168,7 +168,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
                     autoLoad={false}
                     buttonStyle={FBButtonStyles}
                     fields="name,email,picture"
-                    scope="pages_manage_engagement,pages_manage_metadata,pages_messaging,pages_read_engagement,pages_read_user_content,pages_show_list,public_profile,pages_manage_posts,publish_video"
+                    scope="pages_manage_engagement,pages_manage_metadata,pages_messaging,pages_read_engagement,pages_read_user_content,pages_show_list,public_profile,pages_manage_posts"
                     callback={processFacebookCallback}
                     textButton={t(langKeys.linkfacebookpage)}
                     // icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
