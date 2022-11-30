@@ -1,8 +1,5 @@
-import { Call } from 'voximplant-websdk/Call/Call';
-import { CallEvents } from 'voximplant-websdk/Call/CallEvents';
-import { Client } from 'voximplant-websdk/Client';
 import { createReducer, initialCommon } from "common/helpers";
-import { ICallGo, ITemplate, ITicket } from "@types";
+import { ICallGo, ITemplate } from "@types";
 
 import * as caseFUnctions from './caseFunctions';
 import actionTypes from "./actionTypes";
@@ -33,7 +30,6 @@ export interface IState {
 }
 
 export const initialState: IState = {
-    // call: { call: null, type: "", number: "", identifier: "", statusCall: "DISCONNECTED", },
     calls: [],
     connection: { error: true, message: "", loading: false },
     error: "",
@@ -46,8 +42,6 @@ export const initialState: IState = {
     showcall: false,
     transferAction: false,
     phoneNumber: "",
-    // onhold: false,
-    // onholddate: new Date().toISOString(),
     requestGetMaximumConsumption: { ...initialCommon, data: null, loading: false, error: false },
     requestTransferAccountBalance: { ...initialCommon, data: null, loading: false, error: false },
     requestGetAccountBalance: { ...initialCommon, data: null, loading: false, error: false },
@@ -120,4 +114,5 @@ export default createReducer<IState>(initialState, {
     [actionTypes.UPDATE_SCENARIO_FAILURE]: caseFUnctions.updateScenarioFailure,
     [actionTypes.UPDATE_SCENARIO_SUCCESS]: caseFUnctions.updateScenarioSuccess,
     [actionTypes.UPDATE_SCENARIO_RESET]: caseFUnctions.updateScenarioReset,
+    [actionTypes.SET_MUTE]: caseFUnctions.setMute,
 });

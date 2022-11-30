@@ -29,6 +29,7 @@ const translation: LangKeys = {
     textcolor: "Text Color",
     add_classification: "Add classification",
     make_call: "Make call",
+    question_call_busy: "You have an active call. Do you want to answer anyway?",
 
     ringing: "ringing",
     connecting: "Connecting...",

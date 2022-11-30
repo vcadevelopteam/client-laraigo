@@ -6,14 +6,14 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'hooks';
 import PersonIcon from '@material-ui/icons/Person';
 import { useDispatch } from 'react-redux';
-import { answerCall, hangupCall, rejectCall, holdCall, muteCall, unmuteCall, setHold, setModalCall, transferCall, hangupTransferCall, holdTransferCall, muteTransferCall, unmuteTransferCall, completeTransferCall, setTransferAction } from 'store/voximplant/actions';
+import { answerCall, hangupCall, rejectCall, holdCall, muteCall, unmuteCall, setHold, transferCall, hangupTransferCall, holdTransferCall, muteTransferCall, unmuteTransferCall, completeTransferCall, setTransferAction, setMute } from 'store/voximplant/actions';
 import TextField from '@material-ui/core/TextField';
 import PhoneIcon from '@material-ui/icons/Phone';
 import CallEndIcon from '@material-ui/icons/CallEnd';
 import MicIcon from '@material-ui/icons/Mic';
 import PauseIcon from '@material-ui/icons/Pause';
 import MicOffIcon from '@material-ui/icons/MicOff';
-import { FieldEdit, FieldSelect } from 'components';
+import { FieldEdit } from 'components';
 import { Card, CardContent } from '@material-ui/core';
 import { convertLocalDate, secondsToTime, getSecondsUntelNow, conversationCallHold } from 'common/helpers';
 import { langKeys } from 'lang/keys';
@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
     },
     transferListSubheader: {
         lineHeight: 'inherit'
-        
+
     },
     transferListItem: {
         borderRadius: '10px',
@@ -59,53 +59,29 @@ const ManageCallInfoTicket: React.FC = () => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
-    // const [hold, sethold] = useState(false);
-    const [mute, setmute] = useState(false);
     const [call, setCall] = useState<ICallGo | undefined>(undefined);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const [date, setdate] = useState<string>(new Date().toISOString());
     const [time, settime] = useState(0);
-    const [timehold, settimehold] = useState(0);
     const resValidateToken = useSelector(state => state.login.validateToken?.user!!);
-    
     // Variables to transfer
     const agentToReassignList = useSelector(state => state.inbox.agentToReassignList);
     const transferAction = useSelector(state => state.voximplant.transferAction);
     // const [transferEnable, setTransferEnable] = useState(false);
-    const [transferUser, setTransferUser] = useState<{userid: number, name: string} | null>(null);
+    const [transferUser, setTransferUser] = useState<{ userid: number, name: string } | null>(null);
     const [transferStep, setTransferStep] = useState(1);
     const [transferFilter, setTransferFilter] = useState("");
     const [openDial, setOpenDial] = useState(false);
-    
     const calls = useSelector(state => state.voximplant.calls);
 
     useEffect(() => {
         const call = calls.find(call => `${call.number}_VOXI` === ticketSelected?.personcommunicationchannel && call.statusCall !== "DISCONNECTED")
-        
-        if (!call) {
-            return;
-        }
-        // sethold(!call?.onhold);
-
-        setCall(call)
-    }, [ticketSelected?.conversationid])
-
-    useEffect(() => {
-        const call = calls.find(call => `${call.number}_VOXI` === ticketSelected?.personcommunicationchannel && call.statusCall !== "DISCONNECTED")
         if (!call) {
             return;
         }
         setCall(call)
-    }, [calls])
-
-    React.useEffect(() => {
-        if (call?.type === "INBOUND" && call?.statusCall === "CONNECTING") {
-            // sethold(true)
-            setmute(false)
-            // setNumberVox(call.number)
-        }
-    }, [call?.type, dispatch, call?.statusCall])
+    }, [calls, ticketSelected?.conversationid])
 
     React.useEffect(() => {
         if (call?.statusCall === "CONNECTED") {
@@ -135,22 +111,6 @@ const ManageCallInfoTicket: React.FC = () => {
         };
     }, [time, call?.statusCall, date]);
 
-    // React.useEffect(() => {
-    //     let interval: NodeJS.Timeout | null = null;
-    //     if (call?.statusCall === "CONNECTED" && call?.onhold) {
-    //         interval = setTimeout(() => {
-    //             settimehold(getSecondsUntelNow(convertLocalDate(call?.onholddate)));
-    //         }, 1000)
-    //     } else {
-    //         settimehold(0)
-    //     }
-    //     return () => {
-    //         if (interval) {
-    //             clearTimeout(interval)
-    //         }
-    //     };
-    // }, [timehold, call?.onhold, call?.statusCall]);
-
     const triggerHold = () => {
         if (call?.onhold) {
             const timeToAdd = getSecondsUntelNow(convertLocalDate(call?.onholddate))
@@ -159,9 +119,7 @@ const ManageCallInfoTicket: React.FC = () => {
                 conversationid: ticketSelected?.conversationid
             })))
         }
-        console.log("newhold", !call?.onhold)
-        dispatch(holdCall({ call: call?.call!!, flag: !!call?.onhold, number: ticketSelected?.personcommunicationchannel }));
-        // sethold(!!call?.onhold)
+        dispatch(holdCall({ call: call?.call!!, flag: !!call?.onhold, number: call?.number }));
         dispatch(setHold({ hold: !call?.onhold, number: call?.number }))
     }
 
@@ -221,10 +179,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                 <IconButton //rejectcall
                                     style={{ marginLeft: "auto", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#fa6262' }}
                                     onClick={() => {
-                                        // dispatch(holdCall({ call: call.call, flag: true }));
-                                        // sethold(true)
-                                        setmute(false)
-                                        dispatch(hangupCall({ call: call.call!!, number: ticketSelected?.personcommunicationchannel, ticketSelected }))
+                                        dispatch(hangupCall({ call: call.call!!, number: call.number, ticketSelected }))
                                     }}
                                 >
                                     <CallEndIcon style={{ color: "white", width: "35px", height: "35px" }} />
@@ -235,7 +190,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                     <IconButton //answercall
                                         style={{ marginLeft: "10px", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#55bd84' }}
                                         onClick={() => {
-                                            dispatch(answerCall({ call: call.call!!, number: ticketSelected?.personcommunicationchannel }))
+                                            dispatch(answerCall({ call: call.call!!, number: call.number }))
                                             setCall({
                                                 ...call,
                                                 statusCall: "CONNECTED"
@@ -246,7 +201,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                     </IconButton>
                                     <IconButton //rejectcall
                                         style={{ marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#fa6262' }}
-                                        onClick={() => dispatch(rejectCall({ call: call.call!!, number: ticketSelected?.personcommunicationchannel, ticketSelected }))}
+                                        onClick={() => dispatch(rejectCall({ call: call.call!!, number: call.number, ticketSelected }))}
                                     >
                                         <CallEndIcon style={{ color: "white", width: "35px", height: "35px" }} />
                                     </IconButton>
@@ -254,16 +209,22 @@ const ManageCallInfoTicket: React.FC = () => {
                             )}
                             {call?.statusCall === "CONNECTED" && (
                                 <div style={{ display: "grid", width: "100%", gridTemplateColumns: 'auto [col1] 50px 50px [col2] 50px 50px [col3] 50px 50px [col4] 50px auto', }}>
-                                    {(mute || call?.onhold) ? (
+                                    {(call?.mute || call?.onhold) ? (
                                         <IconButton //unmuteself
                                             style={{ gridColumnStart: "col1", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#7721ad' }}
-                                            onClick={() => { dispatch(unmuteCall({ call: call.call!!, number: ticketSelected?.personcommunicationchannel })); setmute(false) }}>
+                                            onClick={() => {
+                                                dispatch(unmuteCall({ call: call.call!!, number: call.number }));
+                                                dispatch(setMute({ mute: false, number: call.number }))
+                                            }}>
                                             <MicOffIcon style={{ color: "white", width: "35px", height: "35px" }} />
                                         </IconButton>
                                     ) : (
                                         <IconButton //muteself
                                             style={{ gridColumnStart: "col1", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#55bd84' }}
-                                            onClick={() => { dispatch(muteCall({ call: call.call!!, number: ticketSelected?.personcommunicationchannel })); setmute(true) }}>
+                                            onClick={() => {
+                                                dispatch(muteCall({ call: call.call!!, number: call.number }));
+                                                dispatch(setMute({ mute: true, number: call.number }))
+                                            }}>
                                             <MicIcon style={{ color: "white", width: "35px", height: "35px" }} />
                                         </IconButton>
                                     )}
@@ -286,17 +247,17 @@ const ManageCallInfoTicket: React.FC = () => {
                                         >
                                             {
                                                 transferAction
-                                                ? <>
-                                                    <CallTransferActiveIcon title="Transferir" style={{ color: "white", width: "35px", height: "35px" }} />
-                                                </>
-                                                : <CallTransferInactiveIcon style={{ color: "white", width: "35px", height: "35px" }} />
+                                                    ? <>
+                                                        <CallTransferActiveIcon title="Transferir" style={{ color: "white", width: "35px", height: "35px" }} />
+                                                    </>
+                                                    : <CallTransferInactiveIcon style={{ color: "white", width: "35px", height: "35px" }} />
                                             }
                                         </IconButton>
                                         {transferAction && <span style={{ color: '#781baf' }}>{t(langKeys.transfer)}</span>}
                                     </div>
                                     <IconButton //hangupcall
                                         style={{ gridColumnStart: "col4", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#fa6262' }}
-                                        onClick={() => dispatch(hangupCall({ call: call.call!!, number: ticketSelected?.personcommunicationchannel, ticketSelected }))}
+                                        onClick={() => dispatch(hangupCall({ call: call.call!!, number: call.number, ticketSelected }))}
                                     >
                                         <CallEndIcon style={{ color: "white", width: "35px", height: "35px" }} />
                                     </IconButton>
@@ -312,7 +273,7 @@ const ManageCallInfoTicket: React.FC = () => {
                     <div>
                         <div>
                             <div style={{ marginLeft: "auto", marginTop: 20, marginRight: "auto", width: "100px", height: "100px", borderRadius: "50%", backgroundColor: "#bdbdbd" }}>
-                                <PersonIcon style={{ color: "white", width: "100px", height: "100px" }}/>
+                                <PersonIcon style={{ color: "white", width: "100px", height: "100px" }} />
                             </div>
                         </div>
                         <div>
@@ -349,7 +310,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                 <IconButton //holdcall
                                     style={{ gridColumnStart: "col2", marginLeft: "auto", marginRight: "10px", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: call.transfer?.hold && call.transfer?.statusCall === "CONNECTED" ? '#781baf' : '#bdbdbd' }}
                                     disabled={call.transfer?.statusCall !== "CONNECTED"}
-                                    onClick={() => { dispatch(holdTransferCall({ call: call?.call, hold: call.transfer?.hold }))}}
+                                    onClick={() => { dispatch(holdTransferCall({ call: call?.call, hold: call.transfer?.hold })) }}
                                 >
                                     <PauseIcon style={{ color: "white", width: "35px", height: "35px" }} />
                                 </IconButton>
@@ -421,27 +382,27 @@ const ManageCallInfoTicket: React.FC = () => {
                                     && x.status === "ACTIVO"
                                     && x.displayname.toLowerCase().includes(transferFilter.toLowerCase()))
                                     .map((item, index) => (
-                                    <ListItem
-                                        button
-                                        key={`transfer-${index}`}
-                                        className={classes.transferListItem}
-                                        onClick={() => {
-                                            setTransferStep(2)
-                                            setTransferUser({
-                                                userid: item.userid,
-                                                name: item.displayname
-                                            })
-                                        }}
-                                    >
-                                        <ListItemText
-                                            primary={item.displayname}
-                                        />
-                                        <ListItemText
-                                            primary={item.userid}
-                                            style={{textAlign: 'right'}}
-                                        />
-                                    </ListItem>
-                                ))}
+                                        <ListItem
+                                            button
+                                            key={`transfer-${index}`}
+                                            className={classes.transferListItem}
+                                            onClick={() => {
+                                                setTransferStep(2)
+                                                setTransferUser({
+                                                    userid: item.userid,
+                                                    name: item.displayname
+                                                })
+                                            }}
+                                        >
+                                            <ListItemText
+                                                primary={item.displayname}
+                                            />
+                                            <ListItemText
+                                                primary={item.userid}
+                                                style={{ textAlign: 'right' }}
+                                            />
+                                        </ListItem>
+                                    ))}
                             </List>
                             <div style={{ justifyContent: 'center', marginBottom: 12, marginTop: 10, display: "flex" }}>
                                 <ClickAwayListener onClickAway={handleClickAway}>
@@ -450,9 +411,6 @@ const ManageCallInfoTicket: React.FC = () => {
                                             style={{ marginLeft: "auto", marginRight: "auto", width: "50px", height: "50px", borderRadius: "50%", backgroundColor: '#7721ad' }}
                                             onClick={() => {
                                                 setOpenDial(true)
-                                                // dispatch(setModalCall(true))
-                                                // sethold(true)
-                                                // setmute(false)
                                             }}
                                         >
                                             <DialpadIcon style={{ color: "white", width: "35px", height: "35px" }} />
@@ -467,7 +425,7 @@ const ManageCallInfoTicket: React.FC = () => {
                         </div>
                     </CardContent>
                 </>}
-                    {transferStep === 2 && <>
+                {transferStep === 2 && <>
                     <IconButton
                         size="small"
                         className={classes.closeButton}
@@ -484,7 +442,7 @@ const ManageCallInfoTicket: React.FC = () => {
                         </Typography>
                         <div>
                             <div>
-                                {t(langKeys.transferto, {from: call?.number, to: transferUser?.name})}
+                                {t(langKeys.transferto, { from: call?.number, to: transferUser?.name })}
                             </div>
                             <div>
                                 <div style={{ marginLeft: "auto", marginTop: 20, marginRight: "auto", width: "100px", height: "100px", borderRadius: "50%", backgroundColor: "#bdbdbd" }}>
@@ -507,8 +465,6 @@ const ManageCallInfoTicket: React.FC = () => {
                                                 transfernumber: `user${transferUser?.userid}.${resValidateToken.orgid}`,
                                                 transfername: transferUser.name,
                                             }))
-                                            // sethold(true)
-                                            setmute(false)
                                             dispatch(setTransferAction(false))
                                         }
                                     }}

@@ -132,6 +132,7 @@ export const langKeys = {
     redo: "redo",
     city: "city",
     make_call: "make_call",
+    question_call_busy: "question_call_busy",
 
     ringing: "ringing",
     connecting: "connecting",
