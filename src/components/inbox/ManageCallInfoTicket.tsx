@@ -6,14 +6,14 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'hooks';
 import PersonIcon from '@material-ui/icons/Person';
 import { useDispatch } from 'react-redux';
-import { answerCall, hangupCall, rejectCall, holdCall, muteCall, unmuteCall, setHold, setModalCall, transferCall, hangupTransferCall, holdTransferCall, muteTransferCall, unmuteTransferCall, completeTransferCall, setTransferAction } from 'store/voximplant/actions';
+import { answerCall, hangupCall, rejectCall, holdCall, muteCall, unmuteCall, setHold, transferCall, hangupTransferCall, holdTransferCall, muteTransferCall, unmuteTransferCall, completeTransferCall, setTransferAction } from 'store/voximplant/actions';
 import TextField from '@material-ui/core/TextField';
 import PhoneIcon from '@material-ui/icons/Phone';
 import CallEndIcon from '@material-ui/icons/CallEnd';
 import MicIcon from '@material-ui/icons/Mic';
 import PauseIcon from '@material-ui/icons/Pause';
 import MicOffIcon from '@material-ui/icons/MicOff';
-import { FieldEdit, FieldSelect } from 'components';
+import { FieldEdit } from 'components';
 import { Card, CardContent } from '@material-ui/core';
 import { convertLocalDate, secondsToTime, getSecondsUntelNow, conversationCallHold } from 'common/helpers';
 import { langKeys } from 'lang/keys';
@@ -59,14 +59,12 @@ const ManageCallInfoTicket: React.FC = () => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
-    // const [hold, sethold] = useState(false);
     const [mute, setmute] = useState(false);
     const [call, setCall] = useState<ICallGo | undefined>(undefined);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const [date, setdate] = useState<string>(new Date().toISOString());
     const [time, settime] = useState(0);
-    const [timehold, settimehold] = useState(0);
     const resValidateToken = useSelector(state => state.login.validateToken?.user!!);
     
     // Variables to transfer
@@ -77,27 +75,15 @@ const ManageCallInfoTicket: React.FC = () => {
     const [transferStep, setTransferStep] = useState(1);
     const [transferFilter, setTransferFilter] = useState("");
     const [openDial, setOpenDial] = useState(false);
-    
     const calls = useSelector(state => state.voximplant.calls);
 
     useEffect(() => {
         const call = calls.find(call => `${call.number}_VOXI` === ticketSelected?.personcommunicationchannel && call.statusCall !== "DISCONNECTED")
-        
-        if (!call) {
-            return;
-        }
-        // sethold(!call?.onhold);
-
-        setCall(call)
-    }, [ticketSelected?.conversationid])
-
-    useEffect(() => {
-        const call = calls.find(call => `${call.number}_VOXI` === ticketSelected?.personcommunicationchannel && call.statusCall !== "DISCONNECTED")
         if (!call) {
             return;
         }
         setCall(call)
-    }, [calls])
+    }, [calls, ticketSelected?.conversationid])
 
     React.useEffect(() => {
         if (call?.type === "INBOUND" && call?.statusCall === "CONNECTING") {
@@ -134,22 +120,6 @@ const ManageCallInfoTicket: React.FC = () => {
             }
         };
     }, [time, call?.statusCall, date]);
-
-    // React.useEffect(() => {
-    //     let interval: NodeJS.Timeout | null = null;
-    //     if (call?.statusCall === "CONNECTED" && call?.onhold) {
-    //         interval = setTimeout(() => {
-    //             settimehold(getSecondsUntelNow(convertLocalDate(call?.onholddate)));
-    //         }, 1000)
-    //     } else {
-    //         settimehold(0)
-    //     }
-    //     return () => {
-    //         if (interval) {
-    //             clearTimeout(interval)
-    //         }
-    //     };
-    // }, [timehold, call?.onhold, call?.statusCall]);
 
     const triggerHold = () => {
         if (call?.onhold) {
