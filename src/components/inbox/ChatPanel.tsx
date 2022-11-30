@@ -1278,7 +1278,6 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
 }
 
 const ChatPanel: React.FC<{ classes: any }> = React.memo(({ classes }) => {
-    const calls = useSelector(state => state.voximplant.calls);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
 
     return (
@@ -1289,7 +1288,7 @@ const ChatPanel: React.FC<{ classes: any }> = React.memo(({ classes }) => {
             <InteractionsPanel
                 classes={classes}
             />
-            {(calls.some(call => call.statusCall !== "DISCONNECTED" && ticketSelected?.personcommunicationchannel === `${call.number}_VOXI`)) && (
+            {(ticketSelected?.communicationchanneltype !== "VOXI") && (
                 <ReplyPanel
                     classes={classes} />
             )}
