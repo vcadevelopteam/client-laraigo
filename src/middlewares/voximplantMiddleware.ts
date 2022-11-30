@@ -123,10 +123,32 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                         }
                     })
 
-                    e.call.on(VoxImplant.CallEvents.Disconnected, () => {
+                    e.call.on(VoxImplant.CallEvents.Disconnected, (e: any) => {
+                        const headers = (e.call as Call).headers()
+                        if (headers["X-transfer"] && headers["X-conversationid"]) {
+                            dispatch(emitEvent({
+                                event: 'deleteTicket',
+                                data: {
+                                    conversationid: +headers["X-conversationid"],
+                                    userid: 0, //userType === "AGENT" ? 0 : agentSelected?.userid,
+                                    getToken: false //userType === "SUPERVISOR"
+                                }
+                            }));
+                        }
                         dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: { status: "DISCONNECTED", number } });
                     });
-                    e.call.on(VoxImplant.CallEvents.Failed, () => {
+                    e.call.on(VoxImplant.CallEvents.Failed, (e: any) => {
+                        const headers = (e.call as Call).headers()
+                        if (headers["X-transfer"] && headers["X-conversationid"]) {
+                            dispatch(emitEvent({
+                                event: 'deleteTicket',
+                                data: {
+                                    conversationid: +headers["X-conversationid"],
+                                    userid: 0, //userType === "AGENT" ? 0 : agentSelected?.userid,
+                                    getToken: false //userType === "SUPERVISOR"
+                                }
+                            }));
+                        }
                         dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: { status: "DISCONNECTED", number } });
                     });
                     e.call.on(VoxImplant.CallEvents.MessageReceived, (e: any) => {
