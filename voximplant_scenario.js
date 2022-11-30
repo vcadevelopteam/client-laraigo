@@ -410,16 +410,16 @@ function holdCall(a, b) {
 // Terminate call and session
 function cleanup(motive) {
     Logger.write("cleanup-inTransfer: " + JSON.stringify(inTransfer));
-    if (motive === "DESCONECTADO POR CLIENTE" && transferCall) {
-        transferCall.sendMessage(JSON.stringify({
-            operation: "TRANSFER-DISCONNECTED",
-            conversationid: conversationid
-        }));
-    }
     if (inTransfer) {
         inTransfer = null;
     }
     else {
+        if (transferCall) {
+            transferCall.sendMessage(JSON.stringify({
+                operation: "TRANSFER-DISCONNECTED",
+                conversationid: conversationid
+            }));
+        }
         if (request) {
             // Remove call from queue
             Logger.write("cleanup-request.cancel");
@@ -631,7 +631,8 @@ function transferTrigger(number) {
             "X-site": site,
             "X-personname": personName,
             "X-accessURL": accessURL,
-            "X-transfernumber": number
+            "X-transfernumber": number,
+            "X-conversationid": conversationid,
         });
     } else {
         transferCall = VoxEngine.callUser(number, number, "transfer", {
@@ -640,7 +641,8 @@ function transferTrigger(number) {
             "X-site": site,
             "X-personname": personName,
             "X-accessURL": accessURL,
-            "X-transfernumber": number
+            "X-transfernumber": number,
+            "X-conversationid": conversationid,
         });
     }
     transferCall.addEventListener(CallEvents.Connected, (e) => {
