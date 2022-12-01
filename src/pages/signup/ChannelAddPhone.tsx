@@ -169,6 +169,7 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                     "form": "",
                     "apikey": "",
                     "coloricon": "#90c900",
+                    "voximplantcallsupervision": values.voximplantcallsupervision
                 },
                 "service": {
                     "category": values.category,
@@ -353,7 +354,7 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     }
 
     const handleSwitchCallSupervison = (value: boolean) => {
-        //setValue('channels.voximplantphone.callsupervision', value);
+        setValue('channels.voximplantphone.voximplantcallsupervision', value);
 
         disableNextButton();
     }
