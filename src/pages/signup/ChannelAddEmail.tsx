@@ -123,6 +123,7 @@ export const ChannelAddEmail: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                     "form": "",
                     "apikey": "",
                     "coloricon": "#1D9BF0",
+                    "voximplantcallsupervision": false
                 },
                 "type": "INFOBIPEMAIL",
                 "service": {

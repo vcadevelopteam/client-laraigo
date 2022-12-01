@@ -84,6 +84,7 @@ export const ChannelAddLinkedIn: FC<{ setOpenWarning: (param: any) => void }> = 
                     "form": "",
                     "apikey": "",
                     "coloricon": "#0A66C2",
+                    "voximplantcallsupervision": false
                 },
                 "type": "LINKEDIN",
                 "service": {

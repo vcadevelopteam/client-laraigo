@@ -83,6 +83,7 @@ export const ChannelAddTikTok: FC<{ setOpenWarning: (param: any) => void }> = ({
                     "form": "",
                     "apikey": "",
                     "coloricon": "#000000",
+                    "voximplantcallsupervision": false
                 },
                 "type": "TIKTOK",
                 "service": {

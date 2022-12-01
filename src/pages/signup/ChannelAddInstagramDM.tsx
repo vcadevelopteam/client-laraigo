@@ -58,6 +58,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
                     "form": "",
                     "apikey": "",
                     "coloricon": "#F56040",
+                    "voximplantcallsupervision": false
                 },
                 "type": "INSTAMESSENGER",
                 "service": {

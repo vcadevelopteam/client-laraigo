@@ -104,6 +104,7 @@ export const ChannelAddBlogger: FC<{ setOpenWarning: (param: any) => void }> = (
                     "form": "",
                     "apikey": "",
                     "coloricon": "#F06A35",
+                    "voximplantcallsupervision": false
                 },
                 "type": "BLOGGER",
                 "service": {

@@ -88,6 +88,7 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
                     "form": "",
                     "apikey": "",
                     "coloricon": "#1D9BF0",
+                    "voximplantcallsupervision": false
                 },
                 "type": "TWITTER",
                 "service": {
