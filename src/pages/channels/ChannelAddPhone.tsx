@@ -360,7 +360,7 @@ export const ChannelAddPhone: FC = () => {
 
     const handleSwitchCallSupervison = (value: boolean) => {
         let partialFields = fields;
-        partialFields.service.callsupervision = value;
+        //partialFields.service.callsupervision = value;
         setFields(partialFields);
 
         disableNextButton();

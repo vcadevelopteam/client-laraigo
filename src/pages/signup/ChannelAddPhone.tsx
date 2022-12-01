@@ -116,6 +116,7 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     const [waitRegions, setWaitRegions] = useState(false);
     const [waitStates, setWaitStates] = useState(false);
     const [hasFinished, setHasFinished] = useState(false)
+    const [checkedCallSupervision, setCheckedCallSupervision] = useState(false);
 
     useEffect(() => {
         dispatch(getCategories({}));
@@ -353,7 +354,7 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     }
 
     const handleSwitchCallSupervison = (value: boolean) => {
-        setValue('channels.voximplantphone.callsupervision', value);
+        //setValue('channels.voximplantphone.callsupervision', value);
 
         disableNextButton();
     }
