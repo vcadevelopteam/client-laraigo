@@ -2680,6 +2680,8 @@ const translation: LangKeys = {
     claim_plural: 'Claims',
     gender: 'Gender',
     displayname: 'Name to show',
+    voicechannel_callsupervisor: "Call supervision",
+    voicechannel_callsupervisortooltip: "Allows you to listen online to a conversation between client and advisor. Price per minute $0.033",
     internalIdentifier: 'Internal identifier',
     personIdentifier: 'Person identifier',
     personType: 'Person type',
