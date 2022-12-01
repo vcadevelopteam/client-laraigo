@@ -115,6 +115,7 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     const [waitRegions, setWaitRegions] = useState(false);
     const [waitStates, setWaitStates] = useState(false);
     const [hasFinished, setHasFinished] = useState(false)
+    const [checkedCallSupervision, setCheckedCallSupervision] = useState(false);
 
     useEffect(() => {
         dispatch(getCategories({}));
@@ -351,6 +352,12 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
         disableNextButton();
     }
 
+    const handleSwitchCallSupervison = (value: boolean) => {
+        //setValue('channels.voximplantphone.callsupervision', value);
+
+        disableNextButton();
+    }
+
     const handleCountry = (value: any) => {
         if (value) {
             setCategoryList(value.phone_categories || []);
@@ -497,6 +504,17 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                                 />
                                 {t(langKeys.voicechannel_outbound)}
                                 <Tooltip title={`${t(langKeys.voicechannel_outboundtooltip)}`} placement="top-start">
+                                    <InfoIcon style={{ color: "rgb(119, 33, 173)", paddingLeft: "4px" }} />
+                                </Tooltip>
+                            </div>
+                            <div className={classes.containerItem}>
+                                <FormControlLabel
+                                    control={<IOSSwitchPurple checked={checkedCallSupervision} onChange={(e) => { setCheckedCallSupervision(e.target.checked); handleSwitchCallSupervison(e.target.checked); }} />}
+                                    label={""}
+                                    style={{ marginRight: "4px" }}
+                                />
+                                {t(langKeys.voicechannel_callsupervisor)}
+                                <Tooltip title={`${t(langKeys.voicechannel_callsupervisortooltip)}`} placement="top-start">
                                     <InfoIcon style={{ color: "rgb(119, 33, 173)", paddingLeft: "4px" }} />
                                 </Tooltip>
                             </div>

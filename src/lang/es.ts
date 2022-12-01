@@ -3954,6 +3954,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     voicechannel_recordingdefault: 'Predeterminado',
     voicechannel_recordinghd: 'HD - Alta definición',
     voicechannel_recordinglossless: 'Sin pérdidas',
+    voicechannel_callsupervisor: "Supervisión de llamada",
+    voicechannel_callsupervisortooltip: "Permite escuchar en linea una conversación entre cliente y asesor. Precio por minuto $0.033",
     voicechannel_recordingalert: 'La compra de una línea nueva y la activación de ciertas capacidades incurren en cargas extras en su plan mensual. Para mayor información visitar nuestra lista de precios: ',
 
     messagetemplate_sms: 'SMS',

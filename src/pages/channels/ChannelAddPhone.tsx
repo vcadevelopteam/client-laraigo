@@ -96,6 +96,7 @@ export const ChannelAddPhone: FC = () => {
     const [checkedRecording, setCheckedRecording] = useState(false);
     const [checkedSms, setCheckedSms] = useState(false);
     const [checkedOutbound, setCheckedOutbound] = useState(false);
+    const [checkedCallSupervision, setCheckedCallSupervision] = useState(false);
     const [dataPaymentPlan, setDataPaymentPlan] = useState<any>([]);
     const [categoryList, setCategoryList] = useState<any>([]);
     const [countryList, setCountryList] = useState<any>([]);
@@ -356,6 +357,14 @@ export const ChannelAddPhone: FC = () => {
         disableNextButton();
     }
 
+    const handleSwitchCallSupervison = (value: boolean) => {
+        let partialFields = fields;
+        //partialFields.service.callsupervision = value;
+        setFields(partialFields);
+
+        disableNextButton();
+    }
+
     const handleCountry = (value: any) => {
         if (value) {
             setCategoryList(value.phone_categories || []);
@@ -569,6 +578,17 @@ export const ChannelAddPhone: FC = () => {
                                 />
                                 {t(langKeys.voicechannel_outbound)}
                                 <Tooltip title={`${t(langKeys.voicechannel_outboundtooltip)}`} placement="top-start">
+                                    <InfoIcon style={{ color: "rgb(119, 33, 173)", paddingLeft: "4px" }} />
+                                </Tooltip>
+                            </div>
+                            <div className={classes.containerItem}>
+                                <FormControlLabel
+                                    control={<IOSSwitchPurple checked={checkedCallSupervision} onChange={(e) => { setCheckedCallSupervision(e.target.checked); handleSwitchCallSupervison(e.target.checked); }} />}
+                                    label={""}
+                                    style={{ marginRight: "4px" }}
+                                />
+                                {t(langKeys.voicechannel_callsupervisor)}
+                                <Tooltip title={`${t(langKeys.voicechannel_callsupervisortooltip)}`} placement="top-start">
                                     <InfoIcon style={{ color: "rgb(119, 33, 173)", paddingLeft: "4px" }} />
                                 </Tooltip>
                             </div>
