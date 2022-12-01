@@ -61,6 +61,7 @@ export const ChannelAddInstagram: FC = () => {
             "form": "",
             "apikey": "",
             "coloricon": "#F56040",
+            "voximplantcallsupervision": false
         },
         "type": "INSTAGRAM",
         "service": {

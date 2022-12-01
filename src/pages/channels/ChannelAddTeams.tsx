@@ -58,6 +58,7 @@ export const ChannelAddTeams: FC = () => {
             "form": "",
             "apikey": "",
             "coloricon": "#7B83EB",
+            "voximplantcallsupervision": false
         },
         "type": "MICROSOFTTEAMS",
         "service": {

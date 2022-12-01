@@ -62,6 +62,7 @@ export const ChannelAddTelegram: FC = () => {
             "form": "",
             "apikey": "",
             "coloricon": "#207FDD",
+            "voximplantcallsupervision": false
         },
         "type": "TELEGRAM",
         "service": {
