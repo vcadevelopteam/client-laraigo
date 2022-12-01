@@ -50,6 +50,7 @@ export const langKeys = {
     securityrules: "securityrules",
     securityrule: "securityrule",
     peoplereached: "peoplereached",
+    noavailabletemplates: 'noavailabletemplates',
     invalid_password: "invalid_password",
     likesandreactions: "likesandreactions",
     confirmationsavedraft: "confirmationsavedraft",
