@@ -52,6 +52,7 @@ export const langKeys = {
     voicechannel_callsupervisortooltip: "voicechannel_callsupervisortooltip",
     securityrule: "securityrule",
     peoplereached: "peoplereached",
+    noavailabletemplates: 'noavailabletemplates',
     invalid_password: "invalid_password",
     likesandreactions: "likesandreactions",
     confirmationsavedraft: "confirmationsavedraft",
