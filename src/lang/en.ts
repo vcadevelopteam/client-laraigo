@@ -752,6 +752,7 @@ const translation: LangKeys = {
     calendar_eventname: 'Event name',
     calendar_eventlocation: 'Event location',
     calendar_eventlink: 'Event link',
+    noavailabletemplates: "You don't have any template available for the selected type",
     calendar_monthdate: 'Event date',
     calendar_hourstart: 'Event start time',
     calendar_hourend: 'Event end time',

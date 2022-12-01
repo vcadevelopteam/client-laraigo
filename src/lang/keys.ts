@@ -34,6 +34,7 @@ export const langKeys = {
     sinonims: "sinonims",
     securityrules: "securityrules",
     securityrule: "securityrule",
+    noavailabletemplates: 'noavailabletemplates',
     invalid_password: "invalid_password",
     successful_cancel_event: "successful_cancel_event",
     passwordCond1: "passwordCond1",

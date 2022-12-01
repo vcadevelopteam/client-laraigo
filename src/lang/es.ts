@@ -1087,6 +1087,7 @@ const translation: LangKeys = {
     calendar_messate_tooltip: 'Variables disponibles: timeevent, timestart, timeend, eventname, eventlocation, eventlink, personname, personcontact, personmail',
     calendar_eventname: 'Nombre del evento',
     calendar_eventlocation: 'Ubicacion del evento',
+    noavailabletemplates: 'Usted no tiene ninguna plantilla disponible para el tipo seleccionado',
     calendar_eventlink: 'Link del evento',
     calendar_monthdate: 'Fecha del evento',
     calendar_hourstart: 'Hora inicio del evento',
