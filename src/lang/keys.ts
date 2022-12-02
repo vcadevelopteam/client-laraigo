@@ -20,6 +20,8 @@ export const langKeys = {
     documentsTooltip: "documentsTooltip",
     poweredbyTooltip: "poweredbyTooltip",
     locationTooltip: "locationTooltip",
+    cssheaderTooltip: "cssheaderTooltip",
+    jsscriptTooltip: "jsscriptTooltip",
     startnewconversation: "startnewconversation",
     startnewconversationTooltip: "startnewconversationTooltip",
     inputAlwaysEnabledTooltip: "inputAlwaysEnabledTooltip",

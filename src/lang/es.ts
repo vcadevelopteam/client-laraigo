@@ -36,11 +36,13 @@ const translation: LangKeys = {
     huge: "Enorme",
 
     noname: "Sin nombre",
+    cssheaderTooltip: "Permite aplicar estilos personalizados a la configuración del chat como tamaño de burbuja, estilos de letra entre otros.",
     size: "Tamaño",
     show_all: 'Mostrar todo',
     function_count_unique: 'Contar únicos',
     indefinetly: "Indefinido",
     daysintothefuture: "Días en el futuro",
+    jsscriptTooltip: "Permite introducir código JavaScript para generar una lógica dentro del sistema que atienda un requerimiento en concreto (Ej: Tener alertas ante identificación de datos dentro del formulario)",
     withinadaterange: "Rango de fechas",
     errorhours: "Las horas se solapan con otro conjunto de horas",
     errorhoursdontmatch: "Elija una hora de fin más tarde que la hora de inicio",

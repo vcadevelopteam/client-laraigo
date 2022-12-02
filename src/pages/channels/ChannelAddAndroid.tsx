@@ -20,7 +20,8 @@ import InfoIcon from '@material-ui/icons/Info';
 import { IAndroidSDKAdd, IChannel, IChatWebAdd, IChatWebAddFormField } from "@types";
 import { ColorChangeHandler } from "react-color";
 import AddCircleIcon from '@material-ui/icons/AddCircle';
-import { getInsertChatwebChannel } from "common/helpers";
+import { getEditChatWebChannel, getInsertChatwebChannel } from "common/helpers";
+import { editChannel as getEditChannel} from 'store/channel/actions';
 
 interface TabPanelProps {
     value: string;
@@ -896,7 +897,7 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">
                             CSS Header
-                            <Tooltip title={`${t(langKeys.sendMetaDataTooltip)}`} placement="top-start">
+                            <Tooltip title={`${t(langKeys.cssheaderTooltip)}`} placement="top-start">
                                 <InfoIcon style={{padding: "5px 0 0 5px"}} />
                             </Tooltip>
                         </Box>
@@ -912,9 +913,14 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                     </Grid>
                     <div style={{ height: 20 }} />
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">
+                            JS Script
+                            <Tooltip title={`${t(langKeys.jsscriptTooltip)}`} placement="top-start">
+                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                            </Tooltip>
+                        </Box>
                         <TextField
                             variant="outlined"
-                            placeholder="JS Script"
                             multiline
                             minRows={5}
                             maxRows={10}
@@ -1912,8 +1918,8 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
             dispatch(insertChannel2(body));
         } else {
             const id = channel.communicationchannelid;
-            //const body = getEditChatWebChannel(id, channel, values, name, auto, hexIconColor);
-            //dispatch(getEditChannel(body, "CHAZ"));
+            const body = getEditChatWebChannel(id, channel, values, name, auto, hexIconColor, "SMOOCHANDROID");
+            dispatch(getEditChannel(body, "SMOOCHANDROID"));
         }
 
     }
