@@ -6,7 +6,7 @@ import Link from '@material-ui/core/Link';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
-import { ColorInput, FieldEdit, FieldEditMulti, IOSSwitch } from "components";
+import { ColorInput, FieldEdit, FieldEditMulti, FieldSelect, IOSSwitch } from "components";
 import { useHistory, useLocation } from "react-router";
 import paths from "common/constants/paths";
 import { useForm, UseFormReturn } from 'react-hook-form';
@@ -17,11 +17,14 @@ import { AndroidIcon } from "icons";
 import clsx from 'clsx';
 import { Close, CloudUpload } from "@material-ui/icons";
 import InfoIcon from '@material-ui/icons/Info';
-import { IAndroidSDKAdd, IChannel, IChatWebAdd, IChatWebAddFormField } from "@types";
+import { IActionCall, IAndroidSDKAdd, IChannel, IChatWebAdd, IChatWebAddFormField } from "@types";
 import { ColorChangeHandler } from "react-color";
 import AddCircleIcon from '@material-ui/icons/AddCircle';
-import { getEditChatWebChannel, getInsertChatwebChannel } from "common/helpers";
+import { getEditChatWebChannel, getInputValidationSel, getInsertChatwebChannel } from "common/helpers";
 import { editChannel as getEditChannel} from 'store/channel/actions';
+import { getMultiCollection } from "store/main/actions";
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 
 interface TabPanelProps {
     value: string;
@@ -29,7 +32,7 @@ interface TabPanelProps {
 }
 interface FieldTemplate {
     text: React.ReactNode;
-    node: (onClose: (key: string) => void, data: IChatWebAddFormField, form: UseFormReturn<IChatWebAdd>, index: number) => React.ReactNode;
+    node: (onClose: (key: string) => void, data: IChatWebAddFormField, form: UseFormReturn<IChatWebAdd>, index: number,fields:any, setFields: (key: any) => void) => React.ReactNode;
     data: IChatWebAddFormField;
 }
 const useTabPanelStyles = makeStyles(theme => ({
@@ -114,12 +117,15 @@ interface NameTemplateProps {
     title: React.ReactNode;
     data: IChatWebAddFormField;
     index: number;
+    fields:any;
+    setFields: (key: any) => void
 }
 
-const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index }) => {
+const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index, fields, setFields }) => {
     const classes = useTemplateStyles();
     const { t } = useTranslation();
     const [required, setRequired] = useState(data.required);
+    const multiRes = useSelector(state => state.main.multiData);
 
     const handleRequired = (checked: boolean) => {
         setRequired(checked);
@@ -130,7 +136,19 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
         <div className={classes.root}>
             <div className={classes.headertitle}>
                 <label className={clsx(classes.title, classes.fieldContainer)}>
-                    {index+1} - {title}
+                    <IconButton
+                        style={{color: "#7721ad", width: 16, height: 16, padding: 0, position: "relative", right: 25, marginRight: -16, bottom: 30}}
+                        //onClick={() => onPageChange(currentPage + 1)}
+                    >
+                        <ArrowDownwardIcon/>
+                    </IconButton>
+                    <IconButton
+                        style={{color: "#7721ad", width: 16, height: 16, padding: 0, right: 9, marginRight: -16, bottom: 30}}
+                        //onClick={() => onPageChange(currentPage + 1)}
+                    >
+                        <ArrowUpwardIcon width={"5px"}/>
+                    </IconButton>
+                    {index+1}) {title}
                 </label>
                 <IconButton color="primary" onClick={onClose} className={classes.closeBtn}>
                     <Close color="primary" className="fa fa-plus-circle" />
@@ -198,17 +216,19 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                                             </Tooltip>
                                         </Grid>
                                         <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
-                                            <TextField
-                                                placeholder="Placeholder"
+                                            <FieldSelect
+                                                className="col-12"
+                                                valueDefault={data.placeholder}
                                                 variant="outlined"
-                                                size="small"
-                                                fullWidth
                                                 onChange={e => {
-                                                    form.setValue(`form.${index}.placeholder`, e.target.value)
-                                                    data.placeholder = e.target.value;
+                                                    form.setValue(`form.${index}.placeholder`, e?.inputvalue || "")
+                                                    data.placeholder = e?.inputvalue || "";
                                                     form.trigger(`form.${index}.placeholder`)
                                                 }}
-                                                defaultValue={data.placeholder}
+                                                data={multiRes.data?.[0]?.data || []}
+                                                loading={multiRes.loading}
+                                                optionDesc="description"
+                                                optionValue="inputvalue"
                                             />
                                         </Grid>
                                     </Grid>
@@ -226,16 +246,18 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                                             </label>
                                         </Grid>
                                         <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
-                                            <TextField
-                                                placeholder={t(langKeys.inputValidation)}
+                                            <FieldSelect
+                                                className="col-12"
+                                                valueDefault={data.inputvalidation}
                                                 variant="outlined"
-                                                size="small"
-                                                fullWidth
                                                 onChange={e => {
-                                                    form.setValue(`form.${index}.inputvalidation`, e.target.value)
-                                                    data.inputvalidation = e.target.value
+                                                    form.setValue(`form.${index}.inputvalidation`, e?.inputvalue || "")
+                                                    data.inputvalidation = e?.inputvalue || ""
                                                 }}
-                                                defaultValue={data.inputvalidation}
+                                                data={multiRes.data?.[0]?.data || []}
+                                                loading={multiRes.loading}
+                                                optionDesc="description"
+                                                optionValue="inputvalue"
                                             />
                                         </Grid>
                                     </Grid>
@@ -307,7 +329,7 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
 const templates: { [x: string]: FieldTemplate } = {
     [FIRSTNAME_FIELD]: {
         text: <Trans i18nKey={langKeys.name} />,
-        node: (onClose, data, form, index) => {
+        node: (onClose, data, form, index, fields, setFields) => {
             return (
                 <NameTemplate
                     form={form}
@@ -316,6 +338,8 @@ const templates: { [x: string]: FieldTemplate } = {
                     onClose={() => onClose(FIRSTNAME_FIELD)}
                     key={FIRSTNAME_FIELD}
                     title={<Trans i18nKey={langKeys.name} />}
+                    fields={fields}
+                    setFields={setFields}
                 />
             );
         },
@@ -332,7 +356,7 @@ const templates: { [x: string]: FieldTemplate } = {
     },
     [LASTNAME_FIELD]: {
         text: <Trans i18nKey={langKeys.lastname} />,
-        node: (onClose, data, form, index) => {
+        node: (onClose, data, form, index, fields, setFields) => {
             return (
                 <NameTemplate
                     form={form}
@@ -340,6 +364,8 @@ const templates: { [x: string]: FieldTemplate } = {
                     data={data}
                     onClose={() => onClose(LASTNAME_FIELD)}
                     key={LASTNAME_FIELD}
+                    fields={fields}
+                    setFields={setFields}
                     title={<Trans i18nKey={langKeys.lastname} />}
                 />
             );
@@ -357,7 +383,7 @@ const templates: { [x: string]: FieldTemplate } = {
     },
     [PHONE_FIELD]: {
         text: <Trans i18nKey={langKeys.phone} />,
-        node: (onClose, data, form, index) => {
+        node: (onClose, data, form, index, fields, setFields) => {
             return (
                 <NameTemplate
                     form={form}
@@ -365,6 +391,8 @@ const templates: { [x: string]: FieldTemplate } = {
                     data={data}
                     onClose={() => onClose(PHONE_FIELD)}
                     key={PHONE_FIELD}
+                    fields={fields}
+                    setFields={setFields}
                     title={<Trans i18nKey={langKeys.phone} />}
                 />
             );
@@ -382,7 +410,7 @@ const templates: { [x: string]: FieldTemplate } = {
     },
     [EMAIL_FIELD]: {
         text: <Trans i18nKey={langKeys.email} />,
-        node: (onClose, data, form, index) => {
+        node: (onClose, data, form, index, fields, setFields) => {
             return (
                 <NameTemplate
                     form={form}
@@ -390,6 +418,8 @@ const templates: { [x: string]: FieldTemplate } = {
                     data={data}
                     onClose={() => onClose(EMAIL_FIELD)}
                     key={EMAIL_FIELD}
+                    fields={fields}
+                    setFields={setFields}
                     title={<Trans i18nKey={langKeys.email} />}
                 />
             );
@@ -407,7 +437,7 @@ const templates: { [x: string]: FieldTemplate } = {
     },
     [DOCUMENT_FIELD]: {
         text: <Trans i18nKey={langKeys.document} />,
-        node: (onClose, data, form, index) => {
+        node: (onClose, data, form, index, fields, setFields) => {
             return (
                 <NameTemplate
                     form={form}
@@ -415,6 +445,8 @@ const templates: { [x: string]: FieldTemplate } = {
                     data={data}
                     onClose={() => onClose(DOCUMENT_FIELD)}
                     key={DOCUMENT_FIELD}
+                    fields={fields}
+                    setFields={setFields}
                     title={<Trans i18nKey={langKeys.document} />}
                 />
             );
@@ -432,7 +464,7 @@ const templates: { [x: string]: FieldTemplate } = {
     },
     [SUPPLYNUMBER_FIELD]: {
         text: <Trans i18nKey={langKeys.supplynumber} />,
-        node: (onClose, data, form, index) => {
+        node: (onClose, data, form, index, fields, setFields) => {
             return (
                 <NameTemplate
                     form={form}
@@ -440,6 +472,8 @@ const templates: { [x: string]: FieldTemplate } = {
                     data={data}
                     onClose={() => onClose(SUPPLYNUMBER_FIELD)}
                     key={SUPPLYNUMBER_FIELD}
+                    fields={fields}
+                    setFields={setFields}
                     title={<Trans i18nKey={langKeys.supplynumber} />}
                 />
             );
@@ -457,7 +491,7 @@ const templates: { [x: string]: FieldTemplate } = {
     },
     [CONTACT]: {
         text: <Trans i18nKey={langKeys.contact} />,
-        node: (onClose, data, form, index) => {
+        node: (onClose, data, form, index, fields, setFields) => {
             return (
                 <NameTemplate
                     form={form}
@@ -465,6 +499,8 @@ const templates: { [x: string]: FieldTemplate } = {
                     data={data}
                     onClose={() => onClose(CONTACT)}
                     key={CONTACT}
+                    fields={fields}
+                    setFields={setFields}
                     title={<Trans i18nKey={langKeys.contact} />}
                 />
             );
@@ -996,6 +1032,10 @@ export const AndroidForm: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn
         form.setValue('form', fields.map(x => x.data));
     }, [fields, form]);
 
+    useEffect(() => {
+        handleAddTemplate()
+    }, [fieldTemplate]);
+
     const handleCloseTemplate = (key: string) => {
         const newFields = fields.filter(e => e.data.field !== templates[key].data.field)
         setFields(newFields);
@@ -1060,20 +1100,11 @@ export const AndroidForm: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn
                                         {getMenuTemplates()}
                                     </Select>
                                 </FormControl>
-                                <Button
-                                    disabled={fieldTemplate === ""}
-                                    variant="contained"
-                                    color="primary"
-                                    style={{ height: 40, minHeight: 40 }}
-                                    onClick={handleAddTemplate}
-                                >
-                                    <Trans i18nKey={langKeys.add} /> +
-                                </Button>
                             </Grid>
                         </Grid>
                     </Grid>
                 </Grid>
-                {fields.map((e, i) => e.node(handleCloseTemplate, e.data, form, i))}
+                {fields.map((e, i) => e.node(handleCloseTemplate, e.data, form, i,fields, setFields))}
             </div>
             <div style={{width: "50%", minWidth: 500, display:"flex", paddingLeft: 24, paddingBottom: 24, gap: 8}}>
                 
@@ -1785,6 +1816,12 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
     const location = useLocation<whatsAppData>();
     const channel = location.state as IChannel | null;
 
+    useEffect(() => {
+        dispatch(getMultiCollection([
+            getInputValidationSel(0),
+        ]));
+    }, [])
+
     const [fields, setFields] = useState({
         "method": "UFN_COMMUNICATIONCHANNEL_INS",
         "parameters": {
@@ -2017,3 +2054,7 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
 }
 
 export default ChannelAddAndroid
+
+function dispatch(arg0: IActionCall) {
+    throw new Error("Function not implemented.");
+}
