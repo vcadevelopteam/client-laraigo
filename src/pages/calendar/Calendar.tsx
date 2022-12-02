@@ -425,6 +425,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                     errors={errors}
                     generalstate={generalstate}
                     setgeneralstate={setgeneralstate}
+                    dateinterval = {dateinterval}
+                    setdateinterval={setdateinterval}
                 />
             </AntTabPanel>
             <AntTabPanel index={2} currentIndex={tabIndex}>
