@@ -138,13 +138,31 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                 <label className={clsx(classes.title, classes.fieldContainer)}>
                     <IconButton
                         style={{color: "#7721ad", width: 16, height: 16, padding: 0, position: "relative", right: 25, marginRight: -16, bottom: 30}}
-                        //onClick={() => onPageChange(currentPage + 1)}
+                        onClick={() => {
+                            console.log(fields.length)
+                            let tempfields = fields;
+                            let tempfield = fields[index]
+                            tempfields[index] = tempfields[index + 1]
+                            tempfields[index + 1] = tempfield
+                            setFields(tempfields)
+                            form.trigger()
+                        }}
+                        disabled={index + 1 >= fields.length}
                     >
                         <ArrowDownwardIcon/>
                     </IconButton>
                     <IconButton
                         style={{color: "#7721ad", width: 16, height: 16, padding: 0, right: 9, marginRight: -16, bottom: 30}}
-                        //onClick={() => onPageChange(currentPage + 1)}
+                        onClick={() => {
+                            console.log(fields.length)
+                            let tempfields = fields;
+                            let tempfield = fields[index]
+                            tempfields[index] = tempfields[index - 1]
+                            tempfields[index - 1] = tempfield
+                            setFields(tempfields)
+                            form.trigger()
+                        }}
+                        disabled={index - 1 < 0}
                     >
                         <ArrowUpwardIcon width={"5px"}/>
                     </IconButton>
