@@ -312,15 +312,15 @@ const ChannelEdit: FC = () => {
                                 />
                             </div>
                             <div>
-                                <FormControlLabel
-                                    control={<IOSSwitchPurple checked={checkedRecording} onChange={(e) => { setCheckedRecording(e.target.checked)}} />}
-                                    label={""}
-                                    style={{ marginRight: "4px" }}
-                                />
                                 {t(langKeys.voicechannel_recording)}
                                 <Tooltip title={`${t(langKeys.voicechannel_recordingtooltip)}`} placement="top-start">
                                     <InfoIcon style={{ color: "rgb(119, 33, 173)", paddingLeft: "4px" }} />
                                 </Tooltip>
+                                <FormControlLabel
+                                    control={<IOSSwitchPurple checked={checkedRecording} onChange={(e) => { setCheckedRecording(e.target.checked)}} />}
+                                    label={""}
+                                    style={{ marginRight: "4px", marginLeft: 50 }}
+                                />
                             </div>
                         </div>
                     }
