@@ -1183,6 +1183,7 @@ export const getInsertChatwebChannel = (name: string, auto: boolean, iconColor: 
         form: "",
         apikey: "",
         coloricon: iconColor,
+        voximplantrecording: false,
     },
     type: "CHATWEB",
     service,
