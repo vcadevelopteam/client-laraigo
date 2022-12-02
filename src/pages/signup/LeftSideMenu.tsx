@@ -31,7 +31,7 @@ const useLeftSideStyles = makeStyles(theme => ({
     root: {
         flex: 1,
         width: '100%',
-        height: '100%',
+        height: 'auto',
         backgroundColor: 'white',
         padding: 40,
         overflowY: 'auto',
