@@ -1167,7 +1167,7 @@ export const insarrayVariableConfiguration = (table: Dictionary[]): IRequestBody
     }
 });
 
-export const getInsertChatwebChannel = (name: string, auto: boolean, iconColor: string, service: IChatWebAdd): IRequestBody<IChatWebAdd> => ({
+export const getInsertChatwebChannel = (name: string, auto: boolean, iconColor: string, service: IChatWebAdd, typechannel?: string): IRequestBody<IChatWebAdd> => ({
     method: "UFN_COMMUNICATIONCHANNEL_INS",
     parameters: {
         id: 0,
@@ -1184,8 +1184,10 @@ export const getInsertChatwebChannel = (name: string, auto: boolean, iconColor: 
         apikey: "",
         coloricon: iconColor,
         voximplantrecording: false,
+        voximplantholdtone: "",
+        voximplantcallsupervision: false,
     },
-    type: "CHATWEB",
+    type: typechannel || "CHATWEB",
     service,
 });
 
