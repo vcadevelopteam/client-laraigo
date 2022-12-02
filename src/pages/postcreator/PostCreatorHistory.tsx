@@ -184,7 +184,7 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value: a
                             {(!!medialink?.[0]?.thumbnail) ?
                                 <img loading='eager' alt="" width={50} height={50} src={medialink?.[0]?.thumbnail || ""}></img>
                                 :
-                                <img loading='eager' alt="" width={50} height={50} src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/41ba0151-31c6-4992-88b0-7d528db01de8/textonly.png"></img>
+                                <img loading='eager' alt="" width={50} height={50} style={{ backgroundColor: "#9C9C9C" }}></img>
                             }
                             <div style={{ position: "absolute", top: 35, left: 125 }}>
                                 <Avatar variant="rounded" style={{ width: 25, height: 25, backgroundColor: "white" }}><GetIconColor channelType={communicationchanneltype} /></Avatar>
