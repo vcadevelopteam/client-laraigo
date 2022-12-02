@@ -519,7 +519,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         color="primary"
                                         onClick={() => { setCustomizeType('Facebook') }}
                                         startIcon={<Facebook color="secondary" />}
-                                        style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                        style={{ backgroundColor: "#197BC8", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         disabled={customizeType === 'Facebook'}
                                     >{t(langKeys.postcreator_publish_facebook)}
                                     </Button>}
@@ -529,7 +529,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         color="primary"
                                         onClick={() => { setCustomizeType('Instagram') }}
                                         startIcon={<Instagram color="secondary" />}
-                                        style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                        style={{ backgroundColor: "#D3CFCE", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         disabled={customizeType === 'Instagram'}
                                     >{t(langKeys.postcreator_publish_instagram)}
                                     </Button>}
@@ -539,7 +539,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         color="primary"
                                         onClick={() => { setCustomizeType('LinkedIn') }}
                                         startIcon={<LinkedIn color="secondary" />}
-                                        style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                        style={{ backgroundColor: "#D3CFCE", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         disabled={customizeType === 'LinkedIn'}
                                     >{t(langKeys.postcreator_publish_linkedin)}
                                     </Button>}
@@ -549,7 +549,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         color="primary"
                                         onClick={() => { setCustomizeType('TikTok') }}
                                         startIcon={<MusicNote color="secondary" />}
-                                        style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                        style={{ backgroundColor: "#D3CFCE", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         disabled={customizeType === 'TikTok'}
                                     >{t(langKeys.postcreator_publish_tiktok)}
                                     </Button>}
@@ -559,7 +559,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         color="primary"
                                         onClick={() => { setCustomizeType('Twitter') }}
                                         startIcon={<Twitter color="secondary" />}
-                                        style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                        style={{ backgroundColor: "#D3CFCE", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         disabled={customizeType === 'Twitter'}
                                     >{t(langKeys.postcreator_publish_twitter)}
                                     </Button>}
@@ -1026,7 +1026,7 @@ const SavePostModalGeneric: FC<{ modalData: any, modalType: string, openModal: b
                         <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(localesLaraigo() as any)[navigator.language.split('-')[0]]}>
                             <KeyboardDatePicker
                                 className="col-6"
-                                format={getLocaleDateString()}
+                                format="d MMMM yyyy"
                                 invalidDateMessage={t(langKeys.invalid_date_format)}
                                 label={t(langKeys.date)}
                                 value={modalDate}
