@@ -6,10 +6,10 @@ import { editChannel, resetEditChannel } from 'store/channel/actions';
 import { getEditChannel } from 'common/helpers';
 import { useHistory, useLocation } from 'react-router';
 import { IChannel } from '@types';
-import { Box, Breadcrumbs, Button, IconButton, Link, makeStyles } from '@material-ui/core';
+import { Box, Breadcrumbs, Button, FormControlLabel, IconButton, Link, makeStyles } from '@material-ui/core';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { ColorInput, FieldEdit, FieldView } from 'components';
+import { ColorInput, FieldEdit, FieldView, IOSSwitchPurple } from 'components';
 import { formatNumber } from 'common/helpers';
 import PublishIcon from '@material-ui/icons/Publish';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -18,6 +18,7 @@ import { uploadFile } from 'store/main/actions';
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import paths from 'common/constants/paths';
 import { CircularProgress } from '@material-ui/core';
+import InfoIcon from "@material-ui/icons/Info";
 
 const useFinalStepStyles = makeStyles(theme => ({
     title: {
@@ -54,6 +55,8 @@ const ChannelEdit: FC = () => {
     const [auto, setAuto] = useState(false);
     const [welcometoneurl, setwelcometoneurl] = useState("");
     const [holdingtoneurl, setholdingtoneurl] = useState("");
+    const [checkedCallSupervision, setCheckedCallSupervision] = useState(false);
+    const [checkedRecording, setCheckedRecording] = useState(false);
     const [hexIconColor, setHexIconColor] = useState("");
     const [serviceCredentials, setServiceCredentials] = useState<any>({});
     const [waitUploadFile, setWaitUploadFile] = useState("");
@@ -70,6 +73,8 @@ const ChannelEdit: FC = () => {
                 setServiceCredentials(JSON.parse(channel.servicecredentials));
                 setholdingtoneurl(channel?.voximplantholdtone||"")
                 setwelcometoneurl(channel?.voximplantwelcometone||"")
+                setCheckedCallSupervision(channel?.voximplantcallsupervision||false)
+                setCheckedRecording(channel?.voximplantrecording ||false)
             }
         }
 
@@ -113,7 +118,7 @@ const ChannelEdit: FC = () => {
     const handleSubmit = useCallback(() => {
         if (!channel) return;
         const id = channel!.communicationchannelid;
-        const body = getEditChannel(id, channel, name, auto, hexIconColor, welcometoneurl, holdingtoneurl);
+        const body = getEditChannel(id, channel, name, auto, hexIconColor, welcometoneurl, holdingtoneurl,checkedCallSupervision);
         dispatch(editChannel(body));
     }, [name, hexIconColor, auto, channel, welcometoneurl, holdingtoneurl, dispatch]);
 
@@ -294,6 +299,28 @@ const ChannelEdit: FC = () => {
                                         </label>
                                     </div>
                                 </div>
+                            </div>
+                            <div>
+                                {t(langKeys.voicechannel_callsupervisor)}
+                                <Tooltip title={`${t(langKeys.voicechannel_callsupervisortooltip)}`} placement="top-start">
+                                    <InfoIcon style={{ color: "rgb(119, 33, 173)", paddingLeft: "4px" }} />
+                                </Tooltip>
+                                <FormControlLabel
+                                    control={<IOSSwitchPurple checked={checkedCallSupervision} onChange={(e) => { setCheckedCallSupervision(e.target.checked) }} />}
+                                    label={""}
+                                    style={{ marginRight: "4px", marginLeft: 50 }}
+                                />
+                            </div>
+                            <div>
+                                <FormControlLabel
+                                    control={<IOSSwitchPurple checked={checkedRecording} onChange={(e) => { setCheckedRecording(e.target.checked)}} />}
+                                    label={""}
+                                    style={{ marginRight: "4px" }}
+                                />
+                                {t(langKeys.voicechannel_recording)}
+                                <Tooltip title={`${t(langKeys.voicechannel_recordingtooltip)}`} placement="top-start">
+                                    <InfoIcon style={{ color: "rgb(119, 33, 173)", paddingLeft: "4px" }} />
+                                </Tooltip>
                             </div>
                         </div>
                     }

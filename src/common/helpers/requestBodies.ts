@@ -1167,7 +1167,7 @@ export const insarrayVariableConfiguration = (table: Dictionary[]): IRequestBody
     }
 });
 
-export const getInsertChatwebChannel = (name: string, auto: boolean, iconColor: string, service: IChatWebAdd): IRequestBody<IChatWebAdd> => ({
+export const getInsertChatwebChannel = (name: string, auto: boolean, iconColor: string, service: IChatWebAdd, voximplantcallsupervision?: boolean): IRequestBody<IChatWebAdd> => ({
     method: "UFN_COMMUNICATIONCHANNEL_INS",
     parameters: {
         id: 0,
@@ -1183,13 +1183,13 @@ export const getInsertChatwebChannel = (name: string, auto: boolean, iconColor: 
         form: "",
         apikey: "",
         coloricon: iconColor,
-        "voximplantcallsupervision": false
+        voximplantcallsupervision: voximplantcallsupervision || false
     },
     type: "CHATWEB",
     service,
 });
 
-export const getEditChannel = (id: number, payload: IChannel, name: string, auto: boolean, iconColor: string, welcometoneurl?: string, holdingtoneurl?: string): IRequestBody<IChannel> => ({
+export const getEditChannel = (id: number, payload: IChannel, name: string, auto: boolean, iconColor: string, welcometoneurl?: string, holdingtoneurl?: string, voximplantcallsupervision?: boolean): IRequestBody<IChannel> => ({
     method: "UFN_COMMUNICATIONCHANNEL_INS",
     parameters: {
         ...payload,
@@ -1207,11 +1207,11 @@ export const getEditChannel = (id: number, payload: IChannel, name: string, auto
         motive: "Edited from API",
         voximplantwelcometone: welcometoneurl || "",
         voximplantholdtone: holdingtoneurl || "",
-        "voximplantcallsupervision": false
+        voximplantcallsupervision: voximplantcallsupervision || false
     },
 });
 
-export const getEditChatWebChannel = (id: number, channel: IChannel, service: IChatWebAdd, name: string, auto: boolean, iconColor: string): IRequestBody<IChatWebAdd> => ({
+export const getEditChatWebChannel = (id: number, channel: IChannel, service: IChatWebAdd, name: string, auto: boolean, iconColor: string, voximplantcallsupervision?: boolean): IRequestBody<IChatWebAdd> => ({
     method: "UFN_COMMUNICATIONCHANNEL_INS",
     parameters: {
         ...channel,
@@ -1227,7 +1227,7 @@ export const getEditChatWebChannel = (id: number, channel: IChannel, service: IC
         apikey: "",
         updintegration: null,
         motive: "Edited from API",
-        "voximplantcallsupervision": false
+        voximplantcallsupervision: voximplantcallsupervision || false
     },
     type: "CHATWEB",
     service,
