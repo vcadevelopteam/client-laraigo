@@ -118,7 +118,7 @@ const ChannelEdit: FC = () => {
     const handleSubmit = useCallback(() => {
         if (!channel) return;
         const id = channel!.communicationchannelid;
-        const body = getEditChannel(id, channel, name, auto, hexIconColor, welcometoneurl, holdingtoneurl,checkedCallSupervision);
+        const body = getEditChannel(id, channel, name, auto, hexIconColor, welcometoneurl, holdingtoneurl,checkedCallSupervision, checkedRecording);
         dispatch(editChannel(body));
     }, [name, hexIconColor, auto, channel, welcometoneurl, holdingtoneurl, dispatch]);
 
