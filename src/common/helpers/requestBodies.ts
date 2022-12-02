@@ -1110,6 +1110,9 @@ export const getInsertChatwebChannel = (name: string, auto: boolean, iconColor: 
         form: "",
         apikey: "",
         coloricon: iconColor,
+        voximplantrecording: false,
+        voximplantholdtone: "",
+        voximplantcallsupervision: false,
     },
     type: "CHATWEB",
     service,
@@ -1133,6 +1136,8 @@ export const getEditChannel = (id: number, payload: IChannel, name: string, auto
         motive: "Edited from API",
         voximplantwelcometone: welcometoneurl || "",
         voximplantholdtone: holdingtoneurl || "",
+        voximplantrecording: false,
+        voximplantcallsupervision: false,
     },
 });
 
@@ -1152,6 +1157,9 @@ export const getEditChatWebChannel = (id: number, channel: IChannel, service: IC
         apikey: "",
         updintegration: null,
         motive: "Edited from API",
+        voximplantrecording: false,
+        voximplantholdtone: "",
+        voximplantcallsupervision: false,
     },
     type: "CHATWEB",
     service,
