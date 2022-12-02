@@ -1214,7 +1214,7 @@ export const getEditChannel = (id: number, payload: IChannel, name: string, auto
     },
 });
 
-export const getEditChatWebChannel = (id: number, channel: IChannel, service: IChatWebAdd, name: string, auto: boolean, iconColor: string, voximplantcallsupervision?: boolean): IRequestBody<IChatWebAdd> => ({
+export const getEditChatWebChannel = (id: number, channel: IChannel, service: IChatWebAdd, name: string, auto: boolean, iconColor: string,typechannel?: string): IRequestBody<IChatWebAdd> => ({
     method: "UFN_COMMUNICATIONCHANNEL_INS",
     parameters: {
         ...channel,
@@ -1230,9 +1230,11 @@ export const getEditChatWebChannel = (id: number, channel: IChannel, service: IC
         apikey: "",
         updintegration: null,
         motive: "Edited from API",
-        voximplantcallsupervision: voximplantcallsupervision || false
+        voximplantcallsupervision: false,
+        voximplantrecording: false,
+        voximplantholdtone: "",
     },
-    type: "CHATWEB",
+    type: typechannel || "CHATWEB",
     service,
 });
 
