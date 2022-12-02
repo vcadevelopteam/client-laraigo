@@ -261,10 +261,12 @@ const DialogCancelBooking: React.FC<{
                     cancelcomment: data.comment || "",
                 }
                 dispatch(execute(calendarBookingCancel(datat)));
+                setValue("comment", "") 
                 setWaitSave(true);
                 dispatch(showBackdrop(true));
             }
         } else {
+            setValue("comment", "") 
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.cancelenventerror || "error_unexpected_error") }))
         }
     }
