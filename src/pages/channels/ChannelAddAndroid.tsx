@@ -17,7 +17,7 @@ import { AndroidIcon } from "icons";
 import clsx from 'clsx';
 import { Close, CloudUpload } from "@material-ui/icons";
 import InfoIcon from '@material-ui/icons/Info';
-import { IAndroidSDKAdd, IChatWebAdd, IChatWebAddFormField } from "@types";
+import { IAndroidSDKAdd, IChannel, IChatWebAdd, IChatWebAddFormField } from "@types";
 import { ColorChangeHandler } from "react-color";
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 
@@ -1255,7 +1255,7 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
     const onChangeChatInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         if (!e.target.files) return;
         setChatBtn(e.target.files[0]);
-        //setValue("interface.iconbutton", e.target.files[0]);
+        setValue("interface.iconbutton", e.target.files[0]);
     }
 
     const handleChatBtnClick = () => {
@@ -1268,7 +1268,7 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
         const input = document.getElementById('chatBtnInput') as HTMLInputElement;
         input.value = "";
         setChatBtn(null);
-        //setValue('interface.iconbutton', null);
+        setValue('interface.iconbutton', null);
     }
 
     const onChangeWaitingInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -1637,6 +1637,7 @@ export const ChannelAddAndroidDetail: FC<{form: UseFormReturn<IAndroidSDKAdd>, s
     const [tabIndex, setTabIndex] = useState('0');
     const { t } = useTranslation();
     const handleNext = () => {
+        debugger
         form.handleSubmit((_) => setView("view-2"))();
     }
     return <>
@@ -1704,6 +1705,9 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
     const [coloricon, setcoloricon] = useState("#90c900");
     const classes = useChannelAddStyles();
     const service = useRef<IAndroidSDKAdd | null>(null);
+    const location = useLocation<whatsAppData>();
+    const channel = location.state as IChannel | null;
+
     const [fields, setFields] = useState({
         "method": "UFN_COMMUNICATIONCHANNEL_INS",
         "parameters": {
@@ -1769,8 +1773,6 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
             },
         }
     });
-    const location = useLocation<whatsAppData>();
-
     const whatsAppData = location.state as whatsAppData | null;
 
     async function finishreg() {
@@ -1831,6 +1833,19 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
         form.register('interface.iconheader', { validate: mandatoryFileField });
         form.register('interface.iconbot', { validate: mandatoryFileField });
     }, [form, t]);
+
+    const handleSubmit = (name: string, auto: boolean, hexIconColor: string) => {
+        const values = form.getValues();
+        if (!channel) {
+            //const body = getInsertChatwebChannel(name, auto, hexIconColor, values);
+            //dispatch(insertChannel2(body));
+        } else {
+            const id = channel.communicationchannelid;
+            //const body = getEditChatWebChannel(id, channel, values, name, auto, hexIconColor);
+            //dispatch(getEditChannel(body, "CHAZ"));
+        }
+
+    }
 
     return (
         <div style={{ width: '100%' }}>
