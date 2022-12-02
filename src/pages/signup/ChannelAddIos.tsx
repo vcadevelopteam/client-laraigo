@@ -43,6 +43,7 @@ export const ChannelAddIos: FC<{ setOpenWarning: (param: any) => void }> = ({ se
                     "form": "",
                     "apikey": "",
                     "coloricon": "#000000",
+                    "voximplantcallsupervision": false
                 },
                 "type": "SMOOCHIOS",
             })

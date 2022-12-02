@@ -118,6 +118,7 @@ export const ChannelAddPhone: FC = () => {
             "integrationid": "",
             "other": "",
             "type": "",
+            "voximplantcallsupervision": false
         },
         "service": {
             "category": "",
@@ -360,7 +361,8 @@ export const ChannelAddPhone: FC = () => {
 
     const handleSwitchCallSupervison = (value: boolean) => {
         let partialFields = fields;
-        //partialFields.service.callsupervision = value;
+        console.log(fields)
+        partialFields.parameters.voximplantcallsupervision = value;
         setFields(partialFields);
 
         disableNextButton();

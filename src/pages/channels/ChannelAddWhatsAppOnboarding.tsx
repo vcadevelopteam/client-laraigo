@@ -65,6 +65,7 @@ export const ChannelAddWhatsAppOnboarding: FC = () => {
             "integrationid": "",
             "other": "",
             "type": "",
+            "voximplantcallsupervision": false
         },
         "service": {
             "channelid": "",

@@ -61,6 +61,7 @@ export const ChannelAddFacebook: FC = () => {
             "form": "",
             "apikey": "",
             "coloricon": "#2d88ff",
+            "voximplantcallsupervision": false
         },
         "type": "FACEBOOK",
         "service": {

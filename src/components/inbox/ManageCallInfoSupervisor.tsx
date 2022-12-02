@@ -20,12 +20,7 @@ const ManageCallInfoSupervisor: React.FC = () => {
     const calls = useSelector(state => state.voximplant.calls);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const [supervision, setSupervision] = useState(false)
-    const [showSupervisionButton, setShowSupervisionButton] = useState(false)
     const [time, settime] = useState(0);
-    
-    useEffect(() => {
-        setShowSupervisionButton(!!resValidateToken?.user?.voximplantcallsupervision)
-    }, [resValidateToken])
 
     React.useEffect(() => {
         if (ticketSelected?.callanswereddate) {
@@ -101,7 +96,7 @@ const ManageCallInfoSupervisor: React.FC = () => {
         <div style={{ width: "100%" }}>
             <Card style={{ maxWidth: "500px" }}>
                 <CardContent>
-                    {(ticketSelected?.status !== "CERRADO" && showSupervisionButton) && (
+                    {(ticketSelected?.status !== "CERRADO" && !!resValidateToken?.user?.voximplantcallsupervision) && (
                         <div style={{ display: "flex", justifyContent: "end" }}>
                             <Tooltip title={t(langKeys.monitor_call) || ""}>
                                 <span>

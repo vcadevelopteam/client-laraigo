@@ -58,6 +58,7 @@ export const ChannelAddLinkedIn: FC = () => {
             "form": "",
             "apikey": "",
             "coloricon": "#0A66C2",
+            "voximplantcallsupervision": false
         },
         "type": "LINKEDIN",
         "service": {

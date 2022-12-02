@@ -1187,11 +1187,11 @@ export const getInsertChatwebChannel = (name: string, auto: boolean, iconColor: 
         voximplantholdtone: "",
         voximplantcallsupervision: false,
     },
-    type: typechannel||"CHATWEB",
+    type: typechannel || "CHATWEB",
     service,
 });
 
-export const getEditChannel = (id: number, payload: IChannel, name: string, auto: boolean, iconColor: string, welcometoneurl?: string, holdingtoneurl?: string): IRequestBody<IChannel> => ({
+export const getEditChannel = (id: number, payload: IChannel, name: string, auto: boolean, iconColor: string, welcometoneurl?: string, holdingtoneurl?: string, voximplantcallsupervision?: boolean, voximplantrecording?:boolean): IRequestBody<IChannel> => ({
     method: "UFN_COMMUNICATIONCHANNEL_INS",
     parameters: {
         ...payload,
@@ -1209,12 +1209,12 @@ export const getEditChannel = (id: number, payload: IChannel, name: string, auto
         motive: "Edited from API",
         voximplantwelcometone: welcometoneurl || "",
         voximplantholdtone: holdingtoneurl || "",
-        voximplantrecording: false,
-        voximplantcallsupervision: false,
+        voximplantcallsupervision: voximplantcallsupervision || false,
+        voximplantrecording: voximplantrecording || false,
     },
 });
 
-export const getEditChatWebChannel = (id: number, channel: IChannel, service: IChatWebAdd, name: string, auto: boolean, iconColor: string): IRequestBody<IChatWebAdd> => ({
+export const getEditChatWebChannel = (id: number, channel: IChannel, service: IChatWebAdd, name: string, auto: boolean, iconColor: string, voximplantcallsupervision?: boolean): IRequestBody<IChatWebAdd> => ({
     method: "UFN_COMMUNICATIONCHANNEL_INS",
     parameters: {
         ...channel,
@@ -1230,9 +1230,7 @@ export const getEditChatWebChannel = (id: number, channel: IChannel, service: IC
         apikey: "",
         updintegration: null,
         motive: "Edited from API",
-        voximplantrecording: false,
-        voximplantholdtone: "",
-        voximplantcallsupervision: false,
+        voximplantcallsupervision: voximplantcallsupervision || false
     },
     type: "CHATWEB",
     service,

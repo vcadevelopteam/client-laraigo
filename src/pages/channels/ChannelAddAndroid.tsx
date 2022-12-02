@@ -59,6 +59,7 @@ export const ChannelAddAndroid: FC = () => {
             "form": "",
             "apikey": "",
             "coloricon": "#90c900",
+            "voximplantcallsupervision": false
         },
         "type": "SMOOCHANDROID",
     })

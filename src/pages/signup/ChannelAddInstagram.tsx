@@ -63,6 +63,7 @@ export const ChannelAddInstagram: FC<ChannelAddInstagramProps> = ({ setOpenWarni
                     "form": "",
                     "apikey": "",
                     "coloricon": "#F56040",
+                    "voximplantcallsupervision": false
                 },
                 "type": "INSTAGRAM",
                 "service": {

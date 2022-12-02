@@ -74,6 +74,7 @@ export const ChannelAddBlogger: FC = () => {
             "form": "",
             "apikey": "",
             "coloricon": "#F06A35",
+            "voximplantcallsupervision": false
         },
         "type": "BLOGGER",
         "service": {

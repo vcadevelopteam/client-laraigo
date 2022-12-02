@@ -61,6 +61,7 @@ export const ChannelAddInstagramDM: FC = () => {
             "form": "",
             "apikey": "",
             "coloricon": "#F56040",
+            "voximplantcallsupervision": false
         },
         "type": "INSTAMESSENGER",
         "service": {

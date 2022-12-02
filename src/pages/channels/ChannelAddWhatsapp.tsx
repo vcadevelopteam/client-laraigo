@@ -138,6 +138,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
             "form": "",
             "apikey": "",
             "coloricon": "#4AC959",
+            "voximplantcallsupervision": false
         },
         "type": whatsAppData?.typeWhatsApp === "DIALOG" ? "WHATSAPP" : "WHATSAPPSMOOCH",
         "service": {
@@ -230,6 +231,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 "form": whatsAppData.row.form,
                                 "apikey": whatsAppData.row.apikey,
                                 "coloricon": whatsAppData.row.coloricon,
+                                "voximplantcallsupervision": false
                             },
                             "type": "WHATSAPPSMOOCH",
                             "service": {

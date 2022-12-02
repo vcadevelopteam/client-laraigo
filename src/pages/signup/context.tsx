@@ -160,7 +160,7 @@ export interface VoxImplantPhoneChannel {
     outbound: boolean,
     recordingstorage: string,
     recordingquality: string,
-    callsupervision: boolean,
+    voximplantcallsupervision: boolean,
     build: (v: Omit<VoxImplantPhoneChannel, 'build'>) => IRequestBody;
 }
 
