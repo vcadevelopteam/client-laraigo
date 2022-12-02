@@ -6,13 +6,13 @@ import Link from '@material-ui/core/Link';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
-import { ColorInput, FieldEdit, IOSSwitch } from "components";
+import { ColorInput, FieldEdit, FieldEditMulti, IOSSwitch } from "components";
 import { useHistory, useLocation } from "react-router";
 import paths from "common/constants/paths";
 import { useForm, UseFormReturn } from 'react-hook-form';
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { insertChannel } from "store/channel/actions";
+import { insertChannel, insertChannel2 } from "store/channel/actions";
 import { AndroidIcon } from "icons";
 import clsx from 'clsx';
 import { Close, CloudUpload } from "@material-ui/icons";
@@ -20,6 +20,7 @@ import InfoIcon from '@material-ui/icons/Info';
 import { IAndroidSDKAdd, IChannel, IChatWebAdd, IChatWebAddFormField } from "@types";
 import { ColorChangeHandler } from "react-color";
 import AddCircleIcon from '@material-ui/icons/AddCircle';
+import { getInsertChatwebChannel } from "common/helpers";
 
 interface TabPanelProps {
     value: string;
@@ -128,7 +129,7 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
         <div className={classes.root}>
             <div className={classes.headertitle}>
                 <label className={clsx(classes.title, classes.fieldContainer)}>
-                    {title}
+                    {index+1} - {title}
                 </label>
                 <IconButton color="primary" onClick={onClose} className={classes.closeBtn}>
                     <Close color="primary" className="fa fa-plus-circle" />
@@ -138,17 +139,20 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
             <Grid container direction="column">
                 <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                     <Grid container direction="row">
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={6}>
+                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <Grid container direction="column">
                                 <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                                     <Box m={1}>
                                         <Grid container direction="row" style={{ minHeight: 40 }}>
-                                            <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
+                                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                                                 <label className={classes.text}>
                                                     <Trans i18nKey={langKeys.required} />
                                                 </label>
+                                                <Tooltip title={`${t(langKeys.requiredTooltip)}`} placement="top-start">
+                                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                </Tooltip>
                                             </Grid>
-                                            <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
+                                            <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
                                                 <IOSSwitch checked={required} onChange={(_, v) => { handleRequired(v); form.setValue(`form.${index}.required`, v);form.trigger(`form.${index}.required`) }} />
                                             </Grid>
                                         </Grid>
@@ -157,12 +161,15 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                                 <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                                     <Box m={1}>
                                         <Grid container direction="row">
-                                            <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
+                                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                                                 <label className={classes.text}>
                                                     <Trans i18nKey={langKeys.label} />
                                                 </label>
+                                                <Tooltip title={`${t(langKeys.labelTooltip)}`} placement="top-start">
+                                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                </Tooltip>
                                             </Grid>
-                                            <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
+                                            <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
                                                 <TextField
                                                     placeholder={t(langKeys.label)}
                                                     variant="outlined"
@@ -180,109 +187,116 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                                     </Box>
                                 </Grid>
                             </Grid>
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={6}>
-                            <Grid container direction="column">
-                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                    <Box m={1}>
-                                        <Grid container direction="row">
-                                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                                                <label className={classes.text}>Placeholder</label>
-                                            </Grid>
-                                            <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
-                                                <TextField
-                                                    placeholder="Placeholder"
-                                                    variant="outlined"
-                                                    size="small"
-                                                    fullWidth
-                                                    onChange={e => {
-                                                        form.setValue(`form.${index}.placeholder`, e.target.value)
-                                                        data.placeholder = e.target.value;
-                                                        form.trigger(`form.${index}.placeholder`)
-                                                    }}
-                                                    defaultValue={data.placeholder}
-                                                />
-                                            </Grid>
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                <Box m={1}>
+                                    <Grid container direction="row">
+                                        <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+                                            <label className={classes.text}>Placeholder</label>
+                                            <Tooltip title={`${t(langKeys.placeholderTooltip)}`} placement="top-start">
+                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            </Tooltip>
                                         </Grid>
-                                    </Box>
-                                </Grid>
-                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                    <Box m={1}>
-                                        <Grid container direction="row">
-                                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                                                <label className={classes.text}>
-                                                    <Trans i18nKey={langKeys.errorText} />
-                                                </label>
-                                            </Grid>
-                                            <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
-                                                <TextField
-                                                    placeholder={t(langKeys.errorText)}
-                                                    variant="outlined"
-                                                    size="small"
-                                                    fullWidth
-                                                    onChange={e => {
-                                                        form.setValue(`form.${index}.validationtext`, e.target.value)
-                                                        data.validationtext = e.target.value;
-                                                        form.trigger(`form.${index}.validationtext`)
-                                                    }}
-                                                    defaultValue={data.validationtext}
-                                                />
-                                            </Grid>
+                                        <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
+                                            <TextField
+                                                placeholder="Placeholder"
+                                                variant="outlined"
+                                                size="small"
+                                                fullWidth
+                                                onChange={e => {
+                                                    form.setValue(`form.${index}.placeholder`, e.target.value)
+                                                    data.placeholder = e.target.value;
+                                                    form.trigger(`form.${index}.placeholder`)
+                                                }}
+                                                defaultValue={data.placeholder}
+                                            />
                                         </Grid>
-                                    </Box>
-                                </Grid>
+                                    </Grid>
+                                </Box>
+                            </Grid>
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                <Box m={1}>
+                                    <Grid container direction="row">
+                                        <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+                                            <label className={classes.text}>
+                                                <Trans i18nKey={langKeys.inputValidation} />
+                                                <Tooltip title={`${t(langKeys.inputValidationTooltip)}`} placement="top-start">
+                                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                </Tooltip>
+                                            </label>
+                                        </Grid>
+                                        <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
+                                            <TextField
+                                                placeholder={t(langKeys.inputValidation)}
+                                                variant="outlined"
+                                                size="small"
+                                                fullWidth
+                                                onChange={e => {
+                                                    form.setValue(`form.${index}.inputvalidation`, e.target.value)
+                                                    data.inputvalidation = e.target.value
+                                                }}
+                                                defaultValue={data.inputvalidation}
+                                            />
+                                        </Grid>
+                                    </Grid>
+                                </Box>
+                            </Grid>
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                <Box m={1}>
+                                    <Grid container direction="row">
+                                        <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+                                            <label className={classes.text}>
+                                                <Trans i18nKey={langKeys.validationOnKeychange} />
+                                                <Tooltip title={`${t(langKeys.validationOnKeychangeTooltip)}`} placement="top-start">
+                                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                </Tooltip>
+                                            </label>
+                                        </Grid>
+                                        <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
+                                            <TextField
+                                                placeholder={t(langKeys.validationOnKeychange)}
+                                                variant="outlined"
+                                                size="small"
+                                                fullWidth
+                                                onChange={e => {
+                                                    form.setValue(`form.${index}.keyvalidation`, e.target.value)
+                                                    data.keyvalidation = e.target.value
+                                                }}
+                                                defaultValue={data.keyvalidation}
+                                            />
+                                        </Grid>
+                                    </Grid>
+                                </Box>
+                            </Grid>
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                <Box m={1}>
+                                    <Grid container direction="row">
+                                        <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+                                            <label className={classes.text}>
+                                                <Trans i18nKey={langKeys.errorText} />
+                                                <Tooltip title={`${t(langKeys.errorTextTooltip)}`} placement="top-start">
+                                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                </Tooltip>
+                                            </label>
+                                        </Grid>
+                                        <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
+                                            <TextField
+                                                placeholder={t(langKeys.errorText)}
+                                                variant="outlined"
+                                                size="small"
+                                                fullWidth
+                                                onChange={e => {
+                                                    form.setValue(`form.${index}.validationtext`, e.target.value)
+                                                    data.validationtext = e.target.value;
+                                                    form.trigger(`form.${index}.validationtext`)
+                                                }}
+                                                defaultValue={data.validationtext}
+                                            />
+                                        </Grid>
+                                    </Grid>
+                                </Box>
                             </Grid>
                         </Grid>
                     </Grid>
-                </Grid>
-                <Divider style={{ margin: '22px 0' }} />
-                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                    <Box m={1}>
-                        <Grid container direction="row">
-                            <Grid item xs={12} sm={3} md={3} lg={3} xl={2}>
-                                <label className={classes.text}>
-                                    <Trans i18nKey={langKeys.inputValidation} />
-                                </label>
-                            </Grid>
-                            <Grid item xs={12} sm={9} md={9} lg={9} xl={10}>
-                                <TextField
-                                    placeholder={t(langKeys.inputValidation)}
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                    onChange={e => {
-                                        form.setValue(`form.${index}.inputvalidation`, e.target.value)
-                                        data.inputvalidation = e.target.value
-                                    }}
-                                    defaultValue={data.inputvalidation}
-                                />
-                            </Grid>
-                        </Grid>
-                    </Box>
-                </Grid>
-                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                    <Box m={1}>
-                        <Grid container direction="row">
-                            <Grid item xs={12} sm={3} md={3} lg={3} xl={2}>
-                                <label className={classes.text}>
-                                    <Trans i18nKey={langKeys.validationOnKeychange} />
-                                </label>
-                            </Grid>
-                            <Grid item xs={12} sm={9} md={9} lg={9} xl={10}>
-                                <TextField
-                                    placeholder={t(langKeys.validationOnKeychange)}
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                    onChange={e => {
-                                        form.setValue(`form.${index}.keyvalidation`, e.target.value)
-                                        data.keyvalidation = e.target.value
-                                    }}
-                                    defaultValue={data.keyvalidation}
-                                />
-                            </Grid>
-                        </Grid>
-                    </Box>
                 </Grid>
             </Grid>
         </div>
@@ -669,13 +683,17 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
         <div style={{ display: 'flex', width: "100%" }}>
             <div style={{width: "50%", minWidth: 500, borderRight: "2px solid #76acdc", padding: 10}}>
                 <Grid container direction="column">
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                    <div style={{padding: "10px 0", paddingTop: 0}}><Typography variant="h6" >{t(langKeys.messagetemplate_attachment)}</Typography></div>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}  style={{padding: "0 0 20px 0", paddingTop: 0}}>                        
                         <Grid container direction="row">
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+                            <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                                 <Grid container direction="row">
                                     <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                         <label className={classes.text}>
-                                            <Trans i18nKey={langKeys.uploadFile} count={2} />
+                                            <Trans i18nKey={langKeys.documents}/>
+                                            <Tooltip title={`${t(langKeys.documentsTooltip)}`} placement="top-start">
+                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            </Tooltip>
                                         </label>
                                     </Grid>
                                     <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
@@ -683,11 +701,48 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                                     </Grid>
                                 </Grid>
                             </Grid>
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+                            <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                                 <Grid container direction="row">
                                     <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                         <label className={classes.text}>
-                                            <Trans i18nKey={langKeys.uploadVideo} />
+                                            <Trans i18nKey={langKeys.image_plural}/>
+                                            <Tooltip title={`${t(langKeys.imageTooltip)}`} placement="top-start">
+                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            </Tooltip>
+                                        </label>
+                                    </Grid>
+                                    <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
+                                        <IOSSwitch checked={uploadImage} onChange={(_, v) => handleUploadImageChange(v)} />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{padding: "0 0 20px 0", paddingTop: 0}}>                       
+                        <Grid container direction="row">
+                            <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
+                                <Grid container direction="row">
+                                    <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
+                                        <label className={classes.text}>
+                                            Audios
+                                            <Tooltip title={`${t(langKeys.audioTooltip)}`} placement="top-start">
+                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            </Tooltip>
+                                        </label>
+                                    </Grid>
+                                    <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
+                                        <IOSSwitch checked={uploadAudio} onChange={(_, v) => handleUploadAudioChange(v)} />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
+                                <Grid container direction="row">
+                                    <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
+                                        <label className={classes.text}>
+                                            Videos
+                                            <Tooltip title={`${t(langKeys.videoTooltip)}`} placement="top-start">
+                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            </Tooltip>
                                         </label>
                                     </Grid>
                                     <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
@@ -695,11 +750,18 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                                     </Grid>
                                 </Grid>
                             </Grid>
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>                        
+                        <Grid container direction="row">
+                            <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                                 <Grid container direction="row">
                                     <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                         <label className={classes.text}>
                                             <Trans i18nKey={langKeys.sendLocation} />
+                                            <Tooltip title={`${t(langKeys.locationTooltip)}`} placement="top-start">
+                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            </Tooltip>
                                         </label>
                                     </Grid>
                                     <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
@@ -709,37 +771,31 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                    <div style={{padding: "10px 0"}}><Typography variant="h6" >{t(langKeys.additionalsettings)}</Typography></div>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>   
                         <Grid container direction="row">
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+                            <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                                 <Grid container direction="row">
                                     <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                        <label className={classes.text}>
-                                            <Trans i18nKey={langKeys.uploadImage} count={2} />
+                                        <label className={classes.text}>Powered by
+                                            <Tooltip title={`${t(langKeys.poweredbyTooltip)}`} placement="top-start">
+                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            </Tooltip>
                                         </label>
                                     </Grid>
                                     <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                        <IOSSwitch checked={uploadImage} onChange={(_, v) => handleUploadImageChange(v)} />
+                                        <IOSSwitch checked={poweredBy} onChange={(_, v) => handlePoweredByChange(v)} />
                                     </Grid>
                                 </Grid>
                             </Grid>
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+                            <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                                 <Grid container direction="row">
                                     <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                         <label className={classes.text}>
-                                            <Trans i18nKey={langKeys.uploadAudio} />
-                                        </label>
-                                    </Grid>
-                                    <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                        <IOSSwitch checked={uploadAudio} onChange={(_, v) => handleUploadAudioChange(v)} />
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                                <Grid container direction="row">
-                                    <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                        <label className={classes.text}>
-                                            <Trans i18nKey={langKeys.refreshChat} />
+                                            <Trans i18nKey={langKeys.startnewconversation} />
+                                            <Tooltip title={`${t(langKeys.startnewconversationTooltip)}`} placement="top-start">
+                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            </Tooltip>
                                         </label>
                                     </Grid>
                                     <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
@@ -749,28 +805,16 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>   
                         <Grid container direction="row">
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                                <Grid container direction="row">
-                                    <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                        <label className={classes.text}>Powered by</label>
-                                    </Grid>
-                                    <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                        <IOSSwitch checked={poweredBy} onChange={(_, v) => handlePoweredByChange(v)} />
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                    <Divider style={{ margin: '22px 0 38px 0' }} />
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <Grid container direction="row">
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+                            <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                                 <Grid container direction="row">
                                     <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                         <label className={classes.text}>
                                             <Trans i18nKey={langKeys.inputAlwaysEnabled} />
+                                            <Tooltip title={`${t(langKeys.inputAlwaysEnabledTooltip)}`} placement="top-start">
+                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            </Tooltip>
                                         </label>
                                     </Grid>
                                     <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
@@ -778,11 +822,14 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                                     </Grid>
                                 </Grid>
                             </Grid>
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+                            <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                                 <Grid container direction="row">
                                     <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                         <label className={classes.text}>
                                             <Trans i18nKey={langKeys.abandonmentEvent} />
+                                            <Tooltip title={`${t(langKeys.abandonmentEventTooltip)}`} placement="top-start">
+                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            </Tooltip>
                                         </label>
                                     </Grid>
                                     <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
@@ -790,11 +837,18 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                                     </Grid>
                                 </Grid>
                             </Grid>
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>   
+                        <Grid container direction="row">
+                            <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                                 <Grid container direction="row">
                                     <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                         <label className={classes.text}>
                                             <Trans i18nKey={langKeys.newMessageRing} />
+                                            <Tooltip title={`${t(langKeys.newMessageRingTooltip)}`} placement="top-start">
+                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            </Tooltip>
                                         </label>
                                     </Grid>
                                     <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
@@ -802,15 +856,14 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                                     </Grid>
                                 </Grid>
                             </Grid>
-                        </Grid>
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <Grid container direction="row">
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+                            <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                                 <Grid container direction="row">
                                     <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                         <label className={classes.text}>
                                             <Trans i18nKey={langKeys.formBaseHistory} />
+                                            <Tooltip title={`${t(langKeys.formBaseHistoryTooltip)}`} placement="top-start">
+                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            </Tooltip>
                                         </label>
                                     </Grid>
                                     <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
@@ -818,11 +871,18 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                                     </Grid>
                                 </Grid>
                             </Grid>
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>   
+                        <Grid container direction="row">
+                            <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                                 <Grid container direction="row">
                                     <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                         <label className={classes.text}>
                                             <Trans i18nKey={langKeys.sendMetaData} />
+                                            <Tooltip title={`${t(langKeys.sendMetaDataTooltip)}`} placement="top-start">
+                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            </Tooltip>
                                         </label>
                                     </Grid>
                                     <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
@@ -832,10 +892,16 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                             </Grid>
                         </Grid>
                     </Grid>
+                    <div style={{padding: "10px 0"}}><Typography variant="h6" >{t(langKeys.layoutconfig)}</Typography></div>
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">
+                            CSS Header
+                            <Tooltip title={`${t(langKeys.sendMetaDataTooltip)}`} placement="top-start">
+                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                            </Tooltip>
+                        </Box>
                         <TextField
                             variant="outlined"
-                            placeholder="CSS Header"
                             multiline
                             minRows={5}
                             maxRows={10}
@@ -951,12 +1017,17 @@ export const AndroidForm: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn
                 <Grid container direction="column">
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Grid container direction="row">
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+                            <Grid item xs={12} sm={10} md={10} lg={10} xl={10}>
                                 <Typography className={classes.text}>
-                                    <Trans i18nKey={langKeys.wantAddFormToSiteQuestion} />
+                                    <label className={classes.text}>
+                                        <Trans i18nKey={langKeys.wantAddFormToSiteQuestion} />
+                                        <Tooltip title={`${t(langKeys.wantAddFormToSiteQuestionTooltip)}`} placement="top-start">
+                                            <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                        </Tooltip>
+                                    </label>
                                 </Typography>
                             </Grid>
-                            <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
+                            <Grid item xs={12} sm={2} md={2} lg={2} xl={2}>
                                 <IOSSwitch checked={enable} onChange={(_, v) => setEnable(v)} />
                             </Grid>
                         </Grid>
@@ -1837,8 +1908,8 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
     const handleSubmit = (name: string, auto: boolean, hexIconColor: string) => {
         const values = form.getValues();
         if (!channel) {
-            //const body = getInsertChatwebChannel(name, auto, hexIconColor, values);
-            //dispatch(insertChannel2(body));
+            const body = getInsertChatwebChannel(name, auto, hexIconColor, values, "SMOOCHANDROID");
+            dispatch(insertChannel2(body));
         } else {
             const id = channel.communicationchannelid;
             //const body = getEditChatWebChannel(id, channel, values, name, auto, hexIconColor);
