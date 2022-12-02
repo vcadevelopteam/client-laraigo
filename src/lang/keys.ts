@@ -2305,12 +2305,14 @@ export const langKeys = {
     report_sentmessages_person: 'report_sentmessages_person',
     report_sentmessages_inbox: 'report_sentmessages_inbox',
     report_sentmessages_chatflow: 'report_sentmessages_chatflow',
+    report_sentmessages_booking: 'report_sentmessages_booking',
 
     report_sentmessages_API: 'report_sentmessages_API',
     report_sentmessages_LEAD: 'report_sentmessages_LEAD',
     report_sentmessages_PERSON: 'report_sentmessages_PERSON',
     report_sentmessages_INBOX: 'report_sentmessages_INBOX',
     report_sentmessages_CHATFLOW: 'report_sentmessages_CHATFLOW',
+    report_sentmessages_BOOKING: 'report_sentmessages_BOOKING',
 
     report_sentmessages_name: 'report_sentmessages_name',
     report_sentmessages_shippingdate: 'report_sentmessages_shippingdate',
