@@ -40,6 +40,8 @@ export const langKeys = {
     posttype: "posttype",
     drafts: "drafts",
     securityrules: "securityrules",
+    voicechannel_callsupervisor: "voicechannel_callsupervisor",
+    voicechannel_callsupervisortooltip: "voicechannel_callsupervisortooltip",
     securityrule: "securityrule",
     peoplereached: "peoplereached",
     invalid_password: "invalid_password",

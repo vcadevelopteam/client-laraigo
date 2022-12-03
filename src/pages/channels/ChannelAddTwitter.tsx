@@ -58,6 +58,7 @@ export const ChannelAddTwitter: FC = () => {
             "form": "",
             "apikey": "",
             "coloricon": "#1D9BF0",
+            "voximplantcallsupervision": false
         },
         "type": "TWITTER",
         "service": {

@@ -45,6 +45,7 @@ export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = 
                     "form": "",
                     "apikey": "",
                     "coloricon": "#207FDD",
+                    "voximplantcallsupervision": false
                 },
                 "type": "TELEGRAM",
                 "service": {

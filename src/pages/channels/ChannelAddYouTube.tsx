@@ -74,6 +74,7 @@ export const ChannelAddYouTube: FC = () => {
             "form": "",
             "apikey": "",
             "coloricon": "#FE0000",
+            "voximplantcallsupervision": false
         },
         "type": "YOUTUBE",
         "service": {

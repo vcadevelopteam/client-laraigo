@@ -157,6 +157,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                     "form": "",
                     "apikey": "",
                     "coloricon": "#4AC959",
+                    "voximplantcallsupervision": false
                 },
                 "type": "WHATSAPPSMOOCH",
                 "service": {

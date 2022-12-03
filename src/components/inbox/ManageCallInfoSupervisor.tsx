@@ -98,7 +98,7 @@ const ManageCallInfoSupervisor: React.FC = () => {
         <div style={{ width: "100%" }}>
             <Card style={{ maxWidth: "500px" }}>
                 <CardContent>
-                    {ticketSelected?.status !== "CERRADO" && (
+                    {(ticketSelected?.status !== "CERRADO" && !!resValidateToken?.user?.voximplantcallsupervision) && (
                         <div style={{ display: "flex", justifyContent: "end" }}>
                             <Tooltip title={t(langKeys.monitor_call) || ""}>
                                 <span>

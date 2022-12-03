@@ -105,6 +105,7 @@ export const ChannelAddYouTube: FC<{ setOpenWarning: (param: any) => void }> = (
                     "form": "",
                     "apikey": "",
                     "coloricon": "#FE0000",
+                    "voximplantcallsupervision": false
                 },
                 "type": "YOUTUBE",
                 "service": {

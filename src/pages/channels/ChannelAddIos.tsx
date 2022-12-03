@@ -59,6 +59,7 @@ export const ChannelAddIos: FC = () => {
             "form": "",
             "apikey": "",
             "coloricon": "#000000",
+            "voximplantcallsupervision": false
         },
         "type": "SMOOCHIOS",
     })

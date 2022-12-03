@@ -61,6 +61,7 @@ export const ChannelAddMessenger: FC<ChannelAddMessengerProps> = ({ setOpenWarni
                     "form": "",
                     "apikey": "",
                     "coloricon": "#0078FF",
+                    "voximplantcallsupervision": false
                 },
                 "type": "MESSENGER",
                 "service": {

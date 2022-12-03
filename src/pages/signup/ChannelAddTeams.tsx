@@ -83,6 +83,7 @@ export const ChannelAddTeams: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                     "form": "",
                     "apikey": "",
                     "coloricon": "#7B83EB",
+                    "voximplantcallsupervision": false
                 },
                 "type": "MICROSOFTTEAMS",
                 "service": {

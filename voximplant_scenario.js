@@ -390,6 +390,9 @@ function handleCallConnected(e) {
     });
     request.addEventListener(ACDEvents.OperatorFailed, function (acdevent) {
         Logger.write("eventACD-OperatorCallAttempt: " + JSON.stringify(acdevent));
+        setTimeout(() => {
+            request.getStatus()
+        }, 1000)
     });
     // No operators are available
     request.addEventListener(ACDEvents.Offline, function (acdevent) {

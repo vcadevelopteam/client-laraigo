@@ -58,6 +58,7 @@ export const ChannelAddTwitterDM: FC = () => {
             "form": "",
             "apikey": "",
             "coloricon": "#1D9BF0",
+            "voximplantcallsupervision": false
         },
         "type": "TWITTERDM",
         "service": {

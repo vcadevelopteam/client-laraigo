@@ -69,7 +69,7 @@ export const Channels: FC = () => {
             dispatch(deleteChannel({
                 method: "UFN_COMMUNICATIONCHANNEL_INS",
                 parameters: {
-                    ...row, id: row.communicationchannelid, description: row.communicationchanneldesc, operation: 'DELETE', status: 'ELIMINADO'
+                    ...row, id: row.communicationchannelid, description: row.communicationchanneldesc, operation: 'DELETE', status: 'ELIMINADO', voximplantcallsupervision: false
                 }
             }));
             dispatch(showBackdrop(true));

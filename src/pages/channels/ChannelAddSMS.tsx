@@ -58,6 +58,7 @@ export const ChannelAddSMS: FC = () => {
             "form": "",
             "apikey": "",
             "coloricon": "#1D9BF0",
+            "voximplantcallsupervision": false
         },
         "type": "INFOBIPSMS",
         "service": {

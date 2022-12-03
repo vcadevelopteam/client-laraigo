@@ -78,6 +78,7 @@ export const ChannelAddEmail: FC = () => {
             "form": "",
             "apikey": "",
             "coloricon": "#1D9BF0",
+            "voximplantcallsupervision": false
         },
         "type": "INFOBIPEMAIL",
         "service": {
