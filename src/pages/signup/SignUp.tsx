@@ -155,7 +155,6 @@ const SignUpFunc: FC = () => {
         setOpenWarning(false);
     };
     const handleClose2 = () => {
-        debugger
         if (step === 2) {
             setDefaultMainData()
             setStep(step - 1)

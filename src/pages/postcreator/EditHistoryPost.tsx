@@ -164,8 +164,8 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
 
     useEffect(() => {
         if (waitOperation) {
-                if (!executeRes.loading && !executeRes.error) {
-                    let message = ""
+            if (!executeRes.loading && !executeRes.error) {
+                let message = ""
                 switch (statuspost) {
                     case "DRAFT":
                         message = t(langKeys.successsavedraft) + ""
@@ -173,11 +173,11 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                     case "SCHEDULED":
                         message = t(langKeys.successpublish) + ""
                         break;
-                
+
                     case "DELETED":
                         message = t(langKeys.successful_delete) + ""
                         break;
-                    
+
                     default:
                         break;
                 }
@@ -203,17 +203,16 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
             case "SCHEDULED":
                 message = t(langKeys.confirmationpublish) + ""
                 break;
-        
+
             case "DELETED":
                 message = t(langKeys.confirmationpostdelete) + ""
                 break;
-            
+
             default:
                 break;
         }
         setstatuspost(data?.status)
         const callback = () => {
-            debugger            
             setWaitOperation(true);
             dispatch(showBackdrop(true));
             dispatch(execute(postHistoryIns({ ...data, medialink: JSON.stringify(data.medialink), operation: "UPDATE" })));
