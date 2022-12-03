@@ -356,7 +356,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                                 label={t(langKeys.notificationtemplate)}
                                                 className="col-6"
                                                 valueDefault={getValues('remindermailtemplateid')}
-                                                error={errors?.remindermailtemplateid?.message}
+                                                error={errors?.remindermailtemplateid?.message || dataTemplates.filter(x => x.type === "MAIL").length===0?t(langKeys.noavailabletemplates):""}
                                                 onChange={onSelectTemplateReminderEmail}
                                                 data={dataTemplates.filter(x => x.type === "MAIL")}
                                                 optionDesc="name"
@@ -385,7 +385,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                                 label={t(langKeys.notificationtemplate)}
                                                 className="col-6"
                                                 valueDefault={getValues('reminderhsmtemplateid')}
-                                                error={errors?.reminderhsmtemplateid?.message}
+                                                error={errors?.reminderhsmtemplateid?.message || dataTemplates.filter(x => x.type === "MAIL").length===0?t(langKeys.noavailabletemplates):""}
                                                 onChange={onSelectTemplateReminderHSM}
                                                 data={dataTemplates.filter(x => x.type === "HSM")}
                                                 optionDesc="name"

@@ -757,6 +757,7 @@ const translation: LangKeys = {
     calendar_eventname: 'Event name',
     calendar_eventlocation: 'Event location',
     calendar_eventlink: 'Event link',
+    noavailabletemplates: "You don't have any template available for the selected type",
     calendar_monthdate: 'Event date',
     calendar_hourstart: 'Event start time',
     calendar_hourend: 'Event end time',
@@ -2146,12 +2147,14 @@ const translation: LangKeys = {
     report_sentmessages_person: 'Sent from person',
     report_sentmessages_inbox: 'Sent from inbox',
     report_sentmessages_chatflow: 'Sent from flow',
+    report_sentmessages_booking: 'Sent from booking',
 
     report_sentmessages_API: 'Sent by API',
     report_sentmessages_LEAD: 'Sent from lead',
     report_sentmessages_PERSON: 'Sent from person',
     report_sentmessages_INBOX: 'Sent from inbox',
     report_sentmessages_CHATFLOW: 'Sent from flow',
+    report_sentmessages_BOOKING: 'Sent from booking',
 
     report_sentmessages_name: 'Shipping reason',
     report_sentmessages_shippingdate: 'Shipping Date',

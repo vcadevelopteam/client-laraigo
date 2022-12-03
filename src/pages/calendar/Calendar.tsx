@@ -136,6 +136,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
     const [bodyMessage, setBodyMessage] = useState(dataTemplates.filter(x => x.id === (row?.messagetemplateid || ""))[0]?.body || "");
     const [bodyMessageReminderEmail, setBodyMessageReminderEmail] = useState(dataTemplates.filter(x => x.id === (row?.remindermailtemplateid || ""))[0]?.body || "");
     const [bodyMessageReminderHSM, setBodyMessageReminderHSM] = useState(dataTemplates.filter(x => x.id === (row?.reminderhsmtemplateid || ""))[0]?.body || "");
+    const user = useSelector(state => state.login.validateToken.user);
 
     // Tab Connections
     const [calendarGoogleActive, setCalendarGoogleActive] = useState(row?.credentialsdate);
@@ -274,6 +275,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                 const date2 = Number(dateRangeCreateDate.endDate);
                 const diffTime = Math.abs(date2 - date1);
                 const diffDays = (dateinterval === "DAYS") ? data.daysintothefuture : Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                const eventURL = new URL(`events/${user?.orgid}/${generalstate.eventcode}`, window.location.origin)
                 let datatosend = {
                     ...data,
                     descriptionobject: bodyobject,
@@ -281,7 +283,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                     code: data.eventcode,
                     name: data.eventname,
                     locationtype: "",
-                    eventlink: "",
+                    eventlink: `${eventURL.host}${eventURL.pathname}`,
                     messagetemplateid: data.hsmtemplateid,
                     availability: data.intervals,
                     timeduration: data.duration,
@@ -423,6 +425,10 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                     errors={errors}
                     generalstate={generalstate}
                     setgeneralstate={setgeneralstate}
+                    dateinterval = {dateinterval}
+                    setdateinterval={setdateinterval}
+                    dateRangeCreateDate = {dateRangeCreateDate}
+                    setDateRangeCreateDate={setDateRangeCreateDate}
                 />
             </AntTabPanel>
             <AntTabPanel index={2} currentIndex={tabIndex}>

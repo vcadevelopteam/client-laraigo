@@ -252,8 +252,12 @@ interface CalendarScheduleProps {
     trigger: UseFormTrigger<ICalendarFormFields>;
     errors: FieldErrors<ICalendarFormFields>;
 
-    generalstate: any,
+    generalstate: any;
     setgeneralstate: (value: any) => void;
+    dateinterval: any;
+    setdateinterval: (value: any) => void;
+    dateRangeCreateDate: any;
+    setDateRangeCreateDate: (value: any) => void;
 }
 
 const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
@@ -268,6 +272,10 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
 
     generalstate,
     setgeneralstate,
+    dateinterval,
+    setdateinterval,
+    dateRangeCreateDate,
+    setDateRangeCreateDate,
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -277,9 +285,7 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
         endDate: row?.enddate ? new Date(row?.enddate + "T00:00:00") : new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
         key: 'selection'
     }
-    const [dateinterval, setdateinterval] = useState(row?.daterange || 'DAYS');
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
-    const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
 
     const [state, setState] = React.useState({
         sun: false,
