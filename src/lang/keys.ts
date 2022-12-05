@@ -1819,6 +1819,8 @@ export const langKeys = {
     ticket_labels_help: 'ticket_labels_help',
     ticket_tdatime: 'ticket_tdatime',
     ticket_tdatime_help: 'ticket_tdatime_help',
+    ticket_holdingwaitingtime: 'ticket_holdingwaitingtime',
+    ticket_holdingwaitingtime_help: 'ticket_holdingwaitingtime_help',
 
     dashboard_managerial_tmo_ticketnum: 'dashboard_managerial_tmo_ticketnum',
     dashboard_managerial_tmo_channel: 'dashboard_managerial_tmo_channel',

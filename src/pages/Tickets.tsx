@@ -1053,6 +1053,12 @@ const Tickets = () => {
                 type: 'time'
             },
             {
+                Header: t(langKeys.ticket_holdingwaitingtime),
+                helpText: t(langKeys.ticket_holdingwaitingtime_help),
+                accessor: 'holdingwaitingtime',
+                type: 'time'
+            },
+            {
                 Header: t(langKeys.ticket_classification),
                 helpText: t(langKeys.ticket_tipification_help),
                 accessor: 'tipification'
