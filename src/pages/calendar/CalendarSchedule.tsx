@@ -280,11 +280,6 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
     const { t } = useTranslation();
     const classes = useStyles();
 
-    const initialRange = {
-        startDate: row?.startdate ? new Date(row?.startdate + "T00:00:00") : new Date(new Date().setDate(1)),
-        endDate: row?.enddate ? new Date(row?.enddate + "T00:00:00") : new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
-        key: 'selection'
-    }
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
 
     const [state, setState] = React.useState({
@@ -356,7 +351,7 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                             <FieldSelect
                                 label={t(langKeys.unitofmeasure)}
                                 className="col-6"
-                                valueDefault={row?.durationtype || "MINUTE"}
+                                valueDefault={getValues("durationtype")}
                                 onChange={(value) => setValue('durationtype', (value?.val || ""))}
                                 error={errors?.durationtype?.message}
                                 data={[{ desc: t(langKeys.minute_plural), val: "MINUTE" }, { desc: t(langKeys.hour_plural), val: "HOUR" }]}
@@ -390,7 +385,7 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                             <FieldSelect
                                 label={t(langKeys.unitofmeasure)}
                                 className="col-6"
-                                valueDefault={row?.timebeforeeventunit || "MINUTE"}
+                                valueDefault={getValues("timebeforeeventunit")}
                                 onChange={(value) => setValue('timebeforeeventunit', (value?.val || ""))}
                                 error={errors?.timebeforeeventunit?.message}
                                 data={[{ desc: t(langKeys.minute_plural), val: "MINUTE" }, { desc: t(langKeys.hour_plural), val: "HOUR" }]}
@@ -424,7 +419,7 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                             <FieldSelect
                                 label={t(langKeys.unitofmeasure)}
                                 className="col-6"
-                                valueDefault={row?.timeaftereventunit || "MINUTE"}
+                                valueDefault={getValues("timeaftereventunit")}
                                 onChange={(value) => setValue('timeaftereventunit', (value?.val || ""))}
                                 error={errors?.timeaftereventunit?.message}
                                 data={[{ desc: t(langKeys.minute_plural), val: "MINUTE" }, { desc: t(langKeys.hour_plural), val: "HOUR" }]}
