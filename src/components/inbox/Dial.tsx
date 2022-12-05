@@ -31,9 +31,10 @@ const useStyles = makeStyles(theme => ({
 interface DialProps {
     open: boolean;
     setOpen: (value: boolean) => void;
+    triggerHold: () => void;
 }
 
-const Dial: React.FC<DialProps> = ({ open, setOpen }) => {
+const Dial: React.FC<DialProps> = ({ open, setOpen, triggerHold }) => {
     const classes = useStyles();
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -158,12 +159,13 @@ const Dial: React.FC<DialProps> = ({ open, setOpen }) => {
                             color="primary"
                             onClick={() => {
                                 dispatch(transferCall({
-                                    url: `${ticketSelected?.commentexternalid}?mode=transfer&number=${numberVox}`,
+                                    url: `${ticketSelected?.commentexternalid}?mode=transfer&number=${numberVox}&name=${numberVox}`,
                                     number: ticketSelected?.personcommunicationchannel,
                                     conversationid: ticketSelected?.conversationid!!,
                                     transfernumber: numberVox,
                                     transfername: numberVox
                                 }))
+                                dispatch(triggerHold)
                                 dispatch(setTransferAction(false))
                                 setOpen(false)
                             }}

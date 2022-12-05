@@ -278,7 +278,7 @@ const ManageCallInfoTicket: React.FC = () => {
                         </div>
                         <div>
                             <div style={{ marginLeft: "auto", marginRight: "auto", textAlign: "center", fontSize: "20px", marginTop: 10 }}>
-                                {call.transfer?.transfernumber}
+                                {call.transfer?.transfername || call.transfer?.transfernumber}
                             </div>
                             {(call.transfer?.statusCall === "CONNECTING") &&
                                 <div style={{ fontSize: "15px", marginLeft: "auto", marginRight: "auto", width: "100px", textAlign: "center" }}>
@@ -418,6 +418,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                         <Dial
                                             open={openDial}
                                             setOpen={setOpenDial}
+                                            triggerHold={triggerHold}
                                         />
                                     </div>
                                 </ClickAwayListener>
@@ -459,12 +460,13 @@ const ManageCallInfoTicket: React.FC = () => {
                                     onClick={() => {
                                         if (transferUser?.userid) {
                                             dispatch(transferCall({
-                                                url: `${ticketSelected?.commentexternalid}?mode=transfer&number=user${transferUser?.userid}.${resValidateToken.orgid}`,
+                                                url: `${ticketSelected?.commentexternalid}?mode=transfer&number=user${transferUser?.userid}.${resValidateToken.orgid}&name=${transferUser.name}`,
                                                 number: ticketSelected?.personcommunicationchannel,
                                                 conversationid: ticketSelected?.conversationid!!,
                                                 transfernumber: `user${transferUser?.userid}.${resValidateToken.orgid}`,
                                                 transfername: transferUser.name,
                                             }))
+                                            dispatch(triggerHold)
                                             dispatch(setTransferAction(false))
                                         }
                                     }}
