@@ -46,8 +46,9 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                     const method = headers["X-method"]
                     const supervision = headers["X-supervision"]
                     const splitIdentifier = headers["X-identifier"].split("-");
-                    const number = cleanNumber(e.call.number());
+                    const number = headers["X-transfer"] ? cleanNumber(headers["X-originalnumber"]) : cleanNumber(e.call.number());
                     console.log(`IncomingCall-number: ${number}`)
+                    console.log(`IncomingCall-name: ${headers["X-personname"] || number}`)
                     const name = headers["X-personname"] || number;
 
                     if (supervision) {

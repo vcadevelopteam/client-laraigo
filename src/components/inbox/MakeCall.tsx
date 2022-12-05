@@ -494,7 +494,7 @@ const MakeCall: React.FC = () => {
                                         }
                                         // if (callInLine && transferAction) {
                                         //     dispatch(transferCall({
-                                        //         url: `${ticketSelected?.commentexternalid}?mode=transfer&number=${numberVox}`,
+                                        //         url: `${ticketSelected?.commentexternalid}?mode=transfer&number=${numberVox}&name=${numberVox}`,
                                         //         number: ticketSelected?.personcommunicationchannel,
                                         //         conversationid: ticketSelected?.conversationid!!,
                                         //         transfernumber: numberVox,

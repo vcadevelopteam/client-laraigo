@@ -631,6 +631,7 @@ function transferTrigger(number) {
             "X-site": site,
             "X-personname": personName,
             "X-accessURL": accessURL,
+            "X-originalnumber": originalCall.number(),
             "X-transfernumber": number,
             "X-conversationid": conversationid,
         });
@@ -641,6 +642,7 @@ function transferTrigger(number) {
             "X-site": site,
             "X-personname": personName,
             "X-accessURL": accessURL,
+            "X-originalnumber": originalCall.number(),
             "X-transfernumber": number,
             "X-conversationid": conversationid,
         });
