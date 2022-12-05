@@ -180,7 +180,7 @@ function createTicket2(callback) {
         "typemessage": "text",
         "lastmessage": "LLAMADA SALIENTE",
         "postexternalid": sessionID,
-        "commentexternalid": sessionID,
+        "commentexternalid": accessURL,
         "newConversation": true,
         "status": "ASIGNADO",
         "origin": "OUTBOUND"
