@@ -73,8 +73,14 @@ const ChannelEdit: FC = () => {
                 setServiceCredentials(JSON.parse(channel.servicecredentials));
                 setholdingtoneurl(channel?.voximplantholdtone||"")
                 setwelcometoneurl(channel?.voximplantwelcometone||"")
-                setCheckedCallSupervision(channel?.voximplantcallsupervision||false)
-                setCheckedRecording(channel?.voximplantrecording ||false)
+                setCheckedCallSupervision(!!channel?.voximplantcallsupervision||false)
+                let voximplantrecording = null;
+                if(channel?.voximplantrecording?.includes("recording")){
+                    voximplantrecording= JSON.parse(channel?.voximplantrecording)
+                }else{
+                    voximplantrecording = {recording: false, recordingstorage: 'month3', recordingquality: 'hd'}
+                }
+                setCheckedRecording(voximplantrecording.recording)
             }
         }
 
@@ -118,9 +124,10 @@ const ChannelEdit: FC = () => {
     const handleSubmit = useCallback(() => {
         if (!channel) return;
         const id = channel!.communicationchannelid;
-        const body = getEditChannel(id, channel, name, auto, hexIconColor, welcometoneurl, holdingtoneurl,checkedCallSupervision, checkedRecording);
+        let recordingtosend = JSON.stringify({recording: checkedRecording, recordingstorage: 'month3', recordingquality: 'hd'})
+        const body = getEditChannel(id, channel, name, auto, hexIconColor, welcometoneurl, holdingtoneurl,checkedCallSupervision, recordingtosend);
         dispatch(editChannel(body));
-    }, [name, hexIconColor, auto, channel, welcometoneurl, holdingtoneurl, dispatch]);
+    }, [name, hexIconColor, auto, channel, welcometoneurl, holdingtoneurl,checkedCallSupervision,checkedRecording, dispatch]);
 
     const handleGoBack = useCallback((e: React.MouseEvent) => {
         e.preventDefault();
@@ -306,7 +313,7 @@ const ChannelEdit: FC = () => {
                                     <InfoIcon style={{ color: "rgb(119, 33, 173)", paddingLeft: "4px" }} />
                                 </Tooltip>
                                 <FormControlLabel
-                                    control={<IOSSwitchPurple checked={checkedCallSupervision} onChange={(e) => { setCheckedCallSupervision(e.target.checked) }} />}
+                                    control={<IOSSwitchPurple checked={checkedCallSupervision} onChange={(e) => { setCheckedCallSupervision(e.target.checked);}} />}
                                     label={""}
                                     style={{ marginRight: "4px", marginLeft: 50 }}
                                 />
