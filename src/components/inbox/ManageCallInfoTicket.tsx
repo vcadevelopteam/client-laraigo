@@ -123,6 +123,11 @@ const ManageCallInfoTicket: React.FC = () => {
         dispatch(setHold({ hold: !call?.onhold, number: call?.number }))
     }
 
+    const transferHold = () => {
+        dispatch(holdCall({ call: call?.call!!, flag: false, number: call?.number }));
+        dispatch(setHold({ hold: true, number: call?.number }))
+    }
+
     const handleClickAway = () => {
         setOpenDial(false)
     };
@@ -418,7 +423,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                         <Dial
                                             open={openDial}
                                             setOpen={setOpenDial}
-                                            triggerHold={triggerHold}
+                                            triggerHold={transferHold}
                                         />
                                     </div>
                                 </ClickAwayListener>
@@ -466,7 +471,7 @@ const ManageCallInfoTicket: React.FC = () => {
                                                 transfernumber: `user${transferUser?.userid}.${resValidateToken.orgid}`,
                                                 transfername: transferUser.name,
                                             }))
-                                            dispatch(triggerHold)
+                                            dispatch(transferHold)
                                             dispatch(setTransferAction(false))
                                         }
                                     }}
