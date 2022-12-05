@@ -125,7 +125,7 @@ const ChannelEdit: FC = () => {
         if (!channel) return;
         const id = channel!.communicationchannelid;
         let recordingtosend = JSON.stringify({recording: checkedRecording, recordingstorage: 'month3', recordingquality: 'hd'})
-        const body = getEditChannel(id, channel, name, auto, hexIconColor, welcometoneurl, holdingtoneurl,checkedCallSupervision, recordingtosend);
+        const body = getEditChannel(id, channel, name, auto, hexIconColor, welcometoneurl, holdingtoneurl,checkedCallSupervision, channel?.type === "VOXI"?recordingtosend:"");
         dispatch(editChannel(body));
     }, [name, hexIconColor, auto, channel, welcometoneurl, holdingtoneurl,checkedCallSupervision,checkedRecording, dispatch]);
 
