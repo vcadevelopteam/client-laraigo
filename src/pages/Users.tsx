@@ -1408,7 +1408,7 @@ const Users: FC = () => {
                                 groups: d.groups || "",
                                 channels: d.channels || "",
                                 status: "DESCONECTADO",
-                                type: domains?.value?.roles?.filter(x=>x.roleid===d.role)?.[0]?.roldesc||"",
+                                type: (domains?.value?.roles?.filter(x=>x.roleid===d.role)?.[0]?.roldesc||"").slice(0,6) === 'ASESOR' ? 'ASESOR' : 'SUPERVISOR',
                                 supervisor: "",
                                 operation: "INSERT",
                                 redirect: "/usersettings"
