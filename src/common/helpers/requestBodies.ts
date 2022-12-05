@@ -1183,7 +1183,7 @@ export const getInsertChatwebChannel = (name: string, auto: boolean, iconColor: 
         form: "",
         apikey: "",
         coloricon: iconColor,
-        voximplantrecording: false,
+        voximplantrecording: '',
         voximplantholdtone: "",
         voximplantcallsupervision: false,
     },
@@ -1191,7 +1191,7 @@ export const getInsertChatwebChannel = (name: string, auto: boolean, iconColor: 
     service,
 });
 
-export const getEditChannel = (id: number, payload: IChannel, name: string, auto: boolean, iconColor: string, welcometoneurl?: string, holdingtoneurl?: string, voximplantcallsupervision?: boolean, voximplantrecording?:boolean): IRequestBody<IChannel> => ({
+export const getEditChannel = (id: number, payload: IChannel, name: string, auto: boolean, iconColor: string, welcometoneurl?: string, holdingtoneurl?: string, voximplantcallsupervision?: boolean, voximplantrecording?:string): IRequestBody<IChannel> => ({
     method: "UFN_COMMUNICATIONCHANNEL_INS",
     parameters: {
         ...payload,
@@ -1210,7 +1210,7 @@ export const getEditChannel = (id: number, payload: IChannel, name: string, auto
         voximplantwelcometone: welcometoneurl || "",
         voximplantholdtone: holdingtoneurl || "",
         voximplantcallsupervision: voximplantcallsupervision || false,
-        voximplantrecording: voximplantrecording || false,
+        voximplantrecording: voximplantrecording || '',
     },
 });
 
@@ -1231,7 +1231,7 @@ export const getEditChatWebChannel = (id: number, channel: IChannel, service: IC
         updintegration: null,
         motive: "Edited from API",
         voximplantcallsupervision: false,
-        voximplantrecording: false,
+        voximplantrecording: '',
         voximplantholdtone: "",
     },
     type: typechannel || "CHATWEB",
