@@ -386,7 +386,7 @@ const CalendarPostHistory: FC<{ data: Dictionary[], date: Date; setDateRange: (p
                                         className={classes.button}
                                         color="primary"
                                         onClick={() => { setDataSelected({ row: postdata, edit: true }); setViewSelected("bet-2") }}
-                                        style={{ backgroundColor: "#8b1bb2", display: 'flex', alignItems: 'center', margin: '10px', width: '100%' }}
+                                        style={{ backgroundColor: "#8b1bb2", display: 'flex', alignItems: 'center', margin: '10px', width: 'auto' }}
                                         variant="contained"
                                     >
                                         {t(langKeys.posthistory_seedetail)}

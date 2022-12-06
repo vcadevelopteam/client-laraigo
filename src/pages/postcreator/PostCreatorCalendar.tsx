@@ -160,7 +160,7 @@ const PostCreatorCalendar: FC<{ setViewSelected: (id: string) => void }> = ({ se
                         <AntTab label={t(langKeys.postcreatorcalendar_weekly)} />
                     </Tabs>
                     <div style={{ paddingTop: 8, display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                        <div>
+                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                             <FieldSelect
                                 data={[
                                     { description: t(langKeys.posthistory_post), value: "POST" },

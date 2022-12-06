@@ -959,6 +959,7 @@ const translation: LangKeys = {
   publicationdate: "Publication date",
   history_scheduled: "Scheduled",
   likesandreactions: "Likes and reactions",
+  publishstatus: "Publication status",
   scope: "Scope",
   like: "Like",
   italic: 'Italic',
@@ -4736,7 +4737,10 @@ const translation: LangKeys = {
   posthistory_publishstatus: "Publish Status",
   posthistory_published: "Published",
   posthistory_error: "Error",
-  posthistory_seedetail: "See Detail"
+  posthistory_seedetail: "See Detail",
+  publishedHistory: "Published",
+  publishedError: "Error",
+  publishedPending: "Pending",
 };
 
 const enResource: ResourceLanguage = {

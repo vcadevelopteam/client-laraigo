@@ -193,9 +193,9 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value: a
                                 <Avatar variant="rounded" style={{ width: 23, height: 23, backgroundColor: "white" }}><GetIconColor channelType={communicationchanneltype} /></Avatar>
                             </div>
                         </div>
-                        <div style={{position: "absolute" , left: 180 }}>
-                            <div style={{ display: "flex", fontSize: "1em", marginBottom: 1, marginTop: 10}}>{texttitle}</div>
-                            <div style={{ display: "flex", fontSize: "0.8em", gap: 5}}><Avatar style={{ width: 16, height: 16, backgroundColor: 'black' }} />{communicationchanneldesc}</div>
+                        <div style={{ position: "absolute", left: 180 }}>
+                            <div style={{ display: "flex", fontSize: "1em", marginBottom: 1, marginTop: 10 }}>{texttitle}</div>
+                            <div style={{ display: "flex", fontSize: "0.8em", gap: 5 }}><Avatar style={{ width: 16, height: 16, backgroundColor: 'black' }} />{communicationchanneldesc}</div>
                         </div>
                     </div>
                 )
@@ -268,22 +268,19 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value: a
             Cell: (props: any) => {
                 const { publishtatus, publishmessage } = props.cell.row.original;
                 return (
-                 
-
                     <div style={{ height: 53, textAlign: "center" }}>
                         {
-                            publishtatus === 'PUBLISHED' ? 
-                            <Tooltip title={publishmessage}>
-                                <p style={{ color: 'green' }}> {t(langKeys.publishedHistory)} </p> 
-                            </Tooltip>
-                            :
-                            <Tooltip title={publishmessage}>
-                            <p style={{ color: 'red' }}>{t(langKeys.publishedError)}</p>
-                            </Tooltip>
+                            publishtatus === 'PUBLISHED' ?
+                                <Tooltip title={publishmessage}>
+                                    <p style={{ color: 'green' }}> {t(langKeys.publishedHistory)} </p>
+                                </Tooltip>
+                                :
+                                <Tooltip title={publishmessage}>
+                                    <p style={{ color: 'red' }}>{t(langKeys.publishedError)}</p>
+                                </Tooltip>
                         }
-                 
                     </div>
-                    )
+                )
             }
         },
     ], []);
@@ -332,7 +329,7 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value: a
                     heightWithCheck={84}
                     initialSelectedRows={selectedRows}
                     loading={mainResult.mainData.loading}
-                    onClickRow={publishType === "PUBLISHED" ? () => { } : handleView}
+                    onClickRow={handleView}
                     register={false}
                     selectionKey={selectionKey}
                     setCleanSelection={setCleanSelected}

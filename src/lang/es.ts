@@ -1146,6 +1146,7 @@ const translation: LangKeys = {
   publicationdate: "Fecha de publicación",
   templatemultimedia: 'Multimedia e interactivo',
   likesandreactions: "Me gusta y reacciones",
+  publishstatus: "Estado de publicación",
   header: 'Cabecera',
   peoplereached: "Personas alcanzadas",
   scope: "Alcance",
@@ -1882,17 +1883,14 @@ const translation: LangKeys = {
   report_interaction_ticketmonth: "Mes",
   report_interaction_ticketdatehour: "Fecha ticket - Hora ticket",
   report_interaction_interactionid: "Código de interacción",
-  report_interaction_interactionid_help:
-    "Código único de cada interacción echa por el bot, cliente o asesor.",
-  report_interaction_interactiondatehour:
-    "Fecha de interacción - Hora de interacción",
+  report_interaction_interactionid_help: "Código único de cada interacción echa por el bot, cliente o asesor.",
+  report_interaction_interactiondatehour: "Fecha de interacción - Hora de interacción",
   report_interaction_person: "Persona",
   report_interaction_originalname: "Nombre original",
   report_interaction_channel: "Canal",
   report_interaction_agent: "Asesor",
   report_interaction_intent: "Intención",
-  report_interaction_intent_help:
-    "Es el camino que se identifica mediante el uso de IA",
+  report_interaction_intent_help: "Es el camino que se identifica mediante el uso de IA",
   report_interaction_interactiontype_help: `Text: Respuesta ingresada por el cliente
 Postback: Respuesta otorgada por el bot
 File: Archivo adjunto enviado
@@ -1902,14 +1900,11 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   report_interaction_interactiontype: "Tipo de interacción",
   report_interaction_interactiontext: "Texto de interacción",
   report_interaction_clientnumber: "Número de cliente",
-  report_interaction_personcommunicationchannel:
-    "Canal de comunicación persona",
+  report_interaction_personcommunicationchannel: "Canal de comunicación persona",
   report_interaction_email: "Correo",
   report_interaction_ticketgroup: "Grupo",
-  propertywaitingtimecustomer:
-    "Tiempo para alerta de envío de mensaje al asesor por espera del cliente",
-  propertywaitingtimecustomermessage:
-    "Mensaje de alerta al asesor por tiempo de espera del cliente",
+  propertywaitingtimecustomer: "Tiempo para alerta de envío de mensaje al asesor por espera del cliente",
+  propertywaitingtimecustomermessage: "Mensaje de alerta al asesor por tiempo de espera del cliente",
 
   report_productivity: "Conversaciones",
   report_productivity_ticket: "Ticket",
@@ -4645,7 +4640,10 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   posthistory_publishstatus: "Estado de Publicación",
   posthistory_published: "Publicado",
   posthistory_error: "Error",
-  posthistory_seedetail: "Ver Detalle"
+  posthistory_seedetail: "Ver Detalle",
+  publishedHistory: "Publicado",
+  publishedError: "Error",
+  publishedPending: "Pendiente",
 };
 
 const esResource: ResourceLanguage = {
