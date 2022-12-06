@@ -906,14 +906,13 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     </div>)
                                 }
                                 <PhoneFieldEdit
-                                    disableAreaCodes={true}
-                                    value={getValues('phone')}
+                                    value={"+" + getValues('phone')}
                                     label={t(langKeys.phone)}
-                                    name="mobilephone"
+                                    name="phone"
                                     fullWidth
                                     defaultCountry={user!.countrycode.toLowerCase()}
                                     className={classes.field}
-                                    onChange={(v: any) => setValue('phone', v)}
+                                    onChange={(v: any) => {setValue('phone', v);debugger}}
                                     error={errors?.phone?.message}
                                     InputProps={{
                                         readOnly: isStatusClosed() || iSProcessLoading(),
@@ -2040,9 +2039,9 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                             className={classes.field}
                                             data={advisers.data}
                                             optionDesc="fullname"
-                                            optionValue="firstname"
+                                            optionValue="userid"
                                             loading={advisers.loading}
-                                            valueDefault={getValues('assignto')}
+                                            valueDefault={getValues('assigneduser')}
                                             onChange={v => {
                                                 setValue('assignto', v?.firstname || "");
                                                 setValue('assigneduser', v?.userid || 0);
