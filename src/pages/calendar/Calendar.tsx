@@ -258,6 +258,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
     })
 
     const onSubmit = handleSubmit((data) => {
+        debugger
         data.description = renderToString(toElement(bodyobject));
         if (data.description === `<div data-reactroot=""><p><span></span></p></div>`) {
             setShowError(true);
@@ -293,7 +294,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                     remindermailmessage: replaceVariables(emailVariables, bodyMessageReminderEmail),
                     reminderhsmmessage: replaceVariables(hsmVariables, bodyMessageReminderHSM),
                     daterange: dateinterval,
-                    startdate: (dateinterval === "DAYS") ? new Date() : dateRangeCreateDate.startDate,
+                    startdate: (dateinterval === "DAYS") ? new Date(new Date().setHours(10,0,0,0)).toISOString(): dateRangeCreateDate.startDate,
                     enddate: (dateinterval === "DAYS") ? new Date(Number(new Date()) + diffDays * 86400000) : dateRangeCreateDate.endDate,
                     daysduration: diffDays,
                     increments: "00:30",
