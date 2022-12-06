@@ -3,6 +3,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import EditHistoryPost from './EditHistoryPost';
 import React, { FC, useEffect, useState } from "react";
 import TableZyx from "components/fields/table-simple";
+import Tooltip from "@material-ui/core/Tooltip";
 
 import { AntTab, FieldSelect, DateRangePicker, GetIconColor, TemplateBreadcrumbs } from 'components';
 import { Avatar, Button, Tabs } from "@material-ui/core";
@@ -19,9 +20,6 @@ import { showBackdrop, showSnackbar } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import { useSelector } from 'hooks';
 import { useTranslation } from "react-i18next";
-import EditHistoryPost from './EditHistoryPost';
-import Tooltip from "@material-ui/core/Tooltip"
-
 
 const getArrayBread = (temporalName: string, viewName: string) => ([
     { id: "view-1", name: viewName || "Post Creator" },
