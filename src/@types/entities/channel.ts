@@ -38,5 +38,5 @@ export interface IChannel {
     voximplantholdtone: string;
     voximplantwelcometone: string;
     voximplantcallsupervision?: boolean;
-    voximplantrecording?: boolean;
+    voximplantrecording?: string;
 }

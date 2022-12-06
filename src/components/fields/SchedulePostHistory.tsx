@@ -4,13 +4,14 @@ import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import RepeatIcon from '@material-ui/icons/Repeat';
 
-import { Dictionary } from "@types";
+import { Button, makeStyles } from "@material-ui/core";
 import { calculateDateFromMonth, dayNames, getFormattedDate } from "common/helpers";
-import { makeStyles } from "@material-ui/core";
-import { langKeys } from 'lang/keys';
-import { useTranslation } from 'react-i18next';
+import { Dictionary } from "@types";
 import { FacebookColor, InstagramColor, LinkedInColor, TikTokColor, TwitterColor, YouTubeColor } from "icons";
 import { FC, useCallback, useEffect, useState } from "react";
+import { langKeys } from 'lang/keys';
+import { useTranslation } from 'react-i18next';
+
 interface ScheduleInputProps {
     data: Dictionary[];
     notPreviousDays?: boolean;
@@ -62,6 +63,15 @@ const useScheduleStyles = makeStyles(theme => ({
         },
         backgroundColor: '#dbdbdb3d',
         cursor: 'pointer',
+    },
+    button: {
+        fontSize: '14px',
+        fontWeight: 500,
+        marginLeft: '4px',
+        marginRight: '4px',
+        padding: 12,
+        textTransform: 'initial',
+        width: 'auto',
     },
     isToday: {
         backgroundColor: '#e1e1e1',
@@ -192,7 +202,7 @@ const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays, handleClick }) => {
                             {item.communicationchanneltype === 'TWIT' && <TwitterColor style={{ width: '18px', height: '18px', marginRight: '3px' }} />}
                             {item.communicationchanneltype === 'YOUT' && <YouTubeColor style={{ width: '18px', height: '18px', marginRight: '3px' }} />}
                             {new Date(item.publishdate).toLocaleTimeString()?.slice(0, 5)}
-                            <b style={{ marginLeft: '3px', backgroundColor: item.type === "POST" ? "#FFDC73" : "#BAFFC9", borderRadius: '4px' }}>{item.type}</b>
+                            <b style={{ marginLeft: '3px', backgroundColor: item.publishtatus === "ERROR" ? "#F12601" : (item.type === "POST" ? "#FFDC73" : "#BAFFC9"), borderRadius: '4px' }}>{item.type}</b>
                         </div>
                     </>
                 ))}
@@ -313,18 +323,30 @@ const SchedulePostHistory: FC<ScheduleInputProps> = ({ notPreviousDays = true, d
                     </div>
                     <div style={{ overflowY: 'scroll', minWidth: 300, height: 700 }}>
                         {daySelected.data?.map((postdata) => (
-                            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', cursor: 'pointer', overflow: 'auto', margin: '16px', border: '1px solid #762AA9', borderRadius: '8px' }}
-                                onClick={() => { setDataSelected({ row: postdata, edit: true }); setViewSelected("bet-2") }}>
+                            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', overflow: 'auto', margin: '16px', border: '1px solid #762AA9', borderRadius: '8px' }}>
                                 <div style={{ maxWidth: '50%', flex: '1 1 50%', wordBreak: 'break-word', padding: '10px' }}>
-                                    <b>{new Date(postdata.publishdate).toLocaleTimeString()?.slice(0, 5)}</b>
-                                    <h3>{postdata.texttitle}</h3>
-                                    <h4>{postdata.textbody}</h4>
-                                    {postdata.communicationchanneltype === 'FBWA' && <FacebookColor style={{ width: '22px', height: '22px' }} />}
-                                    {postdata.communicationchanneltype === 'INST' && <InstagramColor style={{ width: '22px', height: '22px' }} />}
-                                    {postdata.communicationchanneltype === 'LNKD' && <LinkedInColor style={{ width: '22px', height: '22px' }} />}
-                                    {postdata.communicationchanneltype === 'TKTK' && <TikTokColor style={{ width: '22px', height: '22px' }} />}
-                                    {postdata.communicationchanneltype === 'TWIT' && <TwitterColor style={{ width: '22px', height: '22px' }} />}
-                                    {postdata.communicationchanneltype === 'YOUT' && <YouTubeColor style={{ width: '22px', height: '22px' }} />}
+                                    <div style={{ display: 'flex', flexDirection: 'row', alignSelf: 'flex-end', justifyContent: 'flexStart' }}>
+                                        <b style={{ marginRight: '6px' }}>{new Date(postdata.publishdate).toLocaleTimeString()?.slice(0, 5)}</b>
+                                        {postdata.communicationchanneltype === 'FBWA' && <FacebookColor style={{ width: '22px', height: '22px' }} />}
+                                        {postdata.communicationchanneltype === 'INST' && <InstagramColor style={{ width: '22px', height: '22px' }} />}
+                                        {postdata.communicationchanneltype === 'LNKD' && <LinkedInColor style={{ width: '22px', height: '22px' }} />}
+                                        {postdata.communicationchanneltype === 'TKTK' && <TikTokColor style={{ width: '22px', height: '22px' }} />}
+                                        {postdata.communicationchanneltype === 'TWIT' && <TwitterColor style={{ width: '22px', height: '22px' }} />}
+                                        {postdata.communicationchanneltype === 'YOUT' && <YouTubeColor style={{ width: '22px', height: '22px' }} />}
+                                    </div>
+                                    <h3 style={{ marginBottom: '2px' }}>{postdata.texttitle}</h3>
+                                    <h4 style={{ marginTop: '2px' }}>{postdata.textbody}</h4>
+                                    {postdata.publishtatus == "PUBLISHED" && <b style={{ color: 'green' }}>{t(langKeys.posthistory_published)}</b>}
+                                    {postdata.publishtatus == "ERROR" && <b style={{ color: 'red' }}>{t(langKeys.posthistory_error)}</b>}
+                                    <Button
+                                        className={classes.button}
+                                        color="primary"
+                                        onClick={() => { setDataSelected({ row: postdata, edit: true }); setViewSelected("bet-2") }}
+                                        style={{ backgroundColor: "#8b1bb2", display: 'flex', alignItems: 'center', margin: '10px', width: 'auto' }}
+                                        variant="contained"
+                                    >
+                                        {t(langKeys.posthistory_seedetail)}
+                                    </Button>
                                 </div>
                                 {postdata.medialink?.[0]?.thumbnail && <img loading='eager' alt="" style={{ maxWidth: '50%', flex: '1 1 50%', wordBreak: 'break-word' }} src={postdata.medialink?.[0]?.thumbnail || ""}></img>}
                             </div>
