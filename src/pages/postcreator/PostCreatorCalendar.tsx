@@ -1,22 +1,23 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import CalendarPostHistory from 'components/fields/CalendarPostHistory';
-import SchedulePostHistory from 'components/fields/SchedulePostHistory';
+import EditHistoryPost from './EditHistoryPost';
 import React, { FC, useEffect, useState } from "react";
+import SchedulePostHistory from 'components/fields/SchedulePostHistory';
 
 import { AntTab, FieldSelect, TemplateBreadcrumbs } from 'components';
 import { Button, Tabs } from "@material-ui/core";
-import { langKeys } from "lang/keys";
-import { useTranslation } from "react-i18next";
-import { getDateToday } from 'common/helpers';
-import { Range } from 'react-date-range';
 import { Dictionary } from '@types';
+import { getChannelsByOrg, getPostHistorySel } from "common/helpers/requestBodies";
 import { getCollection, getMultiCollection, resetAllMain } from 'store/main/actions';
+import { getDateToday } from 'common/helpers';
+import { langKeys } from "lang/keys";
+import { makeStyles } from '@material-ui/core/styles';
+import { Range } from 'react-date-range';
+import { Refresh as RefreshIcon } from '@material-ui/icons';
 import { showBackdrop } from 'store/popus/actions';
 import { useDispatch } from "react-redux";
 import { useSelector } from 'hooks';
-import { getChannelsByOrg, getPostHistorySel } from "common/helpers/requestBodies";
-import { makeStyles } from '@material-ui/core/styles';
-import EditHistoryPost from './EditHistoryPost';
+import { useTranslation } from "react-i18next";
 
 const getArrayBread = (temporalName: string, viewName: string) => ([
     { id: "view-1", name: viewName || "Post Creator" },
@@ -72,7 +73,7 @@ const PostCreatorCalendar: FC<{ setViewSelected: (id: string) => void }> = ({ se
     const classes = useStyles();
 
     const [dataPublication, setDataPublication] = useState<Dictionary[]>([]);
-    const [filters, setfilters] = useState<any>({ type: "", status: "", communicationchannelid: 0 });
+    const [filters, setfilters] = useState<any>({ type: "", status: "", publishtatus: "", communicationchannelid: 0 });
     const [dataselected, setdataselected] = useState<any>({ row: "", edit: true });
     const [firstCall, setfirstCall] = useState(true);
     const [pageSelected, setPageSelected] = useState(0);
@@ -100,7 +101,7 @@ const PostCreatorCalendar: FC<{ setViewSelected: (id: string) => void }> = ({ se
     const [waitLoad, setWaitLoad] = useState(false);
 
     const fetchData = () => {
-        dispatch(getCollection(getPostHistorySel({ communicationchannelid: filters.communicationchannelid, type: filters.type, status: filters.status, datestart: null, dateend: null })));
+        dispatch(getCollection(getPostHistorySel({ communicationchannelid: filters.communicationchannelid, type: filters.type, status: filters.status, publishtatus: filters.publishtatus, datestart: null, dateend: null })));
         dispatch(showBackdrop(true));
         setWaitLoad(true);
     }
@@ -161,6 +162,36 @@ const PostCreatorCalendar: FC<{ setViewSelected: (id: string) => void }> = ({ se
                     <div style={{ paddingTop: 8, display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                         <div>
                             <FieldSelect
+                                data={[
+                                    { description: t(langKeys.posthistory_post), value: "POST" },
+                                    { description: t(langKeys.posthistory_story), value: "STORY" },
+                                ]}
+                                label={t(langKeys.posthistory_posttype)}
+                                loading={false}
+                                onChange={(value) => { setfilters({ ...filters, type: value?.value || "" }) }}
+                                optionDesc="description"
+                                optionValue="value"
+                                size="small"
+                                style={{ maxWidth: 300, minWidth: 200 }}
+                                valueDefault={filters.type}
+                                variant="outlined"
+                            />
+                            <FieldSelect
+                                data={[
+                                    { description: t(langKeys.posthistory_published), value: "PUBLISHED" },
+                                    { description: t(langKeys.posthistory_error), value: "ERROR" },
+                                ]}
+                                label={t(langKeys.posthistory_publishstatus)}
+                                loading={false}
+                                onChange={(value) => { setfilters({ ...filters, publishtatus: value?.value || "" }) }}
+                                optionDesc="value"
+                                optionValue="value"
+                                size="small"
+                                style={{ maxWidth: 300, minWidth: 200 }}
+                                valueDefault={filters.publishtatus}
+                                variant="outlined"
+                            />
+                            <FieldSelect
                                 data={multiResult?.data?.[0]?.data || []}
                                 label={t(langKeys.channel)}
                                 loading={multiResult.loading}
@@ -174,6 +205,15 @@ const PostCreatorCalendar: FC<{ setViewSelected: (id: string) => void }> = ({ se
                             />
                         </div>
                         <div style={{ display: 'flex', gap: 8 }}>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                onClick={() => { fetchData() }}
+                                startIcon={<RefreshIcon style={{ color: 'white' }} />}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >{t(langKeys.refresh)}
+                            </Button>
                             <Button
                                 className={classes.button}
                                 color="primary"
@@ -190,7 +230,7 @@ const PostCreatorCalendar: FC<{ setViewSelected: (id: string) => void }> = ({ se
                                 style={{ backgroundColor: "#8b1bb2", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                 variant="contained"
                             >
-                                {t(langKeys.drafts)}
+                                {t(langKeys.postcreator_posthistory)}
                             </Button>
 
                         </div>

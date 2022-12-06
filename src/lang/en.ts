@@ -951,7 +951,7 @@ const translation: LangKeys = {
     healthprofessional: "Health professional",
     referralchannel: "Referral channel",
     activate_ticket: 'Activate ticket',
-    posttype: "Post type",
+    posthistory_posttype: "Publication Type",
     successful_cancel_event: "The event has been canceled succesfully",
     bold: 'Bold',
     published: "Published",
@@ -4243,7 +4243,10 @@ const translation: LangKeys = {
     postcreator_publish_officialpage: "Official Page",
     postcreator_publish_textrecommendation: "Text guidelines",
     postcreator_publish_textrecommendation01: "Main text: 125 character limit",
-    postcreator_publish_textrecommendation02: "Images and video: For compatibility reasons, the allowed formats are JPEG and MP4",
+    postcreator_publish_textrecommendation02: "Images: JPEG is the recommended format",
+    postcreator_publish_textrecommendation03: "Images: 4MB is the recommended maximum file size",
+    postcreator_publish_textrecommendation04: "Videos: MP4 is the recommended format",
+    postcreator_publish_textrecommendation05: "Videos: 15MB is the recommended maximum file size",
     postcreator_publish_image: "Image",
     postcreator_publish_video: "Video",
     postcreator_publish_edit: "Edit",
@@ -4637,8 +4640,14 @@ const translation: LangKeys = {
     postcreatorcalendar_monthly: "Monthly View",
     postcreatorcalendar_weekly: "Weekly View",
     more_items: "more...",
-    posthistorycalendar_selectdate: "Select a day to see its detail",
-    posthistorycalendar_selectitem: "Select an item to see its detail",
+    posthistorycalendar_selectdate: "Select a day to see its detail. If your publication is not yet published you will be able to edit it.",
+    posthistorycalendar_selectitem: "Select an item to see its detail. If your publication is not yet published you will be able to edit it.",
+    posthistory_story: "Story",
+    posthistory_post: "Post",
+    posthistory_publishstatus: "Publish Status",
+    posthistory_published: "Published",
+    posthistory_error: "Error",
+    posthistory_seedetail: "See Detail"
 };
 
 const enResource: ResourceLanguage = {

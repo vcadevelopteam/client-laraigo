@@ -1,7 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import CloseIcon from '@material-ui/icons/Close';
+import EditHistoryPost from './EditHistoryPost';
 import React, { FC, useEffect, useState } from "react";
 import TableZyx from "components/fields/table-simple";
+
 import { AntTab, FieldSelect, DateRangePicker, GetIconColor, TemplateBreadcrumbs } from 'components';
 import { Avatar, Button, Tabs } from "@material-ui/core";
 import { CalendarIcon } from "icons";
@@ -12,12 +14,11 @@ import { getPostHistorySel, postHistoryIns } from "common/helpers/requestBodies"
 import { langKeys } from "lang/keys";
 import { makeStyles } from '@material-ui/core/styles';
 import { Range } from 'react-date-range';
+import { Refresh as RefreshIcon } from '@material-ui/icons';
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import { useSelector } from 'hooks';
 import { useTranslation } from "react-i18next";
-import EditHistoryPost from './EditHistoryPost';
-
 
 const getArrayBread = (temporalName: string, viewName: string) => ([
     { id: "view-1", name: viewName || "Post Creator" },
@@ -71,6 +72,7 @@ const PostCreatorHistory: FC<{ setViewSelected: (id: string) => void }> = ({ set
     const [pageSelected, setPageSelected] = useState(0);
     const [betweenViews, setBetweenViews] = useState("bet-1");
     const [arrayBread, setArrayBread] = useState<any>(getArrayBread(t('postcreator_posthistory'), t(langKeys.postcreator_title)));
+
     const handleSelectedString = (key: string) => {
         if (key.includes("view")) {
             setViewSelected(key);
@@ -139,14 +141,14 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value: a
 
     const [cleanSelected, setCleanSelected] = useState(false);
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
-    const [filters, setfilters] = useState<any>({ type: "" });
+    const [filters, setfilters] = useState<any>({ type: "", publishtatus: "" });
     const [firstCall, setfirstCall] = useState(true);
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [waitDelete, setWaitDelete] = useState(false);
     const [rowSelected, setRowSelected] = useState<{ row: Dictionary | null, edit: boolean }>({ row: null, edit: false });
 
-    const fetchData = () => dispatch(getCollection(getPostHistorySel({ type: filters.type, status: publishType, datestart: dateRangeCreateDate.startDate, dateend: dateRangeCreateDate.endDate })));
+    const fetchData = () => dispatch(getCollection(getPostHistorySel({ type: filters.type, publishtatus: filters.publishtatus, status: publishType, datestart: dateRangeCreateDate.startDate, dateend: dateRangeCreateDate.endDate })));
 
     useEffect(() => {
         fetchData();
@@ -314,10 +316,10 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value: a
                             <div style={{ display: "flex", gap: 8 }}>
                                 <FieldSelect
                                     data={[
-                                        { value: "POST" },
-                                        { value: "STORY" },
+                                        { description: t(langKeys.posthistory_post), value: "POST" },
+                                        { description: t(langKeys.posthistory_story), value: "STORY" },
                                     ]}
-                                    label={t(langKeys.posttype)}
+                                    label={t(langKeys.posthistory_posttype)}
                                     loading={false}
                                     onChange={(value) => { setfilters({ ...filters, type: value?.value || "" }) }}
                                     optionDesc="value"
@@ -325,6 +327,21 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value: a
                                     size="small"
                                     style={{ maxWidth: 300, minWidth: 200 }}
                                     valueDefault={filters.type}
+                                    variant="outlined"
+                                />
+                                <FieldSelect
+                                    data={[
+                                        { description: t(langKeys.posthistory_published), value: "PUBLISHED" },
+                                        { description: t(langKeys.posthistory_error), value: "ERROR" },
+                                    ]}
+                                    label={t(langKeys.posthistory_publishstatus)}
+                                    loading={false}
+                                    onChange={(value) => { setfilters({ ...filters, publishtatus: value?.value || "" }) }}
+                                    optionDesc="value"
+                                    optionValue="value"
+                                    size="small"
+                                    style={{ maxWidth: 300, minWidth: 200 }}
+                                    valueDefault={filters.publishtatus}
                                     variant="outlined"
                                 />
                                 <Button
@@ -335,6 +352,15 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value: a
                                     variant="contained"
                                 >
                                     <CloseIcon />{t(langKeys.delete)}
+                                </Button>
+                                <Button
+                                    className={classes.button}
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={() => { fetchData() }}
+                                    startIcon={<RefreshIcon style={{ color: 'white' }} />}
+                                    style={{ backgroundColor: "#55BD84" }}
+                                >{t(langKeys.refresh)}
                                 </Button>
                             </div>
                             <div style={{ display: "flex" }}>

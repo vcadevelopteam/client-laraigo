@@ -37,7 +37,7 @@ export const langKeys = {
     successsavedraft: "successsavedraft",
     successpublish: "successpublish",
     history_scheduled: "history_scheduled",
-    posttype: "posttype",
+    posthistory_posttype: "posthistory_posttype",
     drafts: "drafts",
     securityrules: "securityrules",
     voicechannel_callsupervisor: "voicechannel_callsupervisor",
@@ -4228,6 +4228,9 @@ export const langKeys = {
     postcreator_publish_textrecommendation: "postcreator_publish_textrecommendation",
     postcreator_publish_textrecommendation01: "postcreator_publish_textrecommendation01",
     postcreator_publish_textrecommendation02: "postcreator_publish_textrecommendation02",
+    postcreator_publish_textrecommendation03: "postcreator_publish_textrecommendation03",
+    postcreator_publish_textrecommendation04: "postcreator_publish_textrecommendation04",
+    postcreator_publish_textrecommendation05: "postcreator_publish_textrecommendation05",
     postcreator_publish_image: "postcreator_publish_image",
     postcreator_publish_video: "postcreator_publish_video",
     postcreator_publish_edit: "postcreator_publish_edit",
@@ -4623,6 +4626,12 @@ export const langKeys = {
     more_items: "more_items",
     posthistorycalendar_selectdate: "posthistorycalendar_selectdate",
     posthistorycalendar_selectitem: "posthistorycalendar_selectitem",
+    posthistory_story: "posthistory_story",
+    posthistory_post: "posthistory_post",
+    posthistory_publishstatus: "posthistory_publishstatus",
+    posthistory_published: "posthistory_published",
+    posthistory_error: "posthistory_error",
+    posthistory_seedetail: "posthistory_seedetail",
 };
 
 export type LangKeys = typeof langKeys;
