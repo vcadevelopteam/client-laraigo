@@ -19,6 +19,9 @@ import { showBackdrop, showSnackbar } from "store/popus/actions";
 import { useDispatch } from "react-redux";
 import { useSelector } from 'hooks';
 import { useTranslation } from "react-i18next";
+import EditHistoryPost from './EditHistoryPost';
+import Tooltip from "@material-ui/core/Tooltip"
+
 
 const getArrayBread = (temporalName: string, viewName: string) => ([
     { id: "view-1", name: viewName || "Post Creator" },
@@ -175,7 +178,7 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value: a
         {
             Header: t(langKeys.title),
             accessor: 'texttitle',
-            width: 200,
+            width: 500,
             isComponent: true,
             NoFilter: true,
             Cell: (props: any) => {
@@ -184,17 +187,17 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value: a
                     <div style={{ display: "flex", gap: 5 }}>
                         <div>
                             {(!!medialink?.[0]?.thumbnail) ?
-                                <img loading='eager' alt="" width={50} height={50} src={medialink?.[0]?.thumbnail || ""}></img>
+                                <img loading='eager' alt="" width={60} height={60} src={medialink?.[0]?.thumbnail || ""}></img>
                                 :
-                                <img loading='eager' alt="" width={50} height={50} style={{ backgroundColor: "#9C9C9C" }}></img>
+                                <img loading='eager' alt="" width={60} height={60} src="https://via.placeholder.com/150"></img>
                             }
-                            <div style={{ position: "absolute", top: 35, left: 125 }}>
-                                <Avatar variant="rounded" style={{ width: 25, height: 25, backgroundColor: "white" }}><GetIconColor channelType={communicationchanneltype} /></Avatar>
+                            <div style={{ position: "absolute", top: 48, left: 138 }}>
+                                <Avatar variant="rounded" style={{ width: 23, height: 23, backgroundColor: "white" }}><GetIconColor channelType={communicationchanneltype} /></Avatar>
                             </div>
                         </div>
-                        <div>
-                            <div style={{ display: "flex", fontSize: "1.1em" }}>{texttitle}</div>
-                            <div style={{ display: "flex", fontSize: "1em", gap: 5 }}><Avatar style={{ width: 20, height: 20 }} />{communicationchanneldesc}</div>
+                        <div style={{position: "absolute" , left: 180 }}>
+                            <div style={{ display: "flex", fontSize: "1em", marginBottom: 1, marginTop: 10}}>{texttitle}</div>
+                            <div style={{ display: "flex", fontSize: "0.8em", gap: 5}}><Avatar style={{ width: 16, height: 16, backgroundColor: 'black' }} />{communicationchanneldesc}</div>
                         </div>
                     </div>
                 )
@@ -208,7 +211,7 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value: a
             Cell: (props: any) => {
                 const { publishdate } = props.cell.row.original;
                 return (
-                    <div style={{ height: 31 }}>
+                    <div style={{ height: 37, fontSize: "0.9em" }}>
                         {new Date(publishdate).toDateString()}
                     </div>)
             }
@@ -221,7 +224,7 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value: a
             Cell: (props: any) => {
                 const { reach } = props.cell.row.original;
                 return (
-                    <div style={{ height: 45, textAlign: "center" }}>
+                    <div style={{ height: 58, textAlign: "center" }}>
                         <div>
                             {reach || 0}
                         </div>
@@ -239,7 +242,7 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value: a
             Cell: (props: any) => {
                 const { interactions } = props.cell.row.original;
                 return (
-                    <div style={{ height: 31, textAlign: "center" }}>
+                    <div style={{ height: 50, textAlign: "center" }}>
                         {interactions || 0}
                     </div>)
             }
@@ -252,11 +255,37 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value: a
             Cell: (props: any) => {
                 const { reactions } = props.cell.row.original;
                 return (
-                    <div style={{ height: 45, textAlign: "center" }}>
+                    <div style={{ height: 53, textAlign: "center" }}>
                         {Object.keys(reactions || {}).map((x) => {
                             return <div>{x.toLocaleUpperCase()}: {reactions[x]} </div>
                         })}
                     </div>)
+            }
+        },
+        {
+            Header: t(langKeys.publishstatus),
+            accessor: 'publishstatus',
+            width: "auto",
+            NoFilter: true,
+            Cell: (props: any) => {
+                const { publishtatus, publishmessage } = props.cell.row.original;
+                return (
+                 
+
+                    <div style={{ height: 53, textAlign: "center" }}>
+                        {
+                            publishtatus === 'PUBLISHED' ? 
+                            <Tooltip title={publishmessage}>
+                                <p style={{ color: 'green' }}> {t(langKeys.publishedHistory)} </p> 
+                            </Tooltip>
+                            :
+                            <Tooltip title={publishmessage}>
+                            <p style={{ color: 'red' }}>{t(langKeys.publishedError)}</p>
+                            </Tooltip>
+                        }
+                 
+                    </div>
+                    )
             }
         },
     ], []);
@@ -302,7 +331,7 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value: a
                     columns={columns}
                     data={mainResult.mainData.data}
                     download={false}
-                    heightWithCheck={65}
+                    heightWithCheck={84}
                     initialSelectedRows={selectedRows}
                     loading={mainResult.mainData.loading}
                     onClickRow={publishType === "PUBLISHED" ? () => { } : handleView}
@@ -311,6 +340,7 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value: a
                     setCleanSelection={setCleanSelected}
                     setSelectedRows={setSelectedRows}
                     useSelection={true}
+                    checkHistoryCenter={true}
                     ButtonsElement={() => (
                         <div style={{ display: "flex", width: "100%", justifyContent: "space-between", paddingTop: 10 }}>
                             <div style={{ display: "flex", gap: 8 }}>
