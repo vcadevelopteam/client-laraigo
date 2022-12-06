@@ -44,7 +44,7 @@ const ManageCallInfoSupervisor: React.FC = () => {
         if (!supervision) {
             setSupervision(true)
             const { userid, orgid } = resValidateToken.user!!;
-            const url = `${ticketSelected?.commentexternalid}?mode=supervision&user=user${userid}.${orgid}`;
+            const url = `${ticketSelected?.commentexternalid}?mode=supervision&user=user${userid}.${orgid}&number=${ticketSelected?.personcommunicationchannel.split("_")[0]}`;
             fetch(url, { method: 'GET' })
                 .catch(() => setSupervision(false))
                 .then(() => {

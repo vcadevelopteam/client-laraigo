@@ -64,10 +64,12 @@ VoxEngine.addEventListener(AppEvents.HttpRequest, (ev) => {
 
     const userSupervisor = parameters.user;
     const mode = parameters.mode;
+    const number = parameters.number;
+    
     Logger.write("HttpRequest-mode: " + mode);
 
     if (mode === "supervision") {
-        const supervisorCall = VoxEngine.callUser(userSupervisor, "call-center", "demo", {
+        const supervisorCall = VoxEngine.callUser(userSupervisor, number, "demo", {
             "X-supervision": "truetruetruetrue",
             "X-identifier": identifier,
             "X-site": site,
@@ -462,6 +464,7 @@ function handleSpreadCall() {
             originalCall2 = e.call; // Call del agente
             const agentid = parseInt(inboundCalls.find(ic => ic.id === e.id).destination.replace("user", "").split(".")[0])
             reasignAgent(agentid)
+            sendInteraction("LOG", "AGENTE CONTESTÓ LA LLAMADA")
             lastagentid = agentid;
             VoxEngine.sendMediaBetween(e.call, originalCall);
             holdCall(e.call, originalCall)
