@@ -535,7 +535,7 @@ export const FieldEditAdvanced: React.FC<InputProps> = ({ label, className, disa
                 inputProps={inputProps}
                 style={style}
             />
-            {maxLength !== 0 && <FormHelperText style={{ textAlign: 'right' }}>{maxLength - value.length}/{maxLength}</FormHelperText>}
+            {maxLength !== 0 && <FormHelperText style={{ textAlign: 'right' }}> {maxLength}/{maxLength - value.length}</FormHelperText>}
         </div>
     )
 }

@@ -3087,10 +3087,11 @@ export const calendarBookingCancel = ({ calendareventid, id, cancelcomment }: Di
         cancelcomment,
     },
 });
-export const calendarBookingCancel2 = ({ corpid, orgid,calendareventid, id, cancelcomment }: Dictionary) => ({
+export const calendarBookingCancel2 = ({ corpid, orgid, calendareventid, id, cancelcomment }: Dictionary) => ({
     method: "UFN_CALENDARBOOKING_CANCEL",
     key: "UFN_CALENDARBOOKING_CANCEL",
-    parameters: {corpid, orgid,
+    parameters: {
+        corpid, orgid,
         calendareventid,
         id,
         cancelcomment,
@@ -3120,8 +3121,8 @@ export const insCalendar = ({
     availability,
     timebeforeeventduration, timebeforeeventunit, timeaftereventduration, timeaftereventunit,
     increments,
-    operation, reminderperiod,reminderfrecuency,reminderhsmmessage,
-    communicationchannelid,notificationmessage,reminderenable,remindertype,reminderhsmtemplateid,remindermailmessage,remindermailtemplateid,reminderhsmcommunicationchannelid
+    operation, reminderperiod, reminderfrecuency, reminderhsmmessage,
+    communicationchannelid, notificationmessage, reminderenable, remindertype, reminderhsmtemplateid, remindermailmessage, remindermailtemplateid, reminderhsmcommunicationchannelid
 }: Dictionary): IRequestBody => ({
     method: "UFN_CALENDAREVENT_INS",
     key: "UFN_CALENDAREVENT_INS",
@@ -3133,10 +3134,10 @@ export const insCalendar = ({
         timeduration, timeunit,
         availability: JSON.stringify(availability),
         timebeforeeventduration, timebeforeeventunit, timeaftereventduration, timeaftereventunit,
-        increments,reminderperiod,reminderfrecuency,
-        reminderhsmtemplateid: reminderhsmtemplateid||0,reminderhsmcommunicationchannelid,
-        remindermailtemplateid: remindermailtemplateid||0,reminderhsmmessage,
-        operation,notificationmessage,reminderenable,remindertype,remindermailmessage,
+        increments, reminderperiod, reminderfrecuency,
+        reminderhsmtemplateid: reminderhsmtemplateid || 0, reminderhsmcommunicationchannelid,
+        remindermailtemplateid: remindermailtemplateid || 0, reminderhsmmessage,
+        operation, notificationmessage, reminderenable, remindertype, remindermailmessage,
         communicationchannelid: communicationchannelid || 0
     }
 });
@@ -3201,11 +3202,12 @@ export const getProductCatalogSel = (id: number = 0, category: string = ''): IRe
         all: true
     }
 })
-export const getPostHistorySel = ({ status = "", communicationchannelid = 0, type = "", datestart = null, dateend = null }: Dictionary) => ({
+export const getPostHistorySel = ({ status = "", communicationchannelid = 0, type = "", publishtatus = "", datestart = null, dateend = null }: Dictionary) => ({
     method: "UFN_POSTHISTORY_SEL",
     parameters: {
         status,
         type,
+        publishtatus,
         datestart,
         dateend,
         communicationchannelid,

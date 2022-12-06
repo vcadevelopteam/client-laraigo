@@ -603,7 +603,6 @@ export const SubscriptionProvider: FC = ({ children }) => {
 
     const onSubmit: SubmitHandler<MainData> = (data) => {
         const { channels, ...mainData } = data;
-        debugger
         const majorfield = {
             method: "UFN_CREATEZYXMEACCOUNT_INS",
             key: "UFN_CREATEZYXMEACCOUNT_INS",

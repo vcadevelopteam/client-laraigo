@@ -1,25 +1,25 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import ClearIcon from '@material-ui/icons/Clear';
 import CloseIcon from '@material-ui/icons/Close';
-import React, { FC, Fragment, useEffect, useState, useCallback } from "react";
 import DateFnsUtils from '@date-io/date-fns';
+import React, { Fragment, useEffect, useState, useCallback } from "react";
 
-import { KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import { dataActivities, dataFeelings, getLocaleDateString, localesLaraigo } from 'common/helpers';
-import { FieldSelect, FieldView, FieldEdit, FieldEditAdvanced } from 'components';
+import { AccountCircle, CameraAlt, ChatBubble, Delete, Facebook, Instagram, LinkedIn, PlayCircleOutlineSharp, Replay, Reply, Save, Send, ThumbUp, Timelapse, Twitter, YouTube } from '@material-ui/icons';
 import { Button } from "@material-ui/core";
+import { dataActivities, dataFeelings, getLocaleDateString, localesLaraigo } from 'common/helpers';
 import { Dictionary } from "@types";
 import { execute, uploadFileMetadata } from "store/main/actions";
-import { postHistoryIns } from "common/helpers/requestBodies";
+import { FacebookColor, InstagramColor, LinkedInColor, TikTokColor, TwitterColor, YouTubeColor } from "icons";
+import { FieldSelect, FieldView, FieldEdit, FieldEditAdvanced } from 'components';
+import { KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { langKeys } from "lang/keys";
 import { makeStyles } from '@material-ui/core/styles';
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
+import { postHistoryIns } from "common/helpers/requestBodies";
 import { useDispatch } from "react-redux";
+import { useForm } from 'react-hook-form';
 import { useSelector } from 'hooks';
 import { useTranslation } from "react-i18next";
-import { useForm } from 'react-hook-form';
-import { AccountCircle, CameraAlt, ChatBubble, Delete, Facebook, Instagram, LinkedIn, MusicNote, PlayCircleOutlineSharp, Replay, Reply, Save, Send, ThumbUp, Timelapse, Twitter, YouTube } from '@material-ui/icons';
-import { FacebookColor, InstagramColor, LinkedInColor, TikTokColor, TwitterColor, YouTubeColor } from "icons";
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -64,11 +64,12 @@ const useStyles = makeStyles((theme) => ({
 const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean }; setViewSelected: (view: string) => void; fetchData: () => void, }> = ({ data: { row, edit }, setViewSelected, fetchData }) => {
     const dispatch = useDispatch();
 
-    const classes = useStyles();
-
     const { t } = useTranslation();
 
+    const classes = useStyles();
+    const executeRes = useSelector(state => state.main.execute);
     const uploadResult = useSelector(state => state.main.uploadFile);
+    const isPublished = row?.published;
 
     const [fileAttachment, setFileAttachment] = useState<File | null>(null);
     const [previewType, setPreviewType] = useState('');
@@ -76,7 +77,6 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
     const [waitOperation, setWaitOperation] = useState(false);
     const [customizeType, setCustomizeType] = useState('');
     const [statuspost, setstatuspost] = useState('');
-    const executeRes = useSelector(state => state.main.execute);
 
     const { register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm({
         defaultValues: {
@@ -164,8 +164,8 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
 
     useEffect(() => {
         if (waitOperation) {
-                if (!executeRes.loading && !executeRes.error) {
-                    let message = ""
+            if (!executeRes.loading && !executeRes.error) {
+                let message = ""
                 switch (statuspost) {
                     case "DRAFT":
                         message = t(langKeys.successsavedraft) + ""
@@ -173,11 +173,11 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                     case "SCHEDULED":
                         message = t(langKeys.successpublish) + ""
                         break;
-                
+
                     case "DELETED":
                         message = t(langKeys.successful_delete) + ""
                         break;
-                    
+
                     default:
                         break;
                 }
@@ -195,25 +195,25 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
     }, [executeRes, waitOperation])
 
     const onSubmit = handleSubmit((data) => {
-        let message = ""
+        let message = "";
         switch (data?.status) {
             case "DRAFT":
-                message = t(langKeys.confirmationsavedraft) + ""
+                message = t(langKeys.confirmationsavedraft) + "";
                 break;
+
             case "SCHEDULED":
-                message = t(langKeys.confirmationpublish) + ""
+                message = t(langKeys.confirmationpublish) + "";
                 break;
-        
+
             case "DELETED":
-                message = t(langKeys.confirmationpostdelete) + ""
+                message = t(langKeys.confirmationpostdelete) + "";
                 break;
-            
+
             default:
                 break;
         }
-        setstatuspost(data?.status)
+        setstatuspost(data?.status);
         const callback = () => {
-            debugger            
             setWaitOperation(true);
             dispatch(showBackdrop(true));
             dispatch(execute(postHistoryIns({ ...data, medialink: JSON.stringify(data.medialink), operation: "UPDATE" })));
@@ -309,6 +309,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                         label={t(langKeys.title)}
                                         onChange={(value) => { setValue('texttitle', value); trigger('texttitle'); }}
                                         valueDefault={getValues('texttitle')}
+                                        disabled={isPublished}
                                     />
                                 </div>
                                 <div className="row-zyx" style={{ marginBottom: '0px', height: '10px', paddingLeft: '2px' }}>
@@ -322,7 +323,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                 <div className="row-zyx" style={{ marginBottom: '0px' }}>
                                     <FieldEditAdvanced
                                         className="col-12"
-                                        disabled={false}
+                                        disabled={isPublished}
                                         emoji={true}
                                         error={errors?.textbody?.message}
                                         hashtag={true}
@@ -345,9 +346,18 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                     <span>
                                         {t(langKeys.postcreator_publish_textrecommendation01)}
                                     </span>
-                                    <span>
+                                    {getValues('mediatype') === 'IMAGE' && <span>
                                         {t(langKeys.postcreator_publish_textrecommendation02)}
-                                    </span>
+                                    </span>}
+                                    {getValues('mediatype') === 'IMAGE' && <span>
+                                        {t(langKeys.postcreator_publish_textrecommendation03)}
+                                    </span>}
+                                    {getValues('mediatype') === 'VIDEO' && <span>
+                                        {t(langKeys.postcreator_publish_textrecommendation04)}
+                                    </span>}
+                                    {getValues('mediatype') === 'VIDEO' && <span>
+                                        {t(langKeys.postcreator_publish_textrecommendation05)}
+                                    </span>}
                                 </div>
                                 {(getValues('mediatype') === 'IMAGE' || getValues('mediatype') === 'VIDEO') && <>
                                     {getValues('mediatype') === 'IMAGE' && <div className="row-zyx" style={{ marginBottom: '0px' }}>
@@ -381,14 +391,6 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                         })}
                                     </div>
                                     <div className="row-zyx" style={{ marginTop: '18px', alignItems: 'center', display: 'flex', justifyContent: 'center' }}>
-                                        {/*<Button
-                                        className={classes.button}
-                                        variant="contained"
-                                        color="primary"
-                                        startIcon={<Edit color="secondary" />}
-                                        style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
-                                    >{t(langKeys.postcreator_publish_edit)}
-                                    </Button>*/}
                                         <Button
                                             className={classes.button}
                                             variant="contained"
@@ -396,11 +398,12 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                             startIcon={<Delete color="secondary" />}
                                             style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                             onClick={handleDeleteMedia}
+                                            disabled={isPublished}
                                         >{t(langKeys.postcreator_publish_delete)}
                                         </Button>
                                         <React.Fragment>
                                             <input
-                                                accept={getValues('mediatype') === 'IMAGE' ? "image/jpeg" : "video/mp4"}
+                                                accept={getValues('mediatype') === 'IMAGE' ? "image/*" : "video/*"}
                                                 id="attachmentInput"
                                                 onChange={(e) => onChangeAttachment(e.target.files)}
                                                 style={{ display: 'none' }}
@@ -409,7 +412,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                             <Button
                                                 className={classes.button}
                                                 color="primary"
-                                                disabled={(waitUploadFile || fileAttachment !== null) || (getValues('mediatype') === 'IMAGE' ? (getValues('medialink') || []).length >= 3 : (getValues('medialink') || []).length >= 1)}
+                                                disabled={(waitUploadFile || fileAttachment !== null || isPublished) || (getValues('mediatype') === 'IMAGE' ? (getValues('medialink') || []).length >= 3 : (getValues('medialink') || []).length >= 1)}
                                                 onClick={onClickAttachment}
                                                 startIcon={getValues('mediatype') === 'IMAGE' ? <CameraAlt color="secondary" /> : <PlayCircleOutlineSharp color="secondary" />}
                                                 style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
@@ -438,7 +441,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                         color="primary"
                                         onClick={() => { setCustomizeType('Facebook') }}
                                         startIcon={<Facebook color="secondary" />}
-                                        style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                        style={{ backgroundColor: "#197BC8", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         disabled={customizeType === 'Facebook'}
                                     >{t(langKeys.postcreator_publish_facebook)}
                                     </Button>}
@@ -448,7 +451,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                         color="primary"
                                         onClick={() => { setCustomizeType('Instagram') }}
                                         startIcon={<Instagram color="secondary" />}
-                                        style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                        style={{ backgroundColor: "#197BC8", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         disabled={customizeType === 'Instagram'}
                                     >{t(langKeys.postcreator_publish_instagram)}
                                     </Button>}
@@ -458,7 +461,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                         color="primary"
                                         onClick={() => { setCustomizeType('LinkedIn') }}
                                         startIcon={<LinkedIn color="secondary" />}
-                                        style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                        style={{ backgroundColor: "#197BC8", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         disabled={customizeType === 'LinkedIn'}
                                     >{t(langKeys.postcreator_publish_linkedin)}
                                     </Button>}
@@ -467,8 +470,16 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                         variant="contained"
                                         color="primary"
                                         onClick={() => { setCustomizeType('TikTok') }}
-                                        startIcon={<MusicNote color="secondary" />}
-                                        style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                        startIcon={<svg
+                                            fill={"#000000"}
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 50 50"
+                                            width="100%"
+                                            height="100%"
+                                        >
+                                            <path d="M41,4H9C6.243,4,4,6.243,4,9v32c0,2.757,2.243,5,5,5h32c2.757,0,5-2.243,5-5V9C46,6.243,43.757,4,41,4z M37.006,22.323 c-0.227,0.021-0.457,0.035-0.69,0.035c-2.623,0-4.928-1.349-6.269-3.388c0,5.349,0,11.435,0,11.537c0,4.709-3.818,8.527-8.527,8.527 s-8.527-3.818-8.527-8.527s3.818-8.527,8.527-8.527c0.178,0,0.352,0.016,0.527,0.027v4.202c-0.175-0.021-0.347-0.053-0.527-0.053 c-2.404,0-4.352,1.948-4.352,4.352s1.948,4.352,4.352,4.352s4.527-1.894,4.527-4.298c0-0.095,0.042-19.594,0.042-19.594h4.016 c0.378,3.591,3.277,6.425,6.901,6.685V22.323z" />
+                                        </svg>}
+                                        style={{ backgroundColor: "#197BC8", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         disabled={customizeType === 'TikTok'}
                                     >{t(langKeys.postcreator_publish_tiktok)}
                                     </Button>}
@@ -478,7 +489,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                         color="primary"
                                         onClick={() => { setCustomizeType('Twitter') }}
                                         startIcon={<Twitter color="secondary" />}
-                                        style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                        style={{ backgroundColor: "#197BC8", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         disabled={customizeType === 'Twitter'}
                                     >{t(langKeys.postcreator_publish_twitter)}
                                     </Button>}
@@ -488,7 +499,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                         color="primary"
                                         onClick={() => { setCustomizeType('YouTube') }}
                                         startIcon={<YouTube color="secondary" />}
-                                        style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                        style={{ backgroundColor: "#197BC8", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         disabled={customizeType === 'YouTube'}
                                     >{t(langKeys.postcreator_publish_youtube)}
                                     </Button>}
@@ -504,7 +515,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                 {customizeType !== "" && <div className="row-zyx" style={{ marginBottom: '0px' }}>
                                     <FieldEditAdvanced
                                         className="col-12"
-                                        disabled={false}
+                                        disabled={isPublished}
                                         emoji={true}
                                         error={errors?.textbody?.message}
                                         hashtag={true}
@@ -529,6 +540,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                         variant="outlined"
                                         uset={true}
                                         prefixTranslation={'posthistory_'}
+                                        disabled={isPublished}
                                     />
                                 </div>}
                                 {customizeType === 'Facebook' && <div className="row-zyx">
@@ -544,6 +556,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                         variant="outlined"
                                         uset={true}
                                         prefixTranslation={'posthistory_'}
+                                        disabled={isPublished}
                                     />
                                 </div>}
                             </div>
@@ -563,7 +576,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                         <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(localesLaraigo() as any)[navigator.language.split('-')[0]]}>
                                             <KeyboardDatePicker
                                                 className="col-6"
-                                                format={getLocaleDateString()}
+                                                format="d MMMM yyyy"
                                                 invalidDateMessage={t(langKeys.invalid_date_format)}
                                                 label={t(langKeys.date)}
                                                 value={getValues('publishdate')}
@@ -571,6 +584,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                                     setValue('publishdate', e);
                                                     trigger('publishdate');
                                                 }}
+                                                disabled={isPublished}
                                             />
                                         </MuiPickersUtilsProvider>
                                         <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(localesLaraigo())[navigator.language.split('-')[0]]}>
@@ -586,6 +600,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                                     setValue('publishdate', e);
                                                     trigger('publishdate');
                                                 }}
+                                                disabled={isPublished}
                                             />
                                         </MuiPickersUtilsProvider>
                                     </React.Fragment>
@@ -799,7 +814,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                         </div>}
                                     </div>
                                 </div>}
-                                <div className="row-zyx" style={{ marginTop: '18px', alignItems: 'center', display: 'flex', justifyContent: 'center' }}>
+                                {!isPublished && <div className="row-zyx" style={{ marginTop: '18px', alignItems: 'center', display: 'flex', justifyContent: 'center' }}>
                                     <Button
                                         className={classes.button}
                                         variant="contained"
@@ -808,6 +823,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                         style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         type="submit"
                                         onClick={() => { setValue('status', 'DRAFT') }}
+                                        disabled={isPublished}
                                     >{t(langKeys.postcreator_publish_confirm_draft)}
                                     </Button>
                                     <Button
@@ -818,6 +834,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                         style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         type="submit"
                                         onClick={() => { setValue('status', 'SCHEDULED') }}
+                                        disabled={isPublished}
                                     >{t(langKeys.postcreator_publish_confirm_save)}
                                     </Button>
                                     <Button
@@ -827,10 +844,15 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                         onClick={() => { setValue('status', 'DELETED') }}
                                         style={{ backgroundColor: "#fb5f5f", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         variant="contained"
+                                        disabled={isPublished}
                                     >
                                         <CloseIcon />{t(langKeys.delete)}
                                     </Button>
-                                </div>
+                                </div>}
+                                {(isPublished && row?.publishtatus === "ERROR") && <div className="row-zyx" style={{ marginTop: '18px', alignItems: 'center', display: 'flex', justifyContent: 'center' }}>
+                                    <h3 style={{ color: 'red', marginBottom: '2px' }}>{t(langKeys.posthistory_error)}</h3>
+                                    <h4 style={{ marginTop: '2px' }}>{row?.publishmessage}</h4>
+                                </div>}
                             </div>
                         </div>
                     </div>
