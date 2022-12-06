@@ -124,8 +124,10 @@ const ManageCallInfoTicket: React.FC = () => {
     }
 
     const transferHold = () => {
-        dispatch(holdCall({ call: call?.call!!, flag: false, number: call?.number }));
-        dispatch(setHold({ hold: true, number: call?.number }))
+        if (!call?.onhold) {
+            dispatch(holdCall({ call: call?.call!!, flag: false, number: call?.number }));
+            dispatch(setHold({ hold: true, number: call?.number }))
+        }
     }
 
     const handleClickAway = () => {

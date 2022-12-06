@@ -46,7 +46,7 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                     const method = headers["X-method"]
                     const supervision = headers["X-supervision"]
                     const splitIdentifier = headers["X-identifier"].split("-");
-                    const number = headers["X-transfer"] ? cleanNumber(headers["X-originalnumber"]) : cleanNumber(e.call.number());
+                    const number = headers["X-transfer"] ? cleanNumber(headers["X-originalnumber"]) : cleanNumber(e?.call?.number());
                     console.log(`IncomingCall-number: ${number}`)
                     console.log(`IncomingCall-name: ${headers["X-personname"] || number}`)
                     const name = headers["X-personname"] || number;
@@ -154,7 +154,8 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                     });
                     e.call.on(VoxImplant.CallEvents.MessageReceived, (e: any) => {
                         try {
-                            const number = cleanNumber(e?.call?.number());
+                            const headers = (e.call as Call).headers();
+                            const number = headers["X-transfer"] ? cleanNumber(headers["X-originalnumber"]) : cleanNumber(e?.call?.number());
                             console.log(`MessageReceived-text: ${e.text}`)
                             const message_json = JSON.parse(e.text)
                             switch (message_json.operation) {
@@ -263,7 +264,8 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         });
         call.on(VoxImplant.CallEvents.MessageReceived, (e: any) => {
             try {
-                const number = cleanNumber(e?.call?.number());
+                const headers = (e.call as Call).headers();
+                const number = headers["X-transfer"] ? cleanNumber(headers["X-originalnumber"]) : cleanNumber(e?.call?.number());
                 console.log(`MessageReceived-text: ${e.text}`)
                 const message_json = JSON.parse(e.text)
                 switch (message_json.operation) {

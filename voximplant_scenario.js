@@ -18,6 +18,7 @@ var request,
     originalCall2,
     inboundCalls = [],
     transferCall,
+    transferHoldPlayer,
     inTransfer,
     transferTo,
     callerid,
@@ -660,20 +661,35 @@ function transferTrigger(number) {
     })
 }
 
+function transferHold(a, b) {
+    a.addEventListener(CallEvents.OnHold, function (e) {
+        transferHoldPlayer = VoxEngine.createURLPlayer(holdTone, true, true);
+        Logger.write("incoming leg on hold");
+        transferHoldPlayer.resume();
+        transferHoldPlayer.sendMediaTo(b);
+        transferHoldPlayer.sendMediaTo(a);
+    });
+    a.addEventListener(CallEvents.OffHold, function (e) {
+        Logger.write("incoming leg off hold");
+        transferHoldPlayer.stop();
+        VoxEngine.sendMediaBetween(a, b);
+    });
+}
+
 function transferOnConnect(event, call2) {
     // 3rd leg event
     Logger.write("transfer-connected: " + JSON.stringify(event));
     // Send audio between 2nd, 3er leg
     VoxEngine.sendMediaBetween(event.call, call2);
-    holdCall(event.call, call2);
+    transferHold(event.call, call2);
     // Advise transfer complete to 2nd leg
     call2.sendMessage(JSON.stringify({
         operation: "TRANSFER-CONNECTED"
     }));
     event.call.addEventListener(CallEvents.Disconnected, (e) => {
         Logger.write("transfer-Disconnected: " + JSON.stringify(e));
-        if (holdplayer) {
-            holdplayer.stop();
+        if (transferHoldPlayer) {
+            transferHoldPlayer.stop();
         }
         // Advise transfer disconnected to 2nd leg
         call2.sendMessage(JSON.stringify({
