@@ -412,8 +412,16 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
     } else if (type === typeVoximplant.HOLD_CALL) {
         console.log("payload hold", payload)
         const call = payload.call;
-        // const number = cleanNumber(payload.number);
-        await call?.setActive(payload.flag);
+        console.log("payload hold", call.active())
+        if ((call as Call).active() !== payload.flag) {
+            // const number = cleanNumber(payload.number);
+            await call?.setActive(payload.flag);
+        }
+        else if (payload.flag === true) {
+            call?.sendMessage(JSON.stringify({
+                operation: 'HOLD-STOP'
+            }))
+        }
         return
     } else if (type === typeVoximplant.MUTE_CALL) {
         const call = payload.call;
