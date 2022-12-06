@@ -408,6 +408,7 @@ function holdCall(a, b) {
         VoxEngine.sendMediaBetween(a, b);
     });
 }
+
 // Terminate call and session
 function cleanup(motive) {
     Logger.write("cleanup-inTransfer: " + JSON.stringify(inTransfer));
@@ -625,6 +626,11 @@ function handleSimultaneousCall() {
 }
 
 function transferTrigger(number) {
+    // Send holdTone to PSTN
+    holdplayer = VoxEngine.createURLPlayer(holdTone, true, true);
+    holdplayer.resume();
+    holdplayer.sendMediaTo(originalCall);
+    holdplayer.sendMediaTo(originalCall2);
     if (/^\d+$/.test(number.replace("+", ""))) {
         transferCall = VoxEngine.callPSTN(number, site, number, {
             "X-transfer": "truetruetruetrue",
@@ -636,6 +642,7 @@ function transferTrigger(number) {
             "X-transfernumber": number,
             "X-conversationid": conversationid,
         });
+        VoxEngine.sendMediaBetween(transferCall, originalCall2);
     } else {
         transferCall = VoxEngine.callUser(number, number, "transfer", {
             "X-transfer": "truetruetruetrue",
@@ -719,8 +726,14 @@ function transferOnFailed(event, call2) {
 
 function transferOperations(event) {
     // 2rd leg event
+    const message_json = JSON.parse(event.text);
+    switch (message_json.operation) {
+        case 'HOLD-STOP':
+            holdplayer.stop();
+            VoxEngine.sendMediaBetween(event.call, originalCall);
+            break;
+    }
     if (transferCall) {
-        const message_json = JSON.parse(event.text);
         switch (message_json.operation) {
             case 'TRANSFER-COMPLETE':
                 transferComplete(message_json)
