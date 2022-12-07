@@ -295,7 +295,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                     reminderhsmmessage: replaceVariables(hsmVariables, bodyMessageReminderHSM),
                     daterange: dateinterval,
                     startdate: (dateinterval === "DAYS") ? new Date(new Date().setHours(10,0,0,0)).toISOString(): dateRangeCreateDate.startDate,
-                    enddate: (dateinterval === "DAYS") ? new Date(Number(new Date()) + diffDays * 86400000) : dateRangeCreateDate.endDate,
+                    enddate: (dateinterval === "DAYS") ? new Date(new Date().setHours(10,0,0,0) + diffDays * 86400000) : dateRangeCreateDate.endDate,
                     daysduration: diffDays,
                     increments: "00:30",
                 }
