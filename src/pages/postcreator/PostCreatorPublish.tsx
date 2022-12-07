@@ -4,7 +4,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import React, { FC, Fragment, useEffect, useState, useCallback } from "react";
 
-import { AccountCircle, CameraAlt, ChatBubble, Delete, Facebook, Instagram, LinkedIn, PlayCircleOutlineSharp, Replay, Reply, Save, Send, ThumbUp, Timelapse, Twitter, YouTube } from '@material-ui/icons';
+import { AccountCircle, CameraAlt, ChatBubble, Delete, Facebook, Instagram, LinkedIn, PlayCircleOutlineSharp, Replay, Reply, Save, Send, ThumbUp, Timelapse, Twitter, YouTube, Schedule } from '@material-ui/icons';
 import { AntTab, DialogZyx, FieldEdit, FieldEditAdvanced, FieldSelect, FieldView } from 'components';
 import { Button, Tabs } from "@material-ui/core";
 import { dataActivities, dataFeelings } from 'common/helpers';
@@ -464,7 +464,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                                         <img loading='eager' alt="" style={{ maxHeight: '60px' }} src={media.thumbnail}></img>
                                                     </div>
                                                     <div style={{ height: '100%', paddingLeft: '10px', display: 'flex', alignItems: 'center' }}>
-                                                        {media.name}<br />{media.height} x {media.width}
+                                                        {media.name}<br />{media.width} x {media.height}
                                                     </div>
                                                 </div>
                                             </div>
@@ -929,7 +929,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         className={classes.button}
                                         variant="contained"
                                         color="primary"
-                                        startIcon={<Timelapse color="secondary" />}
+                                        startIcon={<Schedule color="secondary" />}
                                         style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         type="submit"
                                         onClick={() => { setModalType('PROGRAM') }}
@@ -1009,9 +1009,10 @@ const SavePostModalGeneric: FC<{ modalData: any, modalType: string, openModal: b
             buttonText3={modalType === "PUBLISH" ? t(langKeys.postcreator_publish_confirm_save) : t(langKeys.postcreator_publish_program_save)}
             handleClickButton1={() => setOpenModal(false)}
             handleClickButton2={() => { handleInsert('DRAFT'); }}
-            handleClickButton3={() => { handleInsert('PUBLISH'); }}
+            handleClickButton3={() => { modalType === "DRAFT" ? handleInsert('DRAFT') : handleInsert('PUBLISH'); }}
             open={openModal}
             title={modalType === "DRAFT" ? t(langKeys.postcreator_publish_draft_title) : (modalType === "PROGRAM" ? t(langKeys.postcreator_publish_program_title) : t(langKeys.postcreator_publish_confirm_title))}
+            showClose={true}
         >
             <div className={classes.containerDetail}>
                 <h4 style={{ marginTop: '2px' }}>{modalType === "DRAFT" ? t(langKeys.postcreator_publish_draft_description) : (modalType === "PROGRAM" ? t(langKeys.postcreator_publish_program_description) : t(langKeys.postcreator_publish_confirm_description))}</h4>
@@ -1056,6 +1057,7 @@ const SavePostModalGeneric: FC<{ modalData: any, modalType: string, openModal: b
                                 onChange={(e: any) => {
                                     setModalTime(e);
                                 }}
+                                keyboardIcon={<Timelapse />}
                             />
                         </MuiPickersUtilsProvider>
                     </React.Fragment>
