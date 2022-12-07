@@ -4,9 +4,9 @@ import CloseIcon from '@material-ui/icons/Close';
 import DateFnsUtils from '@date-io/date-fns';
 import React, { Fragment, useEffect, useState, useCallback } from "react";
 
-import { AccountCircle, CameraAlt, ChatBubble, Delete, Facebook, Instagram, LinkedIn, PlayCircleOutlineSharp, Replay, Reply, Save, Send, ThumbUp, Timelapse, Twitter, YouTube } from '@material-ui/icons';
+import { AccountCircle, CameraAlt, ChatBubble, Delete, Facebook, Instagram, LinkedIn, PlayCircleOutlineSharp, Replay, Reply, Save, Send, ThumbUp, Timelapse, Twitter, YouTube, Schedule } from '@material-ui/icons';
 import { Button } from "@material-ui/core";
-import { dataActivities, dataFeelings, getLocaleDateString, localesLaraigo } from 'common/helpers';
+import { dataActivities, dataFeelings, localesLaraigo } from 'common/helpers';
 import { Dictionary } from "@types";
 import { execute, uploadFileMetadata } from "store/main/actions";
 import { FacebookColor, InstagramColor, LinkedInColor, TikTokColor, TwitterColor, YouTubeColor } from "icons";
@@ -384,7 +384,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                                         <img loading='eager' alt="" style={{ maxHeight: '60px' }} src={media.thumbnail}></img>
                                                     </div>
                                                     <div style={{ height: '100%', paddingLeft: '10px', display: 'flex', alignItems: 'center' }}>
-                                                        {media.name}<br />{media.height} x {media.width}
+                                                        {media.name}<br />{media.width} x {media.height}
                                                     </div>
                                                 </div>
                                             </div>
@@ -601,6 +601,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                                     trigger('publishdate');
                                                 }}
                                                 disabled={isPublished}
+                                                keyboardIcon={<Timelapse />}
                                             />
                                         </MuiPickersUtilsProvider>
                                     </React.Fragment>
@@ -830,7 +831,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                         className={classes.button}
                                         variant="contained"
                                         color="primary"
-                                        startIcon={<Timelapse color="secondary" />}
+                                        startIcon={<Schedule color="secondary" />}
                                         style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         type="submit"
                                         onClick={() => { setValue('status', 'SCHEDULED') }}

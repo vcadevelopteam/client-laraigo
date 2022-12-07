@@ -203,6 +203,7 @@ export const FieldView: React.FC<{ label: string, value?: string, className?: an
 )
 
 interface TemplateDialogProps {
+    showClose?: boolean;
     open: boolean;
     buttonText0?: string;
     buttonText1?: string;
@@ -221,7 +222,7 @@ interface TemplateDialogProps {
     maxWidth?: false | "sm" | "xs" | "md" | "lg" | "xl" | undefined;
 }
 
-export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText0, buttonText1, buttonText2, buttonText3, handleClickButton0, handleClickButton1, handleClickButton2, handleClickButton3, title, maxWidth = "sm", button1Type = "button", button2Type = "button", zIndex = 1300 }) => (
+export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText0, buttonText1, buttonText2, buttonText3, handleClickButton0, handleClickButton1, handleClickButton2, handleClickButton3, title, maxWidth = "sm", button1Type = "button", button2Type = "button", zIndex = 1300, showClose = false }) => (
     <Dialog
         open={open}
         fullWidth
@@ -230,8 +231,13 @@ export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, butto
         <form onSubmit={(button1Type === "submit" ? handleClickButton1 : (button2Type === "submit" ? handleClickButton2 : undefined))}>
             {title && (
                 <DialogTitle>
-                    <div style={{ overflow: 'hidden', wordBreak: 'break-word', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginRight: 120 }}>
-                        {title}
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', overflow: 'hidden', wordBreak: 'break-word', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginRight: 120 }}>
+                            {title}
+                        </div>
+                        {showClose && <div onClick={(button1Type !== "submit" ? handleClickButton1 : undefined)} style={{ display: 'flex', overflow: 'hidden', wordBreak: 'break-word', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}>
+                            <b>X</b>
+                        </div>}
                     </div>
                 </DialogTitle>
             )}
@@ -445,10 +451,8 @@ export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disable
     )
 }
 
-export const FieldEditAdvanced: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, inputProps = {}, style = {}, variant = "standard", emoji = false, hashtag = false }) => {
+export const FieldEditAdvanced: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, inputProps = {}, style = {}, emoji = false, hashtag = false }) => {
     const [value, setvalue] = useState("");
-    const [positionStart, setPositionStart] = useState(0);
-    const [positionEnd, setPositionEnd] = useState(0);
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
@@ -492,6 +496,7 @@ export const FieldEditAdvanced: React.FC<InputProps> = ({ label, className, disa
                     }}
                     trigger={
                         <button
+                            type='button'
                             onClick={() => {
                                 setIsVisible(!isVisible);
                             }}
@@ -503,6 +508,7 @@ export const FieldEditAdvanced: React.FC<InputProps> = ({ label, className, disa
                     header={'Emojis'}
                 />}
                 {hashtag && <button
+                    type='button'
                     onClick={() => {
                         if (maxLength === 0 || `${value}#`.length <= maxLength) {
                             setvalue(`${value}#`);
@@ -578,32 +584,32 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
 }
 export const GetIconColor: React.FC<IconProps> = ({ channelType }) => {
 
-    if (channelType === "WHAT") return <WhatsappColor/>
-    if (channelType === "WHAD") return <WhatsappColor/>
-    if (channelType === "WHAG") return <WhatsappColor/>
+    if (channelType === "WHAT") return <WhatsappColor />
+    if (channelType === "WHAD") return <WhatsappColor />
+    if (channelType === "WHAG") return <WhatsappColor />
     if (channelType === "WHAP") return <WhatsappColor />
-    if (channelType === "WHAC") return <WhatsappColor/>
-    if (channelType === "FBMS") return <FacebookMessengerColor/>
-    if (channelType === "FBDM") return <FacebookMessengerColor/>
-    if (channelType === "FBWA") return <FacebookColor/>
-    if (channelType === "WEBM") return <WebMessengerColor/>
-    if (channelType === "TELE") return <TelegramColor/>
-    if (channelType === "INST") return <InstagramColor/>
-    if (channelType === "INMS") return <InstagramColor/>
-    if (channelType === "INDM") return <InstagramColor/>
-    if (channelType === "ANDR") return <AndroidColor/>
-    if (channelType === "APPL") return <IosColor/>
-    if (channelType === "CHATZ") return <ZyxmeMessengerIcon color='7721AD'/>
-    if (channelType === "CHAZ") return <ZyxmeMessengerIcon color='7721AD'/>
-    if (channelType === "MAIL") return <EmailColor/>
-    if (channelType === "MAII") return <EmailColor/>
-    if (channelType === "YOUT") return <YouTubeColor/>
-    if (channelType === "LINE") return <LineIcon color='7721AD'/>
-    if (channelType === "SMS") return <SmsColor/>
-    if (channelType === "SMSI") return <SmsColor/>
-    if (channelType === "TWIT") return <TwitterColor/>
-    if (channelType === "TWMS") return <TwitterColor/>
-    if (channelType === "TEAM") return <TeamsColor/>
+    if (channelType === "WHAC") return <WhatsappColor />
+    if (channelType === "FBMS") return <FacebookMessengerColor />
+    if (channelType === "FBDM") return <FacebookMessengerColor />
+    if (channelType === "FBWA") return <FacebookColor />
+    if (channelType === "WEBM") return <WebMessengerColor />
+    if (channelType === "TELE") return <TelegramColor />
+    if (channelType === "INST") return <InstagramColor />
+    if (channelType === "INMS") return <InstagramColor />
+    if (channelType === "INDM") return <InstagramColor />
+    if (channelType === "ANDR") return <AndroidColor />
+    if (channelType === "APPL") return <IosColor />
+    if (channelType === "CHATZ") return <ZyxmeMessengerIcon color='7721AD' />
+    if (channelType === "CHAZ") return <ZyxmeMessengerIcon color='7721AD' />
+    if (channelType === "MAIL") return <EmailColor />
+    if (channelType === "MAII") return <EmailColor />
+    if (channelType === "YOUT") return <YouTubeColor />
+    if (channelType === "LINE") return <LineIcon color='7721AD' />
+    if (channelType === "SMS") return <SmsColor />
+    if (channelType === "SMSI") return <SmsColor />
+    if (channelType === "TWIT") return <TwitterColor />
+    if (channelType === "TWMS") return <TwitterColor />
+    if (channelType === "TEAM") return <TeamsColor />
     if (channelType === "VOXI") return <VoiceColor />
     if (channelType === "LNKD") return <LinkedInColor />
 

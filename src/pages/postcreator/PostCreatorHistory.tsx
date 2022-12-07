@@ -270,14 +270,19 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value: a
                 return (
                     <div style={{ height: 53, textAlign: "center" }}>
                         {
-                            publishtatus === 'PUBLISHED' ?
+                            publishtatus ? (
+                                publishtatus === 'PUBLISHED' ?
+                                    <Tooltip title={publishmessage}>
+                                        <p style={{ color: 'green' }}> {t(langKeys.publishedHistory)} </p>
+                                    </Tooltip>
+                                    :
+                                    <Tooltip title={publishmessage}>
+                                        <p style={{ color: 'red' }}>{t(langKeys.publishedError)}</p>
+                                    </Tooltip>) : (
                                 <Tooltip title={publishmessage}>
-                                    <p style={{ color: 'green' }}> {t(langKeys.publishedHistory)} </p>
+                                    <p> {t(langKeys.pending)} </p>
                                 </Tooltip>
-                                :
-                                <Tooltip title={publishmessage}>
-                                    <p style={{ color: 'red' }}>{t(langKeys.publishedError)}</p>
-                                </Tooltip>
+                            )
                         }
                     </div>
                 )
