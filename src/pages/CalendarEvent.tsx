@@ -535,7 +535,7 @@ export const CalendarEvent: FC = () => {
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                         <ScheduleIcon color="action" />
-                        {event?.timeduration} {event?.timeunit}
+                        {event?.timeduration} {t(event?.timeunit?.toLocaleLowerCase())}{event?.timeduration > 1?"s":""}
                     </div>
                     {timeSelected?.confirm && (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12 }}>
