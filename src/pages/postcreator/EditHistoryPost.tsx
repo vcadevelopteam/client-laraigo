@@ -527,7 +527,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                         valueDefault={getValues('textbody')}
                                     />
                                 </div>}
-                                {customizeType === 'Facebook' && <div className="row-zyx">
+                                {(customizeType === 'Facebook' && getValues('mediatype') !== 'VIDEO') && <div className="row-zyx">
                                     <FieldSelect
                                         data={dataActivities}
                                         error={errors?.activity?.message}
@@ -543,7 +543,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                         disabled={isPublished}
                                     />
                                 </div>}
-                                {customizeType === 'Facebook' && <div className="row-zyx">
+                                {(customizeType === 'Facebook' && getValues('mediatype') !== 'VIDEO') && <div className="row-zyx">
                                     <FieldSelect
                                         data={dataFeelings}
                                         error={errors?.sentiment?.message}
