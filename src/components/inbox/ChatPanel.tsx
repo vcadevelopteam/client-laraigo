@@ -943,7 +943,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     const person = useSelector(state => state.inbox.person);
     const statusCall = useSelector(state => state.voximplant.statusCall);
     const [checkTipification, setCheckTipification] = useState(false);
-    const [propertyAsesorSuspende, setpropertyAsesorSuspende] = useState(false);
+    const [propertyAsesorSuspende, setpropertyAsesorSuspende] = useState(true);
     const mainAux2 = useSelector(state => state.main.mainAux2);
     const location = useLocation();
     const user = useSelector(state => state.login.validateToken.user);
@@ -981,10 +981,9 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                     setpropertyAsesorSuspende(dataasesorsuspende?.filter(x=>x.group===ticketSelected.usergroup)?.[0]?.propertyvalue === '1')
                 }
             }
+        }else{
+            setpropertyAsesorSuspende(true)
         }
-        //const propertyAsesorSuspende = user?.roledesc !== "ASESOR"? multiData?.data?.filter(x=>x.key==="UFN_PROPERTY_SELBYNAMEASESORSUSPENDE")?.[0]?.data: []
-        console.log(propertyAsesorSuspende)
-        console.log(ticketSelected)
     }, [multiData,ticketSelected])
     useEffect(() => {
         if (checkTipification) {
