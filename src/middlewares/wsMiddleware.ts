@@ -76,7 +76,7 @@ const callWSMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async
         socket.emit("disconnectOnSession", {});
         setTimeout(() => {
             socket.disconnect();
-        }, 5000);
+        }, 500);
         return;
     }
 
