@@ -671,7 +671,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         valueDefault={getValues('textcustomyoutube')}
                                     />}
                                 </div>}
-                                {customizeType === 'Facebook' && <div className="row-zyx">
+                                {(customizeType === 'Facebook' && pageMode !== 'VIDEO') && <div className="row-zyx">
                                     <FieldSelect
                                         data={dataActivities}
                                         error={errors?.activity?.message}
@@ -686,7 +686,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         prefixTranslation={'posthistory_'}
                                     />
                                 </div>}
-                                {customizeType === 'Facebook' && <div className="row-zyx">
+                                {(customizeType === 'Facebook' && pageMode !== 'VIDEO') && <div className="row-zyx">
                                     <FieldSelect
                                         data={dataFeelings}
                                         error={errors?.sentiment?.message}
