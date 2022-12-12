@@ -38,6 +38,43 @@ export const chargeReset = (state: IState): IState => ({
     request: initialState.request
 })
 
+export const paymentOrder = (state: IState, action: IAction): IState => ({
+    ...state,
+    request: {
+        ...state.request,
+        loading: true,
+        error: false
+    }
+})
+
+export const paymentOrderFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    request: {
+        ...state.request,
+        loading: false,
+        error: true,
+        code: action.payload.code,
+        message: action.payload.message
+    }
+})
+
+export const paymentOrderSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    request: {
+        ...state.request,
+        loading: false,
+        error: false,
+        data: action.payload.data,
+        code: action.payload.code,
+        message: action.payload.message
+    }
+})
+
+export const paymentOrderReset = (state: IState): IState => ({
+    ...state,
+    request: initialState.request
+})
+
 export const balance = (state: IState, action: IAction): IState => ({
     ...state,
     request: {

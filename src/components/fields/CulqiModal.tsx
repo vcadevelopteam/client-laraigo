@@ -5,7 +5,7 @@ import { CulqiProvider, Culqi } from 'react-culqi';
 import { useTranslation } from 'react-i18next';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import { apiUrls } from 'common/constants';
-import { charge, resetCharge, subscribe, balance } from 'store/culqi/actions'
+import { charge, resetCharge, subscribe, balance, paymentOrder } from 'store/culqi/actions'
 import { useDispatch } from 'react-redux';
 import { Dictionary } from '@types';
 import { useSelector } from 'hooks';
@@ -19,9 +19,9 @@ interface CulqiOptionsProps {
     logo?: string;
 }
 
-interface CulqiModalProps { 
+interface CulqiModalProps {
     invoiceid?: number
-    type?: "CHARGE" | "SUBSCRIPTION" | "BALANCE",
+    type?: "CHARGE" | "SUBSCRIPTION" | "BALANCE" | "PAYMENTORDER",
     title: string;
     description: string;
     currency: string;
@@ -35,16 +35,16 @@ interface CulqiModalProps {
     buttontitle?: string;
     purchaseorder?: string;
     comments?: string;
-    disabled?:boolean;
-    corpid?:number;
-    orgid?:number;
-    successmessage?:string;
-    publickey?:string;
-    override?:boolean;
-    reference?:string;
-    buyamount?:number;
-    totalpay?:number;
-    totalamount?:number;
+    disabled?: boolean;
+    corpid?: number;
+    orgid?: number;
+    successmessage?: string;
+    publickey?: string;
+    override?: boolean;
+    reference?: string;
+    buyamount?: number;
+    totalpay?: number;
+    totalamount?: number;
 }
 
 const globalpublickey = apiUrls.CULQIKEY;
@@ -60,7 +60,7 @@ const CulqiModal: FC<CulqiModalProps> = ({
     interval_count,
     limit,
     options = {},
-    metadata, 
+    metadata,
     callbackOnSuccess,
     buttontitle,
     purchaseorder,
@@ -113,6 +113,24 @@ const CulqiModal: FC<CulqiModalProps> = ({
         }));
     }
 
+    const payPaymentOrder = (token: any) => {
+        dispatch(showBackdrop(true));
+        dispatch(paymentOrder({
+            paymentorderid: invoiceid,
+            settings: { title, description, currency, amount },
+            token,
+            metadata,
+            corpid,
+            orgid,
+            reference,
+            buyamount,
+            comments,
+            purchaseorder,
+            totalpay,
+            totalamount,
+        }));
+    }
+
     const createSubscription = (token: any) => {
         dispatch(showBackdrop(true));
         dispatch(subscribe({
@@ -132,6 +150,9 @@ const CulqiModal: FC<CulqiModalProps> = ({
                 break;
             case 'BALANCE':
                 createBalance(token);
+                break;
+            case 'PAYMENTORDER':
+                payPaymentOrder(token);
                 break;
             default:
                 break;
@@ -155,44 +176,44 @@ const CulqiModal: FC<CulqiModalProps> = ({
             dispatch(showBackdrop(false));
             dispatch(resetCharge());
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [culqiSelector]);
 
     return (
-    <CulqiProvider
-        publicKey={publickey || globalpublickey}
-        title={title}
-        description={description}
-        currency={currency}
-        amount={amount}
-        onToken={onToken}
-        onError={onError}
-        options={{
-            style: {
-                maincolor: "#7721AD",
-                buttontext: "#FFFFFF",
-                maintext: "#7721AD",
-                ...options
-            }
-        }}
-    >
-        <Culqi>
-            {({ openCulqi, setAmount, amount }: any) => {
-                return (
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        type="button"
-                        startIcon={<AttachMoneyIcon color="secondary" />}
-                        style={{ backgroundColor: "#55BD84" }}
-                        onClick={openCulqi}
-                        disabled={disabled}
-                    >{buttontitle ? buttontitle : t(langKeys.pay)}</Button>
-                )
+        <CulqiProvider
+            publicKey={publickey || globalpublickey}
+            title={title}
+            description={description}
+            currency={currency}
+            amount={amount}
+            onToken={onToken}
+            onError={onError}
+            options={{
+                style: {
+                    maincolor: "#7721AD",
+                    buttontext: "#FFFFFF",
+                    maintext: "#7721AD",
+                    ...options
+                }
             }}
-        </Culqi>
-    </CulqiProvider>
-  );
+        >
+            <Culqi>
+                {({ openCulqi, setAmount, amount }: any) => {
+                    return (
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            type="button"
+                            startIcon={<AttachMoneyIcon color="secondary" />}
+                            style={{ backgroundColor: "#55BD84" }}
+                            onClick={openCulqi}
+                            disabled={disabled}
+                        >{buttontitle ? buttontitle : t(langKeys.pay)}</Button>
+                    )
+                }}
+            </Culqi>
+        </CulqiProvider>
+    );
 };
 
 export default CulqiModal;

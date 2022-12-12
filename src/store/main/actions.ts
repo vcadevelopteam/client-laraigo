@@ -20,6 +20,15 @@ export const getCollectionPublic = (requestBody: IRequestBody): IActionCall => (
     },
     type: null,
 });
+export const getCollectionPaymentOrder = (requestBody: IRequestBody): IActionCall => ({
+    callAPI: () => CommonService.mainPaymentOrder(requestBody),
+    types: {
+        loading: actionTypes.MAIN,
+        success: actionTypes.MAIN_SUCCESS,
+        failure: actionTypes.MAIN_FAILURE,
+    },
+    type: null,
+});
 
 export const getMultiCollectionPublic = (requestBodies: string[]): IActionCall => ({
     callAPI: () => CommonService.multiMainPublic(requestBodies),
@@ -52,7 +61,7 @@ export const exportDynamic = (requestBody: IRequestBodyDynamic, reportName: stri
         parameters: {
             ...requestBody.parameters,
             formatToExport,
-            reportName, 
+            reportName,
             headerClient
         }
     }),
