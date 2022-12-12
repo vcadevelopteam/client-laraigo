@@ -1888,7 +1888,7 @@ const translation: LangKeys = {
   report_loginhistory_username: 'Usuario',
   report_loginhistory_status: 'Estado',
   warningnoquickreplies: "No se puede eliminar una clasificación porque se encuentra asociada a una respuesta rápida.",
-  report_loginhistory_status_help: `- Inbox: En bandeja de tickets.
+    report_loginhistory_status_help: `- Inbox: En bandeja de tickets.
 - Login: Sesión iniciada.
 - Expiracion: Sesión expirada.`,
   report_loginhistory_type: "Tipo",
