@@ -1531,6 +1531,7 @@ const translation: LangKeys = {
   connecting: "Conectando...",
   connected_call: "Llamada conectada",
   monitor_call: "Supervisar llamada",
+    monitor_call_off: "Cancelar supervisión de llamada",
 
   tipify_ticket: 'Clasificar ticket',
   today: 'Hoy',
