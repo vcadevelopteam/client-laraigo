@@ -103,6 +103,7 @@ export const langKeys = {
     connecting: "connecting",
     connected_call: "connected_call",
     monitor_call: "monitor_call",
+    monitor_call_off: "monitor_call_off",
 
     alternativephone: "alternativephone",
     limitgroupreassignment: "limitgroupreassignment",

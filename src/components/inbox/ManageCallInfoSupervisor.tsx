@@ -62,7 +62,7 @@ const ManageCallInfoSupervisor: React.FC = () => {
             })));
             setSupervision(false)
             const call = calls.find(call => `${call.number}_VOXI` === ticketSelected?.personcommunicationchannel && call.statusCall !== "DISCONNECTED" && call.type === "SUPERVISION")
-            dispatch(hangupCall({call: call?.call!!, number: call?.number}));
+            dispatch(hangupCall({ call: call?.call!!, number: call?.number }));
             dispatch(resetCall(ticketSelected?.personcommunicationchannel.split("_")[0] || ""));
         }
     }
@@ -98,7 +98,7 @@ const ManageCallInfoSupervisor: React.FC = () => {
                 <CardContent>
                     {ticketSelected?.status !== "CERRADO" && (
                         <div style={{ display: "flex", justifyContent: "end" }}>
-                            <Tooltip title={t(langKeys.monitor_call) || ""}>
+                            <Tooltip title={t(supervision ? langKeys.monitor_call_off : langKeys.monitor_call) || ""}>
                                 <span>
                                     <ToggleButton
                                         value="check"
@@ -106,6 +106,7 @@ const ManageCallInfoSupervisor: React.FC = () => {
                                         selected={supervision}
                                         color="primary"
                                         onChange={triggerSupervision}
+                                        style={{ backgroundColor: supervision ? "#55bd84" : undefined, color: supervision ? "#ffffff" : undefined }}
                                     >
                                         <HearingIcon />
                                     </ToggleButton>

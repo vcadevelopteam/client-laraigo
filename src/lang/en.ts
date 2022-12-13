@@ -35,6 +35,7 @@ const translation: LangKeys = {
     connecting: "Connecting...",
     connected_call: "Connected call",
     monitor_call: "Monitor call",
+    monitor_call_off: "Cancel call supervision",
 
     type_service: 'Service Type',
     font: "Font",
