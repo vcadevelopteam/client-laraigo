@@ -1,193 +1,213 @@
-import { Button } from '@material-ui/core';
-import { langKeys } from 'lang/keys';
-import { FC, useEffect } from 'react';
-import { CulqiProvider, Culqi } from 'react-culqi';
-import { useTranslation } from 'react-i18next';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
+
 import { apiUrls } from 'common/constants';
-import { charge, resetCharge, subscribe, balance, paymentOrder } from 'store/culqi/actions'
-import { useDispatch } from 'react-redux';
+import { Button } from '@material-ui/core';
+import { charge, resetCharge, subscribe, resetSubscribe, balance, resetBalance, paymentOrder, resetPaymentOrder } from 'store/culqi/actions'
+import { CulqiProvider, Culqi } from 'react-culqi';
 import { Dictionary } from '@types';
-import { useSelector } from 'hooks';
+import { FC, useEffect, useState } from 'react';
+import { langKeys } from 'lang/keys';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-
-interface CulqiOptionsProps {
-    maincolor?: string;
-    buttontext?: string;
-    maintext?: string;
-    desctext?: string;
-    logo?: string;
-}
-
-interface CulqiModalProps {
-    invoiceid?: number
-    type?: "CHARGE" | "SUBSCRIPTION" | "BALANCE" | "PAYMENTORDER",
-    title: string;
-    description: string;
-    currency: string;
-    amount: number;
-    interval?: string;
-    interval_count?: number;
-    limit?: number;
-    options?: CulqiOptionsProps;
-    callbackOnSuccess?: () => void;
-    metadata?: Dictionary;
-    buttontitle?: string;
-    purchaseorder?: string;
-    comments?: string;
-    disabled?: boolean;
-    corpid?: number;
-    orgid?: number;
-    successmessage?: string;
-    publickey?: string;
-    override?: boolean;
-    reference?: string;
-    buyamount?: number;
-    totalpay?: number;
-    totalamount?: number;
-}
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'hooks';
+import { useTranslation } from 'react-i18next';
 
 const globalpublickey = apiUrls.CULQIKEY;
 
-const CulqiModal: FC<CulqiModalProps> = ({
-    invoiceid,
-    type = "CHARGE",
-    title,
-    description,
-    currency = "USD",
-    amount,
-    interval,
-    interval_count,
-    limit,
-    options = {},
-    metadata,
-    callbackOnSuccess,
-    buttontitle,
-    purchaseorder,
-    comments,
-    disabled = false,
-    corpid = 0,
-    orgid = 0,
-    successmessage,
-    publickey,
-    override,
-    reference,
-    buyamount,
-    totalpay,
-    totalamount,
-}) => {
+interface CulqiOptionsProps {
+    buttontext?: string;
+    desctext?: string;
+    logo?: string;
+    maincolor?: string;
+    maintext?: string;
+}
+
+interface CulqiModalProps {
+    amount: number;
+    buttontitle?: string;
+    buyamount?: number;
+    callbackOnSuccess?: () => void;
+    comments?: string;
+    corpid?: number;
+    currency: string;
+    description: string;
+    disabled?: boolean;
+    interval?: string;
+    interval_count?: number;
+    invoiceid?: number;
+    paymentorderid?: number;
+    limit?: number;
+    metadata?: Dictionary;
+    options?: CulqiOptionsProps;
+    orgid?: number;
+    override?: boolean;
+    publickey?: string;
+    purchaseorder?: string;
+    reference?: string;
+    successmessage?: string;
+    title: string;
+    totalamount?: number;
+    totalpay?: number;
+    type?: "CHARGE" | "SUBSCRIPTION" | "BALANCE" | "PAYMENTORDER",
+}
+
+const CulqiModal: FC<CulqiModalProps> = ({ amount, buttontitle, buyamount, callbackOnSuccess, comments, corpid = 0, currency = "USD", description, disabled = false, interval, interval_count, invoiceid, paymentorderid, limit, metadata, options = {}, orgid = 0, override, publickey, purchaseorder, reference, successmessage, title, totalamount, totalpay, type = "CHARGE" }) => {
     const { t } = useTranslation();
+
     const dispatch = useDispatch();
+
     const culqiSelector = useSelector(state => state.culqi.request);
+
+    const [waitPay, setWaitPay] = useState(false);
 
     const createCharge = (token: any) => {
         dispatch(showBackdrop(true));
         dispatch(charge({
-            invoiceid,
-            settings: { title, description, currency, amount },
-            token,
-            metadata,
-            purchaseorder,
             comments,
             corpid,
+            invoiceid,
+            metadata,
             orgid,
             override,
+            purchaseorder,
+            settings: { title, description, currency, amount },
+            token,
         }));
+        setWaitPay(true);
     }
 
     const createBalance = (token: any) => {
         dispatch(showBackdrop(true));
         dispatch(balance({
-            invoiceid,
-            settings: { title, description, currency, amount },
-            token,
-            metadata,
-            corpid,
-            orgid,
-            reference,
             buyamount,
             comments,
+            corpid,
+            invoiceid,
+            metadata,
+            orgid,
             purchaseorder,
-            totalpay,
+            reference,
+            settings: { title, description, currency, amount },
+            token,
             totalamount,
+            totalpay,
         }));
+        setWaitPay(true);
     }
 
-    const payPaymentOrder = (token: any) => {
+    const createPaymentOrder = (token: any) => {
         dispatch(showBackdrop(true));
         dispatch(paymentOrder({
-            paymentorderid: invoiceid,
+            corpid,
+            metadata,
+            orgid,
+            paymentorderid,
             settings: { title, description, currency, amount },
             token,
-            metadata,
-            corpid,
-            orgid,
-            reference,
-            buyamount,
-            comments,
-            purchaseorder,
-            totalpay,
-            totalamount,
         }));
+        setWaitPay(true);
     }
 
     const createSubscription = (token: any) => {
         dispatch(showBackdrop(true));
         dispatch(subscribe({
+            metadata,
             settings: { title, description, currency, amount, interval, interval_count, limit },
             token,
-            metadata
         }));
+        setWaitPay(true);
     }
 
     const onToken = (token: any) => {
         switch (type) {
-            case 'CHARGE':
-                createCharge(token);
-                break;
-            case 'SUBSCRIPTION':
-                createSubscription(token);
-                break;
             case 'BALANCE':
                 createBalance(token);
                 break;
-            case 'PAYMENTORDER':
-                payPaymentOrder(token);
+
+            case 'CHARGE':
+                createCharge(token);
                 break;
+
+            case 'PAYMENTORDER':
+                createPaymentOrder(token);
+                break;
+
+            case 'SUBSCRIPTION':
+                createSubscription(token);
+                break;
+
             default:
                 break;
         }
     }
 
     const onError = (error: any) => {
-        console.warn(error)
-        dispatch(resetCharge());
+        switch (type) {
+            case 'BALANCE':
+                dispatch(resetBalance());
+                break;
+
+            case 'CHARGE':
+                dispatch(resetCharge());
+                break;
+
+            case 'PAYMENTORDER':
+                dispatch(resetPaymentOrder());
+                break;
+
+            case 'SUBSCRIPTION':
+                dispatch(resetSubscribe());
+                break;
+        }
+    }
+
+    const resetRequest = () => {
+        switch (type) {
+            case 'BALANCE':
+                dispatch(resetBalance());
+                break;
+
+            case 'CHARGE':
+                dispatch(resetCharge());
+                break;
+
+            case 'PAYMENTORDER':
+                dispatch(resetPaymentOrder());
+                break;
+
+            case 'SUBSCRIPTION':
+                dispatch(resetSubscribe());
+                break;
+        }
     }
 
     useEffect(() => {
-        if (!culqiSelector.loading && culqiSelector.data) {
-            dispatch(showSnackbar({ show: true, severity: "success", message: '' + (successmessage ? successmessage : culqiSelector.message) }))
-            dispatch(showBackdrop(false));
-            dispatch(resetCharge());
-            callbackOnSuccess && callbackOnSuccess()
+        if (waitPay) {
+            if (!culqiSelector.loading && !culqiSelector.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: `${successmessage ? successmessage : culqiSelector.message}` }))
+                dispatch(showBackdrop(false));
+                setWaitPay(false);
+
+                resetRequest && resetRequest();
+                callbackOnSuccess && callbackOnSuccess();
+            }
+            else if (culqiSelector.error) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: `${culqiSelector.message ? culqiSelector.message : t("error_unexpected_error")}` }))
+                dispatch(showBackdrop(false));
+                setWaitPay(false);
+
+                resetRequest && resetRequest();
+            }
         }
-        else if (culqiSelector.error) {
-            dispatch(showSnackbar({ show: true, severity: "error", message: '' + culqiSelector.message }))
-            dispatch(showBackdrop(false));
-            dispatch(resetCharge());
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [culqiSelector]);
+    }, [culqiSelector, waitPay]);
 
     return (
         <CulqiProvider
-            publicKey={publickey || globalpublickey}
-            title={title}
-            description={description}
-            currency={currency}
             amount={amount}
-            onToken={onToken}
+            currency={currency}
+            description={description}
             onError={onError}
+            onToken={onToken}
             options={{
                 style: {
                     maincolor: "#7721AD",
@@ -196,19 +216,23 @@ const CulqiModal: FC<CulqiModalProps> = ({
                     ...options
                 }
             }}
+            publicKey={publickey || globalpublickey}
+            title={title}
         >
             <Culqi>
-                {({ openCulqi, setAmount, amount }: any) => {
+                {({ openCulqi }: any) => {
                     return (
                         <Button
-                            variant="contained"
                             color="primary"
-                            type="button"
+                            disabled={disabled || waitPay}
+                            onClick={openCulqi}
                             startIcon={<AttachMoneyIcon color="secondary" />}
                             style={{ backgroundColor: "#55BD84" }}
-                            onClick={openCulqi}
-                            disabled={disabled}
-                        >{buttontitle ? buttontitle : t(langKeys.pay)}</Button>
+                            type="button"
+                            variant="contained"
+                        >
+                            {buttontitle ? buttontitle : t(langKeys.pay)}
+                        </Button>
                     )
                 }}
             </Culqi>

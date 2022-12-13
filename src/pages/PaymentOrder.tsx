@@ -9,12 +9,12 @@ import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router';
 import { useSelector } from 'hooks';
 import { useTranslation } from 'react-i18next';
-import { Dictionary, MultiData } from '@types';
-import { getCollectionPaymentOrder, getMultiCollectionAux } from 'store/main/actions';
-import { paymentOrderSel, getAppsettingInvoiceSel } from 'common/helpers';
+import { Dictionary } from '@types';
+import { getCollectionPaymentOrder } from 'store/main/actions';
+import { paymentOrderSel } from 'common/helpers';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import { LaraigoLogo } from 'icons';
-import { FieldView } from 'components';
+import { formatNumber } from 'common/helpers';
 
 const useStyles = makeStyles(theme => ({
     back: {
@@ -31,7 +31,8 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         borderRadius: 8,
         boxShadow: '0 1px 8px 0 rgb(0 0 0 / 8%)',
-        width: '60vw',
+        width: '420px',
+        minWidth: '40px',
         alignItems: 'center',
         justifyContent: 'center',
         padding: theme.spacing(3),
@@ -55,6 +56,19 @@ const useStyles = makeStyles(theme => ({
         },
         flexDirection: 'column',
     },
+    textTitle: {
+        border: '1px solid #7721AD',
+        background: '#7721AD',
+        padding: '8px',
+        fontWeight: 'bold',
+        color: 'white',
+        overflowWrap: 'break-word'
+    },
+    textField: {
+        border: '1px solid #EBEAED',
+        padding: '8px',
+        overflowWrap: 'break-word'
+    }
 }));
 
 export const PaymentOrder: FC = () => {
@@ -64,12 +78,14 @@ export const PaymentOrder: FC = () => {
 
     const classes = useStyles();
     const mainResult = useSelector(state => state.main.mainData);
+    const culqiResult = useSelector(state => state.culqi.request);
 
     const { corpid, orgid, ordercode }: any = useParams();
 
     const [paymentData, setPaymentData] = useState<Dictionary | null>(null);
     const [publicKey, setPublicKey] = useState('');
     const [waitData, setWaitData] = useState(false);
+    const [waitPay, setWaitPay] = useState(false);
 
     const fetchData = () => {
         dispatch(getCollectionPaymentOrder(paymentOrderSel({ corpid: corpid, orgid: orgid, conversationid: 0, personid: 0, paymentorderid: 0, ordercode: ordercode })));
@@ -101,6 +117,21 @@ export const PaymentOrder: FC = () => {
         }
     }, [mainResult, waitData])
 
+    useEffect(() => {
+        if (waitPay) {
+            if (!culqiResult.loading && culqiResult.data) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: '' + t(culqiResult.message || langKeys.success) }))
+                dispatch(showBackdrop(false));
+                setWaitPay(false);
+            }
+            else if (culqiResult.error) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: '' + t(culqiResult.message || langKeys.error_cos_unexpected) }))
+                dispatch(showBackdrop(false));
+                setWaitPay(false);
+            }
+        }
+    }, [culqiResult, waitPay]);
+
     if (mainResult.loading) {
         return (
             <div className={classes.back}>
@@ -115,104 +146,155 @@ export const PaymentOrder: FC = () => {
                     <div className={classes.back}>
                         <div className={classes.containerSuccess}>
                             <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                <LaraigoLogo style={{ height: 200 }} />
+                                <LaraigoLogo style={{ height: 120, margin: '20px' }} />
                             </div>
-                            <div style={{ fontWeight: 'bold', fontSize: 20 }}>{t(langKeys.paymentorder_success)}</div>
-                            {paymentData.ordercode && <div className="row-zyx">
-                                <FieldView
-                                    className="col-12"
-                                    label={t(langKeys.paymentorder_code)}
-                                    value={paymentData?.ordercode}
-                                />
+                            <div style={{ fontWeight: 'bold', fontSize: 20, marginBottom: '20px' }}>{t(langKeys.paymentorder_success)}</div>
+                            {paymentData.ordercode && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textTitle}>
+                                        {t(langKeys.paymentorder_code)}
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textField}>
+                                        {paymentData?.ordercode}
+                                    </div>
+                                </div>
                             </div>}
-                            {paymentData.concept && <div className="row-zyx">
-                                <FieldView
-                                    className="col-12"
-                                    label={t(langKeys.paymentorder_concept)}
-                                    value={paymentData?.concept}
-                                />
+                            {paymentData.concept && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textTitle}>
+                                        {t(langKeys.paymentorder_concept)}
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textField}>
+                                        {paymentData?.concept}
+                                    </div>
+                                </div>
                             </div>}
-                            {paymentData.userfirstname && <div className="row-zyx">
-                                <FieldView
-                                    className="col-12"
-                                    label={t(langKeys.paymentorder_firstname)}
-                                    value={paymentData?.userfirstname}
-                                />
+                            {paymentData.userfirstname && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textTitle}>
+                                        {t(langKeys.paymentorder_firstname)}
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textField}>
+                                        {paymentData?.userfirstname}
+                                    </div>
+                                </div>
                             </div>}
-                            {paymentData.userlastname && <div className="row-zyx">
-                                <FieldView
-                                    className="col-12"
-                                    label={t(langKeys.paymentorder_lastname)}
-                                    value={paymentData?.userlastname}
-                                />
+                            {paymentData.userlastname && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textTitle}>
+                                        {t(langKeys.paymentorder_lastname)}
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textField}>
+                                        {paymentData?.userlastname}
+                                    </div>
+                                </div>
                             </div>}
-                            {paymentData.userphone && <div className="row-zyx">
-                                <FieldView
-                                    className="col-12"
-                                    label={t(langKeys.paymentorder_phone)}
-                                    value={paymentData?.userphone}
-                                />
+                            {paymentData.userphone && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textTitle}>
+                                        {t(langKeys.paymentorder_phone)}
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textField}>
+                                        {paymentData?.userphone}
+                                    </div>
+                                </div>
                             </div>}
-                            {paymentData.usermail && <div className="row-zyx">
-                                <FieldView
-                                    className="col-12"
-                                    label={t(langKeys.paymentorder_mail)}
-                                    value={paymentData?.usermail}
-                                />
+                            {paymentData.usermail && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textTitle}>
+                                        {t(langKeys.paymentorder_mail)}
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textField}>
+                                        {paymentData?.usermail}
+                                    </div>
+                                </div>
                             </div>}
-                            {paymentData.usercountry && <div className="row-zyx">
-                                <FieldView
-                                    className="col-12"
-                                    label={t(langKeys.paymentorder_country)}
-                                    value={paymentData?.usercountry}
-                                />
+                            {paymentData.usercountry && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textTitle}>
+                                        {t(langKeys.paymentorder_country)}
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textField}>
+                                        {paymentData?.usercountry}
+                                    </div>
+                                </div>
                             </div>}
-                            {paymentData.usercity && <div className="row-zyx">
-                                <FieldView
-                                    className="col-12"
-                                    label={t(langKeys.paymentorder_city)}
-                                    value={paymentData?.usercity}
-                                />
+                            {paymentData.usercity && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textTitle}>
+                                        {t(langKeys.paymentorder_city)}
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textField}>
+                                        {paymentData?.usercity}
+                                    </div>
+                                </div>
                             </div>}
-                            {paymentData.useraddress && <div className="row-zyx">
-                                <FieldView
-                                    className="col-12"
-                                    label={t(langKeys.paymentorder_address)}
-                                    value={paymentData?.useraddress}
-                                />
+                            {paymentData.useraddress && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textTitle}>
+                                        {t(langKeys.paymentorder_address)}
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textField}>
+                                        {paymentData?.useraddress}
+                                    </div>
+                                </div>
                             </div>}
-                            {paymentData.currency && <div className="row-zyx">
-                                <FieldView
-                                    className="col-12"
-                                    label={t(langKeys.paymentorder_currency)}
-                                    value={paymentData?.currency}
-                                />
+                            {paymentData.currency && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textTitle}>
+                                        {t(langKeys.paymentorder_currency)}
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textField}>
+                                        {paymentData?.currency}
+                                    </div>
+                                </div>
                             </div>}
-                            {paymentData.totalamount && <div className="row-zyx">
-                                <FieldView
-                                    className="col-12"
-                                    label={t(langKeys.paymentorder_totalamount)}
-                                    value={paymentData?.totalamount}
-                                />
+                            {paymentData.totalamount && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '20px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textTitle}>
+                                        {t(langKeys.paymentorder_totalamount)}
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textField}>
+                                        {formatNumber(paymentData?.totalamount || 0)}
+                                    </div>
+                                </div>
                             </div>}
                             {(publicKey && paymentData.totalamount) && <CulqiModal
-                                type="PAYMENTORDER"
-                                invoiceid={paymentData.paymentorderid}
-                                title={paymentData.description}
-                                description={paymentData.concept}
-                                currency={paymentData.currency}
                                 amount={Math.round(((paymentData.totalamount * 100) + Number.EPSILON) * 100) / 100}
-                                callbackOnSuccess={() => { fetchData() }}
                                 buttontitle={t(langKeys.proceedpayment)}
-                                purchaseorder={''}
-                                comments={''}
+                                callbackOnSuccess={fetchData}
                                 corpid={paymentData.corpid}
-                                orgid={paymentData.orgid}
+                                currency={paymentData.currency}
+                                description={paymentData.concept}
                                 disabled={false}
-                                successmessage={t(langKeys.success)}
+                                paymentorderid={paymentData.paymentorderid}
+                                orgid={paymentData.orgid}
                                 publickey={publicKey}
-                                override={false}
-                                totalpay={0}
+                                successmessage={t(langKeys.success)}
+                                title={paymentData.description}
+                                type="PAYMENTORDER"
                             >
                             </CulqiModal>}
                         </div>
