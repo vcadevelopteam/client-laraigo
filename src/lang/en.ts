@@ -4805,6 +4805,23 @@ const translation: LangKeys = {
   publishedHistory: "Published",
   publishedError: "Error",
   publishedPending: "Pending",
+  paymentorder_paid: "Paid Payment Order",
+  paymentorder_paid_description: "This payment order has already been paid!",
+  paymentorder_success: "Payment Order",
+  paymentorder_failure: "Failed Payment Order",
+  paymentorder_notfound: "Payment Order Not Found",
+  paymentorder_notfound_description: "This payment order doesn't exist or has already expired!",
+  paymentorder_address: "Address",
+  paymentorder_city: "City",
+  paymentorder_country: "Country",
+  paymentorder_firstname: "First Name",
+  paymentorder_lastname: "Last Name",
+  paymentorder_phone: "Phone",
+  paymentorder_mail: "Mail",
+  paymentorder_concept: "Concept",
+  paymentorder_currency: "Currency",
+  paymentorder_totalamount: "Total Amount",
+  paymentorder_code: "Code",
 };
 
 const enResource: ResourceLanguage = {

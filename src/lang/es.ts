@@ -1888,7 +1888,7 @@ const translation: LangKeys = {
   report_loginhistory_username: 'Usuario',
   report_loginhistory_status: 'Estado',
   warningnoquickreplies: "No se puede eliminar una clasificación porque se encuentra asociada a una respuesta rápida.",
-    report_loginhistory_status_help: `- Inbox: En bandeja de tickets.
+  report_loginhistory_status_help: `- Inbox: En bandeja de tickets.
 - Login: Sesión iniciada.
 - Expiracion: Sesión expirada.`,
   report_loginhistory_type: "Tipo",
@@ -4724,6 +4724,23 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   publishedHistory: "Publicado",
   publishedError: "Error",
   publishedPending: "Pendiente",
+  paymentorder_paid: "Orden de Pago Pagada",
+  paymentorder_paid_description: "¡Esta orden de pago ya fue pagada!",
+  paymentorder_success: "Orden de Pago",
+  paymentorder_failure: "Orden de Pago Fallida",
+  paymentorder_notfound: "Orden de Pago no Encontrada",
+  paymentorder_notfound_description: "¡Esta orden de pago no existe o ya expiro!",
+  paymentorder_address: "Dirección",
+  paymentorder_city: "Ciudad",
+  paymentorder_country: "País",
+  paymentorder_firstname: "Nombre",
+  paymentorder_lastname: "Apellido",
+  paymentorder_phone: "Teléfono",
+  paymentorder_mail: "Correo",
+  paymentorder_concept: "Concepto",
+  paymentorder_currency: "Moneda",
+  paymentorder_totalamount: "Costo Total",
+  paymentorder_code: "Código",
 };
 
 const esResource: ResourceLanguage = {

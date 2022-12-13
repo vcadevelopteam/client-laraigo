@@ -4716,6 +4716,23 @@ export const langKeys = {
   posthistory_published: "posthistory_published",
   posthistory_error: "posthistory_error",
   posthistory_seedetail: "posthistory_seedetail",
+  paymentorder_paid: "paymentorder_paid",
+  paymentorder_paid_description: "paymentorder_paid_description",
+  paymentorder_success: "paymentorder_success",
+  paymentorder_failure: "paymentorder_failure",
+  paymentorder_notfound: "paymentorder_notfound",
+  paymentorder_notfound_description: "paymentorder_notfound_description",
+  paymentorder_address: "paymentorder_address",
+  paymentorder_city: "paymentorder_city",
+  paymentorder_country: "paymentorder_country",
+  paymentorder_firstname: "paymentorder_firstname",
+  paymentorder_lastname: "paymentorder_lastname",
+  paymentorder_phone: "paymentorder_phone",
+  paymentorder_mail: "paymentorder_mail",
+  paymentorder_concept: "paymentorder_concept",
+  paymentorder_currency: "paymentorder_currency",
+  paymentorder_totalamount: "paymentorder_totalamount",
+  paymentorder_code: "paymentorder_code",
 };
 
 export type LangKeys = typeof langKeys;

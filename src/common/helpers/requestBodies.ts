@@ -1191,7 +1191,7 @@ export const getInsertChatwebChannel = (name: string, auto: boolean, iconColor: 
     service,
 });
 
-export const getEditChannel = (id: number, payload: IChannel, name: string, auto: boolean, iconColor: string, welcometoneurl?: string, holdingtoneurl?: string, voximplantcallsupervision?: boolean, voximplantrecording?:string): IRequestBody<IChannel> => ({
+export const getEditChannel = (id: number, payload: IChannel, name: string, auto: boolean, iconColor: string, welcometoneurl?: string, holdingtoneurl?: string, voximplantcallsupervision?: boolean, voximplantrecording?: string): IRequestBody<IChannel> => ({
     method: "UFN_COMMUNICATIONCHANNEL_INS",
     parameters: {
         ...payload,
@@ -3665,7 +3665,8 @@ export const billingPeriodArtificialIntelligenceInsArray = (corpid: number, orgi
         orgid: orgid,
         table: JSON.stringify(table),
     },
-});
+})
+
 export const exportintent = ({name_json}:Dictionary): IRequestBody => ({
     method: "UFN_WITAI_INTENT_EXPORT",
     key: "UFN_WITAI_INTENT_EXPORT",
@@ -3680,7 +3681,7 @@ export const productCatalogInsArray = (catalogid: string, catalogname: string, t
         table: JSON.stringify(table),
         username: username,
     }
-});
+})
 
 export const productCatalogUpdArray = (table: Dictionary[], username: string): IRequestBody => ({
     method: "UFN_PRODUCTCATALOG_UPD_ARRAY",
@@ -3688,4 +3689,10 @@ export const productCatalogUpdArray = (table: Dictionary[], username: string): I
         table: JSON.stringify(table),
         username: username,
     }
+})
+
+export const paymentOrderSel = ({ corpid, orgid, conversationid, personid, paymentorderid, ordercode }: Dictionary): IRequestBody => ({
+    method: "UFN_PAYMENTORDER_SEL",
+    key: "UFN_PAYMENTORDER_SEL",
+    parameters: { corpid, orgid, conversationid, personid, paymentorderid, ordercode }
 });

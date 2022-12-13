@@ -43,6 +43,9 @@ export function main(requestBody: IRequestBody | ITransaction, transaction: bool
 export function mainPublic(requestBody: IRequestBody | ITransaction) {
     return APIManager.post(apiUrls.MAIN_URL_PUBLIC, { data: requestBody }, true);
 }
+export function mainPaymentOrder(requestBody: IRequestBody | ITransaction) {
+    return APIManager.post(apiUrls.MAIN_URL_PAYMENTORDER, { data: requestBody }, true);
+}
 
 export function multiMain(requestBody: IRequestBody[]) {
     return APIManager.post(apiUrls.MAIN_MULTI, { data: requestBody }, true);
