@@ -222,19 +222,16 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                                             </Tooltip>
                                         </Grid>
                                         <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
-                                            <FieldSelect
-                                                className="col-12"
-                                                valueDefault={data.placeholder}
+                                            <TextField
                                                 variant="outlined"
+                                                size="small"
+                                                fullWidth
                                                 onChange={e => {
-                                                    form.setValue(`form.${index}.placeholder`, e?.inputvalue || "")
-                                                    data.placeholder = e?.inputvalue || "";
+                                                    form.setValue(`form.${index}.placeholder`, e?.target.value || "")
+                                                    data.placeholder = e?.target.value || "";
                                                     form.trigger(`form.${index}.placeholder`)
                                                 }}
-                                                data={multiRes.data?.[0]?.data || []}
-                                                loading={multiRes.loading}
-                                                optionDesc="description"
-                                                optionValue="inputvalue"
+                                                defaultValue={data.placeholder}
                                             />
                                         </Grid>
                                     </Grid>
