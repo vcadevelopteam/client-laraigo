@@ -290,16 +290,18 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                                             </label>
                                         </Grid>
                                         <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
-                                            <TextField
-                                                placeholder={t(langKeys.validationOnKeychange)}
+                                            <FieldSelect
+                                                className="col-12"
+                                                valueDefault={data.keyvalidation}
                                                 variant="outlined"
-                                                size="small"
-                                                fullWidth
                                                 onChange={e => {
-                                                    form.setValue(`form.${index}.keyvalidation`, e.target.value)
-                                                    data.keyvalidation = e.target.value
+                                                    form.setValue(`form.${index}.keyvalidation`, e?.inputvalue || "")
+                                                    data.keyvalidation = e?.inputvalue || ""
                                                 }}
-                                                defaultValue={data.keyvalidation}
+                                                data={multiRes.data?.[0]?.data || []}
+                                                loading={multiRes.loading}
+                                                optionDesc="description"
+                                                optionValue="inputvalue"
                                             />
                                         </Grid>
                                     </Grid>
