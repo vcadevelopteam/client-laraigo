@@ -973,12 +973,13 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
 
     useEffect(() => {
         if(user?.roledesc === "ASESOR"){
-            if(!!multiData && !!ticketSelected){
+            if(!!multiData){
                 let dataasesorsuspende = multiData?.data?.filter(x=>x.key==="UFN_PROPERTY_SELBYNAMEASESORSUSPENDE")?.[0]?.data
-                if(!!ticketSelected.usergroup){
-                    setpropertyAsesorSuspende(dataasesorsuspende?.filter(x=>x.level==="ORGANIZATION")?.[0]?.propertyvalue === '1')
+                if(!user?.groups){
+                    setpropertyAsesorSuspende(true)
                 }else{
-                    setpropertyAsesorSuspende(dataasesorsuspende?.filter(x=>x.group===ticketSelected.usergroup)?.[0]?.propertyvalue === '1')
+                    let usergroups = user?.groups?.split(",") || [];
+                    setpropertyAsesorSuspende(usergroups.reduce((acc,x)=>acc*dataasesorsuspende?.filter(y=>y.group===x)?.[0]?.propertyvalue,1) === 1)
                 }
             }
         }else{
