@@ -234,19 +234,16 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                                             </Tooltip>
                                         </Grid>
                                         <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
-                                            <FieldSelect
-                                                className="col-12"
-                                                valueDefault={data.placeholder}
+                                            <TextField
                                                 variant="outlined"
+                                                size="small"
+                                                fullWidth
                                                 onChange={e => {
-                                                    form.setValue(`form.${index}.placeholder`, e?.inputvalue || "")
-                                                    data.placeholder = e?.inputvalue || "";
+                                                    form.setValue(`form.${index}.placeholder`, e?.target.value || "")
+                                                    data.placeholder = e?.target.value || "";
                                                     form.trigger(`form.${index}.placeholder`)
                                                 }}
-                                                data={multiRes.data?.[0]?.data || []}
-                                                loading={multiRes.loading}
-                                                optionDesc="description"
-                                                optionValue="inputvalue"
+                                                defaultValue={data.placeholder}
                                             />
                                         </Grid>
                                     </Grid>
@@ -293,16 +290,18 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                                             </label>
                                         </Grid>
                                         <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
-                                            <TextField
-                                                placeholder={t(langKeys.validationOnKeychange)}
+                                            <FieldSelect
+                                                className="col-12"
+                                                valueDefault={data.keyvalidation}
                                                 variant="outlined"
-                                                size="small"
-                                                fullWidth
                                                 onChange={e => {
-                                                    form.setValue(`form.${index}.keyvalidation`, e.target.value)
-                                                    data.keyvalidation = e.target.value
+                                                    form.setValue(`form.${index}.keyvalidation`, e?.inputvalue || "")
+                                                    data.keyvalidation = e?.inputvalue || ""
                                                 }}
-                                                defaultValue={data.keyvalidation}
+                                                data={multiRes.data?.[0]?.data || []}
+                                                loading={multiRes.loading}
+                                                optionDesc="description"
+                                                optionValue="inputvalue"
                                             />
                                         </Grid>
                                     </Grid>
@@ -1763,7 +1762,6 @@ export const ChannelAddAndroidDetail: FC<{form: UseFormReturn<IAndroidSDKAdd>, s
     const [tabIndex, setTabIndex] = useState('0');
     const { t } = useTranslation();
     const handleNext = () => {
-        debugger
         form.handleSubmit((_) => setView("view-2"))();
     }
     return <>
@@ -1833,6 +1831,7 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
     const service = useRef<IAndroidSDKAdd | null>(null);
     const location = useLocation<whatsAppData>();
     const channel = location.state as IChannel | null;
+    const [name, setName] = useState(channel?.communicationchanneldesc || "");
 
     useEffect(() => {
         dispatch(getMultiCollection([
@@ -1908,12 +1907,6 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
     });
     const whatsAppData = location.state as whatsAppData | null;
 
-    async function finishreg() {
-        setsetins(true)
-        dispatch(insertChannel(fields))
-        setWaitSave(true);
-    }
-
     async function goback() {
         history.push(paths.CHANNELS);
     }
@@ -1944,13 +1937,7 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
             setWaitSave(false);
         }
     }, [mainResult])
-
-    function setnameField(value: any) {
-        setChannelreg(value === "")
-        let partialf = fields;
-        partialf.parameters.description = value
-        setFields(partialf)
-    }
+    
     useEffect(() => {
         const mandatoryStrField = (value: string) => {
             return value.length === 0 ? t(langKeys.field_required) : undefined;
@@ -1967,8 +1954,11 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
         form.register('interface.iconbot', { validate: mandatoryFileField });
     }, [form, t]);
 
+
     const handleSubmit = (name: string, auto: boolean, hexIconColor: string) => {
         const values = form.getValues();
+        setWaitSave(true);
+        setsetins(true)
         if (!channel) {
             const body = getInsertChatwebChannel(name, auto, hexIconColor, values, "SMOOCHANDROID");
             dispatch(insertChannel2(body));
@@ -1993,8 +1983,9 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
                 <div className="row-zyx">
                     <div className="col-3"></div>
                     <FieldEdit
-                        onChange={(value) => setnameField(value)}
+                        onChange={(value) => setName(value)}
                         label={t(langKeys.givechannelname)}
+                        valueDefault={name}
                         className="col-6"
                     />
                 </div>
@@ -2022,7 +2013,7 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
                 <div style={{ paddingLeft: "80%" }}>
                     {showRegister ?
                         <Button
-                            onClick={() => { finishreg() }}
+                            onClick={() => { handleSubmit(name,true,coloricon) }}
                             className={classes.button}
                             disabled={channelreg || mainResult.loading}
                             variant="contained"
