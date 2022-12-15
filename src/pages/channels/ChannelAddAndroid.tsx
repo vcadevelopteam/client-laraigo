@@ -2067,30 +2067,14 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
                 channel={channel}
             />}
             <div style={{ display: showScript ? 'flex' : 'none', height: 10 }} />
-            <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#d9edf7', border: '1px solid #bce8f1', color: '#31708f', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word', width: '100%', whiteSpace: 'break-spaces' }}>
-                {<code>{t(langKeys.androidalert)}</code>}
-            </pre>
-            </div>
             <div style={{ display: showScript ? 'flex' : 'none', height: 10 }} />
             <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}>
                 {t(langKeys.androidlibrary)}
             </div>
-            <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word', width: '100%', whiteSpace: 'break-spaces' }}><code>
-                {"// See https://github.com/smooch/smooch-android to pin the latest version\nimplementation 'io.smooch:core:8.2.2'\nimplementation 'io.smooch:ui:8.2.2'"}
-            </code></pre><div style={{ height: 10 }} />
-            </div>
-            <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}>
-                {t(langKeys.androidstep1)}
-            </div>
-            <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word', width: '100%', whiteSpace: 'break-spaces' }}><code>
-                {`Smooch.init(this, new Settings("${integrationId}"), new SmoochCallback<InitializationStatus>() {\n\t@Override\n\tpublic void run(@NonNull Response<InitializationStatus> response) {\n\t\t// Response handling\n\t\tif (response.getData() == InitializationStatus.SUCCESS) {\n\t\t\t// Initialization complete\n\t\t} else {\n\t\t\t// Something went wrong\n\t\t}\n\t}\n});`}
-            </code></pre><div style={{ height: 10 }} />
-            </div>
-            <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}>
-                {t(langKeys.androidstep2)}
-            </div>
-            <div style={{width: "100%", display: "flex"}}>
-                <Button variant="contained" style={{marginLeft: "auto"}} color="primary" onClick={() => history.push(paths.CHANNELS)}>
+            <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word' }}><code>
+                {`<script src="https://zyxmelinux.zyxmeapp.com/zyxme/chat/src/chatwebclient.min.js" integrationid="${integrationId}"></script>`}
+            </code></pre><div style={{ height: 20 }} />
+                <Button variant="contained" color="primary" onClick={() => history.push(paths.CHANNELS)}>
                     {t(langKeys.close)}
                 </Button>
             </div>

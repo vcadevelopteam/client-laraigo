@@ -2797,7 +2797,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
     dialog: "Diálogo (Diseñador de bots)",
 
     androidalert: 'La minima versión soportada del SDK es el nivel 16 del API y tu aplicación debe compilar con la versión del API 29 como mínimo. Si tu aplicación debe soportar versiones anteriores de Android, puedes tratar de integrarlo pero no garantizamos la compatibilidad',
-    androidlibrary: 'Se deben añadir las dependencias a tu archivo build.gradle. Esta libreria esta alojada en Bintray y esta disponible en JCenter usando la siguiente url: https://zendesk.jfrog.io/zendesk/repo/',
+    androidlibrary: 'Copie las siguientes lineas de código en el sitio web donde quiere usar el chat',
     androidstep1: 'Para inicializar el chat desde tu clase application, añade las siguientes lineas de codigo',
     androidstep2: 'Si quieres utilizar otros metodos de inicialización, como inicializar desde una clase activity, favor de revisar la documentación detalla en el siguiente enlace: https://docs.smooch.io/guide/native-android-sdk/#quick-start',
     iosstep1: 'Si estas usando Objective-C, copia estas lineas de código para inicializar el chat',
