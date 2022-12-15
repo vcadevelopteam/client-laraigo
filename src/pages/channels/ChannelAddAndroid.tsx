@@ -1812,26 +1812,107 @@ export const ChannelAddAndroidDetail: FC<{form: UseFormReturn<IAndroidSDKAdd>, s
     </>
 }
 
+const useFinalStepStyles = makeStyles(theme => ({
+    title: {
+        textAlign: "center",
+        fontWeight: "bold",
+        fontSize: "2em",
+        color: "#7721ad",
+        padding: "20px",
+        marginLeft: "auto",
+        marginRight: "auto",
+        maxWidth: "800px",
+    },
+    button: {
+        padding: 12,
+        fontWeight: 500,
+        fontSize: '14px',
+        textTransform: 'initial',
+        width: "180px"
+    },
+}));
+interface ChannelAddEndProps {
+    loading: boolean;
+    integrationId?: string;
+    onSubmit: (name: string, auto: boolean, hexIconColor: string) => void;
+    onClose?: () => void;
+    channel: IChannel | null;
+}
+
+const ChannelAndroidAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, integrationId, channel }) => {
+    const classes = useFinalStepStyles();
+    const { t } = useTranslation();
+    const [name, setName] = useState(channel?.communicationchanneldesc || "");
+    const [coloricon, setcoloricon] = useState("#90c900");
+    const [auto] = useState(true);
+    const [hexIconColor, setHexIconColor] = useState(channel?.coloricon || "#90c900");
+
+    const handleGoBack = (e: React.MouseEvent) => {
+        e.preventDefault();
+        if (!integrationId) onClose?.();
+    }
+
+    const handleSave = () => {
+        onSubmit(name, auto, hexIconColor);
+    }
+
+    return (
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+            <div>
+                <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.commchannelfinishreg)}</div>
+                <div className="row-zyx">
+                    <div className="col-3"></div>
+                    <FieldEdit
+                        onChange={(value) => setName(value)}
+                        label={t(langKeys.givechannelname)}
+                        className="col-6"
+                        disabled={loading || integrationId != null}
+                        valueDefault={channel?.communicationchanneldesc}
+                    />
+                </div>
+                <div className="row-zyx">
+                    <div className="col-3"></div>
+                    <div className="col-6">
+                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                            {t(langKeys.givechannelcolor)}
+                        </Box>
+                        <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
+                            <AndroidIcon style={{ fill: `${coloricon}`, width: "100px" }} />
+                            <ColorInput hex={hexIconColor} onChange={e => { setHexIconColor(e.hex); setcoloricon(e.hex) }}
+                            />
+                        </div>
+                    </div>
+                </div>
+                <div style={{ paddingLeft: "80%" }}>
+                    <Button
+                        onClick={handleSave}
+                        className={classes.button}
+                        variant="contained"
+                        color="primary"
+                        disabled={!name || loading || integrationId != null}
+                    >
+                        <Trans i18nKey={langKeys.finishreg} />
+                    </Button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+
+
 export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
-    const [waitSave, setWaitSave] = useState(false);
-    const [setins, setsetins] = useState(false);
-    const [channelreg, setChannelreg] = useState(true);
-    const [showRegister, setShowRegister] = useState(true);
-    const [showClose, setShowClose] = useState(false);
-    const [showScript, setShowScript] = useState(false);
-    const [integrationId, setIntegrationId] = useState('');
+    const [showScript, setShowScript] = useState(true);
+    const [integrationId, setIntegrationId] = useState<string | undefined>(undefined);
     const [view, setView] = useState('view-1');
-    const mainResult = useSelector(state => state.channel.channelList);
-    const executeResult = useSelector(state => state.channel.successinsert);
     const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const [coloricon, setcoloricon] = useState("#90c900");
-    const classes = useChannelAddStyles();
     const service = useRef<IAndroidSDKAdd | null>(null);
     const location = useLocation<whatsAppData>();
     const channel = location.state as IChannel | null;
-    const [name, setName] = useState(channel?.communicationchanneldesc || "");
+    const insertChannel = useSelector(state => state.channel.insertChannel);
+    const editChannel = useSelector(state => state.channel.editChannel);
 
     useEffect(() => {
         dispatch(getMultiCollection([
@@ -1839,26 +1920,45 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
         ]));
     }, [])
 
-    const [fields, setFields] = useState({
-        "method": "UFN_COMMUNICATIONCHANNEL_INS",
-        "parameters": {
-            "id": 0,
-            "description": "",
-            "type": "",
-            "communicationchannelsite": "",
-            "communicationchannelowner": "",
-            "chatflowenabled": true,
-            "integrationid": "",
-            "color": "",
-            "icons": "",
-            "other": "",
-            "form": "",
-            "apikey": "",
-            "coloricon": "#90c900",
-            "voximplantcallsupervision": false
-        },
-        "type": "SMOOCHANDROID",
-    })
+    useEffect(() => {
+        if (insertChannel.loading) return;
+        if (insertChannel.error === true) {
+            dispatch(showSnackbar({
+                message: insertChannel.message!,
+                show: true,
+                severity: "error"
+            }));
+        } else if (insertChannel.value) {
+            dispatch(showBackdrop(false));
+            setShowScript(true);
+            dispatch(showSnackbar({
+                message: t(langKeys.channelcreatesuccess),
+                show: true,
+                severity: "success"
+            }));
+        }
+    }, [dispatch, insertChannel, t]);
+
+    useEffect(() => {
+        if (editChannel.loading) return;
+        if (editChannel.error === true) {
+            dispatch(showSnackbar({
+                message: editChannel.message!,
+                show: true,
+                severity: "error"
+            }));
+        } else if (editChannel.success) {
+            dispatch(showBackdrop(false));
+            setShowScript(true);
+            dispatch(showSnackbar({
+                message: t(langKeys.channeleditsuccess),
+                show: true,
+                severity: "success"
+            }));
+            history.push(paths.CHANNELS);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dispatch, editChannel]);
 
     const form: UseFormReturn<IAndroidSDKAdd> = useForm<IAndroidSDKAdd>({
         defaultValues: service.current || {
@@ -1907,36 +2007,11 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
     });
     const whatsAppData = location.state as whatsAppData | null;
 
-    async function goback() {
-        history.push(paths.CHANNELS);
-    }
-
     useEffect(() => {
-        if (!mainResult.loading && setins) {
-            if (executeResult) {
-                setsetins(false)
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-                setShowRegister(false);
-                setShowClose(true);
-                setShowScript(true);
-                setIntegrationId(mainResult.data[0].integrationId);
-            } else if (!executeResult) {
-                const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
+        if(insertChannel.value?.integrationId){            
+            setIntegrationId(insertChannel?.value?.integrationId)
         }
-    }, [mainResult])
-
-    useEffect(() => {
-        if (waitSave) {
-            dispatch(showBackdrop(false));
-            setWaitSave(false);
-        }
-    }, [mainResult])
+    }, [insertChannel])
     
     useEffect(() => {
         const mandatoryStrField = (value: string) => {
@@ -1957,9 +2032,8 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
 
     const handleSubmit = (name: string, auto: boolean, hexIconColor: string) => {
         const values = form.getValues();
-        setWaitSave(true);
-        setsetins(true)
-        if (!channel) {
+        dispatch(showBackdrop(true));
+        if (!channel?.appintegrationid) {
             const body = getInsertChatwebChannel(name, auto, hexIconColor, values, "SMOOCHANDROID");
             dispatch(insertChannel2(body));
         } else {
@@ -1972,69 +2046,26 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
 
     return (
         <div style={{ width: '100%' }}>
-            <Breadcrumbs aria-label="breadcrumb">
+            <Breadcrumbs aria-label="breadcrumb" style={{display: (!showScript && view) === "view-1" ? "block":"none"}}>
                 <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData) }}>
                     {t(langKeys.previoustext)}
                 </Link>
             </Breadcrumbs>
+            <Breadcrumbs aria-label="breadcrumb" style={{display: (!showScript && view) === "view-2" ? "block":"none"}}>
+                <Link color="textSecondary" key="mainview" href="/" onClick={(e) => { e.preventDefault(); setView("view-1") }}>
+                    {t(langKeys.previoustext)}
+                </Link>
+            </Breadcrumbs>
             {view === "view-1" && <ChannelAddAndroidDetail form={form} setView={setView}/>}
-            {view === "view-2" && <><div>
-                <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.commchannelfinishreg)}</div>
-                <div className="row-zyx">
-                    <div className="col-3"></div>
-                    <FieldEdit
-                        onChange={(value) => setName(value)}
-                        label={t(langKeys.givechannelname)}
-                        valueDefault={name}
-                        className="col-6"
-                    />
-                </div>
-                <div className="row-zyx">
-                    <div className="col-3"></div>
-                    <div className="col-6">
-                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                            {t(langKeys.givechannelcolor)}
-                        </Box>
-                        <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                            <AndroidIcon style={{ fill: `${coloricon}`, width: "100px" }} />
-                            <ColorInput
-                                hex={fields.parameters.coloricon}
-                                onChange={e => {
-                                    setFields(prev => ({
-                                        ...prev,
-                                        parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
-                                    }));
-                                    setcoloricon(e.hex)
-                                }}
-                            />
-                        </div>
-                    </div>
-                </div>
-                <div style={{ paddingLeft: "80%" }}>
-                    {showRegister ?
-                        <Button
-                            onClick={() => { handleSubmit(name,true,coloricon) }}
-                            className={classes.button}
-                            disabled={channelreg || mainResult.loading}
-                            variant="contained"
-                            color="primary"
-                        >{t(langKeys.finishreg)}
-                        </Button>
-                        : null
-                    }
-                    {showClose ?
-                        <Button
-                            onClick={() => { goback() }}
-                            className={classes.button}
-                            disabled={channelreg}
-                            variant="contained"
-                            color="primary"
-                        >{t(langKeys.close)}
-                        </Button>
-                        : null
-                    }
-                </div>
-            </div>
+            {view === "view-2" && <>
+            
+            <ChannelAndroidAddEnd
+                loading={insertChannel.loading || editChannel.loading}
+                integrationId={integrationId}
+                onSubmit={handleSubmit}
+                onClose={() => setView("view-1")}
+                channel={channel}
+            />
             <div style={{ display: showScript ? 'flex' : 'none', height: 10 }} />
             <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#d9edf7', border: '1px solid #bce8f1', color: '#31708f', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word', width: '100%', whiteSpace: 'break-spaces' }}>
                 {<code>{t(langKeys.androidalert)}</code>}
@@ -2058,7 +2089,14 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
             <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}>
                 {t(langKeys.androidstep2)}
             </div>
-            <div style={{ display: showScript ? 'flex' : 'none', height: 20 }} /></>}
+            <div style={{width: "100%", display: "flex"}}>
+                <Button variant="contained" style={{marginLeft: "auto"}} color="primary" onClick={() => history.push(paths.CHANNELS)}>
+                    {t(langKeys.close)}
+                </Button>
+            </div>
+            <div style={{ display: showScript ? 'flex' : 'none', height: 20 }}> 
+            </div>
+            </>}
         </div>
     )
 }
