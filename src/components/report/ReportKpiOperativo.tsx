@@ -227,7 +227,7 @@ const ReportKpiOperativo: FC = () => {
                             props.rows.reduce((sum: any, row: any) => +row.values["abandoned_tickets"] + sum, 0),
                         [props.rows]
                     )
-                    return <>{props.rows.filter((r: any) => r.values["abandoned_tickets"]).length !== 0 ? (total / props.rows.filter((r: any) => r.values["abandoned_tickets"]).length).toFixed(0) : ''}</>
+                    return <>{(total / props.rows.length).toFixed(0)}</>
                 },
             },
             {
