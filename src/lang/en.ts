@@ -3026,7 +3026,7 @@ const translation: LangKeys = {
   adduserexample: "Add user example",
 
   androidalert: 'The minimum supported SDK version is API level 16, and your app must be compiled with at least API version 29. If your app needs to support earlier versions of Android, you may still try to integrate, but it is untested and we cannot guarantee compatibility',
-  androidlibrary: 'You need to add these dependencies to your build.gradle file. This library is hosted on Bintray and available on JCenter by using the following url: https://zendesk.jfrog.io/zendesk/repo/.',
+  androidlibrary: 'Copy the following lines of code to the website where you want to use the chat',
   androidstep1: 'In order to initialize the chat from your application class, add the following lines of code',
   androidstep2: 'If you want to use another initialization method, like initializing from an activity class, please check this link for a more detailed documentation: https://docs.smooch.io/guide/native-android-sdk/#quick-start',
   iosstep1: 'If you are using Objective-C, copy the following lines of code in order to initialize the chat',
