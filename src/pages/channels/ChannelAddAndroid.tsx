@@ -2059,13 +2059,13 @@ export const ChannelAddAndroid: FC<{ edit: boolean }> = ({ edit }) => {
             {view === "view-1" && <ChannelAddAndroidDetail form={form} setView={setView}/>}
             {view === "view-2" && <>
             
-            <ChannelAndroidAddEnd
+            {!showScript && <ChannelAndroidAddEnd
                 loading={insertChannel.loading || editChannel.loading}
                 integrationId={integrationId}
                 onSubmit={handleSubmit}
                 onClose={() => setView("view-1")}
                 channel={channel}
-            />
+            />}
             <div style={{ display: showScript ? 'flex' : 'none', height: 10 }} />
             <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#d9edf7', border: '1px solid #bce8f1', color: '#31708f', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word', width: '100%', whiteSpace: 'break-spaces' }}>
                 {<code>{t(langKeys.androidalert)}</code>}
