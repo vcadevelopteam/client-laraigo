@@ -7,7 +7,8 @@ import React, { FC, Fragment, useEffect, useState, useCallback } from "react";
 import { AccountCircle, CameraAlt, ChatBubble, Delete, Facebook, Instagram, LinkedIn, PlayCircleOutlineSharp, Replay, Reply, Save, Send, ThumbUp, Timelapse, Twitter, YouTube, Schedule } from '@material-ui/icons';
 import { AntTab, DialogZyx, FieldEdit, FieldEditAdvanced, FieldSelect, FieldView } from 'components';
 import { Button, Tabs } from "@material-ui/core";
-import { dataActivities, dataFeelings } from 'common/helpers';
+import { dataActivities } from 'common/helpers';
+import { dataFeelings } from 'common/helpers/dataFeeling';
 import { Dictionary } from '@types';
 import { FacebookColor, InstagramColor, LinkedInColor, TikTokColor, TwitterColor, YouTubeColor } from "icons";
 import { getCollection, resetAllMain, uploadFileMetadata } from 'store/main/actions';
@@ -159,6 +160,8 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
     const [showTwitter, setShowTwitter] = useState(false);
     const [showYouTube, setShowYouTube] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
+    const [filteredFeelings, setFilteredFeelings] = useState(dataFeelings);
+
 
     const { register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm({
         defaultValues: {
@@ -307,6 +310,11 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
             }
         }
     }, [dataChannel, pageMode])
+                                            
+    function getFilteredFeelings() {
+        const feelings = dataFeelings.filter(feeling => feeling.activity_id === getValues('activity'));
+        setFilteredFeelings(feelings);
+      }
 
     return (
         <div style={{ width: '100%' }}>
@@ -676,8 +684,8 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         data={dataActivities}
                                         error={errors?.activity?.message}
                                         label={t(langKeys.postcreator_publish_activity)}
-                                        onChange={(value) => { setValue('activity', value?.value); }}
-                                        optionDesc="description"
+                                        onChange={(value) => { setValue('activity', value?.activity_id);  getFilteredFeelings(); }}
+                                        optionDesc="activity_name"
                                         optionValue="value"
                                         style={{ width: '100%', paddingLeft: '6px', paddingRight: '6px' }}
                                         valueDefault={getValues('activity')}
@@ -688,11 +696,11 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                 </div>}
                                 {(customizeType === 'Facebook' && pageMode !== 'VIDEO') && <div className="row-zyx">
                                     <FieldSelect
-                                        data={dataFeelings}
+                                        data={filteredFeelings}
                                         error={errors?.sentiment?.message}
                                         label={t(langKeys.postcreator_publish_sentiment)}
-                                        onChange={(value) => { setValue('sentiment', value?.value); }}
-                                        optionDesc="description"
+                                        onChange={(value) => { setValue('sentiment', value?.feeling_id); }}
+                                        optionDesc="feeling_name"
                                         optionValue="value"
                                         style={{ width: '100%', paddingLeft: '6px', paddingRight: '6px' }}
                                         valueDefault={getValues('sentiment')}
