@@ -310,11 +310,11 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
             }
         }
     }, [dataChannel, pageMode])
-                                            
+
     function getFilteredFeelings() {
         const feelings = dataFeelings.filter(feeling => feeling.activity_id === getValues('activity'));
         setFilteredFeelings(feelings);
-      }
+    }
 
     return (
         <div style={{ width: '100%' }}>
@@ -684,7 +684,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         data={dataActivities}
                                         error={errors?.activity?.message}
                                         label={t(langKeys.postcreator_publish_activity)}
-                                        onChange={(value) => { setValue('activity', value?.activity_id);  getFilteredFeelings(); }}
+                                        onChange={(value) => { setValue('activity', value?.activity_id); getFilteredFeelings(); }}
                                         optionDesc="activity_name"
                                         optionValue="value"
                                         style={{ width: '100%', paddingLeft: '6px', paddingRight: '6px' }}

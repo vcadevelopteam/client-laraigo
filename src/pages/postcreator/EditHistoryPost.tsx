@@ -267,7 +267,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
     function getFilteredFeelings() {
         const feelings = dataFeelings.filter(feeling => feeling.activity_id === getValues('activity'));
         setFilteredFeelings(feelings);
-      }
+    }
 
     return (
         <div style={{ width: '100%' }}>
@@ -539,7 +539,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                         data={dataActivities}
                                         error={errors?.activity?.message}
                                         label={t(langKeys.postcreator_publish_activity)}
-                                        onChange={(value) => { setValue('activity', value?.activity_id);  getFilteredFeelings(); }}
+                                        onChange={(value) => { setValue('activity', value?.activity_id); getFilteredFeelings(); }}
                                         optionDesc="activity_name"
                                         optionValue="value"
                                         style={{ width: '100%', paddingLeft: '6px', paddingRight: '6px' }}
@@ -555,7 +555,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                         data={filteredFeelings}
                                         error={errors?.sentiment?.message}
                                         label={t(langKeys.postcreator_publish_sentiment)}
-                                        onChange={(value) => { setValue('sentiment', value?.feeling_id);}}
+                                        onChange={(value) => { setValue('sentiment', value?.feeling_id); }}
                                         optionDesc="feeling_name"
                                         optionValue="value"
                                         style={{ width: '100%', paddingLeft: '6px', paddingRight: '6px' }}
