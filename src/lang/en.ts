@@ -1432,9 +1432,16 @@ const translation: LangKeys = {
   report_kpioperativo_tickets: "Ticket Quantity",
   report_kpioperativo_eqtmoasesor: "Agent Quantity without ST",
   report_kpioperativo_userpause_hour_avg: "ST Contacted",
-  report_kpioperativo_tmoasesor_tickets: "Minutes per ticket",
-  report_kpioperativo_tickets_eqtmoasesor:
-    "Tickets Attended by Advisor without ST",
+  report_kpioperativo_tmoasesor_tickets: "Min/Ticket",
+  report_kpioperativo_tickets_eqtmoasesor: "Tickets Attended by Advisor without ST",
+
+  report_kpioperativo_abandoned_tickets: "Unattended Tickets",
+  report_kpioperativo_holdingwaitingtime_avg: "Holding Time",
+  report_kpioperativo_firstassignedtime_avg: "First Assignment",
+  report_kpioperativo_firstreplytime_avg: "1st Response Time",
+  report_kpioperativo_balancetimes_avg: "N Balances",
+  report_kpioperativo_useraveragereplytime_avg: "TMR Advisor",
+
   report_kpioperativo_tmoasesor_hour_sum: "Prom Horas Worked",
   report_kpioperativo_tda_hour_avg: "Waiting time for 1st response",
   report_kpioperativo_tdats_hour_avg: "Overall waiting time",
@@ -1443,25 +1450,24 @@ const translation: LangKeys = {
   report_kpioperativo_month_help: "KPI month",
   report_kpioperativo_day_help: "KPI day",
   report_kpioperativo_groups_help: "KPI group",
-  report_kpioperativo_origin_help: "KPI origin",
-  report_kpioperativo_tme_avg_help:
-    "Average time of the first response of the advisor of the belonging group",
-  report_kpioperativo_tickets_help:
-    "Sum of the number of tickets attended by belonging group",
-  report_kpioperativo_eqtmoasesor_help:
-    "Sum of minutes of TMO ASESOR without ST divided by the number of working minutes per defined day (450 min)",
-  report_kpioperativo_userpause_hour_avg_help:
-    "Average time in hours suspended related to the group belonging",
-  report_kpioperativo_tmoasesor_tickets_help:
-    "Sum of the ADVISOR TMO without ST of the group of advisers divided by the number of tickets attended by belonging group and origin",
-  report_kpioperativo_tickets_eqtmoasesor_help:
-    "Sum of the number of tickets attended divided by the number of Advisors without ST",
-  report_kpioperativo_tmoasesor_hour_sum_help:
-    "Sum of minutes of the ADVISOR TMO without TS belonging to the group divided by 60 min",
-  report_kpioperativo_tda_hour_avg_help:
-    "Average time in hours the customer waits for a first response from the advisor",
-  report_kpioperativo_tdats_hour_avg_help:
-    "Average time in hours of all customer wait times",
+  report_kpioperativo_origin_help: "Origin of ticket attention. (Inbound: Conversation initiated by the customer; External: Conversations initiated by the business through an external system; Outbound: Conversations initiated by the business from the Laraigo platform)",
+  report_kpioperativo_tme_avg_help: "Average time of the first response from the advisor of the belonging group. (Average time of the first message from the advisor to the client of the belonging group)",
+  report_kpioperativo_tickets_help: "Sum of the number of tickets attended by belonging group",
+  report_kpioperativo_eqtmoasesor_help: "Estimated number of Advisors assigned to the group and origin prorated by time of day",
+  report_kpioperativo_userpause_hour_avg_help: "Average time in hours suspended for the advisor related to the group",
+  report_kpioperativo_tmoasesor_tickets_help: "Sum of the TMO ASESOR without ST of the group of advisors divided by the number of tickets handled by belonging group",
+  report_kpioperativo_tickets_eqtmoasesor_help: "Sum of the number of tickets attended by belonging group divided by the estimated number of Advisors",
+
+  report_kpioperativo_abandoned_tickets_help: "Number of tickets that did not contact an advisor after completing the bot flow. The validator would be that there is a first response time from the advisor",
+  report_kpioperativo_holdingwaitingtime_avg_help: "Average time that a user spends from being referred to holding until the first advisor is assigned without having to have a first response",
+  report_kpioperativo_firstassignedtime_avg_help: "Average time in hours the user waits from the moment the user is referred to the holding until the advisor responds",
+  report_kpioperativo_firstreplytime_avg_help: "Average time it takes for the advisor to respond once the ticket was assigned to their tray (First assignment - holding time)",
+  report_kpioperativo_balancetimes_avg_help: "Average number of N Balances per ticket by group and origin",
+  report_kpioperativo_useraveragereplytime_avg_help: "Average time in hours in which a response is given by the advisor",
+
+  report_kpioperativo_tmoasesor_hour_sum_help: "Sum of minutes of the ADVISOR TMO without TS belonging to the group divided by 60 min",
+  report_kpioperativo_tda_hour_avg_help: "Average time in hours the customer waits for a first response from the advisor",
+  report_kpioperativo_tdats_hour_avg_help: "Average time in hours of all customer wait times",
 
   error_cos_unexpected: "5005: There was an error, contact the administrator",
   error_zero_records: "5005: Nothing to export",
@@ -3020,7 +3026,7 @@ const translation: LangKeys = {
   adduserexample: "Add user example",
 
   androidalert: 'The minimum supported SDK version is API level 16, and your app must be compiled with at least API version 29. If your app needs to support earlier versions of Android, you may still try to integrate, but it is untested and we cannot guarantee compatibility',
-  androidlibrary: 'You need to add these dependencies to your build.gradle file. This library is hosted on Bintray and available on JCenter by using the following url: https://zendesk.jfrog.io/zendesk/repo/.',
+  androidlibrary: 'Copy the following lines of code to the website where you want to use the chat',
   androidstep1: 'In order to initialize the chat from your application class, add the following lines of code',
   androidstep2: 'If you want to use another initialization method, like initializing from an activity class, please check this link for a more detailed documentation: https://docs.smooch.io/guide/native-android-sdk/#quick-start',
   iosstep1: 'If you are using Objective-C, copy the following lines of code in order to initialize the chat',
