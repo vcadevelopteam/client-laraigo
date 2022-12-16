@@ -44,7 +44,6 @@ export const dataMonths = [
     }
 ];
 
-
 export const dataActivities = [
     {"activity_name":"AGREES","activity_id":1267092843327003},
     {"activity_name":"ATTENDS","activity_id":668012816568345},
