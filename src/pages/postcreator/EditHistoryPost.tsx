@@ -6,7 +6,8 @@ import React, { Fragment, useEffect, useState, useCallback } from "react";
 
 import { AccountCircle, CameraAlt, ChatBubble, Delete, Facebook, Instagram, LinkedIn, PlayCircleOutlineSharp, Replay, Reply, Save, Send, ThumbUp, Timelapse, Twitter, YouTube, Schedule } from '@material-ui/icons';
 import { Button } from "@material-ui/core";
-import { dataActivities, dataFeelings, localesLaraigo } from 'common/helpers';
+import { dataActivities, localesLaraigo } from 'common/helpers';
+import { dataFeelings } from 'common/helpers/dataFeeling';
 import { Dictionary } from "@types";
 import { execute, uploadFileMetadata } from "store/main/actions";
 import { FacebookColor, InstagramColor, LinkedInColor, TikTokColor, TwitterColor, YouTubeColor } from "icons";
@@ -77,6 +78,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
     const [waitOperation, setWaitOperation] = useState(false);
     const [customizeType, setCustomizeType] = useState('');
     const [statuspost, setstatuspost] = useState('');
+    const [filteredFeelings, setFilteredFeelings] = useState(dataFeelings);
 
     const { register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm({
         defaultValues: {
@@ -261,6 +263,11 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
             }
         }
     }, [waitUploadFile, uploadResult])
+
+    function getFilteredFeelings() {
+        const feelings = dataFeelings.filter(feeling => feeling.activity_id === getValues('activity'));
+        setFilteredFeelings(feelings);
+    }
 
     return (
         <div style={{ width: '100%' }}>
@@ -532,8 +539,8 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                         data={dataActivities}
                                         error={errors?.activity?.message}
                                         label={t(langKeys.postcreator_publish_activity)}
-                                        onChange={(value) => { setValue('activity', value?.value); }}
-                                        optionDesc="description"
+                                        onChange={(value) => { setValue('activity', value?.activity_id); getFilteredFeelings(); }}
+                                        optionDesc="activity_name"
                                         optionValue="value"
                                         style={{ width: '100%', paddingLeft: '6px', paddingRight: '6px' }}
                                         valueDefault={getValues('activity')}
@@ -545,11 +552,11 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                 </div>}
                                 {(customizeType === 'Facebook' && getValues('mediatype') !== 'VIDEO') && <div className="row-zyx">
                                     <FieldSelect
-                                        data={dataFeelings}
+                                        data={filteredFeelings}
                                         error={errors?.sentiment?.message}
                                         label={t(langKeys.postcreator_publish_sentiment)}
-                                        onChange={(value) => { setValue('sentiment', value?.value); }}
-                                        optionDesc="description"
+                                        onChange={(value) => { setValue('sentiment', value?.feeling_id); }}
+                                        optionDesc="feeling_name"
                                         optionValue="value"
                                         style={{ width: '100%', paddingLeft: '6px', paddingRight: '6px' }}
                                         valueDefault={getValues('sentiment')}
