@@ -2220,7 +2220,7 @@ export const validateIsUrl = (text: string) => {
     const regx = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
     const matches = text.match(regx);
     if (!matches || matches.length === 0)
-        return text;
+        return text.replace(/%(?=[A-Za-z0-9])/g, '% ');
     const replaces = matches?.reduce((acc, item, index) => acc.replace(item, `<a href="###${index}###" target="_BLANK">###${index}###</a>`), text) || text
     return matches?.reduce((acc, item, index) => acc.replace(new RegExp(`###${index}###`, 'g'), item), replaces) || text
 }
