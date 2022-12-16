@@ -160,7 +160,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
     const [showTwitter, setShowTwitter] = useState(false);
     const [showYouTube, setShowYouTube] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
-    const [filteredFeelings, setFilteredFeelings] = useState(dataFeelings);
+    const [filteredFeelings, setFilteredFeelings] = useState<any>([]);
 
 
     const { register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm({
@@ -188,7 +188,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
         register('channeldata');
         register('mediadata');
         register('mediatype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('sentiment');
+        register('sentiment', { validate: (value) => ((value && value.length) || !getValues('activity')) || t(langKeys.field_required) });
         register('textbody', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('textcustomfacebook');
         register('textcustominstagram');
@@ -686,7 +686,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         label={t(langKeys.postcreator_publish_activity)}
                                         onChange={(value) => { setValue('activity', value?.activity_id); getFilteredFeelings(); }}
                                         optionDesc="activity_name"
-                                        optionValue="value"
+                                        optionValue="activity_id"
                                         style={{ width: '100%', paddingLeft: '6px', paddingRight: '6px' }}
                                         valueDefault={getValues('activity')}
                                         variant="outlined"
@@ -696,12 +696,12 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                 </div>}
                                 {(customizeType === 'Facebook' && pageMode !== 'VIDEO') && <div className="row-zyx">
                                     <FieldSelect
-                                        data={filteredFeelings}
+                                        data={filteredFeelings?.length > 0 ? filteredFeelings : []}
                                         error={errors?.sentiment?.message}
                                         label={t(langKeys.postcreator_publish_sentiment)}
                                         onChange={(value) => { setValue('sentiment', value?.feeling_id); }}
                                         optionDesc="feeling_name"
-                                        optionValue="value"
+                                        optionValue="feeling_id"
                                         style={{ width: '100%', paddingLeft: '6px', paddingRight: '6px' }}
                                         valueDefault={getValues('sentiment')}
                                         variant="outlined"
