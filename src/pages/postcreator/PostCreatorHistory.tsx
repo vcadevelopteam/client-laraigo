@@ -208,9 +208,10 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value: a
             NoFilter: true,
             Cell: (props: any) => {
                 const { publishdate } = props.cell.row.original;
+                const locale = navigator.languages && navigator.languages.length ? navigator.languages[0] : navigator.language;
                 return (
                     <div style={{ height: 37, fontSize: "0.9em" }}>
-                        {new Date(publishdate).toDateString()}
+                        {locale ? new Date(publishdate).toLocaleDateString(locale, { weekday: 'long', month: 'long', day: 'numeric' }) : new Date(publishdate).toDateString()}
                     </div>)
             }
         },
