@@ -837,20 +837,18 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     optionValue="domaindesc"
                                     readOnly={isStatusClosed() || iSProcessLoading()}
                                 />
-                                {(!!getValues('userid') || !edit) &&
-                                    <FieldSelect
-                                        label={t(langKeys.agent)}
-                                        className={classes.field}
-                                        valueDefault={getValues('userid')}
-                                        loading={advisers.loading}
-                                        data={advisers.data}
-                                        optionDesc="fullname"
-                                        optionValue="userid"
-                                        onChange={(value) => setValue('userid', value ? value.userid : '')}
-                                        error={errors?.userid?.message}
-                                        readOnly={isStatusClosed() || iSProcessLoading()}
-                                    />
-                                }
+                                <FieldSelect
+                                    label={t(langKeys.agent)}
+                                    className={classes.field}
+                                    valueDefault={getValues('userid')}
+                                    loading={advisers.loading}
+                                    data={advisers.data}
+                                    optionDesc="fullname"
+                                    optionValue="userid"
+                                    onChange={(value) => setValue('userid', value ? value.userid : '')}
+                                    error={errors?.userid?.message}
+                                    readOnly={isStatusClosed() || iSProcessLoading()}
+                                />
                                 <FieldMultiSelectVirtualized
                                     label={t(langKeys.product, { count: 2 })}
                                     className={classes.field}
