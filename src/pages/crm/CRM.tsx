@@ -14,7 +14,7 @@ import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "components";
 import { Search as SearchIcon, ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon, Add as AddIcon } from '@material-ui/icons';
-import { Button, IconButton } from "@material-ui/core";
+import { Button, IconButton, Tooltip } from "@material-ui/core";
 import PhoneIcon from '@material-ui/icons/Phone';
 import { Dictionary, ICampaignLst, IChannel, ICrmLead, IDomain, IFetchData } from "@types";
 import TablePaginated, { buildQueryFilters, useQueryParams } from 'components/fields/table-paginated';
@@ -89,6 +89,7 @@ interface IBoardFilter {
   tags: string;
   /**id del asesor */
   asesorid: number;
+  persontype: string;
 }
 
 const DraggablesCategories : FC<{column:any,deletable:boolean, index:number, hanldeDeleteColumn:(a:string)=>void, handleDelete:(lead: ICrmLead)=>void, handleCloseLead:(lead: ICrmLead)=>void}> = ({column, 
@@ -185,7 +186,7 @@ const CRM: FC = () => {
   const query = useMemo(() => new URLSearchParams(location.search), [location]);
   const params = useQueryParams(query, {
     ignore: [
-      'asesorid', 'channels', 'contact', 'display', 'products', 'tags', 'campaign',
+      'asesorid', 'channels', 'contact', 'display', 'products', 'tags', 'campaign', 'persontype'
     ],
   });
   const otherParams = useMemo(() => ({
@@ -193,6 +194,7 @@ const CRM: FC = () => {
     channels: query.get('channels') || '',
     contact: query.get('contact') || '',
     products: query.get('products') || '',
+    persontype: query.get('persontype') || '',
     tags: query.get('tags') || '',
     campaign: Number(query.get('campaign')),
   }), [query]);
@@ -203,6 +205,7 @@ const CRM: FC = () => {
     products: otherParams.products,
     tags: otherParams.tags,
     asesorid: otherParams.asesorid,
+    persontype: otherParams.persontype,
   });
 
   const setBoardFilter = useCallback((prop: React.SetStateAction<typeof boardFilter>) => {
@@ -226,6 +229,7 @@ const CRM: FC = () => {
             campaignid: boardFilter.campaign,
             fullname: boardFilter.customer,
             leadproduct: boardFilter.products,
+            persontype: boardFilter.persontype,
             tags: boardFilter.tags,
             userid: boardFilter.asesorid,
             supervisorid: user?.userid || 0,
@@ -236,6 +240,7 @@ const CRM: FC = () => {
           getCampaignLst(),
           getValuesFromDomain('OPORTUNIDADPRODUCTOS'),
           getLeadTasgsSel(),
+          getValuesFromDomain('TIPOPERSONA'),
       ]));
       return () => {
           dispatch(resetAllMain());
@@ -266,6 +271,7 @@ const CRM: FC = () => {
     const newParams = new URLSearchParams(location.search);
     newParams.set('campaign', String(boardFilter.campaign));
     newParams.set('products', String(boardFilter.products));
+    newParams.set('persontype', String(boardFilter.persontype));
     newParams.set('tags', String(boardFilter.tags));
     newParams.set('contact', String(boardFilter.customer));
     newParams.set('asesorid', String(boardFilter.asesorid));
@@ -278,6 +284,7 @@ const CRM: FC = () => {
         campaignid: boardFilter.campaign,
         fullname: boardFilter.customer,
         leadproduct: boardFilter.products,
+        persontype: boardFilter.persontype,
         tags: boardFilter.tags,
         userid: boardFilter.asesorid,
         supervisorid: user?.userid || 0,
@@ -288,6 +295,7 @@ const CRM: FC = () => {
       getCampaignLst(),
       getValuesFromDomain('OPORTUNIDADPRODUCTOS'),
       getLeadTasgsSel(),
+      getValuesFromDomain('TIPOPERSONA'),
     ]));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardFilter, dispatch]);
@@ -465,11 +473,12 @@ const CRM: FC = () => {
   const voxiConnection = useSelector(state => state.voximplant.connection);
   const statusCall = useSelector(state => state.voximplant.statusCall);
   const userConnected = useSelector(state => state.inbox.userConnected);
-  const [allParameters, setAllParametersPrivate] = useState<{ contact: string, channel: string, asesorid: number }>({
+  const [allParameters, setAllParametersPrivate] = useState<{ contact: string, channel: string, asesorid: number, persontype: string }>({
     // asesorid: otherParams.asesorid || mainMulti.data[2]?.data?.map(d => d.userid).includes(user?.userid) ? (user?.userid || 0) : 0,
     asesorid: initialAsesorId,
     channel: otherParams.channels,
     contact: otherParams.contact,
+    persontype: otherParams.persontype,
   });
   const [selectedRows, setSelectedRows] = useState<Dictionary>({});
   const [personsSelected, setPersonsSelected] = useState<Dictionary[]>([]);
@@ -497,6 +506,7 @@ const CRM: FC = () => {
         return (
           <div style={{ cursor: 'pointer' }}>
             <div>{t(langKeys.name)}: {row['contact_name']}</div>
+            <div>{t(langKeys.personType)}: {row['persontypedesc']}</div>
             <div>{t(langKeys.email)}: {row['email']}</div>
             <div>{t(langKeys.phone)}: {row['phone']}</div>
             <Rating
@@ -823,6 +833,12 @@ const CRM: FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mainMulti.data[3]]);
 
+  const userType = useMemo(() => {
+    if (!mainMulti.data[7]?.data || mainMulti.data[7]?.key !== "UFN_DOMAIN_LST_VALORES") return [];
+    return (mainMulti.data[7].data);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mainMulti.data[7]]);
+
   const filtersElement = useMemo(() => (
     <>
       {(user && user.roledesc !== "ASESOR") && <FieldSelect
@@ -854,6 +870,21 @@ const CRM: FC = () => {
           valueDefault={allParameters.contact}
           onChange={(value) => setAllParameters({...allParameters, contact: value})}
       />
+      
+      <FieldMultiSelect
+        variant="outlined"
+        label={t(langKeys.personType, { count: 2 })}
+        className={classes.filterComponent}
+        valueDefault={allParameters.persontype}
+        onChange={(v) => {
+          const persontype = v?.map((o: IDomain) => o.domainvalue).join(',') || '';
+          setAllParameters({ ...allParameters, persontype });
+        }}
+        data={userType}
+        optionDesc="domaindesc"
+        prefixTranslation="type_personlevel_"
+        optionValue="domainvalue"
+      />
     </>
     // eslint-disable-next-line react-hooks/exhaustive-deps
   ), [user, allParameters, classes, mainMulti, t]);
@@ -862,22 +893,26 @@ const CRM: FC = () => {
       <div style={{ width: '100%', display: 'flex', flexDirection: 'column'}}>
         <div style={{ marginBottom: '34px' }}>
           <div style={{ position: 'fixed', right: '20px' }}>
-            <IconButton
-              color="default"
-              disabled={display === 'BOARD'}
-              onClick={() => setDisplay('BOARD')}
-              style={{ padding: '5px' }}
-            >
-              <ViewColumnIcon />
-            </IconButton>
-            <IconButton
-              color="default"
-              disabled={display === 'GRID'}
-              onClick={() => setDisplay('GRID')}
-              style={{ padding: '5px' }}
-            >
-              <ViewListIcon />
-            </IconButton>
+            <Tooltip title={t(langKeys.kanbanview) + ""} arrow placement="top">
+              <IconButton
+                color="default"
+                disabled={display === 'BOARD'}
+                onClick={() => setDisplay('BOARD')}
+                style={{ padding: '5px' }}
+              >
+                <ViewColumnIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={t(langKeys.listview) + ""} arrow placement="top">
+              <IconButton
+                color="default"
+                disabled={display === 'GRID'}
+                onClick={() => setDisplay('GRID')}
+                style={{ padding: '5px' }}
+              >
+                <ViewListIcon />
+              </IconButton>
+            </Tooltip>
           </div>
         </div>
         {display === 'BOARD' &&
@@ -942,6 +977,21 @@ const CRM: FC = () => {
               className={classes.filterComponent}
               disabled={mainMulti.loading}
               onChange={(v: string) => setBoardFilter(prev => ({ ...prev, customer: v }))}
+            />
+            <FieldMultiSelect
+              variant="outlined"
+              label={t(langKeys.personType, { count: 2 })}
+              className={classes.filterComponent}
+              valueDefault={boardFilter.persontype}
+              onChange={(v) => {
+                const persontype = v?.map((o: IDomain) => o.domainvalue).join(',') || '';
+                setBoardFilter(prev => ({ ...prev, persontype }));
+              }}
+              data={mainMulti.data[7]?.data || []}
+              loading={mainMulti.loading}
+              optionDesc="domaindesc"
+              prefixTranslation="type_personlevel_"
+              optionValue="domainvalue"
             />
             <div style={{ flexGrow: 1 }} />
             <Button

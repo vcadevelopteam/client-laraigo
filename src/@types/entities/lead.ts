@@ -57,6 +57,8 @@ export interface ICrmLead {
     campaignid: number;
     /**descripción de la campaña (campaignid) */
     campaign: string;
+    persontype: string;
+    persontypedesc?: string;
 }
 
 export interface ICRmSaveLead {
@@ -257,5 +259,6 @@ export interface ICrmLeadSel {
     userid: number;
     /**id del usuario de la sesión - OBLIGATORIO no puede ser cero */
     supervisorid: number;
+    persontype: string;
 	all?: boolean;
 }

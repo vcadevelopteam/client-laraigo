@@ -25,6 +25,8 @@ export const langKeys = {
     backgroundColor: "backgroundColor",
     newentity: "newentity",
     textcolor: "textcolor",
+    kanbanview: "kanbanview",
+    listview: "listview",
     no_event_found: "no event found",
     personrepeatedwarning1: "personrepeatedwarning1",
     personrepeatedwarning2: "personrepeatedwarning2",
