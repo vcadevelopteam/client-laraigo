@@ -387,13 +387,13 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 subtitle={(
                                     <FieldSelect
                                         uset={true}
-                                        valueDefault={person.type}
+                                        valueDefault={getValues("persontype")}
                                         onChange={(value) => {
-                                            setValue('type', value?.domainvalue);
+                                            setValue('persontype', value?.domainvalue);
                                         }}
                                         loading={domains.loading}
                                         data={domains.value?.personTypes || []}
-                                        prefixTranslation="type_personlevel_"
+                                        prefixTranslation="type_persontype_"
                                         optionValue="domainvalue"
                                         optionDesc="domaindesc"
                                     />
@@ -407,13 +407,13 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 subtitle={(
                                     <FieldSelect
                                         uset={true}
-                                        valueDefault={getValues("persontype")}
+                                        valueDefault={person.type}
                                         onChange={(value) => {
-                                            setValue('persontype', value?.domainvalue);
+                                            setValue('type', value?.domainvalue);
                                         }}
                                         loading={domains.loading}
                                         data={domains.value?.personGenTypes || []}
-                                        prefixTranslation="type_persontype_"
+                                        prefixTranslation="type_personlevel_"
                                         optionValue="domainvalue"
                                         optionDesc="domainvalue"
                                     />
