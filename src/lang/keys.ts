@@ -22,6 +22,8 @@ export const langKeys = {
   locationTooltip: "locationTooltip",
   cssheaderTooltip: "cssheaderTooltip",
   jsscriptTooltip: "jsscriptTooltip",
+  kanbanview: "kanbanview",
+  listview: "listview",
   startnewconversation: "startnewconversation",
   startnewconversationTooltip: "startnewconversationTooltip",
   inputAlwaysEnabledTooltip: "inputAlwaysEnabledTooltip",

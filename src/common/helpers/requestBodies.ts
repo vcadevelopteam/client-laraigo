@@ -2459,7 +2459,8 @@ export const getPaginatedLead = ({ skip, take, filters, sorts, startdate, enddat
         asesorid: allParameters['asesorid'] ? allParameters['asesorid'] : 0,
         channel: allParameters['channel'] ? allParameters['channel'] : "",
         contact: allParameters['contact'] ? allParameters['contact'] : "",
-        offset: (new Date().getTimezoneOffset() / 60) * -1
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+        ...allParameters
     }
 })
 
