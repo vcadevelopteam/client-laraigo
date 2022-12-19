@@ -137,10 +137,8 @@ const DateRangePicker: FC<DateRangePickerProps> = (props) => {
                                 const selection = (range as { selection: RangeWithKey }).selection;
                                 if (rangeDateFilter) {
                                     const { startDate, endDate } = selection;
-
-                                    const diffYear = endDate!!.getUTCFullYear() - startDate!!.getUTCFullYear()
+                                    const diffYear = endDate!!.getFullYear() - startDate!!.getFullYear()
                                     const diffmonth = endDate!!.getMonth() + 12 * diffYear - startDate!!.getMonth()
-                                    console.log("aaa", diffmonth, diffYear, rangeDateFilter)
                                     if ((diffmonth + 1) > rangeDateFilter) {
                                         setSearch(false)
                                         return dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.validate_time_filter) }))

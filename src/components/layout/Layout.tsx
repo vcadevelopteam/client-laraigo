@@ -236,7 +236,7 @@ const Layout: FC<LayoutProps> = ({ children, mainClasses }) => {
         const tickets = ticketList.data.filter(x => x.countnewmessages > 0);
 
         if (tickets.length > 0) {
-            document.title = `Laraigo (${tickets.length})`;
+            document.title = `(${tickets.length}) Laraigo`;
         } else {
             document.title = `Laraigo`;
         }
