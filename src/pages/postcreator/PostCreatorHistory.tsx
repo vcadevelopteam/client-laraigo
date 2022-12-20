@@ -342,6 +342,7 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value: a
                     setSelectedRows={setSelectedRows}
                     useSelection={true}
                     checkHistoryCenter={true}
+                    pageSizeDefault={5}
                     ButtonsElement={() => (
                         <div style={{ display: "flex", width: "100%", justifyContent: "space-between", paddingTop: 10 }}>
                             <div style={{ display: "flex", gap: 8 }}>

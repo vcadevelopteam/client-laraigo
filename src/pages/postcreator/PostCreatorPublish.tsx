@@ -4,7 +4,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import React, { FC, Fragment, useEffect, useState, useCallback } from "react";
 
-import { AccountCircle, CameraAlt, ChatBubble, Delete, Facebook, Instagram, LinkedIn, PlayCircleOutlineSharp, Replay, Reply, Save, Send, ThumbUp, Timelapse, Twitter, YouTube, Schedule } from '@material-ui/icons';
+import { CameraAltOutlined, ChatBubbleOutline, Delete, Facebook, Instagram, LinkedIn, PlayCircleOutlineSharp, ReplayOutlined, ReplyOutlined, Save, Send, SendOutlined, ThumbUpOutlined, Timelapse, Twitter, YouTube, Schedule } from '@material-ui/icons';
 import { AntTab, DialogZyx, FieldEdit, FieldEditAdvanced, FieldSelect, FieldView } from 'components';
 import { Button, Tabs } from "@material-ui/core";
 import { dataActivities } from 'common/helpers';
@@ -402,11 +402,19 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         })}
                                     </div>
                                 </div>
+                                <div className="row-zyx" style={{ marginBottom: '26px', height: '10px', paddingLeft: '2px' }}>
+                                    <FieldView
+                                        className="col-12"
+                                        label={''}
+                                        styles={{ fontWeight: 'bold', color: '#762AA9' }}
+                                        value={t(langKeys.title)}
+                                    />
+                                </div>
                                 <div className="row-zyx" style={{ marginBottom: '0px', paddingLeft: '6px' }}>
                                     <FieldEdit
                                         className="col-12"
                                         error={errors?.texttitle?.message}
-                                        label={t(langKeys.title)}
+                                        label={''}
                                         onChange={(value) => { setValue('texttitle', value); trigger('texttitle'); }}
                                         valueDefault={getValues('texttitle')}
                                     />
@@ -505,8 +513,8 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                             className={classes.button}
                                             variant="contained"
                                             color="primary"
-                                            startIcon={<Delete color="secondary" />}
-                                            style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                            startIcon={<Delete style={{ color: "#757575" }} />}
+                                            style={{ backgroundColor: "#EBEAEA", color: "#757575", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                             onClick={handleDeleteMedia}
                                         >{t(langKeys.postcreator_publish_delete)}
                                         </Button>
@@ -523,7 +531,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                                 color="primary"
                                                 disabled={(waitUploadFile || fileAttachment !== null) || (pageMode === 'IMAGE' ? (getValues('mediadata') || []).length >= 3 : (getValues('mediadata') || []).length >= 1)}
                                                 onClick={onClickAttachment}
-                                                startIcon={pageMode === 'IMAGE' ? <CameraAlt color="secondary" /> : <PlayCircleOutlineSharp color="secondary" />}
+                                                startIcon={pageMode === 'IMAGE' ? <CameraAltOutlined color="secondary" /> : <PlayCircleOutlineSharp color="secondary" />}
                                                 style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                                 variant="contained"
                                             >{pageMode === 'IMAGE' ? t(langKeys.postcreator_publish_addimage) : t(langKeys.postcreator_publish_addvideo)}
@@ -733,14 +741,14 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                     <FieldView
                                         className="col-12"
                                         label={''}
-                                        value={t(langKeys.postcreator_publish_preview)}
+                                        value={t(langKeys.postcreator_publish_previewmode)}
                                         styles={{ fontWeight: 'bold', color: '#762AA9' }}
                                     />
                                 </div>
                                 <div className="row-zyx">
                                     <FieldSelect
-                                        label={t(langKeys.postcreator_publish_previewmode)}
-                                        style={{ width: '100%', backgroundColor: 'white' }}
+                                        label={''}
+                                        style={{ width: '100%', backgroundColor: 'white', marginBottom: '20px' }}
                                         valueDefault={previewType}
                                         variant="outlined"
                                         onChange={(value) => { setPreviewType(value?.value) }}
@@ -799,9 +807,9 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                             <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto' }} src={getValues('mediadata')[0].thumbnail}></img>
                                         </div>}
                                         <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginLeft: 'auto', marginRight: 'auto', marginBottom: '10px', marginTop: '6px' }}>
-                                            <div style={{ width: '33%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ThumbUp style={{ marginRight: '6px' }} /><b>{t(langKeys.postcreator_publish_facebookmockup_like)}</b></div>
-                                            <div style={{ width: '34%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ChatBubble style={{ marginRight: '6px' }} /><b>{t(langKeys.postcreator_publish_facebookmockup_comment)}</b></div>
-                                            <div style={{ width: '33%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><Reply style={{ marginRight: '6px' }} /><b>{t(langKeys.postcreator_publish_facebookmockup_share)}</b></div>
+                                            <div style={{ width: '33%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ThumbUpOutlined style={{ marginRight: '6px' }} /><b>{t(langKeys.postcreator_publish_facebookmockup_like)}</b></div>
+                                            <div style={{ width: '34%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ChatBubbleOutline style={{ marginRight: '6px' }} /><b>{t(langKeys.postcreator_publish_facebookmockup_comment)}</b></div>
+                                            <div style={{ width: '33%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ReplyOutlined style={{ marginRight: '6px' }} /><b>{t(langKeys.postcreator_publish_facebookmockup_share)}</b></div>
                                         </div>
                                     </div>
                                 </div>}
@@ -884,11 +892,10 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                             <img loading='eager' alt="" style={{ maxWidth: '100%', marginRight: 16, marginBottom: 6 }} src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/b9c67f51-5291-4fb6-a76a-d295ad8dac98/LinkedInButton2.png"></img>
                                         </div>
                                         <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginLeft: 'auto', marginRight: 'auto', marginBottom: '14px', marginTop: '6px', fontSize: '12px' }}>
-                                            <div style={{ width: '12%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><AccountCircle style={{ height: '16px', width: '16px' }} /></div>
-                                            <div style={{ width: '22%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ThumbUp style={{ height: '16px', width: '16px', marginRight: '2px' }} /><b>{t(langKeys.postcreator_publish_linkedin_like)}</b></div>
-                                            <div style={{ width: '22%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ChatBubble style={{ height: '16px', width: '16px', marginRight: '2px' }} /><b>{t(langKeys.postcreator_publish_linkedin_comment)}</b></div>
-                                            <div style={{ width: '22%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><Replay style={{ height: '16px', width: '16px', marginRight: '2px' }} /><b>{t(langKeys.postcreator_publish_linkedin_repost)}</b></div>
-                                            <div style={{ width: '22%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><Send style={{ height: '16px', width: '16px', marginRight: '2px' }} /><b>{t(langKeys.postcreator_publish_linkedin_send)}</b></div>
+                                            <div style={{ width: '25%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ThumbUpOutlined style={{ height: '16px', width: '16px', marginRight: '2px' }} /><b>{t(langKeys.postcreator_publish_linkedin_like)}</b></div>
+                                            <div style={{ width: '25%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ChatBubbleOutline style={{ height: '16px', width: '16px', marginRight: '2px' }} /><b>{t(langKeys.postcreator_publish_linkedin_comment)}</b></div>
+                                            <div style={{ width: '25%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ReplayOutlined style={{ height: '16px', width: '16px', marginRight: '2px' }} /><b>{t(langKeys.postcreator_publish_linkedin_repost)}</b></div>
+                                            <div style={{ width: '25%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><SendOutlined style={{ height: '16px', width: '16px', marginRight: '2px' }} /><b>{t(langKeys.postcreator_publish_linkedin_send)}</b></div>
                                         </div>
                                     </div>
                                 </div>}
@@ -938,6 +945,14 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         </div>}
                                     </div>
                                 </div>}
+                                <div className="row-zyx" style={{ marginTop: '-6px' }}>
+                                    <FieldView
+                                        className="col-12"
+                                        label={''}
+                                        value={t(langKeys.postcreator_publish_preview)}
+                                        styles={{ fontWeight: 'bold', color: '#762AA9' }}
+                                    />
+                                </div>
                                 <div className="row-zyx" style={{ marginTop: '18px', alignItems: 'center', display: 'flex', justifyContent: 'center' }}>
                                     <Button
                                         className={classes.button}

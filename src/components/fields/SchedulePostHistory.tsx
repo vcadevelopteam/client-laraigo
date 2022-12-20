@@ -202,7 +202,7 @@ const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays, handleClick }) => {
                             {item.communicationchanneltype === 'TWIT' && <TwitterColor style={{ width: '18px', height: '18px', marginRight: '3px' }} />}
                             {item.communicationchanneltype === 'YOUT' && <YouTubeColor style={{ width: '18px', height: '18px', marginRight: '3px' }} />}
                             {new Date(item.publishdate).toLocaleTimeString()?.slice(0, 5)}
-                            <b style={{ marginLeft: '3px', backgroundColor: item.publishtatus === "ERROR" ? "#F12601" : (item.type === "POST" ? "#FFDC73" : "#BAFFC9"), borderRadius: '4px' }}>{item.type}</b>
+                            <b style={{ marginLeft: '3px', fontSize: '14px', backgroundColor: item.publishtatus === "ERROR" ? "#F12601" : (item.type === "POST" ? "#FFDC73" : "#BAFFC9"), color: item.publishtatus === "ERROR" ? "#FFFFFF" : "#000000", borderRadius: '4px', paddingLeft: "2px", paddingRight: "2px" }}>{item.type}</b>
                         </div>
                     </>
                 ))}
