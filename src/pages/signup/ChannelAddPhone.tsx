@@ -116,7 +116,6 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     const [waitRegions, setWaitRegions] = useState(false);
     const [waitStates, setWaitStates] = useState(false);
     const [hasFinished, setHasFinished] = useState(false)
-    const [checkedCallSupervision, setCheckedCallSupervision] = useState(false);
 
     useEffect(() => {
         dispatch(getCategories({}));

@@ -941,7 +941,6 @@ export const Person: FC = () => {
                 persons={personsSelected}
                 type={typeTemplate}
                 onSubmitTrigger={() => {
-                    console.log("submit!!")
                     setCleanSelected(true)
                 }}
             />

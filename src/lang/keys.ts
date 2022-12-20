@@ -35,8 +35,6 @@ export const langKeys = {
     invitation_email: "invitation_email",
     sinonims: "sinonims",
     securityrules: "securityrules",
-    voicechannel_callsupervisor: "voicechannel_callsupervisor",
-    voicechannel_callsupervisortooltip: "voicechannel_callsupervisortooltip",
     securityrule: "securityrule",
     noavailabletemplates: 'noavailabletemplates',
     invalid_password: "invalid_password",

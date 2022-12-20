@@ -642,7 +642,6 @@ const Location: FC = () => {
                         operation: 'INSERT',
                     }
                 }), {});
-                debugger
                 Object.values(table).forEach((p: ILocation) => {
                     dispatch(execute({
                         header: locationIns({ ...p }),

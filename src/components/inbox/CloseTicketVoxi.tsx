@@ -142,7 +142,6 @@ const CloseTicketVoxi: React.FC = () => {
     const onSubmit = handleSubmit((data) => {
 
         if (motive === "LLAMADAREPROGRAMDA") {
-            debugger
             if (data.reschedulingdate) {
                 if (new Date(data.reschedulingdate).getTime() > new Date().getTime()) {
                     const dd: Dictionary = {
