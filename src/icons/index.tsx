@@ -2,61 +2,66 @@ import conversations from '../icons/reports_conversations_report.png';
 import interactions from '../icons/reports_interactions_report.png';
 import heatmap from '../icons/reports_heat_map.png';
 import productivity_advisors_hour from '../icons/reports_productivity_advisors_hour.png';
-import productivity_advisors from '../icons/reports_productivity_advisors.png';
+import productivity_advisors from '../icons/reports_productivity_advisors.svg';
 import retry from '../icons/reports_retry_report.png';
 import typification from '../icons/reports_typification_report.png';
-import user_connections from '../icons/reports_user_connections_report.png';
+import user_connections from '../icons/reports_user_connections_report.svg';
+import uniquecontacts from '../icons/reports_unique_contacts.svg';
 
 export const reportsImage = [
-    {
-      name: "reports_conversations_report",
-      image: conversations
-    },
-    {
-      name: "reports_interactions_report",
-      image: interactions
-    },
-    {
-      name: "reports_heat_map",
-      image: heatmap
-    },
-    {
-      name: "reports_productivity_advisors_hour",
-      image: productivity_advisors_hour
-    },
-    {
-      name: "reports_productivity_advisors",
-      image: productivity_advisors
-    },
-    {
-      name: "reports_retry_report",
-      image: retry
-    },
-    {
-      name: "reports_typification_report",
-      image: typification
-    },
-    {
-      name: "reports_user_connections_report",
-      image: user_connections
-    },
-    {
-      name: "reports_conversationwhatsapp_report",
-      image: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/whatsapp_PNG95151.png'
-    },
-    {
-      name: "reports_invoice_report",
-      image: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'
-    },
-    {
-      name: "reports_survey_report",
-      image: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'
-    },
-    {
-      name: "reports_voicecall_report",
-      image: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/3f392517-37c9-4a7e-99e1-9a9505eca6bf/canal_de_voz.svg'
-    }
-  ];
+  {
+    name: "reports_conversations_report",
+    image: conversations
+  },
+  {
+    name: "reports_interactions_report",
+    image: interactions
+  },
+  {
+    name: "reports_heat_map",
+    image: heatmap
+  },
+  {
+    name: "reports_productivity_advisors_hour",
+    image: productivity_advisors_hour
+  },
+  {
+    name: "reports_productivity_advisors",
+    image: productivity_advisors
+  },
+  {
+    name: "reports_retry_report",
+    image: retry
+  },
+  {
+    name: "reports_typification_report",
+    image: typification
+  },
+  {
+    name: "reports_user_connections_report",
+    image: user_connections
+  },
+  {
+    name: "reports_conversationwhatsapp_report",
+    image: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/whatsapp_PNG95151.png'
+  },
+  {
+    name: "reports_invoice_report",
+    image: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'
+  },
+  {
+    name: "reports_survey_report",
+    image: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'
+  },
+  {
+    name: "reports_voicecall_report",
+    image: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/3f392517-37c9-4a7e-99e1-9a9505eca6bf/canal_de_voz.svg'
+  },
+  {
+    name: "reports_reportuniquecontacts_report",
+    image: uniquecontacts
+  },
+];
 
 export { ReactComponent as DashboardIcon } from 'icons/dashboard.svg';
 export { ReactComponent as Reports2Icon } from 'icons/chart-bar-bargraph.svg';
