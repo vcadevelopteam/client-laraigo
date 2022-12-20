@@ -379,7 +379,7 @@ const translation: LangKeys = {
     incorrent_password: "Password is incorrect",
     nextprogramedactivity: 'Next programed activity',
 
-    no_reply_use_hsm: 'Conversation is closed or blocked for being out of the 24 hour sale.\nUse an HSM to contact the customer.',
+    no_reply_use_hsm: 'This conversation is blocked until the client sends a reply to the sent HSM to start a conversation with its consent.',
     password_different: "Passwords do not match",
     password_not_allowed: "The password must contain at least 10 characters, a letter and a number",
     status: 'Status',

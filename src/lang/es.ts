@@ -789,7 +789,7 @@ const translation: LangKeys = {
     shippingrange: "Rango de Envío de Información",
 
     status_activo: 'activo',
-    no_reply_use_hsm: 'La conversación está cerrada o bloqueada por estar fuera de la ventana de 24 horas.\nEnvíe un HSM para contactar al cliente.',
+    no_reply_use_hsm: 'Esta conversación se encuentra bloqueada hasta que el cliente responda el HSM enviado para iniciar la conversación con su consentimiento.',
     status_inactivo: 'inactivo',
     status_bloqueado: 'bloqueado',
     status_ejecutando: 'ejecutando',
