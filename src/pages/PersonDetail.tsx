@@ -395,7 +395,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         data={domains.value?.personTypes || []}
                                         prefixTranslation="type_persontype_"
                                         optionValue="domainvalue"
-                                        optionDesc="domaindesc"
+                                        optionDesc="domainvalue"
                                     />
                                 )}
                                 m={1}
@@ -415,7 +415,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         data={domains.value?.personGenTypes || []}
                                         prefixTranslation="type_personlevel_"
                                         optionValue="domainvalue"
-                                        optionDesc="domainvalue"
+                                        optionDesc="domaindesc"
                                     />
                                 )}
                                 m={1}
@@ -517,7 +517,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         defaultValue={getValues("birthday")}
                                         value={getValues("birthday")}
                                         onChange={e => {
-                                            setValue('birthday', e?.target?.value||"")
+                                            setValue('birthday', e?.target?.value||null)
                                             trigger("birthday")
                                         }}
                                     />
