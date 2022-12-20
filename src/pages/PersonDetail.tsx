@@ -389,13 +389,13 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         uset={true}
                                         valueDefault={getValues("persontype")}
                                         onChange={(value) => {
-                                            setValue('persontype', value?.domainvalue);
+                                            setValue('persontype', value?.domainvalue||"");
                                         }}
                                         loading={domains.loading}
-                                        data={domains.value?.personTypes || []}
+                                        data={domains.value?.personGenTypes || []}
                                         prefixTranslation="type_persontype_"
                                         optionValue="domainvalue"
-                                        optionDesc="domaindesc"
+                                        optionDesc="domainvalue"
                                     />
                                 )}
                                 m={1}
@@ -409,13 +409,13 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         uset={true}
                                         valueDefault={person.type}
                                         onChange={(value) => {
-                                            setValue('type', value?.domainvalue);
+                                            setValue('type', value?.domainvalue||"");
                                         }}
                                         loading={domains.loading}
-                                        data={domains.value?.personGenTypes || []}
+                                        data={domains.value?.personTypes || []}
                                         prefixTranslation="type_personlevel_"
                                         optionValue="domainvalue"
-                                        optionDesc="domainvalue"
+                                        optionDesc="domaindesc"
                                     />
                                 )}
                                 m={1}
@@ -517,7 +517,8 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         defaultValue={getValues("birthday")}
                                         value={getValues("birthday")}
                                         onChange={e => {
-                                            setValue('birthday', e.target.value)
+                                            setValue('birthday', e?.target?.value||null)
+                                            trigger("birthday")
                                         }}
                                     />
                                 )}
@@ -532,8 +533,8 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         uset={true}
                                         valueDefault={getValues("gender")}
                                         onChange={(value) => {
-                                            setValue('gender', value?.domainvalue);
-                                            setValue('genderdesc', value?.domaindesc)
+                                            setValue('gender', value?.domainvalue||"");
+                                            setValue('genderdesc', value?.domaindesc||"")
                                         }}
                                         loading={domains.loading}
                                         data={domains.value?.genders || []}
@@ -553,8 +554,8 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         uset={true}
                                         valueDefault={getValues("educationlevel")}
                                         onChange={(value) => {
-                                            setValue('educationlevel', value?.domainvalue);
-                                            setValue('educationleveldesc', value?.domaindesc)
+                                            setValue('educationlevel', value?.domainvalue||"");
+                                            setValue('educationleveldesc', value?.domaindesc||"")
                                         }}
                                         loading={domains.loading}
                                         data={domains.value?.educationLevels || []}
@@ -574,8 +575,8 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         uset={true}
                                         valueDefault={getValues("civilstatus")}
                                         onChange={(value) => {
-                                            setValue('civilstatus', value?.domainvalue);
-                                            setValue('civilstatusdesc', value?.domaindesc)
+                                            setValue('civilstatus', value?.domainvalue||"");
+                                            setValue('civilstatusdesc', value?.domaindesc||"")
                                         }}
                                         loading={domains.loading}
                                         data={domains.value?.civilStatuses || []}
@@ -595,8 +596,8 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         uset={true}
                                         valueDefault={getValues("occupation")}
                                         onChange={(value) => {
-                                            setValue('occupation', value?.domainvalue);
-                                            setValue('occupationdesc', value?.domaindesc)
+                                            setValue('occupation', value?.domainvalue||"");
+                                            setValue('occupationdesc', value?.domaindesc||"")
                                         }}
                                         loading={domains.loading}
                                         data={domains.value?.occupations || []}
@@ -634,7 +635,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                     <FieldSelect
                                         valueDefault={getValues("groups")}
                                         onChange={(value) => {
-                                            setValue('groups', value?.domainvalue);
+                                            setValue('groups', value?.domainvalue||"");
                                         }}
                                         loading={domains.loading}
                                         data={domains.value?.groups || []}

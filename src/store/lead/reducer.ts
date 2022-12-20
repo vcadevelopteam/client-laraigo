@@ -32,6 +32,7 @@ export interface IState {
     updateLeadTags: IProcessState;
     leadProductsDomain: IListState<IProduct>;
     leadTagsDomain: IListState<IDomain>;
+    personTypeDomain: IListState<IDomain>;
 }
 
 export const initialState: IState = {
@@ -52,6 +53,7 @@ export const initialState: IState = {
     updateLeadTags: initialProccessState,
     leadProductsDomain: initialListState,
     leadTagsDomain: initialListState,
+    personTypeDomain: initialListState,
 };
 
 export default createReducer<IState>(initialState, {
@@ -127,6 +129,11 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_LEAD_TAGS_DOMAIN_SUCCESS]: caseFUnctions.getLeadTagsDomainSuccess,
     [actionTypes.GET_LEAD_TAGS_DOMAIN_FAILURE]: caseFUnctions.getLeadTagsDomainFailure,
     [actionTypes.GET_LEAD_TAGS_DOMAIN_RESET]: caseFUnctions.getLeadTagsDomainReset,
+
+    [actionTypes.GET_PERSON_TYPE]: caseFUnctions.getPersonType,
+    [actionTypes.GET_PERSON_TYPE_SUCCESS]: caseFUnctions.getPersonTypeSuccess,
+    [actionTypes.GET_PERSON_TYPE_FAILURE]: caseFUnctions.getPersonTypeFailure,
+    [actionTypes.GET_PERSON_TYPE_RESET]: caseFUnctions.getPersonTypeReset,
 
     [actionTypes.GET_LEAD_TEMPLATES]: caseFUnctions.getLeadTemplates,
     [actionTypes.GET_LEAD_TEMPLATES_SUCCESS]: caseFUnctions.getLeadTemplatesSuccess,

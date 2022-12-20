@@ -3096,7 +3096,8 @@ const translation: LangKeys = {
     done: 'Done',
     writeFeedback: 'Write feedback',
     history: 'History',
-
+    kanbanview: "Kanban view",
+    listview: "List view",
     NEWLEAD: 'New lead',
     NEWNOTE: 'New note',
     NEWACTIVITY: 'New scheduled activity',
