@@ -1611,7 +1611,9 @@ const translation: LangKeys = {
     ticket_labels: 'Tag',
     ticket_labels_help: 'Tags consultados de izquierda a derecha del ultimo consultado al primero, respectivamente.',
     ticket_tdatime: 'Tiempo de espera antes de atención de asesor',
-    ticket_tdatime_help: 'Suma de todos los tiempos en que la conversación es derivada a Holding hasta que el asesor brinda una respuesta.',
+    ticket_tdatime_help: 'Sumatoria de los tiempos desde que el ticket está en holding hasta que el asesor le brinda la primera respuesta',
+    ticket_holdingwaitingtime: 'Tiempo de espera en holding',
+    ticket_holdingwaitingtime_help: 'Es el tiempo transcurrido desde la derivación a holding hasta la asignación en la bandeja del asesor.',
 
     selectday: "Seleccione la(s) fecha(s) a las que desea asignar horas específicas",
     schedule_availability: "¿En qué horario estás disponible?",

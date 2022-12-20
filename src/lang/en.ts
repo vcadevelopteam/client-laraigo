@@ -1616,7 +1616,9 @@ const translation: LangKeys = {
     ticket_labels: 'Tag',
     ticket_labels_help: 'Tags consulted from left to right from the last consulted to the first, respectively.',
     ticket_tdatime: 'Waiting time before adviser attention',
-    ticket_tdatime_help: 'Sum of all the times in which the conversation is referred to Holding until the advisor provides a response.',
+    ticket_tdatime_help: 'Sum of time when ticket is in holding until the agent give you first answer',
+    ticket_holdingwaitingtime: 'Waiting time in holding',
+    ticket_holdingwaitingtime_help: "It is the time elapsed from the referral to the holding until the assignment in the advisor's tray.",
 
     selectday: "Select the date(s) you want to assign specific hours",
     schedule_availability: "What hours are you available? ",
