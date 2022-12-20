@@ -110,7 +110,7 @@ export const langKeys = {
     redo: "redo",
     city: "city",
     make_call: "make_call",
-    
+
     ringing: "ringing",
     connected_call: "connected_call",
     monitor_call: "monitor_call",
@@ -4209,6 +4209,23 @@ export const langKeys = {
     connect_yourwhatsappnumberdetail: "connect_yourwhatsappnumberdetail",
     select_whatsappnumber: "select_whatsappnumber",
     linked_whatsappnumber: "linked_whatsappnumber",
+    paymentorder_paid: "paymentorder_paid",
+    paymentorder_paid_description: "paymentorder_paid_description",
+    paymentorder_success: "paymentorder_success",
+    paymentorder_failure: "paymentorder_failure",
+    paymentorder_notfound: "paymentorder_notfound",
+    paymentorder_notfound_description: "paymentorder_notfound_description",
+    paymentorder_address: "paymentorder_address",
+    paymentorder_city: "paymentorder_city",
+    paymentorder_country: "paymentorder_country",
+    paymentorder_firstname: "paymentorder_firstname",
+    paymentorder_lastname: "paymentorder_lastname",
+    paymentorder_phone: "paymentorder_phone",
+    paymentorder_mail: "paymentorder_mail",
+    paymentorder_concept: "paymentorder_concept",
+    paymentorder_currency: "paymentorder_currency",
+    paymentorder_totalamount: "paymentorder_totalamount",
+    paymentorder_code: "paymentorder_code",
 };
 
 export type LangKeys = typeof langKeys;

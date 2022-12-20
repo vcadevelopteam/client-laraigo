@@ -56,6 +56,11 @@ export default createReducer<IState>(initialState, {
     [actionTypes.BALANCE_SUCCESS]: caseFUnctions.balanceSuccess,
     [actionTypes.BALANCE_RESET]: caseFUnctions.balanceReset,
 
+    [actionTypes.PAYMENTORDER]: caseFUnctions.paymentOrder,
+    [actionTypes.PAYMENTORDER_FAILURE]: caseFUnctions.paymentOrderFailure,
+    [actionTypes.PAYMENTORDER_SUCCESS]: caseFUnctions.paymentOrderSuccess,
+    [actionTypes.PAYMENTORDER_RESET]: caseFUnctions.paymentOrderReset,
+
     [actionTypes.SUBSCRIBE]: caseFUnctions.subscribe,
     [actionTypes.SUBSCRIBE_FAILURE]: caseFUnctions.subscribeFailure,
     [actionTypes.SUBSCRIBE_SUCCESS]: caseFUnctions.subscribeSuccess,

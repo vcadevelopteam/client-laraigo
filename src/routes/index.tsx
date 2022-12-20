@@ -90,6 +90,7 @@ const CRM = lazy(() => import('pages/crm/CRM'));
 const LeadForm = lazy(() => import('pages/crm/LeadForm'));
 const ChangePwdFirstLogin = lazy(() => import('pages/ChangePwdFirstLogin'));
 const CalendarEvent = lazy(() => import('pages/CalendarEvent'));
+const PaymentOrder = lazy(() => import('pages/PaymentOrder'));
 const Assistant = lazy(() => import('pages/assistant/Assistant'));
 const Location = lazy(() => import('pages/Location'));
 const SecurityRules = lazy(() => import('pages/SecurityRules'));
@@ -194,6 +195,7 @@ const RouterApp: FC = () => {
 					<Route exact path={paths.SIGNUP.path} render={() => <SignUp />} />
 					<Route exact path={paths.LOCATION.path} render={() => <GetLocations />} />
 					<Route exact path={paths.CALENDAR_EVENT.path} render={() => <CalendarEvent />} />
+					<Route exact path={paths.CULQI_PAYMENTORDER.path} render={() => <PaymentOrder />} />
 					<Route exact path={paths.CANCEL_EVENT.path} render={() => <CancelEvent />} />
 					<Route exact path={paths.PRIVACY} render={() => <Privacy />} />
 					<Route exact path={paths.ACTIVATE_USER.path} render={() => <ActivateUser />} />

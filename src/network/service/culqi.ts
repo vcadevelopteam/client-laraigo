@@ -12,6 +12,11 @@ export function charge(request: any) {
     }
 }
 
+export function paymentOrder(request: any) {
+    const uri = `${apiUrls.PAYMENTORDER_PAY}`;
+    return APIManager.post(uri, { data: request }, true);
+}
+
 export function balance(request: any) {
     const uri = `${apiUrls.CULQI}/createbalance`;
     return APIManager.post(uri, { data: request }, true);
