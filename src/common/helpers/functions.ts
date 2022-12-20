@@ -143,6 +143,18 @@ export function secondsToDayTime(sec_num: any) {
     return stringdays + hours + ':' + minutes + ':' + seconds;
 }
 
+export function secondsToHourTime(sec_num: any) {
+    sec_num = parseInt(sec_num)
+    let days = Math.floor(sec_num / 86400);
+    let hours: any = Math.floor((sec_num - (days * 86400)) / 3600);
+    let minutes: any = Math.floor((sec_num - (days * 86400) - (hours * 3600)) / 60);
+    let seconds: any = sec_num - (days * 86400) - (hours * 3600) - (minutes * 60);
+    if (hours < 10 && days === 0) { hours = "0" + hours; } else { hours = days * 24 + hours }
+    if (minutes < 10) { minutes = "0" + minutes; }
+    if (seconds < 10) { seconds = "0" + seconds; }
+    return hours + ':' + minutes + ':' + seconds;
+}
+
 export function uuidv4(): string {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
         var r = Math.random() * 16 | 0, v = c === 'x' ? r : ((r & 0x3) | 0x8);

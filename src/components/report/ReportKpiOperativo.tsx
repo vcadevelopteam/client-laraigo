@@ -8,7 +8,7 @@ import { getCollectionAux2, getMultiCollection, resetMultiMain } from "store/mai
 import { langKeys } from "lang/keys";
 import TableZyx from "components/fields/table-simple";
 import { Button, TextField, } from "@material-ui/core";
-import { getReportKpiOperativoSel, timetoseconds, secondsToDayTime, getUserGroupsSel } from 'common/helpers';
+import { getReportKpiOperativoSel, timetoseconds, secondsToHourTime, getUserGroupsSel } from 'common/helpers';
 import { Search as SearchIcon } from '@material-ui/icons';
 import { FieldSelect } from "components/fields/templates";
 
@@ -137,7 +137,7 @@ const ReportKpiOperativo: FC = () => {
                             props.rows.reduce((sum: any, row: any) => timetoseconds(row.values["tme_avg"]) + sum, 0),
                         [props.rows]
                     )
-                    return <>{props.rows.filter((r: any) => r.values["tme_avg"]).length !== 0 ? secondsToDayTime(total / props.rows.filter((r: any) => r.values["tme_avg"]).length) : ''}</>
+                    return <>{props.rows.filter((r: any) => r.values["tme_avg"]).length !== 0 ? secondsToHourTime(total / props.rows.filter((r: any) => r.values["tme_avg"]).length) : ''}</>
                 },
             },
             {
@@ -152,7 +152,7 @@ const ReportKpiOperativo: FC = () => {
                             props.rows.reduce((sum: any, row: any) => +row.values["tickets"] + sum, 0),
                         [props.rows]
                     )
-                    return <>{props.rows.length !== 0 ? (total).toFixed(0) : ''}</>
+                    return <>{props.rows.filter((r: any) => r.values["tickets"]).length !== 0 ? (total / props.rows.filter((r: any) => r.values["tickets"]).length).toFixed(0) : ''}</>
                 },
             },
             {
@@ -179,10 +179,10 @@ const ReportKpiOperativo: FC = () => {
                 Footer: (props: any) => {
                     const total = React.useMemo(
                         () =>
-                            props.rows.reduce((sum: any, row: any) => +row.values["userpause_hour_avg"] + sum, 0),
+                            props.rows.reduce((sum: any, row: any) => timetoseconds(row.values["userpause_hour_avg"]) + sum, 0),
                         [props.rows]
                     )
-                    return <>{props.rows.filter((r: any) => r.values["userpause_hour_avg"]).length !== 0 ? (total / props.rows.filter((r: any) => r.values["userpause_hour_avg"]).length).toFixed(2) : ''}</>
+                    return <>{props.rows.filter((r: any) => r.values["userpause_hour_avg"]).length !== 0 ? secondsToHourTime(total / props.rows.filter((r: any) => r.values["userpause_hour_avg"]).length) : ''}</>
                 },
             },
             {
@@ -194,10 +194,10 @@ const ReportKpiOperativo: FC = () => {
                 Footer: (props: any) => {
                     const total = React.useMemo(
                         () =>
-                            props.rows.reduce((sum: any, row: any) => +row.values["tmoasesor_tickets"] + sum, 0),
+                            props.rows.reduce((sum: any, row: any) => timetoseconds(row.values["tmoasesor_tickets"]) + sum, 0),    
                         [props.rows]
                     )
-                    return <>{props.rows.filter((r: any) => r.values["tmoasesor_tickets"]).length !== 0 ? (total / props.rows.filter((r: any) => r.values["tmoasesor_tickets"]).length).toFixed(2) : ''}</>
+                    return <>{props.rows.filter((r: any) => r.values["tmoasesor_tickets"]).length !== 0 ? secondsToHourTime(total / props.rows.filter((r: any) => r.values["tmoasesor_tickets"]).length) : ''}</>
                 },
             },
             {
@@ -212,56 +212,144 @@ const ReportKpiOperativo: FC = () => {
                             props.rows.reduce((sum: any, row: any) => +row.values["tickets_eqtmoasesor"] + sum, 0),
                         [props.rows]
                     )
-                    return <>{props.rows.filter((r: any) => r.values["tickets_eqtmoasesor"]).length !== 0 ? (total / props.rows.filter((r: any) => r.values["tickets_eqtmoasesor"]).length).toFixed(2) : ''}</>
+                    return <>{props.rows.filter((r: any) => r.values["tickets_eqtmoasesor"]).length !== 0 ? (total / props.rows.filter((r: any) => r.values["tickets_eqtmoasesor"]).length).toFixed(0) : ''}</>
                 },
             },
             {
-                Header: t(langKeys.report_kpioperativo_tmoasesor_hour_sum),
-                accessor: 'tmoasesor_hour_sum',
-                helpText: t(`report_${origin}_tmoasesor_hour_sum_help`),
+                Header: t(langKeys.report_kpioperativo_abandoned_tickets),
+                accessor: 'abandoned_tickets',
+                helpText: t(`report_${origin}_abandoned_tickets_help`),
                 type: 'number',
                 NoFilter: true,
                 Footer: (props: any) => {
                     const total = React.useMemo(
                         () =>
-                            props.rows.reduce((sum: any, row: any) => +row.values["tmoasesor_hour_sum"] + sum, 0),
+                            props.rows.reduce((sum: any, row: any) => +row.values["abandoned_tickets"] + sum, 0),
                         [props.rows]
                     )
-                    return <>{props.rows.filter((r: any) => r.values["tmoasesor_hour_sum"]).length !== 0 ? (total / props.rows.filter((r: any) => r.values["tmoasesor_hour_sum"]).length).toFixed(2) : ''}</>
+                    return <>{(total / props.rows.length).toFixed(0)}</>
                 },
             },
-            ,
             {
-                Header: t(langKeys.report_kpioperativo_tda_hour_avg),
-                accessor: 'tda_hour_avg',
-                helpText: t(`report_${origin}_tda_hour_avg_help`),
+                Header: t(langKeys.report_kpioperativo_holdingwaitingtime_avg),
+                accessor: 'holdingwaitingtime_avg',
+                helpText: t(`report_${origin}_holdingwaitingtime_avg_help`),
                 type: 'number',
                 NoFilter: true,
                 Footer: (props: any) => {
                     const total = React.useMemo(
                         () =>
-                            props.rows.reduce((sum: any, row: any) => +row.values["tda_hour_avg"] + sum, 0),
+                            props.rows.reduce((sum: any, row: any) => timetoseconds(row.values["holdingwaitingtime_avg"]) + sum, 0),    
                         [props.rows]
                     )
-                    return <>{props.rows.length !== 0 ? (total / props.rows.filter((r: any) => r.values["tda_hour_avg"]).length).toFixed(2) : ''}</>
+                    return <>{props.rows.filter((r: any) => r.values["holdingwaitingtime_avg"]).length !== 0 ? secondsToHourTime(total / props.rows.filter((r: any) => r.values["holdingwaitingtime_avg"]).length) : ''}</>
                 },
             },
-            ,
             {
-                Header: t(langKeys.report_kpioperativo_tdats_hour_avg),
-                accessor: 'tdats_hour_avg',
-                helpText: t(`report_${origin}_tdats_hour_avg_help`),
+                Header: t(langKeys.report_kpioperativo_firstassignedtime_avg),
+                accessor: 'firstassignedtime_avg',
+                helpText: t(`report_${origin}_firstassignedtime_avg_help`),
                 type: 'number',
                 NoFilter: true,
                 Footer: (props: any) => {
                     const total = React.useMemo(
                         () =>
-                            props.rows.reduce((sum: any, row: any) => +row.values["tdats_hour_avg"] + sum, 0),
+                            props.rows.reduce((sum: any, row: any) => timetoseconds(row.values["firstassignedtime_avg"]) + sum, 0),    
                         [props.rows]
                     )
-                    return <>{props.rows.length !== 0 ? (total / props.rows.filter((r: any) => r.values["tdats_hour_avg"]).length).toFixed(2) : ''}</>
+                    return <>{props.rows.filter((r: any) => r.values["firstassignedtime_avg"]).length !== 0 ? secondsToHourTime(total / props.rows.filter((r: any) => r.values["firstassignedtime_avg"]).length) : ''}</>
                 },
             },
+            {
+                Header: t(langKeys.report_kpioperativo_firstreplytime_avg),
+                accessor: 'firstreplytime_avg',
+                helpText: t(`report_${origin}_firstreplytime_avg_help`),
+                type: 'number',
+                NoFilter: true,
+                Footer: (props: any) => {
+                    const total = React.useMemo(
+                        () =>
+                            props.rows.reduce((sum: any, row: any) => timetoseconds(row.values["firstreplytime_avg"]) + sum, 0),    
+                        [props.rows]
+                    )
+                    return <>{props.rows.filter((r: any) => r.values["firstreplytime_avg"]).length !== 0 ? secondsToHourTime(total / props.rows.filter((r: any) => r.values["firstreplytime_avg"]).length) : ''}</>
+                },
+            },
+            {
+                Header: t(langKeys.report_kpioperativo_balancetimes_avg),
+                accessor: 'balancetimes_avg',
+                helpText: t(`report_${origin}_balancetimes_avg_help`),
+                type: 'number',
+                NoFilter: true,
+                Footer: (props: any) => {
+                    const total = React.useMemo(
+                        () =>
+                            props.rows.reduce((sum: any, row: any) => +row.values["balancetimes_avg"] + sum, 0),
+                        [props.rows]
+                    )
+                    return <>{props.rows.filter((r: any) => r.values["balancetimes_avg"]).length !== 0 ? (total / props.rows.filter((r: any) => r.values["balancetimes_avg"]).length).toFixed(0) : ''}</>
+                },
+            },
+            {
+                Header: t(langKeys.report_kpioperativo_useraveragereplytime_avg),
+                accessor: 'useraveragereplytime_avg',
+                helpText: t(`report_${origin}_useraveragereplytime_avg_help`),
+                type: 'number',
+                NoFilter: true,
+                Footer: (props: any) => {
+                    const total = React.useMemo(
+                        () =>
+                            props.rows.reduce((sum: any, row: any) => timetoseconds(row.values["useraveragereplytime_avg"]) + sum, 0),    
+                        [props.rows]
+                    )
+                    return <>{props.rows.filter((r: any) => r.values["useraveragereplytime_avg"]).length !== 0 ? secondsToHourTime(total / props.rows.filter((r: any) => r.values["useraveragereplytime_avg"]).length) : ''}</>
+                },
+            },
+            // {
+            //     Header: t(langKeys.report_kpioperativo_tmoasesor_hour_sum),
+            //     accessor: 'tmoasesor_hour_sum',
+            //     helpText: t(`report_${origin}_tmoasesor_hour_sum_help`),
+            //     type: 'number',
+            //     NoFilter: true,
+            //     Footer: (props: any) => {
+            //         const total = React.useMemo(
+            //             () =>
+            //                 props.rows.reduce((sum: any, row: any) => +row.values["tmoasesor_hour_sum"] + sum, 0),
+            //             [props.rows]
+            //         )
+            //         return <>{props.rows.filter((r: any) => r.values["tmoasesor_hour_sum"]).length !== 0 ? (total / props.rows.filter((r: any) => r.values["tmoasesor_hour_sum"]).length).toFixed(2) : ''}</>
+            //     },
+            // },
+            // {
+            //     Header: t(langKeys.report_kpioperativo_tda_hour_avg),
+            //     accessor: 'tda_hour_avg',
+            //     helpText: t(`report_${origin}_tda_hour_avg_help`),
+            //     type: 'number',
+            //     NoFilter: true,
+            //     Footer: (props: any) => {
+            //         const total = React.useMemo(
+            //             () =>
+            //                 props.rows.reduce((sum: any, row: any) => +row.values["tda_hour_avg"] + sum, 0),
+            //             [props.rows]
+            //         )
+            //         return <>{props.rows.length !== 0 ? (total / props.rows.filter((r: any) => r.values["tda_hour_avg"]).length).toFixed(2) : ''}</>
+            //     },
+            // },
+            // {
+            //     Header: t(langKeys.report_kpioperativo_tdats_hour_avg),
+            //     accessor: 'tdats_hour_avg',
+            //     helpText: t(`report_${origin}_tdats_hour_avg_help`),
+            //     type: 'number',
+            //     NoFilter: true,
+            //     Footer: (props: any) => {
+            //         const total = React.useMemo(
+            //             () =>
+            //                 props.rows.reduce((sum: any, row: any) => +row.values["tdats_hour_avg"] + sum, 0),
+            //             [props.rows]
+            //         )
+            //         return <>{props.rows.length !== 0 ? (total / props.rows.filter((r: any) => r.values["tdats_hour_avg"]).length).toFixed(2) : ''}</>
+            //     },
+            // },
         ],
         []
     );
