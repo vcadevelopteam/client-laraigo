@@ -149,8 +149,8 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                 </span>}
                 <span className={classes.info}>{user?.currencysymbol||"S/."} {Number(lead.expected_revenue).toLocaleString('en-US')}</span>
                 <span className={classes.info}>{lead.displayname}</span>
-                {!!lead?.persontype && <span style={{fontWeight: "bold"}} className={classes.info}>
-                    <Trans i18nKey={`${lead.persontypedesc}`} />
+                {!!lead?.persontype && lead?.persontype !== null && <span style={{fontWeight: "bold"}} className={classes.info}>
+                    <Trans i18nKey={`${lead.persontype}`} />
                 </span>}
                 <div className={classes.tagsRow}>
                     {tags.map((tag: String, index: number) =>
