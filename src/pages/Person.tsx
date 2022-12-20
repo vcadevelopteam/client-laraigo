@@ -442,6 +442,10 @@ export const Person: FC = () => {
             accessor: 'name',
         },
         {
+            Header: t(langKeys.personType),
+            accessor: 'persontype',
+        },
+        {
             Header: t(langKeys.phone),
             accessor: 'phone',
         },
