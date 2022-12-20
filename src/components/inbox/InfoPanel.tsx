@@ -10,7 +10,7 @@ import { getTicketsPerson, showInfoPanel, updateClassificationPerson, updatePers
 import { GetIcon, FieldEdit, FieldSelect, AntTab, FieldEditMulti } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
-import { convertLocalDate, getConversationClassification2, getValuesFromDomain, insertClassificationConversation, insPersonBody, validateIsUrl } from 'common/helpers';
+import { convertLocalDate, getConversationClassification2, getPropertySelByName, getValuesFromDomain, insertClassificationConversation, insPersonBody, validateIsUrl } from 'common/helpers';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import { Dictionary } from '@types';
@@ -221,6 +221,7 @@ const InfoTab: React.FC = () => {
             getValuesFromDomain("OCUPACION"),
             getValuesFromDomain("ESTADOCIVIL"),
             getValuesFromDomain("NIVELEDUCATIVO"),
+            getPropertySelByName("OCUPACION"),
         ]));
         return () => {
             dispatch(resetMultiMainAux());
@@ -338,8 +339,14 @@ const InfoTab: React.FC = () => {
                             prefixTranslation="type_gender_"
                             error={errors?.gender?.message}
                         />
-                        <FieldSelect
-                            onChange={(value) => setValue('occupation', value?.domainvalue)}
+                        {multiData?.data?.[5]?.data?.[0].propertyvalue === "LIBRE"?
+                        <FieldEdit
+                            label={t(langKeys.occupation)}
+                            onChange={(value) => {setValue('occupation', value); setValue('occupationdesc', value)}}
+                            valueDefault={getValues('occupation')}
+                            error={errors?.occupation?.message}
+                        />:<FieldSelect
+                            onChange={(value) => {setValue('occupation', value?.domainvalue); setValue('occupationdesc', value?.domainvalue);}}
                             label={t(langKeys.occupation)}
                             loading={multiData.loading}
                             data={multiData.data[2]?.data || []}
@@ -349,7 +356,7 @@ const InfoTab: React.FC = () => {
                             uset={true}
                             prefixTranslation="type_ocupation_"
                             error={errors?.occupation?.message}
-                        />
+                        />}
                         <FieldSelect
                             onChange={(value) => setValue('civilstatus', value?.domainvalue)}
                             label={t(langKeys.civilStatus)}
@@ -511,10 +518,10 @@ const InfoTab: React.FC = () => {
                         <div>{person?.gender && t("type_gender_" + person?.gender.toLocaleLowerCase())}</div>
                     </div>
                 </div>}
-                {person?.occupationdesc && <div className={classes.containerName}>
+                {person?.occupation && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.occupation)}</div>
-                        <div>{person?.occupation && t("type_ocupation_" + person?.occupation.toLocaleLowerCase())}</div>
+                        <div>{person?.occupation && t(person?.occupation)}</div>
                     </div>
                 </div>}
                 {person?.civilstatusdesc && <div className={classes.containerName}>
