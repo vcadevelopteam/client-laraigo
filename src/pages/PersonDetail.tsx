@@ -517,7 +517,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         defaultValue={getValues("birthday")}
                                         value={getValues("birthday")}
                                         onChange={e => {
-                                            setValue('birthday', e?.target?.value||"")
+                                            setValue('birthday', e?.target?.value||null)
                                             trigger("birthday")
                                         }}
                                     />
