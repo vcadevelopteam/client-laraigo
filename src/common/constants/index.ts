@@ -7,5 +7,5 @@ export * from './icons';
 export * from './variablesTemplate';
 
 export const version = {
-    build: "1.15.5"
+    build: "1.16.0"
 }
