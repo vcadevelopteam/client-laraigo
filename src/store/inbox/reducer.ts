@@ -34,6 +34,7 @@ export interface IState {
     tipificationsLevel2: IListStatePaginated<Dictionary>;
     tipificationsLevel3: IListStatePaginated<Dictionary>;
     ticketSelected: ITicket | null;
+    ticketToClose: ITicket | null;
     agentSelected: IAgent | null;
     person: IPesonState;
     agentList: IListStatePaginated<IAgent>;
@@ -90,6 +91,7 @@ export const initialState: IState = {
     triggerBlock: initialTransaction,
     triggerImportTicket: initialTransaction,
     ticketSelected: null,
+    ticketToClose: null,
     agentSelected: null,
     aNewTicket: null,
     aNewMessage: null,

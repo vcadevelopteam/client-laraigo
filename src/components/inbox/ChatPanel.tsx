@@ -941,13 +941,14 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     const [openModalHSM, setOpenModalHSM] = useState(false);
     const multiData = useSelector(state => state.main.multiData);
     const person = useSelector(state => state.inbox.person);
-    const statusCall = useSelector(state => state.voximplant.statusCall);
     const [checkTipification, setCheckTipification] = useState(false);
     const [propertyAsesorSuspende, setpropertyAsesorSuspende] = useState(true);
     const mainAux2 = useSelector(state => state.main.mainAux2);
     const location = useLocation();
     const user = useSelector(state => state.login.validateToken.user);
     const userConnected = useSelector(state => state.inbox.userConnected);
+    const propertyAsesorSuspende = user?.roledesc === "ASESOR" ? multiData?.data?.filter(x => x.key === "UFN_PROPERTY_SELBYNAMEASESORSUSPENDE")?.[0]?.data?.[0].propertyvalue === "1" : true
+
     const closeTicket = (newstatus: string) => {
         if (newstatus === "CERRADO") {
             let tipificationproperty = (multiData?.data?.[12]?.data || [{ propertyvalue: "0" }])[0];
@@ -965,9 +966,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
         }
     };
 
-
     const handlerShowLogs = (e: any) => {
-        // setShowLogs(e.target.checked);
         dispatch(hideLogInteractions(e.target.checked))
     }
 
@@ -1006,10 +1005,9 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     return (
         <>
             <div className={classes.containerButtonsChat}>
-                {(!voxiConnection.loading && statusCall !== "CONNECTED" && userConnected && statusCall !== "CONNECTING" &&
-                    ticketSelected?.communicationchanneltype !== "VOXI" && location.pathname === "/message_inbox") &&
+                {(!voxiConnection.error && userConnected && ticketSelected?.communicationchanneltype !== "VOXI" && location.pathname === "/message_inbox") &&
                     <Tooltip title={t(langKeys.make_call) + ""} arrow placement="top">
-                        <IconButton onClick={() => voxiConnection.error? dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) })):dispatch(setModalCall(true))}>
+                        <IconButton onClick={() => voxiConnection.error ? dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) })) : dispatch(setModalCall(true))}>
                             <PhoneIcon width={24} height={24} fill="#8F92A1" />
                         </IconButton>
                     </Tooltip>
@@ -1064,7 +1062,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                {(ticketSelected?.status !== 'CERRADO' && ticketSelected?.communicationchanneltype !== "VOXI" && (user?.roledesc === "ASESOR"?multiData?.data?.filter(x=>x.key==="UFN_PROPERTY_SELBYNAMEASESORDELEGACION")?.[0]?.data?.[0]?.propertyvalue==="1":true)) &&
+                {(ticketSelected?.status !== 'CERRADO' && ticketSelected?.communicationchanneltype !== "VOXI" && (user?.roledesc === "ASESOR" ? multiData?.data?.filter(x => x.key === "UFN_PROPERTY_SELBYNAMEASESORDELEGACION")?.[0]?.data?.[0]?.propertyvalue === "1" : true)) &&
                     <MenuItem onClick={() => {
                         setOpenModalReassignticket(true)
                         setAnchorEl(null)
@@ -1272,7 +1270,6 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
 }
 
 const ChatPanel: React.FC<{ classes: any }> = React.memo(({ classes }) => {
-    const call = useSelector(state => state.voximplant.call);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
 
     return (
@@ -1283,7 +1280,7 @@ const ChatPanel: React.FC<{ classes: any }> = React.memo(({ classes }) => {
             <InteractionsPanel
                 classes={classes}
             />
-            {(!(ticketSelected?.conversationid === call.data?.conversationid && !!call?.call)) && (
+            {(ticketSelected?.communicationchanneltype !== "VOXI") && (
                 <ReplyPanel
                     classes={classes} />
             )}
