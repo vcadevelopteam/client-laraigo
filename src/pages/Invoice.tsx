@@ -31,8 +31,6 @@ import {
     GetApp
 } from '@material-ui/icons';
 import PaymentIcon from '@material-ui/icons/Payment';
-import DateFnsUtils from '@date-io/date-fns';
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import CulqiModal from 'components/fields/CulqiModal';
 import { getCountryList } from 'store/signup/actions';
 import TableContainer from '@material-ui/core/TableContainer';
@@ -115,20 +113,6 @@ function toISOLocalString(date: { getTimezoneOffset: () => number; getTime: () =
     const sign = off < 0 ? '+' : '-';
     off = Math.abs(off);
     return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().slice(0, -1) + sign + z(off / 60 | 0) + ':' + z(off % 60);
-}
-
-export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: any) => void) => {
-    return (
-        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(localesLaraigo())[navigator.language.split('-')[0]]} >
-            <KeyboardDatePicker
-                format={getLocaleDateString()}
-                value={value === '' ? null : value}
-                onChange={(e: any) => handleClickItemMenu(e)}
-                style={{ minWidth: '150px' }}
-                views={["month", "year"]}
-            />
-        </MuiPickersUtilsProvider>
-    )
 }
 
 const useStyles = makeStyles((theme) => ({

@@ -392,7 +392,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                             setValue('persontype', value?.domainvalue||"");
                                         }}
                                         loading={domains.loading}
-                                        data={domains.value?.personGenTypes || []}
+                                        data={domains.value?.personTypes || []}
                                         prefixTranslation="type_persontype_"
                                         optionValue="domainvalue"
                                         optionDesc="domainvalue"
@@ -412,7 +412,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                             setValue('type', value?.domainvalue||"");
                                         }}
                                         loading={domains.loading}
-                                        data={domains.value?.personTypes || []}
+                                        data={domains.value?.personGenTypes || []}
                                         prefixTranslation="type_personlevel_"
                                         optionValue="domainvalue"
                                         optionDesc="domaindesc"

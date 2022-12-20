@@ -219,7 +219,7 @@ const DialogManageColumns: React.FC<{
                 clearTimeout(timeOut.current);
                 timeOut.current = null;
             }
-        }, 1000);;
+        }, 1000);
     };
 
     const handlerChecked = React.useCallback((column: Dictionary, checked: boolean) => {

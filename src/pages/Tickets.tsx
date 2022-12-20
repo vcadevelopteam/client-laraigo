@@ -1059,6 +1059,11 @@ const Tickets = () => {
                 type: 'time'
             },
             {
+                Header: t(langKeys.supervisionduration ),
+                accessor: 'supervisionduration',
+                type: 'time'
+            },
+            {
                 Header: t(langKeys.ticket_classification),
                 helpText: t(langKeys.ticket_tipification_help),
                 accessor: 'tipification'

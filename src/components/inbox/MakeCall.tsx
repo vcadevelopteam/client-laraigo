@@ -167,7 +167,7 @@ function yesterdayOrToday(datadate: Date, t: any) {
     }
     yesterday.setDate(yesterday.getDate() - 1);
     if (yesterday.toDateString() === date.toDateString()) {
-        return t(langKeys.yesterday);;
+        return t(langKeys.yesterday);
     } else {
         return formatDate(String(datadate))
     }

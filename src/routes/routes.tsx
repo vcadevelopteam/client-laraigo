@@ -128,14 +128,14 @@ export const routes: RouteConfig[] = [
         description: <Trans i18nKey={langKeys.billingSetup} />,
         tooltip: <Trans i18nKey={langKeys.billingSetup} />,
         path: paths.BILLING_SETUPS,
-        icon: (className) => <BillingSetupIcon style={{width: 22, height: 22}} className={className} />,
+        icon: (className) => <BillingSetupIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
         key: paths.INVOICE,
         description: <Trans i18nKey={langKeys.invoice} />,
         tooltip: <Trans i18nKey={langKeys.invoice} />,
         path: paths.INVOICE,
-        icon: (className) => <InvoiceIcon style={{width: 22, height: 22}} className={className} />,
+        icon: (className) => <InvoiceIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
         key: paths.CONFIGURATION,

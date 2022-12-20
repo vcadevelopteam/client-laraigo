@@ -3660,15 +3660,16 @@ export const productCatalogInsArray = (catalogid: string, catalogname: string, t
     }
 });
 
-export const paymentOrderSel = ({ corpid, orgid, conversationid, personid, paymentorderid, ordercode }: Dictionary): IRequestBody => ({
-    method: "UFN_PAYMENTORDER_SEL",
-    key: "UFN_PAYMENTORDER_SEL",
-    parameters: { corpid, orgid, conversationid, personid, paymentorderid, ordercode }
-});
 export const productCatalogUpdArray = (table: Dictionary[], username: string): IRequestBody => ({
     method: "UFN_PRODUCTCATALOG_UPD_ARRAY",
     parameters: {
         table: JSON.stringify(table),
         username: username,
     }
+})
+
+export const paymentOrderSel = ({ corpid, orgid, conversationid, personid, paymentorderid, ordercode }: Dictionary): IRequestBody => ({
+    method: "UFN_PAYMENTORDER_SEL",
+    key: "UFN_PAYMENTORDER_SEL",
+    parameters: { corpid, orgid, conversationid, personid, paymentorderid, ordercode }
 });

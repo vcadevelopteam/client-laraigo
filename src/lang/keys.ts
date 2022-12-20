@@ -17,32 +17,94 @@ export const langKeys = {
     edit_date: "edit_date",
     edit_all: "edit_all",
     set_your_weekly: "set_your_weekly",
+    documentsTooltip: "documentsTooltip",
+    poweredbyTooltip: "poweredbyTooltip",
+    locationTooltip: "locationTooltip",
+    cssheaderTooltip: "cssheaderTooltip",
+    jsscriptTooltip: "jsscriptTooltip",
+    kanbanview: "kanbanview",
+    listview: "listview",
+    startnewconversation: "startnewconversation",
+    startnewconversationTooltip: "startnewconversationTooltip",
+    inputAlwaysEnabledTooltip: "inputAlwaysEnabledTooltip",
+    abandonmentEventTooltip: "abandonmentEventTooltip",
+    newMessageRingTooltip: "newMessageRingTooltip",
+    formBaseHistoryTooltip: "formBaseHistoryTooltip",
+    sendMetaDataTooltip: "sendMetaDataTooltip",
+    videoTooltip: "videoTooltip",
+    audioTooltip: "audioTooltip",
+    imageTooltip: "imageTooltip",
     unavailable: "unavailable",
     more_times: "more_times",
+    chatHeaderTooltip: 'chatHeaderTooltip',
+    additionalsettings: "additionalsettings",
+    formbeforecompletetion: "formbeforecompletetion",
+    placeholderTooltip: "placeholderTooltip",
+    image_plural: "image_plural",
+    documents: "documents",
+    layoutconfig: "layoutconfig",
+    formaftercompletitionerror: "formaftercompletitionerror",
+    chatBackgroundTooltip: 'chatBackgroundTooltip',
+    chatBorderTooltip: 'chatBorderTooltip',
+    clientMessageColorTooltip: 'clientMessageColorTooltip',
+    botMessageTooltip: 'botMessageTooltip',
     select_date_time: "select_date_time",
     seeonthemap: "seeonthemap",
     prepare_meeting: "prepare_meeting",
     backgroundColor: "backgroundColor",
+    sendData: "sendData",
+    botNameTooltip: "botNameTooltip",
+    homepage: "homepage",
+    headerTooltip: "headerTooltip",
+    botButtonTooltip: "botButtonTooltip",
     newentity: "newentity",
     textcolor: "textcolor",
+    bot_training_done: "bot_training_done",
+    bot_training_scheduled: "bot_training_scheduled",
+    bot_training_ongoing: "bot_training_ongoing",
     condition: "condition",
     saleprice: "saleprice",
     catalogname: "catalogname",
     imagelink: "imagelink",
     additionalimagelink: "additionalimagelink",
-    kanbanview: "kanbanview",
-    listview: "listview",
     rescheduleappointment: "rescheduleappointment",
     no_event_found: "no event found",
     no_booking_found: "no booking found",
+    step: "step",
+    chatButtonTooltip: "chatButtonTooltip",
+    interfaceTitleTooltip: "interfaceTitleTooltip",
+    interfaceSubtitleTooltip: "interfaceSubtitleTooltip",
     personrepeatedwarning1: "personrepeatedwarning1",
     personrepeatedwarning2: "personrepeatedwarning2",
     invitation_email: "invitation_email",
+    bubbleTooltip: "bubbleTooltip",
+    bubbleTooltipText: "bubbleTooltipText",
+    bubbleTooltipImage: "bubbleTooltipImage",
     sinonims: "sinonims",
+    published: "published",
+    publishedHistory: "publishedHistory",
+    publishedError: "publishedError",
+    publishedPending: "publishPending",
+    confirmationpostdelete: "confirmationpostdelete",
+    successsavedraft: "successsavedraft",
+    successpublish: "successpublish",
+    history_scheduled: "history_scheduled",
+    posthistory_posttype: "posthistory_posttype",
+    drafts: "drafts",
     securityrules: "securityrules",
+    voicechannel_callsupervisor: "voicechannel_callsupervisor",
+    voicechannel_callsupervisortooltip: "voicechannel_callsupervisortooltip",
     securityrule: "securityrule",
+    peoplereached: "peoplereached",
     noavailabletemplates: 'noavailabletemplates',
     invalid_password: "invalid_password",
+    likesandreactions: "likesandreactions",
+    publishstatus: "publishstatus",
+    confirmationsavedraft: "confirmationsavedraft",
+    confirmationpublish: "confirmationpublish",
+    publicationdate: "publicationdate",
+    scope: "scope",
+    like: "like",
     successful_cancel_event: "successful_cancel_event",
     passwordCond1: "passwordCond1",
     passwordCond2: "passwordCond2",
@@ -98,6 +160,7 @@ export const langKeys = {
     add_classification: "add_classification",
     assistant: "Laraigo Assistant",
     intentions: "intentions",
+    train: "train",
     dialog: "dialog",
     error_invaliddata: "error_invaliddata",
     invalidformat: "invalidformat",
@@ -118,13 +181,13 @@ export const langKeys = {
     city: "city",
     make_call: "make_call",
     question_call_busy: "question_call_busy",
-
+  
     ringing: "ringing",
     connecting: "connecting",
     connected_call: "connected_call",
     monitor_call: "monitor_call",
     monitor_call_off: "monitor_call_off",
-
+  
     alternativephone: "alternativephone",
     limitgroupreassignment: "limitgroupreassignment",
     waittime: "waittime",
@@ -416,9 +479,9 @@ export const langKeys = {
     month_8: "month_8",
     month_9: "month_9",
     companyinformation: "companyinformation",
-
+  
     agent: 'agent',
-
+  
     billinginformation: "billinginformation",
     highestTMO: "highestTMO",
     currency: "currency",
@@ -464,6 +527,7 @@ export const langKeys = {
     supportplan: "supportplan",
     month: "month",
     inputvalidation: "inputvalidation",
+    inputValidationTooltip: "inputValidationTooltip",
     inputvalidationerror: "inputvalidationerror",
     receiverdoctype: "receiverdoctype",
     receiverdocnum: "receiverdocnum",
@@ -754,7 +818,7 @@ export const langKeys = {
     AIservices: 'AIservices',
     systemvariables: 'systemvariables',
     odoovariables: 'odoovariables',
-
+  
     channel: 'channel',
     channel_plural: 'channel_plural',
     return: "return",
@@ -836,6 +900,7 @@ export const langKeys = {
     detail: 'detail',
     detail_plural: 'detail_plural',
     label: "label",
+    labelTooltip: "labelTooltip",
     newuser: "newuser",
     newgroupconfig: "newgroupconfig",
     newinnapropiateword: "newinnapropiateword",
@@ -856,7 +921,7 @@ export const langKeys = {
     newdomain: "newdomain",
     addressReference: 'addressReference',
     birthday: 'birthday',
-
+  
     documenttype: 'documenttype',
     documentnumber: 'documentnumber',
     usergroup: 'usergroup',
@@ -895,7 +960,7 @@ export const langKeys = {
     connecttelegramins: "connecttelegramins",
     enterbotname: "enterbotname",
     enterbotapikey: "enterbotapikey",
-
+  
     report_kpioperativo: "report_kpioperativo",
     report_kpioperativo_year: "report_kpioperativo_year",
     report_kpioperativo_month: "report_kpioperativo_month",
@@ -917,7 +982,7 @@ export const langKeys = {
     report_kpioperativo_tmoasesor_hour_sum: "report_kpioperativo_tmoasesor_hour_sum",
     report_kpioperativo_tda_hour_avg: "report_kpioperativo_tda_hour_avg",
     report_kpioperativo_tdats_hour_avg: "report_kpioperativo_tdats_hour_avg",
-
+  
     report_kpioperativo_year_help: "report_kpioperativo_year_help",
     report_kpioperativo_month_help: "report_kpioperativo_month_help",
     report_kpioperativo_day_help: "report_kpioperativo_day_help",
@@ -938,29 +1003,29 @@ export const langKeys = {
     report_kpioperativo_tmoasesor_hour_sum_help: "report_kpioperativo_tmoasesor_hour_sum_help",
     report_kpioperativo_tda_hour_avg_help: "report_kpioperativo_tda_hour_avg_help",
     report_kpioperativo_tdats_hour_avg_help: "report_kpioperativo_tdats_hour_avg_help",
-
+  
     dateactivity: "dateactivity",
     leadactivity: "leadactivity",
     datenote: "datenote",
     note: "note",
     no_people_to_send: "no_people_to_send",
-
+  
     next_activity: 'next_activity',
     nextprogramedactivity: 'nextprogramedactivity',
-
+  
     quantity: 'quantity',
     quantity_plural: 'quantity_plural',
-
+  
     validationtext: 'validationtext',
-
+  
     system: 'system',
     system_plural: 'system_plural',
-
+  
     groupconfig: 'groupconfig',
     inappropriatewords: 'inappropriatewords',
     person_who_modified: 'person_who_modified',
     ticket_tiempoprimerarespuesta: 'ticket_tiempoprimerarespuesta',
-
+  
     online: 'online',
     offline: 'offline',
     reschedulingdate: "reschedulingdate",
@@ -968,7 +1033,7 @@ export const langKeys = {
     newRegisterMessage: 'newRegisterMessage',
     newRegisterMessage2: 'newRegisterMessage2',
     signoff: 'signoff',
-
+  
     changePassword: 'changePassword',
     status_history: 'status_history',
     status_SENT: 'status_SENT',
@@ -994,12 +1059,12 @@ export const langKeys = {
     filter_by_user: "filter_by_user",
     filter_by_group: "filter_by_group",
     conversation_status: "conversation_status",
-
+  
     ticket_number: "ticket_number",
     total_duration: "total_duration",
     waiting_person_time: "waiting_person_time",
     time_to_automatic_closing: "time_to_automatic_closing",
-
+  
     organization_permissions: 'organization_permissions',
     generate_password: 'generate_password',
     rate: "rate",
@@ -1007,10 +1072,10 @@ export const langKeys = {
     basecost: "basecost",
     send_password_by_email: 'send_password_by_email',
     change_password_on_login: 'change_password_on_login',
-
+  
     property: 'property',
     property_plural: 'property_plural',
-
+  
     firstname: 'firstname',
     lastname: 'lastname',
     fullname: 'fullname',
@@ -1062,64 +1127,64 @@ export const langKeys = {
     department: 'department',
     province: 'province',
     address: 'address',
-
+  
     ticketCreatedOn: 'ticketCreatedOn',
     lastConnection: 'lastConnection',
     firstConnection: 'firstConnection',
-
+  
     group: 'group',
     group_plural: 'group_plural',
-
+  
     role: 'role',
     role_plural: 'role_plural',
-
+  
     status: 'status',
     status_plural: 'status_plural',
-
+  
     type: 'type',
     type_plural: 'type_plural',
-
+  
     model_type: 'model_type',
     model_type_plural: 'model_type_plural',
-
+  
     type_service: 'type_service',
     type_service_plural: 'type_service_plural',
-
+  
     model: 'model',
     model_plural: 'model_plural',
-
+  
     analysis_type: 'analysis_type',
     analysis_type_plural: 'analysis_type_plural',
-
+  
     client_message: 'client_message',
     bot_message: 'bot_message',
     agent_message: 'agent_message',
     translationservice: 'translationservice',
     channeltype: 'channeltype',
     channeldesc: 'channeldesc',
-
+  
     action: 'action',
     action_plural: 'action_plural',
-
+  
     corporation: 'corporation',
     corporation_plural: 'corporation_plural',
     logo: 'logo',
     logotype: 'logotype',
-
+  
     name: 'name',
     name_plural: 'name_plural',
     data_origin: 'data_origin',
     username: 'username',
     password: 'password',
-
+  
     value: 'value',
     value_plural: 'value_plural',
-
+  
     description: 'description',
     description_plural: 'description_plural',
     hsm_template: 'hsm_template',
     hsm_template_plural: 'hsm_template_plural',
-
+  
     kpimanager: 'kpimanager',
     kpimanager_detail: 'kpimanager_detail',
     kpimanager_plural: 'kpimanager_plural',
@@ -1135,7 +1200,7 @@ export const langKeys = {
     last_reading: 'last_reading',
     variance: 'variance',
     last_update: 'last_update',
-
+  
     calendar: 'calendar',
     calendar_detail: 'calendar_detail',
     calendar_plural: 'calendar_plural',
@@ -1170,21 +1235,21 @@ export const langKeys = {
     calendar_reminders_subtitle: 'calendar_reminders_subtitle',
     calendar_connections_title: 'calendar_connections_title',
     calendar_connections_subtitle: 'calendar_connections_subtitle',
-
+  
     no_reply_use_hsm: 'no_reply_use_hsm',
-
+  
     active: 'active',
     inactive: 'inactive',
-
+  
     attending: 'attending',
-
+  
     status_sent: 'status_sent',
     'status_not sent': 'status_not sent',
     status_attended: 'status_attended',
     status_enviado: 'status_enviado',
     'status_no enviado': 'status_no enviado',
     status_atendido: 'status_atendido',
-
+  
     graphic_view: 'graphic_view',
     graphic_configuration: 'graphic_configuration',
     graphic_type: 'graphic_type',
@@ -1195,7 +1260,7 @@ export const langKeys = {
     grid_view: 'grid_view',
     in_white: 'in_white',
     view_table: 'view_table',
-
+  
     status_activo: 'status_activo',
     status_inactivo: 'status_inactivo',
     status_bloqueado: 'status_bloqueado',
@@ -1206,11 +1271,11 @@ export const langKeys = {
     status_conectado: 'status_conectado',
     status_desconectado: 'status_desconectado',
     status_running: 'status_running',
-
+  
     type_corp_ninguno: 'type_corp_ninguno',
     type_corp_natural: 'type_corp_natural',
     type_corp_juridica: 'type_corp_juridico',
-
+  
     type_org_ninguno: 'type_org_ninguno',
     type_org_1: 'type_org_1',
     type_org_2: 'type_org_2',
@@ -1256,24 +1321,24 @@ export const langKeys = {
     type_org_42: 'type_org_42',
     type_org_43: 'type_org_43',
     type_org_44: 'type_org_44',
-
+  
     type_domain_ninguno: 'type_domain_ninguno',
     type_domain_bot: 'type_domain_bot',
     type_domain_cliente: 'type_domain_client',
     type_domain_sistema: 'type_domain_sistema',
-
+  
     type_gender_femenino: 'type_gender_femenino',
     type_gender_masculino: 'type_gender_masculino',
-
+  
     type_documenttype_ce: 'type_documenttype_ce',
     type_documenttype_dni: 'type_documenttype_dni',
     type_documenttype_ruc: 'type_documenttype_ruc',
-
+  
     type_civilstatus_soltero: 'type_civilstatus_soltero',
     type_civilstatus_casado: 'type_civilstatus_casado',
     type_civilstatus_divorciado: 'type_civilstatus_divorciado',
     type_civilstatus_viudo: 'type_civilstatus_viudo',
-
+  
     type_educationlevel_1: 'type_educationlevel_1',
     type_educationlevel_2: 'type_educationlevel_2',
     type_educationlevel_3: 'type_educationlevel_3',
@@ -1281,15 +1346,15 @@ export const langKeys = {
     type_educationlevel_5: 'type_educationlevel_5',
     type_educationlevel_6: 'type_educationlevel_6',
     type_educationlevel_7: 'type_educationlevel_7',
-
+  
     type_persontype_ninguno: 'type_persontype_ninguno',
-
+  
     type_personlevel_medium: 'type_personlevel_medium',
     type_personlevel_vip: 'type_personlevel_vip',
-
+  
     'type_personlevel_cliente medio': 'type_personlevel_cliente medio',
     'type_personlevel_cliente vip': 'type_personlevel_cliente vip',
-
+  
     type_ocupation_1: "1",
     type_ocupation_2: "2",
     type_ocupation_3: "3",
@@ -1407,7 +1472,7 @@ export const langKeys = {
     type_ocupation_115: "115",
     type_ocupation_998: "998",
     type_ocupation_999: "999",
-
+  
     typepg_bigint: 'typepg_bigint',
     typepg_boolean: 'typepg_boolean',
     "typepg_character varying": 'typepg_character',
@@ -1421,7 +1486,7 @@ export const langKeys = {
     typepg_text: 'typepg_text',
     "typepg_timestamp without time zone": 'typepg_timestamp without time zone',
     typepg_variable: 'typepg_variable',
-
+  
     editRecord: 'editRecord',
     deleteRecord: 'deleteRecord',
     change_by: 'change_by',
@@ -1430,7 +1495,7 @@ export const langKeys = {
     search_result: 'search_result',
     without_result: 'without_result',
     without_files: 'without_files',
-
+  
     edit: 'edit',
     delete: 'delete',
     search: 'search',
@@ -1441,7 +1506,7 @@ export const langKeys = {
     deletedata: 'deletedata',
     refresh: 'refresh',
     stop: 'stop',
-
+  
     newmessagetemplate: 'newmessagetemplate',
     messagetemplate: 'messagetemplate',
     messagetemplate_plural: 'messagetemplate_plural',
@@ -1456,9 +1521,9 @@ export const langKeys = {
     namespace: 'namespace',
     category: 'category',
     language: 'language',
-
+  
     currentlanguage: 'currentlanguage',
-
+  
     templatetype: 'templatetype',
     templatestandard: 'templatestandard',
     templatemultimedia: 'templatemultimedia',
@@ -1477,7 +1542,7 @@ export const langKeys = {
     message: 'Mensaje',
     addbutton: 'addbutton',
     removebutton: 'removebutton',
-
+  
     integrationmanager: 'integrationmanager',
     integrationmanagerdetail: 'integrationmanagerdetail',
     integrationmanager_plural: 'integrationmanager_plural',
@@ -1513,18 +1578,18 @@ export const langKeys = {
     reassign_ticket: 'reassign_ticket',
     typify: 'typify',
     typify_ticket: 'typify_ticket',
-
+  
     send_hsm: 'send_hsm',
     send_mail: 'send_mail',
     send_sms: 'send_sms',
-
+  
     send_quickreply: 'send_quickreply',
     send_enrich_response: 'send_enrich_response',
     send_image: 'send_image',
     send_file: 'send_file',
     send_gif: 'send_gif',
     send_emoji: 'send_emoji',
-
+  
     observation: 'observation',
     tipify_ticket: 'tipify_ticket',
     successful_close_ticket: 'successful_close_ticket',
@@ -1542,18 +1607,18 @@ export const langKeys = {
     lead: 'lead',
     lead_plural: 'lead_plural',
     lastnote: 'lastnote',
-
+  
     available_columns: 'available_columns',
     selected_plural: 'selected_plural',
     select_a_field_then_add_it: 'select_a_field_then_add_it',
-
+  
     priority_high: 'priority_high',
     priority_medium: 'priority_medium',
     priority_low: 'priority_low',
     expected_revenue: 'expected_revenue',
     tags: 'tags',
     newlead: 'newlead',
-
+  
     variableconfiguration: 'variableconfiguration',
     variableconfiguration_plural: 'variableconfiguration_plural',
     variableconfigurationdetail: 'variableconfigurationdetail',
@@ -1590,7 +1655,7 @@ export const langKeys = {
     refundjson: "refundjson",
     paymentnote: "paymentnote",
     paymentfile: "paymentfile",
-
+  
     campaign: 'campaign',
     campaign_plural: 'campaign_plural',
     newcampaign: 'newcampaign',
@@ -1659,22 +1724,22 @@ export const langKeys = {
     firstagent: 'firstagent',
     lastagent: 'lastagent',
     link: 'link',
-
+  
     tablePageOf: 'tablePageOf',
     tableShowingRecordOf: 'tableShowingRecordOf',
-
+  
     recordPerPage: 'recordPerPage',
     recordPerPage_plural: 'recordPerPage_plural',
-
+  
     download_record: 'download_record',
-
+  
     successful_transaction: 'successful_transaction',
     successful_edit: 'successful_edit',
     successful_register: 'successful_register',
     successful_sign_up: 'successful_sign_up',
     successful_delete: 'successful_delete',
     successful_duplicate: 'successful_duplicate',
-
+  
     quickreplies: 'quickreplies',
     quickreply: 'quickreply',
     quickreply_plural: 'quickreply_plural',
@@ -1735,14 +1800,14 @@ export const langKeys = {
     error_excess_users: "error_excess_users",
     error_limit_exceeded: "error_limit_exceeded",
     error_ticket_open: "error_ticket_open",
-
+  
     no_records: 'no_records',
-
+  
     dateRangeFilterTitle: 'dateRangeFilterTitle',
     apply: 'apply',
     close: 'close',
     closetype: 'closetype',
-
+  
     today: 'today',
     yes: 'yes',
     no: 'no',
@@ -1756,9 +1821,9 @@ export const langKeys = {
     minute: 'minute',
     minute_plural: 'minute_plural',
     day: 'day',
-
+  
     upload_conversation_plural: 'upload_conversation_plural',
-
+  
     equals: 'equals',
     notequals: 'notequals',
     contains: 'contains',
@@ -1779,10 +1844,10 @@ export const langKeys = {
     all: 'all',
     istrue: 'istrue',
     isfalse: 'isfalse',
-
+  
     true: 'true',
     false: 'false',
-
+  
     error_login_user_incorrect: "error_login_user_incorrect",
     error_login_user_pending: "error_login_user_pending",
     error_login_locked_by_attempts_failed_password: "error_login_locked_by_attempts_failed_password",
@@ -1792,11 +1857,11 @@ export const langKeys = {
     error_login_user_inactive: "error_login_user_inactive",
     error_parameter_is_missing: "error_parameter_is_missing",
     error_login_no_integration: "error_login_no_integration",
-
+  
     numberofHSMShipments: 'numberofHSMShipments',
     numberofHSMShipmentstooltip: 'numberofHSMShipmentstooltip',
     employeeaplication: 'employeeaplication',
-
+  
     all_adivisers: "all_adivisers",
     conected: "conected",
     disconected: "disconected",
@@ -1808,7 +1873,7 @@ export const langKeys = {
     closed_on: "closed_on",
     close_ticket: "close_ticket",
     client_detail: "client_detail",
-
+  
     emoji_name: 'emoji_name',
     emoji_category_name: 'emoji_category_name',
     emoji_favorites: 'emoji_favorites',
@@ -1817,14 +1882,14 @@ export const langKeys = {
     emoji_restricted: 'emoji_restricted',
     emoji_message_favorites: 'emoji_message_favorites',
     emoji_message_restricted: 'emoji_message_restricted',
-
+  
     ticket_close: 'ticket_close',
     ticket_typify: 'ticket_typify',
     ticket_reasign: 'ticket_reasign',
     ticket_reason: 'ticket_reason',
     ticket_comment: 'ticket_comment',
     ticket_user: 'ticket_user',
-
+  
     ticket_numeroticket: 'ticket_numeroticket',
     ticket_fecha: 'ticket_fecha',
     ticket_firstusergroup: 'ticket_firstusergroup',
@@ -1864,7 +1929,7 @@ export const langKeys = {
     ticket_duracionpausa_help: 'ticket_duracionpausa_help',
     ticket_tmoasesor: 'ticket_tmoasesor',
     ticket_tmoasesor_help: 'ticket_tmoasesor_help',
-
+  
     ticket_tiempoprimeraasignacion: 'ticket_tiempoprimeraasignacion',
     ticket_tiempoprimeraasignacion_help: 'ticket_tiempoprimeraasignacion_help',
     ticket_estadoconversacion: 'ticket_estadoconversacion',
@@ -1884,10 +1949,11 @@ export const langKeys = {
     ticket_labels: 'ticket_labels',
     ticket_labels_help: 'ticket_labels_help',
     ticket_tdatime: 'ticket_tdatime',
+    supervisionduration: 'supervisionduration',
     ticket_tdatime_help: 'ticket_tdatime_help',
     ticket_holdingwaitingtime: 'ticket_holdingwaitingtime',
     ticket_holdingwaitingtime_help: 'ticket_holdingwaitingtime_help',
-
+  
     dashboard_managerial_tmo_ticketnum: 'dashboard_managerial_tmo_ticketnum',
     dashboard_managerial_tmo_channel: 'dashboard_managerial_tmo_channel',
     dashboard_managerial_tmo_closedby: 'dashboard_managerial_tmo_closedby',
@@ -1901,7 +1967,7 @@ export const langKeys = {
     dashboard_managerial_tmo_targettmoasesor_max: 'dashboard_managerial_tmo_targettmoasesor_max',
     dashboard_managerial_tmo_targettmoasesor: 'dashboard_managerial_tmo_targettmoasesor',
     dashboard_managerial_tmo_tmoasesor: 'dashboard_managerial_tmo_tmoasesor',
-
+  
     dashboard_managerial_tme_ticketnum: 'dashboard_managerial_tme_ticketnum',
     dashboard_managerial_tme_channel: 'dashboard_managerial_tme_channel',
     dashboard_managerial_tme_closedby: 'dashboard_managerial_tme_closedby',
@@ -1910,21 +1976,21 @@ export const langKeys = {
     dashboard_managerial_tme_targettme_max: 'dashboard_managerial_tme_targettme_max',
     dashboard_managerial_tme_tme: 'dashboard_managerial_tme_tme',
     dashboard_managerial_tme_targettme: 'dashboard_managerial_tme_targettme',
-
+  
     dashboard_managerial_survey3_ticketnum: 'dashboard_managerial_survey3_ticketnum',
     dashboard_managerial_survey3_closedby: 'dashboard_managerial_survey3_closedby',
     dashboard_managerial_survey3_surveytype: 'dashboard_managerial_survey3_surveytype',
     dashboard_managerial_survey3_answervalue: 'dashboard_managerial_survey3_answervalue',
     dashboard_managerial_survey3_answer: 'dashboard_managerial_survey3_answer',
     dashboard_managerial_survey3_comment: 'dashboard_managerial_survey3_comment',
-
+  
     dashboard_managerial_survey2_ticketnum: 'dashboard_managerial_survey2_ticketnum',
     dashboard_managerial_survey2_closedby: 'dashboard_managerial_survey2_closedby',
     dashboard_managerial_survey2_surveytype: 'dashboard_managerial_survey2_surveytype',
     dashboard_managerial_survey2_answervalue: 'dashboard_managerial_survey2_answervalue',
     dashboard_managerial_survey2_answer: 'dashboard_managerial_survey2_answer',
     dashboard_managerial_survey2_comment: 'dashboard_managerial_survey2_comment',
-
+  
     dashboard_managerial_summary_ticketnum: 'dashboard_managerial_summary_ticketnum',
     dashboard_managerial_summary_closedby: 'dashboard_managerial_summary_closedby',
     dashboard_managerial_summary_channel: 'dashboard_managerial_summary_channel',
@@ -1933,18 +1999,18 @@ export const langKeys = {
     dashboard_managerial_summary_averagereplyagent: 'dashboard_managerial_summary_averagereplyagent',
     dashboard_managerial_summary_firstreplyclient: 'dashboard_managerial_summary_firstreplyclient',
     dashboard_managerial_summary_averagereplyclient: 'dashboard_managerial_summary_averagereplyclient',
-
+  
     dashboard_managerial_asesoresconectados_date: 'dashboard_managerial_asesoresconectados_date',
     dashboard_managerial_asesoresconectados_hour: 'dashboard_managerial_asesoresconectados_hour',
     dashboard_managerial_asesoresconectados_agent: 'dashboard_managerial_asesoresconectados_agent',
-
+  
     dashboard_managerial_averageconversations_ticketnum: 'dashboard_managerial_averageconversations_ticketnum',
     dashboard_managerial_averageconversations_startdate: 'dashboard_managerial_averageconversations_startdate',
     dashboard_managerial_averageconversations_finishdate: 'dashboard_managerial_averageconversations_finishdate',
     dashboard_managerial_averageconversations_channel: 'dashboard_managerial_averageconversations_channel',
     dashboard_managerial_averageconversations_status: 'dashboard_managerial_averageconversations_status',
     dashboard_managerial_averageconversations_closedby: 'dashboard_managerial_averageconversations_closedby',
-
+  
     dashboard_managerial_interaction_ticketnum: 'dashboard_managerial_interaction_ticketnum',
     dashboard_managerial_interaction_startdate: 'dashboard_managerial_interaction_startdate',
     dashboard_managerial_interaction_interactioncode: 'dashboard_managerial_interaction_interactioncode',
@@ -1954,13 +2020,13 @@ export const langKeys = {
     dashboard_managerial_interaction_interactiontext: 'dashboard_managerial_interaction_interactiontext',
     dashboard_managerial_interaction_clientnumber: 'dashboard_managerial_interaction_clientnumber',
     dashboard_managerial_interaction_channel: 'dashboard_managerial_interaction_channel',
-
+  
     dashboard_managerial_etiqueta_ticketnum: 'dashboard_managerial_etiqueta_ticketnum',
     dashboard_managerial_etiqueta_closedby: 'dashboard_managerial_etiqueta_closedby',
     dashboard_managerial_etiqueta_agent: 'dashboard_managerial_etiqueta_agent',
     dashboard_managerial_etiqueta_channel: 'dashboard_managerial_etiqueta_channel',
     dashboard_managerial_etiqueta_label: 'dashboard_managerial_etiqueta_label',
-
+  
     dashboard_productivity_tmo_ticketnum: 'dashboard_productivity_tmo_ticketnum',
     dashboard_productivity_tmo_channel: 'dashboard_productivity_tmo_channel',
     dashboard_productivity_tmo_closedby: 'dashboard_productivity_tmo_closedby',
@@ -1974,7 +2040,7 @@ export const langKeys = {
     dashboard_productivity_tmo_targettmoasesor_max: 'dashboard_productivity_tmo_targettmoasesor_max',
     dashboard_productivity_tmo_targettmoasesor: 'dashboard_productivity_tmo_targettmoasesor',
     dashboard_productivity_tmo_tmoasesor: 'dashboard_productivity_tmo_tmoasesor',
-
+  
     dashboard_productivity_tme_ticketnum: 'dashboard_productivity_tme_ticketnum',
     dashboard_productivity_tme_channel: 'dashboard_productivity_tme_channel',
     dashboard_productivity_tme_closedby: 'dashboard_productivity_tme_closedby',
@@ -1983,41 +2049,41 @@ export const langKeys = {
     dashboard_productivity_tme_targettme_max: 'dashboard_productivity_tme_targettme_max',
     dashboard_productivity_tme_tme: 'dashboard_productivity_tme_tme',
     dashboard_productivity_tme_targettme: 'dashboard_productivity_tme_targettme',
-
+  
     dashboard_productivity_tmodistribution_ticketnum: 'dashboard_productivity_tmodistribution_ticketnum',
     dashboard_productivity_tmodistribution_hourrange: 'dashboard_productivity_tmodistribution_hourrange',
     dashboard_productivity_tmodistribution_closedby: 'dashboard_productivity_tmodistribution_closedby',
     dashboard_productivity_tmodistribution_channel: 'dashboard_productivity_tmodistribution_channel',
     dashboard_productivity_tmodistribution_agent: 'dashboard_productivity_tmodistribution_agent',
     dashboard_productivity_tmodistribution_duration: 'dashboard_productivity_tmodistribution_duration',
-
+  
     dashboard_productivity_tmedistribution_ticketnum: 'dashboard_productivity_tmedistribution_ticketnum',
     dashboard_productivity_tmedistribution_hourrange: 'dashboard_productivity_tmedistribution_hourrange',
     dashboard_productivity_tmedistribution_closedby: 'dashboard_productivity_tmedistribution_closedby',
     dashboard_productivity_tmedistribution_channel: 'dashboard_productivity_tmedistribution_channel',
     dashboard_productivity_tmedistribution_agent: 'dashboard_productivity_tmedistribution_agent',
     dashboard_productivity_tmedistribution_duration: 'dashboard_productivity_tmedistribution_duration',
-
+  
     dashboard_productivity_prodxhoradist_ticketnum: 'dashboard_productivity_prodxhoradist_ticketnum',
     dashboard_productivity_prodxhoradist_hourrange: 'dashboard_productivity_prodxhoradist_hourrange',
     dashboard_productivity_prodxhoradist_closedby: 'dashboard_productivity_prodxhoradist_closedby',
     dashboard_productivity_prodxhoradist_channel: 'dashboard_productivity_prodxhoradist_channel',
     dashboard_productivity_prodxhoradist_agent: 'dashboard_productivity_prodxhoradist_agent',
-
+  
     dashboard_productivity_survey3_ticketnum: 'dashboard_productivity_survey3_ticketnum',
     dashboard_productivity_survey3_closedby: 'dashboard_productivity_survey3_closedby',
     dashboard_productivity_survey3_surveytype: 'dashboard_productivity_survey3_surveytype',
     dashboard_productivity_survey3_answervalue: 'dashboard_productivity_survey3_answervalue',
     dashboard_productivity_survey3_answer: 'dashboard_productivity_survey3_answer',
     dashboard_productivity_survey3_comment: 'dashboard_productivity_survey3_comment',
-
+  
     dashboard_productivity_survey2_ticketnum: 'dashboard_productivity_survey2_ticketnum',
     dashboard_productivity_survey2_closedby: 'dashboard_productivity_survey2_closedby',
     dashboard_productivity_survey2_surveytype: 'dashboard_productivity_survey2_surveytype',
     dashboard_productivity_survey2_answervalue: 'dashboard_productivity_survey2_answervalue',
     dashboard_productivity_survey2_answer: 'dashboard_productivity_survey2_answer',
     dashboard_productivity_survey2_comment: 'dashboard_productivity_survey2_comment',
-
+  
     dashboard_operationalpush_summary_ticketnum: 'dashboard_operationalpush_summary_ticketnum',
     dashboard_operationalpush_summary_clientnumber: 'dashboard_operationalpush_summary_clientnumber',
     dashboard_operationalpush_summary_hsm: 'dashboard_operationalpush_summary_hsm',
@@ -2025,20 +2091,20 @@ export const langKeys = {
     dashboard_operationalpush_summary_datehour: 'dashboard_operationalpush_summary_datehour',
     dashboard_operationalpush_summary_status: 'dashboard_operationalpush_summary_status',
     dashboard_operationalpush_summary_answerdate: 'dashboard_operationalpush_summary_answerdate',
-
+  
     dashboard_operationalpush_categoryrank_hsmcategory: 'dashboard_operationalpush_categoryrank_hsmcategory',
     dashboard_operationalpush_categoryrank_hsm: 'dashboard_operationalpush_categoryrank_hsm',
-
+  
     dashboard_operationalpush_hsmrank_hsm: 'dashboard_operationalpush_hsmrank_hsm',
     dashboard_operationalpush_hsmrank_sentdate: 'dashboard_operationalpush_hsmrank_sentdate',
     dashboard_operationalpush_hsmrank_senthour: 'dashboard_operationalpush_hsmrank_senthour',
-
+  
     dashboard_operationalpush_messageperday_hsm: 'dashboard_operationalpush_messageperday_hsm',
     dashboard_operationalpush_messageperday_campaign: 'dashboard_operationalpush_messageperday_campaign',
     dashboard_operationalpush_messageperday_sentdate: 'dashboard_operationalpush_messageperday_sentdate',
     dashboard_operationalpush_messageperday_clientnumber: 'dashboard_operationalpush_messageperday_clientnumber',
     dashboard_operationalpush_messageperday_status: 'dashboard_operationalpush_messageperday_status',
-
+  
     dashboard_operationalpush_application_application: "dashboard_operationalpush_application_application",
     dashboard_operationalpush_application_hsm: "dashboard_operationalpush_application_hsm",
     dashboard_operationalpush_application_sentdate: "dashboard_operationalpush_application_sentdate",
@@ -2047,7 +2113,7 @@ export const langKeys = {
     dashboard_operationalpush_application_tag: "dashboard_operationalpush_application_tag",
     dashboard_operationalpush_application_quantity: "dashboard_operationalpush_application_quantity",
     dashboard_operationalpush_application_channel: "dashboard_operationalpush_application_channel",
-
+  
     dashboard_operationalpush_disconnections_usr: "dashboard_operationalpush_disconnections_usr",
     dashboard_operationalpush_disconnections_type: "dashboard_operationalpush_disconnections_type",
     dashboard_operationalpush_disconnections_time: "dashboard_operationalpush_disconnections_time",
@@ -2056,7 +2122,7 @@ export const langKeys = {
     dashboard_operationalpush_disconnections_userstatus: "dashboard_operationalpush_disconnections_userstatus",
     dashboard_operationalpush_disconnections_conectedtime: "dashboard_operationalpush_disconnections_conectedtime",
     dashboard_operationalpush_disconnections_desconectedtime: "dashboard_operationalpush_disconnections_desconectedtime",
-
+  
     report_loginhistory: 'report_loginhistory',
     report_loginhistory_datehour: 'report_loginhistory_datehour',
     report_loginhistory_user: 'report_loginhistory_user',
@@ -2064,7 +2130,7 @@ export const langKeys = {
     report_loginhistory_status: 'report_loginhistory_status',
     report_loginhistory_status_help: 'report_loginhistory_status_help',
     report_loginhistory_type: 'report_loginhistory_type',
-
+  
     report_inputretry: 'report_inputretry',
     report_inputretry_ticketnum: 'report_inputretry_ticketnum',
     report_inputretry_channel: 'report_inputretry_channel',
@@ -2074,7 +2140,7 @@ export const langKeys = {
     report_inputretry_answer: 'report_inputretry_answer',
     report_inputretry_attempt: 'report_inputretry_attempt',
     report_inputretry_valid: 'report_inputretry_valid',
-
+  
     report_interaction: 'report_interaction',
     report_interaction_ticketnum: 'report_interaction_ticketnum',
     report_interaction_ticketyear: 'report_interaction_ticketyear',
@@ -2096,7 +2162,7 @@ export const langKeys = {
     report_interaction_personcommunicationchannel: 'report_interaction_personcommunicationchannel',
     report_interaction_email: 'report_interaction_email',
     report_interaction_ticketgroup: 'report_interaction_ticketgroup',
-
+  
     report_productivity: 'report_productivity',
     report_productivity_ticket: 'report_productivity_ticket',
     report_productivity_ticketyear: 'report_productivity_ticketyear',
@@ -2144,7 +2210,7 @@ export const langKeys = {
     report_productivity_holdingholdtime: 'report_productivity_holdingholdtime',
     report_productivity_holdingholdtime_help: 'report_productivity_holdingholdtime_help',
     report_productivity_tags: 'report_productivity_tags',
-
+  
     report_tipification: 'report_tipification',
     report_tipification_ticket: 'report_tipification_ticket',
     report_tipification_datehour: 'report_tipification_datehour',
@@ -2161,7 +2227,7 @@ export const langKeys = {
     report_tipification_firstinteractiontime: 'report_tipification_firstinteractiontime',
     report_tipification_closedby: 'report_tipification_closedby',
     report_tipification_closetype: 'report_tipification_closetype',
-
+  
     report_ticketvsasesor: 'report_ticketvsasesor',
     report_userproductivityhours: 'report_userproductivityhours',
     report_userproductivityhours_datehour: 'report_userproductivityhours_datestr',
@@ -2176,7 +2242,7 @@ export const langKeys = {
     report_userproductivityhours_qtytickets: 'report_userproductivityhours_qtytickets',
     report_userproductivityhours_qtyconnection: 'report_userproductivityhours_qtyconnection',
     report_userproductivityhours_qtydisconnection: 'report_userproductivityhours_qtydisconnection',
-
+  
     report_survey: 'report_survey',
     report_survey_ticketnum: 'report_survey_ticketnum',
     report_survey_ticketdate: 'report_survey_ticketdate',
@@ -2192,8 +2258,8 @@ export const langKeys = {
     report_survey_comment2: 'report_survey_comment2',
     report_survey_answer3: 'report_survey_answer3',
     report_survey_comment3: 'report_survey_comment3',
-
-
+  
+  
     report_voicecall: "report_voicecall",
     report_voicecall_ticketdate: "report_voicecall_ticketdate",
     report_voicecall_tickettime: "report_voicecall_tickettime",
@@ -2203,32 +2269,32 @@ export const langKeys = {
     report_voicecall_origin: "report_voicecall_origin",
     report_voicecall_closetype: "report_voicecall_closetype",
     report_voicecall_holdingtime: "report_voicecall_holdingtime",
-
+  
     report_campaign: 'report_campaign',
-
-
+  
+  
     submotive: "submotive",
     assessment: "assessment",
     closedby: "closedby",
-
+  
     dateoffirstreplytoadviser: "dateoffirstreplytoadviser",
     timeoffirstreplytoadviser: "timeoffirstreplytoadviser",
     closing_date: "closing_date",
     closing_time: "closing_time",
-
+  
     dateoflastreplytoadviser: "dateoflastreplytoadviser",
     timeoflastreplytoadviser: "timeoflastreplytoadviser",
-
+  
     report_userproductivityhours_filter_adviser: 'report_userproductivityhours_filter_adviser',
     report_userproductivityhours_filter_channels: 'report_userproductivityhours_filter_channels',
     report_userproductivityhours_filter_hours: 'report_userproductivityhours_filter_hours',
-
+  
     report_userproductivity: 'report_userproductivity',
     report_userproductivity_totalclosedtickets: 'report_userproductivity_totalclosedtickets',
     report_userproductivity_holdingtickets: 'report_userproductivity_holdingtickets',
     report_userproductivity_asesortickets: 'report_userproductivity_asesortickets',
     report_userproductivity_usersconnected: 'report_userproductivity_usersconnected',
-
+  
     report_userproductivity_userid: 'report_userproductivity_userid',
     report_userproductivity_usr: 'report_userproductivity_usr',
     report_userproductivity_user: 'report_userproductivity_user',
@@ -2250,42 +2316,42 @@ export const langKeys = {
     report_userproductivity_userconnectedduration: 'report_userproductivity_userconnectedduration',
     report_userproductivity_userstatus: 'report_userproductivity_userstatus',
     report_userproductivity_groups: 'report_userproductivity_groups',
-
+  
     report_userproductivity_cardtme: 'report_userproductivity_cardtme',
     report_userproductivity_cardtmo: 'report_userproductivity_cardtmo',
     report_userproductivity_cardtmoadviser: 'report_userproductivity_cardtmoadviser',
-
+  
     report_userproductivity_cardavgmax: 'report_userproductivity_cardavgmax',
     report_userproductivity_cardmaxmax: 'report_userproductivity_cardmaxmax',
     report_userproductivity_cardavgmin: 'report_userproductivity_cardavgmin',
     report_userproductivity_cardminmin: 'report_userproductivity_cardminmin',
-
+  
     report_userproductivity_cardavgmax_tme: 'report_userproductivity_cardavgmax_tme',
     report_userproductivity_cardmaxmax_tme: 'report_userproductivity_cardmaxmax_tme',
     report_userproductivity_cardavgmin_tme: 'report_userproductivity_cardavgmin_tme',
     report_userproductivity_cardminmin_tme: 'report_userproductivity_cardminmin_tme',
-
+  
     report_userproductivity_cardavgmax_tmo: 'report_userproductivity_cardavgmax_tmo',
     report_userproductivity_cardmaxmax_tmo: 'report_userproductivity_cardmaxmax_tmo',
     report_userproductivity_cardavgmin_tmo: 'report_userproductivity_cardavgmin_tmo',
     report_userproductivity_cardminmin_tmo: 'report_userproductivity_cardminmin_tmo',
-
+  
     report_userproductivity_cardavgmax_tmoagent: 'report_userproductivity_cardavgmax_tmoagent',
     report_userproductivity_cardmaxmax_tmoagent: 'report_userproductivity_cardmaxmax_tmoagent',
     report_userproductivity_cardavgmin_tmoagent: 'report_userproductivity_cardavgmin_tmoagent',
     report_userproductivity_cardminmin_tmoagent: 'report_userproductivity_cardminmin_tmoagent',
-
+  
     report_userproductivity_maxticketsclosedasesorhelptext: 'report_userproductivity_maxticketsclosedasesorhelptext',
     report_userproductivity_minticketsclosedasesorhelptext: 'report_userproductivity_minticketsclosedasesorhelptext',
     report_userproductivity_maxtimeconnectedasesorhelptext: 'report_userproductivity_maxtimeconnectedasesorhelptext',
     report_userproductivity_mintimeconnectedasesorhelptext: 'report_userproductivity_mintimeconnectedasesorhelptext',
-
+  
     report_userproductivity_filter_channels: 'report_userproductivity_filter_channels',
     report_userproductivity_filter_group: 'report_userproductivity_filter_group',
     report_userproductivity_filter_status: 'report_userproductivity_filter_status',
     report_userproductivity_filter_includebot: 'report_userproductivity_filter_includebot',
     report_userproductivity_desconectedtimejson: 'report_userproductivity_desconectedtimejson',
-
+  
     type_shippingtype_hsm: 'type_shippingtype_hsm',
     type_shippingtype_mail: 'type_shippingtype_mail',
     type_shippingtype_sms: 'type_shippingtype_sms',
@@ -2294,7 +2360,7 @@ export const langKeys = {
     type_shippingtype_person: 'type_shippingtype_person',
     type_shippingtype_inbox: 'type_shippingtype_inbox',
     type_shippingtype_chatflow: 'type_shippingtype_chatflow',
-
+  
     report_sentmessages: 'report_sentmessages',
     report_sentmessages_api: 'report_sentmessages_api',
     report_sentmessages_lead: 'report_sentmessages_lead',
@@ -2302,14 +2368,14 @@ export const langKeys = {
     report_sentmessages_inbox: 'report_sentmessages_inbox',
     report_sentmessages_chatflow: 'report_sentmessages_chatflow',
     report_sentmessages_booking: 'report_sentmessages_booking',
-
+  
     report_sentmessages_API: 'report_sentmessages_API',
     report_sentmessages_LEAD: 'report_sentmessages_LEAD',
     report_sentmessages_PERSON: 'report_sentmessages_PERSON',
     report_sentmessages_INBOX: 'report_sentmessages_INBOX',
     report_sentmessages_CHATFLOW: 'report_sentmessages_CHATFLOW',
     report_sentmessages_BOOKING: 'report_sentmessages_BOOKING',
-
+  
     report_sentmessages_name: 'report_sentmessages_name',
     report_sentmessages_shippingdate: 'report_sentmessages_shippingdate',
     report_sentmessages_from: 'report_sentmessages_from',
@@ -2318,9 +2384,9 @@ export const langKeys = {
     report_sentmessages_failed: 'report_sentmessages_failed',
     report_sentmessages_satisfactoryp: 'report_sentmessages_satisfactoryp',
     report_sentmessages_failedp: 'report_sentmessages_failedp',
-
+  
     report_conversationwhatsapp: 'report_conversationwhatsapp',
-
+  
     "personalizedreport_conversation.userjoy": "personalizedreport_conversation.userjoy",
     "personalizedreport_conversation.userfear": "personalizedreport_conversation.userfear",
     "personalizedreport_conversation.userdisgust": "personalizedreport_conversation.userdisgust",
@@ -2790,7 +2856,7 @@ export const langKeys = {
     "personalizedreport_messagetemplate.buttons": "personalizedreport_messagetemplate.buttons",
     "personalizedreport_messagetemplate.priority": "personalizedreport_messagetemplate.priority",
     "personalizedreport_messagetemplate.attachment": "personalizedreport_messagetemplate.attachment",
-
+  
     "personalizedreport_surveyansweredsummary.csat_question": "personalizedreport_surveyansweredsummary.csat_question",
     "personalizedreport_surveyansweredsummary.csat_answervalue": "personalizedreport_surveyansweredsummary.csat_answervalue",
     "personalizedreport_surveyansweredsummary.csat_answer": "personalizedreport_surveyansweredsummary.csat_answer",
@@ -2800,16 +2866,16 @@ export const langKeys = {
     "personalizedreport_surveyansweredsummary.fix_question": "personalizedreport_surveyansweredsummary.fix_question",
     "personalizedreport_surveyansweredsummary.fix_answervalue": "personalizedreport_surveyansweredsummary.fix_answervalue",
     "personalizedreport_surveyansweredsummary.fix_answer": "personalizedreport_surveyansweredsummary.fix_answer",
-
+  
     "personalizedreport_firstorguser.groups": "personalizedreport_firstorguser.groups",
     "personalizedreport_firstorguser.channels": "personalizedreport_firstorguser.channels",
     "personalizedreport_firstorguser.type": "personalizedreport_firstorguser.type",
     "personalizedreport_lastorguser.groups": "personalizedreport_lastorguser.groups",
     "personalizedreport_lastorguser.channels": "personalizedreport_lastorguser.channels",
     "personalizedreport_lastorguser.type": "personalizedreport_lastorguser.type",
-
+  
     "personalizedreport_conversationclassification.tipification": "personalizedreport_conversationclassification.tipification",
-
+  
     chatHeaderTitle: 'chatHeaderTitle',
     subtitle: 'subtitle',
     chatHeaderSubtitle: 'chatHeaderSubtitle',
@@ -2823,12 +2889,16 @@ export const langKeys = {
     botMessage: 'botMessage',
     botMessage_plural: 'botMessage_plural',
     required: 'required',
+    requiredTooltip: 'requiredTooltip',
     enterYourName: 'enterYourName',
     errorText: 'errorText',
+    errorTextTooltip: 'errorTextTooltip',
     pleaseEnterYourName: 'pleaseEnterYourName',
     inputValidation: 'inputValidation',
     validationOnKeychange: 'validationOnKeychange',
+    validationOnKeychangeTooltip: 'validationOnKeychangeTooltip',
     wantAddFormToSiteQuestion: 'wantAddFormToSiteQuestion',
+    wantAddFormToSiteQuestionTooltip: 'wantAddFormToSiteQuestionTooltip',
     selectField: 'selectField',
     add: 'add',
     waitingMessageStyle: 'waitingMessageStyle',
@@ -2855,11 +2925,12 @@ export const langKeys = {
     botName: 'botName',
     activeLaraigoOnYourWebsite: 'activeLaraigoOnYourWebsite',
     interface: 'interface',
+    chatinterface: 'chatinterface',
     color_plural: 'color_plural',
     form: 'form',
     bubble: 'bubble',
     bubble_plural: 'bubble_plural',
-
+  
     closure: 'closure',
     indicators: 'indicators',
     quiz: 'quiz',
@@ -2917,7 +2988,7 @@ export const langKeys = {
     invoice: 'invoice',
     invoice_generation: 'invoice_generation',
     whatsappinformationimportant: "whatsappinformationimportant",
-
+  
     businessname: 'businessname',
     fiscaladdress: 'fiscaladdress',
     billingcontact: "billingcontact",
@@ -2925,7 +2996,7 @@ export const langKeys = {
     sunatcountry: 'sunatcountry',
     contactemail: 'contactemail',
     autosendinvoice: 'autosendinvoice',
-
+  
     agreement: 'agreement',
     agreement_plural: 'agreement_plural',
     setting: 'setting',
@@ -2987,7 +3058,7 @@ export const langKeys = {
     iaModel: 'iaModel',
     iaModel_plural: 'iaModel_plural',
     ia: 'ia',
-
+  
     androidalert: 'androidalert',
     androidlibrary: 'androidlibrary',
     androidstep1: 'androidstep1',
@@ -2996,14 +3067,14 @@ export const langKeys = {
     iosstep2: 'iosstep2',
     iosstep3: 'iosstep3',
     chatwebstep: 'chatwebstep',
-
+  
     message_please_wait: 'message_please_wait',
     message_try_later: 'message_try_later',
     message_account_already_activated: 'message_account_already_activated',
     message_account_activated: 'message_account_activated',
     message_thanks_for_register: 'message_thanks_for_register',
     message_click_to_login: 'message_click_to_login',
-
+  
     app_whitelist: "app_whitelist",
     "app_validación de inputs": "app_validación_de_inputs",
     "app_kpi manager": "app_kpi manager",
@@ -3062,7 +3133,7 @@ export const langKeys = {
     app_ia_models: "app_ia_models",
     app_ia: "app_ia",
     app_privacy: "app_privacy",
-
+  
     lead_activitydate: 'lead_activitydate',
     lead_activitydescription: 'lead_activitydescription',
     lead_asesorname: 'lead_asesorname',
@@ -3072,7 +3143,7 @@ export const langKeys = {
     lead_notedescription: 'lead_notedescription',
     lead_phone: 'lead_phone',
     lead_custom: 'lead_custom',
-
+  
     formMandatoryFields: 'formMandatoryFields',
     newLead: 'newLead',
     leadDetail: 'leadDetail',
@@ -3080,7 +3151,7 @@ export const langKeys = {
     logNote_plural: 'logNote_plural',
     scheduleActivity: 'scheduleActivity',
     scheduleActivity_plural: 'scheduleActivity_plural',
-
+  
     channellimit: 'channellimit',
     userlimit: 'userlimit',
     max_limit: 'max_limit',
@@ -3102,7 +3173,7 @@ export const langKeys = {
     type_phaselead_nuevo: 'type_phaselead_nuevo',
     type_phaselead_perdido: 'type_phaselead_perdido',
     type_phaselead_propuesta: 'type_phaselead_propuesta',
-
+  
     customer: 'customer',
     logAnInternalNote: 'logAnInternalNote',
     newActivity: 'newActivity',
@@ -3116,13 +3187,13 @@ export const langKeys = {
     doneAndScheduleNext: 'doneAndScheduleNext',
     discard: 'discard',
     date_format_error: 'date_format_error',
-
+  
     noData: 'noData',
     closed2: 'closed2',
     done: 'done',
     writeFeedback: 'writeFeedback',
     history: 'history',
-
+  
     NEWLEAD: 'NEWLEAD', // lead history type
     NEWNOTE: 'NEWNOTE', // lead history type
     NEWACTIVITY: 'NEWACTIVITY', // lead history type
@@ -3141,26 +3212,26 @@ export const langKeys = {
     CHANGEAGENT: 'CHANGEAGENT',
     NEWPRODUCT: 'NEWPRODUCT',
     REMOVEPRODUCT: 'REMOVEPRODUCT',
-
+  
     repeatPassword: 'repeatPassword',
     passwordsMustBeEqual: 'passwordsMustBeEqual',
     noNotification: 'noNotification',
     noNotification_plural: 'noNotification_plural',
-
+  
     accept: 'accept',
     enterTheUrl: 'enterTheUrl',
     attached: 'attached',
     loadingImage: 'loadingImage',
-
+  
     product: 'product',
     product_plural: 'product_plural',
-
+  
     DEFAULT_FORCED_DISCONNECTION: 'DEFAULT_FORCED_DISCONNECTION',
     OTHER_PC_CONNECTION: 'OTHER_PC_CONNECTION',
     SESSION_EXPIRED: 'SESSION_EXPIRED',
-
+  
     seeMore: 'seeMore',
-
+  
     billingsetupgeneralconfiguration: 'billingsetupgeneralconfiguration',
     billingsetupgeneralinformation: 'billingsetupgeneralinformation',
     billingsetupbillinginformation: 'billingsetupbillinginformation',
@@ -3206,13 +3277,13 @@ export const langKeys = {
     billingvcacomission: "billingvcacomission",
     notificationcost: "notificationcost",
     newnotificationcost: "newnotificationcost",
-
+  
     tmeAgent: 'tmeAgent',
     tmrAgent: 'tmrAgent',
     tmrClient: 'tmrClient',
     initialAgent: 'initialAgent',
     finalAgent: 'finalAgent',
-
+  
     costperperioddetail: "costperperioddetail",
     costbasedonthesupportplan: "costbasedonthesupportplan",
     contractedplandetail: "contractedplandetail",
@@ -3221,7 +3292,7 @@ export const langKeys = {
     supportplandetail: "supportplandetail",
     costcommentary: "costcommentary",
     confirmation_calculate: 'confirmation_calculate',
-
+  
     notedescription: 'notedescription',
     activitydescription: 'activitydescription',
     successful_calculate: 'successful_calculate',
@@ -3237,7 +3308,7 @@ export const langKeys = {
     emissorticket: 'emissorticket',
     regulatepayment: 'regulatepayment',
     costnotificaton: 'costnotificaton',
-
+  
     sendToHistory: 'sendToHistory',
     ticketserial: 'ticketserial',
     ticketcorrelative: 'ticketcorrelative',
@@ -3260,7 +3331,7 @@ export const langKeys = {
     smssection: 'smssection',
     mailsection: 'mailsection',
     newmessagingplan: "newmessagingplan",
-
+  
     fontcolor: 'fontcolor',
     fontbold: 'fontbold',
     visible: 'visible',
@@ -3278,7 +3349,7 @@ export const langKeys = {
     additionalinformation2: "additionalinformation2",
     proceedpayment: "proceedpayment",
     credittype: "credittype",
-
+  
     groupment: 'groupment',
     contentType: 'contentType',
     chartType: 'chartType',
@@ -3346,7 +3417,7 @@ export const langKeys = {
     culqipaysuccess: 'culqipaysuccess',
     xmldocumentopen: 'xmldocumentopen',
     cdrdocumentopen: 'cdrdocumentopen',
-
+  
     function_total: 'function_total',
     function_count: 'function_count',
     function_count_unique: 'function_count_unique',
@@ -3357,7 +3428,7 @@ export const langKeys = {
     function_mode: 'function_mode',
     successful_import: 'successful_import',
     detractionminimum: 'detractionminimum',
-
+  
     propertyambiente: 'propertyambiente',
     propertygrupofacturacion: 'propertygrupofacturacion',
     propertycierreautomaticocampaña: 'propertycierreautomaticocampaña',
@@ -3555,12 +3626,12 @@ export const langKeys = {
     propertycargarconversaciones: 'propertycargarconversaciones',
     propertyreporte_encuestas: 'propertyreporte_encuestas',
     propertyreporte_kpioperativo: 'propertyreporte_kpioperativo',
-
+  
     property_tooltip_enable_button: 'property_tooltip_enable_button',
     property_tooltip_disable_button: 'property_tooltip_disable_button',
     property_tooltip_show_button: 'property_tooltip_show_button',
     property_tooltip_hide_button: 'property_tooltip_hide_button',
-
+  
     newDashboard: 'newDashboard',
     dashboard_groupment_quantity: 'dashboard_groupment_quantity',
     dashboard_groupment_percentage: 'dashboard_groupment_percentage',
@@ -3573,7 +3644,7 @@ export const langKeys = {
     dashboard_chartType_line: 'dashboard_chartType_line',
     enterDashboardDescription: 'enterDashboardDescription',
     moreOptions: 'moreOptions',
-
+  
     reportfreeconversations: 'reportfreeconversations',
     userinitiatedconversations: 'userinitiatedconversations',
     businessinitiatedconversations: 'businessinitiatedconversations',
@@ -3590,13 +3661,13 @@ export const langKeys = {
     billingtypevalidation: 'billingtypevalidation',
     billingaddproduct: 'billingaddproduct',
     billingsubtotal: 'billingsubtotal',
-
+  
     copy: 'copy',
     empty_dashboard_form_error: 'empty_dashboard_form_error',
     chart_dashboard_report_error: 'chart_dashboard_report_error',
     chart_dashboard_column_error: 'chart_dashboard_column_error',
     chart_dashboard_unexpected_error: 'chart_dashboard_unexpected_error',
-
+  
     successinvoiced: 'successinvoiced',
     createdbutnotinvoiced: 'createdbutnotinvoiced',
     correlativenotfound: 'correlativenotfound',
@@ -3605,7 +3676,7 @@ export const langKeys = {
     productdetailnotfound: 'productdetailnotfound',
     corporationnotfound: 'corporationnotfound',
     generalproblem: 'generalproblem',
-
+  
     emiteinvoicetitle: 'emiteinvoicetitle',
     generatecreditnote: 'generatecreditnote',
     billingproductdetail: 'billingproductdetail',
@@ -3637,7 +3708,7 @@ export const langKeys = {
     NONE: 'NONE',
     paymentreferenceview: 'paymentreferenceview',
     discountvalidmessage: 'discountvalidmessage',
-
+  
     doctype_others_non_home_error: 'doctype_others_non_home_error',
     doctype_dni_error: 'doctype_dni_error',
     doctype_foreigners_card: 'doctype_foreigners_card',
@@ -3645,7 +3716,7 @@ export const langKeys = {
     doctype_passport_error: 'doctype_passport_error',
     doctype_unknown_error: 'doctype_unknown_error',
     totaltopay: 'totaltopay',
-
+  
     messagingpackages: 'messagingpackages',
     transactiondate: 'transactiondate',
     transactionmessagetype: 'transactionmessagetype',
@@ -3819,7 +3890,7 @@ export const langKeys = {
     billingreporttaxableiva: 'billingreporttaxableiva',
     billingreportamount: 'billingreportamount',
     password_strongvalidation: 'password_strongvalidation',
-
+  
     error_not_allowed_time: 'error_not_allowed_time',
     select_differente_time: 'select_differente_time',
     view_times: 'view_times',
@@ -3871,7 +3942,7 @@ export const langKeys = {
     error_no_record: 'error_no_record',
     error_record_error: 'error_record_error',
     error_invalid_call: 'error_invalid_call',
-
+  
     type_close_cierre_externo: 'type_close_cierre_externo',
     type_close_cierre_por_envio_de_campaña: 'type_close_cierre_por_envio_de_campaña',
     type_close_cierreautocampaña: 'type_close_cierreautocampaña',
@@ -3885,7 +3956,7 @@ export const langKeys = {
     type_close_resuelto: 'type_close_resuelto',
     available: 'available',
     already_call_person: 'already_call_person',
-
+  
     voximplant_organizationchanneltab: 'voximplant_organizationchanneltab',
     voximplant_organizationenabledrecharge: 'voximplant_organizationenabledrecharge',
     voximplant_organizationchanneladditional: 'voximplant_organizationchanneladditional',
@@ -3908,12 +3979,12 @@ export const langKeys = {
     error_voximplant_failedrequest: 'error_voximplant_failedrequest',
     error_voximplant_nofunds: 'error_voximplant_nofunds',
     error_voximplant_invalidamount: 'error_voximplant_invalidamount',
-
+  
     propertyvoximplantautomaticrecharge: 'propertyvoximplantautomaticrecharge',
     propertyvoximplantrechargerange: 'propertyvoximplantrechargerange',
     propertyvoximplantrechargepercentage: 'propertyvoximplantrechargepercentage',
     propertyvoximplantadditionalperchannel: 'propertyvoximplantadditionalperchannel',
-
+  
     vcacomissionpervoicechannel: 'vcacomissionpervoicechannel',
     minimumsmsquantity: 'minimumsmsquantity',
     minimummailquantity: 'minimummailquantity',
@@ -3942,9 +4013,18 @@ export const langKeys = {
     periodreportother: 'periodreportother',
     T_VOICECHANNEL: 'T_VOICECHANNEL',
     validate_time_filter: "validate_time_filter",
-
+  
     go_ticket: 'go_ticket',
-
+  
+    productcatalog_title: 'productcatalog_title',
+    productcatalog_website: 'productcatalog_website',
+    productcatalog_currency: 'productcatalog_currency',
+    productcatalog_condition: 'productcatalog_condition',
+    productcatalog_contentid: 'productcatalog_contentid',
+    productcatalog_facebookcatalogid: 'productcatalog_facebookcatalogid',
+    productcatalog_facebookproductid: 'productcatalog_facebookproductid',
+    productcatalog_facebookcatalogname: 'productcatalog_facebookcatalogname',
+  
     channel_facebook: 'channel_facebook',
     channel_messenger: 'channel_messenger',
     channel_instagram: 'channel_instagram',
@@ -3970,30 +4050,30 @@ export const langKeys = {
     channel_teamstitle: 'channel_teamstitle',
     channel_tiktoktitle: 'channel_tiktoktitle',
     channel_linkedintitle: 'channel_linkedintitle',
-
+  
     elements: 'elements',
     show_shopping_cart: 'show_shopping_cart',
     cart_sent: 'cart_sent',
     show_items: 'show_items',
     options: 'options',
-
+  
     subscription_congratulations: 'subscription_congratulations',
     subscription_message1: 'subscription_message1',
     subscription_message2: 'subscription_message2',
-
+  
     smooch_apikeyid: 'smooch_apikeyid',
     smooch_apikeysecret: 'smooch_apikeysecret',
     smooch_appid: 'smooch_appid',
-
+  
     blogger_account: 'blogger_account',
     blogger_url: 'blogger_url',
-
+  
     subscription_genericconnect: 'subscription_genericconnect',
     subscription_instagramconnect: "subscription_instagramconnect",
     subscription_selectedchannel: "subscription_selectedchannel",
     subscription_channellimit: "subscription_channellimit",
     subscription_nolimit: "subscription_nolimit",
-
+  
     voicechannel_capacities: 'voicechannel_capacities',
     voicechannel_recording: 'voicechannel_recording',
     voicechannel_recordingtooltip: 'voicechannel_recordingtooltip',
@@ -4001,8 +4081,6 @@ export const langKeys = {
     voicechannel_smstooltip: 'voicechannel_smstooltip',
     voicechannel_outbound: 'voicechannel_outbound',
     voicechannel_outboundtooltip: 'voicechannel_outboundtooltip',
-    voicechannel_callsupervisor: 'voicechannel_callsupervisor',
-    voicechannel_callsupervisortooltip: 'voicechannel_callsupervisortooltip',
     voicechannel_recordingquality: 'voicechannel_recordingquality',
     voicechannel_recordingmonth3: 'voicechannel_recordingmonth3',
     voicechannel_recordingmonth6: 'voicechannel_recordingmonth6',
@@ -4013,7 +4091,7 @@ export const langKeys = {
     voicechannel_recordinghd: 'voicechannel_recordinghd',
     voicechannel_recordinglossless: 'voicechannel_recordinglossless',
     voicechannel_recordingalert: 'voicechannel_recordingalert',
-
+  
     messagetemplate_sms: 'messagetemplate_sms',
     messagetemplate_hsm: 'messagetemplate_hsm',
     messagetemplate_mail: 'messagetemplate_mail',
@@ -4034,7 +4112,7 @@ export const langKeys = {
     messagetemplate_reload: 'messagetemplate_reload',
     messagetemplate_changetoeditor: 'messagetemplate_changetoeditor',
     messagetemplate_changetoview: 'messagetemplate_changetoview',
-
+  
     validationchar: 'validationchar',
     channel_youtubealert1: 'channel_youtubealert1',
     channel_youtubealert2: 'channel_youtubealert2',
@@ -4047,7 +4125,7 @@ export const langKeys = {
     channel_gmailalert2: 'channel_gmailalert2',
     channel_gmailtitle: 'channel_gmailtitle',
     subscription_missinginfo: 'subscription_missinginfo',
-
+  
     privacypolicy44: "privacypolicy44",
     privacypolicy45: "privacypolicy45",
     privacypolicy46: "privacypolicy46",
@@ -4062,7 +4140,7 @@ export const langKeys = {
     privacypolicy55: "privacypolicy55",
     privacypolicy56: "privacypolicy56",
     privacypolicy57: "privacypolicy57",
-
+  
     registergupshup: "registergupshup",
     whatsapptitlegupshup: "whatsapptitlegupshup",
     gupshuppappid: "gupshuppappid",
@@ -4087,7 +4165,7 @@ export const langKeys = {
     messagetemplate_synchronize: "messagetemplate_synchronize",
     messagetemplate_synchronize_alert01: "messagetemplate_synchronize_alert01",
     messagetemplate_synchronize_alert02: "messagetemplate_synchronize_alert02",
-
+  
     TEMPLATE_ACCOUNT_UPDATE: "TEMPLATE_ACCOUNT_UPDATE",
     TEMPLATE_PAYMENT_UPDATE: "TEMPLATE_PAYMENT_UPDATE",
     TEMPLATE_PERSONAL_FINANCE_UPDATE: "TEMPLATE_PERSONAL_FINANCE_UPDATE",
@@ -4199,6 +4277,12 @@ export const langKeys = {
     billingreport_interaction: "billingreport_interaction",
     billingreport_agent: "billingreport_agent",
     billingreport_template: "billingreport_template",
+    customlabel: "customlabel",
+    catalogid: "catalogid",
+    productid: "productid",
+    material: "material",
+    website: "website",
+    additionalimage: "additionalimage",
     instagram_warning: "instagram_warning",
     view_steps: "view_steps",
     billingsetup_artificialintelligence: "billingsetup_artificialintelligence",
@@ -4222,12 +4306,431 @@ export const langKeys = {
     aiduplicatealert: "aiduplicatealert",
     aitotalquantity: "aitotalquantity",
     aiminimumquantity: "aiminimumquantity",
+    importxml: "importxml",
+    productimportdescription: "productimportdescription",
+    templatexml: "templatexml",
+    templateexcel: "templateexcel",
+    productimportalert: "productimportalert",
+    productimportmissing: "productimportmissing",
+    postcreator: "postcreator",
+    postcreator_title: "postcreator_title",
+    postcreator_publish: "postcreator_publish",
+    postcreator_story: "postcreator_story",
+    postcreator_calendar: "postcreator_calendar",
+    postcreator_posthistory: "postcreator_posthistory",
+    postcreator_posthistorydetail: "postcreator_posthistorydetail",
+    postcreator_publish_text: "postcreator_publish_text",
+    postcreator_publish_textimage: "postcreator_publish_textimage",
+    postcreator_publish_textvideo: "postcreator_publish_textvideo",
+    postcreator_publish_pages: "postcreator_publish_pages",
+    postcreator_publish_officialpage: "postcreator_publish_officialpage",
+    postcreator_publish_textrecommendation: "postcreator_publish_textrecommendation",
+    postcreator_publish_textrecommendation01: "postcreator_publish_textrecommendation01",
+    postcreator_publish_textrecommendation02: "postcreator_publish_textrecommendation02",
+    postcreator_publish_textrecommendation03: "postcreator_publish_textrecommendation03",
+    postcreator_publish_textrecommendation04: "postcreator_publish_textrecommendation04",
+    postcreator_publish_textrecommendation05: "postcreator_publish_textrecommendation05",
+    postcreator_publish_image: "postcreator_publish_image",
+    postcreator_publish_video: "postcreator_publish_video",
+    postcreator_publish_edit: "postcreator_publish_edit",
+    postcreator_publish_delete: "postcreator_publish_delete",
+    postcreator_publish_addimage: "postcreator_publish_addimage",
+    postcreator_publish_addvideo: "postcreator_publish_addvideo",
+    postcreator_publish_customizepost: "postcreator_publish_customizepost",
+    postcreator_publish_facebook: "postcreator_publish_facebook",
+    postcreator_publish_instagram: "postcreator_publish_instagram",
+    postcreator_publish_twitter: "postcreator_publish_twitter",
+    postcreator_publish_linkedin: "postcreator_publish_linkedin",
+    postcreator_publish_youtube: "postcreator_publish_youtube",
+    postcreator_publish_tiktok: "postcreator_publish_tiktok",
+    postcreator_publish_sentiment: "postcreator_publish_sentiment",
+    postcreator_publish_activity: "postcreator_publish_activity",
+    postcreator_publish_draft: "postcreator_publish_draft",
+    postcreator_publish_program: "postcreator_publish_program",
+    postcreator_publish_publish: "postcreator_publish_publish",
+    postcreator_publish_hashtag: "postcreator_publish_hashtag",
+    postcreator_publish_preview: "postcreator_publish_preview",
+    postcreator_publish_date: "postcreator_publish_date",
+    postcreator_publish_customizemode: "postcreator_publish_customizemode",
+    postcreator_publish_mockupfacebook: "postcreator_publish_mockupfacebook",
+    postcreator_publish_mockupinstagram: "postcreator_publish_mockupinstagram",
+    postcreator_publish_mockuptwitter: "postcreator_publish_mockuptwitter",
+    postcreator_publish_mockuplinkedin: "postcreator_publish_mockuplinkedin",
+    postcreator_publish_mockupyoutube: "postcreator_publish_mockupyoutube",
+    postcreator_publish_mockuptiktok: "postcreator_publish_mockuptiktok",
+    postcreator_publish_facebookmockup_time: "postcreator_publish_facebookmockup_time",
+    postcreator_publish_facebookmockup_like: "postcreator_publish_facebookmockup_like",
+    postcreator_publish_facebookmockup_comment: "postcreator_publish_facebookmockup_comment",
+    postcreator_publish_facebookmockup_share: "postcreator_publish_facebookmockup_share",
+    postcreator_publish_tiktokmockup_follow: "postcreator_publish_tiktokmockup_follow",
+    postcreator_publish_linkedin_follower: "postcreator_publish_linkedin_follower",
+    postcreator_publish_linkedin_time: "postcreator_publish_linkedin_time",
+    postcreator_publish_linkedin_like: "postcreator_publish_linkedin_like",
+    postcreator_publish_linkedin_comment: "postcreator_publish_linkedin_comment",
+    postcreator_publish_linkedin_repost: "postcreator_publish_linkedin_repost",
+    postcreator_publish_linkedin_send: "postcreator_publish_linkedin_send",
+    postcreator_publish_youtube_subscribe: "postcreator_publish_youtube_subscribe",
+    postcreator_publish_youtube_subscribers: "postcreator_publish_youtube_subscribers",
+    postcreator_publish_youtube_share: "postcreator_publish_youtube_share",
+    postcreator_publish_youtube_save: "postcreator_publish_youtube_save",
+    postcreator_publish_program_title: "postcreator_publish_program_title",
+    postcreator_publish_program_description: "postcreator_publish_program_description",
+    postcreator_publish_program_save: "postcreator_publish_program_save",
+    postcreator_publish_program_cancel: "postcreator_publish_program_cancel",
+    postcreator_publish_confirm_title: "postcreator_publish_confirm_title",
+    postcreator_publish_confirm_description: "postcreator_publish_confirm_description",
+    postcreator_publish_confirm_save: "postcreator_publish_confirm_save",
+    postcreator_publish_confirm_draft: "postcreator_publish_confirm_draft",
+    postcreator_publish_draft_title: "postcreator_publish_draft_title",
+    postcreator_publish_draft_description: "postcreator_publish_draft_description",
+    postcreator_publish_draft_save: "postcreator_publish_draft_save",
+    postcreator_publish_draft_cancel: "postcreator_publish_draft_cancel",
+    postcreator_publish_previewmode: "postcreator_publish_previewmode",
+    posthistory_agrees: "posthistory_agrees",
+    posthistory_attends: "posthistory_attends",
+    posthistory_bikes: "posthistory_bikes",
+    posthistory_boxes: "posthistory_boxes",
+    posthistory_calls: "posthistory_calls",
+    posthistory_celebrates: "posthistory_celebrates",
+    posthistory_climbs: "posthistory_climbs",
+    posthistory_contacts: "posthistory_contacts",
+    posthistory_dances: "posthistory_dances",
+    posthistory_disagrees: "posthistory_disagrees",
+    posthistory_drinks: "posthistory_drinks",
+    posthistory_eats: "posthistory_eats",
+    posthistory_exercises: "posthistory_exercises",
+    posthistory_fake_exercising_type: "posthistory_fake_exercising_type",
+    posthistory_feels: "posthistory_feels",
+    posthistory_gets: "posthistory_gets",
+    posthistory_goes_to: "posthistory_goes_to",
+    posthistory_golfs: "posthistory_golfs",
+    posthistory_hikes: "posthistory_hikes",
+    posthistory_listens: "posthistory_listens",
+    posthistory_looks_for: "posthistory_looks_for",
+    posthistory_makes: "posthistory_makes",
+    posthistory_meets: "posthistory_meets",
+    posthistory_other: "posthistory_other",
+    posthistory_plays: "posthistory_plays",
+    posthistory_practices_yoga: "posthistory_practices_yoga",
+    posthistory_prepares_to_vote: "posthistory_prepares_to_vote",
+    posthistory_races: "posthistory_races",
+    posthistory_rafts: "posthistory_rafts",
+    posthistory_reads: "posthistory_reads",
+    posthistory_registers_to_vote: "posthistory_registers_to_vote",
+    posthistory_remembers: "posthistory_remembers",
+    posthistory_responds_to: "posthistory_responds_to",
+    posthistory_runs: "posthistory_runs",
+    posthistory_scuba_dives: "posthistory_scuba_dives",
+    posthistory_selects_verb: "posthistory_selects_verb",
+    posthistory_skateboards: "posthistory_skateboards",
+    posthistory_skates: "posthistory_skates",
+    posthistory_skis: "posthistory_skis",
+    posthistory_skydives: "posthistory_skydives",
+    posthistory_snowboards: "posthistory_snowboards",
+    posthistory_streams: "posthistory_streams",
+    posthistory_supports: "posthistory_supports",
+    posthistory_surfs: "posthistory_surfs",
+    posthistory_swims: "posthistory_swims",
+    posthistory_thinks_about: "posthistory_thinks_about",
+    posthistory_travels: "posthistory_travels",
+    posthistory_votes: "posthistory_votes",
+    posthistory_walks: "posthistory_walks",
+    posthistory_watches: "posthistory_watches",
+    posthistory_weight_trains: "posthistory_weight_trains",
+    posthistory_writes_a_novel_about: "posthistory_writes_a_novel_about",
+    posthistory_accomplished: "posthistory_accomplished",
+    posthistory_adventurous: "posthistory_adventurous",
+    posthistory_afraid: "posthistory_afraid",
+    posthistory_aggravated: "posthistory_aggravated",
+    posthistory_alive: "posthistory_alive",
+    posthistory_alone: "posthistory_alone",
+    posthistory_amazed: "posthistory_amazed",
+    posthistory_amazing: "posthistory_amazing",
+    posthistory_amused: "posthistory_amused",
+    posthistory_angry: "posthistory_angry",
+    posthistory_annoyed: "posthistory_annoyed",
+    posthistory_anxious: "posthistory_anxious",
+    posthistory_appreciated: "posthistory_appreciated",
+    posthistory_ashamed: "posthistory_ashamed",
+    posthistory_asleep: "posthistory_asleep",
+    posthistory_awake: "posthistory_awake",
+    posthistory_awesome: "posthistory_awesome",
+    posthistory_awful: "posthistory_awful",
+    posthistory_awkward: "posthistory_awkward",
+    posthistory_bad: "posthistory_bad",
+    posthistory_beautiful: "posthistory_beautiful",
+    posthistory_betrayed: "posthistory_betrayed",
+    posthistory_better: "posthistory_better",
+    posthistory_bitter: "posthistory_bitter",
+    posthistory_blah: "posthistory_blah",
+    posthistory_blessed: "posthistory_blessed",
+    posthistory_blissful: "posthistory_blissful",
+    posthistory_blue: "posthistory_blue",
+    posthistory_bored: "posthistory_bored",
+    posthistory_brave: "posthistory_brave",
+    posthistory_broke: "posthistory_broke",
+    posthistory_broken: "posthistory_broken",
+    posthistory_bummed: "posthistory_bummed",
+    posthistory_busy: "posthistory_busy",
+    posthistory_butterflies: "posthistory_butterflies",
+    posthistory_calm: "posthistory_calm",
+    posthistory_challenged: "posthistory_challenged",
+    posthistory_cheated: "posthistory_cheated",
+    posthistory_chill: "posthistory_chill",
+    posthistory_clean: "posthistory_clean",
+    posthistory_cold: "posthistory_cold",
+    posthistory_comfortable: "posthistory_comfortable",
+    posthistory_complete: "posthistory_complete",
+    posthistory_concerned: "posthistory_concerned",
+    posthistory_confident: "posthistory_confident",
+    posthistory_conflicted: "posthistory_conflicted",
+    posthistory_confused: "posthistory_confused",
+    posthistory_connected: "posthistory_connected",
+    posthistory_content: "posthistory_content",
+    posthistory_cool: "posthistory_cool",
+    posthistory_cozy: "posthistory_cozy",
+    posthistory_crafty: "posthistory_crafty",
+    posthistory_crappy: "posthistory_crappy",
+    posthistory_crazy: "posthistory_crazy",
+    posthistory_creative: "posthistory_creative",
+    posthistory_curious: "posthistory_curious",
+    posthistory_cute: "posthistory_cute",
+    posthistory_deep: "posthistory_deep",
+    posthistory_defeated: "posthistory_defeated",
+    posthistory_delighted: "posthistory_delighted",
+    posthistory_depressed: "posthistory_depressed",
+    posthistory_desperate: "posthistory_desperate",
+    posthistory_determined: "posthistory_determined",
+    posthistory_devastated: "posthistory_devastated",
+    posthistory_different: "posthistory_different",
+    posthistory_dirty: "posthistory_dirty",
+    posthistory_disappointed: "posthistory_disappointed",
+    posthistory_discouraged: "posthistory_discouraged",
+    posthistory_disgusted: "posthistory_disgusted",
+    posthistory_dizzy: "posthistory_dizzy",
+    posthistory_done: "posthistory_done",
+    posthistory_down: "posthistory_down",
+    posthistory_drained: "posthistory_drained",
+    posthistory_drunk: "posthistory_drunk",
+    posthistory_dumb: "posthistory_dumb",
+    posthistory_ecstatic: "posthistory_ecstatic",
+    posthistory_embarrassed: "posthistory_embarrassed",
+    posthistory_emotional: "posthistory_emotional",
+    posthistory_empowered: "posthistory_empowered",
+    posthistory_energized: "posthistory_energized",
+    posthistory_enraged: "posthistory_enraged",
+    posthistory_entertained: "posthistory_entertained",
+    posthistory_evil: "posthistory_evil",
+    posthistory_excited: "posthistory_excited",
+    posthistory_exhausted: "posthistory_exhausted",
+    posthistory_fabulous: "posthistory_fabulous",
+    posthistory_fantastic: "posthistory_fantastic",
+    posthistory_fat: "posthistory_fat",
+    posthistory_fed_up: "posthistory_fed_up",
+    posthistory_festive: "posthistory_festive",
+    posthistory_fine: "posthistory_fine",
+    posthistory_flirty: "posthistory_flirty",
+    posthistory_focused: "posthistory_focused",
+    posthistory_fortunate: "posthistory_fortunate",
+    posthistory_free: "posthistory_free",
+    posthistory_freezing: "posthistory_freezing",
+    posthistory_fresh: "posthistory_fresh",
+    posthistory_frozen: "posthistory_frozen",
+    posthistory_frustrated: "posthistory_frustrated",
+    posthistory_full: "posthistory_full",
+    posthistory_funky: "posthistory_funky",
+    posthistory_funny: "posthistory_funny",
+    posthistory_furious: "posthistory_furious",
+    posthistory_generous: "posthistory_generous",
+    posthistory_giddy: "posthistory_giddy",
+    posthistory_glad: "posthistory_glad",
+    posthistory_good: "posthistory_good",
+    posthistory_goofy: "posthistory_goofy",
+    posthistory_grateful: "posthistory_grateful",
+    posthistory_great: "posthistory_great",
+    posthistory_gross: "posthistory_gross",
+    posthistory_grumpy: "posthistory_grumpy",
+    posthistory_guilty: "posthistory_guilty",
+    posthistory_happy: "posthistory_happy",
+    posthistory_healthy: "posthistory_healthy",
+    posthistory_heartbroken: "posthistory_heartbroken",
+    posthistory_helpless: "posthistory_helpless",
+    posthistory_homesick: "posthistory_homesick",
+    posthistory_honored: "posthistory_honored",
+    posthistory_hopeful: "posthistory_hopeful",
+    posthistory_hopeless: "posthistory_hopeless",
+    posthistory_horrible: "posthistory_horrible",
+    posthistory_hot: "posthistory_hot",
+    posthistory_human: "posthistory_human",
+    posthistory_hungover: "posthistory_hungover",
+    posthistory_hungry: "posthistory_hungry",
+    posthistory_hurt: "posthistory_hurt",
+    posthistory_hyper: "posthistory_hyper",
+    posthistory_ignored: "posthistory_ignored",
+    posthistory_ill: "posthistory_ill",
+    posthistory_impatient: "posthistory_impatient",
+    posthistory_important: "posthistory_important",
+    posthistory_impressed: "posthistory_impressed",
+    posthistory_in_love: "posthistory_in_love",
+    posthistory_inadequate: "posthistory_inadequate",
+    posthistory_incomplete: "posthistory_incomplete",
+    posthistory_insecure: "posthistory_insecure",
+    posthistory_inspired: "posthistory_inspired",
+    posthistory_insulted: "posthistory_insulted",
+    posthistory_invisible: "posthistory_invisible",
+    posthistory_irritated: "posthistory_irritated",
+    posthistory_jealous: "posthistory_jealous",
+    posthistory_jolly: "posthistory_jolly",
+    posthistory_joyful: "posthistory_joyful",
+    posthistory_kind: "posthistory_kind",
+    posthistory_lame: "posthistory_lame",
+    posthistory_lazy: "posthistory_lazy",
+    posthistory_light: "posthistory_light",
+    posthistory_lonely: "posthistory_lonely",
+    posthistory_lost: "posthistory_lost",
+    posthistory_lousy: "posthistory_lousy",
+    posthistory_loved: "posthistory_loved",
+    posthistory_lovely: "posthistory_lovely",
+    posthistory_low: "posthistory_low",
+    posthistory_lucky: "posthistory_lucky",
+    posthistory_mad: "posthistory_mad",
+    posthistory_meh: "posthistory_meh",
+    posthistory_mighty: "posthistory_mighty",
+    posthistory_mischievous: "posthistory_mischievous",
+    posthistory_miserable: "posthistory_miserable",
+    posthistory_missing: "posthistory_missing",
+    posthistory_motivated: "posthistory_motivated",
+    posthistory_naked: "posthistory_naked",
+    posthistory_naughty: "posthistory_naughty",
+    posthistory_nauseous: "posthistory_nauseous",
+    posthistory_needed: "posthistory_needed",
+    posthistory_neglected: "posthistory_neglected",
+    posthistory_nerdy: "posthistory_nerdy",
+    posthistory_nervous: "posthistory_nervous",
+    posthistory_nice: "posthistory_nice",
+    posthistory_normal: "posthistory_normal",
+    posthistory_nostalgic: "posthistory_nostalgic",
+    posthistory_numb: "posthistory_numb",
+    posthistory_offended: "posthistory_offended",
+    posthistory_ok: "posthistory_ok",
+    posthistory_okay: "posthistory_okay",
+    posthistory_old: "posthistory_old",
+    posthistory_optimistic: "posthistory_optimistic",
+    posthistory_overwhelmed: "posthistory_overwhelmed",
+    posthistory_pained: "posthistory_pained",
+    posthistory_peaceful: "posthistory_peaceful",
+    posthistory_perfect: "posthistory_perfect",
+    posthistory_perplexed: "posthistory_perplexed",
+    posthistory_pissed: "posthistory_pissed",
+    posthistory_pissed_off: "posthistory_pissed_off",
+    posthistory_positive: "posthistory_positive",
+    posthistory_pretty: "posthistory_pretty",
+    posthistory_pride: "posthistory_pride",
+    posthistory_privileged: "posthistory_privileged",
+    posthistory_productive: "posthistory_productive",
+    posthistory_professional: "posthistory_professional",
+    posthistory_proud: "posthistory_proud",
+    posthistory_pumped: "posthistory_pumped",
+    posthistory_puzzled: "posthistory_puzzled",
+    posthistory_qualified: "posthistory_qualified",
+    posthistory_ready: "posthistory_ready",
+    posthistory_refreshed: "posthistory_refreshed",
+    posthistory_regret: "posthistory_regret",
+    posthistory_relaxed: "posthistory_relaxed",
+    posthistory_relieved: "posthistory_relieved",
+    posthistory_renewed: "posthistory_renewed",
+    posthistory_rested: "posthistory_rested",
+    posthistory_restless: "posthistory_restless",
+    posthistory_rich: "posthistory_rich",
+    posthistory_romantic: "posthistory_romantic",
+    posthistory_rough: "posthistory_rough",
+    posthistory_sad: "posthistory_sad",
+    posthistory_safe: "posthistory_safe",
+    posthistory_sarcastic: "posthistory_sarcastic",
+    posthistory_satisfied: "posthistory_satisfied",
+    posthistory_scared: "posthistory_scared",
+    posthistory_secure: "posthistory_secure",
+    posthistory_sexy: "posthistory_sexy",
+    posthistory_shame: "posthistory_shame",
+    posthistory_shattered: "posthistory_shattered",
+    posthistory_shocked: "posthistory_shocked",
+    posthistory_shy: "posthistory_shy",
+    posthistory_sick: "posthistory_sick",
+    posthistory_silly: "posthistory_silly",
+    posthistory_sleepy: "posthistory_sleepy",
+    posthistory_small: "posthistory_small",
+    posthistory_smart: "posthistory_smart",
+    posthistory_sneaky: "posthistory_sneaky",
+    posthistory_sore: "posthistory_sore",
+    posthistory_sorry: "posthistory_sorry",
+    posthistory_special: "posthistory_special",
+    posthistory_spoiled: "posthistory_spoiled",
+    posthistory_spooky: "posthistory_spooky",
+    posthistory_stoked: "posthistory_stoked",
+    posthistory_strange: "posthistory_strange",
+    posthistory_stressed: "posthistory_stressed",
+    posthistory_strong: "posthistory_strong",
+    posthistory_stuck: "posthistory_stuck",
+    posthistory_stuffed: "posthistory_stuffed",
+    posthistory_stupid: "posthistory_stupid",
+    posthistory_super: "posthistory_super",
+    posthistory_surprised: "posthistory_surprised",
+    posthistory_terrible: "posthistory_terrible",
+    posthistory_thankful: "posthistory_thankful",
+    posthistory_thirsty: "posthistory_thirsty",
+    posthistory_thoughtful: "posthistory_thoughtful",
+    posthistory_threatened: "posthistory_threatened",
+    posthistory_tipsy: "posthistory_tipsy",
+    posthistory_tired: "posthistory_tired",
+    posthistory_trapped: "posthistory_trapped",
+    posthistory_ugly: "posthistory_ugly",
+    posthistory_unappreciated: "posthistory_unappreciated",
+    posthistory_uncomfortable: "posthistory_uncomfortable",
+    posthistory_undecided: "posthistory_undecided",
+    posthistory_uneasy: "posthistory_uneasy",
+    posthistory_unhappy: "posthistory_unhappy",
+    posthistory_unimportant: "posthistory_unimportant",
+    posthistory_unloved: "posthistory_unloved",
+    posthistory_unsure: "posthistory_unsure",
+    posthistory_unwanted: "posthistory_unwanted",
+    posthistory_unwell: "posthistory_unwell",
+    posthistory_upset: "posthistory_upset",
+    posthistory_useless: "posthistory_useless",
+    posthistory_wanted: "posthistory_wanted",
+    posthistory_warm: "posthistory_warm",
+    posthistory_weak: "posthistory_weak",
+    posthistory_weird: "posthistory_weird",
+    posthistory_welcome: "posthistory_welcome",
+    posthistory_welcomed: "posthistory_welcomed",
+    posthistory_well: "posthistory_well",
+    posthistory_wet: "posthistory_wet",
+    posthistory_whole: "posthistory_whole",
+    posthistory_wonderful: "posthistory_wonderful",
+    posthistory_worried: "posthistory_worried",
+    posthistory_worse: "posthistory_worse",
+    posthistory_worthless: "posthistory_worthless",
+    posthistory_young: "posthistory_young",
+    posthistory_yucky: "posthistory_yucky",
+    posthistory_missingchannel: "posthistory_missingchannel",
+    posthistory_missingmedia: "posthistory_missingmedia",
+    posthistory_missingdatetime: "posthistory_missingdatetime",
     channel_whatsapponboarding: "channel_whatsapponboarding",
     connect_whatsappnumber: "connect_whatsappnumber",
     connect_yourwhatsappnumber: "connect_yourwhatsappnumber",
     connect_yourwhatsappnumberdetail: "connect_yourwhatsappnumberdetail",
     select_whatsappnumber: "select_whatsappnumber",
     linked_whatsappnumber: "linked_whatsappnumber",
+    postcreatorcalendar_monthly: "postcreatorcalendar_monthly",
+    postcreatorcalendar_weekly: "postcreatorcalendar_weekly",
+    more_items: "more_items",
+    posthistorycalendar_selectdate: "posthistorycalendar_selectdate",
+    posthistorycalendar_selectitem: "posthistorycalendar_selectitem",
+    posthistory_story: "posthistory_story",
+    posthistory_post: "posthistory_post",
+    posthistory_publishstatus: "posthistory_publishstatus",
+    posthistory_published: "posthistory_published",
+    posthistory_error: "posthistory_error",
+    posthistory_seedetail: "posthistory_seedetail",
     paymentorder_paid: "paymentorder_paid",
     paymentorder_paid_description: "paymentorder_paid_description",
     paymentorder_success: "paymentorder_success",
@@ -4245,18 +4748,6 @@ export const langKeys = {
     paymentorder_currency: "paymentorder_currency",
     paymentorder_totalamount: "paymentorder_totalamount",
     paymentorder_code: "paymentorder_code",
-    customlabel: "customlabel",
-    catalogid: "catalogid",
-    productid: "productid",
-    material: "material",
-    website: "website",
-    additionalimage: "additionalimage",
-    importxml: "importxml",
-    productimportdescription: "productimportdescription",
-    templatexml: "templatexml",
-    templateexcel: "templateexcel",
-    productimportalert: "productimportalert",
-    productimportmissing: "productimportmissing",
-};
-
-export type LangKeys = typeof langKeys;
+  };
+  
+  export type LangKeys = typeof langKeys;

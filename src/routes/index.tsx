@@ -195,8 +195,8 @@ const RouterApp: FC = () => {
 					<Route exact path={paths.SIGNUP.path} render={() => <SignUp />} />
 					<Route exact path={paths.LOCATION.path} render={() => <GetLocations />} />
 					<Route exact path={paths.CALENDAR_EVENT.path} render={() => <CalendarEvent />} />
-					<Route exact path={paths.CULQI_PAYMENTORDER.path} render={() => <PaymentOrder />} />
 					<Route exact path={paths.CANCEL_EVENT.path} render={() => <CancelEvent />} />
+					<Route exact path={paths.CULQI_PAYMENTORDER.path} render={() => <PaymentOrder />} />
 					<Route exact path={paths.PRIVACY} render={() => <Privacy />} />
 					<Route exact path={paths.ACTIVATE_USER.path} render={() => <ActivateUser />} />
 					<Route exact path={paths.RECOVER_PASSWORD.path} render={() => <RecoverPassword />} />

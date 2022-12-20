@@ -22,8 +22,6 @@ import { dataYears, dataMonths } from 'common/helpers';
 import {
     Search as SearchIcon,
 } from '@material-ui/icons';
-import DateFnsUtils from '@date-io/date-fns';
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import Typography from '@material-ui/core/Typography';
 import { formatNumber, formatNumberFourDecimals, formatNumberNoDecimals } from 'common/helpers';
 
@@ -45,20 +43,6 @@ interface DetailArtificialIntelligenceProps {
     fetchData: () => void,
     providerData: any[];
     planData: any[];
-}
-
-export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: any) => void) => {
-    return (
-        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(localesLaraigo())[navigator.language.split('-')[0]]} >
-            <KeyboardDatePicker
-                format={getLocaleDateString()}
-                value={value === '' ? null : value}
-                onChange={(e: any) => handleClickItemMenu(e)}
-                style={{ minWidth: '150px' }}
-                views={["month", "year"]}
-            />
-        </MuiPickersUtilsProvider>
-    )
 }
 
 const useStyles = makeStyles((theme) => ({

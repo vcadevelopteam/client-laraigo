@@ -13,7 +13,7 @@ import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipification
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { changeStatus, getConversationClassification2, insertClassificationConversation, insLeadPerson } from 'common/helpers';
 import { execute, getCollectionAux2 } from 'store/main/actions';
-import { DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView, FieldMultiSelect, FieldMultiSelectFreeSolo } from 'components'
+import { DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView, FieldMultiSelect, FieldMultiSelectFreeSolo, FieldMultiSelectVirtualized } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -37,6 +37,7 @@ import { useLocation } from 'react-router-dom';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import ReplyPanel from './ReplyPanel';
 import InteractionsPanel from './InteractionsPanel';
+import { getLeadProductsDomain, resetGetLeadProductsDomain } from 'store/lead/actions';
 
 const dataPriority = [
     { option: 'HIGH' },
@@ -602,6 +603,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
     const user = useSelector(state => state.login.validateToken.user);
     const personSelected = useSelector(state => state.inbox.person.data);
     const [tagsDomain, setTagsDomain] = useState<Dictionary[]>([]);
+    const leadProductsDomain = useSelector(state => state.lead.leadProductsDomain);
 
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<{
         description: string;
@@ -620,6 +622,24 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
             setTagsDomain(multiData?.data[7] ? multiData?.data[7]?.data : []);
         }
     }, [multiData])
+    useEffect(() => {
+        dispatch(getLeadProductsDomain());
+
+        return () => {
+            dispatch(resetGetLeadProductsDomain());
+        };
+    }, [])
+    useEffect(() => {
+        if (leadProductsDomain.loading) return;
+        if (leadProductsDomain.error) {
+            const errormessage = t(leadProductsDomain.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
+            dispatch(showSnackbar({
+                message: errormessage,
+                severity: "error",
+                show: true,
+            }));
+        }
+    }, [leadProductsDomain, t, dispatch]);
 
     useEffect(() => {
         if (waitInsLead) {
@@ -749,15 +769,19 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
                     optionDesc="domaindesc"
                     optionValue="domaindesc"
                 />
-                <FieldMultiSelect
+                <FieldMultiSelectVirtualized
                     label={t(langKeys.product_plural)}
                     className="col-12"
                     valueDefault={getValues('products')}
-                    onChange={(value) => setValue('products', value.map((o: Dictionary) => o.domainvalue).join())}
+                    onChange={(v) => {
+                        const products = v?.map((o: Dictionary) => o['productid']).join(',') || '';
+                        setValue('products', products);
+                    }}
                     error={errors?.products?.message}
-                    data={multiData?.data[7] && multiData?.data[7]?.data}
-                    optionDesc="domaindesc"
-                    optionValue="domainvalue"
+                    data={leadProductsDomain.data}
+                    loading={leadProductsDomain.loading}
+                    optionDesc="title"
+                    optionValue="productid"
                 />
                 <div style={{ display: 'flex', gap: 16 }}>
                     <FieldEdit
@@ -947,7 +971,6 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     const location = useLocation();
     const user = useSelector(state => state.login.validateToken.user);
     const userConnected = useSelector(state => state.inbox.userConnected);
-
     const closeTicket = (newstatus: string) => {
         if (newstatus === "CERRADO") {
             let tipificationproperty = (multiData?.data?.[12]?.data || [{ propertyvalue: "0" }])[0];
@@ -1195,7 +1218,7 @@ const SearchOnInteraction: React.FC<{ setShowSearcher: (param: any) => void }> =
                 clearTimeout(timeOut.current);
                 timeOut.current = null;
             }
-        }, 300);;
+        }, 300);
     };
 
     return (
