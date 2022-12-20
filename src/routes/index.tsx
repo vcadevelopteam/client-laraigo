@@ -14,6 +14,7 @@ import { getAccessToken, removeAuthorizationToken } from 'common/helpers';
 import { Redirect } from 'react-router-dom';
 import { validateToken } from 'store/login/actions';
 import { useDispatch } from 'react-redux';
+import CancelEvent from "pages/CancelEvent";
 
 const Users = lazy(() => import('pages/Users'));
 const ReportScheduler = lazy(() => import('pages/ReportScheduler'));
@@ -51,7 +52,7 @@ const UserSettings = lazy(() => import('pages/UserSettings'));
 const Invoice = lazy(() => import('pages/Invoice'));
 const KPIManager = lazy(() => import('pages/KPIManager'));
 const GetLocations = lazy(() => import('pages/GetLocations'));
-const Calendar = lazy(() => import('pages/Calendar'));
+const Calendar = lazy(() => import('pages/calendar/Calendar'));
 const AutomatizationRules = lazy(() => import('pages/AutomatizationRules'));
 const Channels = lazy(() => import('pages/channels/Channels'));
 const ChannelAdd = lazy(() => import('pages/channels/ChannelAdd'));
@@ -193,6 +194,7 @@ const RouterApp: FC = () => {
 					<Route exact path={paths.SIGNUP.path} render={() => <SignUp />} />
 					<Route exact path={paths.LOCATION.path} render={() => <GetLocations />} />
 					<Route exact path={paths.CALENDAR_EVENT.path} render={() => <CalendarEvent />} />
+					<Route exact path={paths.CANCEL_EVENT.path} render={() => <CancelEvent />} />
 					<Route exact path={paths.PRIVACY} render={() => <Privacy />} />
 					<Route exact path={paths.ACTIVATE_USER.path} render={() => <ActivateUser />} />
 					<Route exact path={paths.RECOVER_PASSWORD.path} render={() => <RecoverPassword />} />

@@ -1187,7 +1187,7 @@ export const getInsertChatwebChannel = (name: string, auto: boolean, iconColor: 
         voximplantholdtone: "",
         voximplantcallsupervision: false,
     },
-    type: typechannel || "CHATWEB",
+    type: typechannel||"CHATWEB",
     service,
 });
 
@@ -1230,6 +1230,9 @@ export const getEditChatWebChannel = (id: number, channel: IChannel, service: IC
         apikey: "",
         updintegration: null,
         motive: "Edited from API",
+        voximplantrecording: false,
+        voximplantholdtone: "",
+        voximplantcallsupervision: false,
         voximplantcallsupervision: voximplantcallsupervision || false
     },
     type: "CHATWEB",
@@ -3076,6 +3079,34 @@ export const selBookingCalendar = (startdate: string, enddate: string, calendare
     },
 });
 
+export const calendarBookingCancel = ({ calendareventid, id, cancelcomment }: Dictionary) => ({
+    method: "UFN_CALENDARBOOKING_CANCEL",
+    key: "UFN_CALENDARBOOKING_CANCEL",
+    parameters: {
+        calendareventid,
+        id,
+        cancelcomment,
+    },
+});
+export const calendarBookingCancel2 = ({ corpid, orgid,calendareventid, id, cancelcomment }: Dictionary) => ({
+    method: "UFN_CALENDARBOOKING_CANCEL",
+    key: "UFN_CALENDARBOOKING_CANCEL",
+    parameters: {corpid, orgid,
+        calendareventid,
+        id,
+        cancelcomment,
+        username: "",
+    },
+});
+export const calendarBookingSelOne = ({ corpid, orgid, calendareventid, id }: Dictionary) => ({
+    method: "UFN_CALENDARBOOKING_SEL_ONE",
+    key: "UFN_CALENDARBOOKING_SEL_ONE",
+    parameters: {
+        corpid, orgid, calendareventid, id,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    },
+});
+
 export const insCommentsBooking = (parameters: Dictionary) => ({
     method: "UFN_CALENDARYBOOKING_COMMENT",
     key: "UFN_CALENDARYBOOKING_COMMENT",
@@ -3090,8 +3121,8 @@ export const insCalendar = ({
     availability,
     timebeforeeventduration, timebeforeeventunit, timeaftereventduration, timeaftereventunit,
     increments,
-    operation,
-    communicationchannelid
+    operation, reminderperiod,reminderfrecuency,reminderhsmmessage,
+    communicationchannelid,notificationmessage,reminderenable,remindertype,reminderhsmtemplateid,remindermailmessage,remindermailtemplateid,reminderhsmcommunicationchannelid
 }: Dictionary): IRequestBody => ({
     method: "UFN_CALENDAREVENT_INS",
     key: "UFN_CALENDAREVENT_INS",
@@ -3103,17 +3134,19 @@ export const insCalendar = ({
         timeduration, timeunit,
         availability: JSON.stringify(availability),
         timebeforeeventduration, timebeforeeventunit, timeaftereventduration, timeaftereventunit,
-        increments,
-        operation,
+        increments,reminderperiod,reminderfrecuency,
+        reminderhsmtemplateid: reminderhsmtemplateid||0,reminderhsmcommunicationchannelid,
+        remindermailtemplateid: remindermailtemplateid||0,reminderhsmmessage,
+        operation,notificationmessage,reminderenable,remindertype,remindermailmessage,
         communicationchannelid: communicationchannelid || 0
     }
 });
 
-export const getEventByCode = (orgid: number, code: string, personid: number): IRequestBody => ({
+export const getEventByCode = (orgid: number, code: string, personid: number, calendarbookinguuid: string | null | undefined = ""): IRequestBody => ({
     key: "QUERY_EVENT_BY_CODE",
-    method: "QUERY_EVENT_BY_CODE",
+    method: calendarbookinguuid ? "QUERY_EVENT_BY_CODE_WITH_BOOKINGUUID" : "QUERY_EVENT_BY_CODE",
     parameters: {
-        orgid, code, personid
+        orgid, code, personid, calendarbookinguuid
     }
 });
 

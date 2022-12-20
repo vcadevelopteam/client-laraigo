@@ -2,10 +2,10 @@
 import React, { FC, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
-import { Button, IconButton, makeStyles, Typography } from "@material-ui/core";
+import { Button, IconButton, makeStyles, styled, Typography } from "@material-ui/core";
 import { useParams } from 'react-router';
 import { FieldEdit, FieldEditMulti } from "components";
-import { getCollEventBooking } from 'store/main/actions';
+import { getCollEventBooking, resetMain } from 'store/main/actions';
 import { getEventByCode, validateCalendaryBooking, dayNames, calculateDateFromMonth, insBookingCalendar } from 'common/helpers';
 import { Dictionary } from '@types';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -16,7 +16,7 @@ import { langKeys } from 'lang/keys';
 import clsx from 'clsx';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import SaveIcon from '@material-ui/icons/Save';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -24,6 +24,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { useLocation } from "react-router";
 import CalendarZyx from 'components/fields/Calendar';
+import MuiPhoneNumber, { MaterialUiPhoneNumberProps } from 'material-ui-phone-number';
+import { getCountryList } from "store/signup/actions";
+import { manageConfirmation } from 'store/popus/actions';
+import Popus from 'components/layout/Popus';
 
 interface IDay {
     date: Date;
@@ -39,6 +43,13 @@ interface ITime {
     localddow: number;
     localdday: number;
 }
+
+const CssPhonemui = styled(MuiPhoneNumber)({
+    minHeight: 'unset',
+    '& .MuiInput-underline:after': {
+        borderBottomColor: '#7721ad',
+    },
+});
 
 const useStyles = makeStyles(theme => ({
     back: {
@@ -180,11 +191,19 @@ const TimeDate: FC<{ time: ITime, isSelected: boolean, setTimeSelected: (p: any)
         </div>
     )
 }
-const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, disabledSubmit: boolean, parameters: Dictionary }> = ({ event, handlerOnSubmit, disabledSubmit, parameters }) => {
+const URL = "https://ipapi.co/json/";
+const FormToSend: FC<{
+    event: Dictionary,
+    handlerOnSubmit: (p: any) => void,
+    disabledSubmit: boolean, parameters: Dictionary,
+    time?: ITime
+}> = ({ event, handlerOnSubmit, disabledSubmit, time = null }) => {
     const { t } = useTranslation();
     const classes = useStyles();
+    const [phoneCountry, setPhoneCountry] = useState('');
+    const dispatch = useDispatch();
 
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, getValues, control, formState: { errors } } = useForm({
         defaultValues: {
             name: event?.personname,
             email: event?.email,
@@ -193,17 +212,45 @@ const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, dis
         }
     })
 
+    useEffect(() => {
+        dispatch(getCountryList())
+        try {
+            fetch(URL, { method: "get" })
+                .then((response) => response.json())
+                .then((data) => {
+                    const countryCode = data.country_code.toUpperCase();
+                    setPhoneCountry(countryCode);
+                })
+        }
+        catch (error) {
+            console.error("error");
+        }
+        return () => {
+            dispatch(resetMain());
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     React.useEffect(() => {
         register('notes');
         register('name', { validate: (value) => (!!value && value.length > 0) || (t(langKeys.field_required) + "") });
         register('email', { validate: (value) => event?.notificationtype === "HSM" || !!value || (t(langKeys.field_required) + "") });
-        register('phone');
+        register('phone', { validate: (value) => event?.notificationtype === "HSM" || !!value || (t(langKeys.field_required) + "") });
     }, [register, t, event])
 
-
     const onSubmit = handleSubmit((data) => {
-        handlerOnSubmit({ ...data, phone: data.phone?.replace("+", "") })
+        if (event.calendarbookingid) {
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_reschedule, {
+                    current_event: new Date(event.bookingdate).toLocaleString(),
+                    new_event: new Date(`${time?.localyeardate} ${time?.localstarthour}`).toLocaleString()
+                }),
+                callback: () => handlerOnSubmit({ ...data, phone: data.phone?.replace("+", "") })
+            }))
+        } else {
+            handlerOnSubmit({ ...data, phone: data.phone?.replace("+", "") })
+        }
     });
 
     return (
@@ -220,48 +267,44 @@ const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, dis
                         error={errors?.name?.message}
                     />
                 </div>
-                {true && (
-                    <div>
-                        <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}>{t(langKeys.email)}</div>
-                        <FieldEdit
-                            size="small"
-                            className={classes.colInput}
-                            variant={'outlined'}
-                            valueDefault={getValues('email')}
-                            onChange={(value: any) => setValue('email', value)}
-                            error={errors?.email?.message}
-                        />
-                    </div>
-                )}
-                {/* {event.notificationtype === "HSM" && (
-                    <div>
-                        <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}>{t(langKeys.phone)}</div>
-                        <Controller
-                            name="phone"
-                            control={control}
-                            rules={{
-                                validate: (value) => {
-                                    if (value.length === 0) {
-                                        return t(langKeys.field_required) as string;
-                                    } else if (value.length < 10) {
-                                        return t(langKeys.validationphone) as string;
-                                    }
+                <div>
+                    <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}>{t(langKeys.phone)}</div>
+                    <Controller
+                        name="phone"
+                        control={control}
+                        rules={{
+                            validate: (value) => {
+                                if ((value.length || "") === 0) {
+                                    return t(langKeys.field_required) as string;
+                                } else if ((value.length || "") < 10) {
+                                    return t(langKeys.validationphone) as string;
                                 }
-                            }}
-                            render={({ field, formState: { errors } }) => (
-                                <CssPhonemui
-                                    {...field}
-                                    variant="outlined"
-                                    fullWidth
-                                    size="small"
-                                    defaultCountry={getValues('phone') ? undefined : phoneCountry.toLowerCase()}
-                                    error={!!errors?.phone}
-                                    helperText={errors?.phone?.message}
-                                />
-                            )}
-                        />
-                    </div>
-                )} */}
+                            }
+                        }}
+                        render={({ field, formState: { errors } }) => (
+                            <CssPhonemui
+                                {...field}
+                                variant="outlined"
+                                fullWidth
+                                size="small"
+                                defaultCountry={getValues('phone') ? undefined : phoneCountry.toLowerCase()}
+                                error={!!errors?.phone}
+                                helperText={errors?.phone?.message}
+                            />
+                        )}
+                    />
+                </div>
+                <div>
+                    <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}>{t(langKeys.email)}</div>
+                    <FieldEdit
+                        size="small"
+                        className={classes.colInput}
+                        variant={'outlined'}
+                        valueDefault={getValues('email')}
+                        onChange={(value: any) => setValue('email', value)}
+                        error={errors?.email?.message}
+                    />
+                </div>
                 <div>
                     <div style={{ marginBottom: 8, fontSize: 14, fontWeight: 'bold' }}> {t(langKeys.prepare_meeting)} </div>
                     <FieldEditMulti
@@ -281,7 +324,7 @@ const FormToSend: FC<{ event: Dictionary, handlerOnSubmit: (p: any) => void, dis
                         color="primary"
                         disabled={disabledSubmit}
                     >
-                        {t(langKeys.schedule_event)}
+                        {t((event.calendarbookingid ? langKeys.reschedule_event : langKeys.schedule_event))}
                     </Button>
 
                 </div>
@@ -324,6 +367,7 @@ export const CalendarEvent: FC = () => {
         const query = new URLSearchParams(location.search);
         const posibleConversationID = query.get('cid');
         const posiblePersonID = query.get('pid');
+        const posiblecalendarbookinguuid = query.get('booking');
 
         if (posibleConversationID && Number.isInteger(Number(posibleConversationID)) && posiblePersonID && Number.isInteger(Number(posiblePersonID))) {
             personid = Number(posiblePersonID);
@@ -332,7 +376,7 @@ export const CalendarEvent: FC = () => {
                 personid: Number(posiblePersonID)
             })
         }
-        dispatch(getCollEventBooking(getEventByCode(orgid, eventcode, personid)))
+        dispatch(getCollEventBooking(getEventByCode(orgid, eventcode, personid, posiblecalendarbookinguuid)))
     }, [])
 
     const triggerCalculateDate = () => {
@@ -372,7 +416,6 @@ export const CalendarEvent: FC = () => {
                     })));
                 }
             } else {
-                debugger
                 if (resMain.key === "UFN_CALENDARYBOOKING_INS") {
                     const errormessage = t(resMain.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() });
                     setError(errormessage);
@@ -394,13 +437,14 @@ export const CalendarEvent: FC = () => {
 
     const handlerOnSubmit = (data: Dictionary) => {
         const month = t(`month_${((daySelected!!.date.getMonth() + 1) + "").padStart(2, "0")}`)
-        const { corpid, orgid, calendareventid } = event!!;
+        const { corpid, orgid, calendareventid, calendarbookingid } = event!!;
         const dataToSend = {
             corpid,
             orgid,
             calendareventid,
             id: 0,
             description: '',
+            calendarbookingid,
             type: 'NINGUNO',
             status: 'ACTIVO',
             monthdate: timeSelected?.localyeardate,
@@ -409,7 +453,8 @@ export const CalendarEvent: FC = () => {
             conversationid: ticket.conversationid,
             personid: ticket.personid,
             personname: data.name,
-            personcontact: data.email || data.phone,
+            personcontact: data.phone,
+            personmail: data.email,
             persontimezone: -5.00,
             operation: 'INSERT',
             username: 'admin',
@@ -418,13 +463,16 @@ export const CalendarEvent: FC = () => {
             name: data.name,
             parameters: [
                 // { name: "timeevent", text: `${t(dayNames[daySelected!!.dow])}, ${daySelected?.date.getDate()} ${month}, ${daySelected?.date.getFullYear()}` },
-                { name: "timeevent", text: t(langKeys.invitation_date, { month, year: daySelected?.date.getFullYear(), day: t(dayNames[daySelected!!.dow]), date: daySelected?.date.getDate() }) },
-                { name: "timestart", text: timeSelected?.localstarthour },
-                { name: "timeend", text: timeSelected?.localendhour },
                 { name: "eventname", text: event?.name },
-                { name: "personname", text: data.name },
-                { name: "personcontact", text: data.email || data.phone },
+                { name: "eventlocation", text: event?.location },
+                { name: "eventlink", text: event?.eventlink },
                 { name: "eventcode", text: eventcode },
+                { name: "monthdate", text: t(langKeys.invitation_date, { month, year: daySelected?.date.getFullYear(), day: t(dayNames[daySelected!!.dow]), date: daySelected?.date.getDate() }) },
+                { name: "hourstart", text: timeSelected?.localstarthour },
+                { name: "hourend", text: timeSelected?.localendhour },
+                { name: "personname", text: data.name },
+                { name: "personcontact", text: data.phone },
+                { name: "personmail", text: data.email },
             ]
         }
         dispatch(getCollEventBooking(insBookingCalendar(dataToSend)))
@@ -487,7 +535,7 @@ export const CalendarEvent: FC = () => {
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                         <ScheduleIcon color="action" />
-                        {event?.timeduration} {event?.timeunit}
+                        {event?.timeduration} {t(event?.timeunit?.toLocaleLowerCase())}{event?.timeduration > 1?"s":""}
                     </div>
                     {timeSelected?.confirm && (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12 }}>
@@ -505,6 +553,7 @@ export const CalendarEvent: FC = () => {
                             </div>
                             <FormToSend
                                 event={event!!}
+                                time={timeSelected}
                                 handlerOnSubmit={handlerOnSubmit}
                                 disabledSubmit={resMain.loading && !!event}
                                 parameters={{
@@ -555,7 +604,6 @@ export const CalendarEvent: FC = () => {
 
                 </div>
             </div>
-
             <Dialog
                 open={openDialogError}
                 fullWidth
@@ -583,6 +631,7 @@ export const CalendarEvent: FC = () => {
                     </Button>
                 </DialogActions>
             </Dialog >
+            <Popus />
         </div >
     )
 }

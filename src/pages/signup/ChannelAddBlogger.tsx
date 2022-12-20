@@ -3,6 +3,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import clsx from 'clsx';
 
+import { apiUrls } from 'common/constants';
 import { FC, useContext, useEffect, useState } from "react";
 import { makeStyles, Breadcrumbs, Button, Link, IconButton, Typography, InputAdornment } from '@material-ui/core';
 import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon, LinkOff as LinkOffIcon } from '@material-ui/icons';
@@ -15,8 +16,9 @@ import { useDispatch } from "react-redux";
 import { BloggerColor } from "icons";
 import { MainData, SubscriptionContext } from "./context";
 import { useFormContext } from "react-hook-form";
-import { exchangeCode, listBlogger } from "store/google/actions";
-import { useGoogleLogin } from '@react-oauth/google';
+import { listBlogger } from "store/google/actions";
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import GoogleLogInFrame from 'pages/channels/GoogleLogInFrame';
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -146,27 +148,6 @@ export const ChannelAddBlogger: FC<{ setOpenWarning: (param: any) => void }> = (
         }
     }
 
-    const login = useGoogleLogin({
-        onSuccess: tokenResponse => onGoogleLoginSucess(tokenResponse),
-        onError: error => onGoogleLoginFailure(error),
-        flow: 'auth-code',
-        scope: 'https://www.googleapis.com/auth/gmail.compose https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/blogger https://www.googleapis.com/auth/blogger.readonly https://www.googleapis.com/auth/drive.readonly',
-    });
-
-    const onGoogleLoginSucess = (event: any) => {
-        if (event) {
-            if (event.code) {
-                dispatch(exchangeCode({ googlecode: event.code }));
-                dispatch(showBackdrop(true));
-                setWaitExchange(true);
-            }
-        }
-    }
-
-    const onGoogleLoginFailure = (event: any) => {
-        console.log('GOOGLE LOGIN FAILURE: ' + JSON.stringify(event));
-    }
-
     function setchannelField(value: any) {
         setNextbutton(value === null);
         setValue('channels.blogger.channel', value?.id || "");
@@ -242,13 +223,11 @@ export const ChannelAddBlogger: FC<{ setOpenWarning: (param: any) => void }> = (
                         <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px" }}>{t(langKeys.channel_bloggeralert1)}</div>
                         <div style={{ textAlign: "center", padding: "20px", color: "#969ea5" }}>{t(langKeys.channel_bloggeralert2)}</div>
                         <div style={{ display: "flex", alignContent: "center", alignItems: "center", justifyContent: "center" }}>
-                            {<Button
-                                onClick={() => { login() }}
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                            >{t(langKeys.login_with_google)}
-                            </Button>}
+                            <GoogleOAuthProvider clientId={apiUrls.GOOGLECLIENTID_CHANNEL}>
+                                <GoogleLogInFrame
+                                    setWaitExchange={setWaitExchange}
+                                />
+                            </GoogleOAuthProvider>
                         </div>
                         <div style={{ textAlign: "center", paddingTop: "20px", color: "#969ea5", fontStyle: "italic" }}>{t(langKeys.connectface4)}</div>
                         <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5" }}><a style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "pointer" }} onClick={openprivacypolicies} rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>

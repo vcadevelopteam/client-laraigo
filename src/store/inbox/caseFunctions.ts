@@ -498,6 +498,7 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
                 newTicketSelected!!.isAnswered = true;
             } else if (data.usertype === "client") {
                 newTicketSelected!!.lastconversationdate = new Date().toISOString();
+                newTicketSelected!!.personlastreplydate = new Date().toISOString();
             }
             if (data.usertype === "agent") {
                 newTicketSelected!!.lastreplyuser = new Date().toISOString();

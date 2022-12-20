@@ -8,9 +8,8 @@ import BookIcon from '@material-ui/icons/Book';
 import { apiUrls } from 'common/constants';
 import { Breadcrumbs, Box, Button, makeStyles } from '@material-ui/core';
 import { ColorInput, FieldEdit, FieldSelect } from "components";
-import { exchangeCode, listBlogger } from "store/google/actions";
+import { listBlogger } from "store/google/actions";
 import { FC, useEffect, useState } from "react";
-import { useGoogleLogin } from '@react-oauth/google';
 import { insertChannel } from "store/channel/actions";
 import { langKeys } from "lang/keys";
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
@@ -18,6 +17,8 @@ import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import GoogleLogInFrame from './GoogleLogInFrame';
 
 interface whatsAppData {
     typeWhatsApp?: string;
@@ -117,27 +118,6 @@ export const ChannelAddBlogger: FC = () => {
         setFields(partialf);
     }
 
-    const login = useGoogleLogin({
-        onSuccess: tokenResponse => onGoogleLoginSucess(tokenResponse),
-        onError: error => onGoogleLoginFailure(error),
-        flow: 'auth-code',
-        scope: 'https://www.googleapis.com/auth/gmail.compose https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/blogger https://www.googleapis.com/auth/blogger.readonly https://www.googleapis.com/auth/drive.readonly',
-    });
-
-    const onGoogleLoginSucess = (event: any) => {
-        if (event) {
-            if (event.code) {
-                dispatch(exchangeCode({ googlecode: event.code }));
-                dispatch(showBackdrop(true));
-                setWaitExchange(true);
-            }
-        }
-    }
-
-    const onGoogleLoginFailure = (event: any) => {
-        console.log('GOOGLE LOGIN FAILURE: ' + JSON.stringify(event));
-    }
-
     useEffect(() => {
         if (waitExchange) {
             if (!exchangeCodeResult.loading) {
@@ -216,8 +196,6 @@ export const ChannelAddBlogger: FC = () => {
     if (viewSelected === "view1") {
         return (
             <>
-                <meta name="google-signin-client_id" content={apiUrls.GOOGLECLIENTID_CHANNEL} />
-                <script src="https://apis.google.com/js/platform.js" async defer></script>
                 <div style={{ width: '100%' }}>
                     <Breadcrumbs aria-label="breadcrumb">
                         <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData) }}>
@@ -229,13 +207,11 @@ export const ChannelAddBlogger: FC = () => {
                         <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px" }}>{t(langKeys.channel_bloggeralert1)}</div>
                         <div style={{ textAlign: "center", padding: "20px", color: "#969ea5" }}>{t(langKeys.channel_bloggeralert2)}</div>
                         <div style={{ display: "flex", alignContent: "center", alignItems: "center", justifyContent: "center" }}>
-                            {<Button
-                                onClick={() => { login() }}
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                            >{t(langKeys.login_with_google)}
-                            </Button>}
+                            <GoogleOAuthProvider clientId={apiUrls.GOOGLECLIENTID_CHANNEL}>
+                                <GoogleLogInFrame
+                                    setWaitExchange={setWaitExchange}
+                                />
+                            </GoogleOAuthProvider>
                         </div>
                         <div style={{ textAlign: "center", paddingTop: "20px", color: "#969ea5", fontStyle: "italic" }}>{t(langKeys.connectface4)}</div>
                         <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5" }}><a style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "pointer" }} onClick={openprivacypolicies} rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>

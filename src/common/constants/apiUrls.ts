@@ -13,6 +13,7 @@ const APIS_URL = {
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
+        GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
     },
     TESTING: {
         API: 'https://testapix.laraigo.com/api',
@@ -25,6 +26,7 @@ const APIS_URL = {
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
+        GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
     },
     PRODUCTION: {
         API: 'https://apiprd.laraigo.com/api',
@@ -37,6 +39,7 @@ const APIS_URL = {
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
+        GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
     },
     CLARO: {
         API: 'https://claroapi.laraigo.com/api',
@@ -49,6 +52,7 @@ const APIS_URL = {
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
+        GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
     },
     CLOUD: {
         API: 'https://cloudapi.laraigo.com/api',
@@ -61,6 +65,7 @@ const APIS_URL = {
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
+        GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
     },
     DEMO: {
         API: 'https://demoapix.laraigo.com/api',
@@ -73,6 +78,7 @@ const APIS_URL = {
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
+        GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
     },
     LOCAL: {
         API: 'http://localhost:6065/api',
@@ -87,6 +93,7 @@ const APIS_URL = {
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
+        GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
     }
 }
 
@@ -100,6 +107,7 @@ const GOOGLECLIENTID_LOGIN = APIS_URL[ENV].GOOGLECLIENTID_LOGIN
 const GOOGLECLIENTID_CHANNEL = APIS_URL[ENV].GOOGLECLIENTID_CHANNEL
 const FACEBOOKVERSION = APIS_URL[ENV].FACEBOOKVERSION
 const DIALOG360PARTNERID = APIS_URL[ENV].DIALOG360PARTNERID
+const GOOGLECLIENTID_CALENDAR = APIS_URL[ENV].GOOGLECLIENTID_CALENDAR
 
 export const apiUrls = {
     WS_URL,
@@ -110,6 +118,7 @@ export const apiUrls = {
     GOOGLECLIENTID_CHANNEL,
     FACEBOOKVERSION,
     DIALOG360PARTNERID,
+    GOOGLECLIENTID_CALENDAR,
     LOGIN_URL: `${BASE_URL}/auth`,
     CONNECT_INBOX: `${BASE_URL}/auth/connect`,
     CHANGE_ORGANIZATION: `${BASE_URL}/auth/changeorganization`,
@@ -203,4 +212,8 @@ export const apiUrls = {
     DELETE_TEMPLATE: `${BASE_URL}/channel/deletetemplate`,
 
     BILLING_REPORTPDF: `${BASE_URL}/drawpdf`,
+
+    EVENTBOOKING_GOOGLE_LOGIN: `${BASE_URL}/event-booking/googlelogin`,
+    EVENTBOOKING_GOOGLE_DISCONNECT: `${BASE_URL}/event-booking/googledisconnect`,
+    EVENTBOOKING_GOOGLE_VALIDATE: `${BASE_URL}/event-booking/googlevalidate`,
 };
