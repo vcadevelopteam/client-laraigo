@@ -339,14 +339,14 @@ const InfoTab: React.FC = () => {
                             prefixTranslation="type_gender_"
                             error={errors?.gender?.message}
                         />
-                        {multiData?.data?.[5]?.data?.[0]?.propertyvalue === "LIBRE"?
+                        {multiData?.data?.[5]?.data?.[0].propertyvalue === "LIBRE"?
                         <FieldEdit
                             label={t(langKeys.occupation)}
-                            onChange={(value) => setValue('occupation', value)}
+                            onChange={(value) => {setValue('occupation', value); setValue('occupationdesc', value)}}
                             valueDefault={getValues('occupation')}
                             error={errors?.occupation?.message}
                         />:<FieldSelect
-                            onChange={(value) => setValue('occupation', value?.domainvalue)}
+                            onChange={(value) => {setValue('occupation', value?.domainvalue); setValue('occupationdesc', value?.domainvalue);}}
                             label={t(langKeys.occupation)}
                             loading={multiData.loading}
                             data={multiData.data[2]?.data || []}
@@ -518,10 +518,10 @@ const InfoTab: React.FC = () => {
                         <div>{person?.gender && t("type_gender_" + person?.gender.toLocaleLowerCase())}</div>
                     </div>
                 </div>}
-                {person?.occupationdesc && <div className={classes.containerName}>
+                {person?.occupation && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.occupation)}</div>
-                        <div>{person?.occupation && t("type_ocupation_" + person?.occupation.toLocaleLowerCase())}</div>
+                        <div>{person?.occupation && t(person?.occupation)}</div>
                     </div>
                 </div>}
                 {person?.civilstatusdesc && <div className={classes.containerName}>

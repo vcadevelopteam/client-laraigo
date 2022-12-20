@@ -2248,7 +2248,7 @@ export const editPersonBody = (person: IPerson): IRequestBody => ({
 //     },
 // });
 
-export const insLeadPerson = (lead: ILead, firstname: string, lastname: string, email: string, phone: string, personid: number): IRequestBody => ({
+export const insLeadPerson = (lead: ILead, firstname: string, lastname: string, email: string, phone: string, personid: number, persontype: string): IRequestBody => ({
     method: 'UFN_LEAD_PERSON_INS',
     parameters: {
         ...lead,
@@ -2258,6 +2258,7 @@ export const insLeadPerson = (lead: ILead, firstname: string, lastname: string, 
         email,
         phone,
         personid,
+        persontype
     },
 });
 export const getColumnsSel = (id: number, lost: boolean = false): IRequestBody => ({

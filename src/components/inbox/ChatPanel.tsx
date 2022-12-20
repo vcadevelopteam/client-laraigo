@@ -701,8 +701,10 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
         }
 
         const { firstname = "", lastname = "", email = "", phone = "" } = data;
+        console.log(personSelected)
+        debugger
         dispatch(showBackdrop(true));
-        dispatch(execute(insLeadPerson(newLead, firstname, lastname, email, phone, personSelected?.personid!!)))
+        dispatch(execute(insLeadPerson(newLead, firstname, lastname, email, phone, personSelected?.personid!!,personSelected?.persontype || "")))
         setWaitInsLead(true)
     });
 
