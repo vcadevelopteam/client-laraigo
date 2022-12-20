@@ -13,7 +13,7 @@ import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipification
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { changeStatus, getConversationClassification2, insertClassificationConversation, insLeadPerson } from 'common/helpers';
 import { execute, getCollectionAux2 } from 'store/main/actions';
-import { DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView, FieldMultiSelect, FieldMultiSelectFreeSolo, FieldMultiSelectVirtualized } from 'components'
+import { DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView, FieldMultiSelectFreeSolo, FieldMultiSelectVirtualized } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -701,8 +701,6 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
         }
 
         const { firstname = "", lastname = "", email = "", phone = "" } = data;
-        console.log(personSelected)
-        debugger
         dispatch(showBackdrop(true));
         dispatch(execute(insLeadPerson(newLead, firstname, lastname, email, phone, personSelected?.personid!!,personSelected?.persontype || "")))
         setWaitInsLead(true)

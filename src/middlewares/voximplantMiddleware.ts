@@ -47,8 +47,6 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                     const supervision = headers["X-supervision"]
                     const splitIdentifier = headers["X-identifier"].split("-");
                     const number = headers["X-transfer"] ? cleanNumber(headers["X-originalnumber"]) : cleanNumber(e?.call?.number());
-                    console.log(`IncomingCall-number: ${number}`)
-                    console.log(`IncomingCall-name: ${headers["X-personname"] || number}`)
                     const name = headers["X-personname"] || number;
 
                     if (supervision) {
@@ -156,7 +154,6 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                         try {
                             const headers = (e.call as Call).headers();
                             const number = headers["X-transfer"] ? cleanNumber(headers["X-originalnumber"]) : cleanNumber(e?.call?.number());
-                            console.log(`MessageReceived-text: ${e.text}`)
                             const message_json = JSON.parse(e.text)
                             switch (message_json.operation) {
                                 case 'TRANSFER-CONNECTED':
@@ -311,8 +308,6 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         const call = payload.call;
         const method = payload.method;
         const number = cleanNumber(payload.number);
-        console.log("payload", payload)
-        console.log("payload", number)
         call?.answer();
         dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: { status: "CONNECTED", number } });
 
@@ -387,7 +382,6 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
         const call = payload.call;
         const ticketSelected = payload.ticketSelected;
         const number = cleanNumber(payload.number);
-        console.log("hangup call", ticketSelected)
         call?.hangup();
         dispatch({ type: typeVoximplant.MANAGE_STATUS_CALL, payload: { status: "DISCONNECTED", number } });
         if (ticketSelected) {
@@ -406,13 +400,10 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                     }
                 }));
             }
-            console.log("hangup call", "finish")
         }
         return
     } else if (type === typeVoximplant.HOLD_CALL) {
-        console.log("payload hold", payload)
         const call = payload.call;
-        console.log("payload hold", call.active())
         if ((call as Call).active() !== payload.flag) {
             // const number = cleanNumber(payload.number);
             await call?.setActive(payload.flag);
@@ -534,7 +525,6 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
             }
             return
         } catch (error) {
-            console.log("aaaaxxxxx")
             return
         }
     }

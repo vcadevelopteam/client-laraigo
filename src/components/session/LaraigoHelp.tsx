@@ -73,7 +73,6 @@ const LaraigoHelp: FC<BoxProps> = (boxProps) => {
             setredirection(finddocumentation || null)
         } else {
             const lengthsplitpath = location.pathname.split('/')
-            console.log(lengthsplitpath)
             const finddocumentation = viewDocumentation.find(x => x.name === lengthsplitpath[lengthsplitpath.length > 3 ? 2 : lengthsplitpath.length - 1])
             setshowDocButton(!!finddocumentation)
             setredirection(finddocumentation || null)

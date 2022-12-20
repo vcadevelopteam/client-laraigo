@@ -24,7 +24,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { useLocation } from "react-router";
 import CalendarZyx from 'components/fields/Calendar';
-import MuiPhoneNumber, { MaterialUiPhoneNumberProps } from 'material-ui-phone-number';
+import MuiPhoneNumber from 'material-ui-phone-number';
 import { getCountryList } from "store/signup/actions";
 import { manageConfirmation } from 'store/popus/actions';
 import Popus from 'components/layout/Popus';

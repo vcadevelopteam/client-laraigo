@@ -350,7 +350,6 @@ const DialogInteractionsUniqueReports: React.FC<{ ticket: Dictionary | null, ope
                                 heightLeft -= pageHeight;
 
                                 while (heightLeft >= 0) {
-                                    debugger // 4806109
                                     position = heightLeft - imgHeight + topPadding; // top padding for other pages
                                     doc.addPage();
                                     doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);

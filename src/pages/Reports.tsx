@@ -149,7 +149,6 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
 
     useEffect(() => {
         dispatch(setViewChange(`report_${row?.origin}`))
-        console.log(`report_${row?.origin}`)
         return () => {
             dispatch(cleanViewChange());
         }

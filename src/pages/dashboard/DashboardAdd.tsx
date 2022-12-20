@@ -662,7 +662,6 @@ export const LayoutItem: FC<LayoutItemProps> = ({
 
     function deleteFunnel(index:number){
         let newtagsdata=tagsdata.filter((x:any,i:number)=>i!==index)
-        debugger
         settagsdata(newtagsdata)
         setValue(`${key}.tags`,newtagsdata)
     }

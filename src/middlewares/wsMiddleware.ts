@@ -44,10 +44,9 @@ const callWSMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async
             console.log("load eventsListeners")
             eventsListeners.forEach(({ event, type, extra = {} }) => {
                 socket.on(event, (datatmp) => {
-                    console.log(event, datatmp)
                     if (event === "forceddisconnect") {
                         socket.disconnect();
-                    }
+                    } 
                     dispatch({ type, payload: { ...datatmp, ...extra } })
                 });
             });

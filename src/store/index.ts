@@ -25,6 +25,7 @@ import googleReducer, { IState as IGoogle } from './google/reducer';
 import witaiReducer, { IState as IWitai } from './witia/reducer';
 import productReducer, { IState as IProduct } from './product/reducer';
 import calendarReducer, { IState as ICalendar } from './calendar/reducer';
+import productReducer, { IState as IProduct } from './product/reducer';
 import postHistoryReducer, { IState as IPostHistory } from './posthistory/reducer';
 
 export interface IRootState {
@@ -48,8 +49,8 @@ export interface IRootState {
     voximplant: IVoximplant;
     google: IGoogle;
     witai: IWitai;
-    product: IProduct;
     calendar: ICalendar;
+    product: IProduct;
     postHistory: IPostHistory;
 }
 

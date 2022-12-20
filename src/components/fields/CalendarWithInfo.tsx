@@ -275,7 +275,6 @@ const CalendarWithInfo: FC<{
                         }))
                 }))
             ]), [])
-            console.log("aa", aa.filter(x => (x.data?.length || 0) > 0))
             setDaysToShow(aa);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
