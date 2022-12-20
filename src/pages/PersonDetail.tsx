@@ -178,6 +178,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
     const dispatch = useDispatch();
     const { t } = useTranslation();
     // const referrerList = useSelector(state => state.person.personReferrerList);
+    const ocupationProperty = domains?.value?.ocupationProperty?.[0]?.propertyvalue || "DOMINIO"
 
     useEffect(() => {
         if (person.referringpersonid) {
@@ -187,7 +188,6 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
             };
         }
     }, [dispatch, person]);
-
     return (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
             <Grid container direction="row">
@@ -587,7 +587,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 m={1}
                             />
                         </Grid>
-                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                        {ocupationProperty === "DOMINIO"? <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                             <Property
                                 title={<Trans i18nKey={langKeys.occupation} />}
                                 subtitle={(
@@ -607,7 +607,26 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 )}
                                 m={1}
                             />
-                        </Grid>
+                        </Grid>:                        
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.occupation} />}
+                                subtitle={(
+                                    <TextField
+                                        fullWidth
+                                        placeholder={t(langKeys.occupation)}
+                                        defaultValue={getValues("occupation")}
+                                        value={getValues("occupation")}
+                                        onChange={e => {
+                                            setValue('occupation', e.target.value)
+                                            setValue('occupationdesc', e.target.value)
+                                            trigger("occupation")
+                                        }}
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>}
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                             <Property
                                 title={<Trans i18nKey={langKeys.group} count={2} />}
