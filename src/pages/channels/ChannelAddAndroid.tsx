@@ -1895,11 +1895,178 @@ const ChannelAndroidAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loadi
                     </Button>
                 </div>
             </div>
+        </div>
+    );
+}
+
+
+
+export const ChannelAddAndroid: FC = () => {
+    const [showScript, setShowScript] = useState(false);
+    const [integrationId, setIntegrationId] = useState<string | undefined>(undefined);
+    const [view, setView] = useState('view-1');
+    const history = useHistory();
+    const dispatch = useDispatch();
+    const { t } = useTranslation();
+    const service = useRef<IAndroidSDKAdd | null>(null);
+    const location = useLocation<whatsAppData>();
+    const channel = location.state as IChannel | null;
+    const insertChannel = useSelector(state => state.channel.insertChannel);
+    const editChannel = useSelector(state => state.channel.editChannel);
+
+    useEffect(() => {
+        dispatch(getMultiCollection([
+            getInputValidationSel(0),
+        ]));
+    }, [])
+
+    useEffect(() => {
+        if (insertChannel.loading) return;
+        if (insertChannel.error === true) {
+            dispatch(showSnackbar({
+                message: insertChannel.message!,
+                show: true,
+                severity: "error"
+            }));
+        } else if (insertChannel.value) {
+            dispatch(showBackdrop(false));
+            setShowScript(true);
+            dispatch(showSnackbar({
+                message: t(langKeys.channelcreatesuccess),
+                show: true,
+                severity: "success"
+            }));
+        }
+    }, [dispatch, insertChannel, t]);
+
+    useEffect(() => {
+        if (editChannel.loading) return;
+        if (editChannel.error === true) {
+            dispatch(showSnackbar({
+                message: editChannel.message!,
+                show: true,
+                severity: "error"
+            }));
+        } else if (editChannel.success) {
+            dispatch(showBackdrop(false));
+            setShowScript(true);
+            dispatch(showSnackbar({
+                message: t(langKeys.channeleditsuccess),
+                show: true,
+                severity: "success"
+            }));
+            history.push(paths.CHANNELS);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dispatch, editChannel]);
+
+    const form: UseFormReturn<IAndroidSDKAdd> = useForm<IAndroidSDKAdd>({
+        defaultValues: service.current || {
+            interface: {
+                chattitle: "",
+                chatsubtitle: "",
+                iconbutton: null,
+                iconheader: null,
+                iconbot: null,
+            },
+            color: {
+                header: "#fff",
+                background: "#F9F9FA",
+                border: "#EBEAED",
+                client: "#fff",
+                bot: "#aa53e0",
+            },
+            form: [],
+            bubble: {
+                active: true,
+                messagebubble: "",
+                iconbubble: null,
+            },
+            extra: {
+                uploadfile: true,
+                uploadaudio: true,
+                uploadimage: true,
+                uploadlocation: true,
+                uploadvideo: true,
+                reloadchat: true,
+                poweredby: true,
+
+                persistentinput: true,
+                abandonevent: true,
+                alertsound: true,
+                formhistory: true,
+                enablemetadata: true,
+
+                customcss: "",
+                customjs: "",
+
+                botnameenabled: true,
+                botnametext: "",
+            },
+        }
+    });
+    const whatsAppData = location.state as whatsAppData | null;
+
+    useEffect(() => {
+        if(insertChannel.value?.integrationId){            
+            setIntegrationId(insertChannel?.value?.integrationId)
+        }
+    }, [insertChannel])
+    
+    useEffect(() => {
+        const mandatoryStrField = (value: string) => {
+            return value.length === 0 ? t(langKeys.field_required) : undefined;
+        }
+
+        const mandatoryFileField = (value: string | File | null) => {
+            return !value ? t(langKeys.field_required) : undefined;
+        }
+
+        form.register('interface.chattitle', { validate: mandatoryStrField });
+        form.register('interface.chatsubtitle', { validate: mandatoryStrField });
+        form.register('interface.iconbutton', { validate: mandatoryFileField });
+        form.register('interface.iconheader', { validate: mandatoryFileField });
+        form.register('interface.iconbot', { validate: mandatoryFileField });
+    }, [form, t]);
+
+
+    const handleSubmit = (name: string, auto: boolean, hexIconColor: string) => {
+        const values = form.getValues();
+        dispatch(showBackdrop(true));
+        if (!channel?.appintegrationid) {
+            const body = getInsertChatwebChannel(name, auto, hexIconColor, values, "SMOOCHANDROID");
+            dispatch(insertChannel2(body));
+        } else {
+            const id = channel.communicationchannelid;
+            const body = getEditChatWebChannel(id, channel, values, name, auto, hexIconColor, "SMOOCHANDROID");
+            dispatch(getEditChannel(body, "SMOOCHANDROID"));
+        }
+
+    }
+
+    return (
+        <div style={{ width: '100%' }}>
+            <Breadcrumbs aria-label="breadcrumb" style={{display: (!showScript && view) === "view-1" ? "block":"none"}}>
+                <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData) }}>
+                    {t(langKeys.previoustext)}
+                </Link>
+            </Breadcrumbs>
+            <Breadcrumbs aria-label="breadcrumb" style={{display: (!showScript && view) === "view-2" ? "block":"none"}}>
+                <Link color="textSecondary" key="mainview" href="/" onClick={(e) => { e.preventDefault(); setView("view-1") }}>
+                    {t(langKeys.previoustext)}
+                </Link>
+            </Breadcrumbs>
+            {view === "view-1" && <ChannelAddAndroidDetail form={form} setView={setView}/>}
+            {view === "view-2" && <>
+            
+            {!showScript && <ChannelAndroidAddEnd
+                loading={insertChannel.loading || editChannel.loading}
+                integrationId={integrationId}
+                onSubmit={handleSubmit}
+                onClose={() => setView("view-1")}
+                channel={channel}
+            />}
             <div style={{ display: showScript ? 'flex' : 'none', height: 10 }} />
-            <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#d9edf7', border: '1px solid #bce8f1', color: '#31708f', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word', width: '100%', whiteSpace: 'break-spaces' }}>
-                {<code>{t(langKeys.androidalert)}</code>}
-            </pre>
-            </div>
             <div style={{ display: showScript ? 'flex' : 'none', height: 10 }} />
             <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}>
                 {t(langKeys.androidlibrary)}
