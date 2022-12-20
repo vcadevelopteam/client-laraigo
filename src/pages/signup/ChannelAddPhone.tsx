@@ -97,6 +97,7 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     const [checkedRecording, setCheckedRecording] = useState(false);
     const [checkedSms, setCheckedSms] = useState(false);
     const [checkedOutbound, setCheckedOutbound] = useState(false);
+    const [checkedCallSupervision, setCheckedCallSupervision] = useState(false);
     const [categoryList, setCategoryList] = useState<any>([]);
     const [countryList, setCountryList] = useState<any>([]);
     const [hasStates, setHasStates] = useState(false);
@@ -613,7 +614,7 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                                 </div>
                             </div>
                         </div>
-                        {(checkedRecording || checkedSms || checkedOutbound) && <div className="row-zyx">
+                        {(checkedRecording || checkedSms || checkedOutbound || checkedCallSupervision) && <div className="row-zyx">
                             <div style={{ display: "flex", flexFlow: "row", flexWrap: "wrap" }}>
                                 <p><b style={{ color: "#762AA9" }}>{t(langKeys.voicechannel_recordingalert)}</b><a style={{ fontWeight: 'bold', cursor: 'pointer' }} onClick={openPricingPage} rel="noopener noreferrer">https://laraigo.com/en/pricing/</a></p>
                             </div>

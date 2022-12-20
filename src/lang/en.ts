@@ -3955,6 +3955,8 @@ const translation: LangKeys = {
     voicechannel_smstooltip: 'Allows SMS messages. 1 message per $0.00',
     voicechannel_outbound: 'Outbound',
     voicechannel_outboundtooltip: 'Allows outbound calls. 1 call per $0.00',
+    voicechannel_callsupervisor: 'Call Supervision',
+    voicechannel_callsupervisortooltip: 'Allows you to listen online to a conversation between client and advisor. Price per minute $0.0033',
     voicechannel_recordingquality: 'Recording quality',
     voicechannel_recordingmonth3: '3 months of storage',
     voicechannel_recordingmonth6: '6 months of storage',

@@ -135,6 +135,7 @@ export const ChannelAddPhone: FC = () => {
             "recording": false,
             "sms": false,
             "outbound": false,
+            "callsupervision": false,
             "recordingstorage": "",
             "recordingquality": "",
         },
@@ -360,7 +361,6 @@ export const ChannelAddPhone: FC = () => {
 
     const handleSwitchCallSupervison = (value: boolean) => {
         let partialFields = fields;
-        console.log(fields)
         partialFields.parameters.voximplantcallsupervision = value;
         setFields(partialFields);
 

@@ -3940,6 +3940,8 @@ export const langKeys = {
     voicechannel_smstooltip: 'voicechannel_smstooltip',
     voicechannel_outbound: 'voicechannel_outbound',
     voicechannel_outboundtooltip: 'voicechannel_outboundtooltip',
+    voicechannel_callsupervisor: 'voicechannel_callsupervisor',
+    voicechannel_callsupervisortooltip: 'voicechannel_callsupervisortooltip',
     voicechannel_recordingquality: 'voicechannel_recordingquality',
     voicechannel_recordingmonth3: 'voicechannel_recordingmonth3',
     voicechannel_recordingmonth6: 'voicechannel_recordingmonth6',
