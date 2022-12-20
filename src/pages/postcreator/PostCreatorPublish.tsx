@@ -34,6 +34,28 @@ const useStyles = makeStyles((theme) => ({
         textTransform: 'initial',
         width: 'auto',
     },
+    buttonSocial: {
+        alignItems: 'center',
+        backgroundColor: "#BAB8B8",
+        color: "#FFFFFF",
+        display: 'flex',
+        fontSize: '14px',
+        fontWeight: 500,
+        marginBottom: '10px',
+        marginLeft: '4px',
+        marginRight: '4px',
+        padding: 12,
+        textTransform: 'initial',
+        width: 'auto',
+        '&:disabled': {
+            backgroundColor: "#197BC8",
+            color: "#FFFFFF",
+        },
+        '&:hover': {
+            backgroundColor: "#BAB8B8",
+            color: "#FFFFFF",
+        },
+    },
     containerDetail: {
         background: '#fff',
         padding: theme.spacing(2),
@@ -147,13 +169,13 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
     const uploadResult = useSelector(state => state.main.uploadFile);
 
     const [allowedChannel, setAllowedChannel] = useState<Dictionary[]>([]);
-    const [customizeType, setCustomizeType] = useState('');
+    const [customizeType, setCustomizeType] = useState('Facebook');
     const [fileAttachment, setFileAttachment] = useState<File | null>(null);
     const [modalData, setModalData] = useState<any>(null);
     const [modalType, setModalType] = useState('');
     const [openModal, setOpenModal] = useState(false);
     const [previewType, setPreviewType] = useState('FACEBOOKPREVIEW');
-    const [showFacebook, setShowFacebook] = useState(false);
+    const [showFacebook, setShowFacebook] = useState(true);
     const [showInstagram, setShowInstagram] = useState(false);
     const [showLinkedIn, setShowLinkedIn] = useState(false);
     const [showTikTok, setShowTikTok] = useState(false);
@@ -523,37 +545,34 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                 </div>
                                 <div className="row-zyx" style={{ alignItems: 'center', display: 'flex', justifyContent: 'center' }}>
                                     {showFacebook && <Button
-                                        className={classes.button}
+                                        className={classes.buttonSocial}
                                         variant="contained"
                                         color="primary"
                                         onClick={() => { setCustomizeType('Facebook') }}
                                         startIcon={<Facebook color="secondary" />}
-                                        style={{ backgroundColor: "#197BC8", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         disabled={customizeType === 'Facebook'}
                                     >{t(langKeys.postcreator_publish_facebook)}
                                     </Button>}
                                     {showInstagram && <Button
-                                        className={classes.button}
+                                        className={classes.buttonSocial}
                                         variant="contained"
                                         color="primary"
                                         onClick={() => { setCustomizeType('Instagram') }}
                                         startIcon={<Instagram color="secondary" />}
-                                        style={{ backgroundColor: "#197BC8", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         disabled={customizeType === 'Instagram'}
                                     >{t(langKeys.postcreator_publish_instagram)}
                                     </Button>}
                                     {showLinkedIn && <Button
-                                        className={classes.button}
+                                        className={classes.buttonSocial}
                                         variant="contained"
                                         color="primary"
                                         onClick={() => { setCustomizeType('LinkedIn') }}
                                         startIcon={<LinkedIn color="secondary" />}
-                                        style={{ backgroundColor: "#197BC8", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         disabled={customizeType === 'LinkedIn'}
                                     >{t(langKeys.postcreator_publish_linkedin)}
                                     </Button>}
                                     {showTikTok && <Button
-                                        className={classes.button}
+                                        className={classes.buttonSocial}
                                         variant="contained"
                                         color="primary"
                                         onClick={() => { setCustomizeType('TikTok') }}
@@ -566,27 +585,24 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         >
                                             <path d="M41,4H9C6.243,4,4,6.243,4,9v32c0,2.757,2.243,5,5,5h32c2.757,0,5-2.243,5-5V9C46,6.243,43.757,4,41,4z M37.006,22.323 c-0.227,0.021-0.457,0.035-0.69,0.035c-2.623,0-4.928-1.349-6.269-3.388c0,5.349,0,11.435,0,11.537c0,4.709-3.818,8.527-8.527,8.527 s-8.527-3.818-8.527-8.527s3.818-8.527,8.527-8.527c0.178,0,0.352,0.016,0.527,0.027v4.202c-0.175-0.021-0.347-0.053-0.527-0.053 c-2.404,0-4.352,1.948-4.352,4.352s1.948,4.352,4.352,4.352s4.527-1.894,4.527-4.298c0-0.095,0.042-19.594,0.042-19.594h4.016 c0.378,3.591,3.277,6.425,6.901,6.685V22.323z" />
                                         </svg>}
-                                        style={{ backgroundColor: "#197BC8", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         disabled={customizeType === 'TikTok'}
                                     >{t(langKeys.postcreator_publish_tiktok)}
                                     </Button>}
                                     {showTwitter && <Button
-                                        className={classes.button}
+                                        className={classes.buttonSocial}
                                         variant="contained"
                                         color="primary"
                                         onClick={() => { setCustomizeType('Twitter') }}
                                         startIcon={<Twitter color="secondary" />}
-                                        style={{ backgroundColor: "#197BC8", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         disabled={customizeType === 'Twitter'}
                                     >{t(langKeys.postcreator_publish_twitter)}
                                     </Button>}
                                     {showYouTube && <Button
-                                        className={classes.button}
+                                        className={classes.buttonSocial}
                                         variant="contained"
                                         color="primary"
                                         onClick={() => { setCustomizeType('YouTube') }}
                                         startIcon={<YouTube color="secondary" />}
-                                        style={{ backgroundColor: "#197BC8", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         disabled={customizeType === 'YouTube'}
                                     >{t(langKeys.postcreator_publish_youtube)}
                                     </Button>}
