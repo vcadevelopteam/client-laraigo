@@ -284,6 +284,7 @@ export const getDomainsByTypenameSuccess = (state: IState, action: IAction): ISt
     const userstatus = (action.payload.data as any[])[15].data as Dictionary[] | null;
     const roles = (action.payload.data as any[])[16].data as Dictionary[] | null;
     const usergroup = (action.payload.data as any[])[17].data as Dictionary[] | null;
+    const ocupationProperty = (action.payload.data as any[])[18].data as Dictionary[] | null;
 
     return {
         ...state,
@@ -308,6 +309,7 @@ export const getDomainsByTypenameSuccess = (state: IState, action: IAction): ISt
                 userstatus: userstatus || [],
                 roles: roles || [],
                 usergroup: usergroup || [],
+                ocupationProperty: ocupationProperty || [],
             },
             loading: false,
             error: false,
