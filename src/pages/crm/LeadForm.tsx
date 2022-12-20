@@ -876,7 +876,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     className={classes.field}
                                     valueDefault={getValues('leadproduct')}
                                     onChange={(v, value2: { action: "remove-option" | "select-option", option: { option: any } }) => {
-                                        const products = v?.map((o: Dictionary) => o['code']).join(',') || '';
+                                        const products = v?.map((o: Dictionary) => o['productid']).join(',') || '';
                                         setValue('leadproduct', products);
 
                                         handleUpdateLeadProducts(
@@ -886,8 +886,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     }}
                                     data={leadProductsDomain.data}
                                     loading={leadProductsDomain.loading}
-                                    optionDesc="description"
-                                    optionValue="code"
+                                    optionDesc="title"
+                                    optionValue="productid"
                                     error={errors?.leadproduct?.message}
                                 />
                             </Grid>

@@ -219,4 +219,6 @@ export const apiUrls = {
     EVENTBOOKING_GOOGLE_VALIDATE: `${BASE_URL}/event-booking/googlevalidate`,
 
     PAYMENTORDER_PAY: `${BASE_URL}/payment/newpayment`,
+
+    PRODUCT_IMPORT: `${BASE_URL}/product/import`,
 };
