@@ -947,7 +947,6 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     const location = useLocation();
     const user = useSelector(state => state.login.validateToken.user);
     const userConnected = useSelector(state => state.inbox.userConnected);
-    const propertyAsesorSuspende = user?.roledesc === "ASESOR" ? multiData?.data?.filter(x => x.key === "UFN_PROPERTY_SELBYNAMEASESORSUSPENDE")?.[0]?.data?.[0].propertyvalue === "1" : true
 
     const closeTicket = (newstatus: string) => {
         if (newstatus === "CERRADO") {
