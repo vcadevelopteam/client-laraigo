@@ -220,7 +220,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.CHANNELS_ADD_SMS.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddSMS /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_EMAIL.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddEmail /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_IOS.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddIos /></Layout>)} />
-					<ProtectRoute exact path={paths.CHANNELS_ADD_ANDROID.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddAndroid edit/></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_ANDROID.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddAndroid /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_TIKTOK.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddTikTok /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_YOUTUBE.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddYouTube /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_LINKEDIN.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddLinkedIn /></Layout>)} />

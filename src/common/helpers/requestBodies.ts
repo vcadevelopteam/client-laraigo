@@ -1184,7 +1184,6 @@ export const getInsertChatwebChannel = (name: string, auto: boolean, iconColor: 
         apikey: "",
         coloricon: iconColor,
         voximplantrecording: '',
-        voximplantrecording: '',
         voximplantholdtone: "",
         voximplantcallsupervision: false,
     },
