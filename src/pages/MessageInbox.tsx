@@ -113,7 +113,7 @@ const MessageInbox: React.FC = () => {
                     data: { usertype: 'AGENT' }
                 }));
             } else {
-                dispatch(getAgents())
+                // dispatch(getAgents())
                 dispatch(selectAgent(null))
                 dispatch(selectTicket(null))
             }
