@@ -114,7 +114,7 @@ const MessageInbox: React.FC = () => {
                 }));
             } else {
                 // dispatch(getAgents())
-                dispatch(selectAgent(null))
+                // dispatch(selectAgent(null))
                 dispatch(selectTicket(null))
             }
         }
