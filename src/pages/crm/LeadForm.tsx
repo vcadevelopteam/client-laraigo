@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, IconButton, Checkbox, Tabs, Avatar, Paper, InputAdornment } from '@material-ui/core';
-import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, RadioGroudFieldEdit, TitleDetail, AntTabPanel, FieldMultiSelect, FieldEditArray } from 'components';
+import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, RadioGroudFieldEdit, TitleDetail, AntTabPanel, FieldEditArray, FieldMultiSelectVirtualized } from 'components';
 import { RichText } from 'components/fields/RichText';
 import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
@@ -17,7 +17,7 @@ import { useSelector } from 'hooks';
 import {
     archiveLead, getAdvisers, getLead, getLeadActivities, getLeadHistory, getLeadLogNotes, getLeadPhases, markDoneActivity, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadHistory,
     resetGetLeadLogNotes, resetGetLeadPhases, resetMarkDoneActivity, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLeadActivity, saveLeadLogNote, saveLeadWithFiles, saveLead as saveLeadAction,
-    resetGetLeadProductsDomain, getLeadProductsDomain, getLeadTagsDomain, resetGetLeadTagsDomain, getLeadTemplates, getLeadChannels, resetGetLeadChannels
+    resetGetLeadProductsDomain, getLeadProductsDomain, getLeadTagsDomain, getPersonType, resetGetLeadTagsDomain, getLeadTemplates, getLeadChannels, resetGetLeadChannels, resetGetPersonType
 } from 'store/lead/actions';
 import { Dictionary, ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadHistory, ICrmLeadHistoryIns, ICrmLeadNote, ICrmLeadNoteSave, IDomain, IFetchData, IPerson } from '@types';
 import { manageConfirmation, showSnackbar } from 'store/popus/actions';
@@ -168,6 +168,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const updateLeadTagProcess = useSelector(state => state.lead.updateLeadTags);
     const leadProductsDomain = useSelector(state => state.lead.leadProductsDomain);
     const leadTagsDomain = useSelector(state => state.lead.leadTagsDomain);
+    const personTypeDomain = useSelector(state => state.lead.personTypeDomain);
 
     const leadProductsChanges = useRef<ICrmLeadHistoryIns[]>([]);
     const leadTagsChanges = useRef<ICrmLeadHistoryIns[]>([]);
@@ -194,7 +195,9 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             phase: '',
 
             leadproduct: '',
+            persontype: '',
             campaignid: 0,
+            personid: 0,
 
             activities: [] as ICrmLeadActivitySave[],
             notes: [] as ICrmLeadNoteSave[],
@@ -289,6 +292,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 tags: '',
                 userid: 0,
                 supervisorid: user?.userid || 0, // Obligatorio sin ser cero
+                persontype: "",
                 all: false,
             })));
             dispatch(getLeadActivities(leadActivitySel(leadId)));
@@ -303,7 +307,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         dispatch(getLeadTagsDomain(getValuesFromDomain('OPORTUNIDADETIQUETAS')));
         dispatch(getLeadTemplates());
         dispatch(getLeadChannels());
-
+        dispatch(getPersonType(getValuesFromDomain('TIPOPERSONA')));
+        
         return () => {
             dispatch(resetGetLead());
             dispatch(resetSaveLead());
@@ -317,6 +322,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             dispatch(resetGetLeadHistory());
             dispatch(resetGetLeadProductsDomain());
             dispatch(resetGetLeadTagsDomain());
+            dispatch(resetGetPersonType());
             dispatch(resetGetLeadChannels());
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -377,7 +383,9 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 phase: lead.value?.phase,
 
                 leadproduct: lead.value?.leadproduct || '',
+                persontype: lead.value?.persontype || '',
                 campaignid: lead.value?.campaignid,
+                personid: lead.value?.personid||0,
 
                 activities: [] as ICrmLeadActivitySave[],
                 notes: [] as ICrmLeadNoteSave[],
@@ -634,6 +642,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
 
     const onClickSelectPersonModal = useCallback((value: IPerson) => {
         setValue('personcommunicationchannel', "")
+        setValue('personid', value.personid)
+        setValue('persontype', value.persontype || '')
         setValue('email', value.email || '')
         setValue('phone', value.phone || '')
         setValues(prev => ({ ...prev, displayname: value.name }))
@@ -837,26 +847,36 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     optionValue="domaindesc"
                                     readOnly={isStatusClosed() || iSProcessLoading()}
                                 />
-                                {(!!getValues('userid') || !edit) &&
-                                    <FieldSelect
-                                        label={t(langKeys.agent)}
-                                        className={classes.field}
-                                        valueDefault={getValues('userid')}
-                                        loading={advisers.loading}
-                                        data={advisers.data}
-                                        optionDesc="fullname"
-                                        optionValue="userid"
-                                        onChange={(value) => setValue('userid', value ? value.userid : '')}
-                                        error={errors?.userid?.message}
-                                        readOnly={isStatusClosed() || iSProcessLoading()}
-                                    />
-                                }
-                                <FieldMultiSelect
+                                <FieldSelect
+                                    label={t(langKeys.agent)}
+                                    className={classes.field}
+                                    valueDefault={getValues('userid')}
+                                    loading={advisers.loading}
+                                    data={advisers.data}
+                                    optionDesc="fullname"
+                                    optionValue="userid"
+                                    onChange={(value) => setValue('userid', value ? value.userid : '')}
+                                    error={errors?.userid?.message}
+                                    readOnly={isStatusClosed() || iSProcessLoading()}
+                                />
+                                <FieldSelect
+                                    label={t(langKeys.personType)}
+                                    className={classes.field}
+                                    valueDefault={getValues('persontype')}
+                                    loading={personTypeDomain.loading}
+                                    data={personTypeDomain.data}
+                                    prefixTranslation="type_personlevel_"
+                                    optionDesc="domaindesc"
+                                    optionValue="domainvalue"
+                                    onChange={(value) => setValue('persontype', value ? value.domainvalue : '')}
+                                    readOnly={isStatusClosed() || iSProcessLoading()}
+                                />
+                                <FieldMultiSelectVirtualized
                                     label={t(langKeys.product, { count: 2 })}
                                     className={classes.field}
                                     valueDefault={getValues('leadproduct')}
                                     onChange={(v, value2: { action: "remove-option" | "select-option", option: { option: any } }) => {
-                                        const products = v?.map((o: Dictionary) => o['code']).join(',') || '';
+                                        const products = v?.map((o: Dictionary) => o['productid']).join(',') || '';
                                         setValue('leadproduct', products);
 
                                         handleUpdateLeadProducts(
@@ -866,8 +886,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     }}
                                     data={leadProductsDomain.data}
                                     loading={leadProductsDomain.loading}
-                                    optionDesc="description"
-                                    optionValue="code"
+                                    optionDesc="title"
+                                    optionValue="productid"
                                     error={errors?.leadproduct?.message}
                                 />
                             </Grid>
@@ -1124,6 +1144,10 @@ const SelectPersonModal: FC<SelectPersonModalProps> = ({ open, onClose, onClick 
             {
                 Header: t(langKeys.name),
                 accessor: 'name' as keyof IPerson,
+            },
+            {
+                Header: t(langKeys.personType),
+                accessor: 'persontype' as keyof IPerson,
             },
             {
                 Header: t(langKeys.email),

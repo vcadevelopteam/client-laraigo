@@ -5,7 +5,7 @@ import { useSelector } from 'hooks';
 import { Button, makeStyles, Snackbar, Typography } from "@material-ui/core";
 import { useParams } from 'react-router';
 import { FieldEditMulti } from "components";
-import { execute, getCollEventBooking, resetAllMain } from 'store/main/actions';
+import { getCollEventBooking, resetAllMain } from 'store/main/actions';
 import { calendarBookingCancel2, calendarBookingSelOne } from 'common/helpers';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';

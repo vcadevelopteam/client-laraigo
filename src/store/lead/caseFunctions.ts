@@ -433,6 +433,36 @@ export const getLeadTagsDomainReset = (state: IState): IState => ({
     leadTagsDomain: initialState.leadTagsDomain,
 });
 
+export const getPersonType = (state: IState): IState => ({
+    ...state,
+    personTypeDomain: { ...state.personTypeDomain, loading: true, error: false },
+});
+
+export const getPersonTypeSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    personTypeDomain: {
+        data: action.payload.data || [],
+        loading: false,
+        error: false,
+    },
+});
+
+export const getPersonTypeFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    personTypeDomain: {
+        ...state.personTypeDomain,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'getPersonTypeFailure:error',
+        message: action.payload.message || 'Error al objtener el dominio TIPOPERSONA',
+    },
+});
+
+export const getPersonTypeReset = (state: IState): IState => ({
+    ...state,
+    personTypeDomain: initialState.personTypeDomain,
+});
+
 
 
 export const getLeadTemplates = (state: IState): IState => ({

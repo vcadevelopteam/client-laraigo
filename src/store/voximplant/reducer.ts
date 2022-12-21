@@ -1,7 +1,5 @@
-import { Call } from 'voximplant-websdk/Call/Call';
-import { Client } from 'voximplant-websdk/Client';
 import { createReducer, initialCommon } from "common/helpers";
-import { ITemplate, ITicket } from "@types";
+import { ICallGo, ITemplate } from "@types";
 
 import * as caseFUnctions from './caseFunctions';
 import actionTypes from "./actionTypes";
@@ -12,20 +10,18 @@ export interface IRequest extends ITemplate {
 }
 
 export interface IState {
-    call: { call?: Call | null, type: string, number: string, identifier: string, data?: ITicket };
+    calls: ICallGo[];
     connection: { error: boolean; message: string; loading: boolean };
     error: string;
+    phoneNumber: string; //phone to call on dial
+    showcall: boolean; //show dial to call
+    callOnLine: boolean;
     requestGetCategories: IRequest;
     requestGetCountryStates: IRequest;
     requestGetRegions: IRequest;
     requestGetHistory: IRequest;
     requestGetAdvisors: IRequest;
-    sdk: Client | null;
-    showcall: boolean;
-    phoneNumber: string;
-    onhold: boolean;
-    onholddate: string;
-    statusCall: string;
+    transferAction: boolean,
     requestGetMaximumConsumption: IRequest;
     requestTransferAccountBalance: IRequest;
     requestGetAccountBalance: IRequest;
@@ -34,20 +30,18 @@ export interface IState {
 }
 
 export const initialState: IState = {
-    call: { call: null, type: "", number: "", identifier: "" },
+    calls: [],
     connection: { error: true, message: "", loading: false },
     error: "",
+    callOnLine: false,
     requestGetCategories: { ...initialCommon, data: null, loading: false, error: false },
     requestGetCountryStates: { ...initialCommon, data: null, loading: false, error: false },
     requestGetRegions: { ...initialCommon, data: null, loading: false, error: false },
     requestGetHistory: { ...initialCommon, data: null, loading: false, error: false },
     requestGetAdvisors: { ...initialCommon, data: null, loading: false, error: false },
-    sdk: null,
     showcall: false,
+    transferAction: false,
     phoneNumber: "",
-    onhold: false,
-    onholddate: new Date().toISOString(),
-    statusCall: "DISCONNECTED",
     requestGetMaximumConsumption: { ...initialCommon, data: null, loading: false, error: false },
     requestTransferAccountBalance: { ...initialCommon, data: null, loading: false, error: false },
     requestGetAccountBalance: { ...initialCommon, data: null, loading: false, error: false },
@@ -57,13 +51,19 @@ export const initialState: IState = {
 
 export default createReducer<IState>(initialState, {
     [actionTypes.INIT_CALL]: caseFUnctions.initCall,
-    [actionTypes.MODIFY_CALL]: caseFUnctions.modifyCall,
+    // [actionTypes.MODIFY_CALL]: caseFUnctions.modifyCall,
     [actionTypes.SET_MODAL_CALL]: caseFUnctions.setModalCall,
     [actionTypes.SET_PHONE_NUMBER]: caseFUnctions.setPhoneNumber,
     [actionTypes.SET_HOLD]: caseFUnctions.setHold,
     [actionTypes.MANAGE_STATUS_CALL]: caseFUnctions.manageStatusCall,
     [actionTypes.MANAGE_CONNECTION]: caseFUnctions.manageConnection,
     [actionTypes.RESET_CALL]: caseFUnctions.resetCall,
+
+    [actionTypes.SET_TRANSFER_ACTION]: caseFUnctions.setTransferAction,
+    [actionTypes.INIT_TRANSFER_CALL]: caseFUnctions.initTransferCall,
+    [actionTypes.CONNECTED_TRANSFER_CALL]: caseFUnctions.connectedTransferCall,
+    [actionTypes.SET_TRANSFER_CALL]: caseFUnctions.setTransferCall,
+    [actionTypes.RESET_TRANSFER_CALL]: caseFUnctions.resetTransferCall,
 
     [actionTypes.GET_CATEGORIES]: caseFUnctions.getCategories,
     [actionTypes.GET_CATEGORIES_FAILURE]: caseFUnctions.getCategoriesFailure,
@@ -114,4 +114,5 @@ export default createReducer<IState>(initialState, {
     [actionTypes.UPDATE_SCENARIO_FAILURE]: caseFUnctions.updateScenarioFailure,
     [actionTypes.UPDATE_SCENARIO_SUCCESS]: caseFUnctions.updateScenarioSuccess,
     [actionTypes.UPDATE_SCENARIO_RESET]: caseFUnctions.updateScenarioReset,
+    [actionTypes.SET_MUTE]: caseFUnctions.setMute,
 });

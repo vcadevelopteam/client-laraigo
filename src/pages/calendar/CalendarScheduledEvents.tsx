@@ -66,7 +66,6 @@ const DialogBooking: React.FC<{
     const classes = useStyles();
     const saveRes = useSelector(state => state.main.execute);
     const { register, setValue, getValues, reset, trigger, formState: { errors } } = useForm();
-    console.log(booking)
     useEffect(() => {
         if (waitSave) {
             if (!saveRes.loading && !saveRes.error) {
@@ -221,7 +220,7 @@ const DialogCancelBooking: React.FC<{
     const [waitSave, setWaitSave] = useState(false);
     const classes = useStyles();
     const saveRes = useSelector(state => state.main.execute);
-    const { register, setValue, getValues, reset, trigger, formState: { errors } } = useForm();
+    const { register, setValue, getValues, reset, trigger } = useForm();
 
     useEffect(() => {
         if (waitSave) {
@@ -250,7 +249,6 @@ const DialogCancelBooking: React.FC<{
     }, [])
 
     const onSubmit = async () => {
-        console.log(new Date(booking?.monthdate + " " + booking?.hourstart))
         if (new Date(booking?.monthdate + " " + booking?.hourstart).getTime() >= new Date().getTime()) {
             const allOk = await trigger();
             if (allOk) {
@@ -491,7 +489,6 @@ const CalendarScheduledEvents: React.FC<CalendarScheduledEventsProps> = ({
                         >
                             <MenuItem onClick={(e) => {
                                 const url = new URL(`events/${user?.orgid}/${event.code}?booking=${bookingSelected?.calendarbookinguuid}`, window.location.origin)
-                                console.log("url", url)
                                 window.open(url.href, '_blank');
                             }}>
                                 <ListItemIcon color="inherit">

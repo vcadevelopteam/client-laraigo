@@ -441,6 +441,10 @@ export const Person: FC = () => {
             accessor: 'name',
         },
         {
+            Header: t(langKeys.personType),
+            accessor: 'persontype',
+        },
+        {
             Header: t(langKeys.phone),
             accessor: 'phone',
         },
@@ -937,7 +941,6 @@ export const Person: FC = () => {
                 persons={personsSelected}
                 type={typeTemplate}
                 onSubmitTrigger={() => {
-                    console.log("submit!!")
                     setCleanSelected(true)
                 }}
             />

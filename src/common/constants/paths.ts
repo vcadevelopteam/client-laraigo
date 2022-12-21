@@ -37,6 +37,10 @@ const paths = {
         path: "/cancelevent/:corpid/:orgid/:calendareventid/:calendarbookinguuid",
         resolve: (corpid: number, orgid: number, calendareventid: number, calendarbookinguuid: string) => `/events/${corpid}/${orgid}/${calendareventid}/${calendarbookinguuid}`,
     },
+    CULQI_PAYMENTORDER: {
+        path: "/paymentorder/:corpid/:orgid/:ordercode",
+        resolve: (corpid: number, orgid: number, ordercode: string) => `/paymentorder/${corpid}/${orgid}/${ordercode}`,
+    },
     LOCATION: {
         path: "/getLocations/:token",
         resolve: (token: string) => `/getLocations/${token}`,

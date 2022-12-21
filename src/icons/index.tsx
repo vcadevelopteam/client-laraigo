@@ -2,10 +2,11 @@ import conversations from '../icons/reports_conversations_report.png';
 import interactions from '../icons/reports_interactions_report.png';
 import heatmap from '../icons/reports_heat_map.png';
 import productivity_advisors_hour from '../icons/reports_productivity_advisors_hour.png';
-import productivity_advisors from '../icons/reports_productivity_advisors.png';
+import productivity_advisors from '../icons/reports_productivity_advisors.svg';
 import retry from '../icons/reports_retry_report.png';
 import typification from '../icons/reports_typification_report.png';
-import user_connections from '../icons/reports_user_connections_report.png';
+import user_connections from '../icons/reports_user_connections_report.svg';
+import uniquecontacts from '../icons/reports_unique_contacts.svg';
 
 export const reportsImage = [
   {
@@ -55,7 +56,11 @@ export const reportsImage = [
   {
     name: "reports_voicecall_report",
     image: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/3f392517-37c9-4a7e-99e1-9a9505eca6bf/canal_de_voz.svg'
-  }
+  },
+  {
+    name: "reports_reportuniquecontacts_report",
+    image: uniquecontacts
+  },
 ];
 
 export { ReactComponent as DashboardIcon } from 'icons/dashboard.svg';
@@ -218,3 +223,5 @@ export { ReactComponent as PostCreatorPostHistory } from './postcreator-posthist
 export { ReactComponent as PostCreatorPublish } from './postcreator-publish.svg';
 export { ReactComponent as PostCreatorStory } from './postcreator-story.svg';
 export { ReactComponent as GoogleCalendarIcon } from './google-calendar-2020.svg';
+export { ReactComponent as CallTransferActiveIcon } from './call-transfer-active.svg';
+export { ReactComponent as CallTransferInactiveIcon } from './call-transfer-inactive.svg';

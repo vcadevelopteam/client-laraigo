@@ -13,7 +13,7 @@ import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipification
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { changeStatus, getConversationClassification2, insertClassificationConversation, insLeadPerson } from 'common/helpers';
 import { execute, getCollectionAux2 } from 'store/main/actions';
-import { DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView, FieldMultiSelect, FieldMultiSelectFreeSolo } from 'components'
+import { DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView, FieldMultiSelectFreeSolo, FieldMultiSelectVirtualized } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -37,6 +37,7 @@ import { useLocation } from 'react-router-dom';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import ReplyPanel from './ReplyPanel';
 import InteractionsPanel from './InteractionsPanel';
+import { getLeadProductsDomain, resetGetLeadProductsDomain } from 'store/lead/actions';
 
 const dataPriority = [
     { option: 'HIGH' },
@@ -602,6 +603,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
     const user = useSelector(state => state.login.validateToken.user);
     const personSelected = useSelector(state => state.inbox.person.data);
     const [tagsDomain, setTagsDomain] = useState<Dictionary[]>([]);
+    const leadProductsDomain = useSelector(state => state.lead.leadProductsDomain);
 
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<{
         description: string;
@@ -620,6 +622,24 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
             setTagsDomain(multiData?.data[7] ? multiData?.data[7]?.data : []);
         }
     }, [multiData])
+    useEffect(() => {
+        dispatch(getLeadProductsDomain());
+
+        return () => {
+            dispatch(resetGetLeadProductsDomain());
+        };
+    }, [])
+    useEffect(() => {
+        if (leadProductsDomain.loading) return;
+        if (leadProductsDomain.error) {
+            const errormessage = t(leadProductsDomain.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
+            dispatch(showSnackbar({
+                message: errormessage,
+                severity: "error",
+                show: true,
+            }));
+        }
+    }, [leadProductsDomain, t, dispatch]);
 
     useEffect(() => {
         if (waitInsLead) {
@@ -682,7 +702,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
 
         const { firstname = "", lastname = "", email = "", phone = "" } = data;
         dispatch(showBackdrop(true));
-        dispatch(execute(insLeadPerson(newLead, firstname, lastname, email, phone, personSelected?.personid!!)))
+        dispatch(execute(insLeadPerson(newLead, firstname, lastname, email, phone, personSelected?.personid!!,personSelected?.persontype || "")))
         setWaitInsLead(true)
     });
 
@@ -749,15 +769,19 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
                     optionDesc="domaindesc"
                     optionValue="domaindesc"
                 />
-                <FieldMultiSelect
+                <FieldMultiSelectVirtualized
                     label={t(langKeys.product_plural)}
                     className="col-12"
                     valueDefault={getValues('products')}
-                    onChange={(value) => setValue('products', value.map((o: Dictionary) => o.domainvalue).join())}
+                    onChange={(v) => {
+                        const products = v?.map((o: Dictionary) => o['productid']).join(',') || '';
+                        setValue('products', products);
+                    }}
                     error={errors?.products?.message}
-                    data={multiData?.data[7] && multiData?.data[7]?.data}
-                    optionDesc="domaindesc"
-                    optionValue="domainvalue"
+                    data={leadProductsDomain.data}
+                    loading={leadProductsDomain.loading}
+                    optionDesc="title"
+                    optionValue="productid"
                 />
                 <div style={{ display: 'flex', gap: 16 }}>
                     <FieldEdit
@@ -941,14 +965,12 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     const [openModalHSM, setOpenModalHSM] = useState(false);
     const multiData = useSelector(state => state.main.multiData);
     const person = useSelector(state => state.inbox.person);
-    const statusCall = useSelector(state => state.voximplant.statusCall);
     const [checkTipification, setCheckTipification] = useState(false);
+    const [propertyAsesorSuspende, setpropertyAsesorSuspende] = useState(true);
     const mainAux2 = useSelector(state => state.main.mainAux2);
     const location = useLocation();
     const user = useSelector(state => state.login.validateToken.user);
     const userConnected = useSelector(state => state.inbox.userConnected);
-    const propertyAsesorSuspende = user?.roledesc === "ASESOR"? multiData?.data?.filter(x=>x.key==="UFN_PROPERTY_SELBYNAMEASESORSUSPENDE")?.[0]?.data?.[0].propertyvalue === "1": true
-    
     const closeTicket = (newstatus: string) => {
         if (newstatus === "CERRADO") {
             let tipificationproperty = (multiData?.data?.[12]?.data || [{ propertyvalue: "0" }])[0];
@@ -966,12 +988,25 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
         }
     };
 
-
     const handlerShowLogs = (e: any) => {
-        // setShowLogs(e.target.checked);
         dispatch(hideLogInteractions(e.target.checked))
     }
 
+    useEffect(() => {
+        if(user?.roledesc === "ASESOR"){
+            if(!!multiData){
+                let dataasesorsuspende = multiData?.data?.filter(x=>x.key==="UFN_PROPERTY_SELBYNAMEASESORSUSPENDE")?.[0]?.data
+                if(!user?.groups){
+                    setpropertyAsesorSuspende(true)
+                }else{
+                    let usergroups = user?.groups?.split(",") || [];
+                    setpropertyAsesorSuspende(usergroups.reduce((acc,x)=>acc*dataasesorsuspende?.filter(y=>y.group===x)?.[0]?.propertyvalue,1) === 1)
+                }
+            }
+        }else{
+            setpropertyAsesorSuspende(true)
+        }
+    }, [multiData,ticketSelected])
     useEffect(() => {
         if (checkTipification) {
             if (!mainAux2.loading) {
@@ -992,10 +1027,9 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     return (
         <>
             <div className={classes.containerButtonsChat}>
-                {(!voxiConnection.loading && statusCall !== "CONNECTED" && userConnected && statusCall !== "CONNECTING" &&
-                    ticketSelected?.communicationchanneltype !== "VOXI" && location.pathname === "/message_inbox") &&
+                {(!voxiConnection.error && userConnected && ticketSelected?.communicationchanneltype !== "VOXI" && location.pathname === "/message_inbox") &&
                     <Tooltip title={t(langKeys.make_call) + ""} arrow placement="top">
-                        <IconButton onClick={() => voxiConnection.error? dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) })):dispatch(setModalCall(true))}>
+                        <IconButton onClick={() => voxiConnection.error ? dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) })) : dispatch(setModalCall(true))}>
                             <PhoneIcon width={24} height={24} fill="#8F92A1" />
                         </IconButton>
                     </Tooltip>
@@ -1017,14 +1051,14 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                         </IconButton>
                     </Tooltip>
                 }
-                {(propertyAsesorSuspende && (ticketSelected?.status === 'SUSPENDIDO' && ticketSelected?.communicationchanneltype !== "VOXI")) &&
+                {(!!propertyAsesorSuspende && (ticketSelected?.status === 'SUSPENDIDO' && ticketSelected?.communicationchanneltype !== "VOXI")) &&
                     <Tooltip title={t(langKeys.activate_ticket) + ""} arrow placement="top">
                         <IconButton onClick={() => closeTicket("ASIGNADO")}>
                             <PlayArrowIcon width={24} height={24} fill="#8F92A1" />
                         </IconButton>
                     </Tooltip>
                 }
-                {(propertyAsesorSuspende && (ticketSelected?.status === 'ASIGNADO' && ticketSelected?.communicationchanneltype !== "VOXI")) &&
+                {(!!propertyAsesorSuspende && (ticketSelected?.status === 'ASIGNADO' && ticketSelected?.communicationchanneltype !== "VOXI")) &&
                     <Tooltip title={t(langKeys.suspend_ticket) + ""} arrow placement="top">
                         <IconButton onClick={() => closeTicket("SUSPENDIDO")}>
                             <PauseIcon width={24} height={24} fill="#8F92A1" />
@@ -1050,7 +1084,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                {(ticketSelected?.status !== 'CERRADO' && ticketSelected?.communicationchanneltype !== "VOXI" && (user?.roledesc === "ASESOR"?multiData?.data?.filter(x=>x.key==="UFN_PROPERTY_SELBYNAMEASESORDELEGACION")?.[0]?.data?.[0]?.propertyvalue==="1":true)) &&
+                {(ticketSelected?.status !== 'CERRADO' && ticketSelected?.communicationchanneltype !== "VOXI" && (user?.roledesc === "ASESOR" ? multiData?.data?.filter(x => x.key === "UFN_PROPERTY_SELBYNAMEASESORDELEGACION")?.[0]?.data?.[0]?.propertyvalue === "1" : true)) &&
                     <MenuItem onClick={() => {
                         setOpenModalReassignticket(true)
                         setAnchorEl(null)
@@ -1258,7 +1292,6 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
 }
 
 const ChatPanel: React.FC<{ classes: any }> = React.memo(({ classes }) => {
-    const call = useSelector(state => state.voximplant.call);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
 
     return (
@@ -1269,7 +1302,7 @@ const ChatPanel: React.FC<{ classes: any }> = React.memo(({ classes }) => {
             <InteractionsPanel
                 classes={classes}
             />
-            {(!(ticketSelected?.conversationid === call.data?.conversationid && !!call?.call)) && (
+            {(ticketSelected?.communicationchanneltype !== "VOXI") && (
                 <ReplyPanel
                     classes={classes} />
             )}

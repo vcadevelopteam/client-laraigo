@@ -17,7 +17,7 @@ const ManageCallInfoSupervisor: React.FC = () => {
     const phoneinbox = useSelector(state => state.inbox.person.data?.phone);
     const [numberVox, setNumberVox] = useState("");
     const resValidateToken = useSelector(state => state.login.validateToken);
-    const call = useSelector(state => state.voximplant.call);
+    const calls = useSelector(state => state.voximplant.calls);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const [supervision, setSupervision] = useState(false)
     const [time, settime] = useState(0);
@@ -34,11 +34,8 @@ const ManageCallInfoSupervisor: React.FC = () => {
     }, [ticketSelected?.callanswereddate])
 
     useEffect(() => {
-        if (call?.identifier) {
-            const conversationid = parseInt(call.identifier.split("-")[3])
-            if (conversationid === ticketSelected?.conversationid) {
-                setSupervision(true)
-            }
+        if (calls.some(call => `${call.number}_VOXI` === ticketSelected?.personcommunicationchannel && call.statusCall !== "DISCONNECTED" && call.type === "SUPERVISION")) {
+            setSupervision(true)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -47,7 +44,7 @@ const ManageCallInfoSupervisor: React.FC = () => {
         if (!supervision) {
             setSupervision(true)
             const { userid, orgid } = resValidateToken.user!!;
-            const url = `${ticketSelected?.commentexternalid}?mode=supervision&user=user${userid}.${orgid}`;
+            const url = `${ticketSelected?.commentexternalid}?mode=supervision&user=user${userid}.${orgid}&number=${ticketSelected?.personcommunicationchannel.split("_")[0]}`;
             fetch(url, { method: 'GET' })
                 .catch(() => setSupervision(false))
                 .then(() => {
@@ -64,8 +61,9 @@ const ManageCallInfoSupervisor: React.FC = () => {
                 type: "SUPERVISION"
             })));
             setSupervision(false)
-            dispatch(hangupCall(call.call));
-            dispatch(resetCall());
+            const call = calls.find(call => `${call.number}_VOXI` === ticketSelected?.personcommunicationchannel && call.statusCall !== "DISCONNECTED" && call.type === "SUPERVISION")
+            dispatch(hangupCall({ call: call?.call!!, number: call?.number }));
+            dispatch(resetCall(ticketSelected?.personcommunicationchannel.split("_")[0] || ""));
         }
     }
 
@@ -100,7 +98,7 @@ const ManageCallInfoSupervisor: React.FC = () => {
                 <CardContent>
                     {(ticketSelected?.status !== "CERRADO" && !!resValidateToken?.user?.voximplantcallsupervision) && (
                         <div style={{ display: "flex", justifyContent: "end" }}>
-                            <Tooltip title={t(langKeys.monitor_call) || ""}>
+                            <Tooltip title={t(supervision ? langKeys.monitor_call_off : langKeys.monitor_call) || ""}>
                                 <span>
                                     <ToggleButton
                                         value="check"
@@ -108,6 +106,7 @@ const ManageCallInfoSupervisor: React.FC = () => {
                                         selected={supervision}
                                         color="primary"
                                         onChange={triggerSupervision}
+                                        style={{ backgroundColor: supervision ? "#55bd84" : undefined, color: supervision ? "#ffffff" : undefined }}
                                     >
                                         <HearingIcon />
                                     </ToggleButton>

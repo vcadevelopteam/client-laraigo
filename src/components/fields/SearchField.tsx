@@ -79,7 +79,7 @@ const SearchField: FC<Props> = ({ colorPlaceHolder, handleChangeOther, handleSub
                 clearTimeout(timeOut.current);
                 timeOut.current = null;
             }
-        }, timelapse);
+        }, timelapse);       
     };
     useEffect(() => {
         if(cleanState){

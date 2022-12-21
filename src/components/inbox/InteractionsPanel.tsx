@@ -11,8 +11,8 @@ import ManageCallInfoSupervisor from './ManageCallInfoSupervisor';
 const InteractionsPanel: React.FC<{ classes: any }> = React.memo(({ classes }) => {
 
     const dispatch = useDispatch();
-    const call = useSelector(state => state.voximplant.call);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const userType = useSelector(state => state.inbox.userType);
     const groupInteractionList = useSelector(state => state.inbox.interactionList);
     const loadingInteractions = useSelector(state => state.inbox.interactionList.loading);
     const isOnBottom = useSelector(state => state.inbox.isOnBottom);
@@ -57,27 +57,27 @@ const InteractionsPanel: React.FC<{ classes: any }> = React.memo(({ classes }) =
             backgroundSize: '210px',
             zIndex: 1200
         }}>
-            {(ticketSelected?.conversationid === call.data?.conversationid && !!call?.call && ticketSelected?.status === "ASIGNADO") && (
+            {(userType === "AGENT" && ticketSelected?.communicationchanneltype === "VOXI") && (
                 <ManageCallInfoTicket />
             )}
-            {!(ticketSelected?.conversationid === call.data?.conversationid && !!call?.call && ticketSelected?.status === "ASIGNADO") &&
-                (ticketSelected?.communicationchanneltype === "VOXI" ? <ManageCallInfoSupervisor /> :
-                    (groupInteractionList.loading ? <SkeletonInteraction /> :
-                        <div style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: 8,
-                        }}>
-                            {groupInteractionList.data.map((groupInteraction) => (
-                                <ItemGroupInteraction
-                                    imageClient={ticketSelected!!.imageurldef}
-                                    clientName={ticketSelected!!.displayname}
-                                    classes={classes}
-                                    groupInteraction={groupInteraction}
-                                    key={groupInteraction.interactionid} />
-                            ))}
-                        </div>)
-                )}
+            {(userType === "SUPERVISOR" && ticketSelected?.communicationchanneltype === "VOXI") && (
+                <ManageCallInfoSupervisor />
+            )}
+            {(ticketSelected?.communicationchanneltype !== "VOXI") && (groupInteractionList.loading ? <SkeletonInteraction /> :
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 8,
+                }}>
+                    {groupInteractionList.data.map((groupInteraction) => (
+                        <ItemGroupInteraction
+                            imageClient={ticketSelected!!.imageurldef}
+                            clientName={ticketSelected!!.displayname}
+                            classes={classes}
+                            groupInteraction={groupInteraction}
+                            key={groupInteraction.interactionid} />
+                    ))}
+                </div>)}
             <div ref={el} />
         </div>
     )

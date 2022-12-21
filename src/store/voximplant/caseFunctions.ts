@@ -1,65 +1,124 @@
 import { IAction } from "@types";
 import { initialState, IState } from "./reducer";
 
-export const manageConnection = (state: IState, action: IAction): IState => {
-    return {
-        ...state,
-        connection: {
-            error: action.payload.error,
-            message: action.payload.message,
-            loading: action.payload.loading
-        }
+export const manageConnection = (state: IState, action: IAction): IState => ({
+    ...state,
+    connection: {
+        error: action.payload.error,
+        message: action.payload.message,
+        loading: action.payload.loading
     }
-};
+});
 
 export const setModalCall = (state: IState, action: IAction): IState => {
     return {
         ...state,
-        showcall: action.payload,
+        showcall: action.payload.showModalCall,
+        // transferAction: action.payload.transferAction,
     }
 }
-export const setPhoneNumber = (state: IState, action: IAction): IState => {
-    return {
-        ...state,
-        phoneNumber: action.payload,
-    }
-}
-export const setHold = (state: IState, action: IAction): IState => {
-    return {
-        ...state,
-        onholddate: new Date().toISOString(),
-        onhold: action.payload,
-    }
-}
-export const initCall = (state: IState, action: IAction): IState => {
-    return {
-        ...state,
-        call: action.payload,
-        onhold: false,
-        statusCall: "CONNECTING"
-    }
-}
-export const modifyCall = (state: IState, action: IAction): IState => {
-    return {
-        ...state,
-        call: {
-            ...state.call,
-            data: (action.payload.personcommunicationchannel === state.call.data?.personcommunicationchannel ? action.payload : state.call.data)
-        },
-    }
-}
+export const setPhoneNumber = (state: IState, action: IAction): IState => ({
+    ...state,
+    phoneNumber: action.payload,
+})
+
+export const setHold = (state: IState, action: IAction): IState => ({
+    ...state,
+    calls: state.calls.map(x => x.statusCall !== "DISCONNECTED" && x.number === action.payload.number ? ({
+        ...x,
+        onholddate: action.payload.hold ? (x.onholddate ? x.onholddate : new Date().toISOString()) : "",
+        onhold: action.payload.hold,
+    }) : x),
+})
+
+export const initCall = (state: IState, action: IAction): IState => ({
+    ...state,
+    calls: [...state.calls, action.payload],
+    callOnLine: true
+})
 
 export const manageStatusCall = (state: IState, action: IAction): IState => {
+    const newcalls = state.calls.map(x => x.statusCall !== "DISCONNECTED" && x.number === action.payload.number ? ({
+        ...x,
+        statusCall: action.payload.status
+    }) : x)
     return {
         ...state,
-        statusCall: action.payload
+        callOnLine: newcalls.some(call => call.statusCall !== "DISCONNECTED"),
+        calls: newcalls
     }
 }
 
-export const resetCall = (state: IState, action: IAction): IState => {
+export const resetCall = (state: IState, action: IAction): IState => ({
+    ...state,
+    calls: state.calls.filter(x => x.statusCall !== "DISCONNECTED" && x.number === action.payload)
+})
+
+export const setTransferAction = (state: IState, action: IAction): IState => {
     return {
         ...state,
-        call: initialState.call
+        transferAction: action.payload
+    }
+}
+
+export const initTransferCall = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        calls: state.calls.map(x => x.statusCall !== "DISCONNECTED" && x.number === action.payload.number ? ({
+            ...x,
+            transfer: {
+                ...action.payload,
+                statusCall: "CONNECTING",
+                mute: false,
+                hold: false,
+            }
+        }): x),
+    }
+}
+
+export const setMute = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        calls: state.calls.map(x => x.statusCall !== "DISCONNECTED" && x.number === (action.payload?.number || "").split("_")[0] ? ({
+            ...x,
+            mute: action.payload.mute
+        }): x),
+    }
+}
+
+export const connectedTransferCall = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        calls: state.calls.map(x => x.statusCall !== "DISCONNECTED" && x.number === action.payload.number ? ({
+            ...x,
+            transfer: {
+                ...x.transfer,
+                statusCall: "CONNECTED",
+            }
+        }): x),
+    }
+}
+
+export const setTransferCall = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        calls: state.calls.map(x => x.statusCall !== "DISCONNECTED" && x.number === action.payload.number ? ({
+            ...x,
+            transfer: {
+                ...x.transfer,
+                ...action.payload
+            }
+        }): x),
+    }
+}
+
+export const resetTransferCall = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        calls: state.calls.map(x => x.statusCall !== "DISCONNECTED" && x.number === action.payload.number ? ({
+            ...x,
+            transfer: undefined
+        }): x),
     }
 }
 

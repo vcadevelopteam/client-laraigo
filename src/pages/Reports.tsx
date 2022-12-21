@@ -149,7 +149,6 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
 
     useEffect(() => {
         dispatch(setViewChange(`report_${row?.origin}`))
-        console.log(`report_${row?.origin}`)
         return () => {
             dispatch(cleanViewChange());
         }
@@ -1123,7 +1122,7 @@ const Reports: FC = () => {
                                         component="img"
                                         height="140"
                                         className={classes.media}
-                                        image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/02reportehsm.png"
+                                        image={reportsImage.find(x => x.name === report.image)?.image || 'no_data.png'}
                                         title={t(langKeys.uniquecontactsreport)}
                                     />
                                     <CardContent>

@@ -178,6 +178,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
     const dispatch = useDispatch();
     const { t } = useTranslation();
     // const referrerList = useSelector(state => state.person.personReferrerList);
+    const ocupationProperty = domains?.value?.ocupationProperty?.[0]?.propertyvalue || "DOMINIO"
 
     useEffect(() => {
         if (person.referringpersonid) {
@@ -187,7 +188,6 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
             };
         }
     }, [dispatch, person]);
-
     return (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
             <Grid container direction="row">
@@ -387,15 +387,15 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 subtitle={(
                                     <FieldSelect
                                         uset={true}
-                                        valueDefault={person.type}
+                                        valueDefault={getValues("persontype")}
                                         onChange={(value) => {
-                                            setValue('type', value?.domainvalue);
+                                            setValue('persontype', value?.domainvalue||"");
                                         }}
                                         loading={domains.loading}
                                         data={domains.value?.personTypes || []}
-                                        prefixTranslation="type_personlevel_"
+                                        prefixTranslation="type_persontype_"
                                         optionValue="domainvalue"
-                                        optionDesc="domaindesc"
+                                        optionDesc="domainvalue"
                                     />
                                 )}
                                 m={1}
@@ -407,15 +407,15 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 subtitle={(
                                     <FieldSelect
                                         uset={true}
-                                        valueDefault={getValues("persontype")}
+                                        valueDefault={person.type}
                                         onChange={(value) => {
-                                            setValue('persontype', value?.domainvalue);
+                                            setValue('type', value?.domainvalue||"");
                                         }}
                                         loading={domains.loading}
                                         data={domains.value?.personGenTypes || []}
-                                        prefixTranslation="type_persontype_"
+                                        prefixTranslation="type_personlevel_"
                                         optionValue="domainvalue"
-                                        optionDesc="domainvalue"
+                                        optionDesc="domaindesc"
                                     />
                                 )}
                                 m={1}
@@ -517,7 +517,8 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         defaultValue={getValues("birthday")}
                                         value={getValues("birthday")}
                                         onChange={e => {
-                                            setValue('birthday', e.target.value)
+                                            setValue('birthday', e?.target?.value||null)
+                                            trigger("birthday")
                                         }}
                                     />
                                 )}
@@ -532,8 +533,8 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         uset={true}
                                         valueDefault={getValues("gender")}
                                         onChange={(value) => {
-                                            setValue('gender', value?.domainvalue);
-                                            setValue('genderdesc', value?.domaindesc)
+                                            setValue('gender', value?.domainvalue||"");
+                                            setValue('genderdesc', value?.domaindesc||"")
                                         }}
                                         loading={domains.loading}
                                         data={domains.value?.genders || []}
@@ -553,8 +554,8 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         uset={true}
                                         valueDefault={getValues("educationlevel")}
                                         onChange={(value) => {
-                                            setValue('educationlevel', value?.domainvalue);
-                                            setValue('educationleveldesc', value?.domaindesc)
+                                            setValue('educationlevel', value?.domainvalue||"");
+                                            setValue('educationleveldesc', value?.domaindesc||"")
                                         }}
                                         loading={domains.loading}
                                         data={domains.value?.educationLevels || []}
@@ -574,8 +575,8 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         uset={true}
                                         valueDefault={getValues("civilstatus")}
                                         onChange={(value) => {
-                                            setValue('civilstatus', value?.domainvalue);
-                                            setValue('civilstatusdesc', value?.domaindesc)
+                                            setValue('civilstatus', value?.domainvalue||"");
+                                            setValue('civilstatusdesc', value?.domaindesc||"")
                                         }}
                                         loading={domains.loading}
                                         data={domains.value?.civilStatuses || []}
@@ -587,7 +588,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 m={1}
                             />
                         </Grid>
-                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                        {ocupationProperty === "DOMINIO"? <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                             <Property
                                 title={<Trans i18nKey={langKeys.occupation} />}
                                 subtitle={(
@@ -595,8 +596,8 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         uset={true}
                                         valueDefault={getValues("occupation")}
                                         onChange={(value) => {
-                                            setValue('occupation', value?.domainvalue);
-                                            setValue('occupationdesc', value?.domaindesc)
+                                            setValue('occupation', value?.domainvalue||"");
+                                            setValue('occupationdesc', value?.domaindesc||"")
                                         }}
                                         loading={domains.loading}
                                         data={domains.value?.occupations || []}
@@ -607,7 +608,26 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 )}
                                 m={1}
                             />
-                        </Grid>
+                        </Grid>:                        
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.occupation} />}
+                                subtitle={(
+                                    <TextField
+                                        fullWidth
+                                        placeholder={t(langKeys.occupation)}
+                                        defaultValue={getValues("occupation")}
+                                        value={getValues("occupation")}
+                                        onChange={e => {
+                                            setValue('occupation', e.target.value)
+                                            setValue('occupationdesc', e.target.value)
+                                            trigger("occupation")
+                                        }}
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>}
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                             <Property
                                 title={<Trans i18nKey={langKeys.group} count={2} />}
@@ -615,7 +635,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                     <FieldSelect
                                         valueDefault={getValues("groups")}
                                         onChange={(value) => {
-                                            setValue('groups', value?.domainvalue);
+                                            setValue('groups', value?.domainvalue||"");
                                         }}
                                         loading={domains.loading}
                                         data={domains.value?.groups || []}
@@ -785,7 +805,7 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
     const classes = useChannelItemStyles();
     const dispatch = useDispatch();
     const voxiConnection = useSelector(state => state.voximplant.connection);
-    const statusCall = useSelector(state => state.voximplant.statusCall);
+    const callOnLine = useSelector(state => state.voximplant.callOnLine);
     const userConnected = useSelector(state => state.inbox.userConnected);
     const [waitUnLink, setWaitUnLink] = useState(false);
     const unLinkRes = useSelector(state => state.main.execute);
@@ -864,7 +884,7 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                             <label className={classes.propTitle}>{<Trans i18nKey={langKeys.personIdentifier} />}</label>
                             <div style={{ height: 4 }} />
                             <div style={{ display: "flex" }}>
-                                {(!voxiConnection.error && !voxiConnection.loading && statusCall !== "CONNECTED" && userConnected && statusCall !== "CONNECTING" && (channel.type.includes("WHA") || channel.type.includes("VOXI"))) &&
+                                {(!voxiConnection.error && !voxiConnection.loading && userConnected && !callOnLine && (channel.type.includes("WHA") || channel.type.includes("VOXI"))) &&
                                     <IconButton
                                         className={classes.buttonphone}
                                         onClick={() => { dispatch(setPhoneNumber(channel.personcommunicationchannelowner.replaceAll('+', ''))); dispatch(setModalCall(true)) }}

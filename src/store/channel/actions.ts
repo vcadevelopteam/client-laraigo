@@ -123,7 +123,7 @@ export const resetInsertChannel = () => ({ type: actionTypes.INSERT_CHANNEL_RESE
 
 export const editChannel = (payload: IRequestBody<IChannel | IChatWebAdd>, channelType?: string): IActionCall => ({
     callAPI: async () => {
-        if (channelType === "CHAZ") {
+        if (channelType === "CHAZ" || channelType === "SMOOCHANDROID") {
             const service = payload.service as IChatWebAdd;
             let chatIcon = service.interface.iconbutton as File | string | null;
             let headerIcon = service.interface.iconheader as File | string | null;

@@ -9,7 +9,6 @@ import { langKeys } from 'lang/keys';
 import { Control, FieldErrors, UseFormGetValues, UseFormRegister, UseFormSetValue, UseFormTrigger } from 'react-hook-form';
 import { useFieldArray } from 'react-hook-form';
 import { Box, Checkbox, FormControl, FormControlLabel, FormGroup, IconButton, Radio, RadioGroup, Switch, TextField, Typography } from '@material-ui/core';
-import { Range } from 'react-date-range';
 import { CalendarIcon } from 'icons';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Schedule from 'components/fields/Schedule';

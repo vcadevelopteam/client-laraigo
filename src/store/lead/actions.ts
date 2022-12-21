@@ -226,6 +226,18 @@ export const getLeadTagsDomain = (body: IRequestBody): IActionCall => ({
 
 export const resetGetLeadTagsDomain = (): IActionCall => ({ type: actionTypes.GET_LEAD_TAGS_DOMAIN_RESET });
 
+export const getPersonType = (body: IRequestBody): IActionCall => ({
+    callAPI: () => CommonService.main(body),
+    types: {
+        loading: actionTypes.GET_PERSON_TYPE,
+        success: actionTypes.GET_PERSON_TYPE_SUCCESS,
+        failure: actionTypes.GET_PERSON_TYPE_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetPersonType = (): IActionCall => ({ type: actionTypes.GET_PERSON_TYPE_RESET });
+
 export const getLeadTemplates = (): IActionCall => ({
     callAPI: () => CommonService.main(getMessageTemplateLst('')),
     types: {
