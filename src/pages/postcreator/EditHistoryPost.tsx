@@ -4,7 +4,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import DateFnsUtils from '@date-io/date-fns';
 import React, { Fragment, useEffect, useState, useCallback } from "react";
 
-import { AccountCircle, CameraAlt, ChatBubble, Delete, Facebook, Instagram, LinkedIn, PlayCircleOutlineSharp, Replay, Reply, Save, Send, ThumbUp, Timelapse, Twitter, YouTube, Schedule } from '@material-ui/icons';
+import { CameraAltOutlined, ChatBubbleOutline, Delete, Facebook, Instagram, LinkedIn, PlayCircleOutlineSharp, ReplayOutlined, ReplyOutlined, Save, SendOutlined, ThumbUpOutlined, Timelapse, Twitter, YouTube, Schedule } from '@material-ui/icons';
 import { Button } from "@material-ui/core";
 import { dataActivities, localesLaraigo } from 'common/helpers';
 import { dataFeelings } from 'common/helpers/dataFeeling';
@@ -31,6 +31,28 @@ const useStyles = makeStyles((theme) => ({
         padding: 12,
         textTransform: 'initial',
         width: 'auto',
+    },
+    buttonSocial: {
+        alignItems: 'center',
+        backgroundColor: "#BAB8B8",
+        color: "#FFFFFF",
+        display: 'flex',
+        fontSize: '14px',
+        fontWeight: 500,
+        marginBottom: '10px',
+        marginLeft: '4px',
+        marginRight: '4px',
+        padding: 12,
+        textTransform: 'initial',
+        width: 'auto',
+        '&:disabled': {
+            backgroundColor: "#197BC8",
+            color: "#FFFFFF",
+        },
+        '&:hover': {
+            backgroundColor: "#BAB8B8",
+            color: "#FFFFFF",
+        },
     },
     containerLeft: {
         [theme.breakpoints.down('xs')]: {
@@ -107,26 +129,32 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                 switch (row?.communicationchanneltype) {
                     case "FBWA":
                         setPreviewType('FACEBOOKPREVIEW');
+                        setCustomizeType('Facebook');
                         break;
 
                     case "INST":
                         setPreviewType('INSTAGRAMPREVIEW');
+                        setCustomizeType('Instagram');
                         break;
 
                     case "LNKD":
                         setPreviewType('LINKEDINPREVIEW');
+                        setCustomizeType('LinkedIn');
                         break;
 
                     case "TKTK":
                         setPreviewType('TIKTOKPREVIEW');
+                        setCustomizeType('TikTok');
                         break;
 
                     case "YOUT":
                         setPreviewType('YOUTUBEPREVIEW');
+                        setCustomizeType('YouTube');
                         break;
 
                     case "TWIT":
                         setPreviewType('TWITTERPREVIEW');
+                        setCustomizeType('Twitter');
                         break;
                 }
             }
@@ -313,11 +341,19 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                         </div>
                                     </div>
                                 </div>
+                                <div className="row-zyx" style={{ marginBottom: '26px', height: '10px', paddingLeft: '2px' }}>
+                                    <FieldView
+                                        className="col-12"
+                                        label={''}
+                                        styles={{ fontWeight: 'bold', color: '#762AA9' }}
+                                        value={t(langKeys.title)}
+                                    />
+                                </div>
                                 <div className="row-zyx" style={{ marginBottom: '0px', paddingLeft: '6px' }}>
                                     <FieldEdit
                                         className="col-12"
                                         error={errors?.texttitle?.message}
-                                        label={t(langKeys.title)}
+                                        label={''}
                                         onChange={(value) => { setValue('texttitle', value); trigger('texttitle'); }}
                                         valueDefault={getValues('texttitle')}
                                         disabled={isPublished}
@@ -406,8 +442,8 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                             className={classes.button}
                                             variant="contained"
                                             color="primary"
-                                            startIcon={<Delete color="secondary" />}
-                                            style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                            startIcon={<Delete style={{ color: "#757575" }} />}
+                                            style={{ backgroundColor: "#EBEAEA", color: "#757575", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                             onClick={handleDeleteMedia}
                                             disabled={isPublished}
                                         >{t(langKeys.postcreator_publish_delete)}
@@ -425,7 +461,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                                 color="primary"
                                                 disabled={(waitUploadFile || fileAttachment !== null || isPublished) || (getValues('mediatype') === 'IMAGE' ? (getValues('medialink') || []).length >= 3 : (getValues('medialink') || []).length >= 1)}
                                                 onClick={onClickAttachment}
-                                                startIcon={getValues('mediatype') === 'IMAGE' ? <CameraAlt color="secondary" /> : <PlayCircleOutlineSharp color="secondary" />}
+                                                startIcon={getValues('mediatype') === 'IMAGE' ? <CameraAltOutlined color="secondary" /> : <PlayCircleOutlineSharp color="secondary" />}
                                                 style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                                 variant="contained"
                                             >{getValues('mediatype') === 'IMAGE' ? t(langKeys.postcreator_publish_addimage) : t(langKeys.postcreator_publish_addvideo)}
@@ -447,37 +483,34 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                 </div>
                                 <div className="row-zyx" style={{ alignItems: 'center', display: 'flex', justifyContent: 'center' }}>
                                     {getValues('communicationchanneltype') === "FBWA" && <Button
-                                        className={classes.button}
+                                        className={classes.buttonSocial}
                                         variant="contained"
                                         color="primary"
                                         onClick={() => { setCustomizeType('Facebook') }}
                                         startIcon={<Facebook color="secondary" />}
-                                        style={{ backgroundColor: "#197BC8", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         disabled={customizeType === 'Facebook'}
                                     >{t(langKeys.postcreator_publish_facebook)}
                                     </Button>}
                                     {getValues('communicationchanneltype') === "INST" && <Button
-                                        className={classes.button}
+                                        className={classes.buttonSocial}
                                         variant="contained"
                                         color="primary"
                                         onClick={() => { setCustomizeType('Instagram') }}
                                         startIcon={<Instagram color="secondary" />}
-                                        style={{ backgroundColor: "#197BC8", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         disabled={customizeType === 'Instagram'}
                                     >{t(langKeys.postcreator_publish_instagram)}
                                     </Button>}
                                     {getValues('communicationchanneltype') === "LNKD" && <Button
-                                        className={classes.button}
+                                        className={classes.buttonSocial}
                                         variant="contained"
                                         color="primary"
                                         onClick={() => { setCustomizeType('LinkedIn') }}
                                         startIcon={<LinkedIn color="secondary" />}
-                                        style={{ backgroundColor: "#197BC8", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         disabled={customizeType === 'LinkedIn'}
                                     >{t(langKeys.postcreator_publish_linkedin)}
                                     </Button>}
                                     {getValues('communicationchanneltype') === "TKTK" && <Button
-                                        className={classes.button}
+                                        className={classes.buttonSocial}
                                         variant="contained"
                                         color="primary"
                                         onClick={() => { setCustomizeType('TikTok') }}
@@ -490,27 +523,24 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                         >
                                             <path d="M41,4H9C6.243,4,4,6.243,4,9v32c0,2.757,2.243,5,5,5h32c2.757,0,5-2.243,5-5V9C46,6.243,43.757,4,41,4z M37.006,22.323 c-0.227,0.021-0.457,0.035-0.69,0.035c-2.623,0-4.928-1.349-6.269-3.388c0,5.349,0,11.435,0,11.537c0,4.709-3.818,8.527-8.527,8.527 s-8.527-3.818-8.527-8.527s3.818-8.527,8.527-8.527c0.178,0,0.352,0.016,0.527,0.027v4.202c-0.175-0.021-0.347-0.053-0.527-0.053 c-2.404,0-4.352,1.948-4.352,4.352s1.948,4.352,4.352,4.352s4.527-1.894,4.527-4.298c0-0.095,0.042-19.594,0.042-19.594h4.016 c0.378,3.591,3.277,6.425,6.901,6.685V22.323z" />
                                         </svg>}
-                                        style={{ backgroundColor: "#197BC8", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         disabled={customizeType === 'TikTok'}
                                     >{t(langKeys.postcreator_publish_tiktok)}
                                     </Button>}
                                     {getValues('communicationchanneltype') === "TWIT" && <Button
-                                        className={classes.button}
+                                        className={classes.buttonSocial}
                                         variant="contained"
                                         color="primary"
                                         onClick={() => { setCustomizeType('Twitter') }}
                                         startIcon={<Twitter color="secondary" />}
-                                        style={{ backgroundColor: "#197BC8", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         disabled={customizeType === 'Twitter'}
                                     >{t(langKeys.postcreator_publish_twitter)}
                                     </Button>}
                                     {getValues('communicationchanneltype') === "YOUT" && <Button
-                                        className={classes.button}
+                                        className={classes.buttonSocial}
                                         variant="contained"
                                         color="primary"
                                         onClick={() => { setCustomizeType('YouTube') }}
                                         startIcon={<YouTube color="secondary" />}
-                                        style={{ backgroundColor: "#197BC8", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         disabled={customizeType === 'YouTube'}
                                     >{t(langKeys.postcreator_publish_youtube)}
                                     </Button>}
@@ -621,14 +651,14 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                     <FieldView
                                         className="col-12"
                                         label={''}
-                                        value={t(langKeys.postcreator_publish_preview)}
+                                        value={t(langKeys.postcreator_publish_previewmode)}
                                         styles={{ fontWeight: 'bold', color: '#762AA9' }}
                                     />
                                 </div>
                                 <div className="row-zyx">
                                     <FieldSelect
-                                        label={t(langKeys.postcreator_publish_previewmode)}
-                                        style={{ width: '100%', backgroundColor: 'white' }}
+                                        label={''}
+                                        style={{ width: '100%', backgroundColor: 'white', marginBottom: '20px' }}
                                         valueDefault={previewType}
                                         variant="outlined"
                                         onChange={(value) => { setPreviewType(value?.value) }}
@@ -687,9 +717,9 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                             <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto' }} src={getValues('medialink')[0].thumbnail}></img>
                                         </div>}
                                         <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginLeft: 'auto', marginRight: 'auto', marginBottom: '10px', marginTop: '6px' }}>
-                                            <div style={{ width: '33%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ThumbUp style={{ marginRight: '6px' }} /><b>{t(langKeys.postcreator_publish_facebookmockup_like)}</b></div>
-                                            <div style={{ width: '34%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ChatBubble style={{ marginRight: '6px' }} /><b>{t(langKeys.postcreator_publish_facebookmockup_comment)}</b></div>
-                                            <div style={{ width: '33%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><Reply style={{ marginRight: '6px' }} /><b>{t(langKeys.postcreator_publish_facebookmockup_share)}</b></div>
+                                            <div style={{ width: '33%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ThumbUpOutlined style={{ marginRight: '6px' }} /><b>{t(langKeys.postcreator_publish_facebookmockup_like)}</b></div>
+                                            <div style={{ width: '34%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ChatBubbleOutline style={{ marginRight: '6px' }} /><b>{t(langKeys.postcreator_publish_facebookmockup_comment)}</b></div>
+                                            <div style={{ width: '33%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ReplyOutlined style={{ marginRight: '6px' }} /><b>{t(langKeys.postcreator_publish_facebookmockup_share)}</b></div>
                                         </div>
                                     </div>
                                 </div>}
@@ -772,11 +802,10 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                             <img loading='eager' alt="" style={{ maxWidth: '100%', marginRight: 16, marginBottom: 6 }} src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/b9c67f51-5291-4fb6-a76a-d295ad8dac98/LinkedInButton2.png"></img>
                                         </div>
                                         <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginLeft: 'auto', marginRight: 'auto', marginBottom: '14px', marginTop: '6px', fontSize: '12px' }}>
-                                            <div style={{ width: '12%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><AccountCircle style={{ height: '16px', width: '16px' }} /></div>
-                                            <div style={{ width: '22%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ThumbUp style={{ height: '16px', width: '16px', marginRight: '2px' }} /><b>{t(langKeys.postcreator_publish_linkedin_like)}</b></div>
-                                            <div style={{ width: '22%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ChatBubble style={{ height: '16px', width: '16px', marginRight: '2px' }} /><b>{t(langKeys.postcreator_publish_linkedin_comment)}</b></div>
-                                            <div style={{ width: '22%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><Replay style={{ height: '16px', width: '16px', marginRight: '2px' }} /><b>{t(langKeys.postcreator_publish_linkedin_repost)}</b></div>
-                                            <div style={{ width: '22%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><Send style={{ height: '16px', width: '16px', marginRight: '2px' }} /><b>{t(langKeys.postcreator_publish_linkedin_send)}</b></div>
+                                            <div style={{ width: '25%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ThumbUpOutlined style={{ height: '16px', width: '16px', marginRight: '2px' }} /><b>{t(langKeys.postcreator_publish_linkedin_like)}</b></div>
+                                            <div style={{ width: '25%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ChatBubbleOutline style={{ height: '16px', width: '16px', marginRight: '2px' }} /><b>{t(langKeys.postcreator_publish_linkedin_comment)}</b></div>
+                                            <div style={{ width: '25%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ReplayOutlined style={{ height: '16px', width: '16px', marginRight: '2px' }} /><b>{t(langKeys.postcreator_publish_linkedin_repost)}</b></div>
+                                            <div style={{ width: '25%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><SendOutlined style={{ height: '16px', width: '16px', marginRight: '2px' }} /><b>{t(langKeys.postcreator_publish_linkedin_send)}</b></div>
                                         </div>
                                     </div>
                                 </div>}
@@ -825,6 +854,14 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                             <img loading='eager' alt="" style={{ maxWidth: '80%', display: 'flex', width: '80%', maxHeight: '340px', paddingLeft: 'auto', paddingRight: 'auto', borderRadius: '8px' }} src={getValues('medialink')[0].thumbnail}></img>
                                         </div>}
                                     </div>
+                                </div>}
+                                {!isPublished && <div className="row-zyx" style={{ marginTop: '-6px' }}>
+                                    <FieldView
+                                        className="col-12"
+                                        label={''}
+                                        value={t(langKeys.postcreator_publish_preview)}
+                                        styles={{ fontWeight: 'bold', color: '#762AA9' }}
+                                    />
                                 </div>}
                                 {!isPublished && <div className="row-zyx" style={{ marginTop: '18px', alignItems: 'center', display: 'flex', justifyContent: 'center' }}>
                                     <Button
