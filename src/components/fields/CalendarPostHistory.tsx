@@ -166,6 +166,7 @@ const PostHistoryTime: FC<{ item: Dictionary; hourData: HourDayProp, handleClick
             className={classes.itemBooking}
             style={{
                 backgroundColor: item.publishtatus === "ERROR" ? "#F12601" : (item.type === "POST" ? "#FFDC73" : "#BAFFC9"),
+                color: item.publishtatus === "ERROR" ? "#FFFFFF" : "#000000",
                 height: `${item.medialink?.[0]?.thumbnail ? (item.totalTime * 2.6) : item.totalTime}%`,
                 position: "absolute",
                 top: `${item.initTime}%`
