@@ -133,7 +133,7 @@ const DashboardLayout: FC = () => {
             dashboardtemplateid: match.params.id,
             startdate: format(dateRange.startDate!),
             enddate: format(dateRange.endDate!),
-            offset: -5,
+            offset: (new Date().getTimezoneOffset() / 60) * -1,
         }));
     }, [dateRange, match.params.id, dispatch]);
 
