@@ -455,7 +455,7 @@ export const CalendarEvent: FC = () => {
             personname: data.name,
             personcontact: data.phone,
             personmail: data.email,
-            persontimezone: -5.00,
+            persontimezone: (new Date().getTimezoneOffset() / 60) * -1,
             operation: 'INSERT',
             username: 'admin',
             email: data.email,
