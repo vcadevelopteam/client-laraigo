@@ -115,6 +115,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
     const colors = ['', 'cyan', 'red', 'violet', 'blue', 'blueviolet'];
     const history = useHistory();
     const user = useSelector(state => state.login.validateToken.user);
+    const { t } = useTranslation();
 
     const handleMoreVertClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -150,7 +151,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                 <span className={classes.info}>{user?.currencysymbol||"S/."} {Number(lead.expected_revenue).toLocaleString('en-US')}</span>
                 <span className={classes.info}>{lead.displayname}</span>
                 {!!lead?.persontype && lead?.persontype !== null && <span style={{fontWeight: "bold"}} className={classes.info}>
-                    {lead.persontype}
+                    {t(langKeys.client).toLocaleUpperCase()} {lead.persontype}
                 </span>}
                 <div className={classes.tagsRow}>
                     {tags.map((tag: String, index: number) =>

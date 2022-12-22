@@ -807,6 +807,18 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                         readOnly: isStatusClosed() || iSProcessLoading(),
                                     }}
                                 />
+                                <FieldSelect
+                                    label={t(langKeys.personType)}
+                                    className={classes.field}
+                                    valueDefault={getValues('persontype')}
+                                    loading={personTypeDomain.loading}
+                                    data={personTypeDomain.data}
+                                    prefixTranslation="type_personlevel_"
+                                    optionDesc="domaindesc"
+                                    optionValue="domainvalue"
+                                    onChange={(value) => setValue('persontype', value ? value.domainvalue : '')}
+                                    readOnly={isStatusClosed() || iSProcessLoading()}
+                                />
                                 <FieldEdit
                                     label={t(langKeys.expected_revenue)}
                                     className={classes.field}
@@ -857,18 +869,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     optionValue="userid"
                                     onChange={(value) => setValue('userid', value ? value.userid : '')}
                                     error={errors?.userid?.message}
-                                    readOnly={isStatusClosed() || iSProcessLoading()}
-                                />
-                                <FieldSelect
-                                    label={t(langKeys.personType)}
-                                    className={classes.field}
-                                    valueDefault={getValues('persontype')}
-                                    loading={personTypeDomain.loading}
-                                    data={personTypeDomain.data}
-                                    prefixTranslation="type_personlevel_"
-                                    optionDesc="domaindesc"
-                                    optionValue="domainvalue"
-                                    onChange={(value) => setValue('persontype', value ? value.domainvalue : '')}
                                     readOnly={isStatusClosed() || iSProcessLoading()}
                                 />
                                 <FieldMultiSelectVirtualized
