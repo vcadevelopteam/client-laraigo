@@ -3,7 +3,7 @@ import React, { FC, Fragment, useEffect, useState } from 'react'; // we need thi
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, FieldEditMulti, DialogZyx } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, FieldEditMulti, DialogZyx, FieldEditWithSelect } from 'components';
 import { getParentSel, getValuesFromDomain, getClassificationSel, insClassification, uploadExcel, getValuesForTree, exportExcel, templateMaker } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -24,7 +24,10 @@ import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import { TreeItem, TreeView } from '@material-ui/lab';
 import { useHistory } from 'react-router-dom';
 import paths from 'common/constants/paths';
+import { EmojiPickerZyx } from 'components'
+import { emojis } from "common/constants/emojis";
 
+const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
@@ -150,7 +153,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
 
     const datachannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
     
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, getValues,formState: { errors } } = useForm({
         defaultValues: {
             type: externalUse ? externalType : (row ? row?.type : 'TIPIFICACION'),
             id: row?.classificationid || 0,
@@ -280,19 +283,21 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                                 value={row ? (row.title || "") : ""}
                                 className="col-6"
                             />}
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.description)}
-                                className="col-6"
-                                onChange={(value) => setValue('description', value)}
-                                valueDefault={row ? (row.description || "") : ""}
-                                error={errors?.description?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.description)}
-                                value={row ? (row.description || "") : ""}
-                                className="col-6"
-                            />}
+                        <div className='col-6' style={{ position: 'relative' }}>
+                            <>        
+                                <FieldEdit
+                                    label={t(langKeys.description)}
+                                    onChange={(value) => setValue('description', value)}
+                                    valueDefault={row?.description || ""}
+                                    error={errors?.description?.message}
+                                />        
+                                <EmojiPickerZyx
+                                    emojisIndexed={EMOJISINDEXED} 
+                                    style={{ position: "absolute", bottom: "10px", display: 'flex', justifyContent: 'end', right: 16 }}
+                                    onSelect={e => setValue('description', getValues("description") + e.native)} />
+    
+                            </>
+                        </div>
                     </div>
                     <div className="row-zyx">
                         {edit ?
