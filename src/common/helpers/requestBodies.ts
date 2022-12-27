@@ -3218,7 +3218,7 @@ export const listPaymentCard = ({ corpid, orgid, id }: Dictionary) => ({
     parameters: { corpid, orgid, id },
 });
 
-export const paymentCardInsert = ({ corpid, orgid, paymentcardid, cardnumber, cardcode, firstname, lastname, mail, favorite, clientcode, status, type, username }: Dictionary) => ({
+export const paymentCardInsert = ({ corpid, orgid, paymentcardid, cardnumber, cardcode, firstname, lastname, mail, favorite, clientcode, status, type, username, phone }: Dictionary) => ({
     method: "UFN_PAYMENTCARD_INS",
     key: "UFN_PAYMENTCARD_INS",
     parameters: {
@@ -3235,6 +3235,7 @@ export const paymentCardInsert = ({ corpid, orgid, paymentcardid, cardnumber, ca
         status,
         type,
         username,
+        phone,
         operation: paymentcardid ? 'UPDATE' : 'INSERT',
     },
 });

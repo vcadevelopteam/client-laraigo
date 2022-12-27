@@ -26,6 +26,9 @@ import { ListChannels, SubscriptionContext, MainData } from "./context";
 import { useSelector } from "hooks";
 import { Controller, useFormContext } from "react-hook-form";
 import { FieldSelect } from "components";
+import { styled } from '@material-ui/core/styles';
+
+import MuiPhoneNumber from 'material-ui-phone-number';
 
 const useLeftSideStyles = makeStyles(theme => ({
     root: {
@@ -54,6 +57,20 @@ const useLeftSideStyles = makeStyles(theme => ({
         },
     }
 }));
+
+const CssPhonemui = styled(MuiPhoneNumber)({
+    '& label.Mui-focused': {
+        color: '#7721ad',
+    },
+    '& .MuiInput-underline:after': {
+        borderBottomColor: '#7721ad',
+    },
+    '& .MuiOutlinedInput-root': {
+        '&.Mui-focused fieldset': {
+            borderColor: '#7721ad',
+        },
+    },
+});
 
 interface LeftSideProps {
     setOpenWarning: (param: any) => void;
@@ -267,6 +284,34 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                             label={t(langKeys.email)}
                             error={!!errors.pmemail}
                             helperText={errors.pmemail?.message}
+                        />
+                    )}
+                />
+                <Controller
+                    name="pmphone"
+                    control={control}
+                    rules={{
+                        validate: (value) => {
+                            if (currentView === "view-2") {
+                                if (value.length === 0) {
+                                    return t(langKeys.field_required) as string;
+                                } else if (value.length < 10) {
+                                    return t(langKeys.validationphone) as string;
+                                }
+                            }
+                        }
+                    }}
+                    render={({ field, formState: { errors } }) => (
+                        <CssPhonemui
+                            {...field}
+                            variant="outlined"
+                            margin="normal"
+                            fullWidth
+                            size="small"
+                            defaultCountry={'pe'}
+                            label={t(langKeys.phone)}
+                            error={!!errors?.pmphone}
+                            helperText={errors?.pmphone?.message}
                         />
                     )}
                 />

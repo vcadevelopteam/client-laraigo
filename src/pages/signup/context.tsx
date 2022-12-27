@@ -282,6 +282,7 @@ export interface MainData {
     firstname: string;
     lastname: string;
     pmemail: string;
+    pmphone: string;
     firstnamecard: string;
     lastnamecard: string;
     creditcard: string;
@@ -422,6 +423,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
             industry: "",
             rolecompany: "",
             pmemail: "",
+            pmphone: "",
             firstnamecard: "",
             lastnamecard: "",
             creditcard: "",
@@ -610,6 +612,7 @@ export const SubscriptionProvider: FC = ({ children }) => {
                 firstname: mainData.firstnamecard,
                 lastname: mainData.lastnamecard,
                 mail: mainData.pmemail,
+                phone: mainData.pmphone,
                 cardnumber: mainData.creditcard.replace(/[^0-9]/g, ''),
                 expirationmonth: String(mainData.mm),
                 expirationyear: mainData.yyyy,
