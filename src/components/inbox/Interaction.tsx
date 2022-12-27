@@ -279,10 +279,12 @@ const InteractiveList: React.FC<{ onlyTime?: string, interactiontext: string, cr
         <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
             [classes.interactionTextAgent]: userType !== 'client',
         })}>
-            {jsonIntt.headertype === "text" ? (
+            {(jsonIntt.headertype === "text" || !jsonIntt.headertype) ? (
                 <div style={{ fontWeight: 500 }}>{jsonIntt.header}</div>
             ) : jsonIntt.header}
-            {jsonIntt.body}
+            <div>
+                {jsonIntt.body}
+            </div>
             {jsonIntt.footer && (
                 <div style={{ color: 'rgb(0,0,0,0.45)', fontSize: 12 }}>{jsonIntt.footer}</div>
             )}
