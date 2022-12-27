@@ -358,7 +358,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                                 setValue('order', value)
                             }}
                             InputProps={{
-                                inputProps: { min: 2,step: "1" }
+                                inputProps: { min: 1,step: "1" }
                             }}
                         />
                     </div>
