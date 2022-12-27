@@ -139,6 +139,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
     const [waitSave, setWaitSave] = useState(false);
     const [description, setDescription] = useState(row?.description||"");
     const [order, setOrder] = useState(row?.order||"");
+    const [type, seType] = useState(row?.type||"");
     const [showAddAction, setShowAddAction] = useState(!!row?.jobplan || false);
     const [jobplan, setjobplan] = useState<Dictionary[]>(row && row.jobplan ? JSON.parse(row.jobplan) : [])
 
@@ -153,9 +154,9 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
 
     const datachannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
     
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            type: externalUse ? externalType : (row ? row?.type : 'TIPIFICACION'),
+            type: externalUse ? externalType : (row?.type || ''),
             id: row?.classificationid || 0,
             description: edit? (row?.description) : '',
             title: row?.title || '',
@@ -174,9 +175,11 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
         register('title', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('parent');
-        register('communicationchannel', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('communicationchannel', { validate: {
+            typeclassification: (value) => (getValues("type") !== "CATEGORIA")? ((value && value.length) || t(langKeys.field_required)): true,
+        }});
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('type');
+        register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('path');
         register('tags');
         register('order');
@@ -316,15 +319,19 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                         />
                     </div>
                     <div className="row-zyx">
-                        <FieldMultiSelect
-                            label={t(langKeys.channel_plural)}
+                        <FieldSelect
+                            label={t(langKeys.type)}
                             className="col-6"
-                            onChange={(value) => setValue('communicationchannel', value.map((o: Dictionary) => o.domainvalue).join())}
-                            valueDefault={row?.communicationchannel || ""}
-                            error={errors?.communicationchannel?.message}
-                            data={datachannels}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
+                            valueDefault={type}
+                            onChange={(value) => {setValue('type', value?.value || ''); seType(value?.value || '')}}
+                            error={errors?.type?.message}
+                            data={[
+                                {value: "CATEGORIA", desc: t(langKeys.category)},
+                                {value: "TIPIFICACION", desc: t(langKeys.tipification)},
+                            ]}
+                            uset={true}
+                            optionDesc="desc"
+                            optionValue="value"
                         />
                         <FieldSelect
                             label={t(langKeys.status)}
@@ -339,7 +346,18 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                             optionValue="domainvalue"
                         />
                     </div>
+                    {type === "TIPIFICACION" &&
                     <div className="row-zyx">
+                        <FieldMultiSelect
+                            label={t(langKeys.channel_plural)}
+                            className="col-6"
+                            onChange={(value) => setValue('communicationchannel', value.map((o: Dictionary) => o.domainvalue).join())}
+                            valueDefault={row?.communicationchannel || ""}
+                            error={errors?.communicationchannel?.message}
+                            data={datachannels}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
                         <FieldEdit
                             label={t(langKeys.tag)}
                             className="col-6"
@@ -347,6 +365,9 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                             onChange={(value) => setValue('tags', value)}
                             error={errors?.tags?.message}
                         />
+                    </div>}
+                    {type === "CATEGORIA" &&
+                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.order)}
                             className="col-6"
@@ -361,98 +382,101 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                                 inputProps: { min: 1,step: "1" }
                             }}
                         />
-                    </div>
-                    <div style={{ marginBottom: '16px' }}>
-                        <div className={classes.title}>{t(langKeys.actionplan)}</div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            {edit ?
-                                <TemplateSwitch
-                                    // className={classes.halfplace}
-                                    label={t(langKeys.hasactionplan)}
-                                    valueDefault={showAddAction ? "x" : ""}
-                                    onChange={(value) => setShowAddAction(value)}
-                                /> :
-                                <FieldView
-                                    label={t(langKeys.default_organization)}
-                                    value={row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
-                                />
-                            }
-                            {(edit && showAddAction) &&
-                                <div>
-                                    <Button
-                                        variant="contained"
-                                        type="button"
-                                        color="primary"
-                                        endIcon={<AddIcon style={{ color: "#deac32" }} />}
-                                        style={{ backgroundColor: "#6c757d" }}
-                                        onClick={() => addaction()}
-                                    >{t(langKeys.action)}
-                                    </Button>
-                                </div>
-                            }
-                        </div>
-
-                        {
-                            (edit && showAddAction) && jobplan.map((e: any, i: number) => (
-                                <div className="row-zyx" key={i}>
-                                    <FieldEdit
-                                        label={t(langKeys.action)}
-                                        className="col-6"
-                                        valueDefault={e.action ? e.action : ""}
-                                        onChange={(value) => setValueAction('action', value, i)}
+                    </div>}                    
+                    {type === "TIPIFICACION" &&
+                    <>
+                        <div style={{ marginBottom: '16px' }}>
+                            <div className={classes.title}>{t(langKeys.actionplan)}</div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                {edit ?
+                                    <TemplateSwitch
+                                        // className={classes.halfplace}
+                                        label={t(langKeys.hasactionplan)}
+                                        valueDefault={showAddAction ? "x" : ""}
+                                        onChange={(value) => setShowAddAction(value)}
+                                    /> :
+                                    <FieldView
+                                        label={t(langKeys.default_organization)}
+                                        value={row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
                                     />
-                                    <FieldSelect
-                                        label={t(langKeys.type)}
-                                        className="col-5"
-                                        valueDefault={e.type ? e.type : "Simple"}
-                                        //onChange={(value) => setValue('status', value ? value.domainvalue : '')}
-                                        error={errors?.status?.message}
-                                        data={dataTypeAction}
-                                        optionDesc="dat"
-                                        optionValue="dat"
-                                        onChange={(value) => setValueAction('type', value.dat, i)}
-                                    />
-                                    <div className="col-1" style={{ paddingTop: "15px" }}>
-                                        <IconButton aria-label="delete" onClick={() => deleteitem(i)}>
-                                            <DeleteIcon />
-                                        </IconButton>
+                                }
+                                {(edit && showAddAction) &&
+                                    <div>
+                                        <Button
+                                            variant="contained"
+                                            type="button"
+                                            color="primary"
+                                            endIcon={<AddIcon style={{ color: "#deac32" }} />}
+                                            style={{ backgroundColor: "#6c757d" }}
+                                            onClick={() => addaction()}
+                                        >{t(langKeys.action)}
+                                        </Button>
                                     </div>
-                                    {e.type === "Variable" ?
+                                }
+                            </div>
+
+                            {
+                                (edit && showAddAction) && jobplan.map((e: any, i: number) => (
+                                    <div className="row-zyx" key={i}>
                                         <FieldEdit
-                                            label={t(langKeys.variable)}
-                                            className={classes.dataaction}
-                                            valueDefault={e.variable ? e.variable : ""}
-                                            onChange={(value) => setValueAction('variable', value, i)}
+                                            label={t(langKeys.action)}
+                                            className="col-6"
+                                            valueDefault={e.action ? e.action : ""}
+                                            onChange={(value) => setValueAction('action', value, i)}
                                         />
-
-                                        : null}
-                                    {e.type === "Request" ?
-                                        <div>
-                                            <FieldEdit
-                                                label={t(langKeys.endpoint)}
-                                                className={classes.dataaction}
-                                                valueDefault={e.endpoint ? e.endpoint : ""}
-                                                onChange={(value) => setValueAction('endpoint', value, i)}
-                                            />
-                                            <FieldEditMulti
-                                                label={t(langKeys.data)}
-                                                className={classes.dataaction}
-                                                valueDefault={e.data ? e.data : ""}
-                                                onChange={(value) => setValueAction('data', value, i)}
-                                                maxLength={2048}
-                                            />
-
+                                        <FieldSelect
+                                            label={t(langKeys.type)}
+                                            className="col-5"
+                                            valueDefault={e.type ? e.type : "Simple"}
+                                            //onChange={(value) => setValue('status', value ? value.domainvalue : '')}
+                                            error={errors?.status?.message}
+                                            data={dataTypeAction}
+                                            optionDesc="dat"
+                                            optionValue="dat"
+                                            onChange={(value) => setValueAction('type', value.dat, i)}
+                                        />
+                                        <div className="col-1" style={{ paddingTop: "15px" }}>
+                                            <IconButton aria-label="delete" onClick={() => deleteitem(i)}>
+                                                <DeleteIcon />
+                                            </IconButton>
                                         </div>
-                                        : null}
-                                    <hr></hr>
-                                </div>
-                            ))
-                        }
+                                        {e.type === "Variable" ?
+                                            <FieldEdit
+                                                label={t(langKeys.variable)}
+                                                className={classes.dataaction}
+                                                valueDefault={e.variable ? e.variable : ""}
+                                                onChange={(value) => setValueAction('variable', value, i)}
+                                            />
 
-                    </div>
-                    <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                                            : null}
+                                        {e.type === "Request" ?
+                                            <div>
+                                                <FieldEdit
+                                                    label={t(langKeys.endpoint)}
+                                                    className={classes.dataaction}
+                                                    valueDefault={e.endpoint ? e.endpoint : ""}
+                                                    onChange={(value) => setValueAction('endpoint', value, i)}
+                                                />
+                                                <FieldEditMulti
+                                                    label={t(langKeys.data)}
+                                                    className={classes.dataaction}
+                                                    valueDefault={e.data ? e.data : ""}
+                                                    onChange={(value) => setValueAction('data', value, i)}
+                                                    maxLength={2048}
+                                                />
 
-                    </div>
+                                            </div>
+                                            : null}
+                                        <hr></hr>
+                                    </div>
+                                ))
+                            }
+
+                        </div>
+                        <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+
+                        </div>
+                    </>}
                 </div>
             </form>
         </div>
@@ -511,6 +535,11 @@ const Tipifications: FC = () => {
             {
                 Header: t(langKeys.description),
                 accessor: 'description',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.type),
+                accessor: 'type',
                 NoFilter: true
             },
             {
