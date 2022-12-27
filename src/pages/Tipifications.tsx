@@ -25,9 +25,7 @@ import { TreeItem, TreeView } from '@material-ui/lab';
 import { useHistory } from 'react-router-dom';
 import paths from 'common/constants/paths';
 import { EmojiPickerZyx } from 'components'
-import { emojis } from "common/constants/emojis";
 
-const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
@@ -139,6 +137,8 @@ const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary}> = ({ dataClassT
 export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, externalUse = false, externalType, externalSaveHandler, externalCancelHandler,arrayBread }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
+    const [description, setDescription] = useState(row?.description||"");
+    const [order, setOrder] = useState(row?.order||"");
     const [showAddAction, setShowAddAction] = useState(!!row?.jobplan || false);
     const [jobplan, setjobplan] = useState<Dictionary[]>(row && row.jobplan ? JSON.parse(row.jobplan) : [])
 
@@ -153,7 +153,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
 
     const datachannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
     
-    const { register, handleSubmit, setValue, getValues,formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: externalUse ? externalType : (row ? row?.type : 'TIPIFICACION'),
             id: row?.classificationid || 0,
@@ -164,7 +164,8 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
             status: row?.status || 'ACTIVO',
             operation: row ? "EDIT" : "INSERT",
             path: row?.path || '',
-            tags: row?.tags || ''
+            tags: row?.tags || '',
+            order: row?.order || '',
         }
     });
 
@@ -178,6 +179,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
         register('type');
         register('path');
         register('tags');
+        register('order');
     }, [edit, register]);
 
     useEffect(() => {
@@ -214,7 +216,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
     }
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            dispatch(execute(insClassification({ ...data, jobplan: JSON.stringify(jobplan) })));
+            dispatch(execute(insClassification({ ...data, jobplan: JSON.stringify(jobplan), order: order||"1" })));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -270,118 +272,95 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.classification)}
-                                className="col-6"
-                                onChange={(value) => setValue('title', value)}
-                                valueDefault={row ? (row.title || "") : ""}
-                                error={errors?.title?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.title)}
-                                value={row ? (row.title || "") : ""}
-                                className="col-6"
-                            />}
+                        <FieldEdit
+                            label={t(langKeys.classification)}
+                            className="col-6"
+                            onChange={(value) => setValue('title', value)}
+                            valueDefault={row?.title || ""}
+                            error={errors?.title?.message}
+                        />
                         <div className='col-6' style={{ position: 'relative' }}>
                             <>        
                                 <FieldEdit
                                     label={t(langKeys.description)}
-                                    onChange={(value) => setValue('description', value)}
-                                    valueDefault={row?.description || ""}
+                                    onChange={(value) => {setDescription(value);setValue('description', value)}}
+                                    valueDefault={description}
                                     error={errors?.description?.message}
                                 />        
                                 <EmojiPickerZyx
-                                    emojisIndexed={EMOJISINDEXED} 
-                                    style={{ position: "absolute", bottom: "10px", display: 'flex', justifyContent: 'end', right: 16 }}
-                                    onSelect={e => setValue('description', getValues("description") + e.native)} />
+                                    bottom={-370}
+                                    style={{ position: "absolute", top: "25px", display: 'flex', justifyContent: 'end', right: 16 }}
+                                    onSelect={e => {setDescription(description + e.native);setValue('description', description + e.native)}} />
     
                             </>
                         </div>
                     </div>
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.parent)}
-                                className="col-6"
-                                valueDefault={row ? (row.parentid || "") : ""}
-                                onChange={(value) => setValue('parent', value ? value.classificationid : 0)}
-                                error={errors?.parent?.message}
-                                data={dataParent}
-                                optionDesc="description"
-                                optionValue="classificationid"
-                            />
-                            : <FieldView
-                                label={t(langKeys.parent)}
-                                value={row ? (row.parent || "") : ""}
-                                className="col-6"
-                            />}
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.path)}
-                                className="col-6"
-                                valueDefault={row ? (row.path || "") : ""}
-                                onChange={(value) => setValue('path', value)}
-                                error={errors?.path?.message}
-                                disabled={true}
-                            />
-                            : <FieldView
-                                label={t(langKeys.path)}
-                                value={row ? (row.path || "") : ""}
-                                className="col-6"
-                            />}
-
+                        <FieldSelect
+                            label={t(langKeys.parent)}
+                            className="col-6"
+                            valueDefault={row?.parentid || ""}
+                            onChange={(value) => setValue('parent', value ? value.classificationid : 0)}
+                            error={errors?.parent?.message}
+                            data={dataParent}
+                            optionDesc="description"
+                            optionValue="classificationid"
+                        />
+                        <FieldEdit
+                            label={t(langKeys.path)}
+                            className="col-6"
+                            valueDefault={row?.path || ""}
+                            onChange={(value) => setValue('path', value)}
+                            error={errors?.path?.message}
+                            disabled={true}
+                        />
                     </div>
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldMultiSelect
-                                label={t(langKeys.channel_plural)}
-                                className="col-6"
-                                onChange={(value) => setValue('communicationchannel', value.map((o: Dictionary) => o.domainvalue).join())}
-                                valueDefault={row?.communicationchannel || ""}
-                                error={errors?.communicationchannel?.message}
-                                data={datachannels}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            />
-                            : <FieldView
-                                label={t(langKeys.channel_plural)}
-                                value={row ? (row.communicationchannelid || "") : ""}
-                                className="col-6"
-                            />}
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.status)}
-                                className="col-6"
-                                valueDefault={row?.status || "ACTIVO"}
-                                onChange={(value) => setValue('status', value ? value.domainvalue : '')}
-                                error={errors?.status?.message}
-                                data={dataStatus}
-                                uset={true}
-                                prefixTranslation="status_"
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            />
-                            : <FieldView
-                                label={t(langKeys.status)}
-                                value={row ? (row.status || "") : ""}
-                                className="col-6"
-                            />}
+                        <FieldMultiSelect
+                            label={t(langKeys.channel_plural)}
+                            className="col-6"
+                            onChange={(value) => setValue('communicationchannel', value.map((o: Dictionary) => o.domainvalue).join())}
+                            valueDefault={row?.communicationchannel || ""}
+                            error={errors?.communicationchannel?.message}
+                            data={datachannels}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
+                        <FieldSelect
+                            label={t(langKeys.status)}
+                            className="col-6"
+                            valueDefault={row?.status || "ACTIVO"}
+                            onChange={(value) => setValue('status', value?.domainvalue || '')}
+                            error={errors?.status?.message}
+                            data={dataStatus}
+                            uset={true}
+                            prefixTranslation="status_"
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
                     </div>
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.tag)}
-                                className="col-6"
-                                valueDefault={row ? (row.tags || "") : ""}
-                                onChange={(value) => setValue('tags', value)}
-                                error={errors?.tags?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.tag)}
-                                value={row ? (row.tags || "") : ""}
-                                className="col-6"
-                            />}
+                        <FieldEdit
+                            label={t(langKeys.tag)}
+                            className="col-6"
+                            valueDefault={row?.tags || ""}
+                            onChange={(value) => setValue('tags', value)}
+                            error={errors?.tags?.message}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.order)}
+                            className="col-6"
+                            type="number"
+                            valueDefault={order}
+                            error={errors?.order?.message}
+                            onChange={(value) => {
+                                setOrder(value)
+                                setValue('order', value)
+                            }}
+                            InputProps={{
+                                inputProps: { min: 1,step: "1" }
+                            }}
+                        />
                     </div>
                     <div style={{ marginBottom: '16px' }}>
                         <div className={classes.title}>{t(langKeys.actionplan)}</div>
@@ -540,6 +519,11 @@ const Tipifications: FC = () => {
                 NoFilter: true
             },
             {
+                Header: t(langKeys.order),
+                accessor: 'order',
+                NoFilter: true
+            },
+            {
                 Header: t(langKeys.tag),
                 accessor: 'tags',
                 NoFilter: true
@@ -650,6 +634,7 @@ const Tipifications: FC = () => {
                         parent: x.parent || 0,
                         operation: "INSERT",
                         type: 'TIPIFICACION',
+                        oder: '1',
                         status: x.status || "ACTIVO",
                         id: 0,
                     }))

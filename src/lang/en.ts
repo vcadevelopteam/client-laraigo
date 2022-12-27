@@ -2023,6 +2023,8 @@ const translation: LangKeys = {
   report_interaction_agent: "Agent",
   kanbanview: "Kanban view",
   listview: "List view",
+  orderbiggerthan1: "Order can only have values ​greater than 1",
+  mustbeinteger: "Value must be an integer",
   report_interaction_intent: "Intention",
   report_interaction_intent_help:
     "It is the path that is identified through the use of AI",

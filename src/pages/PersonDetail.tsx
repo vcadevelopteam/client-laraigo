@@ -2,17 +2,17 @@
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { FieldSelect, GetIcon } from 'components';
-import { getChannelListByPersonBody, getTicketListByPersonBody, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, convertLocalDate, unLinkPerson, personInsValidation } from 'common/helpers';
+import { DialogZyx, FieldEditArray, FieldEditMulti, FieldSelect, GetIcon } from 'components';
+import { getChannelListByPersonBody, getTicketListByPersonBody, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, convertLocalDate, unLinkPerson, personInsValidation, getPersonOne } from 'common/helpers';
 import { Dictionary, IObjectState, IPerson, IPersonChannel, IPersonConversation, IPersonDomains } from "@types";
-import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, TextField, Paper, InputBase, Tooltip, styled } from '@material-ui/core';
+import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, TextField, Paper, InputBase, Tooltip, styled, InputAdornment } from '@material-ui/core';
 import clsx from 'clsx';
 import { BuildingIcon, DocNumberIcon, DocTypeIcon, EMailInboxIcon, GenderIcon, TelephoneIcon, SearchIcon, CallRecordIcon } from 'icons';
 import PhoneIcon from '@material-ui/icons/Phone';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { useHistory, useLocation } from 'react-router';
+import { useHistory, useLocation, useRouteMatch } from 'react-router';
 import paths from 'common/constants/paths';
 import { ArrowDropDown } from '@material-ui/icons';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -21,7 +21,7 @@ import LockIcon from '@material-ui/icons/Lock';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import { getChannelListByPerson, resetGetChannelListByPerson, getTicketListByPerson, resetGetTicketListByPerson, getLeadsByPerson, resetGetLeadsByPerson, getDomainsByTypename, resetGetDomainsByTypename, resetEditPerson, editPerson, getReferrerListByPerson, resetGetReferrerListByPerson } from 'store/person/actions';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import { useForm, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
+import { useFieldArray, useForm, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
 import { execute } from 'store/main/actions';
 import Rating from '@material-ui/lab/Rating';
 import TableZyx from '../components/fields/table-simple';
@@ -29,12 +29,16 @@ import { setModalCall, setPhoneNumber } from 'store/voximplant/actions';
 import { VoximplantService } from 'network';
 import DialogInteractions from 'components/inbox/DialogInteractions';
 import DialogLinkPerson from 'components/inbox/PersonLinked';
+import { WhatsappIcon } from 'icons';
 import LinkIcon from '@material-ui/icons/Link';
 import LinkOffIcon from '@material-ui/icons/LinkOff';
+import { sendHSM } from 'store/inbox/actions';
 
 import { Controller } from "react-hook-form";
 import MuiPhoneNumber from 'material-ui-phone-number';
+import { id } from 'date-fns/locale';
 const urgencyLevels = [null, 'LOW', 'MEDIUM', 'HIGH']
+const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'dateactivity', 'leadactivity', 'datenote', 'note', 'custom'].map(x => ({ key: x }))
 
 const usePhotoClasses = makeStyles(theme => ({
     accountPhoto: {
@@ -177,6 +181,8 @@ interface GeneralInformationTabProps {
 const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValues, trigger, setValue, domains, errors, control }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
+    const voxiConnection = useSelector(state => state.voximplant.connection);
+    const userConnected = useSelector(state => state.inbox.userConnected);
     // const referrerList = useSelector(state => state.person.personReferrerList);
     const ocupationProperty = domains?.value?.ocupationProperty?.[0]?.propertyvalue || "DOMINIO"
 
@@ -440,6 +446,23 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                                     setValue('channeltype', value?.domainvalue);
                                                     setValue('phone', value || "");
                                                 }}
+                                                InputProps={{
+                                                    endAdornment: (
+                                                        <InputAdornment position="end">
+                                                            {(!voxiConnection.error && userConnected) &&
+                                                                <IconButton size="small" onClick={() => {
+                                                                    if(voxiConnection.error){
+                                                                        dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) })) 
+                                                                    }else {
+                                                                        dispatch(setModalCall(true))
+                                                                        dispatch(setPhoneNumber(getValues("phone")))
+                                                                    }}}>
+                                                                    <PhoneIcon />
+                                                                </IconButton>
+                                                            }
+                                                        </InputAdornment>
+                                                    )
+                                                }}
                                             />
                                         )}
                                     />
@@ -462,6 +485,23 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                                 placeholder={t(langKeys.alternativePhone)}
                                                 onChange={(value: any) => {
                                                     setValue('alternativephone', value || "");
+                                                }}
+                                                InputProps={{
+                                                    endAdornment: (
+                                                        <InputAdornment position="end">
+                                                            {(!voxiConnection.error && userConnected) &&
+                                                                <IconButton size="small" onClick={() => {
+                                                                    if(voxiConnection.error){
+                                                                        dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) })) 
+                                                                    }else {
+                                                                        dispatch(setModalCall(true))
+                                                                        dispatch(setPhoneNumber(getValues("alternativephone")))
+                                                                    }}}>
+                                                                    <PhoneIcon />
+                                                                </IconButton>
+                                                            }
+                                                        </InputAdornment>
+                                                    )
                                                 }}
                                             />
                                         )}
@@ -666,16 +706,16 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                         </Grid>
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                             <Property
-                                title={<Trans i18nKey={langKeys.healthprofessional} />}
+                                title={<Trans i18nKey={langKeys.district} />}
                                 subtitle={(
                                     <TextField
                                         fullWidth
-                                        placeholder={t(langKeys.healthprofessional)}
-                                        defaultValue={getValues("healthprofessional")}
-                                        value={getValues("healthprofessional")}
+                                        placeholder={t(langKeys.district)}
+                                        defaultValue={getValues("district")}
+                                        value={getValues("district")}
                                         onChange={e => {
-                                            setValue('healthprofessional', e.target.value)
-                                            trigger("healthprofessional")
+                                            setValue('district', e.target.value)
+                                            trigger("district")
                                         }}
                                     />
                                 )}
@@ -694,6 +734,24 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         onChange={e => {
                                             setValue('referralchannel', e.target.value)
                                             trigger("referralchannel")
+                                        }}
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.healthprofessional} />}
+                                subtitle={(
+                                    <TextField
+                                        fullWidth
+                                        placeholder={t(langKeys.healthprofessional)}
+                                        defaultValue={getValues("healthprofessional")}
+                                        value={getValues("healthprofessional")}
+                                        onChange={e => {
+                                            setValue('healthprofessional', e.target.value)
+                                            trigger("healthprofessional")
                                         }}
                                     />
                                 )}
@@ -1622,7 +1680,224 @@ const usePersonDetailStyles = makeStyles(theme => ({
     },
 }));
 
-const PersonDetail: FC = () => {
+interface DialogSendTemplateProps {
+    setOpenModal: (param: any) => void;
+    openModal: boolean;
+    persons: IPerson[];
+}
+
+const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, openModal, persons }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const [waitClose, setWaitClose] = useState(false);
+    const sendingRes = useSelector(state => state.inbox.triggerSendHSM);
+    const [templatesList, setTemplatesList] = useState<Dictionary[]>([]);
+    const [channelList, setChannelList] = useState<Dictionary[]>([]);
+    const [bodyMessage, setBodyMessage] = useState('');
+    const [personWithData, setPersonWithData] = useState<IPerson[]>([])
+    const domains = useSelector(state => state.person.editableDomains);
+
+    const title = t(langKeys.send_hsm);
+    const { control, register, handleSubmit, setValue, getValues, trigger, reset, formState: { errors } } = useForm<any>({
+        defaultValues: {
+            hsmtemplateid: 0,
+            observation: '',
+            communicationchannelid: channelList?.length === 1 ? channelList[0].communicationchannelid : 0,
+            communicationchanneltype: channelList?.length === 1 ? channelList[0].type : "",
+            variables: []
+        }
+    });
+
+    const { fields } = useFieldArray({
+        control,
+        name: 'variables',
+    });
+
+    useEffect(() => {
+        if (waitClose) {
+            if (!sendingRes.loading && !sendingRes.error) {
+                const message = t(langKeys.successful_send_hsm)
+                dispatch(showSnackbar({ show: true, severity: "success", message }))
+                setOpenModal(false);
+                dispatch(showBackdrop(false));
+                setWaitClose(false);
+            } else if (sendingRes.error) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(sendingRes.code || "error_unexpected_error") }))
+                dispatch(showBackdrop(false));
+                setWaitClose(false);
+            }
+        }
+    }, [sendingRes, waitClose])
+    useEffect(() => {
+    }, [channelList])
+
+    useEffect(() => {
+        if (!domains.error && !domains.loading) {
+            setTemplatesList(domains?.value?.templates?.filter(x => (x.type === "HSM" )) || []);
+            setChannelList(domains?.value?.channels?.filter(x => x.type.includes("WHA")) || []);
+        }
+    }, [domains])
+
+    useEffect(() => {
+        if (openModal) {
+            setBodyMessage('')
+            reset({
+                hsmtemplateid: 0,
+                hsmtemplatename: '',
+                variables: [],
+                communicationchannelid: (channelList?.length === 1 ? channelList[0].communicationchannelid : 0),
+                communicationchanneltype: (channelList?.length === 1 ? channelList[0].type : "")
+            })
+            register('hsmtemplateid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+
+            register('communicationchannelid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+
+            setPersonWithData(persons.filter(x => !!x.phonewhatsapp))
+        } else {
+            setWaitClose(false);
+        }
+    }, [openModal])
+
+    const onSelectTemplate = (value: Dictionary) => {
+        if (value) {
+            setBodyMessage(value.body);
+            setValue('hsmtemplateid', value ? value.id : 0);
+            setValue('hsmtemplatename', value ? value.name : '');
+            const variablesList = value.body.match(/({{)(.*?)(}})/g) || [];
+            const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
+            setValue('variables', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
+        } else {
+            setValue('hsmtemplatename', '');
+            setValue('variables', []);
+            setBodyMessage('');
+            setValue('hsmtemplateid', 0);
+        }
+    }
+    const onSubmit = handleSubmit((data) => {
+        if (personWithData.length === 0) {
+            dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.no_people_to_send) }))
+            return
+        }
+        const messagedata = {
+            hsmtemplateid: data.hsmtemplateid,
+            hsmtemplatename: data.hsmtemplatename,
+            communicationchannelid: data.communicationchannelid,
+            communicationchanneltype: data.communicationchanneltype,
+            platformtype: data.communicationchanneltype,
+            type: "HSM",
+            shippingreason: "PERSON",
+            listmembers: personWithData.map(person => ({
+                personid: person.personid,
+                phone: person.phonewhatsapp || "",
+                firstname: person.firstname || "",
+                email: person.email || "",
+                lastname: person.lastname,
+                parameters: data.variables.map((v: any) => ({
+                    type: "text",
+                    text: v.variable !== 'custom' ? (person as Dictionary)[v.variable] : v.text,
+                    name: v.name
+                }))
+            }))
+        }
+        dispatch(sendHSM(messagedata))
+        dispatch(showBackdrop(true));
+        setWaitClose(true)
+    });
+
+    useEffect(() => {
+        if (channelList.length === 1) {
+            setValue("communicationchannelid", channelList[0].communicationchannelid || 0)
+            setValue('communicationchanneltype', channelList[0].type || "");
+            trigger("communicationchannelid")
+        }
+    }, [channelList])
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={title}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.continue)}
+            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton2={onSubmit}
+            button2Type="submit"
+        >
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.channel)}
+                    className="col-12"
+                    valueDefault={getValues('communicationchannelid')}
+                    onChange={value => {
+                        setValue('communicationchannelid', value?.communicationchannelid || 0);
+                        setValue('communicationchanneltype', value?.type || "");
+                    }}
+                    error={errors?.communicationchannelid?.message}
+                    data={channelList}
+                    optionDesc="communicationchanneldesc"
+                    optionValue="communicationchannelid"
+                />
+            </div>
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.template)}
+                    className="col-12"
+                    valueDefault={getValues('hsmtemplateid')}
+                    onChange={onSelectTemplate}
+                    error={errors?.hsmtemplateid?.message}
+                    data={templatesList}
+                    optionDesc="name"
+                    optionValue="id"
+                />
+            </div>
+            <FieldEditMulti
+                label={t(langKeys.message)}
+                valueDefault={bodyMessage}
+                disabled={true}
+                rows={1}
+            />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
+                {fields.map((item: Dictionary, i) => (
+                    <div key={item.id}>
+                        <FieldSelect
+                            key={"var_" + item.id}
+                            fregister={{
+                                ...register(`variables.${i}.variable`, {
+                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                })
+                            }}
+                            label={item.name}
+                            valueDefault={getValues(`variables.${i}.variable`)}
+                            onChange={(value) => {
+                                setValue(`variables.${i}.variable`, value.key)
+                                trigger(`variables.${i}.variable`)
+                            }}
+                            error={errors?.variables?.[i]?.text?.message}
+                            data={variables}
+                            uset={true}
+                            prefixTranslation=""
+                            optionDesc="key"
+                            optionValue="key"
+                        />
+                        {getValues(`variables.${i}.variable`) === 'custom' &&
+                            <FieldEditArray
+                                key={"custom_" + item.id}
+                                fregister={{
+                                    ...register(`variables.${i}.text`, {
+                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                    })
+                                }}
+                                valueDefault={item.value}
+                                error={errors?.variables?.[i]?.text?.message}
+                                onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
+                            />
+                        }
+                    </div>
+                ))}
+            </div>
+        </DialogZyx>)
+}
+
+const PersonDetail2: FC<{ person: any;}> = ({ person }) => {
     const dispatch = useDispatch();
     const history = useHistory();
     const { t } = useTranslation();
@@ -1637,9 +1912,10 @@ const PersonDetail: FC = () => {
     const [showLinkPerson, setShowLinkPerson] = useState(false)
     const [payloadTemp, setpayloadTemp] = useState<any>(null)
     const [valuestosend, setvaluestosend] = useState<any>(null)
+    const [openDialogTemplate, setOpenDialogTemplate] = useState(false)
+    const match = useRouteMatch<{ id: string, columnid?: string, columnuuid?: string }>();
 
     const user = useSelector(state => state.login.validateToken.user);
-    const person = location.state as IPerson | null;
 
     const { setValue, getValues, trigger, register, control, formState: { errors } } = useForm<any>({
         defaultValues: {
@@ -1667,6 +1943,7 @@ const PersonDetail: FC = () => {
             occupation: person?.occupation || '',
             educationlevel: person?.educationlevel || '',
             address: person?.address || '',
+            district: person?.district || '',
             healthprofessional: person?.healthprofessional || '',
             referralchannel: person?.referralchannel || '',
             referringpersonid: person?.referringpersonid || 0,
@@ -1701,6 +1978,7 @@ const PersonDetail: FC = () => {
                 person.occupation = '';
                 person.educationlevel = '';
                 person.address = '';
+                person.district = '';
                 person.healthprofessional = '';
                 person.referralchannel = '';
                 person.referringpersonid = 0;
@@ -1884,6 +2162,18 @@ const PersonDetail: FC = () => {
                 <div style={{ display: 'flex', gap: '10px' }}>
                     {!!person.personid &&
                         <>
+                            {!!person.phone &&                             
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    startIcon={<WhatsappIcon width={24} style={{ fill: '#FFF' }} />}
+                                    onClick={() => {
+                                        setOpenDialogTemplate(true);
+                                    }}
+                                >
+                                    <Trans i18nKey={langKeys.send_hsm} />
+                                </Button>
+                            }
                             <Button
                                 variant="contained"
                                 type="button"
@@ -2138,8 +2428,55 @@ const PersonDetail: FC = () => {
                     trigger("occupation")
                     dispatch(getChannelListByPerson(getChannelListByPersonBody(person.personid)));
                 }}
+            />            
+            <DialogSendTemplate
+                openModal={openDialogTemplate}
+                setOpenModal={setOpenDialogTemplate}
+                persons={[person]}
             />
         </div>
+    );
+}
+
+const PersonDetail: FC = () => {
+    const dispatch = useDispatch();
+    const history = useHistory();
+    const { t } = useTranslation();
+    const location = useLocation<IPerson>();
+    const executeResult = useSelector(state => state.main.execute);
+    const [person, setperson] = useState<any>(location.state as IPerson | null);
+    const [waitLoading, setWaitLoading] = useState(false);
+    const match = useRouteMatch<{ id: string, columnid?: string, columnuuid?: string }>();
+
+    useEffect(() => {
+        if (!person) {
+            dispatch(showBackdrop(true));
+            setWaitLoading(true)
+            dispatch(execute(getPersonOne({ personid:match.params.id })));
+            //agregale la candicion para que llame al person sel
+        } 
+    }, [person]);
+
+    useEffect(() => {
+        if (waitLoading) {
+            if (!executeResult.loading && !executeResult.error && executeResult.data.length) {
+                setperson(executeResult.data[0]);
+                dispatch(showBackdrop(false));
+                setWaitLoading(false);
+            } else if (executeResult.error || executeResult.data.length) {
+                dispatch(showBackdrop(false));
+                setWaitLoading(false);
+                history.push(paths.PERSON);
+            }
+        }
+    }, [executeResult, waitLoading]);
+
+    return (
+        <>
+        {!!person &&
+            <PersonDetail2 person={person}/>
+        }
+        </>
     );
 }
 

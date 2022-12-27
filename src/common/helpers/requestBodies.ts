@@ -759,11 +759,11 @@ export const insInvoice = ({ corpid = 0,
         }
     })
 
-export const insClassification = ({ id, title, description, parent, communicationchannel, status, type, operation, tags, jobplan = null }: Dictionary): IRequestBody => ({
+export const insClassification = ({ id, title, description, parent, communicationchannel, status, type, operation, tags, jobplan = null, order = "1" }: Dictionary): IRequestBody => ({
     method: "UFN_CLASSIFICATION_INS",
     key: "UFN_CLASSIFICATION_INS",
     parameters: {
-        id, title, description, parent, communicationchannel, status, type, operation, tags, jobplan, usergroup: 0, schedule: ""
+        id, title, description, parent, communicationchannel, status, type, operation, tags, jobplan, usergroup: 0, schedule: "",order
     }
 })
 //tabla paginada
@@ -781,6 +781,13 @@ export const getPaginatedPerson = ({ skip, take, filters, sorts, startdate, endd
         userids,
         channeltypes,
         offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+export const getPersonOne = ({ personid }: Dictionary): IRequestBody => ({
+    method: "UFN_PERSON_SEL_ONE",
+    key: "UFN_PERSON_SEL_ONE",
+    parameters: {
+        personid
     }
 })
 export const getPaginatedPersonLead = ({ skip, take, filters, sorts, startdate, enddate, userids = "", channeltypes = "" }: Dictionary): IRequestBodyPaginated => ({
@@ -3236,7 +3243,7 @@ export const listPaymentCard = ({ corpid, orgid, id }: Dictionary) => ({
     parameters: { corpid, orgid, id },
 });
 
-export const paymentCardInsert = ({ corpid, orgid, paymentcardid, cardnumber, cardcode, firstname, lastname, mail, favorite, clientcode, status, type, username }: Dictionary) => ({
+export const paymentCardInsert = ({ corpid, orgid, paymentcardid, cardnumber, cardcode, firstname, lastname, mail, favorite, clientcode, status, type, username, phone }: Dictionary) => ({
     method: "UFN_PAYMENTCARD_INS",
     key: "UFN_PAYMENTCARD_INS",
     parameters: {
@@ -3253,6 +3260,7 @@ export const paymentCardInsert = ({ corpid, orgid, paymentcardid, cardnumber, ca
         status,
         type,
         username,
+        phone,
         operation: paymentcardid ? 'UPDATE' : 'INSERT',
     },
 });
