@@ -1247,6 +1247,8 @@ const translation: LangKeys = {
   app_calendar: "Calendario",
   app_productcatalog: "Catálogo de Productos",
   app_reportscheduler: "Envíos Automáticos",
+  orderbiggerthan1: "El orden solo puede tener valores superiores a 1",
+  mustbeinteger: "El valor debe ser un número entero",
   manageWhitelist: "Gestionar Whitelists",
   manageLocation: "Gestionar Ubicaciones",
   observation: 'Observación',
