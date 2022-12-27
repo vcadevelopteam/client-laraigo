@@ -335,7 +335,7 @@ const DialogCancelBooking: React.FC<{
                     {booking?.personname}
                 </div>
                 <div className={classes.cancelEventFields}>
-                    {`${booking?.hourstart.substring(0, 5)} - ${booking?.hourend.substring(0, 5)}`}
+                    {`${booking?.hourstart.substring(0, 5)} - ${booking?.hourend.substring(0, 5)}`}, {t(langKeys.invitation_date, { month: t(`month_${((new Date(booking?.monthdate)?.getMonth() + 1) + "").padStart(2, "0")}`), year: new Date(booking?.monthdate)?.getFullYear(), day: t(dayNames[new Date(booking?.monthdate)?.getDay()]), date: new Date(booking?.monthdate)?.getDate() })}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingTop: '10px' }}>
                     <div style={{ fontSize: '1rem' }}>
