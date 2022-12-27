@@ -3,7 +3,7 @@ import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 're
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { DialogZyx, FieldEditArray, FieldEditMulti, FieldSelect, GetIcon } from 'components';
-import { getChannelListByPersonBody, getTicketListByPersonBody, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, convertLocalDate, unLinkPerson, personInsValidation } from 'common/helpers';
+import { getChannelListByPersonBody, getTicketListByPersonBody, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, convertLocalDate, unLinkPerson, personInsValidation, getPersonOne } from 'common/helpers';
 import { Dictionary, IObjectState, IPerson, IPersonChannel, IPersonConversation, IPersonDomains } from "@types";
 import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, TextField, Paper, InputBase, Tooltip, styled, InputAdornment } from '@material-ui/core';
 import clsx from 'clsx';
@@ -1879,7 +1879,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
         </DialogZyx>)
 }
 
-const PersonDetail: FC = () => {
+const PersonDetail2: FC<{ person: any;}> = ({ person }) => {
     const dispatch = useDispatch();
     const history = useHistory();
     const { t } = useTranslation();
@@ -1896,10 +1896,8 @@ const PersonDetail: FC = () => {
     const [valuestosend, setvaluestosend] = useState<any>(null)
     const [openDialogTemplate, setOpenDialogTemplate] = useState(false)
     const match = useRouteMatch<{ id: string, columnid?: string, columnuuid?: string }>();
-    console.log(match.params.id)
 
     const user = useSelector(state => state.login.validateToken.user);
-    const person = location.state as IPerson | null;
 
     const { setValue, getValues, trigger, register, control, formState: { errors } } = useForm<any>({
         defaultValues: {
@@ -1935,8 +1933,6 @@ const PersonDetail: FC = () => {
 
     useEffect(() => {
         if (!person) {
-            debugger
-            //agregale la candicion para que llame al person sel
             history.push(paths.PERSON);
         } else {
             if (!person.personid) {
@@ -2419,6 +2415,48 @@ const PersonDetail: FC = () => {
                 persons={[person]}
             />
         </div>
+    );
+}
+
+const PersonDetail: FC = () => {
+    const dispatch = useDispatch();
+    const history = useHistory();
+    const { t } = useTranslation();
+    const location = useLocation<IPerson>();
+    const executeResult = useSelector(state => state.main.execute);
+    const [person, setperson] = useState<any>(location.state as IPerson | null);
+    const [waitLoading, setWaitLoading] = useState(false);
+    const match = useRouteMatch<{ id: string, columnid?: string, columnuuid?: string }>();
+
+    useEffect(() => {
+        if (!person) {
+            dispatch(showBackdrop(true));
+            setWaitLoading(true)
+            dispatch(execute(getPersonOne({ personid:match.params.id })));
+            //agregale la candicion para que llame al person sel
+        } 
+    }, [person]);
+
+    useEffect(() => {
+        if (waitLoading) {
+            if (!executeResult.loading && !executeResult.error && executeResult.data.length) {
+                setperson(executeResult.data[0]);
+                dispatch(showBackdrop(false));
+                setWaitLoading(false);
+            } else if (executeResult.error || executeResult.data.length) {
+                dispatch(showBackdrop(false));
+                setWaitLoading(false);
+                history.push(paths.PERSON);
+            }
+        }
+    }, [executeResult, waitLoading]);
+
+    return (
+        <>
+        {!!person &&
+            <PersonDetail2 person={person}/>
+        }
+        </>
     );
 }
 
