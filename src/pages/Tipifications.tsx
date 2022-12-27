@@ -280,6 +280,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                             className="col-6"
                             onChange={(value) => setValue('title', value)}
                             valueDefault={row?.title || ""}
+                            inputProps={{ maxLength: type==="CATEGORIA"?20:1000 }}
                             error={errors?.title?.message}
                         />
                         <div className='col-6' style={{ position: 'relative' }}>
@@ -288,6 +289,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                                     label={t(langKeys.description)}
                                     onChange={(value) => {setDescription(value);setValue('description', value)}}
                                     valueDefault={description}
+                                    inputProps={{ maxLength: type==="CATEGORIA"?72:1000 }}
                                     error={errors?.description?.message}
                                 />        
                                 <EmojiPickerZyx
@@ -320,20 +322,6 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                     </div>
                     <div className="row-zyx">
                         <FieldSelect
-                            label={t(langKeys.type)}
-                            className="col-6"
-                            valueDefault={type}
-                            onChange={(value) => {setValue('type', value?.value || ''); seType(value?.value || '')}}
-                            error={errors?.type?.message}
-                            data={[
-                                {value: "CATEGORIA", desc: t(langKeys.category)},
-                                {value: "TIPIFICACION", desc: t(langKeys.tipification)},
-                            ]}
-                            uset={true}
-                            optionDesc="desc"
-                            optionValue="value"
-                        />
-                        <FieldSelect
                             label={t(langKeys.status)}
                             className="col-6"
                             valueDefault={row?.status || "ACTIVO"}
@@ -344,6 +332,28 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                             prefixTranslation="status_"
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
+                        />
+                        <FieldSelect
+                            label={t(langKeys.type)}
+                            className="col-6"
+                            valueDefault={type}
+                            onChange={(value) => {
+                                setValue('communicationchannel', "")
+                                setValue('tags', "")
+                                setValue('type', value?.value || ''); 
+                                setValue('order', "")
+                                setValue('title', "")
+                                setValue('description', "")
+                                seType(value?.value || '')
+                            }}
+                            error={errors?.type?.message}
+                            data={[
+                                {value: "CATEGORIA", desc: t(langKeys.category)},
+                                {value: "TIPIFICACION", desc: t(langKeys.tipification)},
+                            ]}
+                            uset={true}
+                            optionDesc="desc"
+                            optionValue="value"
                         />
                     </div>
                     {type === "TIPIFICACION" &&
