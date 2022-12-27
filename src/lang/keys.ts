@@ -35,6 +35,8 @@ export const langKeys = {
     audioTooltip: "audioTooltip",
     imageTooltip: "imageTooltip",
     unavailable: "unavailable",
+    orderbiggerthan1: "orderbiggerthan1",
+    mustbeinteger: "mustbeinteger",
     more_times: "more_times",
     chatHeaderTooltip: 'chatHeaderTooltip',
     additionalsettings: "additionalsettings",

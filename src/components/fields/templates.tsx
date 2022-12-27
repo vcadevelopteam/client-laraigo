@@ -5,6 +5,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import IconButton from '@material-ui/core/IconButton';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Link from '@material-ui/core/Link';
+import 'emoji-mart/css/emoji-mart.css'
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import { Trans, useTranslation } from 'react-i18next';
@@ -1171,6 +1172,7 @@ interface EmojiPickerZyxProps {
     onSelect: (e: any) => void;
     style?: React.CSSProperties;
     icon?: (onClick: () => void) => React.ReactNode;
+    bottom?: number;
 }
 
 const emojiPickerStyle = makeStyles({
@@ -1185,7 +1187,7 @@ const emojiPickerStyle = makeStyles({
 });
 
 
-export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, emojisNoShow = [], emojiFavorite = [], onSelect, style, icon }) => {
+export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, emojisNoShow = [], emojiFavorite = [], onSelect, style, icon, bottom = 50 }) => {
     const [open, setOpen] = React.useState(false);
     const classes = emojiPickerStyle();
     const handleClick = () => setOpen((prev) => !prev);
@@ -1200,7 +1202,7 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, e
                 {open && (
                     <div style={{
                         position: 'absolute',
-                        bottom: 50,
+                        bottom: bottom,
                         zIndex: 1201
                     }}>
                         <Picker

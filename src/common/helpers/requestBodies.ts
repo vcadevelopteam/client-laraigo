@@ -759,11 +759,11 @@ export const insInvoice = ({ corpid = 0,
         }
     })
 
-export const insClassification = ({ id, title, description, parent, communicationchannel, status, type, operation, tags, jobplan = null }: Dictionary): IRequestBody => ({
+export const insClassification = ({ id, title, description, parent, communicationchannel, status, type, operation, tags, jobplan = null, order = "1" }: Dictionary): IRequestBody => ({
     method: "UFN_CLASSIFICATION_INS",
     key: "UFN_CLASSIFICATION_INS",
     parameters: {
-        id, title, description, parent, communicationchannel, status, type, operation, tags, jobplan, usergroup: 0, schedule: ""
+        id, title, description, parent, communicationchannel, status, type, operation, tags, jobplan, usergroup: 0, schedule: "",order
     }
 })
 //tabla paginada
