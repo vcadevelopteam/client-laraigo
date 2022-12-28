@@ -144,6 +144,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
         communicationchannel: row?.communicationchannel || "",
         tags: row?.tags || "",
         order: row?.order || "",
+        parent: row?.parentid || 0,
     });
     const [showAddAction, setShowAddAction] = useState(!!row?.jobplan || false);
     const [jobplan, setjobplan] = useState<Dictionary[]>(row && row.jobplan ? JSON.parse(row.jobplan) : [])
@@ -313,10 +314,10 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                         <FieldSelect
                             label={t(langKeys.parent)}
                             className="col-6"
-                            valueDefault={row?.parentid || ""}
-                            onChange={(value) => setValue('parent', value ? value.classificationid : 0)}
+                            valueDefault={auxVariables.parent}
+                            onChange={(value) => setValue('parent', value?.classificationid || 0)}
                             error={errors?.parent?.message}
-                            data={dataParent}
+                            data={dataParent.filter(x=>x.type===type)}
                             optionDesc="description"
                             optionValue="classificationid"
                         />
@@ -350,10 +351,12 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                                 setValue('communicationchannel', "")
                                 setValue('tags', "")
                                 setValue('order', "")
+                                setValue('parent', 0)
                                 seauxVariables({
                                     communicationchannel: "",
                                     tags: "",
                                     order: "",
+                                    parent: 0,
                                 })
                                 setValue('type', value?.value || ''); 
                                 seType(value?.value || '')
