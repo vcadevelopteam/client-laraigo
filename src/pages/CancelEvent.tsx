@@ -13,6 +13,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Alert from '@material-ui/lab/Alert';
+import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
 
 const useStyles = makeStyles(theme => ({
     back: {
@@ -46,6 +47,21 @@ const useStyles = makeStyles(theme => ({
         textAlign: 'center',
         fontSize: '1.1rem',
         padding: '5px',
+    },
+    containerSuccess: {
+        minHeight: 600,
+        backgroundColor: 'white',
+        display: 'flex',
+        borderRadius: 8,
+        boxShadow: '0 1px 8px 0 rgb(0 0 0 / 8%)',
+        width: '80vw',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: theme.spacing(3),
+        [theme.breakpoints.down('xs')]: {
+            width: '100vw',
+        },
+        flexDirection: 'column',
     }
 }));
 
@@ -121,7 +137,6 @@ export const CancelEvent: FC = () => {
         if (waitSave) {
             dispatch(calendarBookingSelOne)
             if (!mainResult.loading && !mainResult.error) {
-                setSuccessCancel(true)
                 setTimeout(function() {
                     window.close()
                 }, 8000);
@@ -135,6 +150,7 @@ export const CancelEvent: FC = () => {
     useEffect(() => {
         if (waitSave) {
             if (!mainResult.loading && !mainResult.error) {
+                setSuccessCancel(true)
                 setshowSnackbar({ open: true, severity: "success", msg: t(langKeys.successful_cancel_event) })
                 setWaitSave(false);
             } else if (mainResult.error) {
@@ -145,6 +161,7 @@ export const CancelEvent: FC = () => {
     }, [mainResult, waitSave])
 
     const onSubmit = async () => {
+        debugger
         if(new Date(data?.monthdate + " " + data?.hourstart).getTime() >= new Date().getTime()){
             const datat = {
                 corpid, orgid,
@@ -232,15 +249,25 @@ export const CancelEvent: FC = () => {
             )
         }else{
             return (
+                
                 <div className={classes.back}>
-                    <div className={classes.container}>
-                        <DialogContent>
-                            <div className={classes.cancelEventFields}>
-                                {t(langKeys.successful_cancel_event)}
+                    <div className={classes.containerSuccess}>
+                        <div style={{ fontWeight: 'bold', fontSize: 20 }}>{t(langKeys.CANCELED)}</div>
+                        <div style={{ marginTop: 16, textAlign: 'center' }} >{t(langKeys.successful_cancel_event)}</div>
+                        <div style={{ width: '70%', height: 1, backgroundColor: '#e1e1e1', marginTop: 24, marginBottom: 24 }}></div>
+                        <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                <span style={{ width: 24, height: 24, borderRadius: 12 }}></span>
+                                <div style={{ fontWeight: 'bold', fontSize: 20 }}>{data?.name}</div>
                             </div>
-                        </DialogContent>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 'bold' }}>
+                                <CalendarTodayIcon />
+                                {`${data?.hourstart.substring(0, 5)} - ${data?.hourend.substring(0, 5)}`}
+                            </div>
+                        </div>
+                        <div style={{ width: '70%', height: 1, backgroundColor: '#e1e1e1', marginTop: 24, marginBottom: 24 }}></div>
                     </div>
-                </div >
+                </div>
             )
 
         }
