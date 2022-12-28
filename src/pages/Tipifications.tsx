@@ -162,7 +162,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
     
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            type: externalUse ? externalType : (row?.type || ''),
+            type: externalUse ? externalType : (row?.type || "TIPIFICACION"),
             id: row?.classificationid || 0,
             description: edit? (row?.description) : '',
             title: row?.title || '',
