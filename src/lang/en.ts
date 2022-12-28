@@ -1775,6 +1775,8 @@ const translation: LangKeys = {
   schedule_event: "Schedule event",
   reschedule_event: "Reschedule event",
   successfully_scheduled: "You have successfully scheduled an appointment",
+  limit20char: "The field must not exceed 20 characters",
+  limit75char: "The field must not exceed 75 characters",
   confirmed: "Confirmed",
   enter_details: "Enter details",
   confirm: "Confirm",

@@ -2993,6 +2993,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   max_limit: 'Límite máximo {{n}}',
   max_limit_file_per_upload: 'Límite máximo de {{n}} archivos por carga',
   error_estructure_user: 'El usuario {{email}} no fue procesado por que tiene una estructura no válida',
+  limit20char: "El campo no debe sobrepasar los 20 caractéres",
+  limit75char: "El campo no debe sobrepasar los 75 caractéres",
 
   invitation_date: "{{day}} {{date}} de {{month}} de {{year}}",
 
