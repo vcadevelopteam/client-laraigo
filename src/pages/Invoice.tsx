@@ -51,6 +51,9 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Typography from '@material-ui/core/Typography';
+import MuiPhoneNumber from 'material-ui-phone-number';
+import { styled } from '@material-ui/core/styles';
+import { Controller } from "react-hook-form";
 
 interface RowSelected {
     row: Dictionary | null,
@@ -195,6 +198,20 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: "bold"
     }
 }));
+
+const CssPhonemui = styled(MuiPhoneNumber)({
+    '& label.Mui-focused': {
+        color: '#7721ad',
+    },
+    '& .MuiInput-underline:after': {
+        borderBottomColor: '#7721ad',
+    },
+    '& .MuiOutlinedInput-root': {
+        '&.Mui-focused fieldset': {
+            borderColor: '#7721ad',
+        },
+    },
+});
 
 const IDCOSTPERPERIOD = "IDCOSTPERPERIOD";
 const CostPerPeriod: React.FC<{ dataCorp: any, dataOrg: any, dataPaymentPlan: any, dataPlan: any }> = ({ dataCorp, dataOrg, dataPaymentPlan, dataPlan }) => {
@@ -7557,6 +7574,10 @@ const PaymentMethods: React.FC<{}> = () => {
                 accessor: 'mail',
             },
             {
+                Header: t(langKeys.phone),
+                accessor: 'phone',
+            },
+            {
                 Header: t(langKeys.creditcardnumber),
                 accessor: 'cardnumber',
             },
@@ -7638,7 +7659,7 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
         }
     }
 
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, getValues, control, formState: { errors } } = useForm({
         defaultValues: {
             firstname: row?.firstname || '',
             lastname: row?.lastname || '',
@@ -7647,6 +7668,7 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
             securitycode: row?.securitycode || '',
             expirationmonth: row?.expirationmonth || '',
             expirationyear: row?.expirationyear || '',
+            phone: row?.phone || '',
             favorite: row?.favorite || false,
             cardlimit: 16,
         }
@@ -7689,6 +7711,7 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
         register('expirationmonth', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('expirationyear', { validate: (value) => (value && value.length && value.length <= 4) || t(langKeys.field_required) });
         register('favorite');
+        register('phone', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('cardlimit');
     }, [edit, register]);
 
@@ -7783,8 +7806,36 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
                             onChange={(value) => setValue('mail', value)}
                             valueDefault={getValues('mail')}
                             error={errors?.mail?.message}
-                            className="col-12"
+                            className="col-6"
                             disabled={!edit}
+                        />
+                        <Controller
+                            name="phone"
+                            control={control}
+                            rules={{
+                                validate: (value) => {
+                                    if (value.length === 0) {
+                                        return t(langKeys.field_required) as string;
+                                    } else if (value.length < 10) {
+                                        return t(langKeys.validationphone) as string;
+                                    }
+                                }
+                            }}
+                            render={({ field, formState: { errors } }) => (
+                                <CssPhonemui
+                                    {...field}
+                                    className="col-6"
+                                    variant="outlined"
+                                    margin="normal"
+                                    fullWidth
+                                    size="small"
+                                    defaultCountry={'pe'}
+                                    label={t(langKeys.phone)}
+                                    error={!!errors?.phone}
+                                    helperText={errors?.phone?.message}
+                                    disabled={!edit}
+                                />
+                            )}
                         />
                     </div>
                     <h3>{t(langKeys.creditcard)}</h3>
