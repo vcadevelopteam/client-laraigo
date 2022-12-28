@@ -25,7 +25,6 @@ import {
 } from '@material-ui/icons';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import DeleteIcon from '@material-ui/icons/Delete';
-import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
 import CalendarWithInfo from 'components/fields/CalendarWithInfo';
 
 const useStyles = makeStyles((theme) => ({
@@ -47,34 +46,11 @@ const useStyles = makeStyles((theme) => ({
     colInput: {
         width: '100%'
     },
-    back: {
-        backgroundColor: '#fbfcfd',
-        height: '100vh',
-        width: '100vw',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
     cancelEventFields: {
         textAlign: 'center',
         fontSize: '1.1rem',
         padding: '5px',
     },
-    containerSuccess: {
-        minHeight: 600,
-        backgroundColor: 'white',
-        display: 'flex',
-        borderRadius: 8,
-        boxShadow: '0 1px 8px 0 rgb(0 0 0 / 8%)',
-        width: '80vw',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: theme.spacing(3),
-        [theme.breakpoints.down('xs')]: {
-            width: '100vw',
-        },
-        flexDirection: 'column',
-    }
 }));
 
 const DialogBooking: React.FC<{
@@ -244,12 +220,12 @@ const DialogCancelBooking: React.FC<{
     const [waitSave, setWaitSave] = useState(false);
     const classes = useStyles();
     const saveRes = useSelector(state => state.main.execute);
-    const { register, setValue, getValues, reset, trigger } = useForm();
+    const { register, setValue, getValues, reset, trigger, formState: { errors } } = useForm();
 
     useEffect(() => {
         if (waitSave) {
             if (!saveRes.loading && !saveRes.error) {
-                //dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_cancel_event) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_cancel_event) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
@@ -293,29 +269,6 @@ const DialogCancelBooking: React.FC<{
         }
     }
 
-    if (!saveRes.error && !saveRes.loading && saveRes.key === "UFN_CALENDARYBOOKING_INS") {
-        return (
-            <div className={classes.back}>
-                <div className={classes.containerSuccess}>
-                    <div style={{ fontWeight: 'bold', fontSize: 20 }}>{t(langKeys.CANCELED)}</div>
-                    <div style={{ marginTop: 16, textAlign: 'center' }} >{t(langKeys.successful_cancel_event)}</div>
-                    <div style={{ width: '70%', height: 1, backgroundColor: '#e1e1e1', marginTop: 24, marginBottom: 24 }}></div>
-                    <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 12 }}>
-                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                            <span style={{ backgroundColor: event.color, width: 24, height: 24, borderRadius: 12 }}></span>
-                            <div style={{ fontWeight: 'bold', fontSize: 20 }}>{event?.name}</div>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 'bold' }}>
-                            <CalendarTodayIcon />
-                            {`${booking?.hourstart.substring(0, 5)} - ${booking?.hourend.substring(0, 5)}`}
-                        </div>
-                    </div>
-                    <div style={{ width: '70%', height: 1, backgroundColor: '#e1e1e1', marginTop: 24, marginBottom: 24 }}></div>
-                </div>
-            </div>
-        )
-    }
-
     return (
         <Dialog
             open={openModal}
@@ -335,7 +288,7 @@ const DialogCancelBooking: React.FC<{
                     {booking?.personname}
                 </div>
                 <div className={classes.cancelEventFields}>
-                    {`${booking?.hourstart.substring(0, 5)} - ${booking?.hourend.substring(0, 5)}`}, {t(langKeys.invitation_date, { month: t(`month_${((new Date(booking?.monthdate)?.getMonth() + 1) + "").padStart(2, "0")}`), year: new Date(booking?.monthdate)?.getFullYear(), day: t(dayNames[new Date(booking?.monthdate)?.getDay()]), date: new Date(booking?.monthdate)?.getDate() })}
+                    {`${booking?.hourstart.substring(0, 5)} - ${booking?.hourend.substring(0, 5)}`}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16, paddingTop: '10px' }}>
                     <div style={{ fontSize: '1rem' }}>
