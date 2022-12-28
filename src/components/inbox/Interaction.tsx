@@ -275,6 +275,14 @@ const InteractiveList: React.FC<{ onlyTime?: string, interactiontext: string, cr
 
     const jsonIntt = JSON.parse(interactiontext);
 
+    if (jsonIntt.sections.length === 0) {
+        return <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
+            [classes.interactionTextAgent]: userType !== 'client',
+        })}>
+            INTERACTIVE LIST WITHOUT OPTIONS
+        </div>
+    }
+
     return (
         <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
             [classes.interactionTextAgent]: userType !== 'client',
