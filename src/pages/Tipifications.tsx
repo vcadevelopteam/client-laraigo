@@ -140,6 +140,11 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
     const [description, setDescription] = useState(row?.description||"");
     const [order, setOrder] = useState(row?.order||"");
     const [type, seType] = useState(row?.type||"");
+    const [auxVariables, seauxVariables] = useState({
+        communicationchannel: row?.communicationchannel || "",
+        tags: row?.tags || "",
+        order: row?.order || "",
+    });
     const [showAddAction, setShowAddAction] = useState(!!row?.jobplan || false);
     const [jobplan, setjobplan] = useState<Dictionary[]>(row && row.jobplan ? JSON.parse(row.jobplan) : [])
 
@@ -172,8 +177,14 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
 
     React.useEffect(() => {
         register('id');
-        register('title', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('title', { validate: {
+            noempty: (value) => (value && value.length) || t(langKeys.field_required),
+            limit: (value) => (getValues("type") === "CATEGORIA")? ((value && value.length && value.length<= 20) || t(langKeys.limit20char)): true,
+        }});
+        register('description', { validate: {
+            noempty: (value) => (value && value.length) || t(langKeys.field_required),
+            limit: (value) => (getValues("type") === "CATEGORIA")? ((value && value.length && value.length <= 75) || t(langKeys.limit20char)): true,
+        }});
         register('parent');
         register('communicationchannel', { validate: {
             typeclassification: (value) => (getValues("type") !== "CATEGORIA")? ((value && value.length) || t(langKeys.field_required)): true,
@@ -280,7 +291,6 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                             className="col-6"
                             onChange={(value) => setValue('title', value)}
                             valueDefault={row?.title || ""}
-                            inputProps={{ maxLength: type==="CATEGORIA"?20:1000 }}
                             error={errors?.title?.message}
                         />
                         <div className='col-6' style={{ position: 'relative' }}>
@@ -289,7 +299,6 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                                     label={t(langKeys.description)}
                                     onChange={(value) => {setDescription(value);setValue('description', value)}}
                                     valueDefault={description}
-                                    inputProps={{ maxLength: type==="CATEGORIA"?72:1000 }}
                                     error={errors?.description?.message}
                                 />        
                                 <EmojiPickerZyx
@@ -340,10 +349,13 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                             onChange={(value) => {
                                 setValue('communicationchannel', "")
                                 setValue('tags', "")
-                                setValue('type', value?.value || ''); 
                                 setValue('order', "")
-                                setValue('title', "")
-                                setValue('description', "")
+                                seauxVariables({
+                                    communicationchannel: "",
+                                    tags: "",
+                                    order: "",
+                                })
+                                setValue('type', value?.value || ''); 
                                 seType(value?.value || '')
                             }}
                             error={errors?.type?.message}
@@ -361,8 +373,11 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                         <FieldMultiSelect
                             label={t(langKeys.channel_plural)}
                             className="col-6"
-                            onChange={(value) => setValue('communicationchannel', value.map((o: Dictionary) => o.domainvalue).join())}
-                            valueDefault={row?.communicationchannel || ""}
+                            onChange={(value) => {
+                                setValue('communicationchannel', value.map((o: Dictionary) => o.domainvalue).join())
+                                seauxVariables({...auxVariables, communicationchannel: value.map((o: Dictionary) => o.domainvalue).join()})
+                            }}
+                            valueDefault={auxVariables.communicationchannel}
                             error={errors?.communicationchannel?.message}
                             data={datachannels}
                             optionDesc="domaindesc"

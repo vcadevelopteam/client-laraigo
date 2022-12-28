@@ -24,6 +24,8 @@ export const langKeys = {
     jsscriptTooltip: "jsscriptTooltip",
     kanbanview: "kanbanview",
     listview: "listview",
+    limit20char: "limit20char",
+    limit75char: "limit75char",
     startnewconversation: "startnewconversation",
     startnewconversationTooltip: "startnewconversationTooltip",
     inputAlwaysEnabledTooltip: "inputAlwaysEnabledTooltip",
