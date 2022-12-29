@@ -1003,6 +1003,10 @@ const Tickets = () => {
                 accessor: 'supervisor'
             },
             {
+                Header: t(langKeys.ticket_agentrol),
+                accessor: 'rolasesor'
+            },
+            {
                 Header: t(langKeys.ticket_empresa),
                 accessor: 'empresa'
             },
