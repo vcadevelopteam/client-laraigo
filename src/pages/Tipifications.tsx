@@ -139,7 +139,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
     const [waitSave, setWaitSave] = useState(false);
     const [description, setDescription] = useState(row?.description||"");
     const [order, setOrder] = useState(row?.order||"");
-    const [type, seType] = useState(row?.type||"");
+    const [type, seType] = useState(row?.type||"TIPIFICACION");
     const [auxVariables, seauxVariables] = useState({
         communicationchannel: row?.communicationchannel || "",
         tags: row?.tags || "",
@@ -159,7 +159,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
     const dataParent = multiData[3] && multiData[3].success ? multiData[3].data : [];
 
     const datachannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
-    
+    console.log(externalUse ? externalType : (row?.type || "TIPIFICACION"))
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             type: externalUse ? externalType : (row?.type || "TIPIFICACION"),
@@ -568,7 +568,12 @@ const Tipifications: FC = () => {
             {
                 Header: t(langKeys.type),
                 accessor: 'type',
-                NoFilter: true
+                prefixTranslation: 'type_',
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const { type } = props.cell.row.original;
+                    return (t(`type_${type}`) || "").toUpperCase()
+                }
             },
             {
                 Header: t(langKeys.parent),

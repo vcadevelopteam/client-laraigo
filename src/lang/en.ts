@@ -1761,6 +1761,8 @@ const translation: LangKeys = {
   reset_weekly_hours: "Reset to weekly hours",
   edit_date: "Edit date(s)",
   edit_all: "Edit all ",
+  type_TIPIFICACION: "CLASIFICATION",
+  type_CATEGORIA: "CATEGORY",
   set_your_weekly: "Set your weekly hours",
   unavailable: "Unavailable",
   more_times: "More Times",
