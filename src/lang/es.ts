@@ -1700,6 +1700,8 @@ const translation: LangKeys = {
   supervisionduration: 'Tiempo de supervisión de llamada',
   ticket_tdatime_help: 'Suma de todos los tiempos en que la conversación es derivada a Holding hasta que el asesor brinda una respuesta.',
   ticket_holdingwaitingtime: 'Tiempo de espera en holding',
+  type_TIPIFICACION: "CLASIFICACIÓN",
+  type_CATEGORIA: "CATEGORÍA",
   ticket_holdingwaitingtime_help: 'Es el tiempo transcurrido desde la derivación a holding hasta la asignación en la bandeja del asesor.',
 
   selectday: "Seleccione la(s) fecha(s) a las que desea asignar horas específicas",

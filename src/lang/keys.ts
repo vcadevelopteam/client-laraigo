@@ -2166,6 +2166,8 @@ export const langKeys = {
     report_interaction_personcommunicationchannel: 'report_interaction_personcommunicationchannel',
     report_interaction_email: 'report_interaction_email',
     report_interaction_ticketgroup: 'report_interaction_ticketgroup',
+    type_TIPIFICACION: "type_TIPIFICACION",
+    type_CATEGORIA: "type_CATEGORIA",
   
     report_productivity: 'report_productivity',
     report_productivity_ticket: 'report_productivity_ticket',
