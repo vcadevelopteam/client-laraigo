@@ -90,6 +90,18 @@ export const uploadFile = (data: FormData): IActionCall => ({
 
 export const resetUploadFile = (): IActionCall => ({ type: actionTypes.UPLOAD_FILE_RESET });
 
+export const uploadFileMetadata = (data: FormData): IActionCall => ({
+    callAPI: () => CommonService.uploadFileMetadata(data),
+    types: {
+        loading: actionTypes.UPLOAD_FILE,
+        success: actionTypes.UPLOAD_FILE_SUCCESS,
+        failure: actionTypes.UPLOAD_FILE_FAILURE,
+    },
+    type: null,
+});
+
+export const resetUploadFileMetadata = (): IActionCall => ({ type: actionTypes.UPLOAD_FILE_RESET });
+
 
 export const exportData = (requestBody: IRequestBody, reportName: string = "", formatToExport: "excel" | "csv" = "excel", isNotPaginated: boolean = false, headerClient: Dictionary[] | null = null): IActionCall => ({
     callAPI: () => CommonService.exportData({

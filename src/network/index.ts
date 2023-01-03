@@ -11,3 +11,4 @@ export * as GoogleService from './service/google';
 // export * as WitaiService from './service/witai';
 export * as ProductService from './service/product';
 export * as CalendarService from './service/calendar';
+export * as PostHistoryService from './service/posthistory';

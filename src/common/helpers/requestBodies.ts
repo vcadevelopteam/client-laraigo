@@ -3204,6 +3204,21 @@ export const getProductCatalogSel = (id: number = 0, category: string = ''): IRe
         all: true
     }
 })
+export const getPostHistorySel = ({ status = "", type = "", datestart = null, dateend = null }: Dictionary) => ({
+    method: "UFN_POSTHISTORY_SEL",
+    parameters: {
+        status,
+        type,
+        datestart,
+        dateend,
+    }
+})
+export const postHistoryIns = ({ communicationchannelid, communicationchanneltype, posthistoryid, status, type, publishdate, texttitle, textbody, hashtag, sentiment, activity, mediatype, medialink, operation }: Dictionary) => ({
+    method: "UFN_POSTHISTORY_INS",
+    parameters: {
+        communicationchannelid, communicationchanneltype, posthistoryid, status, type, publishdate, texttitle, textbody, hashtag, sentiment, activity, mediatype, medialink, operation
+    }
+})
 
 export const productCatalogIns = ({ id, productid, title, link, imagelink, additionalimagelink, brand, condition, availability, category, material, color, pattern, currency, price, saleprice, customlabel1, customlabel2, customlabel3, customlabel4, customlabel5, labels, catalogid, catalogname, description, status, type, operation }: Dictionary): IRequestBody => ({
     method: "UFN_PRODUCTCATALOG_INS",
@@ -3212,6 +3227,7 @@ export const productCatalogIns = ({ id, productid, title, link, imagelink, addit
         id, productid, title, link, imagelink, additionalimagelink, brand, condition, availability, category, material, color, pattern, currency, price, saleprice, customlabel1, customlabel2, customlabel3, customlabel4, customlabel5, labels, catalogid, catalogname, description, status, type, operation,
     }
 })
+
 export const listPaymentCard = ({ corpid, orgid, id }: Dictionary) => ({
     method: "UFN_PAYMENTCARD_LST",
     key: "UFN_PAYMENTCARD_LST",
