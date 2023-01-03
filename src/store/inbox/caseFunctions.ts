@@ -13,6 +13,9 @@ const getGroupInteractions = (interactions: IInteraction[], hideLogs: boolean = 
         item.listImage = listImages;
         item.onlyTime = toTime24HR(convertLocalDate(item.createdate, false).toLocaleTimeString())
         const currentUser = item.usertype === "BOT" ? "BOT" : (item.userid ? "agent" : "client");
+        
+        if (item.interactiontype.includes("image"))
+            indexImage++;
         if (acc.last === "") {
             return { data: [{ ...item, usertype: currentUser, interactions: [item] }], last: currentUser }
         } else if (currentUser === "BOT" && (acc.last === "BOT")) {
@@ -28,8 +31,7 @@ const getGroupInteractions = (interactions: IInteraction[], hideLogs: boolean = 
         } else if (!item.userid && acc.last === "client") {
             acc.data[acc.data.length - 1].interactions.push(item)
         }
-        if (item.interactiontype.includes("image"))
-            indexImage++;
+
         return { data: acc.data, last: currentUser }
     }, { data: [], last: "" }).data;
 }
