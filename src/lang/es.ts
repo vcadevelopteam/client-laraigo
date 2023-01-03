@@ -1231,6 +1231,7 @@ const translation: LangKeys = {
   invalidjson: 'Json inválido',
   invalid_file: 'Archivo inválido',
   invalid_date_format: 'Formato de fecha inválida',
+  catalogmaster: "Maestro de catálogo",
   invalid_time_format: 'Formato de tiempo inválido',
   test: 'Probar',
   result: 'Resultado',

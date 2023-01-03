@@ -730,6 +730,7 @@ const translation: LangKeys = {
   hsm_template: 'HSM template',
   hsm_template_plural: 'HSM templates',
   data_origin: 'Data origin',
+  catalogmaster: "Catalog master",
   kpimanager: 'KPI Manager',
   kpimanager_detail: 'KPI Manager Detail',
   kpimanager_plural: 'KPI Manager',
