@@ -3438,7 +3438,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
                                 }
                                 else {
                                     setTotalPay(Math.round(((data?.totalamount || 0) + Number.EPSILON) * 100) / 100);
-                                    setTotalAmount(Math.round(((data?.totalamount || 0) + Number.EPSILON) * 100) / 100);;
+                                    setTotalAmount(Math.round(((data?.totalamount || 0) + Number.EPSILON) * 100) / 100);
                                     setShowCulqi(true);
                                 }
                             }
@@ -6795,7 +6795,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                     var compareamount = (buyAmount || 0) * (exchangeRequest?.exchangerate || 0);
 
                     if (compareamount > mainResult.mainData.data[0].detractionminimum) {
-                        setTotalPay(Math.round(((((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0))) - (((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0))) * (mainResult.mainData.data[0].detraction || 0))) + Number.EPSILON) * 100) / 100);;
+                        setTotalPay(Math.round(((((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0))) - (((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0))) * (mainResult.mainData.data[0].detraction || 0))) + Number.EPSILON) * 100) / 100);
                         setDetractionAlert(true);
                         setDetractionAmount(Math.round((((mainResult.mainData.data[0].detraction || 0) * 100) + Number.EPSILON) * 100) / 100);
                         setPaymentTax(Math.round((((buyAmount || 0) * (mainResult.mainData.data[0].igv || 0)) + Number.EPSILON) * 100) / 100);

@@ -24,12 +24,12 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Tab, { TabProps } from '@material-ui/core/Tab';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { FormControlLabel, FormHelperText, OutlinedInputProps, Radio, RadioGroup, RadioGroupProps, useTheme, TypographyVariant } from '@material-ui/core';
+import { FormControlLabel, FormHelperText, OutlinedInputProps, Radio, RadioGroup, RadioGroupProps, useTheme, TypographyVariant, InputBase } from '@material-ui/core';
 import { Divider, Grid, ListItem, ListItemText, styled } from '@material-ui/core';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import { Skeleton } from '@material-ui/lab';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import { EmojiICon, GifIcon } from 'icons';
+import { AndroidColor, EmailColor, EmojiICon, FacebookColor, FacebookMessengerColor, GifIcon, InstagramColor, IosColor, LinkedInColor, SmsColor, TeamsColor, TelegramColor, TwitterColor, VoiceColor, WebMessengerColor, WhatsappColor, YouTubeColor } from 'icons';
 import { Picker } from 'emoji-mart'
 import { SearchField } from 'components';
 import CameraAltIcon from '@material-ui/icons/CameraAlt';
@@ -58,6 +58,7 @@ import {
 import { VariableSizeList, FixedSizeList, ListChildComponentProps } from 'react-window';
 import MuiPhoneNumber, { MaterialUiPhoneNumberProps } from 'material-ui-phone-number';
 import InfoIcon from '@material-ui/icons/Info';
+import QuickReactions from "react-quick-reactions";
 
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
@@ -322,7 +323,8 @@ interface InputProps {
     className?: any;
     valueDefault?: any;
     disabled?: boolean;
-
+    emoji?: boolean;
+    hashtag?: boolean;
     onChange?: (param: any, param2?: any | null) => void;
     onBlur?: (param: any, param2?: any | null) => void;
     style?: any;
@@ -436,6 +438,102 @@ export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disable
                     onBlur && onBlur(e.target.value);
                 }}
                 inputProps={inputProps}
+                style={{ border: '1px solid #762AA9' }}
+            />
+            {maxLength !== 0 && <FormHelperText style={{ textAlign: 'right' }}>{maxLength - value.length}/{maxLength}</FormHelperText>}
+        </div>
+    )
+}
+
+export const FieldEditAdvanced: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, inputProps = {}, style = {}, variant = "standard", emoji = false, hashtag = false }) => {
+    const [value, setvalue] = useState("");
+    const [positionStart, setPositionStart] = useState(0);
+    const [positionEnd, setPositionEnd] = useState(0);
+    const [isVisible, setIsVisible] = useState(false);
+
+    useEffect(() => {
+        setvalue(valueDefault || "");
+    }, [valueDefault])
+
+    return (
+        <div className={className}>
+            {label && <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>}
+            {(emoji || hashtag) && <div style={{ display: 'flex', width: '100%', alignItems: 'right', alignContent: 'right', justifyContent: 'flex-end', marginLeft: '6px' }}>
+                {emoji && <QuickReactions
+                    reactionsArray={[
+                        {
+                            id: "laughing",
+                            name: "Laughing",
+                            content: "😂",
+                        },
+                        {
+                            id: "crying",
+                            name: "Crying",
+                            content: "😢",
+                        },
+                        {
+                            id: "thinking",
+                            name: "Thinking",
+                            content: "🤔",
+                        },
+                        {
+                            id: "screaming",
+                            name: "Screaming",
+                            content: "😱",
+                        },
+                    ]}
+                    isVisible={isVisible}
+                    onClose={() => setIsVisible(false)}
+                    onClickReaction={(reaction) => {
+                        if (maxLength === 0 || `${value}${reaction.content}`.length <= maxLength) {
+                            setvalue(`${value}${reaction.content}`);
+                            onChange && onChange(`${value}${reaction.content}`);
+                        }
+                    }}
+                    trigger={
+                        <button
+                            onClick={() => {
+                                setIsVisible(!isVisible);
+                            }}
+                            style={{ border: 'none', width: '28px', height: '28px', backgroundImage: 'url(https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/d710976d-8894-4f37-935b-f4dc102bc294/Emoji.png)', backgroundSize: '28px 28px', cursor: 'pointer' }}
+                        >
+                        </button>
+                    }
+                    placement={'left'}
+                    header={'Emojis'}
+                />}
+                {hashtag && <button
+                    onClick={() => {
+                        if (maxLength === 0 || `${value}#`.length <= maxLength) {
+                            setvalue(`${value}#`);
+                            onChange && onChange(`${value}#`);
+                        }
+                    }}
+                    style={{ border: 'none', width: '28px', height: '28px', backgroundImage: 'url(https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/ccbdbce8-db2e-4437-b28f-53fa371334a7/Hashtag.png)', backgroundSize: '28px 28px', cursor: 'pointer' }}
+                >
+                </button>}
+            </div>}
+            <TextField
+                {...fregister}
+                color="primary"
+                fullWidth
+                disabled={disabled}
+                type={type}
+                error={!!error}
+                value={value}
+                multiline
+                minRows={rows}
+                onChange={(e) => {
+                    if (maxLength === 0 || e.target.value.length <= maxLength) {
+                        setvalue(e.target.value);
+                        onChange && onChange(e.target.value);
+                    }
+                }}
+                onBlur={(e) => {
+                    onBlur && onBlur(e.target.value);
+                }}
+                inputProps={inputProps}
+                style={style}
             />
             {maxLength !== 0 && <FormHelperText style={{ textAlign: 'right' }}>{maxLength - value.length}/{maxLength}</FormHelperText>}
         </div>
@@ -477,6 +575,39 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     if (channelType === "VOXI") return <PhoneIcon width={10} fill={color} stroke={color} height={height} style={{ color, width: 16, height: 16 }} />
 
     return <TelegramIcon style={{ color, width, height }} />
+}
+export const GetIconColor: React.FC<IconProps> = ({ channelType }) => {
+
+    if (channelType === "WHAT") return <WhatsappColor/>
+    if (channelType === "WHAD") return <WhatsappColor/>
+    if (channelType === "WHAG") return <WhatsappColor/>
+    if (channelType === "WHAP") return <WhatsappColor />
+    if (channelType === "WHAC") return <WhatsappColor/>
+    if (channelType === "FBMS") return <FacebookMessengerColor/>
+    if (channelType === "FBDM") return <FacebookMessengerColor/>
+    if (channelType === "FBWA") return <FacebookColor/>
+    if (channelType === "WEBM") return <WebMessengerColor/>
+    if (channelType === "TELE") return <TelegramColor/>
+    if (channelType === "INST") return <InstagramColor/>
+    if (channelType === "INMS") return <InstagramColor/>
+    if (channelType === "INDM") return <InstagramColor/>
+    if (channelType === "ANDR") return <AndroidColor/>
+    if (channelType === "APPL") return <IosColor/>
+    if (channelType === "CHATZ") return <ZyxmeMessengerIcon color='7721AD'/>
+    if (channelType === "CHAZ") return <ZyxmeMessengerIcon color='7721AD'/>
+    if (channelType === "MAIL") return <EmailColor/>
+    if (channelType === "MAII") return <EmailColor/>
+    if (channelType === "YOUT") return <YouTubeColor/>
+    if (channelType === "LINE") return <LineIcon color='7721AD'/>
+    if (channelType === "SMS") return <SmsColor/>
+    if (channelType === "SMSI") return <SmsColor/>
+    if (channelType === "TWIT") return <TwitterColor/>
+    if (channelType === "TWMS") return <TwitterColor/>
+    if (channelType === "TEAM") return <TeamsColor/>
+    if (channelType === "VOXI") return <VoiceColor />
+    if (channelType === "LNKD") return <LinkedInColor />
+
+    return <TelegramColor />
 }
 
 export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ multiline = false, error, label, data = [], optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false, orderbylabel = false }) => {

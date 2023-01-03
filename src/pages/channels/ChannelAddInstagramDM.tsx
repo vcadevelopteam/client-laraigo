@@ -159,7 +159,7 @@ export const ChannelAddInstagramDM: FC = () => {
                         autoLoad={false}
                         buttonStyle={{ margin: "auto", backgroundColor: "#7721ad", textTransform: "none", display: "flex", textAlign: "center", justifyItems: "center", alignItems: "center", justifyContent: "center" }}
                         fields="name,email,picture"
-                        scope="instagram_basic,instagram_manage_comments,instagram_manage_messages,pages_manage_metadata,pages_read_engagement,pages_show_list,public_profile"
+                        scope="instagram_basic,instagram_manage_comments,instagram_manage_messages,pages_manage_metadata,pages_read_engagement,pages_show_list,public_profile,instagram_content_publish"
                         callback={processFacebookCallback}
                         textButton={t(langKeys.linkinstagrampage)}
                         icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}

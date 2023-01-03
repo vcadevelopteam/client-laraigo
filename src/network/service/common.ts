@@ -18,6 +18,10 @@ export function uploadFile(data: FormData) {
     return APIManager.post(apiUrls.UPLOAD_FILE, { data }, true);
 }
 
+export function uploadFileMetadata(data: FormData) {
+    return APIManager.post(apiUrls.UPLOAD_FILEMETADATA, { data }, true);
+}
+
 export function exportData(requestBody: IRequestBody) {
     return APIManager.post(apiUrls.EXPORT_DATA, { data: requestBody }, true);
 }

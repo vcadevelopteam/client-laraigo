@@ -171,7 +171,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
                     autoLoad={false}
                     buttonStyle={FBButtonStyles}
                     fields="name,email,picture"
-                    scope="instagram_basic,instagram_manage_comments,instagram_manage_messages,pages_manage_metadata,pages_read_engagement,pages_show_list,public_profile"
+                    scope="instagram_basic,instagram_manage_comments,instagram_manage_messages,pages_manage_metadata,pages_read_engagement,pages_show_list,public_profile,instagram_content_publish"
                     callback={processFacebookCallback}
                     textButton={t(langKeys.linkinstagrampage)}
                     onClick={(e: any) => {
