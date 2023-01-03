@@ -1,24 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import Checkbox from '@material-ui/core/Checkbox';
+import ClearIcon from '@material-ui/icons/Clear';
+import CloseIcon from '@material-ui/icons/Close';
 import DateFnsUtils from '@date-io/date-fns';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import React, { FC, Fragment, useEffect, useState, useCallback } from "react";
+import React, { Fragment, useEffect, useState, useCallback } from "react";
 
-import { CameraAltOutlined, ChatBubbleOutline, Delete, Facebook, Instagram, LinkedIn, PlayCircleOutlineSharp, ReplayOutlined, ReplyOutlined, Save, Send, SendOutlined, ThumbUpOutlined, Timelapse, Twitter, YouTube, Schedule } from '@material-ui/icons';
-import { AntTab, DialogZyx, FieldEdit, FieldEditAdvanced, FieldSelect, FieldView } from 'components';
-import { Button, Tabs } from "@material-ui/core";
-import { dataActivities } from 'common/helpers';
+import { CameraAltOutlined, ChatBubbleOutline, Delete, Facebook, Instagram, LinkedIn, PlayCircleOutlineSharp, ReplayOutlined, ReplyOutlined, Save, SendOutlined, ThumbUpOutlined, Timelapse, Twitter, YouTube, Schedule } from '@material-ui/icons';
+import { Button } from "@material-ui/core";
+import { dataActivities, localesLaraigo } from 'common/helpers';
 import { dataFeelings } from 'common/helpers/dataFeeling';
-import { Dictionary } from '@types';
+import { Dictionary } from "@types";
+import { execute, uploadFileMetadata } from "store/main/actions";
 import { FacebookColor, InstagramColor, LinkedInColor, TikTokColor, TwitterColor, YouTubeColor } from "icons";
-import { getCollection, resetAllMain, uploadFileMetadata } from 'store/main/actions';
-import { getCommChannelLst } from 'common/helpers';
+import { FieldSelect, FieldView, FieldEdit, FieldEditAdvanced } from 'components';
 import { KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { langKeys } from "lang/keys";
-import { localesLaraigo } from 'common/helpers';
 import { makeStyles } from '@material-ui/core/styles';
-import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import { schedulePost } from 'store/posthistory/actions';
+import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
+import { postHistoryIns } from "common/helpers/requestBodies";
 import { useDispatch } from "react-redux";
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'hooks';
@@ -56,10 +54,6 @@ const useStyles = makeStyles((theme) => ({
             color: "#FFFFFF",
         },
     },
-    containerDetail: {
-        background: '#fff',
-        padding: theme.spacing(2),
-    },
     containerLeft: {
         [theme.breakpoints.down('xs')]: {
             minWidth: '100vw',
@@ -72,6 +66,13 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: '28px',
         overflowY: 'auto',
     },
+    itemDate: {
+        border: '1px solid #bfbfc0',
+        borderRadius: 4,
+        color: 'rgb(143, 146, 161)',
+        height: 40,
+        minHeight: 40,
+    },
     root: {
         backgroundColor: 'white',
         flex: 1,
@@ -83,148 +84,105 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const PostCreatorPublish: FC<{ setViewSelected: (id: string) => void }> = ({ setViewSelected }) => {
+const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean }; setViewSelected: (view: string) => void; fetchData: () => void, }> = ({ data: { row, edit }, setViewSelected, fetchData }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
-
-    const mainResult = useSelector(state => state.main.mainData);
-
-    const [dataChannel, setDataChannel] = useState<Dictionary[]>([]);
-    const [pageMode, setPageMode] = useState('TEXT');
-    const [pageSelected, setPageSelected] = useState(0);
-    const [waitLoad, setWaitLoad] = useState(false);
-
-    const fetchData = () => {
-        dispatch(getCollection(getCommChannelLst()));
-        dispatch(showBackdrop(true));
-        setWaitLoad(true);
-    };
-
-    useEffect(() => {
-        fetchData();
-
-        return () => {
-            dispatch(resetAllMain());
-        };
-    }, []);
-
-    useEffect(() => {
-        if (waitLoad) {
-            if (!mainResult.loading && !mainResult.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
-                dispatch(showBackdrop(false));
-                setWaitLoad(false);
-
-                setDataChannel(mainResult.data || []);
-            } else if (mainResult.error) {
-                dispatch(showSnackbar({ show: true, severity: "error", message: t(mainResult.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() }) }));
-                dispatch(showBackdrop(false));
-                setWaitLoad(false);
-            }
-        }
-    }, [mainResult, waitLoad])
-
-    return (
-        <React.Fragment>
-            <div style={{ width: '100%' }}>
-                <Tabs
-                    indicatorColor="primary"
-                    onChange={(_, value) => {
-                        setPageSelected(value);
-                        if (value === 0) {
-                            setPageMode('TEXT');
-                        }
-                        if (value === 1) {
-                            setPageMode('IMAGE');
-                        }
-                        if (value === 2) {
-                            setPageMode('VIDEO');
-                        }
-                    }}
-                    style={{ border: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
-                    textColor="primary"
-                    value={pageSelected}
-                    variant="fullWidth"
-                >
-                    <AntTab label={t(langKeys.postcreator_publish_text)} />
-                    <AntTab label={t(langKeys.postcreator_publish_textimage)} />
-                    <AntTab label={t(langKeys.postcreator_publish_textvideo)} />
-                </Tabs>
-                <div style={{ marginTop: 4 }}>
-                    <PublishPostGeneric dataChannel={dataChannel} dataRow={null} pageMode={pageMode} setViewSelected={setViewSelected} />
-                </div>
-            </div>
-        </React.Fragment>
-    )
-}
-
-const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pageMode: string, setViewSelected: (id: string) => void }> = ({ dataChannel, dataRow, pageMode, setViewSelected }) => {
-    const dispatch = useDispatch();
 
     const classes = useStyles();
-
-    const { t } = useTranslation();
-
+    const executeRes = useSelector(state => state.main.execute);
     const uploadResult = useSelector(state => state.main.uploadFile);
+    const isPublished = row?.published;
 
-    const [allowedChannel, setAllowedChannel] = useState<Dictionary[]>([]);
-    const [customizeType, setCustomizeType] = useState('Facebook');
     const [fileAttachment, setFileAttachment] = useState<File | null>(null);
-    const [modalData, setModalData] = useState<any>(null);
-    const [modalType, setModalType] = useState('');
-    const [openModal, setOpenModal] = useState(false);
-    const [previewType, setPreviewType] = useState('FACEBOOKPREVIEW');
-    const [showFacebook, setShowFacebook] = useState(true);
-    const [showInstagram, setShowInstagram] = useState(false);
-    const [showLinkedIn, setShowLinkedIn] = useState(false);
-    const [showTikTok, setShowTikTok] = useState(false);
-    const [showTwitter, setShowTwitter] = useState(false);
-    const [showYouTube, setShowYouTube] = useState(false);
+    const [previewType, setPreviewType] = useState('');
     const [waitUploadFile, setWaitUploadFile] = useState(false);
+    const [waitOperation, setWaitOperation] = useState(false);
+    const [customizeType, setCustomizeType] = useState('');
+    const [statuspost, setstatuspost] = useState('');
     const [filteredFeelings, setFilteredFeelings] = useState<any>([]);
-
 
     const { register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm({
         defaultValues: {
-            activity: dataRow?.activity || '',
-            channeldata: dataRow?.channeldata || [],
-            mediadata: dataRow?.mediadata || [],
-            mediatype: dataRow?.mediatype || pageMode,
-            sentiment: dataRow?.sentiment || '',
-            textbody: dataRow?.textbody || '',
-            textcustomfacebook: dataRow?.textcustomfacebook || '',
-            textcustominstagram: dataRow?.textcustominstagram || '',
-            textcustomlinkedin: dataRow?.textcustomlinkedin || '',
-            textcustomtiktok: dataRow?.textcustomtiktok || '',
-            textcustomtwitter: dataRow?.textcustomtwitter || '',
-            textcustomyoutube: dataRow?.textcustomyoutube || '',
-            texttitle: dataRow?.texttitle || '',
-            scheduledate: dataRow?.scheduledate || null,
-            scheduletime: dataRow?.scheduletime || null,
+            corpid: row?.corpid || 0,
+            orgid: row?.orgid || 0,
+            communicationchannelid: row?.communicationchannelid || 0,
+            communicationchanneltype: row?.communicationchanneltype || '',
+            posthistoryid: row?.posthistoryid || 0,
+            status: row?.status || 'SCHEDULED',
+            type: row?.type || '',
+            publishdate: row?.publishdate || null,
+            texttitle: row?.texttitle || '',
+            textbody: row?.textbody || '',
+            hashtag: row?.hashtag || '',
+            sentiment: row?.sentiment || '',
+            activity: row?.activity || '',
+            mediatype: row?.mediatype || '',
+            medialink: row?.medialink || [],
+            operation: row ? 'UPDATE' : 'INSERT',
         }
     });
 
     React.useEffect(() => {
-        register('activity');
-        register('channeldata');
-        register('mediadata');
-        register('mediatype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('sentiment', { validate: (value) => ((value && value.length) || !getValues('activity')) || t(langKeys.field_required) });
-        register('textbody', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('textcustomfacebook');
-        register('textcustominstagram');
-        register('textcustomlinkedin');
-        register('textcustomtiktok');
-        register('textcustomtwitter');
-        register('textcustomyoutube');
-        register('texttitle', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-    }, [register]);
+        if (row) {
+            if (row?.communicationchanneltype) {
+                switch (row?.communicationchanneltype) {
+                    case "FBWA":
+                        setPreviewType('FACEBOOKPREVIEW');
+                        setCustomizeType('Facebook');
+                        break;
 
-    const onModalSuccess = () => {
-        setOpenModal(false);
-        setViewSelected('postcreator_posthistory');
-    }
+                    case "INST":
+                        setPreviewType('INSTAGRAMPREVIEW');
+                        setCustomizeType('Instagram');
+                        break;
+
+                    case "LNKD":
+                        setPreviewType('LINKEDINPREVIEW');
+                        setCustomizeType('LinkedIn');
+                        break;
+
+                    case "TKTK":
+                        setPreviewType('TIKTOKPREVIEW');
+                        setCustomizeType('TikTok');
+                        break;
+
+                    case "YOUT":
+                        setPreviewType('YOUTUBEPREVIEW');
+                        setCustomizeType('YouTube');
+                        break;
+
+                    case "TWIT":
+                        setPreviewType('TWITTERPREVIEW');
+                        setCustomizeType('Twitter');
+                        break;
+                }
+            }
+
+            if (row?.activity) {
+                setFilteredFeelings(dataFeelings.filter(feeling => feeling.activity_id === row?.activity));
+            }
+        }
+    }, [row]);
+
+    React.useEffect(() => {
+        register('corpid');
+        register('orgid');
+        register('communicationchannelid');
+        register('communicationchanneltype');
+        register('posthistoryid');
+        register('status');
+        register('type');
+        register('publishdate');
+        register('texttitle', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('textbody', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('hashtag');
+        register('sentiment', { validate: (value) => ((value && value.length) || !getValues('activity')) || t(langKeys.field_required) });
+        register('activity');
+        register('mediatype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('medialink');
+        register('operation');
+    }, [register]);
 
     const handleDeleteMedia = async () => {
         const input = document.getElementById('attachmentInput') as HTMLInputElement;
@@ -232,25 +190,74 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
             input.value = "";
         }
         setFileAttachment(null);
-        var dataAttached = (getValues('mediadata') || []);
+        var dataAttached = (getValues('medialink') || []);
         dataAttached.pop();
-        setValue('mediadata', dataAttached);
-        await trigger('mediadata');
+        setValue('medialink', dataAttached);
+        await trigger('medialink');
     }
 
+    useEffect(() => {
+        if (waitOperation) {
+            if (!executeRes.loading && !executeRes.error) {
+                let message = ""
+                switch (statuspost) {
+                    case "DRAFT":
+                        message = t(langKeys.successsavedraft) + ""
+                        break;
+                    case "SCHEDULED":
+                        message = t(langKeys.successpublish) + ""
+                        break;
+
+                    case "DELETED":
+                        message = t(langKeys.successful_delete) + ""
+                        break;
+
+                    default:
+                        break;
+                }
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                fetchData && fetchData();
+                dispatch(showBackdrop(false));
+                setViewSelected("bet-1")
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.postcreator_posthistory).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                setWaitOperation(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [executeRes, waitOperation])
+
     const onSubmit = handleSubmit((data) => {
-        if (data.channeldata.length === 0 || !data.channeldata) {
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.posthistory_missingchannel) }));
-            return;
-        }
+        let message = "";
+        switch (data?.status) {
+            case "DRAFT":
+                message = t(langKeys.confirmationsavedraft) + "";
+                break;
 
-        if ((data.mediadata.length === 0 || !data.mediadata) && data.mediatype !== "TEXT") {
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.posthistory_missingmedia) }));
-            return;
-        }
+            case "SCHEDULED":
+                message = t(langKeys.confirmationpublish) + "";
+                break;
 
-        setModalData(data);
-        setOpenModal(true);
+            case "DELETED":
+                message = t(langKeys.confirmationpostdelete) + "";
+                break;
+
+            default:
+                break;
+        }
+        setstatuspost(data?.status);
+        const callback = () => {
+            setWaitOperation(true);
+            dispatch(showBackdrop(true));
+            dispatch(execute(postHistoryIns({ ...data, medialink: JSON.stringify(data.medialink), operation: "UPDATE" })));
+        }
+        dispatch(manageConfirmation({
+            visible: true,
+            question: message,
+            callback
+        }))
+
     });
 
     const onClickAttachment = useCallback(() => {
@@ -273,9 +280,9 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
     useEffect(() => {
         if (waitUploadFile) {
             if (!uploadResult.loading && !uploadResult.error) {
-                var dataAttached = (getValues('mediadata') || []);
+                var dataAttached = (getValues('medialink') || []);
                 dataAttached.push({ url: uploadResult?.url, height: uploadResult?.height, width: uploadResult?.width, name: uploadResult?.name, thumbnail: uploadResult?.thumbnail });
-                setValue('mediadata', dataAttached);
+                setValue('medialink', dataAttached);
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
                 dispatch(showBackdrop(false));
                 setWaitUploadFile(false);
@@ -289,50 +296,6 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
         }
     }, [waitUploadFile, uploadResult])
 
-    useEffect(() => {
-        setValue('mediatype', pageMode);
-        setValue('channeldata', []);
-        setValue('mediadata', []);
-        setAllowedChannel([]);
-
-        if (pageMode === "TEXT") {
-            if (dataChannel.length > 0) {
-                let filterData = dataChannel.filter(channel => channel.type === 'FBWA' || channel.type === 'TWIT' || channel.type === 'LNKD')?.sort((a, b) => a.type - b.type);
-                setAllowedChannel(filterData.map(channel => ({ ...channel, checked: false })));
-                setShowFacebook(true);
-                setShowInstagram(false);
-                setShowLinkedIn(true);
-                setShowTikTok(false);
-                setShowTwitter(true);
-                setShowYouTube(false);
-            }
-        }
-        if (pageMode === "IMAGE") {
-            if (dataChannel.length > 0) {
-                let filterData = dataChannel.filter(channel => channel.type === 'FBWA' || channel.type === 'TWIT' || channel.type === 'LNKD' || channel.type === 'INST')?.sort((a, b) => a.type - b.type);
-                setAllowedChannel(filterData.map(channel => ({ ...channel, checked: false })));
-                setShowFacebook(true);
-                setShowInstagram(true);
-                setShowLinkedIn(true);
-                setShowTikTok(false);
-                setShowTwitter(true);
-                setShowYouTube(false);
-            }
-        }
-        if (pageMode === "VIDEO") {
-            if (dataChannel.length > 0) {
-                let filterData = dataChannel.filter(channel => channel.type === 'FBWA' || channel.type === 'TWIT' || channel.type === 'LNKD' || channel.type === 'INST' || channel.type === 'TKTK' || channel.type === 'YOUT')?.sort((a, b) => a.type - b.type);
-                setAllowedChannel(filterData.map(channel => ({ ...channel, checked: false })));
-                setShowFacebook(true);
-                setShowInstagram(true);
-                setShowLinkedIn(true);
-                setShowTikTok(true);
-                setShowTwitter(true);
-                setShowYouTube(true);
-            }
-        }
-    }, [dataChannel, pageMode])
-
     function getFilteredFeelings() {
         const feelings = dataFeelings.filter(feeling => feeling.activity_id === getValues('activity'));
         setFilteredFeelings(feelings);
@@ -340,14 +303,19 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
 
     return (
         <div style={{ width: '100%' }}>
-            <SavePostModalGeneric
-                modalData={modalData}
-                modalType={modalType}
-                openModal={openModal}
-                setOpenModal={setOpenModal}
-                onTrigger={onModalSuccess}
-            />
             <form onSubmit={onSubmit} style={{ width: '100%' }}>
+                <div style={{ display: 'flex', justifyContent: 'end', paddingTop: '10px', paddingBottom: '10px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => setViewSelected("bet-1")}
+                        >{t(langKeys.back)}</Button>
+                    </div>
+                </div>
                 <Fragment>
                     <div style={{ display: "flex", flexDirection: 'row', height: '100%', overflow: 'overlay', flexWrap: 'wrap' }}>
                         <div className={classes.containerLeft}>
@@ -361,45 +329,16 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                     />
                                 </div>
                                 <div className="row-zyx">
-                                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                                        {allowedChannel?.map(function (channel) {
-                                            return <div style={{ width: '100%', flex: '50%' }}>
-                                                <FormControlLabel
-                                                    control={(
-                                                        <Checkbox
-                                                            checked={getValues('channeldata').filter((filtered: any) => filtered.communicationchannelid === channel.communicationchannelid).length > 0}
-                                                            color="primary"
-                                                            onChange={(e) => {
-                                                                if (channel.communicationchannelid) {
-                                                                    let channelClean = getValues('channeldata');
-                                                                    channelClean = channelClean.filter((filtered: any) => filtered.communicationchannelid !== channel.communicationchannelid);
-                                                                    setValue('channeldata', channelClean);
-
-                                                                    if (e.target.checked) {
-                                                                        let channelAdd = getValues('channeldata');
-                                                                        channelAdd.push(channel);
-                                                                        setValue('channeldata', channelAdd);
-                                                                    }
-                                                                }
-
-                                                                trigger('channeldata');
-                                                            }}
-                                                            name={channel.communicationchannelid} />
-                                                    )}
-                                                    label={
-                                                        <div style={{ display: 'inline-flex', alignItems: 'center' }}>
-                                                            {channel.type === 'FBWA' && <FacebookColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
-                                                            {channel.type === 'INST' && <InstagramColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
-                                                            {channel.type === 'LNKD' && <LinkedInColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
-                                                            {channel.type === 'TKTK' && <TikTokColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
-                                                            {channel.type === 'TWIT' && <TwitterColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
-                                                            {channel.type === 'YOUT' && <YouTubeColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
-                                                            <span>{channel.communicationchanneldesc}</span>
-                                                        </div>
-                                                    }
-                                                />
-                                            </div>
-                                        })}
+                                    <div style={{ width: '100%', flex: '50%' }}>
+                                        <div style={{ display: 'inline-flex', alignItems: 'center' }}>
+                                            {getValues('communicationchanneltype') === 'FBWA' && <FacebookColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
+                                            {getValues('communicationchanneltype') === 'INST' && <InstagramColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
+                                            {getValues('communicationchanneltype') === 'LNKD' && <LinkedInColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
+                                            {getValues('communicationchanneltype') === 'TKTK' && <TikTokColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
+                                            {getValues('communicationchanneltype') === 'TWIT' && <TwitterColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
+                                            {getValues('communicationchanneltype') === 'YOUT' && <YouTubeColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
+                                            <span>{row?.communicationchanneldesc || ''}</span>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="row-zyx" style={{ marginBottom: '26px', height: '10px', paddingLeft: '2px' }}>
@@ -417,6 +356,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         label={''}
                                         onChange={(value) => { setValue('texttitle', value); trigger('texttitle'); }}
                                         valueDefault={getValues('texttitle')}
+                                        disabled={isPublished}
                                     />
                                 </div>
                                 <div className="row-zyx" style={{ marginBottom: '0px', height: '10px', paddingLeft: '2px' }}>
@@ -430,7 +370,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                 <div className="row-zyx" style={{ marginBottom: '0px' }}>
                                     <FieldEditAdvanced
                                         className="col-12"
-                                        disabled={false}
+                                        disabled={isPublished}
                                         emoji={true}
                                         error={errors?.textbody?.message}
                                         hashtag={true}
@@ -438,21 +378,10 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         maxLength={2200}
                                         onChange={(value) => {
                                             setValue('textbody', value);
-                                            setValue('textcustomfacebook', value);
-                                            setValue('textcustominstagram', value);
-                                            setValue('textcustomlinkedin', value);
-                                            setValue('textcustomtiktok', value);
-                                            setValue('textcustomtwitter', value);
-                                            setValue('textcustomyoutube', value);
 
-                                            trigger('textcustomfacebook');
-                                            trigger('textcustominstagram');
-                                            trigger('textcustomlinkedin');
-                                            trigger('textcustomtiktok');
-                                            trigger('textcustomtwitter');
-                                            trigger('textcustomyoutube');
+                                            trigger('textbody');
                                         }}
-                                        rows={(pageMode === 'TEXT' ? 12 : 6)}
+                                        rows={(getValues('mediatype') === 'TEXT' ? 12 : 6)}
                                         style={{ border: '1px solid #959595', borderRadius: '4px', marginLeft: '6px', padding: '8px' }}
                                         valueDefault={getValues('textbody')}
                                     />
@@ -464,21 +393,21 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                     <span>
                                         {t(langKeys.postcreator_publish_textrecommendation01)}
                                     </span>
-                                    {pageMode === 'IMAGE' && <span>
+                                    {getValues('mediatype') === 'IMAGE' && <span>
                                         {t(langKeys.postcreator_publish_textrecommendation02)}
                                     </span>}
-                                    {pageMode === 'IMAGE' && <span>
+                                    {getValues('mediatype') === 'IMAGE' && <span>
                                         {t(langKeys.postcreator_publish_textrecommendation03)}
                                     </span>}
-                                    {pageMode === 'VIDEO' && <span>
+                                    {getValues('mediatype') === 'VIDEO' && <span>
                                         {t(langKeys.postcreator_publish_textrecommendation04)}
                                     </span>}
-                                    {pageMode === 'VIDEO' && <span>
+                                    {getValues('mediatype') === 'VIDEO' && <span>
                                         {t(langKeys.postcreator_publish_textrecommendation05)}
                                     </span>}
                                 </div>
-                                {(pageMode === 'IMAGE' || pageMode === 'VIDEO') && <>
-                                    {pageMode === 'IMAGE' && <div className="row-zyx" style={{ marginBottom: '0px' }}>
+                                {(getValues('mediatype') === 'IMAGE' || getValues('mediatype') === 'VIDEO') && <>
+                                    {getValues('mediatype') === 'IMAGE' && <div className="row-zyx" style={{ marginBottom: '0px' }}>
                                         <FieldView
                                             className="col-12"
                                             label={''}
@@ -486,7 +415,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                             styles={{ fontWeight: 'bold', color: '#762AA9' }}
                                         />
                                     </div>}
-                                    {pageMode === 'VIDEO' && <div className="row-zyx" style={{ marginBottom: '0px' }}>
+                                    {getValues('mediatype') === 'VIDEO' && <div className="row-zyx" style={{ marginBottom: '0px' }}>
                                         <FieldView
                                             className="col-12"
                                             label={''}
@@ -495,7 +424,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         />
                                     </div>}
                                     <div className="row-zyx" style={{ marginBottom: '0px' }}>
-                                        {getValues('mediadata')?.map(function (media: any) {
+                                        {getValues('medialink')?.map(function (media: any) {
                                             return <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '10px' }}>
                                                 <div style={{ display: 'inline-flex', verticalAlign: 'center' }}>
                                                     <div style={{ height: '100%', display: 'flex', alignItems: 'center' }}>
@@ -516,11 +445,12 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                             startIcon={<Delete style={{ color: "#757575" }} />}
                                             style={{ backgroundColor: "#EBEAEA", color: "#757575", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                             onClick={handleDeleteMedia}
+                                            disabled={isPublished}
                                         >{t(langKeys.postcreator_publish_delete)}
                                         </Button>
                                         <React.Fragment>
                                             <input
-                                                accept={pageMode === 'IMAGE' ? "image/*" : "video/*"}
+                                                accept={getValues('mediatype') === 'IMAGE' ? "image/*" : "video/*"}
                                                 id="attachmentInput"
                                                 onChange={(e) => onChangeAttachment(e.target.files)}
                                                 style={{ display: 'none' }}
@@ -529,12 +459,12 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                             <Button
                                                 className={classes.button}
                                                 color="primary"
-                                                disabled={(waitUploadFile || fileAttachment !== null) || (pageMode === 'IMAGE' ? (getValues('mediadata') || []).length >= 3 : (getValues('mediadata') || []).length >= 1)}
+                                                disabled={(waitUploadFile || fileAttachment !== null || isPublished) || (getValues('mediatype') === 'IMAGE' ? (getValues('medialink') || []).length >= 3 : (getValues('medialink') || []).length >= 1)}
                                                 onClick={onClickAttachment}
-                                                startIcon={pageMode === 'IMAGE' ? <CameraAltOutlined color="secondary" /> : <PlayCircleOutlineSharp color="secondary" />}
+                                                startIcon={getValues('mediatype') === 'IMAGE' ? <CameraAltOutlined color="secondary" /> : <PlayCircleOutlineSharp color="secondary" />}
                                                 style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                                 variant="contained"
-                                            >{pageMode === 'IMAGE' ? t(langKeys.postcreator_publish_addimage) : t(langKeys.postcreator_publish_addvideo)}
+                                            >{getValues('mediatype') === 'IMAGE' ? t(langKeys.postcreator_publish_addimage) : t(langKeys.postcreator_publish_addvideo)}
                                             </Button>
                                         </React.Fragment>
                                     </div>
@@ -552,7 +482,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                     />
                                 </div>
                                 <div className="row-zyx" style={{ alignItems: 'center', display: 'flex', justifyContent: 'center' }}>
-                                    {showFacebook && <Button
+                                    {getValues('communicationchanneltype') === "FBWA" && <Button
                                         className={classes.buttonSocial}
                                         variant="contained"
                                         color="primary"
@@ -561,7 +491,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         disabled={customizeType === 'Facebook'}
                                     >{t(langKeys.postcreator_publish_facebook)}
                                     </Button>}
-                                    {showInstagram && <Button
+                                    {getValues('communicationchanneltype') === "INST" && <Button
                                         className={classes.buttonSocial}
                                         variant="contained"
                                         color="primary"
@@ -570,7 +500,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         disabled={customizeType === 'Instagram'}
                                     >{t(langKeys.postcreator_publish_instagram)}
                                     </Button>}
-                                    {showLinkedIn && <Button
+                                    {getValues('communicationchanneltype') === "LNKD" && <Button
                                         className={classes.buttonSocial}
                                         variant="contained"
                                         color="primary"
@@ -579,7 +509,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         disabled={customizeType === 'LinkedIn'}
                                     >{t(langKeys.postcreator_publish_linkedin)}
                                     </Button>}
-                                    {showTikTok && <Button
+                                    {getValues('communicationchanneltype') === "TKTK" && <Button
                                         className={classes.buttonSocial}
                                         variant="contained"
                                         color="primary"
@@ -596,7 +526,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         disabled={customizeType === 'TikTok'}
                                     >{t(langKeys.postcreator_publish_tiktok)}
                                     </Button>}
-                                    {showTwitter && <Button
+                                    {getValues('communicationchanneltype') === "TWIT" && <Button
                                         className={classes.buttonSocial}
                                         variant="contained"
                                         color="primary"
@@ -605,7 +535,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         disabled={customizeType === 'Twitter'}
                                     >{t(langKeys.postcreator_publish_twitter)}
                                     </Button>}
-                                    {showYouTube && <Button
+                                    {getValues('communicationchanneltype') === "YOUT" && <Button
                                         className={classes.buttonSocial}
                                         variant="contained"
                                         color="primary"
@@ -624,86 +554,21 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                     />
                                 </div>}
                                 {customizeType !== "" && <div className="row-zyx" style={{ marginBottom: '0px' }}>
-                                    {customizeType === "Facebook" && <FieldEditAdvanced
+                                    <FieldEditAdvanced
                                         className="col-12"
-                                        disabled={false}
+                                        disabled={isPublished}
                                         emoji={true}
-                                        error={errors?.textcustomfacebook?.message}
+                                        error={errors?.textbody?.message}
                                         hashtag={true}
                                         label={''}
                                         maxLength={2200}
-                                        onChange={(value) => { setValue('textcustomfacebook', value); trigger('textcustomfacebook'); }}
+                                        onChange={(value) => { setValue('textbody', value); trigger('textbody'); }}
                                         rows={18}
                                         style={{ border: '1px solid #959595', borderRadius: '4px', marginLeft: '6px', padding: '8px' }}
-                                        valueDefault={getValues('textcustomfacebook')}
-                                    />}
-                                    {customizeType === "Instagram" && <FieldEditAdvanced
-                                        className="col-12"
-                                        disabled={false}
-                                        emoji={true}
-                                        error={errors?.textcustominstagram?.message}
-                                        hashtag={true}
-                                        label={''}
-                                        maxLength={2200}
-                                        onChange={(value) => { setValue('textcustominstagram', value); trigger('textcustominstagram'); }}
-                                        rows={18}
-                                        style={{ border: '1px solid #959595', borderRadius: '4px', marginLeft: '6px', padding: '8px' }}
-                                        valueDefault={getValues('textcustominstagram')}
-                                    />}
-                                    {customizeType === "LinkedIn" && <FieldEditAdvanced
-                                        className="col-12"
-                                        disabled={false}
-                                        emoji={true}
-                                        error={errors?.textcustomlinkedin?.message}
-                                        hashtag={true}
-                                        label={''}
-                                        maxLength={2200}
-                                        onChange={(value) => { setValue('textcustomlinkedin', value); trigger('textcustomlinkedin'); }}
-                                        rows={18}
-                                        style={{ border: '1px solid #959595', borderRadius: '4px', marginLeft: '6px', padding: '8px' }}
-                                        valueDefault={getValues('textcustomlinkedin')}
-                                    />}
-                                    {customizeType === "TikTok" && <FieldEditAdvanced
-                                        className="col-12"
-                                        disabled={false}
-                                        emoji={true}
-                                        error={errors?.textcustomtiktok?.message}
-                                        hashtag={true}
-                                        label={''}
-                                        maxLength={2200}
-                                        onChange={(value) => { setValue('textcustomtiktok', value); trigger('textcustomtiktok'); }}
-                                        rows={18}
-                                        style={{ border: '1px solid #959595', borderRadius: '4px', marginLeft: '6px', padding: '8px' }}
-                                        valueDefault={getValues('textcustomtiktok')}
-                                    />}
-                                    {customizeType === "Twitter" && <FieldEditAdvanced
-                                        className="col-12"
-                                        disabled={false}
-                                        emoji={true}
-                                        error={errors?.textcustomtwitter?.message}
-                                        hashtag={true}
-                                        label={''}
-                                        maxLength={2200}
-                                        onChange={(value) => { setValue('textcustomtwitter', value); trigger('textcustomtwitter'); }}
-                                        rows={18}
-                                        style={{ border: '1px solid #959595', borderRadius: '4px', marginLeft: '6px', padding: '8px' }}
-                                        valueDefault={getValues('textcustomtwitter')}
-                                    />}
-                                    {customizeType === "YouTube" && <FieldEditAdvanced
-                                        className="col-12"
-                                        disabled={false}
-                                        emoji={true}
-                                        error={errors?.textcustomyoutube?.message}
-                                        hashtag={true}
-                                        label={''}
-                                        maxLength={2200}
-                                        onChange={(value) => { setValue('textcustomyoutube', value); trigger('textcustomyoutube'); }}
-                                        rows={18}
-                                        style={{ border: '1px solid #959595', borderRadius: '4px', marginLeft: '6px', padding: '8px' }}
-                                        valueDefault={getValues('textcustomyoutube')}
-                                    />}
+                                        valueDefault={getValues('textbody')}
+                                    />
                                 </div>}
-                                {(customizeType === 'Facebook' && pageMode !== 'VIDEO') && <div className="row-zyx">
+                                {(customizeType === 'Facebook' && getValues('mediatype') !== 'VIDEO') && <div className="row-zyx">
                                     <FieldSelect
                                         data={dataActivities}
                                         error={errors?.activity?.message}
@@ -716,9 +581,10 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         variant="outlined"
                                         uset={true}
                                         prefixTranslation={'posthistory_'}
+                                        disabled={isPublished}
                                     />
                                 </div>}
-                                {(customizeType === 'Facebook' && pageMode !== 'VIDEO') && <div className="row-zyx">
+                                {(customizeType === 'Facebook' && getValues('mediatype') !== 'VIDEO') && <div className="row-zyx">
                                     <FieldSelect
                                         data={filteredFeelings?.length > 0 ? filteredFeelings : []}
                                         error={errors?.sentiment?.message}
@@ -731,12 +597,56 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         variant="outlined"
                                         uset={true}
                                         prefixTranslation={'posthistory_'}
+                                        disabled={isPublished}
                                     />
                                 </div>}
                             </div>
                         </div>
                         <div className={classes.containerLeft}>
                             <div className={classes.root} style={{ backgroundColor: '#EBEBEB' }}>
+                                <div className="row-zyx">
+                                    <FieldView
+                                        className="col-12"
+                                        label={''}
+                                        value={t(langKeys.postcreator_publish_date)}
+                                        styles={{ fontWeight: 'bold', color: '#762AA9' }}
+                                    />
+                                </div>
+                                <div className="row-zyx">
+                                    <React.Fragment>
+                                        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(localesLaraigo() as any)[navigator.language.split('-')[0]]}>
+                                            <KeyboardDatePicker
+                                                className="col-6"
+                                                format="d MMMM yyyy"
+                                                invalidDateMessage={t(langKeys.invalid_date_format)}
+                                                label={t(langKeys.date)}
+                                                value={getValues('publishdate')}
+                                                onChange={(e: any) => {
+                                                    setValue('publishdate', e);
+                                                    trigger('publishdate');
+                                                }}
+                                                disabled={isPublished}
+                                            />
+                                        </MuiPickersUtilsProvider>
+                                        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(localesLaraigo())[navigator.language.split('-')[0]]}>
+                                            <KeyboardTimePicker
+                                                ampm={false}
+                                                className="col-6"
+                                                error={false}
+                                                format="HH:mm:ss"
+                                                label={t(langKeys.time)}
+                                                value={getValues('publishdate')}
+                                                views={['hours', 'minutes', 'seconds']}
+                                                onChange={(e: any) => {
+                                                    setValue('publishdate', e);
+                                                    trigger('publishdate');
+                                                }}
+                                                disabled={isPublished}
+                                                keyboardIcon={<Timelapse />}
+                                            />
+                                        </MuiPickersUtilsProvider>
+                                    </React.Fragment>
+                                </div>
                                 <div className="row-zyx">
                                     <FieldView
                                         className="col-12"
@@ -800,11 +710,11 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         </div>
                                         <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '10px', paddingLeft: '10px', paddingRight: '20px', paddingTop: '10px' }}>
                                             <div style={{ height: '100%', paddingLeft: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', whiteSpace: 'pre-line' }}>
-                                                <div style={{ display: 'flex', width: '100%', paddingRight: 'auto', textAlign: 'justify', textJustify: 'inter-word' }}>{getValues('textcustomfacebook')}</div>
+                                                <div style={{ display: 'flex', width: '100%', paddingRight: 'auto', textAlign: 'justify', textJustify: 'inter-word' }}>{getValues('textbody')}</div>
                                             </div>
                                         </div>
-                                        {((pageMode === 'IMAGE' || pageMode === 'VIDEO') && (getValues('mediadata') || []).length > 0) && <div style={{ maxWidth: '100%' }}>
-                                            <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto' }} src={getValues('mediadata')[0].thumbnail}></img>
+                                        {((getValues('mediatype') === 'IMAGE' || getValues('mediatype') === 'VIDEO') && (getValues('medialink') || []).length > 0) && <div style={{ maxWidth: '100%' }}>
+                                            <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto' }} src={getValues('medialink')[0].thumbnail}></img>
                                         </div>}
                                         <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginLeft: 'auto', marginRight: 'auto', marginBottom: '10px', marginTop: '6px' }}>
                                             <div style={{ width: '33%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ThumbUpOutlined style={{ marginRight: '6px' }} /><b>{t(langKeys.postcreator_publish_facebookmockup_like)}</b></div>
@@ -825,8 +735,8 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                                 </div>
                                             </div>
                                         </div>
-                                        {((pageMode === 'IMAGE' || pageMode === 'VIDEO') && (getValues('mediadata') || []).length > 0) && <div style={{ maxWidth: '100%' }}>
-                                            <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto' }} src={getValues('mediadata')[0].thumbnail}></img>
+                                        {((getValues('mediatype') === 'IMAGE' || getValues('mediatype') === 'VIDEO') && (getValues('medialink') || []).length > 0) && <div style={{ maxWidth: '100%' }}>
+                                            <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto' }} src={getValues('medialink')[0].thumbnail}></img>
                                         </div>}
                                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <img loading='eager' alt="" style={{ maxWidth: '100%', margin: 6 }} src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/334a434c-c07c-4904-8c49-9e425c7b3f8d/InstagramButton1.png"></img>
@@ -834,7 +744,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         </div>
                                         <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '20px', paddingLeft: '5px', paddingRight: '10px', paddingTop: '6px' }}>
                                             <div style={{ height: '100%', paddingLeft: '5px', display: 'flex', flexDirection: 'column', alignItems: 'center', whiteSpace: 'pre-line' }}>
-                                                <div style={{ width: '100%', paddingRight: 'auto', textAlign: 'justify', textJustify: 'inter-word' }}><b>{t(langKeys.postcreator_publish_officialpage)}</b> {getValues('textcustominstagram')}</div>
+                                                <div style={{ width: '100%', paddingRight: 'auto', textAlign: 'justify', textJustify: 'inter-word' }}><b>{t(langKeys.postcreator_publish_officialpage)}</b> {getValues('textbody')}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -853,11 +763,11 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                                 </div>
                                                 <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between', flexDirection: 'row', flexBasis: 'auto', flexShrink: 0 }}>
                                                     <div style={{ height: '100%', paddingTop: '4px', display: 'flex', flexDirection: 'column', alignItems: 'center', whiteSpace: 'pre-line' }}>
-                                                        <div style={{ display: 'flex', width: '100%', paddingRight: 'auto', textAlign: 'justify', textJustify: 'inter-word' }}>{getValues('textcustomtwitter')}</div>
+                                                        <div style={{ display: 'flex', width: '100%', paddingRight: 'auto', textAlign: 'justify', textJustify: 'inter-word' }}>{getValues('textbody')}</div>
                                                     </div>
                                                 </div>
-                                                {((pageMode === 'IMAGE' || pageMode === 'VIDEO') && (getValues('mediadata') || []).length > 0) && <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
-                                                    <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '200px', borderRadius: '8px' }} src={getValues('mediadata')[0].thumbnail}></img>
+                                                {((getValues('mediatype') === 'IMAGE' || getValues('mediatype') === 'VIDEO') && (getValues('medialink') || []).length > 0) && <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
+                                                    <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '200px', borderRadius: '8px' }} src={getValues('medialink')[0].thumbnail}></img>
                                                 </div>}
                                                 <div style={{ display: 'flex', justifyContent: 'center' }}>
                                                     <img loading='eager' alt="" style={{ maxWidth: '100%', marginTop: 6, marginLeft: 6, marginRight: 6 }} src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/6c942c26-3778-47fc-9284-7814a7981b1a/TwitterButton1.png"></img>
@@ -881,11 +791,11 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         </div>
                                         <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '12px', paddingLeft: '10px', paddingRight: '20px', paddingTop: '10px' }}>
                                             <div style={{ height: '100%', paddingLeft: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', whiteSpace: 'pre-line' }}>
-                                                <div style={{ display: 'flex', width: '100%', paddingRight: 'auto', textAlign: 'justify', textJustify: 'inter-word' }}>{getValues('textcustomlinkedin')}</div>
+                                                <div style={{ display: 'flex', width: '100%', paddingRight: 'auto', textAlign: 'justify', textJustify: 'inter-word' }}>{getValues('textbody')}</div>
                                             </div>
                                         </div>
-                                        {((pageMode === 'IMAGE' || pageMode === 'VIDEO') && (getValues('mediadata') || []).length > 0) && <div style={{ maxWidth: '100%' }}>
-                                            <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto' }} src={getValues('mediadata')[0].thumbnail}></img>
+                                        {((getValues('mediatype') === 'IMAGE' || getValues('mediatype') === 'VIDEO') && (getValues('medialink') || []).length > 0) && <div style={{ maxWidth: '100%' }}>
+                                            <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto' }} src={getValues('medialink')[0].thumbnail}></img>
                                         </div>}
                                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <img loading='eager' alt="" style={{ maxWidth: '100%', marginLeft: 16, marginBottom: 6 }} src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/60b26115-5c3a-4097-a29c-0db8f0967240/LinkedInButton1.png"></img>
@@ -901,8 +811,8 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                 </div>}
                                 {previewType === 'YOUTUBEPREVIEW' && <div className="row-zyx">
                                     <div style={{ width: '90%', marginLeft: 'auto', marginRight: 'auto', marginBottom: '18px', backgroundColor: 'white', border: '1px solid #959595' }}>
-                                        {((pageMode === 'IMAGE' || pageMode === 'VIDEO') && (getValues('mediadata') || []).length > 0) && <div style={{ maxWidth: '100%' }}>
-                                            <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto' }} src={getValues('mediadata')[0].thumbnail}></img>
+                                        {((getValues('mediatype') === 'IMAGE' || getValues('mediatype') === 'VIDEO') && (getValues('medialink') || []).length > 0) && <div style={{ maxWidth: '100%' }}>
+                                            <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto' }} src={getValues('medialink')[0].thumbnail}></img>
                                         </div>}
                                         <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '10px', paddingLeft: '10px', paddingRight: '20px', paddingTop: '10px' }}>
                                             <div style={{ width: '100%', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden', paddingLeft: '6px' }}>
@@ -922,7 +832,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         </div>
                                         <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '10px', paddingLeft: '10px', paddingRight: '20px', paddingTop: '4px' }}>
                                             <div style={{ height: '100%', paddingLeft: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', whiteSpace: 'pre-line' }}>
-                                                <div style={{ display: 'flex', width: '100%', paddingRight: 'auto', textAlign: 'justify', textJustify: 'inter-word' }}>{getValues('textcustomyoutube')}</div>
+                                                <div style={{ display: 'flex', width: '100%', paddingRight: 'auto', textAlign: 'justify', textJustify: 'inter-word' }}>{getValues('textbody')}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -936,24 +846,24 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                                 </div>
                                                 <div style={{ height: '100%', paddingLeft: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', whiteSpace: 'pre-line', marginBottom: '10px' }}>
                                                     <div style={{ display: 'flex', width: '100%', paddingRight: 'auto' }}><b>{t(langKeys.postcreator_publish_officialpage)}</b></div>
-                                                    <div style={{ display: 'flex', width: '100%', paddingRight: 'auto' }}>{getValues('textcustomtiktok')}</div>
+                                                    <div style={{ display: 'flex', width: '100%', paddingRight: 'auto' }}>{getValues('textbody')}</div>
                                                 </div>
                                             </div>
                                         </div>
-                                        {((pageMode === 'IMAGE' || pageMode === 'VIDEO') && (getValues('mediadata') || []).length > 0) && <div style={{ maxWidth: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
-                                            <img loading='eager' alt="" style={{ maxWidth: '80%', display: 'flex', width: '80%', maxHeight: '340px', paddingLeft: 'auto', paddingRight: 'auto', borderRadius: '8px' }} src={getValues('mediadata')[0].thumbnail}></img>
+                                        {((getValues('mediatype') === 'IMAGE' || getValues('mediatype') === 'VIDEO') && (getValues('medialink') || []).length > 0) && <div style={{ maxWidth: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
+                                            <img loading='eager' alt="" style={{ maxWidth: '80%', display: 'flex', width: '80%', maxHeight: '340px', paddingLeft: 'auto', paddingRight: 'auto', borderRadius: '8px' }} src={getValues('medialink')[0].thumbnail}></img>
                                         </div>}
                                     </div>
                                 </div>}
-                                <div className="row-zyx" style={{ marginTop: '-6px' }}>
+                                {!isPublished && <div className="row-zyx" style={{ marginTop: '-6px' }}>
                                     <FieldView
                                         className="col-12"
                                         label={''}
                                         value={t(langKeys.postcreator_publish_preview)}
                                         styles={{ fontWeight: 'bold', color: '#762AA9' }}
                                     />
-                                </div>
-                                <div className="row-zyx" style={{ marginTop: '18px', alignItems: 'center', display: 'flex', justifyContent: 'center' }}>
+                                </div>}
+                                {!isPublished && <div className="row-zyx" style={{ marginTop: '18px', alignItems: 'center', display: 'flex', justifyContent: 'center' }}>
                                     <Button
                                         className={classes.button}
                                         variant="contained"
@@ -961,8 +871,9 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         startIcon={<Save color="secondary" />}
                                         style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         type="submit"
-                                        onClick={() => { setModalType('DRAFT') }}
-                                    >{t(langKeys.postcreator_publish_draft)}
+                                        onClick={() => { setValue('status', 'DRAFT') }}
+                                        disabled={isPublished}
+                                    >{t(langKeys.postcreator_publish_confirm_draft)}
                                     </Button>
                                     <Button
                                         className={classes.button}
@@ -971,20 +882,26 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         startIcon={<Schedule color="secondary" />}
                                         style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         type="submit"
-                                        onClick={() => { setModalType('PROGRAM') }}
-                                    >{t(langKeys.postcreator_publish_program)}
+                                        onClick={() => { setValue('status', 'SCHEDULED') }}
+                                        disabled={isPublished}
+                                    >{t(langKeys.postcreator_publish_confirm_save)}
                                     </Button>
                                     <Button
                                         className={classes.button}
-                                        variant="contained"
                                         color="primary"
-                                        startIcon={<Send color="secondary" />}
-                                        style={{ backgroundColor: "#11ABF1", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
                                         type="submit"
-                                        onClick={() => { setModalType('PUBLISH') }}
-                                    >{t(langKeys.postcreator_publish_publish)}
+                                        onClick={() => { setValue('status', 'DELETED') }}
+                                        style={{ backgroundColor: "#fb5f5f", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                        variant="contained"
+                                        disabled={isPublished}
+                                    >
+                                        <CloseIcon />{t(langKeys.delete)}
                                     </Button>
-                                </div>
+                                </div>}
+                                {(isPublished && row?.publishtatus === "ERROR") && <div className="row-zyx" style={{ marginTop: '18px', alignItems: 'center', display: 'flex', justifyContent: 'center' }}>
+                                    <h3 style={{ color: 'red', marginBottom: '2px' }}>{t(langKeys.posthistory_error)}</h3>
+                                    <h4 style={{ marginTop: '2px' }}>{row?.publishmessage}</h4>
+                                </div>}
                             </div>
                         </div>
                     </div>
@@ -994,120 +911,4 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
     )
 }
 
-const SavePostModalGeneric: FC<{ modalData: any, modalType: string, openModal: boolean, setOpenModal: (param: any) => void, onTrigger: () => void }> = ({ modalData, modalType, openModal, setOpenModal, onTrigger }) => {
-    const dispatch = useDispatch();
-
-    const { t } = useTranslation();
-
-    const classes = useStyles();
-    const resultSchedule = useSelector(state => state.postHistory.requestSchedulePost);
-
-    const [modalDate, setModalDate] = useState(null);
-    const [modalTime, setModalTime] = useState(null);
-
-    const [waitSave, setWaitSave] = useState(false);
-
-    const handleInsert = (type: string) => {
-        if (!modalDate || !modalTime) {
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.posthistory_missingdatetime) }));
-            return;
-        }
-
-        const callback = () => {
-            dispatch(schedulePost({ data: modalData, date: modalDate, time: modalTime, type: type, publication: 'POST' }));
-            dispatch(showBackdrop(true));
-            setWaitSave(true);
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
-    }
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!resultSchedule.loading && !resultSchedule.error) {
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-                onTrigger();
-            } else if (resultSchedule.error) {
-                dispatch(showSnackbar({ show: true, severity: "error", message: t(resultSchedule.code || "error_unexpected_error", { module: t(langKeys.person).toLocaleLowerCase() }) }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
-        }
-    }, [resultSchedule, waitSave]);
-
-    return (
-        <DialogZyx
-            button2Type="button"
-            buttonText1={t(langKeys.postcreator_publish_program_cancel)}
-            buttonText2={modalType === "PUBLISH" ? t(langKeys.postcreator_publish_confirm_draft) : ''}
-            buttonText3={modalType === "PUBLISH" ? t(langKeys.postcreator_publish_confirm_save) : t(langKeys.postcreator_publish_program_save)}
-            handleClickButton1={() => setOpenModal(false)}
-            handleClickButton2={() => { handleInsert('DRAFT'); }}
-            handleClickButton3={() => { modalType === "DRAFT" ? handleInsert('DRAFT') : handleInsert('PUBLISH'); }}
-            open={openModal}
-            title={modalType === "DRAFT" ? t(langKeys.postcreator_publish_draft_title) : (modalType === "PROGRAM" ? t(langKeys.postcreator_publish_program_title) : t(langKeys.postcreator_publish_confirm_title))}
-            showClose={true}
-        >
-            <div className={classes.containerDetail}>
-                <h4 style={{ marginTop: '2px' }}>{modalType === "DRAFT" ? t(langKeys.postcreator_publish_draft_description) : (modalType === "PROGRAM" ? t(langKeys.postcreator_publish_program_description) : t(langKeys.postcreator_publish_confirm_description))}</h4>
-                <div className="row-zyx">
-                    {modalData?.channeldata?.map(function (channel: any) {
-                        return <div style={{ width: '100%', flex: '50%' }}>
-                            <div style={{ display: 'inline-flex', alignItems: 'center' }}>
-                                {channel.type === 'FBWA' && <FacebookColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
-                                {channel.type === 'INST' && <InstagramColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
-                                {channel.type === 'LNKD' && <LinkedInColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
-                                {channel.type === 'TKTK' && <TikTokColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
-                                {channel.type === 'TWIT' && <TwitterColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
-                                {channel.type === 'YOUT' && <YouTubeColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
-                                <span>{channel.communicationchanneldesc}</span>
-                            </div>
-                        </div>
-                    })}
-                </div>
-                <div className="row-zyx">
-                    <React.Fragment>
-                        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(localesLaraigo() as any)[navigator.language.split('-')[0]]}>
-                            <KeyboardDatePicker
-                                className="col-6"
-                                format="d MMMM yyyy"
-                                invalidDateMessage={t(langKeys.invalid_date_format)}
-                                label={t(langKeys.date)}
-                                value={modalDate}
-                                onChange={(e: any) => {
-                                    setModalDate(e);
-                                }}
-                            />
-                        </MuiPickersUtilsProvider>
-                        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(localesLaraigo())[navigator.language.split('-')[0]]}>
-                            <KeyboardTimePicker
-                                ampm={false}
-                                className="col-6"
-                                error={false}
-                                format="HH:mm:ss"
-                                label={t(langKeys.time)}
-                                value={modalTime}
-                                views={['hours', 'minutes', 'seconds']}
-                                onChange={(e: any) => {
-                                    setModalTime(e);
-                                }}
-                                keyboardIcon={<Timelapse />}
-                            />
-                        </MuiPickersUtilsProvider>
-                    </React.Fragment>
-                </div>
-                <div className="row-zyx">
-                    <h3 style={{ marginBottom: '2px' }}>{modalData?.texttitle}</h3>
-                    <h4 style={{ marginTop: '2px' }}>{modalData?.textbody}</h4>
-                </div>
-            </div>
-        </DialogZyx>
-    )
-}
-
-export default PostCreatorPublish;
+export default EditHistoryPost;
