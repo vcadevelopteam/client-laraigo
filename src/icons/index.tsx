@@ -218,10 +218,10 @@ export { ReactComponent as RulesIcon } from './rules.svg';
 export { ReactComponent as ProductsIcon } from './products.svg';
 export { ReactComponent as CallRecordIcon } from './call-record.svg';
 
+export { ReactComponent as GoogleCalendarIcon } from './google-calendar-2020.svg';
+export { ReactComponent as CallTransferActiveIcon } from './call-transfer-active.svg';
+export { ReactComponent as CallTransferInactiveIcon } from './call-transfer-inactive.svg';
 export { ReactComponent as PostCreatorCalendar } from './postcreator-calendar.svg';
 export { ReactComponent as PostCreatorPostHistory } from './postcreator-posthistory.svg';
 export { ReactComponent as PostCreatorPublish } from './postcreator-publish.svg';
 export { ReactComponent as PostCreatorStory } from './postcreator-story.svg';
-export { ReactComponent as GoogleCalendarIcon } from './google-calendar-2020.svg';
-export { ReactComponent as CallTransferActiveIcon } from './call-transfer-active.svg';
-export { ReactComponent as CallTransferInactiveIcon } from './call-transfer-inactive.svg';
