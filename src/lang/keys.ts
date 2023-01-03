@@ -1330,6 +1330,15 @@ export const langKeys = {
     type_domain_bot: 'type_domain_bot',
     type_domain_cliente: 'type_domain_client',
     type_domain_sistema: 'type_domain_sistema',
+
+    type_domain_mastercatalog_productos: "type_domain_mastercatalog_productos",
+    type_domain_mastercatalog_menu: "type_domain_mastercatalog_menu",
+    type_domain_mastercatalog_ubicaciones: "type_domain_mastercatalog_ubicaciones",
+    type_domain_mastercatalog_hoteles: "type_domain_mastercatalog_hoteles",
+    type_domain_mastercatalog_vuelos: "type_domain_mastercatalog_vuelos",
+    type_domain_mastercatalog_destinos: "type_domain_mastercatalog_destinos",
+    type_domain_mastercatalog_viviendas: "type_domain_mastercatalog_viviendas",
+    type_domain_mastercatalog_vehiculos: "type_domain_mastercatalog_vehiculos",
   
     type_gender_femenino: 'type_gender_femenino',
     type_gender_masculino: 'type_gender_masculino',
