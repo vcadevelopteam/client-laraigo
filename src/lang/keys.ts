@@ -4764,6 +4764,8 @@ export const langKeys = {
     paymentorder_currency: "paymentorder_currency",
     paymentorder_totalamount: "paymentorder_totalamount",
     paymentorder_code: "paymentorder_code",
+    catalogmaster_businessid: "catalogmaster_businessid",
+    catalogmaster_businessname: "catalogmaster_businessname",
   };
   
   export type LangKeys = typeof langKeys;

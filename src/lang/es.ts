@@ -1240,7 +1240,7 @@ const translation: LangKeys = {
   invalidjson: 'Json inválido',
   invalid_file: 'Archivo inválido',
   invalid_date_format: 'Formato de fecha inválida',
-  catalogmaster: "Maestro de catálogo",
+  catalogmaster: "Maestro de Catálogo",
   invalid_time_format: 'Formato de tiempo inválido',
   test: 'Probar',
   result: 'Resultado',
@@ -1559,7 +1559,7 @@ const translation: LangKeys = {
   connecting: "Conectando...",
   connected_call: "Llamada conectada",
   monitor_call: "Supervisar llamada",
-    monitor_call_off: "Cancelar supervisión de llamada",
+  monitor_call_off: "Cancelar supervisión de llamada",
 
   tipify_ticket: 'Clasificar ticket',
   today: 'Hoy',
@@ -4776,6 +4776,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   paymentorder_currency: "Moneda",
   paymentorder_totalamount: "Costo Total",
   paymentorder_code: "Código",
+  catalogmaster_businessid: "ID del Negocio",
+  catalogmaster_businessname: "Nombre del Negocio",
 };
 
 const esResource: ResourceLanguage = {

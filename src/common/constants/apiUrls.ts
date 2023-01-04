@@ -1,4 +1,4 @@
-const ENV = "DEVELOP";
+const ENV = "LOCAL";
 
 const APIS_URL = {
     DEVELOP: {
@@ -8,6 +8,7 @@ const APIS_URL = {
         CHATFLOW: 'https://zyxmelinux2.zyxmeapp.com/zyxme/chatflow',
         FACEBOOKAPP: '367176075182579',
         INSTAGRAMAPP: '1872023336244866',
+        CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
         GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
@@ -21,6 +22,7 @@ const APIS_URL = {
         CHATFLOW: 'https://zyxmelinux2.zyxmeapp.com/zyxmetest/chatflow',
         FACEBOOKAPP: '1094526090706564',
         INSTAGRAMAPP: '1872023336244866',
+        CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
         GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
@@ -34,6 +36,7 @@ const APIS_URL = {
         CHATFLOW: 'https://chatflow.s3-web.us-east.cloud-object-storage.appdomain.cloud',
         FACEBOOKAPP: '1980305408682607',
         INSTAGRAMAPP: '1924971937716955',
+        CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
         GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
@@ -47,6 +50,7 @@ const APIS_URL = {
         CHATFLOW: 'https://clarobackend.laraigo.com/zyxme/chatflow',
         FACEBOOKAPP: '1980305408682607',
         INSTAGRAMAPP: '1924971937716955',
+        CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
         GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
@@ -60,6 +64,7 @@ const APIS_URL = {
         CHATFLOW: 'https://zyxmelinux2.zyxmeapp.com/zyxmedemo/chatflowcloud',
         FACEBOOKAPP: '1094526090706564',
         INSTAGRAMAPP: '1872023336244866',
+        CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
         GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
@@ -73,6 +78,7 @@ const APIS_URL = {
         CHATFLOW: 'https://zyxmelinux2.zyxmeapp.com/zyxmedemo/chatflow',
         FACEBOOKAPP: '1094526090706564',
         INSTAGRAMAPP: '1872023336244866',
+        CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
         GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
@@ -88,6 +94,7 @@ const APIS_URL = {
         CHATFLOW: 'https://zyxmelinux2.zyxmeapp.com/zyxme/chatflow',
         FACEBOOKAPP: '367176075182579',
         INSTAGRAMAPP: '1924971937716955',
+        CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
         GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
         GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
@@ -102,6 +109,7 @@ const WS_URL = APIS_URL[ENV].WS
 const CHATFLOW_URL = APIS_URL[ENV].CHATFLOW
 const FACEBOOKAPP = APIS_URL[ENV].FACEBOOKAPP
 const INSTAGRAMAPP = APIS_URL[ENV].INSTAGRAMAPP
+const CATALOGAPP = APIS_URL[ENV].CATALOGAPP
 const CULQIKEY = APIS_URL[ENV].CULQIKEY
 const GOOGLECLIENTID_LOGIN = APIS_URL[ENV].GOOGLECLIENTID_LOGIN
 const GOOGLECLIENTID_CHANNEL = APIS_URL[ENV].GOOGLECLIENTID_CHANNEL
@@ -113,6 +121,7 @@ export const apiUrls = {
     WS_URL,
     FACEBOOKAPP,
     INSTAGRAMAPP,
+    CATALOGAPP,
     CULQIKEY,
     GOOGLECLIENTID_LOGIN,
     GOOGLECLIENTID_CHANNEL,
@@ -221,4 +230,6 @@ export const apiUrls = {
     PAYMENTORDER_PAY: `${BASE_URL}/payment/newpayment`,
 
     PRODUCT_IMPORT: `${BASE_URL}/product/import`,
+
+    CATALOG_BUSINESSLIST: `${BASE_URL}/catalog/getbusinesslist`,
 };

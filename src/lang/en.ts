@@ -739,7 +739,7 @@ const translation: LangKeys = {
   hsm_template: 'HSM template',
   hsm_template_plural: 'HSM templates',
   data_origin: 'Data origin',
-  catalogmaster: "Catalog master",
+  catalogmaster: "Catalog Master",
   kpimanager: 'KPI Manager',
   kpimanager_detail: 'KPI Manager Detail',
   kpimanager_plural: 'KPI Manager',
@@ -4847,6 +4847,8 @@ const translation: LangKeys = {
   paymentorder_currency: "Currency",
   paymentorder_totalamount: "Total Amount",
   paymentorder_code: "Code",
+  catalogmaster_businessid: "Business ID",
+  catalogmaster_businessname: "Business Name",
 };
 
 const enResource: ResourceLanguage = {
