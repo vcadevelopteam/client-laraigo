@@ -173,6 +173,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
             path: row?.path || '',
             tags: row?.tags || '',
             order: row?.order || '',
+            catalogmaster: row?.catalogmaster || '',
         }
     });
 
@@ -195,6 +196,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
         register('path');
         register('tags');
         register('order');
+        register('catalogmaster');
     }, [edit, register]);
 
     useEffect(() => {
@@ -395,22 +397,36 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                         />
                     </div>}
                     {type === "CATEGORIA" &&
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.order)}
-                            className="col-6"
-                            type="number"
-                            valueDefault={order}
-                            error={errors?.order?.message}
-                            onChange={(value) => {
-                                setOrder(value)
-                                setValue('order', value)
-                            }}
-                            InputProps={{
-                                inputProps: { min: 1,step: "1" }
-                            }}
-                        />
-                    </div>}                    
+                    <>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                label={t(langKeys.order)}
+                                className="col-6"
+                                type="number"
+                                valueDefault={order}
+                                error={errors?.order?.message}
+                                onChange={(value) => {
+                                    setOrder(value)
+                                    setValue('order', value)
+                                }}
+                                InputProps={{
+                                    inputProps: { min: 1,step: "1" }
+                                }}
+                            />
+                            <FieldSelect
+                                label={t(langKeys.catalogmaster)}
+                                className="col-6"
+                                valueDefault={type}
+                                onChange={(value) => {
+                                    setValue('catalogmaster', value?.value || ''); 
+                                }}
+                                data={[]} //falta llenar la lista de maestro de catalogos
+                                optionDesc="desc"
+                                optionValue="value"
+                            />
+                        </div>                        
+                    </>
+                    }                    
                     {type === "TIPIFICACION" &&
                     <>
                         <div style={{ marginBottom: '16px' }}>

@@ -1,6 +1,7 @@
 const paths = {
     REPORTSCHEDULER: '/reportscheduler',
     PRODUCTCATALOG: '/productcatalog',
+    CATALOGMASTER: '/catalogmaster',
     DASHBOARD: '/dashboard',
     DASHBOARD_ADD: '/dashboard/add',
     DASHBOARD_EDIT: {

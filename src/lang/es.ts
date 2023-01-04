@@ -889,6 +889,15 @@ const translation: LangKeys = {
   type_domain_cliente: 'Dominio de cliente',
   type_domain_sistema: 'Dominio de sistema',
 
+  type_domain_mastercatalog_productos: "Productos",
+  type_domain_mastercatalog_menu: "Menú y artículos de la tienda",
+  type_domain_mastercatalog_ubicaciones: "Ubicaciones de rrestaurantes y tiendas",
+  type_domain_mastercatalog_hoteles: "Hoteles",
+  type_domain_mastercatalog_vuelos: "Vuelos",
+  type_domain_mastercatalog_destinos: "Destinos",
+  type_domain_mastercatalog_viviendas: "Viviendas",
+  type_domain_mastercatalog_vehiculos: "Vehículos",
+
   type_gender_femenino: 'Femenino',
   type_gender_masculino: 'Masculino',
 
@@ -1231,6 +1240,7 @@ const translation: LangKeys = {
   invalidjson: 'Json inválido',
   invalid_file: 'Archivo inválido',
   invalid_date_format: 'Formato de fecha inválida',
+  catalogmaster: "Maestro de catálogo",
   invalid_time_format: 'Formato de tiempo inválido',
   test: 'Probar',
   result: 'Resultado',

@@ -105,6 +105,13 @@ export const routes: RouteConfig[] = [
         path: paths.PRODUCTCATALOG,
         icon: (className) => <ProductsIcon style={{ width: 22, height: 26 }} className={className} />,
     },
+    {
+        key: paths.CATALOGMASTER,
+        description: <Trans i18nKey={langKeys.catalogmaster} count={2} />,
+        tooltip: <Trans i18nKey={langKeys.catalogmaster} count={2} />,
+        path: paths.CATALOGMASTER,
+        icon: (className) => <ProductsIcon style={{ width: 22, height: 26 }} className={className} />,
+    },
     // {
     //     key: paths.EMAIL_INBOX,
     //     description: <Trans i18nKey={langKeys.eMailInbox} />,

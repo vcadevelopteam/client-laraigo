@@ -490,6 +490,15 @@ const translation: LangKeys = {
   type_domain_ninguno: 'None',
   type_domain_bot: 'Bot domain',
 
+  type_domain_mastercatalog_productos: "Products",
+  type_domain_mastercatalog_menu: "Shop menu and items",
+  type_domain_mastercatalog_ubicaciones: "Restaurant and store locations",
+  type_domain_mastercatalog_hoteles: "Hotels",
+  type_domain_mastercatalog_vuelos: "Flights",
+  type_domain_mastercatalog_destinos: "Destinations",
+  type_domain_mastercatalog_viviendas: "Homes",
+  type_domain_mastercatalog_vehiculos: "Vehicles",
+
   type_gender_femenino: 'Female',
   type_gender_masculino: 'Male',
 
@@ -730,6 +739,7 @@ const translation: LangKeys = {
   hsm_template: 'HSM template',
   hsm_template_plural: 'HSM templates',
   data_origin: 'Data origin',
+  catalogmaster: "Catalog master",
   kpimanager: 'KPI Manager',
   kpimanager_detail: 'KPI Manager Detail',
   kpimanager_plural: 'KPI Manager',
