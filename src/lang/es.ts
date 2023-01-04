@@ -883,6 +883,11 @@ const translation: LangKeys = {
   type_org_44: 'Actividades de asociaciones',
 
   attending: 'En atención',
+  orders: "Pedidos",
+  ordernumber: "N° de pedido",
+  orderstatus: "Estado del pedido",
+  ordersdetail: "Detalles de pedido",
+  picture: "Foto",
 
   type_domain_ninguno: 'None',
   type_domain_bot: 'Dominio de bot',
@@ -2990,6 +2995,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   logNote_plural: 'Notas de registro',
   scheduleActivity: 'Programa de actividad',
   scheduleActivity_plural: 'Programa de actividades',
+  view: "Ver",
 
   channellimit: 'Se alcanzo el maximo número de canales, mejora tu plan para continuar',
   userlimit: 'Se alcanzo el maximo número de usuarios({{limit}}), mejora tu plan para continuar',

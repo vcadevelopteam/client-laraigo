@@ -486,6 +486,12 @@ const translation: LangKeys = {
   type_org_44: 'Association activitie',
 
   attending: 'Attending',
+  orders: "Orders",
+  ordernumber: "Order N°",
+  orderstatus: "Order status",
+  ordersdetail: "Order details",
+  picture: "Picture",
+  view: "Watch",
 
   type_domain_ninguno: 'None',
   type_domain_bot: 'Bot domain',

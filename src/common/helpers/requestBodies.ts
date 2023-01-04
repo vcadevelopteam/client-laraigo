@@ -331,6 +331,16 @@ export const getCorpSel = (id: number): IRequestBody => ({
         all: id === 0,
     }
 });
+export const getOrderSel = (): IRequestBody => ({
+    method: "UFN_ORDER_SEL",
+    key: "UFN_ORDER_SEL",
+    parameters: { }
+});
+export const getOrderLineSel = ( orderid: number): IRequestBody => ({
+    method: "UFN_ORDERLINE_SEL",
+    key: "UFN_ORDERLINE_SEL",
+    parameters: { orderid }
+});
 export const getOrgSel = (id: number, corpid?: number): IRequestBody => ({
     method: "UFN_ORG_SEL",
     key: "UFN_ORG_SEL",
