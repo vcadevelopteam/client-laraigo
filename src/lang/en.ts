@@ -487,6 +487,7 @@ const translation: LangKeys = {
 
   attending: 'Attending',
   orders: "Orders",
+  orderlist: "Orders list",
   ordernumber: "Order N°",
   orderstatus: "Order status",
   ordersdetail: "Order details",
