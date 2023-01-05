@@ -18,6 +18,7 @@ export const langKeys = {
     edit_all: "edit_all",
     set_your_weekly: "set_your_weekly",
     orders: "orders",
+    orderlist: "orderlist",
     ordernumber: "ordernumber",
     orderstatus: "orderstatus",
     ordersdetail: "ordersdetail",
