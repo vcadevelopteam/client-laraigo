@@ -1142,13 +1142,13 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                                         label={t(langKeys.customer)}
                                                         value={values?.displayname}
                                                     />
-                                                </div>
-                                                <IconButton size="small" onClick={(e) => {
+                                                </div>                                                
+                                                {(!!lead?.value?.personid) && <IconButton size="small" onClick={(e) => {
                                                     e.preventDefault();
                                                     history.push(`/extras/person/${lead?.value?.personid}`)
                                                 }}>
                                                     <PersonIcon />
-                                                </IconButton>
+                                                </IconButton>}
                                             </div>
                                         </div>
                                     ) :
