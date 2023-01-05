@@ -4766,6 +4766,10 @@ export const langKeys = {
     paymentorder_code: "paymentorder_code",
     catalogmaster_businessid: "catalogmaster_businessid",
     catalogmaster_businessname: "catalogmaster_businessname",
+    catalogmaster_detail: "catalogmaster_detail",
+    catalogmaster_businessalert: "catalogmaster_businessalert",
+    catalogmaster_businesslink: "catalogmaster_businesslink",
+    catalogmaster_businesschoose: "catalogmaster_businesschoose",
   };
   
   export type LangKeys = typeof langKeys;

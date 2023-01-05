@@ -4776,8 +4776,12 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   paymentorder_currency: "Moneda",
   paymentorder_totalamount: "Costo Total",
   paymentorder_code: "Código",
-  catalogmaster_businessid: "ID del Negocio",
-  catalogmaster_businessname: "Nombre del Negocio",
+  catalogmaster_businessid: "ID del Comercio",
+  catalogmaster_businessname: "Nombre del Comercio",
+  catalogmaster_detail: "Detalle del Maestro de Catálogo",
+  catalogmaster_businessalert: "¿No encuentras tu Cuenta Comercial? Puedes utilizar este boton para enlazar la Cuenta Comercial de Facebook que deseas usar",
+  catalogmaster_businesslink: "Enlaza tu Cuenta Comercial",
+  catalogmaster_businesschoose: "Cuenta Comercial",
 };
 
 const esResource: ResourceLanguage = {

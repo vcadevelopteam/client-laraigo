@@ -4849,6 +4849,10 @@ const translation: LangKeys = {
   paymentorder_code: "Code",
   catalogmaster_businessid: "Business ID",
   catalogmaster_businessname: "Business Name",
+  catalogmaster_detail: "Catalog Master Detail",
+  catalogmaster_businessalert: "Can't find your Business Account? You can use this button to link the Facebook Business Account that you wish to use",
+  catalogmaster_businesslink: "Link your Business Account",
+  catalogmaster_businesschoose: "Business Account",
 };
 
 const enResource: ResourceLanguage = {

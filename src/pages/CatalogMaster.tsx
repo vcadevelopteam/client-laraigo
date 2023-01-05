@@ -21,10 +21,9 @@ import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'hooks';
 import { useTranslation } from 'react-i18next';
-import { catalogBusinessList } from "store/catalog/actions";
+import { catalogBusinessList, catalogManageCatalog, resetCatalogBusinessList } from "store/catalog/actions";
 
 interface RowSelected {
-    domainname: string | "";
     edit: boolean;
     row: Dictionary | null;
 }
@@ -52,13 +51,12 @@ const CatalogMaster: FC = () => {
 
     const { t } = useTranslation();
 
-    const executeResult = useSelector(state => state.main.execute);
-    const history = useHistory();
-    const mainResult = useSelector(state => state.main);
+    const resultMain = useSelector(state => state.main);
+    const resultManageCatalog = useSelector(state => state.catalog.requestCatalogManageCatalog);
     const user = useSelector(state => state.login.validateToken.user);
     const superadmin = ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '');
 
-    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, domainname: "", edit: false });
+    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
 
@@ -141,38 +139,38 @@ const CatalogMaster: FC = () => {
 
     useEffect(() => {
         if (waitSave) {
-            if (!executeResult.loading && !executeResult.error) {
+            if (!resultManageCatalog.loading && !resultManageCatalog.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
-                fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
+                fetchData();
+            } else if (resultManageCatalog.error) {
+                const errormessage = t(resultManageCatalog.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
         }
-    }, [executeResult, waitSave])
+    }, [resultManageCatalog, waitSave])
 
     const handleRegister = () => {
         setViewSelected("view-2");
-        setRowSelected({ row: null, domainname: "", edit: true });
+        setRowSelected({ row: null, edit: true });
     }
 
     const handleView = (row: Dictionary) => {
         setViewSelected("view-2");
-        setRowSelected({ row, domainname: row.domainname, edit: false });
+        setRowSelected({ row, edit: false });
     }
 
     const handleEdit = (row: Dictionary) => {
         setViewSelected("view-2");
-        setRowSelected({ row, domainname: row.domainname, edit: true });
+        setRowSelected({ row, edit: true });
     }
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            //dispatch(execute(insDomain({ ...row, operation: 'DELETE', status: 'ELIMINADO' })));
+            dispatch(catalogManageCatalog({ ...row, operation: 'DELETE', status: 'ELIMINADO' }));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -185,203 +183,133 @@ const CatalogMaster: FC = () => {
     }
 
     if (viewSelected === "view-1") {
-
-        if (mainResult.mainData.error) {
+        if (resultMain.mainData.error) {
             return <h1>ERROR</h1>;
         }
-
         return (
             <div style={{ width: "100%" }}>
                 <TableZyx
                     columns={columns}
-                    titlemodule={t(langKeys.catalogmaster)}
-                    data={mainResult.mainData.data}
+                    data={resultMain.mainData.data}
                     download={true}
-                    onClickRow={handleEdit}
-                    loading={mainResult.mainData.loading}
-                    register={superadmin}
                     handleRegister={handleRegister}
+                    loading={resultMain.mainData.loading}
+                    onClickRow={handleEdit}
+                    register={superadmin}
+                    titlemodule={t(langKeys.catalogmaster)}
                 />
             </div>
         )
     }
     else
         return (
-            <DetailDomains
+            <CatalogMasterDetail
                 data={rowSelected}
                 setViewSelected={setViewSelected}
-                multiData={mainResult.multiData.data}
+                multiData={resultMain.multiData.data}
                 fetchData={fetchData}
             />
         )
 }
 
-const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit }, setViewSelected, multiData, fetchData }) => {
-    const { t } = useTranslation();
+const CatalogMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetchData, multiData, setViewSelected }) => {
     const dispatch = useDispatch();
+
+    const { t } = useTranslation();
+
+    const classes = useStyles();
     const user = useSelector(state => state.login.validateToken.user);
     const useradmin = ["ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '');
-    const newrow = row === null
-    const classes = useStyles();
+    const domainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const domainCatalogType = multiData[1] && multiData[1].success ? (useradmin ? multiData[1].data.filter(x => x.domainvalue === "BOT") : multiData[1].data) : [];
+    const resultBusinessList = useSelector(state => state.catalog.requestCatalogBusinessList);
+    const resultManageCatalog = useSelector(state => state.catalog.requestCatalogManageCatalog);
+
+    const [businessList, setBusinessList] = useState<any>([]);
     const [waitSave, setWaitSave] = useState(false);
-    const executeRes = useSelector(state => state.main.execute);
-    const detailRes = useSelector(state => state.main.mainAux);
-    const [dataDomain, setdataDomain] = useState<Dictionary[]>([]);
-    const [domainToDelete, setDomainToDelete] = useState<Dictionary[]>([]);
-    const [openDialogDomain, setOpenDialogDomain] = useState(false);
-    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, domainname: "", edit: false });
-    const dataDomainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataDomainType = multiData[0] && multiData[1].success ? (useradmin ? multiData[1].data.filter(x => x.domainvalue === "BOT") : multiData[1].data) : [];
-
-    const columns = React.useMemo(
-        () => [
-            {
-                accessor: 'domainid',
-                NoFilter: true,
-                isComponent: true,
-                minWidth: 60,
-                width: '1%',
-                Cell: (props: any) => {
-                    if (!edit)
-                        return null;
-                    const row = props.cell.row.original;
-                    return (
-                        <TemplateIcons
-                            viewFunction={() => handleView(row)}
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                        />
-                    )
-                }
-            },
-            {
-                Header: t(langKeys.code),
-                accessor: 'domainvalue',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.description),
-                accessor: 'domaindesc',
-                NoFilter: true
-            },
-            /*{
-                Header: t(langKeys.bydefault),
-                accessor: 'bydefault',
-                NoFilter: true,
-                Cell: (prop: any) => {
-                    const row = prop.cell.row.original;
-                    const val = (row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative))
-                    return val;
-                }
-            },*/
-            {
-                Header: t(langKeys.organization),
-                accessor: 'organization',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.status),
-                prefixTranslation: 'status_',
-                accessor: 'status',
-                NoFilter: true
-            }
-        ],
-        []
-    );
-
-    useEffect(() => {
-        if (!detailRes.loading && !detailRes.error) {
-            setdataDomain(detailRes.data);
-        }
-    }, [detailRes]);
-
-    const handleRegister = () => {
-        setOpenDialogDomain(true)
-        setRowSelected({ row, domainname, edit: false });
-    }
-
-    const handleDelete = (row: Dictionary) => {
-        if (row && row.operation !== "INSERT") {
-            setDomainToDelete(p => [...p, { ...row, operation: "DELETE", status: 'ELIMINADO' }]);
-        } else {
-            row.operation = 'DELETE';
-        }
-
-        setdataDomain(p => p.filter(x => (row.operation === "DELETE" ? x.operation !== "DELETE" : row.domainid !== x.domainid)));
-    }
-
-    const handleView = (row: Dictionary) => {
-        setOpenDialogDomain(true)
-        setRowSelected({ row, domainname, edit: false })
-    }
-
-    const handleEdit = (row: Dictionary) => {
-        setOpenDialogDomain(true)
-        setRowSelected({ row, domainname, edit: true })
-    }
+    const [waitBusiness, setWaitBusiness] = useState(false);
 
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
-            id: row?.domainid || 0,
-            operation: row ? "EDIT" : "INSERT",
+            catalogdescription: row?.catalogdescription || '',
+            catalogid: row?.catalogid || '',
+            catalogname: row?.catalogname || '',
+            catalogtype: row?.catalogtype || '',
             description: row?.description || '',
-            corporation: row?.corpdesc || '',
-            organization: row?.orgdesc || '',
-            name: row?.name || '',
+            id: row?.metacatalogid || 0,
+            metabusinessid: row?.metabusinessid || 0,
+            operation: row ? "EDIT" : "CREATE",
+            status: row?.status || 'ACTIVO',
             type: row?.type || '',
-            status: row?.status || 'ACTIVO'
         }
     });
 
+    React.useEffect(() => {
+        register('catalogdescription', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('catalogid');
+        register('catalogname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('catalogtype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('description');
+        register('id');
+        register('metabusinessid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
+        register('operation');
+        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('type');
+    }, [register]);
+
+    useEffect(() => {
+        dispatch(catalogBusinessList({}));
+        dispatch(showBackdrop(true));
+        setWaitBusiness(true);
+
+        return () => {
+            dispatch(resetCatalogBusinessList());
+        };
+    }, []);
+
     useEffect(() => {
         if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
-                fetchData && fetchData();
+            if (!resultManageCatalog.loading && !resultManageCatalog.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }));
                 dispatch(showBackdrop(false));
-                setViewSelected("view-1");
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
+                fetchData && fetchData();
+                setViewSelected("view-1");
+            } else if (resultManageCatalog.error) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(resultManageCatalog.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() }) }));
                 dispatch(showBackdrop(false));
+                setWaitSave(false);
             }
         }
-    }, [executeRes, waitSave])
+    }, [resultManageCatalog, waitSave])
 
-    React.useEffect(() => {
-        register('id');
-        register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-
-        dispatch(resetMainAux());
-        //dispatch(getCollectionAux(getDomainValueSel((row?.name || ""))));
-    }, [register]);
+    useEffect(() => {
+        if (waitBusiness) {
+            if (!resultBusinessList.loading && !resultBusinessList.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
+                dispatch(showBackdrop(false));
+                setWaitBusiness(false);
+                setBusinessList(resultBusinessList.data);
+            } else if (resultBusinessList.error) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(resultBusinessList.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() }) }));
+                dispatch(showBackdrop(false));
+                setWaitBusiness(false);
+            }
+        }
+    }, [resultBusinessList, waitBusiness])
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
+            dispatch(catalogManageCatalog(data));
             dispatch(showBackdrop(true));
-            /*dispatch(execute({
-                header: insDomain({ ...data }),
-                detail: [
-                    ...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data, ...x, status: data?.status, id: x.domainid ? x.domainid : 0 })),
-                    ...domainToDelete.map(x => insDomainvalue({ ...x, id: x.domainid, description: data.description, type: data.type }))
-                ]
-            }, true));*/
-
             setWaitSave(true);
         }
-        if (!!dataDomain.length) {
-            dispatch(manageConfirmation({
-                visible: true,
-                question: t(langKeys.confirmation_save),
-                callback
-            }))
-        } else {
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.errorneedvalues) }))
-        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
     });
 
     const processFacebookCallback = async (facebookevent: any) => {
@@ -393,6 +321,8 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                 userfullname: facebookevent.name,
                 userid: facebookevent.id,
             }));
+            dispatch(showBackdrop(true));
+            setWaitBusiness(true);
         }
     }
 
@@ -404,36 +334,15 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                         <TemplateBreadcrumbs
                             breadcrumbs={[
                                 { id: "view-1", name: `${t(langKeys.catalogmaster)}` },
-                                { id: "view-2", name: `${t(langKeys.catalogmaster)} ${t(langKeys.detail)}` }
+                                { id: "view-2", name: `${t(langKeys.catalogmaster_detail)}` }
                             ]}
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={row ? `${row.name}` : `${t(langKeys.new)} ${t(langKeys.catalogmaster)}`}
+                            title={row ? `${row.catalogname}` : `${t(langKeys.new)} ${t(langKeys.catalogmaster)}`}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                        <div>
-                            <FacebookLogin
-                                appId={apiUrls.CATALOGAPP}
-                                autoLoad={false}
-                                buttonStyle={{ margin: "auto", backgroundColor: "#7721ad", textTransform: "none", display: "flex", textAlign: "center", justifyItems: "center", alignItems: "center", justifyContent: "center" }}
-                                fields="name,email,picture"
-                                scope="catalog_management,pages_show_list,business_management,pages_read_engagement"
-                                callback={processFacebookCallback}
-                                textButton={t(langKeys.linkfacebookpage)}
-                                icon={<FacebookIcon style={{ color: "white", marginRight: "8px" }} />}
-                                onClick={(e: any) => {
-                                    e.view.window.FB.init({
-                                        appId: apiUrls.CATALOGAPP,
-                                        cookie: true,
-                                        xfbml: true,
-                                        version: apiUrls.FACEBOOKVERSION,
-                                    });
-                                }}
-                                disableMobileRedirect={true}
-                            />
-                        </div>
                         <Button
                             variant="contained"
                             type="button"
@@ -456,54 +365,84 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                         }
                     </div>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div>
-                    </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                    </div>
-                </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.name)}
-                            disabled={row ? true : false}
-                            className="col-6"
-                            valueDefault={row?.name || ""}
-                            onChange={(value) => setValue('name', value)}
-                            error={errors?.name?.message}
-                        />
-                        <FieldEdit
-                            label={t(langKeys.description)}
-                            className="col-6"
-                            valueDefault={row?.description || ""}
-                            onChange={(value) => setValue('description', value)}
-                            error={errors?.description?.message}
+                        <div style={{ textAlign: "center", padding: "20px", color: "#969ea5" }}>{t(langKeys.catalogmaster_businessalert)}</div>
+                        <FacebookLogin
+                            appId={apiUrls.CATALOGAPP}
+                            autoLoad={false}
+                            buttonStyle={{ margin: "auto", backgroundColor: "#7721ad", textTransform: "none", display: "flex", textAlign: "center", justifyItems: "center", alignItems: "center", justifyContent: "center" }}
+                            fields="name,email,picture"
+                            scope="catalog_management,pages_show_list,business_management,pages_read_engagement"
+                            callback={processFacebookCallback}
+                            textButton={t(langKeys.catalogmaster_businesslink)}
+                            icon={<FacebookIcon style={{ color: "white", marginRight: "8px" }} />}
+                            onClick={(e: any) => {
+                                e.view.window.FB.init({
+                                    appId: apiUrls.CATALOGAPP,
+                                    cookie: true,
+                                    xfbml: true,
+                                    version: apiUrls.FACEBOOKVERSION,
+                                });
+                            }}
+                            disableMobileRedirect={true}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldSelect
-                            label={t(langKeys.type)}
+                            className="col-12"
+                            data={businessList}
+                            disabled={row ? true : false}
+                            error={errors?.metabusinessid?.message}
+                            label={t(langKeys.catalogmaster_businesschoose)}
+                            onChange={(value) => setValue('metabusinessid', value?.metabusinessid || 0)}
+                            optionDesc="businessname"
+                            optionValue="businessid"
+                            valueDefault={row?.metabusinessid || ''}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
                             className="col-6"
-                            valueDefault={row?.type || ""}
-                            onChange={(value) => setValue('type', value ? value.domainvalue : '')}
-                            error={errors?.type?.message}
-                            data={dataDomainType}
-                            uset={true}
-                            prefixTranslation="type_domain_mastercatalog_"
+                            disabled={row ? true : false}
+                            error={errors?.catalogname?.message}
+                            label={t(langKeys.name)}
+                            onChange={(value) => setValue('catalogname', value || '')}
+                            valueDefault={row?.catalogname || ""}
+                        />
+                        <FieldEdit
+                            className="col-6"
+                            disabled={row ? true : false}
+                            error={errors?.catalogdescription?.message}
+                            label={t(langKeys.description)}
+                            onChange={(value) => setValue('catalogdescription', value || '')}
+                            valueDefault={row?.catalogdescription || ""}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldSelect
+                            className="col-6"
+                            data={domainCatalogType}
+                            error={errors?.catalogtype?.message}
+                            label={t(langKeys.type)}
+                            onChange={(value) => setValue('catalogtype', value?.domainvalue || '')}
                             optionDesc="domainvalue"
                             optionValue="domainvalue"
+                            prefixTranslation="type_domain_mastercatalog_"
+                            uset={true}
+                            valueDefault={row?.catalogtype || ""}
                         />
                         <FieldSelect
-                            label={t(langKeys.status)}
                             className="col-6"
-                            valueDefault={row?.status || "ACTIVO"}
-                            onChange={(value) => setValue('status', value ? value.domainvalue : '')}
+                            data={domainStatus}
                             error={errors?.status?.message}
-                            data={dataDomainStatus}
+                            label={t(langKeys.status)}
+                            onChange={(value) => setValue('status', value?.domainvalue || '')}
                             optionDesc="domaindesc"
-                            uset={true}
-                            prefixTranslation="status_"
                             optionValue="domainvalue"
+                            prefixTranslation="status_"
+                            uset={true}
+                            valueDefault={row?.status || ""}
                         />
                     </div>
                 </div>
@@ -511,7 +450,5 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
         </div>
     );
 }
-
-
 
 export default CatalogMaster;

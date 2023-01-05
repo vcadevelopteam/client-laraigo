@@ -14,3 +14,15 @@ export const catalogBusinessList = (request: any): IActionCall => ({
 });
 
 export const resetCatalogBusinessList = (): IActionCall => ({ type: actionTypes.CATALOG_BUSINESSLIST_RESET });
+
+export const catalogManageCatalog = (request: any): IActionCall => ({
+    callAPI: () => CatalogService.catalogManageCatalog(request),
+    types: {
+        loading: actionTypes.CATALOG_MANAGECATALOG,
+        success: actionTypes.CATALOG_MANAGECATALOG_SUCCESS,
+        failure: actionTypes.CATALOG_MANAGECATALOG_FAILURE,
+    },
+    type: null,
+});
+
+export const resetCatalogManageCatalog = (): IActionCall => ({ type: actionTypes.CATALOG_MANAGECATALOG_RESET });

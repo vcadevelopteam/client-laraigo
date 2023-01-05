@@ -37,3 +37,39 @@ export const catalogBusinessListReset = (state: IState): IState => ({
     ...state,
     requestCatalogBusinessList: initialState.requestCatalogBusinessList,
 })
+
+export const catalogManageCatalog = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestCatalogManageCatalog: {
+        ...state.requestCatalogManageCatalog,
+        error: false,
+        loading: true,
+    }
+})
+
+export const catalogManageCatalogFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestCatalogManageCatalog: {
+        ...state.requestCatalogManageCatalog,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message || 'error_unexpected_error',
+    }
+})
+
+export const catalogManageCatalogSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestCatalogManageCatalog: {
+        ...state.requestCatalogManageCatalog,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message,
+    }
+})
+
+export const catalogManageCatalogReset = (state: IState): IState => ({
+    ...state,
+    requestCatalogManageCatalog: initialState.requestCatalogManageCatalog,
+})
