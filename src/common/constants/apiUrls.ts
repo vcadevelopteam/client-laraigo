@@ -233,4 +233,5 @@ export const apiUrls = {
 
     CATALOG_BUSINESSLIST: `${BASE_URL}/catalog/getbusinesslist`,
     CATALOG_MANAGECATALOG: `${BASE_URL}/catalog/managecatalog`,
+    CATALOG_SYNCHROCATALOG: `${BASE_URL}/catalog/synchrocatalog`,
 };

@@ -4,24 +4,24 @@ import Button from '@material-ui/core/Button';
 import ClearIcon from '@material-ui/icons/Clear';
 import FacebookLogin from "react-facebook-login";
 import React, { FC, useEffect, useState } from 'react';
+import RefreshIcon from '@material-ui/icons/Refresh';
 import SaveIcon from '@material-ui/icons/Save';
 import TableZyx from '../components/fields/table-simple';
 
 import { apiUrls } from "common/constants";
 import { Dictionary, MultiData } from "@types";
 import { Facebook as FacebookIcon } from "@material-ui/icons";
-import { getCollection, getMultiCollection, execute, getCollectionAux, resetMainAux, resetAllMain } from 'store/main/actions';
-import { getValuesFromDomain, metaCatalogSel } from 'common/helpers';
+import { getCollection, getMultiCollection, resetAllMain, cleanMemoryTable, setMemoryTable } from 'store/main/actions';
+import { getValuesFromDomain, metaCatalogSel, metaBusinessSel } from 'common/helpers';
 import { langKeys } from 'lang/keys';
 import { makeStyles } from '@material-ui/core/styles';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { TemplateIcons, TemplateBreadcrumbs, FieldEdit, FieldSelect, TitleDetail } from 'components';
 import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { useHistory } from 'react-router-dom';
 import { useSelector } from 'hooks';
 import { useTranslation } from 'react-i18next';
-import { catalogBusinessList, catalogManageCatalog, resetCatalogBusinessList } from "store/catalog/actions";
+import { catalogBusinessList, catalogManageCatalog, resetCatalogBusinessList, catalogSynchroCatalog } from "store/catalog/actions";
 
 interface RowSelected {
     edit: boolean;
@@ -46,18 +46,24 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const IDCATALOGMASTER = "IDCATALOGMASTER";
 const CatalogMaster: FC = () => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
+    const memoryTable = useSelector(state => state.main.memoryTable);
     const resultMain = useSelector(state => state.main);
     const resultManageCatalog = useSelector(state => state.catalog.requestCatalogManageCatalog);
+    const resultSynchroCatalog = useSelector(state => state.catalog.requestCatalogSynchroCatalog);
     const user = useSelector(state => state.login.validateToken.user);
     const superadmin = ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '');
 
+    const [businessId, setBusinessId] = useState(0);
+    const [metaBusinessList, setMetaBusinessList] = useState<Dictionary[]>([]);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [viewSelected, setViewSelected] = useState("view-1");
+    const [waitSynchronize, setWaitSynchronize] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
 
     const columns = React.useMemo(
@@ -127,13 +133,18 @@ const CatalogMaster: FC = () => {
 
     useEffect(() => {
         fetchData();
+        dispatch(setMemoryTable({
+            id: IDCATALOGMASTER
+        }));
         dispatch(getMultiCollection([
             getValuesFromDomain("ESTADOGENERICO"),
             getValuesFromDomain("TIPOCATALOGOMAESTRO"),
+            metaBusinessSel({ id: 0 }),
         ]));
 
         return () => {
             dispatch(resetAllMain());
+            dispatch(cleanMemoryTable());
         };
     }, []);
 
@@ -182,6 +193,44 @@ const CatalogMaster: FC = () => {
         }))
     }
 
+    const handleSynchronize = (metabusinessid: any) => {
+        const callback = () => {
+            dispatch(catalogSynchroCatalog({ metabusinessid: metabusinessid }));
+            dispatch(showBackdrop(true));
+            setWaitSynchronize(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.catalogmaster_synchroalert),
+            callback
+        }))
+    }
+
+    useEffect(() => {
+        if (waitSynchronize) {
+            if (!resultSynchroCatalog.loading && !resultSynchroCatalog.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(resultSynchroCatalog.code || "success") }))
+                dispatch(showBackdrop(false));
+                fetchData();
+                setWaitSynchronize(false);
+            }
+            else if (resultSynchroCatalog.error) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(resultSynchroCatalog.code || "error_unexpected_error") }))
+                dispatch(showBackdrop(false));
+                setWaitSynchronize(false);
+            }
+        }
+    }, [resultSynchroCatalog, waitSynchronize])
+
+    useEffect(() => {
+        if (resultMain.multiData.data.length > 0) {
+            if (resultMain.multiData.data[2] && resultMain.multiData.data[2].success) {
+                setMetaBusinessList(resultMain.multiData.data[2].data || []);
+            }
+        }
+    }, [resultMain.multiData.data])
+
     if (viewSelected === "view-1") {
         if (resultMain.mainData.error) {
             return <h1>ERROR</h1>;
@@ -189,6 +238,29 @@ const CatalogMaster: FC = () => {
         return (
             <div style={{ width: "100%" }}>
                 <TableZyx
+                    ButtonsElement={() => (
+                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                            <FieldSelect
+                                label={t(langKeys.catalogmaster_businesschoose)}
+                                style={{ width: 300 }}
+                                valueDefault={businessId}
+                                variant="outlined"
+                                optionDesc="businessname"
+                                optionValue="metabusinessid"
+                                data={metaBusinessList}
+                                onChange={(value) => { setBusinessId(value?.metabusinessid || 0) }}
+                            />
+                            <Button
+                                disabled={!businessId}
+                                variant="contained"
+                                color="primary"
+                                style={{ width: 140, backgroundColor: "#55BD84" }}
+                                startIcon={<RefreshIcon style={{ color: 'white' }} />}
+                                onClick={() => { handleSynchronize(businessId) }}
+                            >{t(langKeys.messagetemplate_synchronize)}
+                            </Button>
+                        </div>
+                    )}
                     columns={columns}
                     data={resultMain.mainData.data}
                     download={true}
@@ -197,6 +269,9 @@ const CatalogMaster: FC = () => {
                     onClickRow={handleEdit}
                     register={superadmin}
                     titlemodule={t(langKeys.catalogmaster)}
+                    pageSizeDefault={IDCATALOGMASTER === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                    initialPageIndex={IDCATALOGMASTER === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                    initialStateFilter={IDCATALOGMASTER === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
                 />
             </div>
         )

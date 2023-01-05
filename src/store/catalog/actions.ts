@@ -26,3 +26,15 @@ export const catalogManageCatalog = (request: any): IActionCall => ({
 });
 
 export const resetCatalogManageCatalog = (): IActionCall => ({ type: actionTypes.CATALOG_MANAGECATALOG_RESET });
+
+export const catalogSynchroCatalog = (request: any): IActionCall => ({
+    callAPI: () => CatalogService.catalogSynchroCatalog(request),
+    types: {
+        loading: actionTypes.CATALOG_SYNCHROCATALOG,
+        success: actionTypes.CATALOG_SYNCHROCATALOG_SUCCESS,
+        failure: actionTypes.CATALOG_SYNCHROCATALOG_FAILURE,
+    },
+    type: null,
+});
+
+export const resetCatalogSynchroCatalog = (): IActionCall => ({ type: actionTypes.CATALOG_SYNCHROCATALOG_RESET });

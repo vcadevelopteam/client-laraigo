@@ -4853,6 +4853,7 @@ const translation: LangKeys = {
   catalogmaster_businessalert: "Can't find your Business Account? You can use this button to link the Facebook Business Account that you wish to use",
   catalogmaster_businesslink: "Link your Business Account",
   catalogmaster_businesschoose: "Business Account",
+  catalogmaster_synchroalert: "The catalogs that belong to the selected Business Account will be registered, or updated in the case that they were previously registered.",
 };
 
 const enResource: ResourceLanguage = {

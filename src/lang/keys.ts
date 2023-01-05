@@ -4770,6 +4770,7 @@ export const langKeys = {
     catalogmaster_businessalert: "catalogmaster_businessalert",
     catalogmaster_businesslink: "catalogmaster_businesslink",
     catalogmaster_businesschoose: "catalogmaster_businesschoose",
+    catalogmaster_synchroalert: "catalogmaster_synchroalert",
   };
   
   export type LangKeys = typeof langKeys;

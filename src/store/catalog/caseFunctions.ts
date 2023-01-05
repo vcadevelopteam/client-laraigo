@@ -73,3 +73,39 @@ export const catalogManageCatalogReset = (state: IState): IState => ({
     ...state,
     requestCatalogManageCatalog: initialState.requestCatalogManageCatalog,
 })
+
+export const catalogSynchroCatalog = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestCatalogSynchroCatalog: {
+        ...state.requestCatalogSynchroCatalog,
+        error: false,
+        loading: true,
+    }
+})
+
+export const catalogSynchroCatalogFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestCatalogSynchroCatalog: {
+        ...state.requestCatalogSynchroCatalog,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message || 'error_unexpected_error',
+    }
+})
+
+export const catalogSynchroCatalogSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestCatalogSynchroCatalog: {
+        ...state.requestCatalogSynchroCatalog,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message,
+    }
+})
+
+export const catalogSynchroCatalogReset = (state: IState): IState => ({
+    ...state,
+    requestCatalogSynchroCatalog: initialState.requestCatalogSynchroCatalog,
+})

@@ -12,11 +12,13 @@ export interface IRequest extends ITemplate {
 export interface IState {
     requestCatalogBusinessList: IRequest;
     requestCatalogManageCatalog: IRequest;
+    requestCatalogSynchroCatalog: IRequest;
 }
 
 export const initialState: IState = {
     requestCatalogBusinessList: { ...initialCommon, data: null, loading: false, error: false },
     requestCatalogManageCatalog: { ...initialCommon, data: null, loading: false, error: false },
+    requestCatalogSynchroCatalog: { ...initialCommon, data: null, loading: false, error: false },
 };
 
 export default createReducer<IState>(initialState, {
@@ -29,4 +31,9 @@ export default createReducer<IState>(initialState, {
     [actionTypes.CATALOG_MANAGECATALOG_FAILURE]: caseFunctions.catalogManageCatalogFailure,
     [actionTypes.CATALOG_MANAGECATALOG_SUCCESS]: caseFunctions.catalogManageCatalogSuccess,
     [actionTypes.CATALOG_MANAGECATALOG_RESET]: caseFunctions.catalogManageCatalogReset,
+
+    [actionTypes.CATALOG_SYNCHROCATALOG]: caseFunctions.catalogSynchroCatalog,
+    [actionTypes.CATALOG_SYNCHROCATALOG_FAILURE]: caseFunctions.catalogSynchroCatalogFailure,
+    [actionTypes.CATALOG_SYNCHROCATALOG_SUCCESS]: caseFunctions.catalogSynchroCatalogSuccess,
+    [actionTypes.CATALOG_SYNCHROCATALOG_RESET]: caseFunctions.catalogSynchroCatalogReset,
 });

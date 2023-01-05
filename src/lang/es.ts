@@ -4782,6 +4782,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   catalogmaster_businessalert: "¿No encuentras tu Cuenta Comercial? Puedes utilizar este boton para enlazar la Cuenta Comercial de Facebook que deseas usar",
   catalogmaster_businesslink: "Enlaza tu Cuenta Comercial",
   catalogmaster_businesschoose: "Cuenta Comercial",
+  catalogmaster_synchroalert: "Los catalogos pertenecientes a la Cuenta Comercial seleccionada seran registrados, o actualizados en el caso de que hayan sido previamente registrados.",
 };
 
 const esResource: ResourceLanguage = {
