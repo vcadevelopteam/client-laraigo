@@ -3,10 +3,169 @@
 import { Dictionary } from "@types";
 // import * as XLSX from 'xlsx';
 
-export const dataMonths = [{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" }];
-export const dataYears = Array.from(Array(21).keys()).map(x => ({ value: `${new Date().getFullYear() + x - 10}` }))
+export const dataYears = Array.from(Array(21).keys()).map(x => ({ value: `${new Date().getFullYear() + x - 10}` }));
 
+export const dataMonths = [
+    {
+        val: "01"
+    },
+    {
+        val: "02"
+    },
+    {
+        val: "03"
+    },
+    {
+        val: "04"
+    },
+    {
+        val: "05"
+    },
+    {
+        val: "06"
+    },
+    {
+        val: "07"
+    },
+    {
+        val: "08"
+    },
+    {
+        val: "09"
+    },
+    {
+        val: "10"
+    },
+    {
+        val: "11"
+    },
+    {
+        val: "12"
+    }
+];
 
+export const dataActivities = [
+    {
+        "activity_id": "1267092843327003",
+        "activity_name": "AGREES"
+    },
+    {
+        "activity_id": "742120442490915",
+        "activity_name": "CELEBRATES"
+    },
+    {
+        "activity_id": "383634705006159",
+        "activity_name": "EATS"
+    },
+    {
+        "activity_id": "721170054585954",
+        "activity_name": "SUPPORTS"
+    },
+    {
+        "activity_id": "1226135157422772",
+        "activity_name": "CALLS"
+    },
+    {
+        "activity_id": "1136670953035860",
+        "activity_name": "STREAMS"
+    },
+    {
+        "activity_id": "601369976565963",
+        "activity_name": "LOOKS_FOR"
+    },
+    {
+        "activity_id": "809473052422320",
+        "activity_name": "THINKS_ABOUT"
+    },
+    {
+        "activity_id": "809472309089061",
+        "activity_name": "MAKES"
+    },
+    {
+        "activity_id": "806115869424705",
+        "activity_name": "SELECTS_VERB"
+    },
+    {
+        "activity_id": "383634835006146",
+        "activity_name": "FEELS"
+    },
+    {
+        "activity_id": "383634868339476",
+        "activity_name": "LISTENS"
+    },
+    {
+        "activity_id": "809471075755851",
+        "activity_name": "MEETS"
+    },
+    {
+        "activity_id": "1443817305654555",
+        "activity_name": "RESPONDS_TO"
+    },
+    {
+        "activity_id": "556187044417590",
+        "activity_name": "GOES_TO"
+    },
+    {
+        "activity_id": "668012816568345",
+        "activity_name": "ATTENDS"
+    },
+    {
+        "activity_id": "532534113449550",
+        "activity_name": "VOTES"
+    },
+    {
+        "activity_id": "1294635240572763",
+        "activity_name": "CONTACTS"
+    },
+    {
+        "activity_id": "637142219655405",
+        "activity_name": "OTHER"
+    },
+    {
+        "activity_id": "383635058339457",
+        "activity_name": "READS"
+    },
+    {
+        "activity_id": "520095228026772",
+        "activity_name": "PLAYS"
+    },
+    {
+        "activity_id": "809472139089078",
+        "activity_name": "GETS"
+    },
+    {
+        "activity_id": "1500689486634003",
+        "activity_name": "PREPARES_TO_VOTE"
+    },
+    {
+        "activity_id": "906305289405762",
+        "activity_name": "WRITES_A_NOVEL_ABOUT"
+    },
+    {
+        "activity_id": "902228273146797",
+        "activity_name": "REMEMBERS"
+    },
+    {
+        "activity_id": "383634741672822",
+        "activity_name": "DRINKS"
+    },
+    {
+        "activity_id": "1270648612971426",
+        "activity_name": "DISAGREES"
+    },
+    {
+        "activity_id": "383634671672829",
+        "activity_name": "WATCHES"
+    },
+    {
+        "activity_id": "1503898576313094",
+        "activity_name": "REGISTERS_TO_VOTE"
+    },
+    {
+        "activity_id": "580961725273455",
+        "activity_name": "TRAVELS"
+    }
+]
 export function formatNumber(num: number) {
     if (num)
         return parseFloat(num.toString()).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
@@ -36,7 +195,7 @@ export function formattime(cc: any) {
     return `${hh}${mm}${ss}`
 }
 
-export function validateNumbersEqualsConsecutive(text:string, limit:number){
+export function validateNumbersEqualsConsecutive(text: string, limit: number) {
     let canxx = 1;
     for (var i = 0; i < text.length; i++) {
         if (/^\d+$/.test(text.charAt(i))) {
@@ -54,12 +213,12 @@ export function validateNumbersEqualsConsecutive(text:string, limit:number){
     return true;
 }
 
-export function validateDomainCharacters(text:string, regex:any, option:string){
+export function validateDomainCharacters(text: string, regex: any, option: string) {
     switch (option) {
         case "01": //comienza
             return (eval(`/^[${regex}]/`).test(text));
         case "05": //termina
-            return (eval(`/[${regex}]/g`).test(text.substring(text.length-1)));
+            return (eval(`/[${regex}]/g`).test(text.substring(text.length - 1)));
         case "02": //incluye
             return (eval(`/[${regex}]/`).test(text));
         case "03": //mas de 1
@@ -69,13 +228,13 @@ export function validateDomainCharacters(text:string, regex:any, option:string){
     }
 }
 
-export function validateDomainCharactersSpecials(text:string, option:string){
+export function validateDomainCharactersSpecials(text: string, option: string) {
     let charactersallowed = `! " # $ % & ' ( ) * + , - . / : ; < = > ? @ [ \ ] ^ _ { | } ~`
     switch (option) {
         case "01": //comienza
             return charactersallowed.includes(text.substring(0, 1));
         case "05": //termina
-            return charactersallowed.includes(text.substring(text.length-1));
+            return charactersallowed.includes(text.substring(text.length - 1));
         case "02": //incluye
             let isok = false;
             charactersallowed.split(" ").forEach(c => {
@@ -419,7 +578,7 @@ export const cleanedRichResponse = (data: Dictionary[], variablesContext: Dictio
                 content = y.config.randomlist[rn].value;
             }
             else
-                content = y.config.randomlist[0].value;;
+                content = y.config.randomlist[0].value;
         }
         const variableToReplace = y.variablereplace ? y.variablereplace : [];
 
@@ -785,13 +944,19 @@ export const calculateDateFromMonth = (year: number, month: number) => {
     return [...daysPreviewMonth, ...daysMonth, ...daysNextMonth];
 }
 
+export const getFormattedDate = (date: Date) => {
+    const offset = date.getTimezoneOffset();
+    date = new Date(date.getTime() - (offset * 60 * 1000));
+    return date.toISOString().split('T')[0];
+}
+
 const transDayLocal = (day: Date) => day.getDay() - 1 < 0 ? 6 : day.getDay() - 1;
 
 export const calculateDateFromWeek = (datex: Date) => {
     const currentDate = new Date(datex.getFullYear(), datex.getMonth(), datex.getDate())
-    
+
     const dayCurrent = transDayLocal(currentDate);
-    
+
     const firstDayWeek = new Date(currentDate.setDate(currentDate.getDate() - dayCurrent));
 
     return Array.from(Array(7).keys()).map(x => {

@@ -338,7 +338,9 @@ const TableZyx = React.memo(({
     initialStateFilter,
     registertext,
     setDataFiltered,
-    useFooter = false
+    useFooter = false,
+    heightWithCheck = 43,
+    checkHistoryCenter = false
 }: TableConfig) => {
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -657,13 +659,20 @@ const TableZyx = React.memo(({
                         </div>
                     ),
                     Cell: ({ row }: any) => (
+
                         <div>
-                            <Checkbox
+                            {checkHistoryCenter === true ? <Checkbox
                                 color="primary"
-                                style={{ padding: '0 24px 0 16px' }}
+                                style={{ padding: '0 24px 0 16px', height: 68 }}
                                 checked={row.isSelected}
                                 onChange={(e) => row.toggleRowSelected()}
-                            />
+                            /> :
+                                <Checkbox
+                                    color="primary"
+                                    style={{ padding: '0 24px 0 16px' }}
+                                    checked={row.isSelected}
+                                    onChange={(e) => row.toggleRowSelected()}
+                                />}
                         </div>
                     ),
                     NoFilter: true,
@@ -935,7 +944,7 @@ const TableZyx = React.memo(({
                                         width="auto"
                                         height={window.innerHeight - 470}
                                         itemCount={page.length}
-                                        itemSize={43}
+                                        itemSize={heightWithCheck}
                                     >
                                         {RenderRow}
                                     </FixedSizeList>
@@ -1065,7 +1074,7 @@ const TableZyx = React.memo(({
                                     }));
                                 }}
                             >
-                                {[10, 20, 50, 100].map(pageSize => (
+                                {[5, 10, 20, 50, 100].map(pageSize => (
                                     <MenuItem key={pageSize} value={pageSize}>
                                         {pageSize}
                                     </MenuItem >
