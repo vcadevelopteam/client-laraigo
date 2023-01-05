@@ -41,6 +41,7 @@ import { emitEvent } from 'store/inbox/actions';
 import { emojis } from "common/constants/emojis";
 import { sendHSM } from 'store/inbox/actions';
 import { setModalCall, setPhoneNumber } from 'store/voximplant/actions';
+import MailIcon from '@material-ui/icons/Mail';
 
 const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
 
@@ -146,9 +147,10 @@ interface DialogSendTemplateProps {
     setOpenModal: (param: any) => void;
     openModal: boolean;
     persons: any[];
+    type: "HSM" | "MAIL" | "SMS";
 }
 
-const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, openModal, persons }) => {
+const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, openModal, persons, type }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitClose, setWaitClose] = useState(false);
@@ -159,13 +161,20 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
     const [personWithData, setPersonWithData] = useState<IPerson[]>([])
     const domains = useSelector(state => state.person.editableDomains);
 
-    const title = t(langKeys.send_hsm);
+    const title = useMemo(() => {
+        switch (type) {
+            case "HSM": return t(langKeys.send_hsm);
+            case "SMS": return t(langKeys.send_sms);
+            case "MAIL": return t(langKeys.send_mail);
+            default: return '-';
+        }
+    }, [type]);
     const { control, register, handleSubmit, setValue, getValues, trigger, reset, formState: { errors } } = useForm<any>({
         defaultValues: {
             hsmtemplateid: 0,
             observation: '',
-            communicationchannelid: channelList?.length === 1 ? channelList[0].communicationchannelid : 0,
-            communicationchanneltype: channelList?.length === 1 ? channelList[0].type : "",
+            communicationchannelid: type === "HSM" ? (channelList?.length === 1 ? channelList[0].communicationchannelid : 0) : 0,
+            communicationchanneltype: type === "HSM" ? (channelList?.length === 1 ? channelList[0].type : "") : '',
             variables: []
         }
     });
@@ -178,7 +187,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
     useEffect(() => {
         if (waitClose) {
             if (!sendingRes.loading && !sendingRes.error) {
-                const message = t(langKeys.successful_send_hsm)
+                const message = type === "HSM" ? t(langKeys.successful_send_hsm) : (type === "SMS" ? t(langKeys.successful_send_sms) : t(langKeys.successful_send_mail));
                 dispatch(showSnackbar({ show: true, severity: "success", message }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
@@ -195,10 +204,10 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
 
     useEffect(() => {
         if (!domains.error && !domains.loading) {
-            setTemplatesList(domains?.value?.templates?.filter(x => (x.type === "HSM" )) || []);
-            setChannelList(domains?.value?.channels?.filter(x => x.type.includes("WHA")) || []);
+            setTemplatesList(domains?.value?.templates?.filter(x => (type !== "MAIL" ? x.type === type : (x.type === type || x.type === "HTML"))) || []);
+            setChannelList(domains?.value?.channels?.filter(x => x.type.includes(type === "HSM" ? "WHA" : type)) || []);
         }
-    }, [domains])
+    }, [domains, type])
 
     useEffect(() => {
         if (openModal) {
@@ -207,13 +216,24 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
                 hsmtemplateid: 0,
                 hsmtemplatename: '',
                 variables: [],
-                communicationchannelid: (channelList?.length === 1 ? channelList[0].communicationchannelid : 0),
-                communicationchanneltype: (channelList?.length === 1 ? channelList[0].type : "")
+                communicationchannelid: type === "HSM" ? (channelList?.length === 1 ? channelList[0].communicationchannelid : 0) : 0,
+                communicationchanneltype: type === "HSM" ? (channelList?.length === 1 ? channelList[0].type : "") : ''
             })
             register('hsmtemplateid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
 
-            register('communicationchannelid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
-            setPersonWithData(persons.filter(x => !!x.phonewhatsapp))
+            if (type === "HSM") {
+                register('communicationchannelid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+            } else {
+                register('communicationchannelid');
+            }
+
+            if (type === "MAIL") {
+                setPersonWithData(persons.filter(x => x.email && x.email.length > 0))
+            } else if (type === "HSM") {
+                setPersonWithData(persons.filter(x => !!x.phonewhatsapp))
+            } else {
+                setPersonWithData(persons.filter(x => x.phone && x.phone.length > 0))
+            }
         } else {
             setWaitClose(false);
         }
@@ -245,11 +265,11 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             communicationchannelid: data.communicationchannelid,
             communicationchanneltype: data.communicationchanneltype,
             platformtype: data.communicationchanneltype,
-            type: "HSM",
+            type,
             shippingreason: "PERSON",
             listmembers: personWithData.map(person => ({
                 personid: person.personid,
-                phone: person.phonewhatsapp || "",
+                phone: person.phone?.replace("+",'') || "",
                 firstname: person.firstname || "",
                 email: person.email || "",
                 lastname: person.lastname,
@@ -266,7 +286,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
     });
 
     useEffect(() => {
-        if (channelList.length === 1) {
+        if (channelList.length === 1 && type === "HSM") {
             setValue("communicationchannelid", channelList[0].communicationchannelid || 0)
             setValue('communicationchanneltype', channelList[0].type || "");
             trigger("communicationchannelid")
@@ -283,21 +303,23 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             handleClickButton2={onSubmit}
             button2Type="submit"
         >
-            <div className="row-zyx">
-                <FieldSelect
-                    label={t(langKeys.channel)}
-                    className="col-12"
-                    valueDefault={getValues('communicationchannelid')}
-                    onChange={value => {
-                        setValue('communicationchannelid', value?.communicationchannelid || 0);
-                        setValue('communicationchanneltype', value?.type || "");
-                    }}
-                    error={errors?.communicationchannelid?.message}
-                    data={channelList}
-                    optionDesc="communicationchanneldesc"
-                    optionValue="communicationchannelid"
-                />
-            </div>
+            {type === "HSM" && (
+                <div className="row-zyx">
+                    <FieldSelect
+                        label={t(langKeys.channel)}
+                        className="col-12"
+                        valueDefault={getValues('communicationchannelid')}
+                        onChange={value => {
+                            setValue('communicationchannelid', value?.communicationchannelid || 0);
+                            setValue('communicationchanneltype', value?.type || "");
+                        }}
+                        error={errors?.communicationchannelid?.message}
+                        data={channelList}
+                        optionDesc="communicationchanneldesc"
+                        optionValue="communicationchannelid"
+                    />
+                </div>
+            )}
             <div className="row-zyx">
                 <FieldSelect
                     label={t(langKeys.template)}
@@ -310,12 +332,22 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
                     optionValue="id"
                 />
             </div>
-            <FieldEditMulti
-                label={t(langKeys.message)}
-                valueDefault={bodyMessage}
-                disabled={true}
-                rows={1}
-            />
+            {type === 'MAIL' &&
+                <div style={{ overflow: 'scroll' }}>
+                    <React.Fragment>
+                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.message)}</Box>
+                        <div dangerouslySetInnerHTML={{ __html: bodyMessage }} />
+                    </React.Fragment>
+                </div>
+            }
+            {type !== 'MAIL' &&
+                <FieldEditMulti
+                    label={t(langKeys.message)}
+                    valueDefault={bodyMessage}
+                    disabled={true}
+                    rows={1}
+                />
+            }
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
                 {fields.map((item: Dictionary, i) => (
                     <div key={item.id}>
@@ -395,6 +427,12 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const [openDialogTemplate, setOpenDialogTemplate] = useState(false)
     const voxiConnection = useSelector(state => state.voximplant.connection);
     const userConnected = useSelector(state => state.inbox.userConnected);
+    
+    const [typeTemplate, setTypeTemplate] = useState<"HSM" | "SMS" | "MAIL">('MAIL');
+    const [extraTriggers, setExtraTriggers] = useState({
+        phone: lead.value?.phone || '',
+        email: lead.value?.email || '',
+    })
     
     useEffect(() => {
         dispatch(getDomainsByTypename());
@@ -637,6 +675,14 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     }, [advisers, t, dispatch]);
 
     useEffect(() => {
+        console.log(values)
+        setExtraTriggers({
+            email:values?.email || "",
+            phone: values?.phone || ""
+        })
+    }, [values]);
+
+    useEffect(() => {
         if (saveLead.loading) return;
         if (saveLead.error) {
             const errormessage = t(saveLead.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
@@ -869,10 +915,14 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
 
     const onClickSelectPersonModal = useCallback((value: IPerson) => {
         setValue('personcommunicationchannel', "")
-        setValue('personid', value.personid)
-        setValue('persontype', value.persontype || '')
-        setValue('email', value.email || '')
-        setValue('phone', value.phone || '')
+        setValue('personid', value?.personid)
+        setValue('persontype', value?.persontype || '')
+        setValue('email', value?.email || '')
+        setValue('phone', value?.phone || '')
+        setExtraTriggers({
+            phone: value?.phone || '',
+            email: value?.email || '',
+        })
         setValues(prev => ({ ...prev, displayname: value.name }))
     }, [setValue]);
 
@@ -927,7 +977,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     } else if (edit === true && (lead.error)) {
         return <div>ERROR</div>;
     }
-
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <div className={classes.root}>
@@ -985,18 +1034,45 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                         >
                             <Trans i18nKey={langKeys.back} />
                         </Button>}
-                        {(edit && lead.value?.phone && !isStatusClosed()) && (                
+                        {(edit && !!extraTriggers.phone) &&                      
                             <Button
                                 variant="contained"
                                 color="primary"
                                 startIcon={<WhatsappIcon width={24} style={{ fill: '#FFF' }} />}
                                 onClick={() => {
                                     setOpenDialogTemplate(true);
+                                    setTypeTemplate("HSM");
                                 }}
                             >
                                 <Trans i18nKey={langKeys.send_hsm} />
                             </Button>
-                        )}
+                        }
+                        {(edit && !!extraTriggers.email && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(extraTriggers.email)) &&                    
+                            <Button
+                            variant="contained"
+                            color="primary"
+                            startIcon={<MailIcon width={24} style={{ fill: '#FFF' }} />}
+                            onClick={() => {
+                                setOpenDialogTemplate(true);
+                                setTypeTemplate("MAIL");
+                            }}
+                            >
+                                <Trans i18nKey={langKeys.send_mail} />
+                            </Button>
+                        }
+                        {(edit && !!extraTriggers.phone) &&                      
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                startIcon={<SmsIcon width={24} style={{ fill: '#FFF' }} />}
+                                onClick={() => {
+                                    setOpenDialogTemplate(true);
+                                    setTypeTemplate("SMS");
+                                }}
+                            >
+                                <Trans i18nKey={langKeys.send_sms} />
+                            </Button>
+                        }
                         {(edit && lead.value && !isStatusClosed()) && (
                             <Button
                                 variant="contained"
@@ -1039,7 +1115,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 <FieldEdit
                                     label={t(langKeys.email)}
                                     className={classes.field}
-                                    onChange={(value) => setValue('email', value)}
+                                    onChange={(value) => {setValue('email', value);setExtraTriggers({...extraTriggers, email: value || ''})}}
                                     valueDefault={getValues('email')}
                                     error={errors?.email?.message}
                                     InputProps={{
@@ -1181,7 +1257,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     fullWidth
                                     defaultCountry={user!.countrycode.toLowerCase()}
                                     className={classes.field}
-                                    onChange={(v: any) => {setValue('phone', v)}}
+                                    onChange={(v: any) => {setValue('phone', v); setExtraTriggers({...extraTriggers, phone: v || ''})}}
                                     error={errors?.phone?.message}
                                     InputProps={{
                                         readOnly: isStatusClosed() || iSProcessLoading(),
@@ -1350,8 +1426,9 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 <DialogSendTemplate
                     openModal={openDialogTemplate}
                     setOpenModal={setOpenDialogTemplate}
-                    persons={[{...lead?.value, phonewhatsapp: lead?.value?.phone}]}
-                />
+                    persons={[{...lead?.value, ...extraTriggers}]}
+                    type={typeTemplate}
+                />      
             </div>
         </MuiPickersUtilsProvider>
     );

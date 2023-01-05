@@ -36,7 +36,8 @@ import { sendHSM } from 'store/inbox/actions';
 
 import { Controller } from "react-hook-form";
 import MuiPhoneNumber from 'material-ui-phone-number';
-import { id } from 'date-fns/locale';
+import MailIcon from '@material-ui/icons/Mail';
+import SmsIcon from '@material-ui/icons/Sms';
 const urgencyLevels = [null, 'LOW', 'MEDIUM', 'HIGH']
 const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'dateactivity', 'leadactivity', 'datenote', 'note', 'custom'].map(x => ({ key: x }))
 
@@ -176,9 +177,11 @@ interface GeneralInformationTabProps {
     domains: IObjectState<IPersonDomains>;
     errors: any;
     control: any;
+    extraTriggers: any;
+    setExtraTriggers: (trig:any) => void;
 }
 
-const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValues, trigger, setValue, domains, errors, control }) => {
+const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValues, trigger, setValue, domains, errors, control, extraTriggers, setExtraTriggers }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const voxiConnection = useSelector(state => state.voximplant.connection);
@@ -445,6 +448,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                                     setValue('personcommunicationchannelowner', value || "")
                                                     setValue('channeltype', value?.domainvalue);
                                                     setValue('phone', value || "");
+                                                    setExtraTriggers({...extraTriggers, phone: value?.replace("+",'') || ""})
                                                 }}
                                                 InputProps={{
                                                     endAdornment: (
@@ -521,6 +525,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         value={getValues("email")}
                                         onChange={e => {
                                             setValue('email', e.target.value)
+                                            setExtraTriggers({...extraTriggers, email: e.target.value || ""})
                                             trigger("email")
                                         }}
                                     />
@@ -1684,9 +1689,10 @@ interface DialogSendTemplateProps {
     setOpenModal: (param: any) => void;
     openModal: boolean;
     persons: IPerson[];
+    type: "HSM" | "MAIL" | "SMS";
 }
 
-const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, openModal, persons }) => {
+const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, openModal, persons, type }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitClose, setWaitClose] = useState(false);
@@ -1697,13 +1703,20 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
     const [personWithData, setPersonWithData] = useState<IPerson[]>([])
     const domains = useSelector(state => state.person.editableDomains);
 
-    const title = t(langKeys.send_hsm);
+    const title = useMemo(() => {
+        switch (type) {
+            case "HSM": return t(langKeys.send_hsm);
+            case "SMS": return t(langKeys.send_sms);
+            case "MAIL": return t(langKeys.send_mail);
+            default: return '-';
+        }
+    }, [type]);
     const { control, register, handleSubmit, setValue, getValues, trigger, reset, formState: { errors } } = useForm<any>({
         defaultValues: {
             hsmtemplateid: 0,
             observation: '',
-            communicationchannelid: channelList?.length === 1 ? channelList[0].communicationchannelid : 0,
-            communicationchanneltype: channelList?.length === 1 ? channelList[0].type : "",
+            communicationchannelid: type === "HSM" ? (channelList?.length === 1 ? channelList[0].communicationchannelid : 0) : 0,
+            communicationchanneltype: type === "HSM" ? (channelList?.length === 1 ? channelList[0].type : "") : '',
             variables: []
         }
     });
@@ -1716,7 +1729,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
     useEffect(() => {
         if (waitClose) {
             if (!sendingRes.loading && !sendingRes.error) {
-                const message = t(langKeys.successful_send_hsm)
+                const message = type === "HSM" ? t(langKeys.successful_send_hsm) : (type === "SMS" ? t(langKeys.successful_send_sms) : t(langKeys.successful_send_mail));
                 dispatch(showSnackbar({ show: true, severity: "success", message }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
@@ -1733,10 +1746,10 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
 
     useEffect(() => {
         if (!domains.error && !domains.loading) {
-            setTemplatesList(domains?.value?.templates?.filter(x => (x.type === "HSM" )) || []);
-            setChannelList(domains?.value?.channels?.filter(x => x.type.includes("WHA")) || []);
+            setTemplatesList(domains?.value?.templates?.filter(x => (type !== "MAIL" ? x.type === type : (x.type === type || x.type === "HTML"))) || []);
+            setChannelList(domains?.value?.channels?.filter(x => x.type.includes(type === "HSM" ? "WHA" : type)) || []);
         }
-    }, [domains])
+    }, [domains, type])
 
     useEffect(() => {
         if (openModal) {
@@ -1745,14 +1758,24 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
                 hsmtemplateid: 0,
                 hsmtemplatename: '',
                 variables: [],
-                communicationchannelid: (channelList?.length === 1 ? channelList[0].communicationchannelid : 0),
-                communicationchanneltype: (channelList?.length === 1 ? channelList[0].type : "")
+                communicationchannelid: type === "HSM" ? (channelList?.length === 1 ? channelList[0].communicationchannelid : 0) : 0,
+                communicationchanneltype: type === "HSM" ? (channelList?.length === 1 ? channelList[0].type : "") : ''
             })
             register('hsmtemplateid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
 
-            register('communicationchannelid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+            if (type === "HSM") {
+                register('communicationchannelid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+            } else {
+                register('communicationchannelid');
+            }
 
-            setPersonWithData(persons.filter(x => !!x.phonewhatsapp))
+            if (type === "MAIL") {
+                setPersonWithData(persons.filter(x => x.email && x.email.length > 0))
+            } else if (type === "HSM") {
+                setPersonWithData(persons.filter(x => !!x.phonewhatsapp))
+            } else {
+                setPersonWithData(persons.filter(x => x.phone && x.phone.length > 0))
+            }
         } else {
             setWaitClose(false);
         }
@@ -1784,11 +1807,11 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             communicationchannelid: data.communicationchannelid,
             communicationchanneltype: data.communicationchanneltype,
             platformtype: data.communicationchanneltype,
-            type: "HSM",
+            type,
             shippingreason: "PERSON",
             listmembers: personWithData.map(person => ({
                 personid: person.personid,
-                phone: person.phonewhatsapp || "",
+                phone: person.phone?.replace("+",'') || "",
                 firstname: person.firstname || "",
                 email: person.email || "",
                 lastname: person.lastname,
@@ -1805,7 +1828,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
     });
 
     useEffect(() => {
-        if (channelList.length === 1) {
+        if (channelList.length === 1 && type === "HSM") {
             setValue("communicationchannelid", channelList[0].communicationchannelid || 0)
             setValue('communicationchanneltype', channelList[0].type || "");
             trigger("communicationchannelid")
@@ -1822,21 +1845,23 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             handleClickButton2={onSubmit}
             button2Type="submit"
         >
-            <div className="row-zyx">
-                <FieldSelect
-                    label={t(langKeys.channel)}
-                    className="col-12"
-                    valueDefault={getValues('communicationchannelid')}
-                    onChange={value => {
-                        setValue('communicationchannelid', value?.communicationchannelid || 0);
-                        setValue('communicationchanneltype', value?.type || "");
-                    }}
-                    error={errors?.communicationchannelid?.message}
-                    data={channelList}
-                    optionDesc="communicationchanneldesc"
-                    optionValue="communicationchannelid"
-                />
-            </div>
+            {type === "HSM" && (
+                <div className="row-zyx">
+                    <FieldSelect
+                        label={t(langKeys.channel)}
+                        className="col-12"
+                        valueDefault={getValues('communicationchannelid')}
+                        onChange={value => {
+                            setValue('communicationchannelid', value?.communicationchannelid || 0);
+                            setValue('communicationchanneltype', value?.type || "");
+                        }}
+                        error={errors?.communicationchannelid?.message}
+                        data={channelList}
+                        optionDesc="communicationchanneldesc"
+                        optionValue="communicationchannelid"
+                    />
+                </div>
+            )}
             <div className="row-zyx">
                 <FieldSelect
                     label={t(langKeys.template)}
@@ -1849,12 +1874,22 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
                     optionValue="id"
                 />
             </div>
-            <FieldEditMulti
-                label={t(langKeys.message)}
-                valueDefault={bodyMessage}
-                disabled={true}
-                rows={1}
-            />
+            {type === 'MAIL' &&
+                <div style={{ overflow: 'scroll' }}>
+                    <React.Fragment>
+                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.message)}</Box>
+                        <div dangerouslySetInnerHTML={{ __html: bodyMessage }} />
+                    </React.Fragment>
+                </div>
+            }
+            {type !== 'MAIL' &&
+                <FieldEditMulti
+                    label={t(langKeys.message)}
+                    valueDefault={bodyMessage}
+                    disabled={true}
+                    rows={1}
+                />
+            }
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
                 {fields.map((item: Dictionary, i) => (
                     <div key={item.id}>
@@ -1913,7 +1948,11 @@ const PersonDetail2: FC<{ person: any;}> = ({ person }) => {
     const [payloadTemp, setpayloadTemp] = useState<any>(null)
     const [valuestosend, setvaluestosend] = useState<any>(null)
     const [openDialogTemplate, setOpenDialogTemplate] = useState(false)
-    const match = useRouteMatch<{ id: string, columnid?: string, columnuuid?: string }>();
+    const [typeTemplate, setTypeTemplate] = useState<"HSM" | "SMS" | "MAIL">('MAIL');
+    const [extraTriggers, setExtraTriggers] = useState({
+        phone: person?.phone || '',
+        email: person?.email || '',
+    })
 
     const user = useSelector(state => state.login.validateToken.user);
 
@@ -2162,16 +2201,43 @@ const PersonDetail2: FC<{ person: any;}> = ({ person }) => {
                 <div style={{ display: 'flex', gap: '10px' }}>
                     {!!person.personid &&
                         <>
-                            {!!person.phone &&                             
+                            {!!extraTriggers.phone &&                      
                                 <Button
                                     variant="contained"
                                     color="primary"
                                     startIcon={<WhatsappIcon width={24} style={{ fill: '#FFF' }} />}
                                     onClick={() => {
                                         setOpenDialogTemplate(true);
+                                        setTypeTemplate("HSM");
                                     }}
                                 >
                                     <Trans i18nKey={langKeys.send_hsm} />
+                                </Button>
+                            }
+                            {(!!extraTriggers.email && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(extraTriggers.email)) &&                    
+                                <Button
+                                variant="contained"
+                                color="primary"
+                                startIcon={<MailIcon width={24} style={{ fill: '#FFF' }} />}
+                                onClick={() => {
+                                    setOpenDialogTemplate(true);
+                                    setTypeTemplate("MAIL");
+                                }}
+                                >
+                                    <Trans i18nKey={langKeys.send_mail} />
+                                </Button>
+                            }
+                            {!!extraTriggers.phone &&                      
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    startIcon={<SmsIcon width={24} style={{ fill: '#FFF' }} />}
+                                    onClick={() => {
+                                        setOpenDialogTemplate(true);
+                                        setTypeTemplate("SMS");
+                                    }}
+                                >
+                                    <Trans i18nKey={langKeys.send_sms} />
                                 </Button>
                             }
                             <Button
@@ -2278,6 +2344,8 @@ const PersonDetail2: FC<{ person: any;}> = ({ person }) => {
                             domains={domains}
                             errors={errors}
                             control={control}
+                            extraTriggers={extraTriggers}
+                            setExtraTriggers={setExtraTriggers}
                         />
                     </TabPanel>
                     <TabPanel value="1" index={tabIndex}>
@@ -2428,12 +2496,13 @@ const PersonDetail2: FC<{ person: any;}> = ({ person }) => {
                     trigger("occupation")
                     dispatch(getChannelListByPerson(getChannelListByPersonBody(person.personid)));
                 }}
-            />            
+            />             
             <DialogSendTemplate
                 openModal={openDialogTemplate}
                 setOpenModal={setOpenDialogTemplate}
-                persons={[person]}
-            />
+                persons={[getValues()]}
+                type={typeTemplate}
+            />      
         </div>
     );
 }
@@ -2458,8 +2527,8 @@ const PersonDetail: FC = () => {
     }, [person]);
 
     useEffect(() => {
-        if (waitLoading) {
-            if (!executeResult.loading && !executeResult.error && executeResult.data.length) {
+        if (waitLoading && !executeResult.loading) {
+            if (!executeResult.error && executeResult.data.length) {
                 setperson(executeResult.data[0]);
                 dispatch(showBackdrop(false));
                 setWaitLoading(false);
