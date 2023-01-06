@@ -219,11 +219,11 @@ const PostCreator: FC = () => {
                 </div>
             </>
         )
-    } else if (viewSelected === "postcreator_posthistory") {
+    } else if (viewSelected === "postcreator_posthistory" || viewSelected === "postcreator_posthistory_" || viewSelected === "postcreator_posthistory_0" || viewSelected === "postcreator_posthistory_1" || viewSelected === "postcreator_posthistory_2") {
         return (
             <>
                 <div style={{ width: '100%' }}>
-                    <PostCreatorHistory setViewSelected={setViewSelected} />
+                    <PostCreatorHistory setViewSelected={setViewSelected} modeSelected={viewSelected.split("_")[2] ? parseInt(viewSelected.split("_")[2]) : 0} />
                 </div>
             </>
         )

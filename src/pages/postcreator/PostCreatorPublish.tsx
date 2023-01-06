@@ -56,6 +56,28 @@ const useStyles = makeStyles((theme) => ({
             color: "#FFFFFF",
         },
     },
+    buttonMedia: {
+        alignItems: 'center',
+        backgroundColor: "#762AA9",
+        color: "#FFFFFF",
+        display: 'flex',
+        fontSize: '14px',
+        fontWeight: 500,
+        marginBottom: '10px',
+        marginLeft: '4px',
+        marginRight: '4px',
+        padding: 12,
+        textTransform: 'initial',
+        width: 'auto',
+        '&:disabled': {
+            backgroundColor: "#EBEAEA",
+            color: "#757575",
+        },
+        '&:hover': {
+            backgroundColor: "#762AA9",
+            color: "#FFFFFF",
+        },
+    },
     containerDetail: {
         background: '#fff',
         padding: theme.spacing(2),
@@ -171,6 +193,8 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
     const [allowedChannel, setAllowedChannel] = useState<Dictionary[]>([]);
     const [customizeType, setCustomizeType] = useState('Facebook');
     const [fileAttachment, setFileAttachment] = useState<File | null>(null);
+    const [filteredFeelings, setFilteredFeelings] = useState<any>([]);
+    const [mediaDisabled, setMediaDisabled] = useState(false);
     const [modalData, setModalData] = useState<any>(null);
     const [modalType, setModalType] = useState('');
     const [openModal, setOpenModal] = useState(false);
@@ -181,9 +205,8 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
     const [showTikTok, setShowTikTok] = useState(false);
     const [showTwitter, setShowTwitter] = useState(false);
     const [showYouTube, setShowYouTube] = useState(false);
+    const [tikTokEnabled] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
-    const [filteredFeelings, setFilteredFeelings] = useState<any>([]);
-
 
     const { register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm({
         defaultValues: {
@@ -221,9 +244,9 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
         register('texttitle', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [register]);
 
-    const onModalSuccess = () => {
+    const onModalSuccess = (savemode: string) => {
         setOpenModal(false);
-        setViewSelected('postcreator_posthistory');
+        setViewSelected(`postcreator_posthistory_${savemode}`);
     }
 
     const handleDeleteMedia = async () => {
@@ -288,6 +311,10 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
             }
         }
     }, [waitUploadFile, uploadResult])
+
+    useEffect(() => {
+        setMediaDisabled((waitUploadFile || fileAttachment !== null) || (pageMode === 'IMAGE' ? (getValues('mediadata') || []).length >= 3 : (getValues('mediadata') || []).length >= 1));
+    }, [waitUploadFile, fileAttachment, pageMode, getValues('mediadata')])
 
     useEffect(() => {
         setValue('mediatype', pageMode);
@@ -527,12 +554,11 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                                 type="file"
                                             />
                                             <Button
-                                                className={classes.button}
+                                                className={classes.buttonMedia}
                                                 color="primary"
-                                                disabled={(waitUploadFile || fileAttachment !== null) || (pageMode === 'IMAGE' ? (getValues('mediadata') || []).length >= 3 : (getValues('mediadata') || []).length >= 1)}
+                                                disabled={mediaDisabled}
                                                 onClick={onClickAttachment}
-                                                startIcon={pageMode === 'IMAGE' ? <CameraAltOutlined color="secondary" /> : <PlayCircleOutlineSharp color="secondary" />}
-                                                style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                                startIcon={pageMode === 'IMAGE' ? <CameraAltOutlined style={{ color: (mediaDisabled ? "#757575" : "#FFFFFF") }} /> : <PlayCircleOutlineSharp style={{ color: (mediaDisabled ? "#757575" : "#FFFFFF") }} />}
                                                 variant="contained"
                                             >{pageMode === 'IMAGE' ? t(langKeys.postcreator_publish_addimage) : t(langKeys.postcreator_publish_addvideo)}
                                             </Button>
@@ -579,7 +605,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         disabled={customizeType === 'LinkedIn'}
                                     >{t(langKeys.postcreator_publish_linkedin)}
                                     </Button>}
-                                    {showTikTok && <Button
+                                    {(showTikTok && tikTokEnabled) && <Button
                                         className={classes.buttonSocial}
                                         variant="contained"
                                         color="primary"
@@ -773,10 +799,10 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                                 description: t(langKeys.postcreator_publish_mockupyoutube),
                                                 value: "YOUTUBEPREVIEW",
                                             },
-                                            {
+                                            /*{
                                                 description: t(langKeys.postcreator_publish_mockuptiktok),
                                                 value: "TIKTOKPREVIEW",
-                                            },
+                                            },*/
                                         ]}
                                         optionDesc="description"
                                         optionValue="value"
@@ -804,7 +830,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                             </div>
                                         </div>
                                         {((pageMode === 'IMAGE' || pageMode === 'VIDEO') && (getValues('mediadata') || []).length > 0) && <div style={{ maxWidth: '100%' }}>
-                                            <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto' }} src={getValues('mediadata')[0].thumbnail}></img>
+                                            <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto', objectFit: 'cover' }} src={getValues('mediadata')[0].thumbnail}></img>
                                         </div>}
                                         <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginLeft: 'auto', marginRight: 'auto', marginBottom: '10px', marginTop: '6px' }}>
                                             <div style={{ width: '33%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ThumbUpOutlined style={{ marginRight: '6px' }} /><b>{t(langKeys.postcreator_publish_facebookmockup_like)}</b></div>
@@ -826,7 +852,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                             </div>
                                         </div>
                                         {((pageMode === 'IMAGE' || pageMode === 'VIDEO') && (getValues('mediadata') || []).length > 0) && <div style={{ maxWidth: '100%' }}>
-                                            <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto' }} src={getValues('mediadata')[0].thumbnail}></img>
+                                            <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto', objectFit: 'cover' }} src={getValues('mediadata')[0].thumbnail}></img>
                                         </div>}
                                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <img loading='eager' alt="" style={{ maxWidth: '100%', margin: 6 }} src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/334a434c-c07c-4904-8c49-9e425c7b3f8d/InstagramButton1.png"></img>
@@ -857,7 +883,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                                     </div>
                                                 </div>
                                                 {((pageMode === 'IMAGE' || pageMode === 'VIDEO') && (getValues('mediadata') || []).length > 0) && <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
-                                                    <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '200px', borderRadius: '8px' }} src={getValues('mediadata')[0].thumbnail}></img>
+                                                    <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '200px', borderRadius: '8px', objectFit: 'cover' }} src={getValues('mediadata')[0].thumbnail}></img>
                                                 </div>}
                                                 <div style={{ display: 'flex', justifyContent: 'center' }}>
                                                     <img loading='eager' alt="" style={{ maxWidth: '100%', marginTop: 6, marginLeft: 6, marginRight: 6 }} src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/6c942c26-3778-47fc-9284-7814a7981b1a/TwitterButton1.png"></img>
@@ -885,7 +911,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                             </div>
                                         </div>
                                         {((pageMode === 'IMAGE' || pageMode === 'VIDEO') && (getValues('mediadata') || []).length > 0) && <div style={{ maxWidth: '100%' }}>
-                                            <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto' }} src={getValues('mediadata')[0].thumbnail}></img>
+                                            <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto', objectFit: 'cover' }} src={getValues('mediadata')[0].thumbnail}></img>
                                         </div>}
                                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <img loading='eager' alt="" style={{ maxWidth: '100%', marginLeft: 16, marginBottom: 6 }} src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/60b26115-5c3a-4097-a29c-0db8f0967240/LinkedInButton1.png"></img>
@@ -902,7 +928,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                 {previewType === 'YOUTUBEPREVIEW' && <div className="row-zyx">
                                     <div style={{ width: '90%', marginLeft: 'auto', marginRight: 'auto', marginBottom: '18px', backgroundColor: 'white', border: '1px solid #959595' }}>
                                         {((pageMode === 'IMAGE' || pageMode === 'VIDEO') && (getValues('mediadata') || []).length > 0) && <div style={{ maxWidth: '100%' }}>
-                                            <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto' }} src={getValues('mediadata')[0].thumbnail}></img>
+                                            <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto', objectFit: 'cover' }} src={getValues('mediadata')[0].thumbnail}></img>
                                         </div>}
                                         <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '10px', paddingLeft: '10px', paddingRight: '20px', paddingTop: '10px' }}>
                                             <div style={{ width: '100%', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden', paddingLeft: '6px' }}>
@@ -941,7 +967,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                             </div>
                                         </div>
                                         {((pageMode === 'IMAGE' || pageMode === 'VIDEO') && (getValues('mediadata') || []).length > 0) && <div style={{ maxWidth: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
-                                            <img loading='eager' alt="" style={{ maxWidth: '80%', display: 'flex', width: '80%', maxHeight: '340px', paddingLeft: 'auto', paddingRight: 'auto', borderRadius: '8px' }} src={getValues('mediadata')[0].thumbnail}></img>
+                                            <img loading='eager' alt="" style={{ maxWidth: '80%', display: 'flex', width: '80%', maxHeight: '340px', paddingLeft: 'auto', paddingRight: 'auto', borderRadius: '8px', objectFit: 'cover' }} src={getValues('mediadata')[0].thumbnail}></img>
                                         </div>}
                                     </div>
                                 </div>}
@@ -994,7 +1020,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
     )
 }
 
-const SavePostModalGeneric: FC<{ modalData: any, modalType: string, openModal: boolean, setOpenModal: (param: any) => void, onTrigger: () => void }> = ({ modalData, modalType, openModal, setOpenModal, onTrigger }) => {
+const SavePostModalGeneric: FC<{ modalData: any, modalType: string, openModal: boolean, setOpenModal: (param: any) => void, onTrigger: (savemode: string) => void }> = ({ modalData, modalType, openModal, setOpenModal, onTrigger }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -1006,8 +1032,11 @@ const SavePostModalGeneric: FC<{ modalData: any, modalType: string, openModal: b
     const [modalTime, setModalTime] = useState(null);
 
     const [waitSave, setWaitSave] = useState(false);
+    const [insertMode, setInsertMode] = useState('DRAFT');
 
     const handleInsert = (type: string) => {
+        setInsertMode(type);
+
         if (!modalDate || !modalTime) {
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.posthistory_missingdatetime) }));
             return;
@@ -1031,7 +1060,7 @@ const SavePostModalGeneric: FC<{ modalData: any, modalType: string, openModal: b
             if (!resultSchedule.loading && !resultSchedule.error) {
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
-                onTrigger();
+                onTrigger(insertMode === 'DRAFT' ? '2' : '1');
             } else if (resultSchedule.error) {
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(resultSchedule.code || "error_unexpected_error", { module: t(langKeys.person).toLocaleLowerCase() }) }))
                 dispatch(showBackdrop(false));
