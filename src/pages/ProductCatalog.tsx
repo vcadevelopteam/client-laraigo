@@ -1,74 +1,71 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { Fragment, FC, useEffect, useState, useCallback } from 'react';
-import ClearIcon from '@material-ui/icons/Clear';
-import SaveIcon from '@material-ui/icons/Save';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
-import { useSelector } from 'hooks';
-import { useDispatch } from 'react-redux';
-import { TemplateIcons, TemplateBreadcrumbs, FieldEdit, FieldSelect, TitleDetail, FieldMultiSelectFreeSolo, DialogZyx, IOSSwitch } from 'components';
-import { getValuesFromDomain, getPaginatedProductCatalog, productCatalogIns, productCatalogUpdArray } from 'common/helpers';
-import { Dictionary, MultiData, IFetchData } from "@types";
-import { useTranslation } from 'react-i18next';
-import { langKeys } from 'lang/keys';
-import { useForm } from 'react-hook-form';
-import { getCollectionPaginated, getMultiCollection, execute, resetAllMain, setMemoryTable, cleanMemoryTable, uploadFile, resetCollectionPaginated } from 'store/main/actions';
-import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { Search as SearchIcon, AddCircle, FileCopy, GetApp, Close, Delete } from '@material-ui/icons';
-import { IconButton, CircularProgress, FormControlLabel } from '@material-ui/core';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
-import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
-import { formatNumber } from 'common/helpers';
-import { importXml } from 'store/product/actions';
+import Button from '@material-ui/core/Button';
+import ClearIcon from '@material-ui/icons/Clear';
+import Paper from '@material-ui/core/Paper';
+import React, { Fragment, FC, useEffect, useState, useCallback } from 'react';
+import SaveIcon from '@material-ui/icons/Save';
 import TablePaginated from 'components/fields/table-paginated';
+
+import { Dictionary, MultiData, IFetchData } from "@types";
 import { DownloadIcon } from 'icons';
+import { formatNumber } from 'common/helpers';
+import { getCollectionPaginated, getMultiCollection, execute, resetAllMain, setMemoryTable, cleanMemoryTable, uploadFile, resetCollectionPaginated } from 'store/main/actions';
+import { getValuesFromDomain, getPaginatedProductCatalog } from 'common/helpers';
+import { IconButton, CircularProgress, FormControlLabel } from '@material-ui/core';
+import { importXml } from 'store/product/actions';
+import { langKeys } from 'lang/keys';
+import { makeStyles } from '@material-ui/core/styles';
+import { Search as SearchIcon, AddCircle, FileCopy, GetApp, Close, Delete } from '@material-ui/icons';
+import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
+import { TemplateIcons, TemplateBreadcrumbs, FieldEdit, FieldSelect, TitleDetail, FieldMultiSelectFreeSolo, DialogZyx, IOSSwitch } from 'components';
+import { useDispatch } from 'react-redux';
+import { useForm } from 'react-hook-form';
+import { useSelector } from 'hooks';
+import { useTranslation } from 'react-i18next';
 
 interface RowSelected {
-    row: Dictionary | null;
     edit: boolean;
+    row: Dictionary | null;
 }
 
 interface DetailProps {
-    data: RowSelected;
-    setViewSelected: (view: string) => void;
-    multiData: MultiData[];
-    fetchData?: () => void;
     arrayBread: any;
+    data: RowSelected;
+    fetchData?: () => void;
+    multiData: MultiData[];
+    setViewSelected: (view: string) => void;
 }
 
-const selectionKey = 'productcatalogid';
-
 const useStyles = makeStyles((theme) => ({
-    fieldsfilter: {
-        width: 220,
-    },
-    containerDetail: {
-        marginTop: theme.spacing(2),
-        padding: theme.spacing(2),
-        background: '#fff',
-    },
-    subtitle: {
-        fontWeight: "bold",
-        fontSize: "20px",
-        paddingBottom: "10px",
-    },
-    subtitle2: {
-        fontWeight: "bold",
-        fontSize: "15px",
-        paddingBottom: "10px",
-    },
     button: {
         marginRight: theme.spacing(2),
     },
+    containerDetail: {
+        background: '#fff',
+        marginTop: theme.spacing(2),
+        padding: theme.spacing(2),
+    },
+    fieldsfilter: {
+        width: 220,
+    },
     labellink: {
         color: '#7721ad',
+        cursor: 'pointer',
         textDecoration: 'underline',
-        cursor: 'pointer'
+    },
+    subtitle: {
+        fontSize: "20px",
+        fontWeight: "bold",
+        paddingBottom: "10px",
+    },
+    subtitle2: {
+        fontSize: "15px",
+        fontWeight: "bold",
+        paddingBottom: "10px",
     },
 }));
-
-const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
 
 const PRODUCTCATALOG = 'PRODUCTCATALOG';
 const ProductCatalog: FC = () => {
@@ -84,39 +81,18 @@ const ProductCatalog: FC = () => {
     const user = useSelector(state => state.login.validateToken.user);
     const superadmin = ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '');
 
+    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null });
     const [openModal, setOpenModal] = useState(false);
+    const [pageCount, setPageCount] = useState(0);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
+    const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
+    const [selectedRows, setSelectedRows] = useState<any>({});
+    const [totalrow, settotalrow] = useState(0);
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
-    const [selectedRows, setSelectedRows] = useState<any>({});
-    const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
-    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null });
-    const [pageCount, setPageCount] = useState(0);
-    const [totalrow, settotalrow] = useState(0);
 
-    const arrayBread = [
-        { id: "view-1", name: t(langKeys.productcatalog) },
-    ];
-
-    const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
-        setfetchDataAux({ ...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts } });
-        dispatch(getCollectionPaginated(getPaginatedProductCatalog(
-            {
-                startdate: daterange?.startDate!,
-                enddate: daterange?.endDate!,
-                sorts: sorts,
-                filters: filters,
-                take: pageSize,
-                skip: pageIndex * pageSize,
-            }
-        )));
-    };
-
-    const onModalSuccess = () => {
-        setOpenModal(false);
-        fetchData(fetchDataAux);
-        setViewSelected("view-1");
-    }
+    const arrayBread = [{ id: "view-1", name: t(langKeys.productcatalog) }];
+    const selectionKey = 'productcatalogid';
 
     useEffect(() => {
         dispatch(resetCollectionPaginated());
@@ -124,7 +100,6 @@ const ProductCatalog: FC = () => {
 
         dispatch(getMultiCollection([
             getValuesFromDomain("ESTADOGENERICO"),
-            getValuesFromDomain("CATALOGOPRODUCTOCATEGORIA"),
         ]));
 
         dispatch(setMemoryTable({
@@ -137,6 +112,24 @@ const ProductCatalog: FC = () => {
             dispatch(resetAllMain());
         };
     }, []);
+
+    const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
+        setfetchDataAux({ ...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts } });
+        dispatch(getCollectionPaginated(getPaginatedProductCatalog({
+            enddate: daterange?.endDate!,
+            filters: filters,
+            skip: pageIndex * pageSize,
+            sorts: sorts,
+            startdate: daterange?.startDate!,
+            take: pageSize,
+        })));
+    };
+
+    const onModalSuccess = () => {
+        setOpenModal(false);
+        fetchData(fetchDataAux);
+        setViewSelected("view-1");
+    }
 
     useEffect(() => {
         if (!mainPaginated.loading && !mainPaginated.error) {
@@ -188,13 +181,13 @@ const ProductCatalog: FC = () => {
 
     const handleBulkDelete = (dataSelected: Dictionary[]) => {
         const callback = () => {
-            dispatch(execute(productCatalogUpdArray((dataSelected.reduce((ad: any[], d: any) => {
+            /*dispatch(execute(productCatalogUpdArray((dataSelected.reduce((ad: any[], d: any) => {
                 ad.push({
                     ...d,
                     status: 'ELIMINADO',
                 })
                 return ad;
-            }, [])), user?.usr || '')));
+            }, [])), user?.usr || '')));*/
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -208,7 +201,7 @@ const ProductCatalog: FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(productCatalogIns({ ...row, id: row.productcatalogid, operation: 'DELETE', status: 'ELIMINADO' })));
+            //dispatch(execute(productCatalogIns({ ...row, id: row.productcatalogid, operation: 'DELETE', status: 'ELIMINADO' })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -232,12 +225,9 @@ const ProductCatalog: FC = () => {
                     const row = props.cell.row.original;
                     return (
                         <TemplateIcons
-                            //extraOption={t(langKeys.duplicate)}
-                            //extraFunction={() => handleDuplicate(row)}
-                            //ExtraICon={() => <DuplicateIcon width={28} style={{ fill: '#7721AD' }} />}
-                            viewFunction={() => handleView(row)}
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
+                            viewFunction={() => handleView(row)}
                         />
                     )
                 }
@@ -371,79 +361,77 @@ const ProductCatalog: FC = () => {
         if (mainPaginated.error) {
             return <h1>ERROR</h1>;
         }
-
         return (
             <div style={{ width: "100%" }}>
                 <ImportXmlModal
+                    onTrigger={onModalSuccess}
                     openModal={openModal}
                     setOpenModal={setOpenModal}
-                    onTrigger={onModalSuccess}
                 />
-                <Fragment>
-                    <TablePaginated
-                        ButtonsElement={() => (
-                            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                                    startIcon={<Delete style={{ color: 'white' }} />}
-                                    onClick={() => {
-                                        handleBulkDelete(rowWithDataSelected);
-                                    }}
-                                >
-                                    {t(langKeys.delete)}
-                                </Button>
-                                <Button
-                                    disabled={mainPaginated.loading}
-                                    variant="contained"
-                                    color="primary"
-                                    style={{ width: 120, backgroundColor: "#55BD84" }}
-                                    startIcon={<SearchIcon style={{ color: 'white' }} />}
-                                    onClick={() => { fetchData(fetchDataAux) }}
-                                >{t(langKeys.search)}
-                                </Button>
-                                <Button
-                                    disabled={mainPaginated.loading}
-                                    variant="contained"
-                                    color="primary"
-                                    style={{ width: 120, backgroundColor: "#55BD84" }}
-                                    startIcon={<AddCircle style={{ color: 'white' }} />}
-                                    onClick={() => { setOpenModal(true) }}
-                                >{t(langKeys.import)}
-                                </Button>
-                            </div>
-                        )}
-                        columns={columns}
-                        data={mainPaginated.data}
-                        totalrow={totalrow}
-                        loading={mainPaginated.loading}
-                        pageCount={pageCount}
-                        fetchData={fetchData}
-                        autotrigger={false}
-                        onClickRow={handleEdit}
-                        download={false}
-                        register={superadmin}
-                        handleRegister={handleRegister}
-                        pageSizeDefault={PRODUCTCATALOG === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
-                        initialPageIndex={PRODUCTCATALOG === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
-                        initialStateFilter={PRODUCTCATALOG === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
-                        useSelection={true}
-                        selectionKey={selectionKey}
-                        setSelectedRows={setSelectedRows}
-                    />
-                </Fragment>
+                <TablePaginated
+                    ButtonsElement={() => (
+                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                            <Button
+                                color="primary"
+                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                                onClick={() => {
+                                    handleBulkDelete(rowWithDataSelected);
+                                }}
+                                startIcon={<Delete style={{ color: 'white' }} />}
+                                variant="contained"
+                            >
+                                {t(langKeys.delete)}
+                            </Button>
+                            <Button
+                                color="primary"
+                                disabled={mainPaginated.loading}
+                                onClick={() => { fetchData(fetchDataAux) }}
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                variant="contained"
+                            >{t(langKeys.search)}
+                            </Button>
+                            <Button
+                                color="primary"
+                                disabled={mainPaginated.loading}
+                                onClick={() => { setOpenModal(true) }}
+                                startIcon={<AddCircle style={{ color: 'white' }} />}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                variant="contained"
+                            >{t(langKeys.import)}
+                            </Button>
+                        </div>
+                    )}
+                    autotrigger={false}
+                    columns={columns}
+                    data={mainPaginated.data}
+                    download={false}
+                    fetchData={fetchData}
+                    handleRegister={handleRegister}
+                    loading={mainPaginated.loading}
+                    onClickRow={handleEdit}
+                    pageCount={pageCount}
+                    register={superadmin}
+                    selectionKey={selectionKey}
+                    setSelectedRows={setSelectedRows}
+                    titlemodule={t(langKeys.productcatalog)}
+                    totalrow={totalrow}
+                    useSelection={true}
+                    pageSizeDefault={PRODUCTCATALOG === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                    initialPageIndex={PRODUCTCATALOG === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                    initialStateFilter={PRODUCTCATALOG === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
+                />
             </div>
         )
     }
     else
         return (
             <DetailProductCatalog
-                data={rowSelected}
-                setViewSelected={redirectFunc}
-                multiData={mainResult.multiData.data}
-                fetchData={() => fetchData(fetchDataAux)}
                 arrayBread={arrayBread}
+                data={rowSelected}
+                fetchData={() => fetchData(fetchDataAux)}
+                multiData={mainResult.multiData.data}
+                setViewSelected={redirectFunc}
             />
         )
 }
@@ -698,6 +686,8 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
     const [waitUploadFile, setWaitUploadFile] = useState(false);
     const [labels, setlabels] = useState(row?.labels?.split(',') || []);
 
+    const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
+
     const { trigger, register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             id: row?.productcatalogid || 0,
@@ -780,7 +770,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            dispatch(execute(productCatalogIns(data)));
+            //dispatch(execute(productCatalogIns(data)));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }

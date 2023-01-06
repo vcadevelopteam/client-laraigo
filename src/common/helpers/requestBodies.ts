@@ -3222,11 +3222,11 @@ export const postHistoryIns = ({ communicationchannelid, communicationchanneltyp
     }
 })
 
-export const productCatalogIns = ({ id, productid, title, link, imagelink, additionalimagelink, brand, condition, availability, category, material, color, pattern, currency, price, saleprice, customlabel1, customlabel2, customlabel3, customlabel4, customlabel5, labels, catalogid, catalogname, description, status, type, operation }: Dictionary): IRequestBody => ({
+export const productCatalogIns = ({ metacatalogid, id, productid, title, link, imagelink, additionalimagelink, brand, condition, availability, category, material, color, pattern, currency, price, saleprice, customlabel1, customlabel2, customlabel3, customlabel4, customlabel5, labels, description, status, type, operation }: Dictionary): IRequestBody => ({
     method: "UFN_PRODUCTCATALOG_INS",
     key: "UFN_PRODUCTCATALOG_INS",
     parameters: {
-        id, productid, title, link, imagelink, additionalimagelink, brand, condition, availability, category, material, color, pattern, currency, price, saleprice, customlabel1, customlabel2, customlabel3, customlabel4, customlabel5, labels, catalogid, catalogname, description, status, type, operation,
+        metacatalogid, id, productid, title, link, imagelink, additionalimagelink, brand, condition, availability, category, material, color, pattern, currency, price, saleprice, customlabel1, customlabel2, customlabel3, customlabel4, customlabel5, labels, description, status, type, operation,
     }
 })
 
@@ -3669,11 +3669,10 @@ export const billingPeriodArtificialIntelligenceInsArray = (corpid: number, orgi
         table: JSON.stringify(table),
     },
 });
-export const productCatalogInsArray = (catalogid: string, catalogname: string, table: Dictionary[], username: string): IRequestBody => ({
+export const productCatalogInsArray = (metacatalogid: bigint, table: Dictionary[], username: string): IRequestBody => ({
     method: "UFN_PRODUCTCATALOG_INS_ARRAY",
     parameters: {
-        catalogid: catalogid,
-        catalogname: catalogname,
+        metacatalogid: metacatalogid,
         table: JSON.stringify(table),
         username: username,
     }
