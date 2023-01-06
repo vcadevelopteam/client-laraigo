@@ -19,6 +19,7 @@ import CancelEvent from "pages/CancelEvent";
 const Users = lazy(() => import('pages/Users'));
 const ReportScheduler = lazy(() => import('pages/ReportScheduler'));
 const ProductCatalog = lazy(() => import('pages/ProductCatalog'));
+const CatalogMaster = lazy(() => import('pages/CatalogMaster'));
 const SignIn = lazy(() => import('pages/SignIn'));
 const Properties = lazy(() => import('pages/Properties'));
 const Quickreplies = lazy(() => import('pages/Quickreplies'));
@@ -202,6 +203,7 @@ const RouterApp: FC = () => {
 					<Route exact path={paths.ACTIVATE_USER.path} render={() => <ActivateUser />} />
 					<Route exact path={paths.RECOVER_PASSWORD.path} render={() => <RecoverPassword />} />
 					<ProtectRoute exact path={paths.PRODUCTCATALOG} component={() => (<Layout mainClasses={classes.main}><ProductCatalog /></Layout>)} />
+					<ProtectRoute exact path={paths.CATALOGMASTER} component={() => (<Layout mainClasses={classes.main}><CatalogMaster /></Layout>)} />
 					<ProtectRoute exact path={paths.REPORTS} component={() => (<Layout mainClasses={classes.main}><Reports /></Layout>)} />
 					<ProtectRoute exact path={paths.REPORTSCHEDULER} component={() => (<Layout mainClasses={classes.main}><ReportScheduler /></Layout>)} />
 					<ProtectRoute exact path={paths.TICKETS} component={() => (<Layout mainClasses={classes.main}><Tickets /></Layout>)} />
