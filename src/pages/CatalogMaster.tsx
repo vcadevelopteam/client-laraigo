@@ -99,10 +99,10 @@ const CatalogMaster: FC = () => {
                 accessor: 'catalogtype',
                 Header: t(langKeys.type),
                 NoFilter: true,
-                prefixTranslation: 'catalogmaster_type_',
+                prefixTranslation: 'type_domain_mastercatalog_',
                 Cell: (props: any) => {
                     const { type } = props.cell.row.original;
-                    return (t(`catalogmaster_type_${type}`.toLowerCase()) || "").toUpperCase()
+                    return (t(`type_domain_mastercatalog_${type}`.toLowerCase()) || "").toUpperCase()
                 }
             },
             {
