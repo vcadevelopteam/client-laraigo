@@ -320,7 +320,7 @@ const CatalogMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetch
     });
 
     React.useEffect(() => {
-        register('catalogdescription', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('catalogdescription');
         register('catalogid');
         register('catalogname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('catalogtype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -441,7 +441,7 @@ const CatalogMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetch
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
-                    {edit && <div className="row-zyx">
+                    {!row && <div className="row-zyx">
                         <div style={{ textAlign: "center", padding: "20px", color: "#969ea5" }}>{t(langKeys.catalogmaster_businessalert)}</div>
                         <FacebookLogin
                             appId={apiUrls.CATALOGAPP}
@@ -467,7 +467,7 @@ const CatalogMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetch
                         <FieldSelect
                             className="col-12"
                             data={businessList}
-                            disabled={!edit}
+                            disabled={row ? true : false}
                             error={errors?.metabusinessid?.message}
                             label={t(langKeys.catalogmaster_businesschoose)}
                             onChange={(value) => setValue('metabusinessid', value?.metabusinessid || 0)}
@@ -498,7 +498,7 @@ const CatalogMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetch
                         <FieldSelect
                             className="col-6"
                             data={domainCatalogType}
-                            disabled={!edit}
+                            disabled={row ? true : false}
                             error={errors?.catalogtype?.message}
                             label={t(langKeys.type)}
                             onChange={(value) => setValue('catalogtype', value?.domainvalue || '')}
