@@ -496,6 +496,7 @@ const translation: LangKeys = {
 
   type_domain_ninguno: 'None',
   type_domain_bot: 'Bot domain',
+  propertyiainiciodelimit: "Define the AI ​​at the beginning of the conversation if it will be active or inactive.",
 
   type_domain_mastercatalog_productos: "Products",
   type_domain_mastercatalog_menu: "Shop menu and items",
