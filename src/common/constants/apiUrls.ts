@@ -1,4 +1,4 @@
-const ENV = "CLARO";
+const ENV = "DEVELOP";
 
 const APIS_URL = {
     DEVELOP: {

@@ -489,6 +489,7 @@ const translation: LangKeys = {
 
   type_domain_ninguno: 'None',
   type_domain_bot: 'Bot domain',
+  propertyiainiciodelimit: "Define the AI ​​at the beginning of the conversation if it will be active or inactive.",
 
   type_gender_femenino: 'Female',
   type_gender_masculino: 'Male',
@@ -4114,7 +4115,7 @@ const translation: LangKeys = {
   channel_tiktok: 'TikTok',
   channel_youtube: 'YouTube',
   channel_linkedin: 'LinkedIn',
-  channel_chatweb: 'Web Chat',
+  channel_chatweb: 'Chat Web',
   channel_email: 'Email',
   uniquecontactsreport: "Unique Contacts and Number of Conversations",
   report_uniquecontactsreport: "Report Unique Contacts and Number of Conversations",
