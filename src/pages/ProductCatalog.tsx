@@ -4,15 +4,16 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import ClearIcon from '@material-ui/icons/Clear';
 import Paper from '@material-ui/core/Paper';
-import React, { Fragment, FC, useEffect, useState, useCallback } from 'react';
+import React, { FC, useEffect, useState, useCallback } from 'react';
+import RefreshIcon from '@material-ui/icons/Refresh';
 import SaveIcon from '@material-ui/icons/Save';
 import TablePaginated from 'components/fields/table-paginated';
 
 import { Dictionary, MultiData, IFetchData } from "@types";
 import { DownloadIcon } from 'icons';
 import { formatNumber } from 'common/helpers';
-import { getCollectionPaginated, getMultiCollection, execute, resetAllMain, setMemoryTable, cleanMemoryTable, uploadFile, resetCollectionPaginated } from 'store/main/actions';
-import { getValuesFromDomain, getPaginatedProductCatalog } from 'common/helpers';
+import { getCollectionPaginated, getMultiCollection, resetAllMain, setMemoryTable, cleanMemoryTable, uploadFile, resetCollectionPaginated } from 'store/main/actions';
+import { getValuesFromDomain, getPaginatedProductCatalog, metaCatalogSel } from 'common/helpers';
 import { IconButton, CircularProgress, FormControlLabel } from '@material-ui/core';
 import { importXml } from 'store/product/actions';
 import { langKeys } from 'lang/keys';
@@ -81,7 +82,9 @@ const ProductCatalog: FC = () => {
     const user = useSelector(state => state.login.validateToken.user);
     const superadmin = ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '');
 
+    const [catalogId, setCatalogId] = useState(0);
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null });
+    const [metaCatalogList, setMetaCatalogList] = useState<Dictionary[]>([]);
     const [openModal, setOpenModal] = useState(false);
     const [pageCount, setPageCount] = useState(0);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
@@ -90,6 +93,7 @@ const ProductCatalog: FC = () => {
     const [totalrow, settotalrow] = useState(0);
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
+    const [waitSynchronize, setWaitSynchronize] = useState(false);
 
     const arrayBread = [{ id: "view-1", name: t(langKeys.productcatalog) }];
     const selectionKey = 'productcatalogid';
@@ -100,6 +104,11 @@ const ProductCatalog: FC = () => {
 
         dispatch(getMultiCollection([
             getValuesFromDomain("ESTADOGENERICO"),
+            getValuesFromDomain("PRODUCTODISPONIBILIDAD"),
+            getValuesFromDomain("PRODUCTOMONEDA"),
+            getValuesFromDomain("PRODUCTOGENERO"),
+            getValuesFromDomain("PRODUCTOCONDICION"),
+            metaCatalogSel({ metabusinessid: 0, id: 0 }),
         ]));
 
         dispatch(setMemoryTable({
@@ -164,6 +173,14 @@ const ProductCatalog: FC = () => {
         }
     }, [executeResult, waitSave])
 
+    useEffect(() => {
+        if (mainResult.multiData.data.length > 0) {
+            if (mainResult.multiData.data[5] && mainResult.multiData.data[5].success) {
+                setMetaCatalogList(mainResult.multiData.data[5].data || []);
+            }
+        }
+    }, [mainResult.multiData.data])
+
     const handleRegister = () => {
         setViewSelected("view-2");
         setRowSelected({ row: null, edit: true });
@@ -213,11 +230,24 @@ const ProductCatalog: FC = () => {
         }))
     }
 
+    const handleSynchronize = (metabusinessid: any) => {
+        const callback = () => {
+            //dispatch(catalogSynchroCatalog({ metabusinessid: metabusinessid }));
+            dispatch(showBackdrop(true));
+            setWaitSynchronize(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.productcatalog_synchroalert),
+            callback
+        }))
+    }
+
     const columns = React.useMemo(
         () => [
             {
                 accessor: 'productcatalogid',
-                NoFilter: true,
                 isComponent: true,
                 minWidth: 60,
                 width: '1%',
@@ -233,125 +263,139 @@ const ProductCatalog: FC = () => {
                 }
             },
             {
-                Header: t(langKeys.title),
-                accessor: 'title'
+                accessor: 'productid',
+                Header: t(langKeys.productid),
             },
             {
-                Header: t(langKeys.description),
+                accessor: 'catalogid',
+                Header: t(langKeys.catalogid),
+            },
+            {
+                accessor: 'catalogname',
+                Header: t(langKeys.catalogname),
+            },
+            {
+                accessor: 'title',
+                Header: t(langKeys.title),
+            },
+            {
                 accessor: 'description',
+                Header: t(langKeys.description),
                 Cell: (props: any) => {
                     const { description } = props.cell.row.original;
-                    return description?.substring(0, 50) + "... "
+                    return description?.substring(0, 50) + "... ";
                 }
             },
             {
-                Header: t(langKeys.brand),
-                accessor: 'brand'
-            },
-            {
+                accessor: 'availability',
                 Header: t(langKeys.availability),
-                accessor: 'availability'
+                prefixTranslation: 'productcatalog_domain_availability_',
+                Cell: (props: any) => {
+                    const { availability } = props.cell.row.original;
+                    return (t(`productcatalog_domain_availability_${availability}`.toLowerCase()) || "").toUpperCase()
+                }
             },
             {
-                Header: t(langKeys.condition),
-                accessor: 'condition'
-            },
-            {
-                Header: t(langKeys.website),
                 accessor: 'link',
+                Header: t(langKeys.website),
                 NoFilter: true,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    return (
-                        <label
-                            className={classes.labellink}
-                            onClick={(e) => { e.stopPropagation(); window.open(`${row.link}`, '_blank')?.focus() }}
-                        >
-                            {row.link ? t(langKeys.website) : ""}
-                        </label>
-                    )
+                    return (<label
+                        className={classes.labellink}
+                        onClick={(e) => { e.stopPropagation(); window.open(`${row.link}`, '_blank')?.focus() }}
+                    >{row.link ? t(langKeys.website) : ""}
+                    </label>)
                 }
             },
             {
-                Header: t(langKeys.image),
-                accessor: 'imagelink',
-                NoFilter: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <label
-                            className={classes.labellink}
-                            onClick={(e) => { e.stopPropagation(); window.open(`${row.imagelink}`, '_blank')?.focus() }}
-                        >
-                            {row.imagelink ? t(langKeys.imagelink) : ""}
-                        </label>
-                    )
-                }
-            },
-            {
+                accessor: 'currency',
                 Header: t(langKeys.currency),
-                accessor: 'currency'
+                prefixTranslation: 'productcatalog_domain_currency_',
+                Cell: (props: any) => {
+                    const { currency } = props.cell.row.original;
+                    return (t(`productcatalog_domain_currency_${currency}`.toLowerCase()) || "").toUpperCase()
+                }
             },
             {
-                Header: t(langKeys.productcatalogunitprice),
                 accessor: 'price',
-                type: 'number',
+                Header: t(langKeys.productcatalogunitprice),
                 sortType: 'number',
+                type: 'number',
                 Cell: (props: any) => {
                     const { price } = props.cell.row.original;
                     return formatNumber(price || 0);
                 }
             },
             {
-                Header: t(langKeys.saleprice),
                 accessor: 'saleprice',
-                type: 'number',
+                Header: t(langKeys.saleprice),
                 sortType: 'number',
+                type: 'number',
                 Cell: (props: any) => {
                     const { saleprice } = props.cell.row.original;
                     return formatNumber(saleprice || 0);
                 }
             },
             {
-                Header: t(langKeys.catalogname),
-                accessor: 'catalogname'
-            },
-            {
-                Header: t(langKeys.catalogid),
-                accessor: 'catalogid'
-            },
-            {
-                Header: t(langKeys.productid),
-                accessor: 'productid'
-            },
-            {
-                Header: t(langKeys.status),
-                accessor: 'status',
-                prefixTranslation: 'status_',
+                accessor: 'imagelink',
+                Header: t(langKeys.image),
+                NoFilter: true,
                 Cell: (props: any) => {
-                    const { status } = props.cell.row.original;
-                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+                    const row = props.cell.row.original;
+                    return (<label
+                        className={classes.labellink}
+                        onClick={(e) => { e.stopPropagation(); window.open(`${row.imagelink}`, '_blank')?.focus() }}
+                    >{row.imagelink ? t(langKeys.imagelink) : ""}
+                    </label>)
                 }
             },
             {
+                accessor: 'gender',
+                Header: t(langKeys.gender),
+                prefixTranslation: 'productcatalog_domain_gender_',
+                Cell: (props: any) => {
+                    const { gender } = props.cell.row.original;
+                    return (t(`productcatalog_domain_gender_${gender}`.toLowerCase()) || "").toUpperCase()
+                }
+            },
+            {
+                accessor: 'condition',
+                Header: t(langKeys.condition),
+                prefixTranslation: 'productcatalog_domain_condition_',
+                Cell: (props: any) => {
+                    const { condition } = props.cell.row.original;
+                    return (t(`productcatalog_domain_condition_${condition}`.toLowerCase()) || "").toUpperCase()
+                }
+            },
+            {
+                accessor: 'customlabel0',
+                Header: `${t(langKeys.customlabel)}${user?.properties?.environment === "CLARO" ? ' 0' : ''}`,
+            },
+            ...(user?.properties?.environment === "CLARO" ? [{
+                accessor: 'customlabel1',
                 Header: `${t(langKeys.customlabel)} 1`,
-                accessor: 'customlabel1'
-            },
-            {
+            }] : []),
+            ...(user?.properties?.environment === "CLARO" ? [{
+                accessor: 'customlabel2',
                 Header: `${t(langKeys.customlabel)} 2`,
-                accessor: 'customlabel2'
-            },
-            {
+            }] : []),
+            ...(user?.properties?.environment === "CLARO" ? [{
+                accessor: 'customlabel3',
                 Header: `${t(langKeys.customlabel)} 3`,
-                accessor: 'customlabel3'
-            },
-            {
+            }] : []),
+            ...(user?.properties?.environment === "CLARO" ? [{
+                accessor: 'customlabel4',
                 Header: `${t(langKeys.customlabel)} 4`,
-                accessor: 'customlabel4'
-            },
+            }] : []),
             {
-                Header: `${t(langKeys.customlabel)} 5`,
-                accessor: 'customlabel5'
+                accessor: 'status',
+                Header: t(langKeys.status),
+                prefixTranslation: 'status_',
+                Cell: (props: any) => {
+                    const { status } = props.cell.row.original;
+                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
+                }
             },
         ],
         []
@@ -379,8 +423,15 @@ const ProductCatalog: FC = () => {
                                 }}
                                 startIcon={<Delete style={{ color: 'white' }} />}
                                 variant="contained"
-                            >
-                                {t(langKeys.delete)}
+                            >{t(langKeys.delete)}
+                            </Button>
+                            <Button
+                                color="primary"
+                                disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                                onClick={() => { }}
+                                startIcon={<DownloadIcon style={{ color: 'white' }} />}
+                                variant="contained"
+                            >{t(langKeys.download)}
                             </Button>
                             <Button
                                 color="primary"
@@ -390,6 +441,25 @@ const ProductCatalog: FC = () => {
                                 style={{ width: 120, backgroundColor: "#55BD84" }}
                                 variant="contained"
                             >{t(langKeys.search)}
+                            </Button>
+                            <FieldSelect
+                                label={t(langKeys.catalogname)}
+                                style={{ width: 300 }}
+                                valueDefault={catalogId}
+                                variant="outlined"
+                                optionDesc="catalogname"
+                                optionValue="metacatalogid"
+                                data={metaCatalogList}
+                                onChange={(value) => { setCatalogId(value?.metacatalogid || 0) }}
+                            />
+                            <Button
+                                color="primary"
+                                disabled={!catalogId}
+                                onClick={() => { handleSynchronize(catalogId) }}
+                                startIcon={<RefreshIcon style={{ color: 'white' }} />}
+                                style={{ width: 140, backgroundColor: "#55BD84" }}
+                                variant="contained"
+                            >{t(langKeys.messagetemplate_synchronize)}
                             </Button>
                             <Button
                                 color="primary"
@@ -407,6 +477,7 @@ const ProductCatalog: FC = () => {
                     data={mainPaginated.data}
                     download={false}
                     fetchData={fetchData}
+                    filterGeneral={true}
                     handleRegister={handleRegister}
                     loading={mainPaginated.loading}
                     onClickRow={handleEdit}
