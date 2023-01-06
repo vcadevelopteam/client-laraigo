@@ -92,7 +92,7 @@ const CatalogMaster: FC = () => {
             },
             {
                 accessor: 'catalogdescription',
-                Header: t(langKeys.name),
+                Header: t(langKeys.description),
                 NoFilter: true,
             },
             {
@@ -101,8 +101,8 @@ const CatalogMaster: FC = () => {
                 NoFilter: true,
                 prefixTranslation: 'type_domain_mastercatalog_',
                 Cell: (props: any) => {
-                    const { type } = props.cell.row.original;
-                    return (t(`type_domain_mastercatalog_${type}`.toLowerCase()) || "").toUpperCase()
+                    const { catalogtype } = props.cell.row.original;
+                    return (t(`type_domain_mastercatalog_${catalogtype}`.toLowerCase()) || "").toUpperCase()
                 }
             },
             {
@@ -314,7 +314,7 @@ const CatalogMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetch
             id: row?.metacatalogid || 0,
             metabusinessid: row?.metabusinessid || 0,
             operation: row ? "EDIT" : "CREATE",
-            status: row?.status || 'ACTIVO',
+            status: row?.status || '',
             type: row?.type || '',
         }
     });
@@ -441,14 +441,14 @@ const CatalogMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetch
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
-                    <div className="row-zyx">
+                    {edit && <div className="row-zyx">
                         <div style={{ textAlign: "center", padding: "20px", color: "#969ea5" }}>{t(langKeys.catalogmaster_businessalert)}</div>
                         <FacebookLogin
                             appId={apiUrls.CATALOGAPP}
                             autoLoad={false}
                             buttonStyle={{ margin: "auto", backgroundColor: "#7721ad", textTransform: "none", display: "flex", textAlign: "center", justifyItems: "center", alignItems: "center", justifyContent: "center" }}
                             fields="name,email,picture"
-                            scope="catalog_management,pages_show_list,business_management,pages_read_engagement"
+                            scope="pages_show_list,business_management,catalog_management"
                             callback={processFacebookCallback}
                             textButton={t(langKeys.catalogmaster_businesslink)}
                             icon={<FacebookIcon style={{ color: "white", marginRight: "8px" }} />}
@@ -462,42 +462,43 @@ const CatalogMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetch
                             }}
                             disableMobileRedirect={true}
                         />
-                    </div>
+                    </div>}
                     <div className="row-zyx">
                         <FieldSelect
                             className="col-12"
                             data={businessList}
-                            disabled={row ? true : false}
+                            disabled={!edit}
                             error={errors?.metabusinessid?.message}
                             label={t(langKeys.catalogmaster_businesschoose)}
                             onChange={(value) => setValue('metabusinessid', value?.metabusinessid || 0)}
                             optionDesc="businessname"
-                            optionValue="businessid"
-                            valueDefault={row?.metabusinessid || ''}
+                            optionValue="metabusinessid"
+                            valueDefault={row?.metabusinessid || 0}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
                             className="col-6"
-                            disabled={row ? true : false}
+                            disabled={!edit}
                             error={errors?.catalogname?.message}
                             label={t(langKeys.name)}
                             onChange={(value) => setValue('catalogname', value || '')}
-                            valueDefault={row?.catalogname || ""}
+                            valueDefault={row?.catalogname || ''}
                         />
                         <FieldEdit
                             className="col-6"
-                            disabled={row ? true : false}
+                            disabled={!edit}
                             error={errors?.catalogdescription?.message}
                             label={t(langKeys.description)}
                             onChange={(value) => setValue('catalogdescription', value || '')}
-                            valueDefault={row?.catalogdescription || ""}
+                            valueDefault={row?.catalogdescription || ''}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldSelect
                             className="col-6"
                             data={domainCatalogType}
+                            disabled={!edit}
                             error={errors?.catalogtype?.message}
                             label={t(langKeys.type)}
                             onChange={(value) => setValue('catalogtype', value?.domainvalue || '')}
@@ -505,11 +506,12 @@ const CatalogMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetch
                             optionValue="domainvalue"
                             prefixTranslation="type_domain_mastercatalog_"
                             uset={true}
-                            valueDefault={row?.catalogtype || ""}
+                            valueDefault={row?.catalogtype || ''}
                         />
                         <FieldSelect
                             className="col-6"
                             data={domainStatus}
+                            disabled={!edit}
                             error={errors?.status?.message}
                             label={t(langKeys.status)}
                             onChange={(value) => setValue('status', value?.domainvalue || '')}
@@ -517,7 +519,7 @@ const CatalogMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetch
                             optionValue="domainvalue"
                             prefixTranslation="status_"
                             uset={true}
-                            valueDefault={row?.status || ""}
+                            valueDefault={row?.status || ''}
                         />
                     </div>
                 </div>
