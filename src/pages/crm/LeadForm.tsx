@@ -1,11 +1,14 @@
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, IconButton, Checkbox, Tabs, Avatar, Paper, InputAdornment } from '@material-ui/core';
-import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, RadioGroudFieldEdit, TitleDetail, AntTabPanel, FieldEditArray, FieldMultiSelectVirtualized } from 'components';
+import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, RadioGroudFieldEdit, TitleDetail, AntTabPanel, FieldEditArray, FieldMultiSelectVirtualized, DialogZyx, FieldEditMulti } from 'components';
 import { RichText } from 'components/fields/RichText';
 import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useRouteMatch } from 'react-router';
+import PhoneIcon from '@material-ui/icons/Phone';
+import PersonIcon from '@material-ui/icons/Person';
+import { getDomainsByTypename } from 'store/person/actions';
 import {
     insLead2, adviserSel, getPaginatedPersonLead as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSel, insArchiveLead, leadHistorySel,
     getLeadsSel, leadHistoryIns
@@ -20,7 +23,7 @@ import {
     resetGetLeadProductsDomain, getLeadProductsDomain, getLeadTagsDomain, getPersonType, resetGetLeadTagsDomain, getLeadTemplates, getLeadChannels, resetGetLeadChannels, resetGetPersonType
 } from 'store/lead/actions';
 import { Dictionary, ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadHistory, ICrmLeadHistoryIns, ICrmLeadNote, ICrmLeadNoteSave, IDomain, IFetchData, IPerson } from '@types';
-import { manageConfirmation, showSnackbar } from 'store/popus/actions';
+import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { Rating, Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineSeparator } from '@material-ui/lab';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
@@ -36,6 +39,9 @@ import { EmailIcon, WhatsappIcon, SmsIcon } from 'icons';
 import { Descendant } from 'slate';
 import { emitEvent } from 'store/inbox/actions';
 import { emojis } from "common/constants/emojis";
+import { sendHSM } from 'store/inbox/actions';
+import { setModalCall, setPhoneNumber } from 'store/voximplant/actions';
+import MailIcon from '@material-ui/icons/Mail';
 
 const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
 
@@ -137,6 +143,252 @@ function returnNumberprio(prio:string) {
             return 1
     }    
 }
+interface DialogSendTemplateProps {
+    setOpenModal: (param: any) => void;
+    openModal: boolean;
+    persons: any[];
+    type: "HSM" | "MAIL" | "SMS";
+}
+
+const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, openModal, persons, type }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const [waitClose, setWaitClose] = useState(false);
+    const sendingRes = useSelector(state => state.inbox.triggerSendHSM);
+    const [templatesList, setTemplatesList] = useState<Dictionary[]>([]);
+    const [channelList, setChannelList] = useState<Dictionary[]>([]);
+    const [bodyMessage, setBodyMessage] = useState('');
+    const [personWithData, setPersonWithData] = useState<IPerson[]>([])
+    const domains = useSelector(state => state.person.editableDomains);
+
+    const title = useMemo(() => {
+        switch (type) {
+            case "HSM": return t(langKeys.send_hsm);
+            case "SMS": return t(langKeys.send_sms);
+            case "MAIL": return t(langKeys.send_mail);
+            default: return '-';
+        }
+    }, [type]);
+    const { control, register, handleSubmit, setValue, getValues, trigger, reset, formState: { errors } } = useForm<any>({
+        defaultValues: {
+            hsmtemplateid: 0,
+            observation: '',
+            communicationchannelid: type === "HSM" ? (channelList?.length === 1 ? channelList[0].communicationchannelid : 0) : 0,
+            communicationchanneltype: type === "HSM" ? (channelList?.length === 1 ? channelList[0].type : "") : '',
+            variables: []
+        }
+    });
+
+    const { fields } = useFieldArray({
+        control,
+        name: 'variables',
+    });
+
+    useEffect(() => {
+        if (waitClose) {
+            if (!sendingRes.loading && !sendingRes.error) {
+                const message = type === "HSM" ? t(langKeys.successful_send_hsm) : (type === "SMS" ? t(langKeys.successful_send_sms) : t(langKeys.successful_send_mail));
+                dispatch(showSnackbar({ show: true, severity: "success", message }))
+                setOpenModal(false);
+                dispatch(showBackdrop(false));
+                setWaitClose(false);
+            } else if (sendingRes.error) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(sendingRes.code || "error_unexpected_error") }))
+                dispatch(showBackdrop(false));
+                setWaitClose(false);
+            }
+        }
+    }, [sendingRes, waitClose])
+    useEffect(() => {
+    }, [channelList])
+
+    useEffect(() => {
+        if (!domains.error && !domains.loading) {
+            setTemplatesList(domains?.value?.templates?.filter(x => (type !== "MAIL" ? x.type === type : (x.type === type || x.type === "HTML"))) || []);
+            setChannelList(domains?.value?.channels?.filter(x => x.type.includes(type === "HSM" ? "WHA" : type)) || []);
+        }
+    }, [domains, type])
+
+    useEffect(() => {
+        if (openModal) {
+            setBodyMessage('')
+            reset({
+                hsmtemplateid: 0,
+                hsmtemplatename: '',
+                variables: [],
+                communicationchannelid: type === "HSM" ? (channelList?.length === 1 ? channelList[0].communicationchannelid : 0) : 0,
+                communicationchanneltype: type === "HSM" ? (channelList?.length === 1 ? channelList[0].type : "") : ''
+            })
+            register('hsmtemplateid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+
+            if (type === "HSM") {
+                register('communicationchannelid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+            } else {
+                register('communicationchannelid');
+            }
+
+            if (type === "MAIL") {
+                setPersonWithData(persons.filter(x => x.email && x.email.length > 0))
+            } else if (type === "HSM") {
+                setPersonWithData(persons.filter(x => !!x.phonewhatsapp))
+            } else {
+                setPersonWithData(persons.filter(x => x.phone && x.phone.length > 0))
+            }
+        } else {
+            setWaitClose(false);
+        }
+    }, [openModal])
+
+    const onSelectTemplate = (value: Dictionary) => {
+        if (value) {
+            setBodyMessage(value.body);
+            setValue('hsmtemplateid', value ? value.id : 0);
+            setValue('hsmtemplatename', value ? value.name : '');
+            const variablesList = value.body.match(/({{)(.*?)(}})/g) || [];
+            const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
+            setValue('variables', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
+        } else {
+            setValue('hsmtemplatename', '');
+            setValue('variables', []);
+            setBodyMessage('');
+            setValue('hsmtemplateid', 0);
+        }
+    }
+    const onSubmit = handleSubmit((data) => {
+        if (personWithData.length === 0) {
+            dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.no_people_to_send) }))
+            return
+        }
+        const messagedata = {
+            hsmtemplateid: data.hsmtemplateid,
+            hsmtemplatename: data.hsmtemplatename,
+            communicationchannelid: data.communicationchannelid,
+            communicationchanneltype: data.communicationchanneltype,
+            platformtype: data.communicationchanneltype,
+            type,
+            shippingreason: "PERSON",
+            listmembers: personWithData.map(person => ({
+                personid: person.personid,
+                phone: person.phone?.replace("+",'') || "",
+                firstname: person.firstname || "",
+                email: person.email || "",
+                lastname: person.lastname,
+                parameters: data.variables.map((v: any) => ({
+                    type: "text",
+                    text: v.variable !== 'custom' ? (person as Dictionary)[v.variable] : v.text,
+                    name: v.name
+                }))
+            }))
+        }
+        dispatch(sendHSM(messagedata))
+        dispatch(showBackdrop(true));
+        setWaitClose(true)
+    });
+
+    useEffect(() => {
+        if (channelList.length === 1 && type === "HSM") {
+            setValue("communicationchannelid", channelList[0].communicationchannelid || 0)
+            setValue('communicationchanneltype', channelList[0].type || "");
+            trigger("communicationchannelid")
+        }
+    }, [channelList])
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={title}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.continue)}
+            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton2={onSubmit}
+            button2Type="submit"
+        >
+            {type === "HSM" && (
+                <div className="row-zyx">
+                    <FieldSelect
+                        label={t(langKeys.channel)}
+                        className="col-12"
+                        valueDefault={getValues('communicationchannelid')}
+                        onChange={value => {
+                            setValue('communicationchannelid', value?.communicationchannelid || 0);
+                            setValue('communicationchanneltype', value?.type || "");
+                        }}
+                        error={errors?.communicationchannelid?.message}
+                        data={channelList}
+                        optionDesc="communicationchanneldesc"
+                        optionValue="communicationchannelid"
+                    />
+                </div>
+            )}
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.template)}
+                    className="col-12"
+                    valueDefault={getValues('hsmtemplateid')}
+                    onChange={onSelectTemplate}
+                    error={errors?.hsmtemplateid?.message}
+                    data={templatesList}
+                    optionDesc="name"
+                    optionValue="id"
+                />
+            </div>
+            {type === 'MAIL' &&
+                <div style={{ overflow: 'scroll' }}>
+                    <React.Fragment>
+                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.message)}</Box>
+                        <div dangerouslySetInnerHTML={{ __html: bodyMessage }} />
+                    </React.Fragment>
+                </div>
+            }
+            {type !== 'MAIL' &&
+                <FieldEditMulti
+                    label={t(langKeys.message)}
+                    valueDefault={bodyMessage}
+                    disabled={true}
+                    rows={1}
+                />
+            }
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
+                {fields.map((item: Dictionary, i) => (
+                    <div key={item.id}>
+                        <FieldSelect
+                            key={"var_" + item.id}
+                            fregister={{
+                                ...register(`variables.${i}.variable`, {
+                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                })
+                            }}
+                            label={item.name}
+                            valueDefault={getValues(`variables.${i}.variable`)}
+                            onChange={(value) => {
+                                setValue(`variables.${i}.variable`, value.key)
+                                trigger(`variables.${i}.variable`)
+                            }}
+                            error={errors?.variables?.[i]?.text?.message}
+                            data={variables}
+                            uset={true}
+                            prefixTranslation=""
+                            optionDesc="key"
+                            optionValue="key"
+                        />
+                        {getValues(`variables.${i}.variable`) === 'custom' &&
+                            <FieldEditArray
+                                key={"custom_" + item.id}
+                                fregister={{
+                                    ...register(`variables.${i}.text`, {
+                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                    })
+                                }}
+                                valueDefault={item.value}
+                                error={errors?.variables?.[i]?.text?.message}
+                                onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
+                            />
+                        }
+                    </div>
+                ))}
+            </div>
+        </DialogZyx>)
+}
 
 export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const classes = useLeadFormStyles();
@@ -172,6 +424,19 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
 
     const leadProductsChanges = useRef<ICrmLeadHistoryIns[]>([]);
     const leadTagsChanges = useRef<ICrmLeadHistoryIns[]>([]);
+    const [openDialogTemplate, setOpenDialogTemplate] = useState(false)
+    const voxiConnection = useSelector(state => state.voximplant.connection);
+    const userConnected = useSelector(state => state.inbox.userConnected);
+    
+    const [typeTemplate, setTypeTemplate] = useState<"HSM" | "SMS" | "MAIL">('MAIL');
+    const [extraTriggers, setExtraTriggers] = useState({
+        phone: lead.value?.phone || '',
+        email: lead.value?.email || '',
+    })
+    
+    useEffect(() => {
+        dispatch(getDomainsByTypename());
+    }, []);
 
     const { register, setValue, getValues, formState: { errors }, reset, trigger } = useForm<any>({
         defaultValues: {
@@ -410,6 +675,14 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     }, [advisers, t, dispatch]);
 
     useEffect(() => {
+        console.log(values)
+        setExtraTriggers({
+            email:values?.email || "",
+            phone: values?.phone || ""
+        })
+    }, [values]);
+
+    useEffect(() => {
         if (saveLead.loading) return;
         if (saveLead.error) {
             const errormessage = t(saveLead.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
@@ -642,10 +915,14 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
 
     const onClickSelectPersonModal = useCallback((value: IPerson) => {
         setValue('personcommunicationchannel', "")
-        setValue('personid', value.personid)
-        setValue('persontype', value.persontype || '')
-        setValue('email', value.email || '')
-        setValue('phone', value.phone || '')
+        setValue('personid', value?.personid)
+        setValue('persontype', value?.persontype || '')
+        setValue('email', value?.email || '')
+        setValue('phone', value?.phone || '')
+        setExtraTriggers({
+            phone: value?.phone || '',
+            email: value?.email || '',
+        })
         setValues(prev => ({ ...prev, displayname: value.name }))
     }, [setValue]);
 
@@ -700,7 +977,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     } else if (edit === true && (lead.error)) {
         return <div>ERROR</div>;
     }
-
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <div className={classes.root}>
@@ -758,6 +1034,45 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                         >
                             <Trans i18nKey={langKeys.back} />
                         </Button>}
+                        {(edit && !!extraTriggers.phone) &&                      
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                startIcon={<WhatsappIcon width={24} style={{ fill: '#FFF' }} />}
+                                onClick={() => {
+                                    setOpenDialogTemplate(true);
+                                    setTypeTemplate("HSM");
+                                }}
+                            >
+                                <Trans i18nKey={langKeys.send_hsm} />
+                            </Button>
+                        }
+                        {(edit && !!extraTriggers.email && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(extraTriggers.email)) &&                    
+                            <Button
+                            variant="contained"
+                            color="primary"
+                            startIcon={<MailIcon width={24} style={{ fill: '#FFF' }} />}
+                            onClick={() => {
+                                setOpenDialogTemplate(true);
+                                setTypeTemplate("MAIL");
+                            }}
+                            >
+                                <Trans i18nKey={langKeys.send_mail} />
+                            </Button>
+                        }
+                        {(edit && !!extraTriggers.phone) &&                      
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                startIcon={<SmsIcon width={24} style={{ fill: '#FFF' }} />}
+                                onClick={() => {
+                                    setOpenDialogTemplate(true);
+                                    setTypeTemplate("SMS");
+                                }}
+                            >
+                                <Trans i18nKey={langKeys.send_sms} />
+                            </Button>
+                        }
                         {(edit && lead.value && !isStatusClosed()) && (
                             <Button
                                 variant="contained"
@@ -800,7 +1115,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 <FieldEdit
                                     label={t(langKeys.email)}
                                     className={classes.field}
-                                    onChange={(value) => setValue('email', value)}
+                                    onChange={(value) => {setValue('email', value);setExtraTriggers({...extraTriggers, email: value || ''})}}
                                     valueDefault={getValues('email')}
                                     error={errors?.email?.message}
                                     InputProps={{
@@ -897,10 +1212,20 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 {edit ?
                                     (
                                         <div className={clsx(classes.fakeInputContainer, classes.field)}>
-                                            <FieldView
-                                                label={t(langKeys.customer)}
-                                                value={lead.value?.displayname}
-                                            />
+                                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                                                <div style={{ flexGrow: 1 }}>
+                                                    <FieldView
+                                                        label={t(langKeys.customer)}
+                                                        value={values?.displayname}
+                                                    />
+                                                </div>                                                
+                                                {(!!lead?.value?.personid) && <IconButton size="small" onClick={(e) => {
+                                                    e.preventDefault();
+                                                    history.push(`/extras/person/${lead?.value?.personid}`)
+                                                }}>
+                                                    <PersonIcon />
+                                                </IconButton>}
+                                            </div>
                                         </div>
                                     ) :
                                     (<div style={{ display: 'flex', flexDirection: 'column' }} className={classes.field}>
@@ -932,10 +1257,26 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     fullWidth
                                     defaultCountry={user!.countrycode.toLowerCase()}
                                     className={classes.field}
-                                    onChange={(v: any) => {setValue('phone', v);debugger}}
+                                    onChange={(v: any) => {setValue('phone', v); setExtraTriggers({...extraTriggers, phone: v || ''})}}
                                     error={errors?.phone?.message}
                                     InputProps={{
                                         readOnly: isStatusClosed() || iSProcessLoading(),
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                {(!voxiConnection.error && userConnected) &&
+                                                    <IconButton size="small" onClick={() => {
+                                                        if(voxiConnection.error){
+                                                            dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) })) 
+                                                        }else {
+                                                            dispatch(setModalCall(true))
+                                                            console.log(getValues("phone"))
+                                                            dispatch(setPhoneNumber(getValues("phone")))
+                                                        }}}>
+                                                        <PhoneIcon />
+                                                    </IconButton>
+                                                }
+                                            </InputAdornment>
+                                        )
                                     }}
                                 />
                                 <FieldEdit
@@ -1082,6 +1423,12 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                         onClick={onClickSelectPersonModal}
                     />
                 )}
+                <DialogSendTemplate
+                    openModal={openDialogTemplate}
+                    setOpenModal={setOpenDialogTemplate}
+                    persons={[{...lead?.value, ...extraTriggers}]}
+                    type={typeTemplate}
+                />      
             </div>
         </MuiPickersUtilsProvider>
     );
