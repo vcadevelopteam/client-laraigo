@@ -506,7 +506,7 @@ const CRM: FC = () => {
         return (
           <div style={{ cursor: 'pointer' }}>
             <div>{t(langKeys.name)}: {row['contact_name']}</div>
-            <div>{t(langKeys.personType)}: {t(langKeys.client).toLocaleUpperCase()} {row['persontype']}</div>
+            {!!row['persontype'] && <div>{t(langKeys.personType)}: {t(langKeys.client).toLocaleUpperCase()} {row['persontype']}</div>}
             <div>{t(langKeys.email)}: {row['email']}</div>
             <div>{t(langKeys.phone)}: {row['phone']}</div>
             <Rating
