@@ -19,6 +19,7 @@ export const langKeys = {
     set_your_weekly: "set_your_weekly",
     documentsTooltip: "documentsTooltip",
     poweredbyTooltip: "poweredbyTooltip",
+    propertyiainiciodelimit: "propertyiainiciodelimit",
     locationTooltip: "locationTooltip",
     cssheaderTooltip: "cssheaderTooltip",
     jsscriptTooltip: "jsscriptTooltip",

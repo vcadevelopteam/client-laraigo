@@ -885,6 +885,7 @@ const translation: LangKeys = {
   attending: 'En atención',
 
   type_domain_ninguno: 'None',
+  propertyiainiciodelimit: "Delimita a la IA al inicio de la conversación si se encontrará activa o inactiva.",
   type_domain_bot: 'Dominio de bot',
   type_domain_cliente: 'Dominio de cliente',
   type_domain_sistema: 'Dominio de sistema',

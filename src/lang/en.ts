@@ -489,6 +489,7 @@ const translation: LangKeys = {
 
   type_domain_ninguno: 'None',
   type_domain_bot: 'Bot domain',
+  propertyiainiciodelimit: "Define the AI ​​at the beginning of the conversation if it will be active or inactive.",
 
   type_gender_femenino: 'Female',
   type_gender_masculino: 'Male',
