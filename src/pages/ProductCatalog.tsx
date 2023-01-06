@@ -35,6 +35,7 @@ interface DetailProps {
     arrayBread: any;
     data: RowSelected;
     fetchData?: () => void;
+    metaCatalogList: Dictionary[];
     multiData: MultiData[];
     setViewSelected: (view: string) => void;
 }
@@ -408,6 +409,7 @@ const ProductCatalog: FC = () => {
         return (
             <div style={{ width: "100%" }}>
                 <ImportXmlModal
+                    metaCatalogList={metaCatalogList}
                     onTrigger={onModalSuccess}
                     openModal={openModal}
                     setOpenModal={setOpenModal}
@@ -501,13 +503,14 @@ const ProductCatalog: FC = () => {
                 arrayBread={arrayBread}
                 data={rowSelected}
                 fetchData={() => fetchData(fetchDataAux)}
+                metaCatalogList={metaCatalogList}
                 multiData={mainResult.multiData.data}
                 setViewSelected={redirectFunc}
             />
         )
 }
 
-const ImportXmlModal: FC<{ openModal: boolean, setOpenModal: (param: any) => void, onTrigger: () => void }> = ({ openModal, setOpenModal, onTrigger }) => {
+const ImportXmlModal: FC<{ openModal: boolean, metaCatalogList: Dictionary[], setOpenModal: (param: any) => void, onTrigger: () => void }> = ({ openModal, metaCatalogList, setOpenModal, onTrigger }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -517,26 +520,24 @@ const ImportXmlModal: FC<{ openModal: boolean, setOpenModal: (param: any) => voi
     const user = useSelector(state => state.login.validateToken.user);
 
     const [checkedUrl, setCheckedUrl] = useState(false);
+    const [fileAttachment, setFileAttachment] = useState<File | null>(null);
     const [waitSave, setWaitSave] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
-    const [fileAttachment, setFileAttachment] = useState<File | null>(null);
 
     const { register, trigger, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             corpid: user?.corpid,
+            isxml: true,
+            metacatalogid: 0,
             orgid: user?.orgid,
             url: '',
-            catalogname: '',
-            catalogid: '',
-            isxml: true,
         }
     });
 
     React.useEffect(() => {
-        register('url', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('catalogname', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('catalogid', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('isxml');
+        register('metacatalogid', { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
+        register('url', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
     }, [register]);
 
     useEffect(() => {
@@ -545,10 +546,9 @@ const ImportXmlModal: FC<{ openModal: boolean, setOpenModal: (param: any) => voi
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(importResult.code || "success") }))
                 dispatch(showBackdrop(false));
 
-                setValue('url', '');
-                setValue('catalogname', '');
-                setValue('catalogid', '');
                 setValue('isxml', false);
+                setValue('metacatalogid', 0);
+                setValue('url', '');
                 setFileAttachment(null);
 
                 setWaitSave(false);
@@ -582,7 +582,7 @@ const ImportXmlModal: FC<{ openModal: boolean, setOpenModal: (param: any) => voi
         }
 
         const callback = () => {
-            dispatch(importXml(data));
+            //dispatch(importXml(data));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -637,10 +637,9 @@ const ImportXmlModal: FC<{ openModal: boolean, setOpenModal: (param: any) => voi
             title={t(langKeys.importxml)}
             buttonText1={t(langKeys.cancel)}
             handleClickButton1={() => {
-                setValue('url', '');
-                setValue('catalogname', '');
-                setValue('catalogid', '');
                 setValue('isxml', false);
+                setValue('metacatalogid', 0);
+                setValue('url', '');
                 setFileAttachment(null);
                 setOpenModal(false);
             }}
@@ -673,20 +672,17 @@ const ImportXmlModal: FC<{ openModal: boolean, setOpenModal: (param: any) => voi
                     </Button>
                 </div>
             </div>
-            <div className="row-zyx">
-                <FieldEdit
+            <div className="row-zyx" style={{ marginTop: '36px' }}>
+                <FieldSelect
+                    className="col-12"
+                    data={metaCatalogList}
+                    error={errors?.metacatalogid?.message}
                     label={t(langKeys.catalogname)}
-                    valueDefault={getValues('catalogname')}
-                    error={errors?.catalogname?.message}
-                    onChange={(value) => setValue('catalogname', value)}
-                    className="col-6"
-                />
-                <FieldEdit
-                    label={t(langKeys.catalogid)}
-                    valueDefault={getValues('catalogid')}
-                    error={errors?.catalogid?.message}
-                    onChange={(value) => setValue('catalogid', value)}
-                    className="col-6"
+                    onChange={(value) => { setValue('metacatalogid', value?.metacatalogid || 0) }}
+                    optionDesc="catalogname"
+                    optionValue="metacatalogid"
+                    valueDefault={getValues('metacatalogid') || 0}
+                    variant="outlined"
                 />
             </div>
             <div className="row-zyx">
@@ -739,54 +735,59 @@ const sxImageBox = {
     textAlign: 'center',
 }
 
-const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, arrayBread }) => {
+const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, metaCatalogList, fetchData, arrayBread }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const executeRes = useSelector(state => state.main.execute);
     const dataDomainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataDomainCategory = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataDomainAvailability = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataDomainCurrency = multiData[2] && multiData[2].success ? multiData[2].data : [];
+    const dataDomainGender = multiData[3] && multiData[3].success ? multiData[3].data : [];
+    const dataDomainCondition = multiData[4] && multiData[4].success ? multiData[4].data : [];
+    const executeResult = useSelector(state => state.main.execute);
     const uploadResult = useSelector(state => state.main.uploadFile);
 
+    const [fieldupload, setfieldupload] = useState<"imagelink" | "additionalimagelink">("imagelink");
     const [fileAttachment, setFileAttachment] = useState<File | null>(null);
     const [fileAttachmentAditional, setFileAttachmentAditional] = useState<File | null>(null);
-    const [waitSave, setWaitSave] = useState(false);
-    const [fieldupload, setfieldupload] = useState<"imagelink" | "additionalimagelink">("imagelink");
-    const [waitUploadFile, setWaitUploadFile] = useState(false);
     const [labels, setlabels] = useState(row?.labels?.split(',') || []);
+    const [waitSave, setWaitSave] = useState(false);
+    const [waitUploadFile, setWaitUploadFile] = useState(false);
 
     const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
 
     const { trigger, register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
+            metacatalogid: row?.metacatalogid || 0,
             id: row?.productcatalogid || 0,
-            productid: row?.productid || "",
+            productid: row?.productid || '',
             title: row?.title || '',
+            description: row?.description || '',
+            availability: row?.availability || '',
             link: row?.link || '',
-            imagelink: row?.imagelink || '',
-            additionalimagelink: row?.additionalimagelink || '',
-            brand: row?.brand || "",
-            condition: row?.condition || '',
-            availability: row?.availability || "",
-            category: row?.category || '',
-            material: row?.material || "",
-            color: row?.color || "",
-            pattern: row?.pattern || "",
             currency: row?.currency || '',
             price: row?.price || 0.00,
             saleprice: row?.saleprice || 0.00,
-            customlabel1: row?.customlabel1 || "",
-            customlabel2: row?.customlabel2 || "",
-            customlabel3: row?.customlabel3 || "",
-            customlabel4: row?.customlabel4 || "",
-            customlabel5: row?.customlabel5 || "",
-            labels: row?.labels || "",
-            catalogid: row?.catalogid || "",
-            catalogname: row?.catalogname || "",
-            description: row?.description || '',
-            status: row?.status || 'ACTIVO',
+            imagelink: row?.imagelink || '',
+            additionalimagelink: row?.additionalimagelink || '',
+            pattern: row?.pattern || '',
+            category: row?.category || '',
+            productstatus: row?.productstatus || '',
+            status: row?.status || '',
+            brand: row?.brand || '',
+            color: row?.color || '',
+            gender: row?.gender || '',
+            material: row?.material || '',
+            size: row?.size || '',
+            condition: row?.condition || '',
+            customlabel0: row?.customlabel0 || '',
+            customlabel1: row?.customlabel1 || '',
+            customlabel2: row?.customlabel2 || '',
+            customlabel3: row?.customlabel3 || '',
+            customlabel4: row?.customlabel4 || '',
+            labels: row?.labels || '',
             type: row?.type || '',
             operation: (edit && row) ? "EDIT" : "INSERT",
         }
@@ -794,47 +795,49 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
 
     useEffect(() => {
         if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
+            if (!executeResult.loading && !executeResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1");
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
         }
-    }, [executeRes, waitSave])
+    }, [executeResult, waitSave])
 
     React.useEffect(() => {
+        register('metacatalogid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('id');
         register('productid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('title', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('link', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('imagelink', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('additionalimagelink');
-        register('brand', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('condition', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('availability', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('category');
-        register('material');
-        register('color');
-        register('pattern');
+        register('link', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('currency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('price', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('saleprice');
+        register('saleprice', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('imagelink', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('additionalimagelink');
+        register('pattern');
+        register('category');
+        register('productstatus');
+        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('brand', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('color');
+        register('gender');
+        register('material');
+        register('size');
+        register('condition', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('customlabel0');
         register('customlabel1');
         register('customlabel2');
         register('customlabel3');
         register('customlabel4');
-        register('customlabel5');
         register('labels');
-        register('catalogid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('catalogname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type');
         register('operation');
     }, [edit, register]);
