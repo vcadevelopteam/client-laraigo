@@ -54,6 +54,28 @@ const useStyles = makeStyles((theme) => ({
             color: "#FFFFFF",
         },
     },
+    buttonMedia: {
+        alignItems: 'center',
+        backgroundColor: "#762AA9",
+        color: "#FFFFFF",
+        display: 'flex',
+        fontSize: '14px',
+        fontWeight: 500,
+        marginBottom: '10px',
+        marginLeft: '4px',
+        marginRight: '4px',
+        padding: 12,
+        textTransform: 'initial',
+        width: 'auto',
+        '&:disabled': {
+            backgroundColor: "#EBEAEA",
+            color: "#757575",
+        },
+        '&:hover': {
+            backgroundColor: "#762AA9",
+            color: "#FFFFFF",
+        },
+    },
     containerLeft: {
         [theme.breakpoints.down('xs')]: {
             minWidth: '100vw',
@@ -91,16 +113,18 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
 
     const classes = useStyles();
     const executeRes = useSelector(state => state.main.execute);
-    const uploadResult = useSelector(state => state.main.uploadFile);
     const isPublished = row?.published;
+    const uploadResult = useSelector(state => state.main.uploadFile);
 
-    const [fileAttachment, setFileAttachment] = useState<File | null>(null);
-    const [previewType, setPreviewType] = useState('');
-    const [waitUploadFile, setWaitUploadFile] = useState(false);
-    const [waitOperation, setWaitOperation] = useState(false);
     const [customizeType, setCustomizeType] = useState('');
-    const [statuspost, setstatuspost] = useState('');
+    const [fileAttachment, setFileAttachment] = useState<File | null>(null);
     const [filteredFeelings, setFilteredFeelings] = useState<any>([]);
+    const [mediaDisabled, setMediaDisabled] = useState(false);
+    const [previewType, setPreviewType] = useState('');
+    const [statuspost, setstatuspost] = useState('');
+    const [tikTokEnabled] = useState(false);
+    const [waitOperation, setWaitOperation] = useState(false);
+    const [waitUploadFile, setWaitUploadFile] = useState(false);
 
     const { register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm({
         defaultValues: {
@@ -227,6 +251,10 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
             }
         }
     }, [executeRes, waitOperation])
+
+    useEffect(() => {
+        setMediaDisabled((waitUploadFile || fileAttachment !== null || isPublished) || (getValues('mediatype') === 'IMAGE' ? (getValues('medialink') || []).length >= 3 : (getValues('medialink') || []).length >= 1));
+    }, [waitUploadFile, fileAttachment, isPublished, getValues('mediatype'), getValues('medialink')])
 
     const onSubmit = handleSubmit((data) => {
         let message = "";
@@ -457,12 +485,11 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                                 type="file"
                                             />
                                             <Button
-                                                className={classes.button}
+                                                className={classes.buttonMedia}
                                                 color="primary"
-                                                disabled={(waitUploadFile || fileAttachment !== null || isPublished) || (getValues('mediatype') === 'IMAGE' ? (getValues('medialink') || []).length >= 3 : (getValues('medialink') || []).length >= 1)}
+                                                disabled={mediaDisabled}
                                                 onClick={onClickAttachment}
-                                                startIcon={getValues('mediatype') === 'IMAGE' ? <CameraAltOutlined color="secondary" /> : <PlayCircleOutlineSharp color="secondary" />}
-                                                style={{ backgroundColor: "#762AA9", display: 'flex', alignItems: 'center', marginBottom: '10px' }}
+                                                startIcon={getValues('mediatype') === 'IMAGE' ? <CameraAltOutlined style={{ color: (mediaDisabled ? "#757575" : "#FFFFFF") }} /> : <PlayCircleOutlineSharp style={{ color: (mediaDisabled ? "#757575" : "#FFFFFF") }} />}
                                                 variant="contained"
                                             >{getValues('mediatype') === 'IMAGE' ? t(langKeys.postcreator_publish_addimage) : t(langKeys.postcreator_publish_addvideo)}
                                             </Button>
@@ -683,10 +710,10 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                                 description: t(langKeys.postcreator_publish_mockupyoutube),
                                                 value: "YOUTUBEPREVIEW",
                                             },
-                                            {
+                                            /*{
                                                 description: t(langKeys.postcreator_publish_mockuptiktok),
                                                 value: "TIKTOKPREVIEW",
-                                            },
+                                            },*/
                                         ]}
                                         optionDesc="description"
                                         optionValue="value"
@@ -714,7 +741,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                             </div>
                                         </div>
                                         {((getValues('mediatype') === 'IMAGE' || getValues('mediatype') === 'VIDEO') && (getValues('medialink') || []).length > 0) && <div style={{ maxWidth: '100%' }}>
-                                            <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto' }} src={getValues('medialink')[0].thumbnail}></img>
+                                            <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto', objectFit: 'cover' }} src={getValues('medialink')[0].thumbnail}></img>
                                         </div>}
                                         <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginLeft: 'auto', marginRight: 'auto', marginBottom: '10px', marginTop: '6px' }}>
                                             <div style={{ width: '33%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ThumbUpOutlined style={{ marginRight: '6px' }} /><b>{t(langKeys.postcreator_publish_facebookmockup_like)}</b></div>
@@ -736,7 +763,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                             </div>
                                         </div>
                                         {((getValues('mediatype') === 'IMAGE' || getValues('mediatype') === 'VIDEO') && (getValues('medialink') || []).length > 0) && <div style={{ maxWidth: '100%' }}>
-                                            <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto' }} src={getValues('medialink')[0].thumbnail}></img>
+                                            <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto', objectFit: 'cover' }} src={getValues('medialink')[0].thumbnail}></img>
                                         </div>}
                                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <img loading='eager' alt="" style={{ maxWidth: '100%', margin: 6 }} src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/334a434c-c07c-4904-8c49-9e425c7b3f8d/InstagramButton1.png"></img>
@@ -767,7 +794,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                                     </div>
                                                 </div>
                                                 {((getValues('mediatype') === 'IMAGE' || getValues('mediatype') === 'VIDEO') && (getValues('medialink') || []).length > 0) && <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
-                                                    <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '200px', borderRadius: '8px' }} src={getValues('medialink')[0].thumbnail}></img>
+                                                    <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '200px', borderRadius: '8px', objectFit: 'cover' }} src={getValues('medialink')[0].thumbnail}></img>
                                                 </div>}
                                                 <div style={{ display: 'flex', justifyContent: 'center' }}>
                                                     <img loading='eager' alt="" style={{ maxWidth: '100%', marginTop: 6, marginLeft: 6, marginRight: 6 }} src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/6c942c26-3778-47fc-9284-7814a7981b1a/TwitterButton1.png"></img>
@@ -795,7 +822,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                             </div>
                                         </div>
                                         {((getValues('mediatype') === 'IMAGE' || getValues('mediatype') === 'VIDEO') && (getValues('medialink') || []).length > 0) && <div style={{ maxWidth: '100%' }}>
-                                            <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto' }} src={getValues('medialink')[0].thumbnail}></img>
+                                            <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto', objectFit: 'cover' }} src={getValues('medialink')[0].thumbnail}></img>
                                         </div>}
                                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <img loading='eager' alt="" style={{ maxWidth: '100%', marginLeft: 16, marginBottom: 6 }} src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/60b26115-5c3a-4097-a29c-0db8f0967240/LinkedInButton1.png"></img>
@@ -812,7 +839,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                 {previewType === 'YOUTUBEPREVIEW' && <div className="row-zyx">
                                     <div style={{ width: '90%', marginLeft: 'auto', marginRight: 'auto', marginBottom: '18px', backgroundColor: 'white', border: '1px solid #959595' }}>
                                         {((getValues('mediatype') === 'IMAGE' || getValues('mediatype') === 'VIDEO') && (getValues('medialink') || []).length > 0) && <div style={{ maxWidth: '100%' }}>
-                                            <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto' }} src={getValues('medialink')[0].thumbnail}></img>
+                                            <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto', objectFit: 'cover' }} src={getValues('medialink')[0].thumbnail}></img>
                                         </div>}
                                         <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '10px', paddingLeft: '10px', paddingRight: '20px', paddingTop: '10px' }}>
                                             <div style={{ width: '100%', textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden', paddingLeft: '6px' }}>
@@ -851,7 +878,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                             </div>
                                         </div>
                                         {((getValues('mediatype') === 'IMAGE' || getValues('mediatype') === 'VIDEO') && (getValues('medialink') || []).length > 0) && <div style={{ maxWidth: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
-                                            <img loading='eager' alt="" style={{ maxWidth: '80%', display: 'flex', width: '80%', maxHeight: '340px', paddingLeft: 'auto', paddingRight: 'auto', borderRadius: '8px' }} src={getValues('medialink')[0].thumbnail}></img>
+                                            <img loading='eager' alt="" style={{ maxWidth: '80%', display: 'flex', width: '80%', maxHeight: '340px', paddingLeft: 'auto', paddingRight: 'auto', borderRadius: '8px', objectFit: 'cover' }} src={getValues('medialink')[0].thumbnail}></img>
                                         </div>}
                                     </div>
                                 </div>}
