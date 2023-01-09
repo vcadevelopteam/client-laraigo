@@ -26,6 +26,7 @@ import witaiReducer, { IState as IWitai } from './witia/reducer';
 import productReducer, { IState as IProduct } from './product/reducer';
 import calendarReducer, { IState as ICalendar } from './calendar/reducer';
 import postHistoryReducer, { IState as IPostHistory } from './posthistory/reducer';
+import catalogReducer, { IState as ICatalog } from './catalog/reducer';
 
 export interface IRootState {
     login: ILogin,
@@ -51,6 +52,7 @@ export interface IRootState {
     calendar: ICalendar;
     product: IProduct;
     postHistory: IPostHistory;
+    catalog: ICatalog;
 }
 
 declare global {
@@ -83,6 +85,7 @@ const rootReducer = combineReducers<IRootState>({
     postHistory: postHistoryReducer,
     getversion: getversionReducer,
     calendar: calendarReducer,
+    catalog: catalogReducer,
 });
 
 export default function configureStore(preloadedState?: IRootState) {

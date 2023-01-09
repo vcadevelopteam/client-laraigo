@@ -1,85 +1,80 @@
 /* TODO: añadir la implementación con meta */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from 'react';
-import ClearIcon from '@material-ui/icons/Clear';
-import SaveIcon from '@material-ui/icons/Save';
 import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
+import ClearIcon from '@material-ui/icons/Clear';
+import FacebookLogin from "react-facebook-login";
+import React, { FC, useEffect, useState } from 'react';
+import RefreshIcon from '@material-ui/icons/Refresh';
+import SaveIcon from '@material-ui/icons/Save';
 import TableZyx from '../components/fields/table-simple';
-import { useSelector } from 'hooks';
-import { useDispatch } from 'react-redux';
-import { TemplateIcons, TemplateBreadcrumbs, FieldEdit, FieldSelect, TitleDetail } from 'components';
-import { getDomainValueSel, getDomainSel, getValuesFromDomain, insDomain, insDomainvalue } from 'common/helpers';
+
+import { apiUrls } from "common/constants";
 import { Dictionary, MultiData } from "@types";
-import { useTranslation } from 'react-i18next';
+import { Facebook as FacebookIcon } from "@material-ui/icons";
+import { getCollection, getMultiCollection, resetAllMain, cleanMemoryTable, setMemoryTable } from 'store/main/actions';
+import { getValuesFromDomain, metaCatalogSel, metaBusinessSel } from 'common/helpers';
 import { langKeys } from 'lang/keys';
-import { useForm } from 'react-hook-form';
-import { getCollection, getMultiCollection, execute, getCollectionAux, resetMainAux, resetAllMain } from 'store/main/actions';
+import { makeStyles } from '@material-ui/core/styles';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { useHistory } from 'react-router-dom';
-import paths from 'common/constants/paths';
+import { TemplateIcons, TemplateBreadcrumbs, FieldEdit, FieldSelect, TitleDetail } from 'components';
+import { useDispatch } from 'react-redux';
+import { useForm } from 'react-hook-form';
+import { useSelector } from 'hooks';
+import { useTranslation } from 'react-i18next';
+import { catalogBusinessList, catalogManageCatalog, resetCatalogBusinessList, catalogSynchroCatalog } from "store/catalog/actions";
 
 interface RowSelected {
-    row: Dictionary | null;
-    domainname: string | "";
     edit: boolean;
+    row: Dictionary | null;
 }
 
 interface DetailProps {
     data: RowSelected;
-    setViewSelected: (view: string) => void;
-    multiData: MultiData[];
     fetchData?: () => void;
+    multiData: MultiData[];
+    setViewSelected: (view: string) => void;
 }
-
-interface ModalProps {
-    data: RowSelected;
-    dataDomain: Dictionary[] | null;
-    openModal: boolean;
-    setOpenModal: (open: boolean) => void;
-    updateRecords?: (record: any) => void;
-}
-
 
 const useStyles = makeStyles((theme) => ({
-    containerDetail: {
-        marginTop: theme.spacing(2),
-        padding: theme.spacing(2),
-        background: '#fff',
-    },
     button: {
         marginRight: theme.spacing(2),
-    }
+    },
+    containerDetail: {
+        background: '#fff',
+        marginTop: theme.spacing(2),
+        padding: theme.spacing(2),
+    },
 }));
 
-const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit }, setViewSelected, multiData, fetchData }) => {
-    const { t } = useTranslation();
+const IDCATALOGMASTER = "IDCATALOGMASTER";
+const CatalogMaster: FC = () => {
     const dispatch = useDispatch();
+
+    const { t } = useTranslation();
+
+    const memoryTable = useSelector(state => state.main.memoryTable);
+    const resultMain = useSelector(state => state.main);
+    const resultManageCatalog = useSelector(state => state.catalog.requestCatalogManageCatalog);
+    const resultSynchroCatalog = useSelector(state => state.catalog.requestCatalogSynchroCatalog);
     const user = useSelector(state => state.login.validateToken.user);
-    const useradmin = ["ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '');
-    const newrow = row===null
-    const classes = useStyles();
+    const superadmin = ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '');
+
+    const [businessId, setBusinessId] = useState(0);
+    const [metaBusinessList, setMetaBusinessList] = useState<Dictionary[]>([]);
+    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
+    const [viewSelected, setViewSelected] = useState("view-1");
+    const [waitSynchronize, setWaitSynchronize] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
-    const executeRes = useSelector(state => state.main.execute);
-    const detailRes = useSelector(state => state.main.mainAux);
-    const [dataDomain, setdataDomain] = useState<Dictionary[]>([]);
-    const [domainToDelete, setDomainToDelete] = useState<Dictionary[]>([]);
-    const [openDialogDomain, setOpenDialogDomain] = useState(false);
-    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, domainname: "", edit: false });
-    const dataDomainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataDomainType = multiData[0] && multiData[1].success ? (useradmin?multiData[1].data.filter(x=>x.domainvalue === "BOT"):multiData[1].data) : [];
 
     const columns = React.useMemo(
         () => [
             {
-                accessor: 'domainid',
-                NoFilter: true,
+                accessor: 'metacatalogid',
                 isComponent: true,
                 minWidth: 60,
+                NoFilter: true,
                 width: '1%',
                 Cell: (props: any) => {
-                    if (!edit)
-                        return null;
                     const row = props.cell.row.original;
                     return (
                         <TemplateIcons
@@ -91,148 +86,335 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                 }
             },
             {
-                Header: t(langKeys.code),
-                accessor: 'domainvalue',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.description),
-                accessor: 'domaindesc',
-                NoFilter: true
-            },
-            /*{
-                Header: t(langKeys.bydefault),
-                accessor: 'bydefault',
+                accessor: 'catalogname',
+                Header: t(langKeys.name),
                 NoFilter: true,
-                Cell: (prop: any) => {
-                    const row = prop.cell.row.original;
-                    const val = (row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative))
-                    return val;
-                }
-            },*/
-            {
-                Header: t(langKeys.organization),
-                accessor: 'organization',
-                NoFilter: true
             },
             {
-                Header: t(langKeys.status),
-                prefixTranslation: 'status_',
+                accessor: 'catalogdescription',
+                Header: t(langKeys.description),
+                NoFilter: true,
+            },
+            {
+                accessor: 'catalogtype',
+                Header: t(langKeys.type),
+                NoFilter: true,
+                prefixTranslation: 'type_domain_mastercatalog_',
+                Cell: (props: any) => {
+                    const { catalogtype } = props.cell.row.original;
+                    return (t(`type_domain_mastercatalog_${catalogtype}`.toLowerCase()) || "").toUpperCase()
+                }
+            },
+            {
+                accessor: 'businessid',
+                Header: t(langKeys.catalogmaster_businessid),
+                NoFilter: true,
+            },
+            {
+                accessor: 'businessname',
+                Header: t(langKeys.catalogmaster_businessname),
+                NoFilter: true,
+            },
+            {
                 accessor: 'status',
-                NoFilter: true
+                Header: t(langKeys.status),
+                NoFilter: true,
+                prefixTranslation: 'status_',
+                Cell: (props: any) => {
+                    const { status } = props.cell.row.original;
+                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+                }
             }
         ],
         []
     );
 
+    const fetchData = () => dispatch(getCollection(metaCatalogSel({ metabusinessid: 0, id: 0 })));
+
     useEffect(() => {
-        if (!detailRes.loading && !detailRes.error) {
-            setdataDomain(detailRes.data);
-        }
-    }, [detailRes]);
+        fetchData();
+        dispatch(setMemoryTable({
+            id: IDCATALOGMASTER
+        }));
+        dispatch(getMultiCollection([
+            getValuesFromDomain("ESTADOGENERICO"),
+            getValuesFromDomain("TIPOCATALOGOMAESTRO"),
+            metaBusinessSel({ id: 0 }),
+        ]));
 
-    const handleRegister = () => {
-        setOpenDialogDomain(true)
-        setRowSelected({ row, domainname, edit: false });
-    }
-
-    const handleDelete = (row: Dictionary) => {
-        if (row && row.operation !== "INSERT") {
-            setDomainToDelete(p => [...p, { ...row, operation: "DELETE", status: 'ELIMINADO' }]);
-        } else {
-            row.operation = 'DELETE';
-        }
-
-        setdataDomain(p => p.filter(x => (row.operation === "DELETE" ? x.operation !== "DELETE" : row.domainid !== x.domainid)));
-    }
-
-    const handleView = (row: Dictionary) => {
-        setOpenDialogDomain(true)
-        setRowSelected({ row, domainname, edit: false })
-    }
-
-    const handleEdit = (row: Dictionary) => {
-        setOpenDialogDomain(true)
-        setRowSelected({ row, domainname, edit: true })
-    }
-
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm({
-        defaultValues: {
-            id: row?.domainid || 0,
-            operation: row ? "EDIT" : "INSERT",
-            description: row?.description || '',
-            corporation: row?.corpdesc || '',
-            organization: row?.orgdesc || '',
-            name: row?.name || '',
-            type: row?.type || '',
-            status: row?.status || 'ACTIVO'
-        }
-    });
+        return () => {
+            dispatch(resetAllMain());
+            dispatch(cleanMemoryTable());
+        };
+    }, []);
 
     useEffect(() => {
         if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
-                fetchData && fetchData();
+            if (!resultManageCatalog.loading && !resultManageCatalog.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 dispatch(showBackdrop(false));
-                setViewSelected("view-1");
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
+                fetchData();
+            } else if (resultManageCatalog.error) {
+                const errormessage = t(resultManageCatalog.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
+                setWaitSave(false);
             }
         }
-    }, [executeRes, waitSave])
+    }, [resultManageCatalog, waitSave])
+
+    const handleRegister = () => {
+        setViewSelected("view-2");
+        setRowSelected({ row: null, edit: true });
+    }
+
+    const handleView = (row: Dictionary) => {
+        setViewSelected("view-2");
+        setRowSelected({ row, edit: false });
+    }
+
+    const handleEdit = (row: Dictionary) => {
+        setViewSelected("view-2");
+        setRowSelected({ row, edit: true });
+    }
+
+    const handleDelete = (row: Dictionary) => {
+        const callback = () => {
+            dispatch(catalogManageCatalog({ ...row, operation: 'DELETE', status: 'ELIMINADO' }));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete),
+            callback
+        }))
+    }
+
+    const handleSynchronize = (metabusinessid: any) => {
+        const callback = () => {
+            dispatch(catalogSynchroCatalog({ metabusinessid: metabusinessid }));
+            dispatch(showBackdrop(true));
+            setWaitSynchronize(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.catalogmaster_synchroalert),
+            callback
+        }))
+    }
+
+    useEffect(() => {
+        if (waitSynchronize) {
+            if (!resultSynchroCatalog.loading && !resultSynchroCatalog.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(resultSynchroCatalog.code || "success") }))
+                dispatch(showBackdrop(false));
+                fetchData();
+                setWaitSynchronize(false);
+            }
+            else if (resultSynchroCatalog.error) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(resultSynchroCatalog.code || "error_unexpected_error") }))
+                dispatch(showBackdrop(false));
+                setWaitSynchronize(false);
+            }
+        }
+    }, [resultSynchroCatalog, waitSynchronize])
+
+    useEffect(() => {
+        if (resultMain.multiData.data.length > 0) {
+            if (resultMain.multiData.data[2] && resultMain.multiData.data[2].success) {
+                setMetaBusinessList(resultMain.multiData.data[2].data || []);
+            }
+        }
+    }, [resultMain.multiData.data])
+
+    if (viewSelected === "view-1") {
+        if (resultMain.mainData.error) {
+            return <h1>ERROR</h1>;
+        }
+        return (
+            <div style={{ width: "100%" }}>
+                <TableZyx
+                    ButtonsElement={() => (
+                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                            <FieldSelect
+                                label={t(langKeys.catalogmaster_businesschoose)}
+                                style={{ width: 300 }}
+                                valueDefault={businessId}
+                                variant="outlined"
+                                optionDesc="businessname"
+                                optionValue="metabusinessid"
+                                data={metaBusinessList}
+                                onChange={(value) => { setBusinessId(value?.metabusinessid || 0) }}
+                            />
+                            <Button
+                                disabled={!businessId}
+                                variant="contained"
+                                color="primary"
+                                style={{ width: 140, backgroundColor: "#55BD84" }}
+                                startIcon={<RefreshIcon style={{ color: 'white' }} />}
+                                onClick={() => { handleSynchronize(businessId) }}
+                            >{t(langKeys.messagetemplate_synchronize)}
+                            </Button>
+                        </div>
+                    )}
+                    columns={columns}
+                    data={resultMain.mainData.data}
+                    download={true}
+                    handleRegister={handleRegister}
+                    loading={resultMain.mainData.loading}
+                    onClickRow={handleEdit}
+                    register={superadmin}
+                    titlemodule={t(langKeys.catalogmaster)}
+                    pageSizeDefault={IDCATALOGMASTER === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
+                    initialPageIndex={IDCATALOGMASTER === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                    initialStateFilter={IDCATALOGMASTER === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
+                />
+            </div>
+        )
+    }
+    else
+        return (
+            <CatalogMasterDetail
+                data={rowSelected}
+                setViewSelected={setViewSelected}
+                multiData={resultMain.multiData.data}
+                fetchData={fetchData}
+            />
+        )
+}
+
+const CatalogMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetchData, multiData, setViewSelected }) => {
+    const dispatch = useDispatch();
+
+    const { t } = useTranslation();
+
+    const classes = useStyles();
+    const user = useSelector(state => state.login.validateToken.user);
+    const useradmin = ["ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '');
+    const domainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const domainCatalogType = multiData[1] && multiData[1].success ? (useradmin ? multiData[1].data.filter(x => x.domainvalue === "BOT") : multiData[1].data) : [];
+    const resultBusinessList = useSelector(state => state.catalog.requestCatalogBusinessList);
+    const resultManageCatalog = useSelector(state => state.catalog.requestCatalogManageCatalog);
+
+    const [businessList, setBusinessList] = useState<any>([]);
+    const [waitSave, setWaitSave] = useState(false);
+    const [waitBusiness, setWaitBusiness] = useState(false);
+
+    const { register, handleSubmit, setValue, formState: { errors } } = useForm({
+        defaultValues: {
+            catalogdescription: row?.catalogdescription || '',
+            catalogid: row?.catalogid || '',
+            catalogname: row?.catalogname || '',
+            catalogtype: row?.catalogtype || '',
+            description: row?.description || '',
+            id: row?.metacatalogid || 0,
+            metabusinessid: row?.metabusinessid || 0,
+            operation: row ? "EDIT" : "CREATE",
+            status: row?.status || '',
+            type: row?.type || '',
+        }
+    });
 
     React.useEffect(() => {
+        register('catalogdescription');
+        register('catalogid');
+        register('catalogname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('catalogtype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('description');
         register('id');
-        register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('metabusinessid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
+        register('operation');
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-
-        dispatch(resetMainAux());
-        dispatch(getCollectionAux(getDomainValueSel((row?.name || ""))));
+        register('type');
     }, [register]);
+
+    useEffect(() => {
+        dispatch(catalogBusinessList({}));
+        dispatch(showBackdrop(true));
+        setWaitBusiness(true);
+
+        return () => {
+            dispatch(resetCatalogBusinessList());
+        };
+    }, []);
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!resultManageCatalog.loading && !resultManageCatalog.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }));
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+                fetchData && fetchData();
+                setViewSelected("view-1");
+            } else if (resultManageCatalog.error) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(resultManageCatalog.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() }) }));
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [resultManageCatalog, waitSave])
+
+    useEffect(() => {
+        if (waitBusiness) {
+            if (!resultBusinessList.loading && !resultBusinessList.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
+                dispatch(showBackdrop(false));
+                setWaitBusiness(false);
+                setBusinessList(resultBusinessList.data);
+            } else if (resultBusinessList.error) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(resultBusinessList.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() }) }));
+                dispatch(showBackdrop(false));
+                setWaitBusiness(false);
+            }
+        }
+    }, [resultBusinessList, waitBusiness])
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
+            dispatch(catalogManageCatalog(data));
             dispatch(showBackdrop(true));
-            dispatch(execute({
-                header: insDomain({ ...data }),
-                detail: [
-                    ...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data, ...x, status: data?.status, id: x.domainid ? x.domainid : 0 })),
-                    ...domainToDelete.map(x => insDomainvalue({ ...x, id: x.domainid, description: data.description, type: data.type }))
-                ]
-            }, true));
-
             setWaitSave(true);
         }
-        if(!!dataDomain.length){
-            dispatch(manageConfirmation({
-                visible: true,
-                question: t(langKeys.confirmation_save),
-                callback
-            }))
-        }else{
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.errorneedvalues) }))
-        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
     });
+
+    const processFacebookCallback = async (facebookevent: any) => {
+        if (facebookevent.status !== "unknown" && !facebookevent.error) {
+            dispatch(catalogBusinessList({
+                accesstoken: facebookevent.accessToken,
+                appid: apiUrls.CATALOGAPP,
+                graphdomain: facebookevent.graphDomain,
+                userfullname: facebookevent.name,
+                userid: facebookevent.id,
+            }));
+            dispatch(showBackdrop(true));
+            setWaitBusiness(true);
+        }
+    }
+
     return (
-        <div style={{width: "100%"}}>
+        <div style={{ width: "100%" }}>
             <form onSubmit={onSubmit}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={[
                                 { id: "view-1", name: `${t(langKeys.catalogmaster)}` },
-                                { id: "view-2", name: `${t(langKeys.catalogmaster)} ${t(langKeys.detail)}` }
+                                { id: "view-2", name: `${t(langKeys.catalogmaster_detail)}` }
                             ]}
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={row ? `${row.name}` : `${t(langKeys.new)} ${t(langKeys.catalogmaster)}`}
+                            title={row ? `${row.catalogname}` : `${t(langKeys.new)} ${t(langKeys.catalogmaster)}`}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -258,223 +440,92 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                         }
                     </div>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div>
-                    </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                    </div>
-                </div>
                 <div className={classes.containerDetail}>
+                    {!row && <div className="row-zyx">
+                        <div style={{ textAlign: "center", padding: "20px", color: "#969ea5" }}>{t(langKeys.catalogmaster_businessalert)}</div>
+                        <FacebookLogin
+                            appId={apiUrls.CATALOGAPP}
+                            autoLoad={false}
+                            buttonStyle={{ margin: "auto", backgroundColor: "#7721ad", textTransform: "none", display: "flex", textAlign: "center", justifyItems: "center", alignItems: "center", justifyContent: "center" }}
+                            fields="name,email,picture"
+                            scope="pages_show_list,business_management,catalog_management"
+                            callback={processFacebookCallback}
+                            textButton={t(langKeys.catalogmaster_businesslink)}
+                            icon={<FacebookIcon style={{ color: "white", marginRight: "8px" }} />}
+                            onClick={(e: any) => {
+                                e.view.window.FB.init({
+                                    appId: apiUrls.CATALOGAPP,
+                                    cookie: true,
+                                    xfbml: true,
+                                    version: apiUrls.FACEBOOKVERSION,
+                                });
+                            }}
+                            disableMobileRedirect={true}
+                        />
+                    </div>}
+                    <div className="row-zyx">
+                        <FieldSelect
+                            className="col-12"
+                            data={businessList}
+                            disabled={row ? true : false}
+                            error={errors?.metabusinessid?.message}
+                            label={t(langKeys.catalogmaster_businesschoose)}
+                            onChange={(value) => setValue('metabusinessid', value?.metabusinessid || 0)}
+                            optionDesc="businessname"
+                            optionValue="metabusinessid"
+                            valueDefault={row?.metabusinessid || 0}
+                        />
+                    </div>
                     <div className="row-zyx">
                         <FieldEdit
+                            className="col-6"
+                            disabled={!edit}
+                            error={errors?.catalogname?.message}
                             label={t(langKeys.name)}
-                            disabled={row ? true : false}
-                            className="col-6"
-                            valueDefault={row?.name || ""}
-                            onChange={(value) => setValue('name', value)}
-                            error={errors?.name?.message}
-                        /> 
+                            onChange={(value) => setValue('catalogname', value || '')}
+                            valueDefault={row?.catalogname || ''}
+                        />
                         <FieldEdit
-                            label={t(langKeys.description)}
                             className="col-6"
-                            valueDefault={row?.description || ""}
-                            onChange={(value) => setValue('description', value)}
-                            error={errors?.description?.message}
+                            disabled={!edit}
+                            error={errors?.catalogdescription?.message}
+                            label={t(langKeys.description)}
+                            onChange={(value) => setValue('catalogdescription', value || '')}
+                            valueDefault={row?.catalogdescription || ''}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldSelect
-                            label={t(langKeys.type)}
                             className="col-6"
-                            valueDefault={row?.type || ""}
-                            onChange={(value) => setValue('type', value ? value.domainvalue : '')}
-                            error={errors?.type?.message}
-                            data={dataDomainType}
-                            uset={true}
-                            prefixTranslation="type_domain_mastercatalog_"
+                            data={domainCatalogType}
+                            disabled={row ? true : false}
+                            error={errors?.catalogtype?.message}
+                            label={t(langKeys.type)}
+                            onChange={(value) => setValue('catalogtype', value?.domainvalue || '')}
                             optionDesc="domainvalue"
                             optionValue="domainvalue"
-                        /> 
-                        <FieldSelect
-                            label={t(langKeys.status)}
-                            className="col-6"
-                            valueDefault={row?.status || "ACTIVO"}
-                            onChange={(value) => setValue('status', value ? value.domainvalue : '')}
-                            error={errors?.status?.message}
-                            data={dataDomainStatus}
-                            optionDesc="domaindesc"
+                            prefixTranslation="type_domain_mastercatalog_"
                             uset={true}
-                            prefixTranslation="status_"
+                            valueDefault={row?.catalogtype || ''}
+                        />
+                        <FieldSelect
+                            className="col-6"
+                            data={domainStatus}
+                            disabled={!edit}
+                            error={errors?.status?.message}
+                            label={t(langKeys.status)}
+                            onChange={(value) => setValue('status', value?.domainvalue || '')}
+                            optionDesc="domaindesc"
                             optionValue="domainvalue"
-                        /> 
-                    </div> 
+                            prefixTranslation="status_"
+                            uset={true}
+                            valueDefault={row?.status || ''}
+                        />
+                    </div>
                 </div>
             </form>
         </div>
     );
-}
-
-const CatalogMaster: FC = () => {
-    const history = useHistory();
-    const { t } = useTranslation();
-    const dispatch = useDispatch();
-    const mainResult = useSelector(state => state.main);
-    const executeResult = useSelector(state => state.main.execute);
-    const [viewSelected, setViewSelected] = useState("view-1");
-    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, domainname: "", edit: false });
-    const [waitSave, setWaitSave] = useState(false);
-    const user = useSelector(state => state.login.validateToken.user);
-    const superadmin = ["SUPERADMIN","ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '');
-
-    function redirectFunc(view:string){
-        if(view ==="view-0"){
-            history.push(paths.CONFIGURATION)
-            return;
-        }
-        setViewSelected(view)
-    }
-    const columns = React.useMemo(
-        () => [
-            {
-                accessor: 'domainid',
-                NoFilter: true,
-                isComponent: true,
-                minWidth: 60,
-                width: '1%',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <TemplateIcons
-                            viewFunction={() => handleView(row)}
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                        />
-                    )
-                }
-            },
-            {
-                Header: t(langKeys.name),
-                accessor: 'domainname',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.description),
-                accessor: 'description',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.type),
-                accessor: 'type',
-                NoFilter: true,
-                prefixTranslation: 'type_domain_mastercatalog_',
-                Cell: (props: any) => {
-                    const { type } = props.cell.row.original;
-                    return (t(`type_domain_mastercatalog_${type}`.toLowerCase()) || "").toUpperCase()
-                }
-            },
-            {
-                Header: t(langKeys.status),
-                accessor: 'status',
-                NoFilter: true,
-                prefixTranslation: 'status_',
-                Cell: (props: any) => {
-                    const { status } = props.cell.row.original;
-                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
-                }
-            }
-        ],
-        []
-    );
-
-    const fetchData = () => dispatch(getCollection(getDomainSel('')));
-
-    useEffect(() => {
-        fetchData();
-        dispatch(getMultiCollection([
-            getValuesFromDomain("ESTADOGENERICO"),
-            getValuesFromDomain("TIPOCATALOGOMAESTRO")
-        ]));
-
-        return () => {
-            dispatch(resetAllMain());
-        };
-    }, []);
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
-                fetchData();
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
-        }
-    }, [executeResult, waitSave])
-
-    const handleRegister = () => {
-        setViewSelected("view-2");
-        setRowSelected({ row: null, domainname: "", edit: true });
-    }
-
-    const handleView = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected({ row, domainname: row.domainname, edit: false });
-    }
-
-    const handleEdit = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected({ row, domainname: row.domainname, edit: true });
-    }
-
-    const handleDelete = (row: Dictionary) => {
-        const callback = () => {
-            dispatch(execute(insDomain({ ...row, operation: 'DELETE', status: 'ELIMINADO' })));
-            dispatch(showBackdrop(true));
-            setWaitSave(true);
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_delete),
-            callback
-        }))
-    }
-
-    if (viewSelected === "view-1") {
-
-        if (mainResult.mainData.error) {
-            return <h1>ERROR</h1>;
-        }
-
-        return (
-            <div style={{width:"100%"}}>
-                <TableZyx
-                    columns={columns}
-                    titlemodule={t(langKeys.catalogmaster)}
-                    data={mainResult.mainData.data}
-                    download={true}
-                    onClickRow={handleEdit}
-                    loading={mainResult.mainData.loading}
-                    register={superadmin}
-                    handleRegister={handleRegister}
-            />
-            </div>
-        )
-    }
-    else
-        return (
-            <DetailDomains
-                data={rowSelected}
-                setViewSelected={redirectFunc}
-                multiData={mainResult.multiData.data}
-                fetchData={fetchData}
-            />
-        )
 }
 
 export default CatalogMaster;
