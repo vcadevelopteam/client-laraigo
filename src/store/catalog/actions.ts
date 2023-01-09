@@ -38,3 +38,51 @@ export const catalogSynchroCatalog = (request: any): IActionCall => ({
 });
 
 export const resetCatalogSynchroCatalog = (): IActionCall => ({ type: actionTypes.CATALOG_SYNCHROCATALOG_RESET });
+
+export const catalogSynchroProduct = (request: any): IActionCall => ({
+    callAPI: () => CatalogService.catalogSynchroProduct(request),
+    types: {
+        loading: actionTypes.CATALOG_SYNCHROPRODUCT,
+        success: actionTypes.CATALOG_SYNCHROPRODUCT_SUCCESS,
+        failure: actionTypes.CATALOG_SYNCHROPRODUCT_FAILURE,
+    },
+    type: null,
+});
+
+export const resetCatalogSynchroProduct = (): IActionCall => ({ type: actionTypes.CATALOG_SYNCHROPRODUCT_RESET });
+
+export const catalogImportProduct = (request: any): IActionCall => ({
+    callAPI: () => CatalogService.catalogImportProduct(request),
+    types: {
+        loading: actionTypes.CATALOG_IMPORTPRODUCT,
+        success: actionTypes.CATALOG_IMPORTPRODUCT_SUCCESS,
+        failure: actionTypes.CATALOG_IMPORTPRODUCT_FAILURE,
+    },
+    type: null,
+});
+
+export const resetCatalogImportProduct = (): IActionCall => ({ type: actionTypes.CATALOG_IMPORTPRODUCT_RESET });
+
+export const catalogManageProduct = (request: any): IActionCall => ({
+    callAPI: () => CatalogService.catalogManageProduct(request),
+    types: {
+        loading: actionTypes.CATALOG_MANAGEPRODUCT,
+        success: actionTypes.CATALOG_MANAGEPRODUCT_SUCCESS,
+        failure: actionTypes.CATALOG_MANAGEPRODUCT_FAILURE,
+    },
+    type: null,
+});
+
+export const resetCatalogManageProduct = (): IActionCall => ({ type: actionTypes.CATALOG_MANAGEPRODUCT_RESET });
+
+export const catalogDeleteProduct = (request: any): IActionCall => ({
+    callAPI: () => CatalogService.catalogDeleteProduct(request),
+    types: {
+        loading: actionTypes.CATALOG_DELETEPRODUCT,
+        success: actionTypes.CATALOG_DELETEPRODUCT_SUCCESS,
+        failure: actionTypes.CATALOG_DELETEPRODUCT_FAILURE,
+    },
+    type: null,
+});
+
+export const resetCatalogDeleteProduct = (): IActionCall => ({ type: actionTypes.CATALOG_DELETEPRODUCT_RESET });
