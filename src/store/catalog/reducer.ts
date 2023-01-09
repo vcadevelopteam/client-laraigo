@@ -17,6 +17,7 @@ export interface IState {
     requestCatalogImportProduct: IRequest;
     requestCatalogManageProduct: IRequest;
     requestCatalogDeleteProduct: IRequest;
+    requestCatalogDownloadProduct: IRequest;
 }
 
 export const initialState: IState = {
@@ -27,6 +28,7 @@ export const initialState: IState = {
     requestCatalogImportProduct: { ...initialCommon, data: null, loading: false, error: false },
     requestCatalogManageProduct: { ...initialCommon, data: null, loading: false, error: false },
     requestCatalogDeleteProduct: { ...initialCommon, data: null, loading: false, error: false },
+    requestCatalogDownloadProduct: { ...initialCommon, data: null, loading: false, error: false },
 };
 
 export default createReducer<IState>(initialState, {
@@ -64,4 +66,9 @@ export default createReducer<IState>(initialState, {
     [actionTypes.CATALOG_DELETEPRODUCT_FAILURE]: caseFunctions.catalogDeleteProductFailure,
     [actionTypes.CATALOG_DELETEPRODUCT_SUCCESS]: caseFunctions.catalogDeleteProductSuccess,
     [actionTypes.CATALOG_DELETEPRODUCT_RESET]: caseFunctions.catalogDeleteProductReset,
+
+    [actionTypes.CATALOG_DOWNLOADPRODUCT]: caseFunctions.catalogDownloadProduct,
+    [actionTypes.CATALOG_DOWNLOADPRODUCT_FAILURE]: caseFunctions.catalogDownloadProductFailure,
+    [actionTypes.CATALOG_DOWNLOADPRODUCT_SUCCESS]: caseFunctions.catalogDownloadProductSuccess,
+    [actionTypes.CATALOG_DOWNLOADPRODUCT_RESET]: caseFunctions.catalogDownloadProductReset,
 });

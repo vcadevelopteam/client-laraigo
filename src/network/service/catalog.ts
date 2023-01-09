@@ -28,3 +28,7 @@ export function catalogManageProduct(request: any) {
 export function catalogDeleteProduct(request: any) {
     return APIManager.post(apiUrls.CATALOG_DELETEPRODUCT, { data: request }, true);
 }
+
+export function catalogDownloadProduct(request: any) {
+    return APIManager.post(apiUrls.CATALOG_DOWNLOADPRODUCT, { data: request }, true);
+}

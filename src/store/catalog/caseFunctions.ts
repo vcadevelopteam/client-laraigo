@@ -253,3 +253,39 @@ export const catalogDeleteProductReset = (state: IState): IState => ({
     ...state,
     requestCatalogDeleteProduct: initialState.requestCatalogDeleteProduct,
 })
+
+export const catalogDownloadProduct = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestCatalogDownloadProduct: {
+        ...state.requestCatalogDownloadProduct,
+        error: false,
+        loading: true,
+    }
+})
+
+export const catalogDownloadProductFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestCatalogDownloadProduct: {
+        ...state.requestCatalogDownloadProduct,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message || 'error_unexpected_error',
+    }
+})
+
+export const catalogDownloadProductSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestCatalogDownloadProduct: {
+        ...state.requestCatalogDownloadProduct,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message,
+    }
+})
+
+export const catalogDownloadProductReset = (state: IState): IState => ({
+    ...state,
+    requestCatalogDownloadProduct: initialState.requestCatalogDownloadProduct,
+})

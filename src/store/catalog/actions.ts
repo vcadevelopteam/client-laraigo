@@ -86,3 +86,15 @@ export const catalogDeleteProduct = (request: any): IActionCall => ({
 });
 
 export const resetCatalogDeleteProduct = (): IActionCall => ({ type: actionTypes.CATALOG_DELETEPRODUCT_RESET });
+
+export const catalogDownloadProduct = (request: any): IActionCall => ({
+    callAPI: () => CatalogService.catalogDownloadProduct(request),
+    types: {
+        loading: actionTypes.CATALOG_DOWNLOADPRODUCT,
+        success: actionTypes.CATALOG_DOWNLOADPRODUCT_SUCCESS,
+        failure: actionTypes.CATALOG_DOWNLOADPRODUCT_FAILURE,
+    },
+    type: null,
+});
+
+export const resetCatalogDownloadProduct = (): IActionCall => ({ type: actionTypes.CATALOG_DOWNLOADPRODUCT_RESET });

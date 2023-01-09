@@ -1,4 +1,4 @@
-const ENV = "DEVELOP";
+const ENV = "LOCAL";
 
 const APIS_URL = {
     DEVELOP: {
@@ -240,4 +240,5 @@ export const apiUrls = {
     CATALOG_IMPORTPRODUCT: `${BASE_URL}/catalog/importproduct`,
     CATALOG_MANAGEPRODUCT: `${BASE_URL}/catalog/manageproduct`,
     CATALOG_DELETEPRODUCT: `${BASE_URL}/catalog/deleteproduct`,
+    CATALOG_DOWNLOADPRODUCT: `${BASE_URL}/catalog/downloadproduct`,
 };
