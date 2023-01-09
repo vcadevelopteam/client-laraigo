@@ -15,7 +15,6 @@ import { formatNumber } from 'common/helpers';
 import { getCollectionPaginated, getMultiCollection, resetAllMain, setMemoryTable, cleanMemoryTable, uploadFile, resetCollectionPaginated } from 'store/main/actions';
 import { getValuesFromDomain, getPaginatedProductCatalog, metaCatalogSel } from 'common/helpers';
 import { IconButton, CircularProgress, FormControlLabel } from '@material-ui/core';
-import { importXml } from 'store/product/actions';
 import { langKeys } from 'lang/keys';
 import { makeStyles } from '@material-ui/core/styles';
 import { Search as SearchIcon, AddCircle, FileCopy, GetApp, Close, Delete } from '@material-ui/icons';
@@ -763,31 +762,36 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
             metacatalogid: row?.metacatalogid || 0,
             id: row?.productcatalogid || 0,
             productid: row?.productid || '',
+            retailerid: row?.retailerid || '',
             title: row?.title || '',
             description: row?.description || '',
+            descriptionshort: row?.descriptionshort || '',
             availability: row?.availability || '',
-            link: row?.link || '',
+            category: row?.category || '',
+            condition: row?.condition || '',
             currency: row?.currency || '',
             price: row?.price || 0.00,
             saleprice: row?.saleprice || 0.00,
+            link: row?.link || '',
             imagelink: row?.imagelink || '',
             additionalimagelink: row?.additionalimagelink || '',
-            pattern: row?.pattern || '',
-            category: row?.category || '',
-            productstatus: row?.productstatus || '',
-            status: row?.status || '',
             brand: row?.brand || '',
             color: row?.color || '',
             gender: row?.gender || '',
             material: row?.material || '',
+            pattern: row?.pattern || '',
             size: row?.size || '',
-            condition: row?.condition || '',
+            datestart: row?.datestart || null,
+            datelaunch: row?.datelaunch || null,
+            dateexpiration: row?.dateexpiration || null,
+            labels: row?.labels || '',
             customlabel0: row?.customlabel0 || '',
             customlabel1: row?.customlabel1 || '',
             customlabel2: row?.customlabel2 || '',
             customlabel3: row?.customlabel3 || '',
             customlabel4: row?.customlabel4 || '',
-            labels: row?.labels || '',
+            reviewstatus: row?.reviewstatus || '',
+            status: row?.status || '',
             type: row?.type || '',
             operation: (edit && row) ? "EDIT" : "INSERT",
         }
@@ -813,31 +817,36 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
         register('metacatalogid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('id');
         register('productid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('retailerid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('title', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('description');
+        register('descriptionshort');
         register('availability', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('link', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('category', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('condition', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('currency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('price', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('saleprice', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('saleprice');
+        register('link', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('imagelink', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('additionalimagelink');
-        register('pattern');
-        register('category');
-        register('productstatus');
-        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('brand', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('brand');
         register('color');
         register('gender');
         register('material');
+        register('pattern');
         register('size');
-        register('condition', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('datestart');
+        register('datelaunch');
+        register('dateexpiration');
+        register('labels');
         register('customlabel0');
         register('customlabel1');
         register('customlabel2');
         register('customlabel3');
         register('customlabel4');
-        register('labels');
+        register('reviewstatus');
+        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type');
         register('operation');
     }, [edit, register]);
@@ -981,7 +990,8 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                                 setValue('category', value?.domainvalue || '');
                             }}
                             error={errors?.category?.message}
-                            data={dataDomainCategory}
+                            //data={dataDomainCategory}
+                            data={[]}
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
                         />
@@ -1117,13 +1127,13 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         />
                     </div>
                     <div className="row-zyx">
-                        <FieldEdit
+                        {/*<FieldEdit
                             label={`${t(langKeys.customlabel)} 5`}
                             className="col-6"
                             valueDefault={row?.customlabel5 || ""}
                             onChange={(value) => setValue('customlabel5', value)}
                             error={errors?.customlabel5?.message}
-                        />
+                        />*/}
                         <FieldEdit
                             label={t(langKeys.productid)}
                             className="col-6"
@@ -1133,7 +1143,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         />
                     </div>
                     <div className="row-zyx">
-                        <FieldEdit
+                        {/*<FieldEdit
                             label={t(langKeys.catalogname)}
                             className="col-6"
                             valueDefault={row?.catalogname || ""}
@@ -1146,7 +1156,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             valueDefault={row?.catalogid || ""}
                             onChange={(value) => setValue('catalogid', value)}
                             error={errors?.catalogid?.message}
-                        />
+                    />*/}
                     </div>
                     <div className="row-zyx">
                         <div className={classes.subtitle}>{t(langKeys.productcatalogimage)}</div>

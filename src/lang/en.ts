@@ -4881,6 +4881,16 @@ const translation: LangKeys = {
   productcatalog_domain_condition_used_fair: "Used (Fair)",
   productcatalog_domain_condition_cpo: "Certified Pre-Owned",
   productcatalog_domain_condition_open_box_new: "Open Box New",
+  productcatalog_reviewstatus_pending: "Pending",
+  productcatalog_reviewstatus_rejected: "Rejected",
+  productcatalog_reviewstatus_approved: "Approved",
+  productcatalog_reviewstatus_outdated: "Outdated",
+  productcatalog_retailerid: "Retailer ID",
+  productcatalog_descriptionshort: "Short Description",
+  productcatalog_reviewstatus: "Review Status",
+  productcatalog_datestart: "Start Date",
+  productcatalog_datelaunch: "Launch Date",
+  productcatalog_dateexpiration: "Expiration Date",
 };
 
 const enResource: ResourceLanguage = {

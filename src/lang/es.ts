@@ -4810,6 +4810,16 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   productcatalog_domain_condition_used_fair: "Usado (Aceptable Estado)",
   productcatalog_domain_condition_cpo: "Usado con Certificado",
   productcatalog_domain_condition_open_box_new: "Como Recien Salido de Caja",
+  productcatalog_reviewstatus_pending: "Pendiente",
+  productcatalog_reviewstatus_rejected: "Rechazado",
+  productcatalog_reviewstatus_approved: "Aprobado",
+  productcatalog_reviewstatus_outdated: "Desfasado",
+  productcatalog_retailerid: "ID de Comercio",
+  productcatalog_descriptionshort: "Descripción Corta",
+  productcatalog_reviewstatus: "Estado de Revisión",
+  productcatalog_datestart: "Fecha de Comienzo",
+  productcatalog_datelaunch: "Fecha de Lanzamiento",
+  productcatalog_dateexpiration: "Fecha de Expiración",
 };
 
 const esResource: ResourceLanguage = {
