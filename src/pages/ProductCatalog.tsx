@@ -82,6 +82,7 @@ const ProductCatalog: FC = () => {
     const memoryTable = useSelector(state => state.main.memoryTable);
     const resultDeleteProduct = useSelector(state => state.catalog.requestCatalogDeleteProduct);
     const resultDownloadProduct = useSelector(state => state.catalog.requestCatalogDownloadProduct);
+    const resultManageProduct = useSelector(state => state.catalog.requestCatalogManageProduct);
     const resultSynchroProduct = useSelector(state => state.catalog.requestCatalogSynchroProduct);
     const user = useSelector(state => state.login.validateToken.user);
     const superadmin = ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '');
@@ -97,6 +98,7 @@ const ProductCatalog: FC = () => {
     const [totalrow, settotalrow] = useState(0);
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitDelete, setWaitDelete] = useState(false);
+    const [waitManage, setWaitManage] = useState(false);
     const [waitDownload, setWaitDownload] = useState(false);
     const [waitSynchronize, setWaitSynchronize] = useState(false);
 
@@ -161,6 +163,21 @@ const ProductCatalog: FC = () => {
     function redirectFunc(view: string) {
         setViewSelected(view)
     }
+
+    useEffect(() => {
+        if (waitManage) {
+            if (!resultManageProduct.loading && !resultManageProduct.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
+                dispatch(showBackdrop(false));
+                setWaitManage(false);
+                fetchData(fetchDataAux);
+            } else if (resultManageProduct.error) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(resultManageProduct.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() }) }))
+                dispatch(showBackdrop(false));
+                setWaitManage(false);
+            }
+        }
+    }, [resultManageProduct, waitManage])
 
     useEffect(() => {
         if (waitDelete) {
@@ -246,9 +263,9 @@ const ProductCatalog: FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(catalogDeleteProduct({ product: [{ ...row, id: row.productcatalogid, operation: 'DELETE', status: 'ELIMINADO' }] }));
+            dispatch(catalogManageProduct({ ...row, id: row.productcatalogid, operation: 'DELETE', status: 'ELIMINADO' }));
             dispatch(showBackdrop(true));
-            setWaitDelete(true);
+            setWaitManage(true);
         }
 
         dispatch(manageConfirmation({
@@ -326,7 +343,7 @@ const ProductCatalog: FC = () => {
                 prefixTranslation: 'productcatalog_domain_availability_',
                 Cell: (props: any) => {
                     const { availability } = props.cell.row.original;
-                    return (t(`productcatalog_domain_availability_${availability}`.toLowerCase()) || "").toUpperCase()
+                    return (t(`productcatalog_domain_availability_${availability?.replaceAll(' ', '_')}`.toLowerCase()) || "").toUpperCase()
                 }
             },
             {
@@ -1021,7 +1038,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         <FieldSelect
                             className="col-6"
                             data={metaCatalogList || []}
-                            disabled={(row ? true : false)}
+                            disabled={row ? true : false}
                             error={errors?.metacatalogid?.message}
                             label={t(langKeys.catalogname)}
                             onChange={(value) => { setValue('metacatalogid', value?.metacatalogid || 0); }}
@@ -1031,7 +1048,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         />
                         <FieldEdit
                             className="col-6"
-                            disabled={(row ? true : false)}
+                            disabled={row ? true : false}
                             error={errors?.productid?.message}
                             label={t(langKeys.productid)}
                             onChange={(value) => { setValue('productid', value); }}
@@ -1049,7 +1066,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         />
                         <FieldEdit
                             className="col-6"
-                            disabled={(row ? true : false)}
+                            disabled={!edit}
                             error={errors?.descriptionshort?.message}
                             label={t(langKeys.productcatalog_descriptionshort)}
                             onChange={(value) => setValue('descriptionshort', value)}
@@ -1059,7 +1076,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                     <div className="row-zyx">
                         <FieldEdit
                             className="col-12"
-                            disabled={(row ? true : false)}
+                            disabled={!edit}
                             error={errors?.description?.message}
                             label={t(langKeys.description)}
                             onChange={(value) => setValue('description', value)}
@@ -1070,7 +1087,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         <FieldSelect
                             className="col-6"
                             data={dataDomainAvailability || []}
-                            disabled={(row ? true : false)}
+                            disabled={!edit}
                             error={errors?.availability?.message}
                             label={t(langKeys.availability)}
                             onChange={(value) => setValue('availability', value?.domainvalue || '')}
@@ -1083,7 +1100,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         <FieldSelect
                             className="col-6"
                             data={googleCategory || []}
-                            disabled={(row ? true : false)}
+                            disabled={!edit}
                             error={errors?.category?.message}
                             label={t(langKeys.category)}
                             onChange={(value) => setValue('category', value?.categoryname || '')}
@@ -1096,7 +1113,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         <FieldSelect
                             className="col-6"
                             data={dataDomainCondition || []}
-                            disabled={(row ? true : false)}
+                            disabled={!edit}
                             error={errors?.condition?.message}
                             label={t(langKeys.condition)}
                             onChange={(value) => setValue('condition', value?.domainvalue || '')}
@@ -1109,7 +1126,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         <FieldSelect
                             className="col-6"
                             data={dataDomainCurrency || []}
-                            disabled={(row ? true : false)}
+                            disabled={!edit}
                             error={errors?.currency?.message}
                             label={t(langKeys.currency)}
                             onChange={(value) => setValue('currency', value?.domainvalue || '')}
@@ -1123,7 +1140,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                     <div className="row-zyx">
                         <FieldEdit
                             className="col-6"
-                            disabled={(row ? true : false)}
+                            disabled={!edit}
                             error={errors?.price?.message}
                             inputProps={{ step: "any" }}
                             label={t(langKeys.productcatalogunitprice)}
@@ -1133,7 +1150,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         />
                         <FieldEdit
                             className="col-6"
-                            disabled={(row ? true : false)}
+                            disabled={!edit}
                             error={errors?.saleprice?.message}
                             inputProps={{ step: "any" }}
                             label={t(langKeys.saleprice)}
@@ -1145,7 +1162,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                     <div className="row-zyx">
                         <FieldEdit
                             className="col-6"
-                            disabled={(row ? true : false)}
+                            disabled={!edit}
                             error={errors?.link?.message}
                             label={t(langKeys.website)}
                             onChange={(value) => setValue('link', value)}
@@ -1153,7 +1170,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         />
                         <FieldEdit
                             className="col-6"
-                            disabled={(row ? true : false)}
+                            disabled={!edit}
                             error={errors?.brand?.message}
                             label={t(langKeys.brand)}
                             onChange={(value) => setValue('brand', value)}
@@ -1163,7 +1180,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                     <div className="row-zyx">
                         <FieldEdit
                             className="col-6"
-                            disabled={(row ? true : false)}
+                            disabled={!edit}
                             error={errors?.color?.message}
                             label={t(langKeys.color)}
                             onChange={(value) => setValue('color', value)}
@@ -1172,7 +1189,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         <FieldSelect
                             className="col-6"
                             data={dataDomainGender || []}
-                            disabled={(row ? true : false)}
+                            disabled={!edit}
                             error={errors?.gender?.message}
                             label={t(langKeys.gender)}
                             onChange={(value) => setValue('gender', value?.domainvalue || '')}
@@ -1186,7 +1203,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                     <div className="row-zyx">
                         <FieldEdit
                             className="col-6"
-                            disabled={(row ? true : false)}
+                            disabled={!edit}
                             error={errors?.material?.message}
                             label={t(langKeys.material)}
                             onChange={(value) => setValue('material', value)}
@@ -1194,7 +1211,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         />
                         <FieldEdit
                             className="col-6"
-                            disabled={(row ? true : false)}
+                            disabled={!edit}
                             error={errors?.pattern?.message}
                             label={t(langKeys.pattern)}
                             onChange={(value) => setValue('pattern', value)}
@@ -1204,7 +1221,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                     <div className="row-zyx">
                         <FieldEdit
                             className="col-6"
-                            disabled={(row ? true : false)}
+                            disabled={!edit}
                             error={errors?.size?.message}
                             label={t(langKeys.size)}
                             onChange={(value) => setValue('size', value)}
@@ -1228,7 +1245,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         <FieldMultiSelectFreeSolo
                             className="col-6"
                             data={labels.map((x: any) => ({ value: x }))}
-                            disabled={(row ? true : false)}
+                            disabled={!edit}
                             label={t(langKeys.labels)}
                             loading={false}
                             onChange={(value) => {
@@ -1241,7 +1258,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         />
                         <FieldEdit
                             className="col-6"
-                            disabled={(row ? true : false)}
+                            disabled={!edit}
                             error={errors?.customlabel0?.message}
                             label={`${t(langKeys.customlabel)}${isClaro ? ' 0' : ''}`}
                             onChange={(value) => setValue('customlabel0', value)}
@@ -1251,7 +1268,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                     <div className="row-zyx" style={{ display: isClaro ? "flex" : "none" }}>
                         <FieldEdit
                             className="col-6"
-                            disabled={(row ? true : false)}
+                            disabled={!edit}
                             error={errors?.customlabel1?.message}
                             label={`${t(langKeys.customlabel)} 1`}
                             onChange={(value) => setValue('customlabel1', value)}
@@ -1259,7 +1276,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         />
                         <FieldEdit
                             className="col-6"
-                            disabled={(row ? true : false)}
+                            disabled={!edit}
                             error={errors?.customlabel2?.message}
                             label={`${t(langKeys.customlabel)} 2`}
                             onChange={(value) => setValue('customlabel2', value)}
@@ -1269,7 +1286,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                     <div className="row-zyx" style={{ display: isClaro ? "flex" : "none" }}>
                         <FieldEdit
                             className="col-6"
-                            disabled={(row ? true : false)}
+                            disabled={!edit}
                             error={errors?.customlabel3?.message}
                             label={`${t(langKeys.customlabel)} 3`}
                             onChange={(value) => setValue('customlabel3', value)}
@@ -1277,7 +1294,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         />
                         <FieldEdit
                             className="col-6"
-                            disabled={(row ? true : false)}
+                            disabled={!edit}
                             error={errors?.customlabel4?.message}
                             label={`${t(langKeys.customlabel)} 4`}
                             onChange={(value) => setValue('customlabel4', value)}
@@ -1299,7 +1316,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             : null}
                         <React.Fragment>
                             <input
-                                disabled={(row ? true : false)}
+                                disabled={!edit}
                                 accept="image/png"
                                 style={{ display: 'none' }}
                                 id="attachmentInput"
@@ -1308,7 +1325,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             />
                             {<IconButton
                                 onClick={() => { setfieldupload("imagelink"); onClickAttachment("attachmentInput") }}
-                                disabled={((row ? true : false) || waitUploadFile || (fileAttachment !== null || getValues("imagelink")))}
+                                disabled={(!edit || waitUploadFile || (fileAttachment !== null || getValues("imagelink")))}
                             ><AttachFileIcon color="primary" />
                             </IconButton>}
                             {!!getValues("imagelink") && getValues("imagelink").split(',').map((f: string, i: number) => (
@@ -1340,7 +1357,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             : null}
                         <React.Fragment>
                             <input
-                                disabled={(row ? true : false)}
+                                disabled={!edit}
                                 accept="image/png"
                                 style={{ display: 'none' }}
                                 id="attachmentInput2"
@@ -1349,7 +1366,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             />
                             {<IconButton
                                 onClick={() => { setfieldupload("additionalimagelink"); onClickAttachment("attachmentInput2") }}
-                                disabled={((row ? true : false) || waitUploadFile || (fileAttachmentAditional !== null || getValues("additionalimagelink")))}
+                                disabled={(!edit || waitUploadFile || (fileAttachmentAditional !== null || getValues("additionalimagelink")))}
                             ><AttachFileIcon color="primary" />
                             </IconButton>}
                             {!!getValues("additionalimagelink") && getValues("additionalimagelink").split(',').map((f: string, i: number) => (
