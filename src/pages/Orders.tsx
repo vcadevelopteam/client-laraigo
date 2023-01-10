@@ -94,7 +94,7 @@ const Orders: FC = () => {
                 NoFilter: true
             },
             {
-                Header: t(langKeys.ticket_numeroticket),
+                Header: `N° ${t(langKeys.ticket_numeroticket)}`,
                 accessor: 'ticketnum',
                 NoFilter: true,
                 // prefixTranslation: 'status_',
@@ -109,7 +109,7 @@ const Orders: FC = () => {
                 NoFilter: true
             },
             {
-                Header: t(langKeys.phone),
+                Header: `N° ${t(langKeys.phone)}`,
                 accessor: 'phone',
                 NoFilter: true
             },
