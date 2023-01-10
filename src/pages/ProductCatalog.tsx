@@ -180,7 +180,7 @@ const ProductCatalog: FC = () => {
     useEffect(() => {
         if (waitSynchronize) {
             if (!resultSynchroProduct.loading && !resultSynchroProduct.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }))
                 dispatch(showBackdrop(false));
                 setWaitSynchronize(false);
                 fetchData(fetchDataAux);
@@ -195,7 +195,7 @@ const ProductCatalog: FC = () => {
     useEffect(() => {
         if (waitDownload) {
             if (!resultDownloadProduct.loading && !resultDownloadProduct.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }))
                 dispatch(showBackdrop(false));
                 setWaitDownload(false);
                 fetchData(fetchDataAux);
@@ -385,8 +385,25 @@ const ProductCatalog: FC = () => {
                 }
             },
             {
+                accessor: 'additionalimagelink',
+                Header: t(langKeys.additionalimage),
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (<label
+                        className={classes.labellink}
+                        onClick={(e) => { e.stopPropagation(); window.open(`${row.additionalimagelink}`, '_blank')?.focus() }}
+                    >{row.additionalimagelink ? t(langKeys.additionalimagelink) : ""}
+                    </label>)
+                }
+            },
+            {
                 accessor: 'pattern',
                 Header: t(langKeys.pattern),
+            },
+            {
+                accessor: 'category',
+                Header: t(langKeys.category),
             },
             {
                 accessor: 'brand',
@@ -406,17 +423,12 @@ const ProductCatalog: FC = () => {
                 }
             },
             {
-                accessor: 'size',
-                Header: t(langKeys.size),
+                accessor: 'material',
+                Header: t(langKeys.material),
             },
             {
-                accessor: 'condition',
-                Header: t(langKeys.condition),
-                prefixTranslation: 'productcatalog_domain_condition_',
-                Cell: (props: any) => {
-                    const { condition } = props.cell.row.original;
-                    return (t(`productcatalog_domain_condition_${condition}`.toLowerCase()) || "").toUpperCase()
-                }
+                accessor: 'size',
+                Header: t(langKeys.size),
             },
             {
                 accessor: 'customlabel0',
@@ -601,7 +613,7 @@ const ImportXmlModal: FC<{ openModal: boolean, metaCatalogList: Dictionary[], se
     useEffect(() => {
         if (waitImport) {
             if (!resultImportProduct.loading && !resultImportProduct.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }))
                 dispatch(showBackdrop(false));
 
                 setValue('isxml', false);

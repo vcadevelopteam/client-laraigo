@@ -4820,6 +4820,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   productcatalog_datestart: "Fecha de Comienzo",
   productcatalog_datelaunch: "Fecha de Lanzamiento",
   productcatalog_dateexpiration: "Fecha de Expiración",
+  productcatalog_domain_gender_: "Vacio",
 };
 
 const esResource: ResourceLanguage = {

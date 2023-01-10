@@ -4808,6 +4808,7 @@ export const langKeys = {
     productcatalog_datestart: "productcatalog_datestart",
     productcatalog_datelaunch: "productcatalog_datelaunch",
     productcatalog_dateexpiration: "productcatalog_dateexpiration",
+    productcatalog_domain_gender_: "productcatalog_domain_gender_",
   };
   
   export type LangKeys = typeof langKeys;
