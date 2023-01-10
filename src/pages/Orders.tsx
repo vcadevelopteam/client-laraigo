@@ -109,7 +109,7 @@ const Orders: FC = () => {
                 NoFilter: true
             },
             {
-                Header: `N° ${t(langKeys.phone)}`,
+                Header: t(langKeys.phone),
                 accessor: 'phone',
                 NoFilter: true
             },
