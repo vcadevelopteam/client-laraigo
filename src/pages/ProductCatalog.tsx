@@ -215,7 +215,10 @@ const ProductCatalog: FC = () => {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }))
                 dispatch(showBackdrop(false));
                 setWaitDownload(false);
-                fetchData(fetchDataAux);
+
+                if (resultDownloadProduct.data?.url) {
+                    window.open(resultDownloadProduct.data?.url, '_blank');
+                }
             } else if (resultDownloadProduct.error) {
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(resultDownloadProduct.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() }) }))
                 dispatch(showBackdrop(false));

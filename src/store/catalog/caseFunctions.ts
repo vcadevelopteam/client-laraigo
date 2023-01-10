@@ -279,6 +279,7 @@ export const catalogDownloadProductSuccess = (state: IState, action: IAction): I
     requestCatalogDownloadProduct: {
         ...state.requestCatalogDownloadProduct,
         code: action?.payload?.code,
+        data: action?.payload?.data,
         error: action?.payload?.success ? false : true,
         loading: false,
         msg: action?.payload?.message,
