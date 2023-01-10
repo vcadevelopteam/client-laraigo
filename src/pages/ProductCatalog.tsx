@@ -906,20 +906,20 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
         register('metacatalogid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('id');
         register('productid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('retailerid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('retailerid');
         register('title', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('description');
+        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('descriptionshort');
         register('availability', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('category', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('condition', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('currency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('price', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register('price', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) > 0) || t(langKeys.field_required) });
         register('saleprice');
         register('link', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('imagelink', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('additionalimagelink');
-        register('brand');
+        register('brand', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('color');
         register('gender');
         register('material');
@@ -1009,7 +1009,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         <FieldSelect
                             className="col-6"
                             data={metaCatalogList || []}
-                            disabled={row ? true : false}
+                            disabled={(row ? true : false)}
                             error={errors?.metacatalogid?.message}
                             label={t(langKeys.catalogname)}
                             onChange={(value) => { setValue('metacatalogid', value?.metacatalogid || 0); }}
@@ -1019,10 +1019,10 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         />
                         <FieldEdit
                             className="col-6"
-                            disabled={row ? true : false}
+                            disabled={(row ? true : false)}
                             error={errors?.productid?.message}
                             label={t(langKeys.productid)}
-                            onChange={(value) => { setValue('productid', value); setValue('retailerid', value); }}
+                            onChange={(value) => { setValue('productid', value); }}
                             valueDefault={row?.productid || ''}
                         />
                     </div>
@@ -1037,7 +1037,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         />
                         <FieldEdit
                             className="col-6"
-                            disabled={!edit}
+                            disabled={(row ? true : false)}
                             error={errors?.descriptionshort?.message}
                             label={t(langKeys.productcatalog_descriptionshort)}
                             onChange={(value) => setValue('descriptionshort', value)}
@@ -1047,7 +1047,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                     <div className="row-zyx">
                         <FieldEdit
                             className="col-12"
-                            disabled={!edit}
+                            disabled={(row ? true : false)}
                             error={errors?.description?.message}
                             label={t(langKeys.description)}
                             onChange={(value) => setValue('description', value)}
@@ -1058,7 +1058,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         <FieldSelect
                             className="col-6"
                             data={dataDomainAvailability || []}
-                            disabled={!edit}
+                            disabled={(row ? true : false)}
                             error={errors?.availability?.message}
                             label={t(langKeys.availability)}
                             onChange={(value) => setValue('availability', value?.domainvalue || '')}
@@ -1071,12 +1071,12 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         <FieldSelect
                             className="col-6"
                             data={googleCategory || []}
-                            disabled={!edit}
+                            disabled={(row ? true : false)}
                             error={errors?.category?.message}
                             label={t(langKeys.category)}
-                            onChange={(value) => setValue('category', value?.categoryid || '')}
+                            onChange={(value) => setValue('category', value?.categoryname || '')}
                             optionDesc="categoryname"
-                            optionValue="categoryid"
+                            optionValue="categoryname"
                             valueDefault={row?.category || ''}
                         />
                     </div>
@@ -1084,7 +1084,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         <FieldSelect
                             className="col-6"
                             data={dataDomainCondition || []}
-                            disabled={!edit}
+                            disabled={(row ? true : false)}
                             error={errors?.condition?.message}
                             label={t(langKeys.condition)}
                             onChange={(value) => setValue('condition', value?.domainvalue || '')}
@@ -1097,7 +1097,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         <FieldSelect
                             className="col-6"
                             data={dataDomainCurrency || []}
-                            disabled={!edit}
+                            disabled={(row ? true : false)}
                             error={errors?.currency?.message}
                             label={t(langKeys.currency)}
                             onChange={(value) => setValue('currency', value?.domainvalue || '')}
@@ -1111,7 +1111,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                     <div className="row-zyx">
                         <FieldEdit
                             className="col-6"
-                            disabled={!edit}
+                            disabled={(row ? true : false)}
                             error={errors?.price?.message}
                             inputProps={{ step: "any" }}
                             label={t(langKeys.productcatalogunitprice)}
@@ -1121,7 +1121,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         />
                         <FieldEdit
                             className="col-6"
-                            disabled={!edit}
+                            disabled={(row ? true : false)}
                             error={errors?.saleprice?.message}
                             inputProps={{ step: "any" }}
                             label={t(langKeys.saleprice)}
@@ -1133,7 +1133,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                     <div className="row-zyx">
                         <FieldEdit
                             className="col-6"
-                            disabled={!edit}
+                            disabled={(row ? true : false)}
                             error={errors?.link?.message}
                             label={t(langKeys.website)}
                             onChange={(value) => setValue('link', value)}
@@ -1141,7 +1141,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         />
                         <FieldEdit
                             className="col-6"
-                            disabled={!edit}
+                            disabled={(row ? true : false)}
                             error={errors?.brand?.message}
                             label={t(langKeys.brand)}
                             onChange={(value) => setValue('brand', value)}
@@ -1151,7 +1151,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                     <div className="row-zyx">
                         <FieldEdit
                             className="col-6"
-                            disabled={!edit}
+                            disabled={(row ? true : false)}
                             error={errors?.color?.message}
                             label={t(langKeys.color)}
                             onChange={(value) => setValue('color', value)}
@@ -1160,7 +1160,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         <FieldSelect
                             className="col-6"
                             data={dataDomainGender || []}
-                            disabled={!edit}
+                            disabled={(row ? true : false)}
                             error={errors?.gender?.message}
                             label={t(langKeys.gender)}
                             onChange={(value) => setValue('gender', value?.domainvalue || '')}
@@ -1174,7 +1174,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                     <div className="row-zyx">
                         <FieldEdit
                             className="col-6"
-                            disabled={!edit}
+                            disabled={(row ? true : false)}
                             error={errors?.material?.message}
                             label={t(langKeys.material)}
                             onChange={(value) => setValue('material', value)}
@@ -1182,7 +1182,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         />
                         <FieldEdit
                             className="col-6"
-                            disabled={!edit}
+                            disabled={(row ? true : false)}
                             error={errors?.pattern?.message}
                             label={t(langKeys.pattern)}
                             onChange={(value) => setValue('pattern', value)}
@@ -1192,7 +1192,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                     <div className="row-zyx">
                         <FieldEdit
                             className="col-6"
-                            disabled={!edit}
+                            disabled={(row ? true : false)}
                             error={errors?.size?.message}
                             label={t(langKeys.size)}
                             onChange={(value) => setValue('size', value)}
@@ -1216,7 +1216,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         <FieldMultiSelectFreeSolo
                             className="col-6"
                             data={labels.map((x: any) => ({ value: x }))}
-                            disabled={!edit}
+                            disabled={(row ? true : false)}
                             label={t(langKeys.labels)}
                             loading={false}
                             onChange={(value) => {
@@ -1229,7 +1229,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         />
                         <FieldEdit
                             className="col-6"
-                            disabled={!edit}
+                            disabled={(row ? true : false)}
                             error={errors?.customlabel0?.message}
                             label={`${t(langKeys.customlabel)}${isClaro ? ' 0' : ''}`}
                             onChange={(value) => setValue('customlabel0', value)}
@@ -1239,7 +1239,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                     <div className="row-zyx" style={{ display: isClaro ? "flex" : "none" }}>
                         <FieldEdit
                             className="col-6"
-                            disabled={!edit}
+                            disabled={(row ? true : false)}
                             error={errors?.customlabel1?.message}
                             label={`${t(langKeys.customlabel)} 1`}
                             onChange={(value) => setValue('customlabel1', value)}
@@ -1247,7 +1247,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         />
                         <FieldEdit
                             className="col-6"
-                            disabled={!edit}
+                            disabled={(row ? true : false)}
                             error={errors?.customlabel2?.message}
                             label={`${t(langKeys.customlabel)} 2`}
                             onChange={(value) => setValue('customlabel2', value)}
@@ -1257,7 +1257,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                     <div className="row-zyx" style={{ display: isClaro ? "flex" : "none" }}>
                         <FieldEdit
                             className="col-6"
-                            disabled={!edit}
+                            disabled={(row ? true : false)}
                             error={errors?.customlabel3?.message}
                             label={`${t(langKeys.customlabel)} 3`}
                             onChange={(value) => setValue('customlabel3', value)}
@@ -1265,7 +1265,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         />
                         <FieldEdit
                             className="col-6"
-                            disabled={!edit}
+                            disabled={(row ? true : false)}
                             error={errors?.customlabel4?.message}
                             label={`${t(langKeys.customlabel)} 4`}
                             onChange={(value) => setValue('customlabel4', value)}
@@ -1287,7 +1287,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             : null}
                         <React.Fragment>
                             <input
-                                disabled={!edit}
+                                disabled={(row ? true : false)}
                                 accept="image/png"
                                 style={{ display: 'none' }}
                                 id="attachmentInput"
@@ -1296,7 +1296,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             />
                             {<IconButton
                                 onClick={() => { setfieldupload("imagelink"); onClickAttachment("attachmentInput") }}
-                                disabled={(!edit || waitUploadFile || (fileAttachment !== null || getValues("imagelink")))}
+                                disabled={((row ? true : false) || waitUploadFile || (fileAttachment !== null || getValues("imagelink")))}
                             ><AttachFileIcon color="primary" />
                             </IconButton>}
                             {!!getValues("imagelink") && getValues("imagelink").split(',').map((f: string, i: number) => (
@@ -1328,7 +1328,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             : null}
                         <React.Fragment>
                             <input
-                                disabled={!edit}
+                                disabled={(row ? true : false)}
                                 accept="image/png"
                                 style={{ display: 'none' }}
                                 id="attachmentInput2"
@@ -1337,7 +1337,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             />
                             {<IconButton
                                 onClick={() => { setfieldupload("additionalimagelink"); onClickAttachment("attachmentInput2") }}
-                                disabled={(!edit || waitUploadFile || (fileAttachmentAditional !== null || getValues("additionalimagelink")))}
+                                disabled={((row ? true : false) || waitUploadFile || (fileAttachmentAditional !== null || getValues("additionalimagelink")))}
                             ><AttachFileIcon color="primary" />
                             </IconButton>}
                             {!!getValues("additionalimagelink") && getValues("additionalimagelink").split(',').map((f: string, i: number) => (
