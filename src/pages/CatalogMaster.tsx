@@ -10,7 +10,7 @@ import TableZyx from '../components/fields/table-simple';
 
 import { apiUrls } from "common/constants";
 import { Dictionary, MultiData } from "@types";
-import { Facebook as FacebookIcon } from "@material-ui/icons";
+import { Facebook as FacebookIcon, Search as SearchIcon } from "@material-ui/icons";
 import { getCollection, getMultiCollection, resetAllMain, cleanMemoryTable, setMemoryTable } from 'store/main/actions';
 import { getValuesFromDomain, metaCatalogSel, metaBusinessSel } from 'common/helpers';
 import { langKeys } from 'lang/keys';
@@ -245,6 +245,15 @@ const CatalogMaster: FC = () => {
                 <TableZyx
                     ButtonsElement={() => (
                         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                            <Button
+                                color="primary"
+                                disabled={resultMain.mainData.loading}
+                                onClick={() => { fetchData(); }}
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                variant="contained"
+                            >{t(langKeys.search)}
+                            </Button>
                             <FieldSelect
                                 label={t(langKeys.catalogmaster_businesschoose)}
                                 style={{ width: 300 }}
