@@ -86,6 +86,11 @@ const CatalogMaster: FC = () => {
                 }
             },
             {
+                accessor: 'catalogid',
+                Header: t(langKeys.catalogid),
+                NoFilter: true,
+            },
+            {
                 accessor: 'catalogname',
                 Header: t(langKeys.name),
                 NoFilter: true,
@@ -461,6 +466,16 @@ const CatalogMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetch
                                 });
                             }}
                             disableMobileRedirect={true}
+                        />
+                    </div>}
+                    {row && <div className="row-zyx">
+                        <FieldEdit
+                            className="col-12"
+                            disabled={row ? true : false}
+                            error={errors?.catalogid?.message}
+                            label={t(langKeys.catalogid)}
+                            onChange={(value) => setValue('catalogid', value || '')}
+                            valueDefault={row?.catalogid || ''}
                         />
                     </div>}
                     <div className="row-zyx">
