@@ -4410,7 +4410,7 @@ const translation: LangKeys = {
   aitotalquantity: "Total AI Quantity",
   aiminimumquantity: "Minimum AI Quantity",
   importxml: "Import XML/XLSX",
-  productimportdescription: "You can use both XML and Excel files to import products to Laraigo. The templates for each format can be downloaded here:",
+  productimportdescription: "You can use an XML file to import products to a selected Product Catalog. Because there are no restrictions on how many items can be uploaded, this process is done by an asynchronous feed method. In order to view any changes you need to synchronize your Product Catalog. The template can be downloaded here:",
   templatexml: "XML Template",
   templateexcel: "Excel Template",
   productimportalert: "The uploaded file has a wrong format",
