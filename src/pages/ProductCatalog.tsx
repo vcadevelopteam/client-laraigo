@@ -747,17 +747,8 @@ const ImportXmlModal: FC<{ openModal: boolean, metaCatalogList: Dictionary[], se
                         color="primary"
                         style={{ width: 150, backgroundColor: "#55BD84" }}
                         startIcon={<DownloadIcon style={{ color: 'white' }} />}
-                        onClick={() => { window.open("https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/LARAIGO%20-%20ACME/4a2b6056-a8ee-4382-8fec-ee76a6348614/Template%20XML.xml", '_blank'); }}
+                        onClick={() => { window.open("https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/d4f29279-27e9-4f9d-b4a0-095967d1394b/product-catalog-template.xml", '_blank'); }}
                     >{t(langKeys.templatexml)}
-                    </Button>
-                    <Button
-                        disabled={false}
-                        variant="contained"
-                        color="primary"
-                        style={{ width: 160, backgroundColor: "#55BD84" }}
-                        startIcon={<DownloadIcon style={{ color: 'white' }} />}
-                        onClick={() => { window.open("https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/LARAIGO%20-%20ACME/20258d45-e033-44c7-bbae-160c5901bc16/Template%20Excel.xlsx", '_blank'); }}
-                    >{t(langKeys.templateexcel)}
                     </Button>
                 </div>
             </div>
