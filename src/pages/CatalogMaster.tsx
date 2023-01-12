@@ -462,7 +462,7 @@ const CatalogMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, fetch
                             autoLoad={false}
                             buttonStyle={{ margin: "auto", backgroundColor: "#7721ad", textTransform: "none", display: "flex", textAlign: "center", justifyItems: "center", alignItems: "center", justifyContent: "center" }}
                             fields="name,email,picture"
-                            scope="pages_show_list,business_management,catalog_management"
+                            scope="business_management,catalog_management"
                             callback={processFacebookCallback}
                             textButton={t(langKeys.catalogmaster_businesslink)}
                             icon={<FacebookIcon style={{ color: "white", marginRight: "8px" }} />}
