@@ -506,7 +506,7 @@ const CRM: FC = () => {
         return (
           <div style={{ cursor: 'pointer' }}>
             <div>{t(langKeys.name)}: {row['contact_name']}</div>
-            {!!row['persontype'] && <div>{t(langKeys.personType)}: {t(langKeys.client).toLocaleUpperCase()} {row['persontype']}</div>}
+            {!!row['persontype'] && <div>{t(langKeys.personType)}: {row['persontype']}</div>}
             <div>{t(langKeys.email)}: {row['email']}</div>
             <div>{t(langKeys.phone)}: {row['phone']}</div>
             <Rating
@@ -881,8 +881,7 @@ const CRM: FC = () => {
           setAllParameters({ ...allParameters, persontype });
         }}
         data={userType}
-        optionDesc="domaindesc"
-        prefixTranslation="type_personlevel_"
+        optionDesc="domainvalue"
         optionValue="domainvalue"
       />
     </>
@@ -989,8 +988,7 @@ const CRM: FC = () => {
               }}
               data={mainMulti.data[7]?.data || []}
               loading={mainMulti.loading}
-              optionDesc="domaindesc"
-              prefixTranslation="type_personlevel_"
+              optionDesc="domainvalue"
               optionValue="domainvalue"
             />
             <div style={{ flexGrow: 1 }} />
