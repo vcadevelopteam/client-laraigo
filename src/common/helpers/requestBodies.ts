@@ -3181,11 +3181,11 @@ export const getPersonFromBooking = (params: Dictionary): IRequestBody => ({
     parameters: params
 });
 
-export const getPaginatedProductCatalog = ({ enddate, filters, skip, sorts, startdate, take }: Dictionary): IRequestBodyPaginated => ({
+export const getPaginatedProductCatalog = ({ metacatalogid, enddate, filters, skip, sorts, startdate, take }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_PRODUCTCATALOG_SEL",
     methodCount: "UFN_PRODUCTCATALOG_TOTALRECORDS",
     parameters: {
-        enddate, filters, offset: (new Date().getTimezoneOffset() / 60) * -1, origin: "productcatalog", skip, sorts, startdate, take,
+        metacatalogid, enddate, filters, offset: (new Date().getTimezoneOffset() / 60) * -1, origin: "productcatalog", skip, sorts, startdate, take,
     }
 })
 
