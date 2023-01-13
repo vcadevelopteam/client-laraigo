@@ -403,7 +403,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         loading={domains.loading}
                                         data={domains.value?.personTypes || []}
                                         prefixTranslation="type_persontype_"
-                                        optionValue="domaindesc"
+                                        optionValue="domainvalue"
                                         optionDesc="domainvalue"
                                     />
                                 )}
