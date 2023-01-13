@@ -132,6 +132,7 @@ const ProductCatalog: FC = () => {
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
         setfetchDataAux({ ...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts } });
         dispatch(getCollectionPaginated(getPaginatedProductCatalog({
+            metacatalogid: catalogId || 0,
             enddate: daterange?.endDate!,
             filters: filters,
             skip: pageIndex * pageSize,

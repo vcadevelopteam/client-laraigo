@@ -4807,6 +4807,7 @@ export const langKeys = {
     productcatalog_domain_condition_used_fair: "productcatalog_domain_condition_used_fair",
     productcatalog_domain_condition_cpo: "productcatalog_domain_condition_cpo",
     productcatalog_domain_condition_open_box_new: "productcatalog_domain_condition_open_box_new",
+    productcatalog_reviewstatus_: "productcatalog_reviewstatus_",
     productcatalog_reviewstatus_pending: "productcatalog_reviewstatus_pending",
     productcatalog_reviewstatus_rejected: "productcatalog_reviewstatus_rejected",
     productcatalog_reviewstatus_approved: "productcatalog_reviewstatus_approved",
