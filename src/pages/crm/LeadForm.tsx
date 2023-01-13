@@ -1129,7 +1129,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     loading={personTypeDomain.loading}
                                     data={personTypeDomain.data}
                                     prefixTranslation="type_personlevel_"
-                                    optionDesc="domaindesc"
+                                    optionDesc="domainvalue"
                                     optionValue="domainvalue"
                                     onChange={(value) => setValue('persontype', value ? value.domainvalue : '')}
                                     readOnly={isStatusClosed() || iSProcessLoading()}
