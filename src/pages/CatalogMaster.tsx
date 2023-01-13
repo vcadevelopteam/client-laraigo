@@ -134,7 +134,7 @@ const CatalogMaster: FC = () => {
         []
     );
 
-    const fetchData = () => dispatch(getCollection(metaCatalogSel({ metabusinessid: 0, id: 0 })));
+    const fetchData = () => dispatch(getCollection(metaCatalogSel({ metabusinessid: businessId || 0, id: 0 })));
 
     useEffect(() => {
         fetchData();
