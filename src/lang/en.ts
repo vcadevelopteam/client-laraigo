@@ -4418,10 +4418,10 @@ const translation: LangKeys = {
   aiduplicatealert: "The active AI services must be unique",
   aitotalquantity: "Total AI Quantity",
   aiminimumquantity: "Minimum AI Quantity",
-  importxml: "Import XML",
-  productimportdescription: "You can use an XML file to import products to a selected Product Catalog. Because there are no restrictions on how many items can be uploaded, this process is done by an asynchronous feed method. In order to view any changes you need to synchronize your Product Catalog. The template can be downloaded here:",
+  importxml: "Import CSV/XML",
+  productimportdescription: "You can use a CSV or XML file to import products to a selected Product Catalog. Because there are no restrictions on how many items can be uploaded, this process is done by an asynchronous feed method. In order to view any changes you need to synchronize your Product Catalog. The templates can be downloaded here:",
   templatexml: "XML Template",
-  templateexcel: "Excel Template",
+  templateexcel: "CSV Template",
   productimportalert: "The uploaded file has a wrong format",
   productimportmissing: "There are empty required fields",
   postcreator: "Post Creator",
@@ -4902,6 +4902,7 @@ const translation: LangKeys = {
   productcatalog_datelaunch: "Launch Date",
   productcatalog_dateexpiration: "Expiration Date",
   productcatalog_domain_gender_: "Empty",
+  productcatalog_reviewdescription: "Review Description",
 };
 
 const enResource: ResourceLanguage = {
