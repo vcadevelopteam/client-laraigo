@@ -716,7 +716,7 @@ const ImportXmlModal: FC<{ openModal: boolean, metaCatalogList: Dictionary[], se
         if (data?.url) {
             var extension = data?.url.slice((data?.url.lastIndexOf(".") - 1 >>> 0) + 2);
 
-            if (extension?.toUpperCase() !== "XML" && extension?.toUpperCase() !== "XLSX") {
+            if (extension?.toUpperCase() !== "XML" && extension?.toUpperCase() !== "CSV") {
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.productimportalert) }));
             }
             else {
