@@ -87,14 +87,10 @@ const ProductCatalog: FC = () => {
     const user = useSelector(state => state.login.validateToken.user);
     const superadmin = ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '');
 
+    const [catalogTemplate] = useState<Dictionary[]>([]);
     const [catalogId, setCatalogId] = useState(0);
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null });
     const [metaCatalogList, setMetaCatalogList] = useState<Dictionary[]>([]);
-    const [availabilityList, setAvailabilityList] = useState<Dictionary[]>([]);
-    const [currencyList, setCurrencyList] = useState<Dictionary[]>([]);
-    const [genderList, setGenderList] = useState<Dictionary[]>([]);
-    const [statusList, setStatusList] = useState<Dictionary[]>([]);
-    const [reviewStatusList, setReviewStatusList] = useState<Dictionary[]>([]);
     const [openModal, setOpenModal] = useState(false);
     const [pageCount, setPageCount] = useState(0);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
@@ -109,6 +105,24 @@ const ProductCatalog: FC = () => {
 
     const arrayBread = [{ id: "view-1", name: t(langKeys.productcatalog) }];
     const selectionKey = 'productcatalogid';
+
+    const { trigger, register, setValue, getValues, formState: { errors } } = useForm({
+        defaultValues: {
+            availabilityList: catalogTemplate,
+            currencyList: catalogTemplate,
+            genderList: catalogTemplate,
+            statusList: catalogTemplate,
+            reviewStatusList: catalogTemplate,
+        }
+    });
+
+    React.useEffect(() => {
+        register('availabilityList');
+        register('currencyList');
+        register('genderList');
+        register('statusList');
+        register('reviewStatusList');
+    }, [register]);
 
     useEffect(() => {
         dispatch(resetCollectionPaginated());
@@ -146,6 +160,12 @@ const ProductCatalog: FC = () => {
             startdate: daterange?.startDate!,
             take: pageSize,
         })));
+
+        trigger('statusList');
+        trigger('availabilityList');
+        trigger('currencyList');
+        trigger('genderList');
+        trigger('reviewStatusList');
     };
 
     const onModalSuccess = () => {
@@ -237,23 +257,28 @@ const ProductCatalog: FC = () => {
     useEffect(() => {
         if (mainResult.multiData.data.length > 0) {
             if (mainResult.multiData.data[0] && mainResult.multiData.data[0].success) {
-                setStatusList(mainResult.multiData.data[0].data?.map(x => ({ key: t('status_' + x.domaindesc?.toLowerCase()), value: x.domainvalue })) || []);
+                setValue('statusList', mainResult.multiData.data[0].data?.map(x => ({ key: t('status_' + x.domaindesc?.toLowerCase()), value: x.domainvalue })) || []);
+                trigger('statusList');
             }
 
             if (mainResult.multiData.data[1] && mainResult.multiData.data[1].success) {
-                setAvailabilityList(mainResult.multiData.data[1].data?.map(x => ({ key: t('productcatalog_domain_availability_' + x.domaindesc?.toLowerCase()), value: x.domainvalue })) || []);
+                setValue('availabilityList', mainResult.multiData.data[1].data?.map(x => ({ key: t('productcatalog_domain_availability_' + x.domaindesc?.toLowerCase()), value: x.domainvalue })) || []);
+                trigger('availabilityList');
             }
 
             if (mainResult.multiData.data[2] && mainResult.multiData.data[2].success) {
-                setCurrencyList(mainResult.multiData.data[2].data?.map(x => ({ key: t('productcatalog_domain_currency_' + x.domaindesc?.toLowerCase()), value: x.domainvalue })) || []);
+                setValue('currencyList', mainResult.multiData.data[2].data?.map(x => ({ key: t('productcatalog_domain_currency_' + x.domaindesc?.toLowerCase()), value: x.domainvalue })) || []);
+                trigger('currencyList');
             }
 
             if (mainResult.multiData.data[3] && mainResult.multiData.data[3].success) {
-                setGenderList(mainResult.multiData.data[3].data?.map(x => ({ key: t('productcatalog_domain_gender_' + x.domaindesc?.toLowerCase()), value: x.domainvalue })) || []);
+                setValue('genderList', mainResult.multiData.data[3].data?.map(x => ({ key: t('productcatalog_domain_gender_' + x.domaindesc?.toLowerCase()), value: x.domainvalue })) || []);
+                trigger('genderList');
             }
 
             if (mainResult.multiData.data[5] && mainResult.multiData.data[5].success) {
-                setReviewStatusList(mainResult.multiData.data[5].data?.map(x => ({ key: t('productcatalog_reviewstatus_' + x.domaindesc?.toLowerCase()), value: x.domainvalue })) || []);
+                setValue('reviewStatusList', mainResult.multiData.data[5].data?.map(x => ({ key: t('productcatalog_reviewstatus_' + x.domaindesc?.toLowerCase()), value: x.domainvalue })) || []);
+                trigger('reviewStatusList');
             }
 
             if (mainResult.multiData.data[6] && mainResult.multiData.data[6].success) {
@@ -261,10 +286,6 @@ const ProductCatalog: FC = () => {
             }
         }
     }, [mainResult.multiData.data])
-
-    useEffect(() => {
-        console.log(availabilityList);
-    }, [availabilityList])
 
     const handleRegister = () => {
         setViewSelected("view-2");
@@ -375,7 +396,7 @@ const ProductCatalog: FC = () => {
                 accessor: 'availability',
                 Header: t(langKeys.availability),
                 type: 'select',
-                listSelectFilter: availabilityList,
+                listSelectFilter: getValues('availabilityList') || [],
                 Cell: (props: any) => {
                     const { availability } = props.cell.row.original;
                     return (t(`productcatalog_domain_availability_${availability?.replaceAll(' ', '_')}`.toLowerCase()) || '').toUpperCase()
@@ -398,7 +419,7 @@ const ProductCatalog: FC = () => {
                 accessor: 'currency',
                 Header: t(langKeys.currency),
                 type: 'select',
-                listSelectFilter: currencyList,
+                listSelectFilter: getValues('currencyList') || [],
                 Cell: (props: any) => {
                     const { currency } = props.cell.row.original;
                     return (t(`productcatalog_domain_currency_${currency}`.toLowerCase()) || '').toUpperCase()
@@ -470,7 +491,7 @@ const ProductCatalog: FC = () => {
                 accessor: 'gender',
                 Header: t(langKeys.gender),
                 type: 'select',
-                listSelectFilter: genderList,
+                listSelectFilter: getValues('genderList') || [],
                 Cell: (props: any) => {
                     const { gender } = props.cell.row.original;
                     return (t(`productcatalog_domain_gender_${gender}`.toLowerCase()) || '').toUpperCase()
@@ -508,7 +529,7 @@ const ProductCatalog: FC = () => {
                 accessor: 'status',
                 Header: t(langKeys.status),
                 type: 'select',
-                listSelectFilter: statusList,
+                listSelectFilter: getValues('statusList') || [],
                 Cell: (props: any) => {
                     const { status } = props.cell.row.original;
                     return (t(`status_${status}`.toLowerCase()) || '').toUpperCase();
@@ -518,7 +539,7 @@ const ProductCatalog: FC = () => {
                 accessor: 'reviewstatus',
                 Header: t(langKeys.productcatalog_reviewstatus),
                 type: 'select',
-                listSelectFilter: reviewStatusList,
+                listSelectFilter: getValues('reviewStatusList') || [],
                 Cell: (props: any) => {
                     const { reviewstatus } = props.cell.row.original;
                     return (t(`productcatalog_reviewstatus_${reviewstatus}`.toLowerCase()) || '').toUpperCase()
