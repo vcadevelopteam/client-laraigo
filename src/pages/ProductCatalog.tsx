@@ -20,7 +20,7 @@ import { langKeys } from 'lang/keys';
 import { makeStyles } from '@material-ui/core/styles';
 import { Search as SearchIcon, AddCircle, FileCopy, GetApp, Close, Delete } from '@material-ui/icons';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { TemplateIcons, TemplateBreadcrumbs, FieldEdit, FieldSelect, TitleDetail, FieldMultiSelectFreeSolo, DialogZyx, IOSSwitch } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, FieldEdit, FieldSelect, TitleDetail, FieldMultiSelectFreeSolo, DialogZyx, IOSSwitch, FieldView } from 'components';
 import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'hooks';
@@ -90,6 +90,11 @@ const ProductCatalog: FC = () => {
     const [catalogId, setCatalogId] = useState(0);
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null });
     const [metaCatalogList, setMetaCatalogList] = useState<Dictionary[]>([]);
+    const [availabilityList, setAvailabilityList] = useState<Dictionary[]>([]);
+    const [currencyList, setCurrencyList] = useState<Dictionary[]>([]);
+    const [genderList, setGenderList] = useState<Dictionary[]>([]);
+    const [statusList, setStatusList] = useState<Dictionary[]>([]);
+    const [reviewStatusList, setReviewStatusList] = useState<Dictionary[]>([]);
     const [openModal, setOpenModal] = useState(false);
     const [pageCount, setPageCount] = useState(0);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
@@ -115,6 +120,7 @@ const ProductCatalog: FC = () => {
             getValuesFromDomain("PRODUCTOMONEDA"),
             getValuesFromDomain("PRODUCTOGENERO"),
             getValuesFromDomain("PRODUCTOCONDICION"),
+            getValuesFromDomain("PRODUCTOESTADOREVISION"),
             metaCatalogSel({ metabusinessid: 0, id: 0 }),
         ]));
 
@@ -230,11 +236,35 @@ const ProductCatalog: FC = () => {
 
     useEffect(() => {
         if (mainResult.multiData.data.length > 0) {
+            if (mainResult.multiData.data[0] && mainResult.multiData.data[0].success) {
+                setStatusList(mainResult.multiData.data[0].data?.map(x => ({ key: t('status_' + x.domaindesc?.toLowerCase()), value: x.domainvalue })) || []);
+            }
+
+            if (mainResult.multiData.data[1] && mainResult.multiData.data[1].success) {
+                setAvailabilityList(mainResult.multiData.data[1].data?.map(x => ({ key: t('productcatalog_domain_availability_' + x.domaindesc?.toLowerCase()), value: x.domainvalue })) || []);
+            }
+
+            if (mainResult.multiData.data[2] && mainResult.multiData.data[2].success) {
+                setCurrencyList(mainResult.multiData.data[2].data?.map(x => ({ key: t('productcatalog_domain_currency_' + x.domaindesc?.toLowerCase()), value: x.domainvalue })) || []);
+            }
+
+            if (mainResult.multiData.data[3] && mainResult.multiData.data[3].success) {
+                setGenderList(mainResult.multiData.data[3].data?.map(x => ({ key: t('productcatalog_domain_gender_' + x.domaindesc?.toLowerCase()), value: x.domainvalue })) || []);
+            }
+
             if (mainResult.multiData.data[5] && mainResult.multiData.data[5].success) {
-                setMetaCatalogList(mainResult.multiData.data[5].data || []);
+                setReviewStatusList(mainResult.multiData.data[5].data?.map(x => ({ key: t('productcatalog_reviewstatus_' + x.domaindesc?.toLowerCase()), value: x.domainvalue })) || []);
+            }
+
+            if (mainResult.multiData.data[6] && mainResult.multiData.data[6].success) {
+                setMetaCatalogList(mainResult.multiData.data[6].data || []);
             }
         }
     }, [mainResult.multiData.data])
+
+    useEffect(() => {
+        console.log(availabilityList);
+    }, [availabilityList])
 
     const handleRegister = () => {
         setViewSelected("view-2");
@@ -294,7 +324,7 @@ const ProductCatalog: FC = () => {
     }
 
     const handleDownload = () => {
-        dispatch(catalogDownloadProduct({}));
+        dispatch(catalogDownloadProduct({ metacatalogid: (catalogId || 0) }));
         dispatch(showBackdrop(true));
         setWaitDownload(true);
     }
@@ -344,10 +374,11 @@ const ProductCatalog: FC = () => {
             {
                 accessor: 'availability',
                 Header: t(langKeys.availability),
-                prefixTranslation: 'productcatalog_domain_availability_',
+                type: 'select',
+                listSelectFilter: availabilityList,
                 Cell: (props: any) => {
                     const { availability } = props.cell.row.original;
-                    return (t(`productcatalog_domain_availability_${availability?.replaceAll(' ', '_')}`.toLowerCase()) || "").toUpperCase()
+                    return (t(`productcatalog_domain_availability_${availability?.replaceAll(' ', '_')}`.toLowerCase()) || '').toUpperCase()
                 }
             },
             {
@@ -359,17 +390,18 @@ const ProductCatalog: FC = () => {
                     return (<label
                         className={classes.labellink}
                         onClick={(e) => { e.stopPropagation(); window.open(`${row.link}`, '_blank')?.focus() }}
-                    >{row.link ? t(langKeys.website) : ""}
+                    >{row.link ? t(langKeys.website) : ''}
                     </label>)
                 }
             },
             {
                 accessor: 'currency',
                 Header: t(langKeys.currency),
-                prefixTranslation: 'productcatalog_domain_currency_',
+                type: 'select',
+                listSelectFilter: currencyList,
                 Cell: (props: any) => {
                     const { currency } = props.cell.row.original;
-                    return (t(`productcatalog_domain_currency_${currency}`.toLowerCase()) || "").toUpperCase()
+                    return (t(`productcatalog_domain_currency_${currency}`.toLowerCase()) || '').toUpperCase()
                 }
             },
             {
@@ -401,7 +433,7 @@ const ProductCatalog: FC = () => {
                     return (<label
                         className={classes.labellink}
                         onClick={(e) => { e.stopPropagation(); window.open(`${row.imagelink}`, '_blank')?.focus() }}
-                    >{row.imagelink ? t(langKeys.imagelink) : ""}
+                    >{row.imagelink ? t(langKeys.imagelink) : ''}
                     </label>)
                 }
             },
@@ -414,7 +446,7 @@ const ProductCatalog: FC = () => {
                     return (<label
                         className={classes.labellink}
                         onClick={(e) => { e.stopPropagation(); window.open(`${row.additionalimagelink}`, '_blank')?.focus() }}
-                    >{row.additionalimagelink ? t(langKeys.additionalimagelink) : ""}
+                    >{row.additionalimagelink ? t(langKeys.additionalimagelink) : ''}
                     </label>)
                 }
             },
@@ -437,10 +469,11 @@ const ProductCatalog: FC = () => {
             {
                 accessor: 'gender',
                 Header: t(langKeys.gender),
-                prefixTranslation: 'productcatalog_domain_gender_',
+                type: 'select',
+                listSelectFilter: genderList,
                 Cell: (props: any) => {
                     const { gender } = props.cell.row.original;
-                    return (t(`productcatalog_domain_gender_${gender}`.toLowerCase()) || "").toUpperCase()
+                    return (t(`productcatalog_domain_gender_${gender}`.toLowerCase()) || '').toUpperCase()
                 }
             },
             {
@@ -474,20 +507,26 @@ const ProductCatalog: FC = () => {
             {
                 accessor: 'status',
                 Header: t(langKeys.status),
-                prefixTranslation: 'status_',
+                type: 'select',
+                listSelectFilter: statusList,
                 Cell: (props: any) => {
                     const { status } = props.cell.row.original;
-                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
+                    return (t(`status_${status}`.toLowerCase()) || '').toUpperCase();
                 }
             },
             {
                 accessor: 'reviewstatus',
                 Header: t(langKeys.productcatalog_reviewstatus),
-                prefixTranslation: 'productcatalog_reviewstatus_',
+                type: 'select',
+                listSelectFilter: reviewStatusList,
                 Cell: (props: any) => {
                     const { reviewstatus } = props.cell.row.original;
-                    return (t(`productcatalog_reviewstatus_${reviewstatus}`.toLowerCase()) || "").toUpperCase()
+                    return (t(`productcatalog_reviewstatus_${reviewstatus}`.toLowerCase()) || '').toUpperCase()
                 }
+            },
+            {
+                accessor: 'reviewdescription',
+                Header: t(langKeys.productcatalog_reviewdescription),
             },
         ],
         []
@@ -627,8 +666,8 @@ const ImportXmlModal: FC<{ openModal: boolean, metaCatalogList: Dictionary[], se
 
     React.useEffect(() => {
         register('isxml');
-        register('metacatalogid', { validate: (value) => (value && value > 0) || "" + t(langKeys.field_required) });
-        register('url', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register('metacatalogid', { validate: (value) => (value && value > 0) || '' + t(langKeys.field_required) });
+        register('url', { validate: (value) => (value && value.length > 0) || '' + t(langKeys.field_required) });
     }, [register]);
 
     useEffect(() => {
@@ -703,7 +742,7 @@ const ImportXmlModal: FC<{ openModal: boolean, metaCatalogList: Dictionary[], se
     const handleCleanMediaInput = async (f: string) => {
         const input = document.getElementById('attachmentInput') as HTMLInputElement;
         if (input) {
-            input.value = "";
+            input.value = '';
         }
         setFileAttachment(null);
         setValue('url', getValues('url').split(',').filter((a: string) => a !== f).join(''));
@@ -748,6 +787,15 @@ const ImportXmlModal: FC<{ openModal: boolean, metaCatalogList: Dictionary[], se
                         color="primary"
                         style={{ width: 150, backgroundColor: "#55BD84" }}
                         startIcon={<DownloadIcon style={{ color: 'white' }} />}
+                        onClick={() => { window.open("https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/b29c7819-bfc3-4934-93de-a796c7a0de11/product-catalog-template.csv", '_blank'); }}
+                    >{t(langKeys.templateexcel)}
+                    </Button>
+                    <Button
+                        disabled={false}
+                        variant="contained"
+                        color="primary"
+                        style={{ width: 150, backgroundColor: "#55BD84" }}
+                        startIcon={<DownloadIcon style={{ color: 'white' }} />}
                         onClick={() => { window.open("https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/d4f29279-27e9-4f9d-b4a0-095967d1394b/product-catalog-template.xml", '_blank'); }}
                     >{t(langKeys.templatexml)}
                     </Button>
@@ -780,12 +828,12 @@ const ImportXmlModal: FC<{ openModal: boolean, metaCatalogList: Dictionary[], se
                     <FormControlLabel
                         style={{ paddingLeft: 10 }}
                         control={<IOSSwitch checked={checkedUrl} onChange={(e) => { setCheckedUrl(e.target.checked); }} />}
-                        label={""}
+                        label={''}
                     />
                 </div>
                 {checkedUrl && <React.Fragment>
                     <input
-                        accept="text/xml, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                        accept="text/xml, text/csv"
                         style={{ display: 'none' }}
                         id="attachmentInput"
                         type="file"
@@ -920,6 +968,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
             customlabel3: row?.customlabel3 || '',
             customlabel4: row?.customlabel4 || '',
             reviewstatus: row?.reviewstatus || '',
+            reviewdescription: row?.reviewdescription || '',
             status: row?.status || '',
             type: row?.type || '',
             operation: (edit && row) ? "EDIT" : "INSERT",
@@ -959,6 +1008,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
         register('customlabel3');
         register('customlabel4');
         register('reviewstatus');
+        register('reviewdescription');
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type');
         register('operation');
@@ -981,7 +1031,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
     const handleCleanMediaInput = async (f: string, field: "imagelink" | "additionalimagelink") => {
         const input = document.getElementById(field === "imagelink" ? 'attachmentInput' : 'attachmentInput2') as HTMLInputElement;
         if (input) {
-            input.value = "";
+            input.value = '';
         }
         if (field === "imagelink") {
             setFileAttachment(null);
@@ -1257,7 +1307,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             error={errors?.customlabel0?.message}
                             label={`${t(langKeys.customlabel)}${isClaro ? ' 0' : ''}`}
                             onChange={(value) => setValue('customlabel0', value)}
-                            valueDefault={row?.customlabel0 || ""}
+                            valueDefault={row?.customlabel0 || ''}
                         />
                     </div>
                     <div className="row-zyx" style={{ display: isClaro ? "flex" : "none" }}>
@@ -1267,7 +1317,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             error={errors?.customlabel1?.message}
                             label={`${t(langKeys.customlabel)} 1`}
                             onChange={(value) => setValue('customlabel1', value)}
-                            valueDefault={row?.customlabel1 || ""}
+                            valueDefault={row?.customlabel1 || ''}
                         />
                         <FieldEdit
                             className="col-6"
@@ -1275,7 +1325,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             error={errors?.customlabel2?.message}
                             label={`${t(langKeys.customlabel)} 2`}
                             onChange={(value) => setValue('customlabel2', value)}
-                            valueDefault={row?.customlabel2 || ""}
+                            valueDefault={row?.customlabel2 || ''}
                         />
                     </div>
                     <div className="row-zyx" style={{ display: isClaro ? "flex" : "none" }}>
@@ -1285,7 +1335,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             error={errors?.customlabel3?.message}
                             label={`${t(langKeys.customlabel)} 3`}
                             onChange={(value) => setValue('customlabel3', value)}
-                            valueDefault={row?.customlabel3 || ""}
+                            valueDefault={row?.customlabel3 || ''}
                         />
                         <FieldEdit
                             className="col-6"
@@ -1293,7 +1343,19 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             error={errors?.customlabel4?.message}
                             label={`${t(langKeys.customlabel)} 4`}
                             onChange={(value) => setValue('customlabel4', value)}
-                            valueDefault={row?.customlabel4 || ""}
+                            valueDefault={row?.customlabel4 || ''}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.productcatalog_reviewstatus)}
+                            value={t(`productcatalog_reviewstatus_${row?.reviewstatus || ''}`)}
+                        />
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.productcatalog_reviewdescription)}
+                            value={row?.reviewdescription || ''}
                         />
                     </div>
                     <div className="row-zyx">
@@ -1424,7 +1486,7 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
     const getFileName = useCallback(() => {
         if (isUrl()) {
             const m = (src as string).match(/.*\/(.+?)\./);
-            return m && m.length > 1 ? m[1] : "";
+            return m && m.length > 1 ? m[1] : '';
         };
         return (src as File).name;
     }, [isUrl, src]);
