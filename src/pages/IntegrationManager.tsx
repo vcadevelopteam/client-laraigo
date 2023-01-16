@@ -441,7 +441,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
             let rex1 = new RegExp(/[^0-9a-zA-Z\s-_]/,'g');
             let rex2 = new RegExp(/[\s-]/,'g');
             let corpdesc = (user?.corpdesc || '').replace(rex1, '_').replace(rex2, '_').toLowerCase();
-            let orgdesc = (user?.corpdesc || '').replace(rex1, '_').replace(rex2, '_').toLowerCase();
+            let orgdesc = (user?.orgdesc || '').replace(rex1, '_').replace(rex2, '_').toLowerCase();
             let name = data.name.replace(rex1, '').replace(rex2, '_').toLowerCase();
             data.url = `${apiUrls.INTEGRATION_URL}/integration_${corpdesc}_${orgdesc}_${name}`;
         }
