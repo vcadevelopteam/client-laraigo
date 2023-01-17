@@ -206,8 +206,10 @@ export const routes: RouteConfig[] = [
     },
     {
         key: paths.IASERVICES,
-        description: <Trans i18nKey={langKeys.ia} />,
-        tooltip: <Trans i18nKey={langKeys.ia} />,
+        //description: <Trans i18nKey={langKeys.ia} />,
+        //tooltip: <Trans i18nKey={langKeys.ia} />,
+        description: <Trans i18nKey={langKeys.laraigoia} />,
+        tooltip: <Trans i18nKey={langKeys.laraigoia} />,
         path: paths.IASERVICES,
         icon: (className) => <IAServicesIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
     },

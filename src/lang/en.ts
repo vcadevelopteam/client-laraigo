@@ -492,6 +492,17 @@ const translation: LangKeys = {
   propertyiainiciodelimit: "Define the AI ​​at the beginning of the conversation if it will be active or inactive.",
 
   type_gender_femenino: 'Female',
+  laraigoia: "Laraigo AI",
+  iaconnectors: "IA Connectors",
+  iaconnectorsdescription: "Register your artificial intelligence connectors",
+  enter: "Enter",
+  iaconfiguration: "IA Configuration",
+  iaconfigurationdescription: "Configure how and where to use your artificial intelligence services",
+  trainingwithai: "Training with AI",
+  trainingwithaidescription: "Train your artificial intelligence service",
+  training: "Training",
+  intentionsdescription: "The intention is named and associated with the question the customer asks.",
+  entitiesdescription: "The entity that associates the category and keyword is named, to be detected.",
   type_gender_masculino: 'Male',
 
   type_documenttype_ce: 'Immigration card',

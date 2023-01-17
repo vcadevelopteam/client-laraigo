@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
-import {  FieldEdit, FieldEditArray, FieldMultiSelectFreeSolo } from 'components';
+import {  FieldEdit, FieldEditArray, FieldMultiSelectFreeSolo, TemplateBreadcrumbs } from 'components';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Button, IconButton, makeStyles, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
@@ -27,6 +27,8 @@ interface DetailProps {
     data: RowSelected;
     fetchData?: () => void;
     setViewSelected: (view: string) => void;
+    setExternalViewSelected?: (view: string) => void;
+    arrayBread?: any;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -58,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,setViewSelected }) => {
+const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,setViewSelected, setExternalViewSelected, arrayBread }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [keywords, setkeywords] = useState<any>(row?.datajson?.keywords || []);
@@ -121,6 +123,12 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
 
     return (
         <div style={{width: '100%'}}>
+            {!!arrayBread && <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <TemplateBreadcrumbs
+                    breadcrumbs={[...arrayBread, { id: "view-2", name: t(langKeys.entities) }]}
+                    handleClick={setExternalViewSelected}
+                />
+            </div>}
             <form onSubmit={onSubmit}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
@@ -245,7 +253,12 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
     );
 }
 
-export const Entities: FC = () => {
+interface EntityProps {
+    setExternalViewSelected?: (view: string) => void;
+    arrayBread?: any;
+}
+
+export const Entities: React.FC<EntityProps> = ({ setExternalViewSelected, arrayBread }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -360,33 +373,43 @@ export const Entities: FC = () => {
         return (
             <React.Fragment>
                 <div style={{ height: 10 }}></div>
-                <TableZyx
-                    columns={columns}
-                    data={mainResult.mainData.data}
-                    filterGeneral={false}
-                    useSelection={true}
-                    selectionKey={selectionKey}
-                    setSelectedRows={setSelectedRows}
-                    ButtonsElement={() => (
-                        <div style={{display: "flex", justifyContent: "end", width: "100%"}}>
-                            <Button
-                                disabled={Object.keys(selectedRows).length===0}
-                                variant="contained"
-                                type="button"
-                                color="primary"
-                                startIcon={<ClearIcon color="secondary" />}
-                                style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
-                                onClick={handleDelete}
-                            >{t(langKeys.delete)}</Button>
-                        </div>
-                    )}
-                    loading={mainResult.mainData.loading}
-                    register={true}
-                    download={false}
-                    handleRegister={handleRegister}
-                    pageSizeDefault={20}
-                    initialPageIndex={0}
-                />
+                
+                <div style={{ width: "100%" }}>
+                    {!!arrayBread && <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={arrayBread}
+                            handleClick={setExternalViewSelected}
+                        />
+                    </div>}
+                    <TableZyx
+                        titlemodule={!!arrayBread?t(langKeys.entities):""}
+                        columns={columns}
+                        data={mainResult.mainData.data}
+                        filterGeneral={false}
+                        useSelection={true}
+                        selectionKey={selectionKey}
+                        setSelectedRows={setSelectedRows}
+                        ButtonsElement={() => (
+                            <div style={{display: "flex", justifyContent: "end", width: "100%"}}>
+                                <Button
+                                    disabled={Object.keys(selectedRows).length===0}
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    startIcon={<ClearIcon color="secondary" />}
+                                    style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
+                                    onClick={handleDelete}
+                                >{t(langKeys.delete)}</Button>
+                            </div>
+                        )}
+                        loading={mainResult.mainData.loading}
+                        register={true}
+                        download={false}
+                        handleRegister={handleRegister}
+                        pageSizeDefault={20}
+                        initialPageIndex={0}
+                    />
+                </div>
             </React.Fragment>
             );
     }else if (viewSelected==="view-2"){
@@ -396,6 +419,8 @@ export const Entities: FC = () => {
                     data={rowSelected}
                     fetchData={fetchData}
                     setViewSelected={setViewSelected}
+                    setExternalViewSelected={setExternalViewSelected}
+                    arrayBread={arrayBread}
                 />
             </div>
         );
