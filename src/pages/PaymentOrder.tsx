@@ -111,10 +111,8 @@ export const PaymentOrder: FC = () => {
                 setWaitData(false);
 
                 if (mainResult.data.length) {
-                    if (!mainResult.data[0].expired) {
                         setPaymentData(mainResult.data[0]);
                         setPublicKey(mainResult.data[0].publickey);
-                    }
                 }
             } else if (mainResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(mainResult.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() }) }))
