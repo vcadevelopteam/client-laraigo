@@ -87,7 +87,11 @@ const ProductCatalog: FC = () => {
     const user = useSelector(state => state.login.validateToken.user);
     const superadmin = ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '');
 
-    const [catalogTemplate] = useState<Dictionary[]>([]);
+    const [availabilityTemplate] = useState<Dictionary[]>([{ "key": t(langKeys.productcatalog_domain_availability_available_for_order), "value": "available for order" }, { "key": t(langKeys.productcatalog_domain_availability_discontinued), "value": "discontinued" }, { "key": t(langKeys.productcatalog_domain_availability_in_stock), "value": "in stock" }, { "key": t(langKeys.productcatalog_domain_availability_out_of_stock), "value": "out of stock" }, { "key": t(langKeys.productcatalog_domain_availability_pending), "value": "pending" }, { "key": t(langKeys.productcatalog_domain_availability_preorder), "value": "preorder" }]);
+    const [currencyTemplate] = useState<Dictionary[]>([{ "key": t(langKeys.productcatalog_domain_currency_pen), "value": "PEN" }, { "key": t(langKeys.productcatalog_domain_currency_usd), "value": "USD" }]);
+    const [genderTemplate] = useState<Dictionary[]>([{ "key": t(langKeys.productcatalog_domain_gender_female), "value": "female" }, { "key": t(langKeys.productcatalog_domain_gender_male), "value": "male" }, { "key": t(langKeys.productcatalog_domain_gender_unisex), "value": "unisex" }]);
+    const [statusTemplate] = useState<Dictionary[]>([{ "key": t(langKeys.status_activo), "value": "ACTIVO" }, { "key": t(langKeys.status_inactivo), "value": "INACTIVO" }]);
+    const [reviewStatusTemplate] = useState<Dictionary[]>([{ "key": t(langKeys.productcatalog_reviewstatus_approved), "value": "approved" }, { "key": t(langKeys.productcatalog_reviewstatus_rejected), "value": "rejected" }]);
     const [catalogId, setCatalogId] = useState(0);
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null });
     const [metaCatalogList, setMetaCatalogList] = useState<Dictionary[]>([]);
@@ -108,11 +112,11 @@ const ProductCatalog: FC = () => {
 
     const { trigger, register, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            availabilityList: catalogTemplate,
-            currencyList: catalogTemplate,
-            genderList: catalogTemplate,
-            statusList: catalogTemplate,
-            reviewStatusList: catalogTemplate,
+            availabilityList: availabilityTemplate,
+            currencyList: currencyTemplate,
+            genderList: genderTemplate,
+            statusList: statusTemplate,
+            reviewStatusList: reviewStatusTemplate,
         }
     });
 
@@ -160,12 +164,6 @@ const ProductCatalog: FC = () => {
             startdate: daterange?.startDate!,
             take: pageSize,
         })));
-
-        trigger('statusList');
-        trigger('availabilityList');
-        trigger('currencyList');
-        trigger('genderList');
-        trigger('reviewStatusList');
     };
 
     const onModalSuccess = () => {
