@@ -3000,8 +3000,9 @@ const Payments: React.FC<{ dataCorp: any, dataOrg: any, setCustomSearch(value: R
 
     useEffect(() => {
         if (!mainResult.loading && !mainResult.error) {
-            setDataInvoice(mainResult.data.map(x => ({
+            setDataInvoice(mainResult.data.filter(x => x.invoicestatus !== 'CANCELED')?.map(x => ({
                 ...x,
+                invoicestatuscolumn: t(x.invoicestatus),
                 paymentstatuscolumn: t(x.paymentstatus),
                 hasreportcolumn: x.hasreport ? t(langKeys.toreport) : t(langKeys.none),
                 docnumbercolumn: (x.serie && x.correlative) ? (x.serie + '-' + x.correlative.toString().padStart(8, '0')) : 'X000-00000000',
@@ -3084,6 +3085,10 @@ const Payments: React.FC<{ dataCorp: any, dataOrg: any, setCustomSearch(value: R
                     const { totalamount } = props.cell.row.original;
                     return formatNumber(totalamount || 0);
                 }
+            },
+            {
+                Header: t(langKeys.invoicestatus),
+                accessor: 'invoicestatuscolumn',
             },
             {
                 Header: t(langKeys.paymentstatus),
