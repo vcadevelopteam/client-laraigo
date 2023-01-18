@@ -791,6 +791,13 @@ export const getPaginatedPerson = ({ skip, take, filters, sorts, startdate, endd
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
+export const getPersonOne = ({ personid }: Dictionary): IRequestBody => ({
+    method: "UFN_PERSON_SEL_ONE",
+    key: "UFN_PERSON_SEL_ONE",
+    parameters: {
+        personid
+    }
+})
 export const getPaginatedPersonLead = ({ skip, take, filters, sorts, startdate, enddate, userids = "", channeltypes = "" }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_LEAD_PERSON_SEL",
     methodCount: "UFN_LEAD_PERSON_TOTALRECORDS",
@@ -3212,6 +3219,23 @@ export const getProductCatalogSel = (id: number = 0, category: string = ''): IRe
         all: true
     }
 })
+export const getPostHistorySel = ({ status = "", communicationchannelid = 0, type = "", publishtatus = "", datestart = null, dateend = null }: Dictionary) => ({
+    method: "UFN_POSTHISTORY_SEL",
+    parameters: {
+        status,
+        type,
+        publishtatus,
+        datestart,
+        dateend,
+        communicationchannelid,
+    }
+})
+export const postHistoryIns = ({ communicationchannelid, communicationchanneltype, posthistoryid, status, type, publishdate, texttitle, textbody, hashtag, sentiment, activity, mediatype, medialink, operation }: Dictionary) => ({
+    method: "UFN_POSTHISTORY_INS",
+    parameters: {
+        communicationchannelid, communicationchanneltype, posthistoryid, status, type, publishdate, texttitle, textbody, hashtag, sentiment, activity, mediatype, medialink, operation
+    }
+})
 
 export const productCatalogIns = ({ id, productid, title, link, imagelink, additionalimagelink, brand, condition, availability, category, material, color, pattern, currency, price, saleprice, customlabel1, customlabel2, customlabel3, customlabel4, customlabel5, labels, catalogid, catalogname, description, status, type, operation }: Dictionary): IRequestBody => ({
     method: "UFN_PRODUCTCATALOG_INS",
@@ -3220,13 +3244,14 @@ export const productCatalogIns = ({ id, productid, title, link, imagelink, addit
         id, productid, title, link, imagelink, additionalimagelink, brand, condition, availability, category, material, color, pattern, currency, price, saleprice, customlabel1, customlabel2, customlabel3, customlabel4, customlabel5, labels, catalogid, catalogname, description, status, type, operation,
     }
 })
+
 export const listPaymentCard = ({ corpid, orgid, id }: Dictionary) => ({
     method: "UFN_PAYMENTCARD_LST",
     key: "UFN_PAYMENTCARD_LST",
     parameters: { corpid, orgid, id },
 });
 
-export const paymentCardInsert = ({ corpid, orgid, paymentcardid, cardnumber, cardcode, firstname, lastname, mail, favorite, clientcode, status, type, username }: Dictionary) => ({
+export const paymentCardInsert = ({ corpid, orgid, paymentcardid, cardnumber, cardcode, firstname, lastname, mail, favorite, clientcode, status, type, username, phone }: Dictionary) => ({
     method: "UFN_PAYMENTCARD_INS",
     key: "UFN_PAYMENTCARD_INS",
     parameters: {
@@ -3243,6 +3268,7 @@ export const paymentCardInsert = ({ corpid, orgid, paymentcardid, cardnumber, ca
         status,
         type,
         username,
+        phone,
         operation: paymentcardid ? 'UPDATE' : 'INSERT',
     },
 });

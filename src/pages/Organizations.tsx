@@ -246,6 +246,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         if (row) {
             if (row?.orgid && row?.voximplantrechargerange) {
                 handleGetConsumption(row?.orgid, row?.voximplantrechargerange, row?.timezoneoffset);
+                handleGetBalance(row?.orgid);
             }
         }
     }, [row])

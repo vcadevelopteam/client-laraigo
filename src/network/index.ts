@@ -12,3 +12,4 @@ export * as GoogleService from './service/google';
 export * as ProductService from './service/product';
 export * as CalendarService from './service/calendar';
 export * as CatalogService from './service/catalog';
+export * as PostHistoryService from './service/posthistory';
