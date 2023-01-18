@@ -47,7 +47,7 @@ const APIS_URL = {
     CLARO: {
         API: 'https://claroapi.laraigo.com/api',
         WS: 'https://clarobroker.laraigo.com',
-        CHATFLOW: 'https://clarobackend.laraigo.com/zyxme/chatflow',
+        CHATFLOW: 'https://chatflow-claro.s3-web.us-east.cloud-object-storage.appdomain.cloud',
         FACEBOOKAPP: '1980305408682607',
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',

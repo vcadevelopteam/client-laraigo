@@ -173,6 +173,14 @@ export const getValuesFromDomain = (domainname: string, keytmp?: any, orgid?: nu
         corpid: corpid || undefined
     }
 });
+export const getCatalogMasterList = () => ({
+    method: "UFN_METACATALOG_SEL",
+    key: "UFN_METACATALOG_SEL",
+    parameters: {
+        metabusinessid: 0,
+        id:0,
+    }
+});
 export const getReportschedulerreportsSel = () => ({
     method: "UFN_REPORTSCHEDULER_REPORTSEL",
     key: "UFN_REPORTSCHEDULER_REPORTSEL",
@@ -759,11 +767,11 @@ export const insInvoice = ({ corpid = 0,
         }
     })
 
-export const insClassification = ({ id, title, description, parent, communicationchannel, status, type, operation, tags, jobplan = null, order = "1" }: Dictionary): IRequestBody => ({
+export const insClassification = ({ id, title, description, parent, communicationchannel, status, type, operation, tags, jobplan = null, order = "1", metacatalogid = null }: Dictionary): IRequestBody => ({
     method: "UFN_CLASSIFICATION_INS",
     key: "UFN_CLASSIFICATION_INS",
     parameters: {
-        id, title, description, parent, communicationchannel, status, type, operation, tags, jobplan, usergroup: 0, schedule: "", order
+        id, title, description, parent, communicationchannel, status, type, operation, tags, jobplan, usergroup: 0, schedule: "", order, metacatalogid
     }
 })
 //tabla paginada
@@ -781,6 +789,13 @@ export const getPaginatedPerson = ({ skip, take, filters, sorts, startdate, endd
         userids,
         channeltypes,
         offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+export const getPersonOne = ({ personid }: Dictionary): IRequestBody => ({
+    method: "UFN_PERSON_SEL_ONE",
+    key: "UFN_PERSON_SEL_ONE",
+    parameters: {
+        personid
     }
 })
 export const getPaginatedPersonLead = ({ skip, take, filters, sorts, startdate, enddate, userids = "", channeltypes = "" }: Dictionary): IRequestBodyPaginated => ({

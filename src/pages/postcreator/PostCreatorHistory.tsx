@@ -9,7 +9,7 @@ import { AntTab, FieldSelect, DateRangePicker, GetIconColor, TemplateBreadcrumbs
 import { Avatar, Button, Tabs } from "@material-ui/core";
 import { CalendarIcon } from "icons";
 import { Dictionary, IRequestBody } from "@types";
-import { getCollection, getMultiCollection, resetAllMain } from "store/main/actions";
+import { getCollection, getMultiCollection, resetAllMain, setMemoryTable, cleanMemoryTable } from "store/main/actions";
 import { getDateCleaned } from "common/helpers/functions";
 import { getPostHistorySel, postHistoryIns } from "common/helpers/requestBodies";
 import { langKeys } from "lang/keys";
@@ -67,10 +67,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const selectionKey = 'posthistoryid';
-const PostCreatorHistory: FC<{ setViewSelected: (id: string) => void }> = ({ setViewSelected }) => {
+const PostCreatorHistory: FC<{ setViewSelected: (id: string) => void, modeSelected: number }> = ({ setViewSelected, modeSelected }) => {
     const { t } = useTranslation();
 
-    const [pageSelected, setPageSelected] = useState(0);
+    const [pageSelected, setPageSelected] = useState(modeSelected ? modeSelected : 0);
     const [betweenViews, setBetweenViews] = useState("bet-1");
     const [arrayBread, setArrayBread] = useState<any>(getArrayBread(t('postcreator_posthistory'), t(langKeys.postcreator_title)));
 
@@ -131,6 +131,7 @@ const initialRange = {
     startDate: new Date(new Date().setDate(1)),
 }
 
+const IDPUBLISHEDHISTORY = "IDPUBLISHEDHISTORY";
 const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value: any) => void, betweenViews: any, setBetweenViews: (value: any) => void }> = ({ publishType, setArrayBread, betweenViews, setBetweenViews }) => {
     const dispatch = useDispatch();
 
@@ -138,6 +139,7 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value: a
 
     const classes = useStyles();
     const mainResult = useSelector(state => state.main);
+    const memoryTable = useSelector(state => state.main.memoryTable);
     const multiResult = useSelector(state => state.main.multiData);
 
     const [cleanSelected, setCleanSelected] = useState(false);
@@ -155,8 +157,13 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value: a
         fetchData();
         setfirstCall(false);
 
+        dispatch(setMemoryTable({
+            id: IDPUBLISHEDHISTORY
+        }))
+
         return () => {
             dispatch(resetAllMain());
+            dispatch(cleanMemoryTable());
         };
     }, []);
 
@@ -342,7 +349,6 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value: a
                     setSelectedRows={setSelectedRows}
                     useSelection={true}
                     checkHistoryCenter={true}
-                    pageSizeDefault={5}
                     ButtonsElement={() => (
                         <div style={{ display: "flex", width: "100%", justifyContent: "space-between", paddingTop: 10 }}>
                             <div style={{ display: "flex", gap: 8 }}>
@@ -413,6 +419,9 @@ const PublishedHistory: React.FC<{ publishType: string, setArrayBread: (value: a
                             </div>
                         </div>
                     )}
+                    pageSizeDefault={IDPUBLISHEDHISTORY === memoryTable.id ? memoryTable.pageSize === -1 ? 5 : memoryTable.pageSize : 5}
+                    initialPageIndex={IDPUBLISHEDHISTORY === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
+                    initialStateFilter={IDPUBLISHEDHISTORY === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
                 />
             </div>
         )
