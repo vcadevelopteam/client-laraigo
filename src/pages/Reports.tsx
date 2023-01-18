@@ -1137,6 +1137,27 @@ const Reports: FC = () => {
                 }else{
                     return (<></>)
                 }
+            case 'VOICECALL':
+                return (
+                    <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
+                        <Card >
+                            <CardActionArea onClick={() => handleSelectedString("voicecallreport")}>
+                                <CardMedia
+                                    component="img"
+                                    height="140"
+                                    className={classes.media}
+                                    image={reportsImage.find(x => x.name === report.image)?.image || 'no_data.png'}
+                                    title={t('report_' + report?.origin)}
+                                />
+                                <CardContent>
+                                    <Typography gutterBottom variant="h6" component="div" style={{fontSize: "130%"}}>
+                                        {t('report_' + report?.origin)}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                )
             default:
                 return (
                     <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
@@ -1435,6 +1456,19 @@ const Reports: FC = () => {
                         handleClick={handleSelectedString}
                     />
                     <UniqueContactsReport />
+                </div>
+            </>
+        )
+    } else if (viewSelected === "voicecallreport") {
+        //RecordHSMRecord
+        return (
+            <>
+                <div style={{ width: '100%' }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={getArrayBread(t('report_voicecall'), t(langKeys.report_plural))}
+                        handleClick={handleSelectedString}
+                    />
+                    <RecordHSMRecord />
                 </div>
             </>
         )
