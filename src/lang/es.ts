@@ -27,6 +27,17 @@ const translation: LangKeys = {
   type_service_plural: 'Tipos de Servicio',
 
   show_logs: 'Mostrar logs',
+  laraigoia: "Laraigo IA",
+  iaconnectors: "Conectores IA",
+  iaconnectorsdescription: "Registra tus conectores de inteligencia artificial",
+  enter: "Ingresar",
+  iaconfiguration: "Configuración IA",
+  iaconfigurationdescription: "Configura como y dónde usar tus servicios de inteligencia artificial",
+  trainingwithai: "Entrenamiento with IA",
+  trainingwithaidescription: "Entrena tu servicio de inteligencia artifical",
+  training: "Entrenamiento",
+  intentionsdescription: "Se nombra y asocia la intención con la pregunta que haga el cliente.",
+  entitiesdescription: "Se nombra la entidad que asocie la categoría y palabra clave, para ser detectado.",
   font: "Fuente",
   hide_logs: 'Ocultar logs',
 
