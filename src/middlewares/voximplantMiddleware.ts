@@ -6,6 +6,8 @@ import { CallSettings } from 'voximplant-websdk/Structures';
 import { ICallGo, ITicket } from '@types';
 import { Call } from "voximplant-websdk/Call/Call";
 import { emitEvent, connectAgentUI, connectAgentAPI } from 'store/inbox/actions';
+import { execute } from 'store/main/actions';
+import { conversationTransferStatus } from 'common/helpers';
 
 const cleanNumber = (number: string | null) => number?.includes("@") ? number?.split("@")[0].split(":")?.[1] : (number?.includes("_") ? number?.split("_")[0] : number);
 const sdk = VoxImplant.getInstance();
@@ -436,16 +438,33 @@ const calVoximplantMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) =
                 transfername: transfername,
             }
         })
-        fetch(url, { method: 'GET' }).catch(x => {
+        fetch(url, { method: 'GET' })
+            .catch(x => {
             console.log(x)
-        });
+            })
+            .then(() => {
+                dispatch(execute(
+                    conversationTransferStatus({
+                        conversationid: conversationid,
+                        status: "ACTIVO",
+                        type: "TRANSFER"
+                    })
+                ))
+            });
         return
     } else if (type === typeVoximplant.COMPLETE_TRANSFER_CALL) {
-        const { call, number } = payload;
+        const { call, number, conversationid } = payload;
         call?.sendMessage(JSON.stringify({
             operation: 'TRANSFER-COMPLETE',
             number: number
         }))
+        dispatch(execute(
+            conversationTransferStatus({
+                conversationid: conversationid,
+                status: "INACTIVO",
+                type: "TRANSFER"
+            })
+        ))
         return
     } else if (type === typeVoximplant.HANGUP_TRANSFER_CALL) {
         const call = payload;
