@@ -110,6 +110,8 @@ const ShoppingCart: React.FC<{ onlyTime?: string, interactiontext: string, creat
 
     // const firstimage = jsonIntt.SectionList?.[0]?.ProductList?.[0]?.ImageReference || "";
     // const totalitems = jsonIntt.SectionList.reduce((a: number, i: Dictionary) => a + i.ProductList.length, 0)
+    if ((jsonIntt.Product_items?.length || 0) === 0)
+        return <div></div>
 
     return (
         <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
@@ -186,11 +188,11 @@ const CatalogProduct: React.FC<{ onlyTime?: string, interactiontext: string, cre
             <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
                 [classes.interactionTextAgent]: userType !== 'client',
             })}>
-                <div style={{ display: 'flex', gap: '4px', backgroundColor: "#f5f6f6", width: 300 }}>
+                <div style={{ display: 'flex', gap: '4px', backgroundColor: "#f5f6f6" }}>
                     {firstimage && <img width="70px" height="70px" src={firstimage} alt="fist" />}
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                         <div>
-                            <div style={{ fontWeight: 500 }}>{jsonIntt.Body}</div>
+                            <div style={{ fontWeight: 500 }}>{jsonIntt.Header}</div>
                             <div style={{ color: '#8696a0' }}>{totalitems} {t(langKeys.elements)}</div>
                         </div>
                     </div>
@@ -275,14 +277,24 @@ const InteractiveList: React.FC<{ onlyTime?: string, interactiontext: string, cr
 
     const jsonIntt = JSON.parse(interactiontext);
 
+    if (jsonIntt.sections.length === 0) {
+        return <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
+            [classes.interactionTextAgent]: userType !== 'client',
+        })}>
+            INTERACTIVE LIST WITHOUT OPTIONS
+        </div>
+    }
+
     return (
         <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
             [classes.interactionTextAgent]: userType !== 'client',
         })}>
-            {jsonIntt.headertype === "text" ? (
+            {(jsonIntt.headertype === "text" || !jsonIntt.headertype) ? (
                 <div style={{ fontWeight: 500 }}>{jsonIntt.header}</div>
             ) : jsonIntt.header}
-            {jsonIntt.body}
+            <div>
+                {jsonIntt.body}
+            </div>
             {jsonIntt.footer && (
                 <div style={{ color: 'rgb(0,0,0,0.45)', fontSize: 12 }}>{jsonIntt.footer}</div>
             )}

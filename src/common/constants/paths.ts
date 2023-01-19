@@ -15,6 +15,7 @@ const paths = {
     },
     REPORTS: '/reports',
     REPORTDESIGNER: '/reportdesigner',
+    POSTCREATOR: '/postcreator',
     TICKETS: '/tickets',
     EMAIL_INBOX: '/email_inbox',
     MESSAGE_INBOX: '/message_inbox',

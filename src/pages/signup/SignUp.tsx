@@ -131,6 +131,7 @@ const SignUpFunc: FC = () => {
             billingcontactmail: "",
             autosendinvoice: true,
             pmemail: "",
+            pmphone: "",
             firstnamecard: "",
             lastnamecard: "",
             creditcard: "",

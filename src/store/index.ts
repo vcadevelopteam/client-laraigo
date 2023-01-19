@@ -25,6 +25,7 @@ import googleReducer, { IState as IGoogle } from './google/reducer';
 import calendarReducer, { IState as ICalendar } from './calendar/reducer';
 import productReducer, { IState as IProduct } from './product/reducer';
 import catalogReducer, { IState as ICatalog } from './catalog/reducer';
+import postHistoryReducer, { IState as IPostHistory } from './posthistory/reducer';
 
 export interface IRootState {
     login: ILogin,
@@ -49,6 +50,7 @@ export interface IRootState {
     calendar: ICalendar;
     product: IProduct;
     catalog: ICatalog;
+    postHistory: IPostHistory;
 }
 
 declare global {
@@ -76,6 +78,7 @@ const rootReducer = combineReducers<IRootState>({
     subscription: subscriptionReducer,
     voximplant: voximplantReducer,
     google: googleReducer,
+    postHistory: postHistoryReducer,
     getversion: getversionReducer,
     calendar: calendarReducer,
     product: productReducer,

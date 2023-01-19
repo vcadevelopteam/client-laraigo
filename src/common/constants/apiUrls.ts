@@ -1,4 +1,4 @@
-const ENV = "DEVELOP";
+const ENV = "PRODUCTION";
 
 const APIS_URL = {
     DEVELOP: {
@@ -47,7 +47,7 @@ const APIS_URL = {
     CLARO: {
         API: 'https://claroapi.laraigo.com/api',
         WS: 'https://clarobroker.laraigo.com',
-        CHATFLOW: 'https://clarobackend.laraigo.com/zyxme/chatflow',
+        CHATFLOW: 'https://chatflow-claro.s3-web.us-east.cloud-object-storage.appdomain.cloud',
         FACEBOOKAPP: '1980305408682607',
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
@@ -145,6 +145,7 @@ export const apiUrls = {
     MAIN_DYNAMIC_EXPORT: `${BASE_URL}/reportdesigner/export`,
     INTEGRATION: `${BASE_URL}/integration`,
     UPLOAD_FILE: `${BASE_URL}/upload`,
+    UPLOAD_FILEMETADATA: `${BASE_URL}/upload/metadata`,
     EXPORT_DATA: `${BASE_URL}/main/export`,
 
     CLOSE_TICKET: `${BASE_URL}/ticket/close`,
@@ -223,6 +224,7 @@ export const apiUrls = {
 
     BILLING_REPORTPDF: `${BASE_URL}/drawpdf`,
 
+    POSTHISTORY_SCHEDULE: `${BASE_URL}/posthistory/schedulepost`,
     EVENTBOOKING_GOOGLE_LOGIN: `${BASE_URL}/event-booking/googlelogin`,
     EVENTBOOKING_GOOGLE_DISCONNECT: `${BASE_URL}/event-booking/googledisconnect`,
     EVENTBOOKING_GOOGLE_VALIDATE: `${BASE_URL}/event-booking/googlevalidate`,
