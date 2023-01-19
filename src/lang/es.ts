@@ -767,6 +767,7 @@ const translation: LangKeys = {
   report_kpioperativo_tdats_hour_avg_help: "Tiempo promedio en horas de todos los tiempos de espera del cliente",
 
   dateactivity: "Fecha actividad",
+  dashboardkpi: "Dashboard KPI",
   leadactivity: "Actividad",
   datenote: "Fecha nota",
   note: "Nota",

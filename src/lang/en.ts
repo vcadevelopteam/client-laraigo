@@ -484,6 +484,7 @@ const translation: LangKeys = {
   type_org_42: 'Human health care and social assistance activities',
   type_org_43: 'Artistic, entertainment and recreation activities',
   type_org_44: 'Association activitie',
+  dashboardkpi: "Dashboard KPI",
 
   attending: 'Attending',
 

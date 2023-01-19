@@ -24,6 +24,7 @@ export const langKeys = {
     cssheaderTooltip: "cssheaderTooltip",
     jsscriptTooltip: "jsscriptTooltip",
     kanbanview: "kanbanview",
+    dashboardkpi: "dashboardkpi",
     listview: "listview",
     startnewconversation: "startnewconversation",
     startnewconversationTooltip: "startnewconversationTooltip",
