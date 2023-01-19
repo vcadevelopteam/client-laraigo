@@ -1,6 +1,6 @@
 import { Box, Button, createStyles, makeStyles, Theme } from "@material-ui/core";
 import { Dictionary } from "@types";
-import { getDisconnectionTimes, getDateCleaned, getUserAsesorByOrgID, getValuesFromDomain, timetoseconds, formattime, exportExcel, getUserGroupsSel, dataYears, dataMonths} from "common/helpers";
+import { getDisconnectionTimes, getDateCleaned, getUserAsesorByOrgID, getValuesFromDomain, timetoseconds, formattime, exportExcel, getUserGroupsSel, dataYears, dataMonths, datesInMonth} from "common/helpers";
 import { DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect } from "components";
 import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
@@ -173,12 +173,17 @@ const DashboardKPI: FC = () => {
     const [searchfields, setsearchfields] = useState({
         day: "",
         month: String(new Date().getMonth()+1).padStart(2, '0'),
-        year: new Date().getFullYear(),
+        year: String(new Date().getFullYear()),
         groups: "",
         origin: "",
     });
+    const [dayData, setDayData] = useState<any>([]);
     const user = useSelector(state => state.login.validateToken.user);
     
+    useEffect(() => {
+        setDayData(datesInMonth(+searchfields.year, +searchfields.month))
+    }, [searchfields.month, searchfields.year])
+
     async function funcsearch() {
         let tosend = { 
             startdate: dateRangeCreateDate.startDate, 
@@ -288,12 +293,22 @@ const DashboardKPI: FC = () => {
                 handleClickButton2={() => funcsearch()}
             >
                 <div className="row-zyx" style={{ marginTop: "15px" }}>
+                    <FieldMultiSelect
+                        label={t(langKeys.day)}
+                        className={classes.fieldsfilter}
+                        variant="outlined"
+                        valueDefault={searchfields.day}
+                        onChange={(value) => {debugger;setsearchfields(p => ({ ...p, day: value.map((o: any) => o.val).join() }))}}
+                        data={dayData}
+                        optionValue="val"
+                        optionDesc="val"
+                    />
                     <FieldSelect
                         label={t(langKeys.month)}
-                        style={{ width: 300 }}
-                        valueDefault={searchfields.year}
+                        className={classes.fieldsfilter}
+                        valueDefault={searchfields.month}
                         variant="outlined"
-                        onChange={(value) => setsearchfields({...searchfields, month: value?.value || String(new Date().getMonth()+1).padStart(2, '0')})}
+                        onChange={(value) => setsearchfields({...searchfields, month: value?.val || String(new Date().getMonth()+1).padStart(2, '0')})}
                         data={dataMonths}
                         uset={true}
                         prefixTranslation="month_"
@@ -302,7 +317,7 @@ const DashboardKPI: FC = () => {
                     />
                     <FieldSelect
                         label={t(langKeys.year)}
-                        style={{ width: 140 }}
+                        className={classes.fieldsfilter}
                         variant="outlined"
                         valueDefault={searchfields.year}
                         onChange={(value) => setsearchfields({...searchfields, year: value?.value || new Date().getFullYear()})}

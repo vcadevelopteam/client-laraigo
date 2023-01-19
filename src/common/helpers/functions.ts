@@ -48,7 +48,7 @@ export const dataMonths = [
 export function datesInMonth(year?:number, month?:number) {
     if(!!year && !!month){
         let lastdate = new Date(year, month, 0).getDate()
-        return Array.from(Array(lastdate).keys()).map(x => ({ value: x+1 }));
+        return Array.from(Array(lastdate).keys()).map(x => ({ val: `${x+1}` }));
     }else{
         return []
     }
@@ -181,7 +181,6 @@ export function formatNumber(num: number) {
         return parseFloat(num.toString()).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
     return "0.00"
 }
-a
 export function formatNumberFourDecimals(num: number) {
     if (num)
         return parseFloat(num.toString()).toFixed(4).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1')
