@@ -332,7 +332,7 @@ const DetailOrders: React.FC<DetailOrdersProps> = ({ data: { row, edit }, multiD
             </div>
             <div style={{width: "100%", display: "flex", justifyContent: "space-between", padding: 15}}>
                 <div style={{fontSize: "1.2em"}}></div>
-                <div style={{fontSize: "1.2em", fontWeight: "bold"}}>{t(langKeys.total)}: {row?.currency === "PEN"? "S/.": "$"}{formatNumber(dataorders.reduce((acc,x)=>acc + x.amount,0))}</div>
+                <div style={{fontSize: "1.2em", fontWeight: "bold"}}>{t(langKeys.total)}: {row?.currency === "PEN"? "S/ ": "$ "}{formatNumber(dataorders.reduce((acc,x)=>acc + x.amount,0))}</div>
             </div>
         </div>
     );
