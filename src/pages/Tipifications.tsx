@@ -173,7 +173,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
             path: row?.path || '',
             tags: row?.tags || '',
             order: row?.order || '',
-            metacatalogid: row?.metacatalogid || '',
+            metacatalogid: row?.metacatalogid || 0,
         }
     });
 
@@ -418,7 +418,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                                 className="col-6"
                                 valueDefault={row?.metacatalogid || 0}
                                 onChange={(value) => {
-                                    setValue('metacatalogid', value?.metacatalogid || ''); 
+                                    setValue('metacatalogid', value?.metacatalogid || 0); 
                                 }}
                                 data={datamastercatalog} //falta llenar la lista de maestro de catalogos
                                 optionDesc="catalogname"
