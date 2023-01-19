@@ -341,7 +341,11 @@ const ManageCallInfoTicket: React.FC = () => {
                                 disabled={call.transfer?.statusCall !== "CONNECTED"}
                                 onClick={() => {
                                     if (call.transfer?.statusCall === "CONNECTED") {
-                                        dispatch(completeTransferCall({ call: call?.call, number: call.transfer?.transfernumber }))
+                                        dispatch(completeTransferCall({
+                                            call: call?.call,
+                                            number: call.transfer?.transfernumber,
+                                            conversationid: ticketSelected?.conversationid!!,
+                                        }))
                                     }
                                 }}
                             >
