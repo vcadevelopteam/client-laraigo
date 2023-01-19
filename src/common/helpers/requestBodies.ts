@@ -3202,6 +3202,20 @@ export const getPaginatedProductCatalog = ({ skip, take, filters, sorts, startda
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
+export const getPaginatedReportVoiceCall = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_REPORT_VOICECALL_SEL",
+    methodCount: "UFN_REPORT_VOICECALL_TOTALRECORDS",
+    parameters: {
+        startdate,
+        enddate,
+        skip,
+        take,
+        filters,
+        sorts,
+        origin: "productcatalog",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
 
 export const getProductCatalogSel = (id: number = 0, category: string = ''): IRequestBody => ({
     method: "UFN_PRODUCTCATALOG_SEL_NORMAL",
@@ -3446,6 +3460,19 @@ export const getTicketvsAdviserExport = ({ filters, sorts, startdate, enddate }:
     key: "UFN_REPORT_ASESOR_VS_TICKET_EXPORT",
     parameters: {
         origin: "ticketvsadviser",
+        filters,
+        startdate,
+        enddate,
+        sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+});
+
+export const getVoiceCallReportExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
+    method: "UFN_REPORT_VOICECALL_EXPORT",
+    key: "UFN_REPORT_VOICECALL_EXPORT",
+    parameters: {
+        origin: "voicecall",
         filters,
         startdate,
         enddate,

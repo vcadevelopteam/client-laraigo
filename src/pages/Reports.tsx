@@ -44,6 +44,7 @@ import HSMHistoryReport from './HSMHistoryReport';
 import UniqueContactsReport from './UniqueContactsReport';
 import { CampaignReport } from 'pages/campaign/CampaignReport';
 import ReportKpiOperativo from 'components/report/ReportKpiOperativo';
+import VoiceChannelReport from './VoiceChannelReport';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -1460,7 +1461,6 @@ const Reports: FC = () => {
             </>
         )
     } else if (viewSelected === "voicecallreport") {
-        //RecordHSMRecord
         return (
             <>
                 <div style={{ width: '100%' }}>
@@ -1468,7 +1468,7 @@ const Reports: FC = () => {
                         breadcrumbs={getArrayBread(t('report_voicecall'), t(langKeys.report_plural))}
                         handleClick={handleSelectedString}
                     />
-                    <RecordHSMRecord />
+                    <VoiceChannelReport />
                 </div>
             </>
         )
