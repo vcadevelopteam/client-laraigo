@@ -767,7 +767,7 @@ export const insInvoice = ({ corpid = 0,
         }
     })
 
-export const insClassification = ({ id, title, description, parent, communicationchannel, status, type, operation, tags, jobplan = null, order = "1", metacatalogid = null }: Dictionary): IRequestBody => ({
+export const insClassification = ({ id, title, description, parent, communicationchannel, status, type, operation, tags, jobplan = null, order = "1", metacatalogid = 0 }: Dictionary): IRequestBody => ({
     method: "UFN_CLASSIFICATION_INS",
     key: "UFN_CLASSIFICATION_INS",
     parameters: {
