@@ -1728,6 +1728,22 @@ export const gerencialEncuestassel = ({ startdate, enddate, channel, group, comp
         offset: (new Date().getTimezoneOffset() / 60) * -1,
     }
 });
+export const dashboardKPISummarySel = ({ date, origin, usergroup, supervisorid }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_KPI_SUMMARY_SEL',
+    key: "UFN_DASHBOARD_KPI_SUMMARY_SEL",
+    parameters: {
+        date, origin, usergroup, supervisorid,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+});
+export const dashboardKPISummaryGraphSel = ({ date, origin, usergroup, supervisorid }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_KPI_SUMMARY_GRAPH_SEL',
+    key: "UFN_DASHBOARD_KPI_SUMMARY_GRAPH_SEL",
+    parameters: {
+        date, origin, usergroup, supervisorid,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+});
 export const gerencialsummarysel = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_GERENCIAL_SUMMARY_SEL',
     key: "UFN_DASHBOARD_GERENCIAL_SUMMARY_SEL",
@@ -3213,6 +3229,20 @@ export const getPaginatedProductCatalog = ({ metacatalogid, enddate, filters, sk
         metacatalogid, enddate, filters, offset: (new Date().getTimezoneOffset() / 60) * -1, origin: "productcatalog", skip, sorts, startdate, take,
     }
 })
+export const getPaginatedReportVoiceCall = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_REPORT_VOICECALL_SEL",
+    methodCount: "UFN_REPORT_VOICECALL_TOTALRECORDS",
+    parameters: {
+        startdate,
+        enddate,
+        skip,
+        take,
+        filters,
+        sorts,
+        origin: "productcatalog",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
 
 export const getProductCatalogSel = (id: number = 0, category: string = ''): IRequestBody => ({
     method: "UFN_PRODUCTCATALOG_SEL_NORMAL",
@@ -3462,6 +3492,19 @@ export const getTicketvsAdviserExport = ({ filters, sorts, startdate, enddate }:
     key: "UFN_REPORT_ASESOR_VS_TICKET_EXPORT",
     parameters: {
         origin: "ticketvsadviser",
+        filters,
+        startdate,
+        enddate,
+        sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+});
+
+export const getVoiceCallReportExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
+    method: "UFN_REPORT_VOICECALL_EXPORT",
+    key: "UFN_REPORT_VOICECALL_EXPORT",
+    parameters: {
+        origin: "voicecall",
         filters,
         startdate,
         enddate,
