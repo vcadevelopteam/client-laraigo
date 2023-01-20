@@ -1710,6 +1710,22 @@ export const gerencialEncuestassel = ({ startdate, enddate, channel, group, comp
         offset: (new Date().getTimezoneOffset() / 60) * -1,
     }
 });
+export const dashboardKPISummarySel = ({ date, origin, usergroup, supervisorid }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_KPI_SUMMARY_SEL',
+    key: "UFN_DASHBOARD_KPI_SUMMARY_SEL",
+    parameters: {
+        date, origin, usergroup, supervisorid,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+});
+export const dashboardKPISummaryGraphSel = ({ date, origin, usergroup, supervisorid }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_KPI_SUMMARY_GRAPH_SEL',
+    key: "UFN_DASHBOARD_KPI_SUMMARY_GRAPH_SEL",
+    parameters: {
+        date, origin, usergroup, supervisorid,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+});
 export const gerencialsummarysel = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_GERENCIAL_SUMMARY_SEL',
     key: "UFN_DASHBOARD_GERENCIAL_SUMMARY_SEL",

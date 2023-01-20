@@ -1,6 +1,6 @@
 import { Box, Button, createStyles, makeStyles, Theme } from "@material-ui/core";
 import { Dictionary } from "@types";
-import { getDisconnectionTimes, getDateCleaned, getUserAsesorByOrgID, getValuesFromDomain, timetoseconds, formattime, exportExcel, getUserGroupsSel, dataYears, dataMonths, datesInMonth} from "common/helpers";
+import { getDisconnectionTimes, getDateCleaned, getUserAsesorByOrgID, getValuesFromDomain, timetoseconds, formattime, exportExcel, getUserGroupsSel, dataYears, dataMonths, datesInMonth, dashboardKPISummaryGraphSel, dashboardKPISummarySel} from "common/helpers";
 import { DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect } from "components";
 import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
@@ -13,6 +13,7 @@ import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, X
 import { cleanViewChange, getMultiCollection, getMultiCollectionAux, resetMainAux, resetMultiMainAux, setViewChange } from "store/main/actions";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import clsx from 'clsx';
 
 const COLORS = ["#0087e0", "#ff0000", "#296680", "#fc3617", "#e8187a", "#7cfa57", "#cfbace", "#4cd45f", "#fd5055", "#7e1be4", "#bf1490", "#66c6cf", "#011c3d", "#1a9595", "#4ae2c7", "#515496", "#a2aa65", "#df909c", "#3aa343", "#e0606e"];
 
@@ -144,15 +145,27 @@ const useStyles = makeStyles((theme: Theme) =>
                 cursor: 'pointer',
             }
         },
+        columnCard2: {
+            backgroundColor: "#FFF",
+            display: 'flex',
+            height: '100%',
+            flex: 1,
+            textAlign: "center",
+            padding: theme.spacing(2),
+            flexDirection: 'column',
+            gap: theme.spacing(1)
+        },
+        subtitle: {
+            fontSize:"0.8em"
+        },
+        less: {
+            color: "#ff5b5b",
+        },
+        more: {
+            color: "#8bafd6",
+        },
     })
 );
-
-
-const initialRange = {
-    startDate: new Date(new Date().setDate(1)),
-    endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
-    key: 'selection'
-}
 
 const DashboardKPI: FC = () => {
     const classes = useStyles();
@@ -162,14 +175,9 @@ const DashboardKPI: FC = () => {
     const [waitSave, setWaitSave] = useState(false);
     const { t } = useTranslation();
     const [openDialog, setOpenDialog] = useState(false);
-    const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
-    const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
-    const [dataasesors, setdataasesors] = useState<any>([]);
     const [dataGroup, setDataGroup] = useState<any>([]);
-    const [datatotaltime, setdatatotaltime] = useState<any>([]);
-    const [disconnectiontypes, setdisconnectiontypes] = useState<any>([]);
-    const [tcovstdc, settcovstdc] = useState<any>([]);
-    const [usersearch, setusersearch] = useState(0);
+    const [dataSummary, setDataSummary] = useState<any>([]);
+    const [filteredDays, setfilteredDays] = useState("");
     const [searchfields, setsearchfields] = useState({
         day: "",
         month: String(new Date().getMonth()+1).padStart(2, '0'),
@@ -186,37 +194,24 @@ const DashboardKPI: FC = () => {
 
     async function funcsearch() {
         let tosend = { 
-            startdate: dateRangeCreateDate.startDate, 
-            enddate: dateRangeCreateDate.endDate, 
-            asesorid: usersearch, 
+            date: `${searchfields.year}-${searchfields.month}-01`, 
+            origin: searchfields.origin,
+            usergroup: searchfields.groups,
             supervisorid: user?.userid||0,
         }
+        setfilteredDays(searchfields.day)
         dispatch(showBackdrop(true));
         setOpenDialog(false)
         dispatch(getMultiCollectionAux([
-            getDisconnectionTimes(tosend)
+            dashboardKPISummarySel(tosend),
+            dashboardKPISummaryGraphSel(tosend)
         ]))
         setWaitSave(true)
     }
     useEffect(() => {
         if (waitSave) {
             if (!remultiaux.loading && !remultiaux.error) {
-                let arraydisconnectiontimes =disconnectiontypes.map((x:any)=>0)
-                let userereasons = remultiaux?.data[0]?.data || []
-                let timestotal = [0,0]
-                userereasons.forEach(x=>{
-                    if(x.desconectedtimejson){
-                        timestotal[0]+=timetoseconds(x.conectedtime)
-                        timestotal[1]+=timetoseconds(x.desconectedtime)
-                        let arraydesconectionjson = JSON.parse(x.desconectedtimejson)
-                        let times = Object.keys(arraydesconectionjson)
-                        times.forEach(y=>{
-                            arraydisconnectiontimes[disconnectiontypes.indexOf(y)]+=timetoseconds(arraydesconectionjson[y])
-                        })
-                    }
-                })
-                setdatatotaltime(disconnectiontypes.reduce((acc:any,x:string, i:number)=>[...acc,{type:x, time: arraydisconnectiontimes[i]}],[]).filter((x:any)=>x.time!==0))
-                settcovstdc([{title: t(langKeys.totaltimeconnected), time: timestotal[0]},{title: t(langKeys.totaltimeoffline), time: timestotal[1]}])
+                processSummary();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (remultiaux.error) {
@@ -232,14 +227,12 @@ const DashboardKPI: FC = () => {
         if (mainResult.multiData.data.length !== 0) {
             let multiData = mainResult.multiData.data;
             setDataGroup(multiData[0] && multiData[0].success ? multiData[0].data : []);
-            setdisconnectiontypes(multiData[1]?.data?.reduce((acc:any,x)=>[...acc,x.domainvalue],[]))
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mainResult])
     useEffect(() => {
         dispatch(getMultiCollection([
             getUserGroupsSel(),
-            getValuesFromDomain("TIPODESCONEXION"),
         ]));
         funcsearch()
         return () => {
@@ -249,27 +242,14 @@ const DashboardKPI: FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    useEffect(() => {
+    /*useEffect(() => {
         dispatch(setViewChange("disconnections"))
         return () => {
             dispatch(cleanViewChange());
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [])*/
     
-    const RADIAN = Math.PI / 180;
-    const renderCustomizedLabel = ({cx, cy, midAngle, innerRadius, outerRadius, percent, index,}:Dictionary) => {
-        const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-        const x = cx + radius * Math.cos(-midAngle * RADIAN);
-        const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-    return (
-            <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central">
-            {`${formattime(tcovstdc[index].time)}`}
-            </text>
-        );
-    }
-
     function downloaddata(data:any,title:string) {
         if (data.length !== 0) {
             let seteddata = data.map((x:any)=>{return {...x,time:formattime(x.time)}})
@@ -281,6 +261,24 @@ const DashboardKPI: FC = () => {
                 []
             ))
         }
+    }
+    function processSummary() {
+        const prevmonth= remultiaux?.data?.[0]?.data[0];
+        const actmonth= remultiaux?.data?.[0]?.data[1];
+        console.log(remultiaux?.data?.[0]?.data||[])
+        setDataSummary({
+            firstassignedtime_avg: actmonth.firstassignedtime_avg,
+            holdingwaitingtime_avg: actmonth.holdingwaitingtime_avg,
+            firstreplytime_avg: actmonth.firstreplytime_avg,
+            tmr_avg: actmonth.tmr_avg,
+            tme_avg: actmonth.tme_avg,
+            agents: actmonth.agents,
+            tickets_count: actmonth.tickets_count,
+            abandoned_tickets: actmonth.abandoned_tickets,
+            balancetimes_avg: actmonth.balancetimes_avg,
+            //variationfirstassignedtime_avg: timeVariationPorc()
+        })
+        debugger
     }
     return (
         <Fragment>
@@ -364,62 +362,67 @@ const DashboardKPI: FC = () => {
             <div style={{ display: 'flex', gap: 16, flexDirection: 'column' }}>
                 <div className={classes.replacerowzyx}>
                     <Box
-                        className={classes.itemCard}
-                        style={{width:"100%"}}
+                        className={classes.columnCard2}
                     >
-                        <div className={classes.downloadiconcontainer}>                            
-                            <CloudDownloadIcon onClick={()=>downloaddata(datatotaltime,t(langKeys.totaltimeduetodisconnectionreasons))} className={classes.styleicon}/>
-                        </div>
-                        <div style={{width: "100%"}}> 
-                            <div style={{display: "flex"}}>
-                                <div style={{fontWeight: "bold",fontSize: "1.6em",}}> {t(langKeys.totaltimeduetodisconnectionreasons)} </div>
-                            </div>
-                        </div>
-                        <div style={{width: "100%", display:"flex"}}>
-                            <div style={{width: "100%", paddingTop: 50}}>
-                                <ResponsiveContainer width="100%" aspect={5.0 / 2.0}>
-                                    <BarChart data={datatotaltime}>
-                                        <XAxis domain={["",""]} angle={-40} interval={0} textAnchor="end"  type="category" dataKey="type" height={95}/>
-                                        <YAxis tickFormatter={v=>formattime(v)} width={100}/>
-                                        <RechartsTooltip formatter={(value: any, name: any) => [formattime(value), t(name)]} />
-                                        <Bar dataKey="time" fill="#8884d8" > </Bar>
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </div>
-
+                        <div className={classes.boxtitlequarter}>{t(langKeys.firstavgassignment)}
+                        <div className={classes.datafieldquarter}>{dataSummary?.firstassignedtime_avg || "00:00:00"}</div>
+                        <div className={clsx(classes.subtitle, {[classes.less]: true, [classes.more]: false})}>poop</div>
                         </div>
                     </Box>
-                </div>
-            </div>
-            <div style={{ display: 'flex', gap: 16, flexDirection: 'column' }}>
-                <div className={classes.replacerowzyx}>
                     <Box
-                        className={classes.itemCard}
-                        style={{width:"100%"}}
+                        className={classes.columnCard2}
                     >
-                        <div className={classes.downloadiconcontainer}>                            
-                            <CloudDownloadIcon onClick={()=>downloaddata(tcovstdc,t(langKeys.timeconnectedvstimeoff))} className={classes.styleicon}/>
+                        <div className={classes.boxtitlequarter}>{t(langKeys.averageholdingtime)}
+                        <div className={classes.datafieldquarter}>{dataSummary?.holdingwaitingtime_avg || "00:00:00"}</div>
                         </div>
-                        <div style={{width: "100%"}}> 
-                            <div style={{display: "flex"}}>
-                                <div style={{fontWeight: "bold",fontSize: "1.6em",}}> {t(langKeys.timeconnectedvstimeoff)} </div>
-                            </div>
+                    </Box>
+                    <Box
+                        className={classes.columnCard2}
+                    >
+                        <div className={classes.boxtitlequarter}>{t(langKeys.avg1stresponsetime)}
+                        <div className={classes.datafieldquarter}>{dataSummary?.firstreplytime_avg || "00:00:00"}</div>
                         </div>
-                        <div style={{width: "100%", display:"flex"}}>
-                            <div style={{width: "100%", paddingTop: 50}}>
-                                <ResponsiveContainer width="100%" aspect={5.0 / 2.0}>
-                                    <PieChart>
-                                        <RechartsTooltip formatter={(value: any, name: any) => [formattime(value), t(name)]} />
-                                        <Pie isAnimationActive={false} data={tcovstdc} dataKey="time" nameKey="title" cx="50%" cy="50%" fill="#8884d8" labelLine={false} label={renderCustomizedLabel}>
-                                            {
-                                                tcovstdc.map((entry:any, index:number) => <Cell key={entry.title} fill={COLORS[index % COLORS.length]}/>)
-                                            }
-                                        </Pie>
-                                        <Legend verticalAlign="bottom"/>
-                                    </PieChart>
-                                </ResponsiveContainer>
-                            </div>
-
+                    </Box>
+                    <Box
+                        className={classes.columnCard2}
+                    >
+                        <div className={classes.boxtitlequarter}>{t(langKeys.tmrprom)}
+                        <div className={classes.datafieldquarter}>{dataSummary?.tmr_avg || "00:00:00"}</div>
+                        </div>
+                    </Box>
+                    <Box
+                        className={classes.columnCard2}
+                    >
+                        <div className={classes.boxtitlequarter}>{t(langKeys.tmeprom)}
+                        <div className={classes.datafieldquarter}>{dataSummary?.tme_avg || "00:00:00"}</div>
+                        </div>
+                    </Box>
+                    <Box
+                        className={classes.columnCard2}
+                    >
+                        <div className={classes.boxtitlequarter}>{t(langKeys.asesoresprom)}
+                        <div className={classes.datafieldquarter}>{dataSummary?.agents || "0"}</div>
+                        </div>
+                    </Box>
+                    <Box
+                        className={classes.columnCard2}
+                    >
+                        <div className={classes.boxtitlequarter}>{t(langKeys.ticketsprom)}
+                        <div className={classes.datafieldquarter}>{dataSummary?.tickets_count || "0"}</div>
+                        </div>
+                    </Box>
+                    <Box
+                        className={classes.columnCard2}
+                    >
+                        <div className={classes.boxtitlequarter}>{t(langKeys.unattendedticketsavg)}
+                        <div className={classes.datafieldquarter}>{dataSummary?.abandoned_tickets || "0"}</div>
+                        </div>
+                    </Box>
+                    <Box
+                        className={classes.columnCard2}
+                    >
+                        <div className={classes.boxtitlequarter}>{t(langKeys.nprombalanceos)}
+                        <div className={classes.datafieldquarter}>{dataSummary?.balancetimes_avg || "0"}</div>
                         </div>
                     </Box>
                 </div>

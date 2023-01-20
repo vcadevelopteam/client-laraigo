@@ -265,6 +265,11 @@ export function validateDomainCharactersSpecials(text: string, option: string) {
     }
 }
 
+export function timeVariationPorc(after: string, before: string, decimals: number) {
+    let bcseconds = timetoseconds(before);
+    let acseconds = timetoseconds(after);
+    debugger
+}
 export function timetoseconds(cc: any) {
     if (!cc)
         return 0;
