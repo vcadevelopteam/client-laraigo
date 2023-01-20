@@ -265,10 +265,41 @@ export function validateDomainCharactersSpecials(text: string, option: string) {
     }
 }
 
-export function timeVariationPorc(after: string, before: string, decimals: number) {
+export function addTimes(t1: string, t2: string) {
+    let t1seconds = timetoseconds(t1);
+    let t2seconds = timetoseconds(t2);
+    return secondsToTime(t1seconds + t2seconds)
+}
+export function substractiontimesTimes(after: string, before: string) {
     let bcseconds = timetoseconds(before);
     let acseconds = timetoseconds(after);
-    debugger
+    return secondsToTime(acseconds - bcseconds)
+}
+export function varpercTime(newt: string, oldt: string, decimals:number) {
+    if(!!newt && !!oldt){
+        let newtseconds = timetoseconds(newt);
+        let oldtseconds = timetoseconds(oldt);
+        return (((newtseconds-oldtseconds)/oldtseconds)*100).toFixed(decimals)
+    }else{
+        return (0).toFixed(decimals)
+    }
+}
+export function varpercnumber(newn: number, oldn: number, decimals:number) {
+    if(newn + oldn){
+        return (((newn-oldn)/oldn)*100).toFixed(decimals)
+    }else{
+        return (0).toFixed(decimals)
+    }
+}
+
+export function divisionTimeNumber(tim: string, n: number) {
+    if(!!n){
+        let timeseconds = timetoseconds(tim);
+        let divided = Math.floor(timeseconds/n)
+        return secondsToTime(divided)
+    }else{
+        return "00:00:00"
+    }
 }
 export function timetoseconds(cc: any) {
     if (!cc)

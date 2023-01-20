@@ -1,21 +1,20 @@
 import { Box, Button, createStyles, makeStyles, Theme } from "@material-ui/core";
 import { Dictionary } from "@types";
-import { getDisconnectionTimes, getDateCleaned, getUserAsesorByOrgID, getValuesFromDomain, timetoseconds, formattime, exportExcel, getUserGroupsSel, dataYears, dataMonths, datesInMonth, dashboardKPISummaryGraphSel, dashboardKPISummarySel} from "common/helpers";
+import { getDisconnectionTimes, getDateCleaned, getUserAsesorByOrgID, getValuesFromDomain, timetoseconds, formattime, exportExcel, getUserGroupsSel, dataYears, dataMonths, datesInMonth, dashboardKPISummaryGraphSel, dashboardKPISummarySel, addTimes, varpercTime, varpercnumber, divisionTimeNumber} from "common/helpers";
 import { DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect } from "components";
 import { useSelector } from "hooks";
-import { CalendarIcon } from "icons";
+import { CalendarIcon, DownloadIcon } from "icons";
 import { langKeys } from "lang/keys";
-import { FC, Fragment, useEffect, useState } from "react";
+import { FC, Fragment, FunctionComponent, useEffect, useState } from "react";
 import { Range } from 'react-date-range';
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis, Pie, PieChart, Legend } from "recharts";
+import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis, Pie, PieChart, Legend, LineChart, CartesianGrid, Line, LabelList } from "recharts";
 import { cleanViewChange, getMultiCollection, getMultiCollectionAux, resetMainAux, resetMultiMainAux, setViewChange } from "store/main/actions";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
-import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import DomToImage from 'dom-to-image';
 import clsx from 'clsx';
-
-const COLORS = ["#0087e0", "#ff0000", "#296680", "#fc3617", "#e8187a", "#7cfa57", "#cfbace", "#4cd45f", "#fd5055", "#7e1be4", "#bf1490", "#66c6cf", "#011c3d", "#1a9595", "#4ae2c7", "#515496", "#a2aa65", "#df909c", "#3aa343", "#e0606e"];
+import React from "react";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -164,9 +163,15 @@ const useStyles = makeStyles((theme: Theme) =>
         more: {
             color: "#8bafd6",
         },
+        containertitleboxes:{
+            display: "flex",
+            justifyContent: "space-between",
+            width: "100%"
+        }
     })
 );
 
+  
 const DashboardKPI: FC = () => {
     const classes = useStyles();
     const mainResult = useSelector(state => state.main);
@@ -177,9 +182,10 @@ const DashboardKPI: FC = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [dataGroup, setDataGroup] = useState<any>([]);
     const [dataSummary, setDataSummary] = useState<any>([]);
-    const [filteredDays, setfilteredDays] = useState("");
+    const [filteredDays, setfilteredDays] = useState("1");
+    const el = React.useRef<null | HTMLDivElement>(null);
     const [searchfields, setsearchfields] = useState({
-        day: "",
+        day: "1",
         month: String(new Date().getMonth()+1).padStart(2, '0'),
         year: String(new Date().getFullYear()),
         groups: "",
@@ -199,7 +205,7 @@ const DashboardKPI: FC = () => {
             usergroup: searchfields.groups,
             supervisorid: user?.userid||0,
         }
-        setfilteredDays(searchfields.day)
+        setfilteredDays((searchfields.day.split(",")).sort().join())
         dispatch(showBackdrop(true));
         setOpenDialog(false)
         dispatch(getMultiCollectionAux([
@@ -242,43 +248,111 @@ const DashboardKPI: FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    /*useEffect(() => {
-        dispatch(setViewChange("disconnections"))
-        return () => {
-            dispatch(cleanViewChange());
+    const GenericPdfDownloader: React.FC<{ downloadFileName: string }> = ({ downloadFileName }) => {
+        const downloadPdfDocument = () => {
+            import('jspdf').then(jsPDF => {
+                if (el.current) {
+                    const gg = document.createElement('div');
+                    gg.style.display = 'flex';
+                    gg.style.flexDirection = 'column';
+                    gg.style.gap = '8px';
+                    gg.style.width = '190mm';
+                    gg.id = "newexportcontainer"
+
+                    gg.innerHTML = el.current.innerHTML;
+
+                    gg.querySelectorAll(".interaction-gmap").forEach(x => x.remove())
+                    gg.querySelectorAll(".interaction-gmap-text").forEach(x => (x as HTMLDivElement).style.display = "")
+                    document.body.appendChild(gg);
+                    const pdf = new jsPDF.jsPDF('p', 'mm');
+                    if (pdf) {
+                        DomToImage.toPng(gg)
+                            .then(imgData => {
+                                var imgWidth = 200;
+                                var pageHeight = 297;
+                                var imgHeight = Math.ceil(gg.scrollHeight * 0.2645833333);
+                                var heightLeft = imgHeight;
+                                var doc = new jsPDF.jsPDF('p', 'mm');
+                                var topPadding = 10;
+                                var position = topPadding; // give some top padding to first page
+
+                                doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                                heightLeft -= pageHeight;
+
+                                while (heightLeft >= 0) {
+                                    position = heightLeft - imgHeight + topPadding; // top padding for other pages
+                                    doc.addPage();
+                                    doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                                    heightLeft -= pageHeight;
+                                }
+                                doc.save(`${downloadFileName}.pdf`);
+                                document.getElementById('newexportcontainer')?.remove();
+                            });
+                    }
+                }
+            });
+
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])*/
-    
-    function downloaddata(data:any,title:string) {
-        if (data.length !== 0) {
-            let seteddata = data.map((x:any)=>{return {...x,time:formattime(x.time)}})
-            exportExcel(title, seteddata, Object.keys(seteddata[0]).reduce((ac: any[], c: any) => (
-                [
-                    ...ac,
-                    { Header: t((langKeys as any)[`dashboard_operationalpush_disconnections_${c}`]), accessor: c }
-                ]),
-                []
-            ))
-        }
+        return (
+            <Button
+                variant="contained"
+                color="primary"
+                onClick={downloadPdfDocument}
+                startIcon={<DownloadIcon />}
+            ><Trans i18nKey={langKeys.download} />
+            </Button>
+        )
     }
+
+
     function processSummary() {
         const prevmonth= remultiaux?.data?.[0]?.data[0];
         const actmonth= remultiaux?.data?.[0]?.data[1];
-        console.log(remultiaux?.data?.[0]?.data||[])
+        const selectedDays = filteredDays.split(",")
+        const cantdays = selectedDays.length
+        const dataDays = remultiaux?.data?.[1]?.data?.filter(x=>selectedDays.includes(String(x.day)))||[]
+        console.log(remultiaux)
+        //tme: timetoseconds(dataDays.filter(y=>String(y.day)===x)?.[0]?.tme_avg || "00:00:00")
+        let graphdata = selectedDays.reduce((acc:any,x:string)=>{
+            let foundDay = dataDays.filter(y=>String(y.day)===x)?.[0];
+            return [...acc, {
+            date: t(langKeys.day) + " "+ x,
+            tme: timetoseconds(foundDay?.tme_avg || "00:00:00"),
+            tmr: timetoseconds(foundDay?.tmr_avg || "00:00:00"),
+            tickets_agents: foundDay?.tickets_agents||0,
+            agents: foundDay?.agents||0,
+            balancetimes_avg: foundDay?.balancetimes_avg||0,
+            tickets_count: (foundDay?.tickets_count + foundDay?.abandoned_tickets)||0,
+            abandoned_tickets: foundDay?.abandoned_tickets||0,
+            //faltauno
+            holdingwaitingtime_avg: timetoseconds(foundDay?.holdingwaitingtime_avg || "00:00:00"),
+            firstassignedtime_avg: timetoseconds(foundDay?.firstassignedtime_avg || "00:00:00"),
+            firstreplytime_avg: timetoseconds(foundDay?.firstreplytime_avg || "00:00:00"),
+            participacion: foundDay?.stake||0,
+        }]}, [])
         setDataSummary({
-            firstassignedtime_avg: actmonth.firstassignedtime_avg,
-            holdingwaitingtime_avg: actmonth.holdingwaitingtime_avg,
-            firstreplytime_avg: actmonth.firstreplytime_avg,
-            tmr_avg: actmonth.tmr_avg,
-            tme_avg: actmonth.tme_avg,
-            agents: actmonth.agents,
-            tickets_count: actmonth.tickets_count,
-            abandoned_tickets: actmonth.abandoned_tickets,
-            balancetimes_avg: actmonth.balancetimes_avg,
-            //variationfirstassignedtime_avg: timeVariationPorc()
+            month: actmonth.month,
+            year: actmonth.year,
+            firstassignedtime_avg: divisionTimeNumber(dataDays.reduce((acc,x)=>(addTimes(acc,x.firstassignedtime_avg)),"00:00:00"),cantdays),
+            holdingwaitingtime_avg: divisionTimeNumber(dataDays.reduce((acc,x)=>(addTimes(acc,x.holdingwaitingtime_avg)),"00:00:00"),cantdays),
+            firstreplytime_avg: divisionTimeNumber(dataDays.reduce((acc,x)=>(addTimes(acc,x.firstreplytime_avg)),"00:00:00"),cantdays),
+            tmr_avg: divisionTimeNumber(dataDays.reduce((acc,x)=>(addTimes(acc,x.tmr_avg)),"00:00:00"),cantdays),
+            tme_avg: divisionTimeNumber(dataDays.reduce((acc,x)=>(addTimes(acc,x.tme_avg)),"00:00:00"),cantdays),
+            agents: (dataDays.reduce((acc,x)=>(acc + x.agents),0)/cantdays).toFixed(2),
+            tickets_count: (dataDays.reduce((acc,x)=>(acc + x.tickets_count + x.abandoned_tickets),0)/cantdays).toFixed(2),
+            abandoned_tickets: (dataDays.reduce((acc,x)=>(acc + x.abandoned_tickets),0)/cantdays).toFixed(2),
+            balancetimes_avg: (dataDays.reduce((acc,x)=>(acc + x.balancetimes_avg),0)/cantdays).toFixed(2),
+            varperfata: varpercTime(actmonth.firstassignedtime_avg, prevmonth.firstassignedtime_avg,0),
+            varperhwta: varpercTime(actmonth.holdingwaitingtime_avg, prevmonth.holdingwaitingtime_avg,0),
+            varperfrta: varpercTime(actmonth.firstreplytime_avg, prevmonth.firstreplytime_avg,0),
+            varpertmr_avg: varpercTime(actmonth.tmr_avg, prevmonth.tmr_avg,0),
+            varpertme_avg: varpercTime(actmonth.tme_avg, prevmonth.tme_avg,0),
+            varperagents: varpercnumber(actmonth.agents, prevmonth.agents,0),
+            varpertc: varpercnumber(actmonth.tickets_count + actmonth.abandoned_tickets, prevmonth.tickets_count + prevmonth.abandoned_tickets,0),
+            varperat: varpercnumber(actmonth.abandoned_tickets, prevmonth.abandoned_tickets,0),
+            varperbta: varpercnumber(actmonth.balancetimes_avg, prevmonth.balancetimes_avg,0),
+            graphdata: graphdata,
         })
-        debugger
     }
     return (
         <Fragment>
@@ -296,7 +370,7 @@ const DashboardKPI: FC = () => {
                         className={classes.fieldsfilter}
                         variant="outlined"
                         valueDefault={searchfields.day}
-                        onChange={(value) => {debugger;setsearchfields(p => ({ ...p, day: value.map((o: any) => o.val).join() }))}}
+                        onChange={(value) => setsearchfields(p => ({ ...p, day: value.map((o: any) => o.val).join() }))}
                         data={dayData}
                         optionValue="val"
                         optionDesc="val"
@@ -351,22 +425,27 @@ const DashboardKPI: FC = () => {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
                 <div className={classes.maintitle}> {t(langKeys.dashboardkpi)}</div>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    style={{ width: 200, backgroundColor: "#007bff" }}
-                    onClick={() => setOpenDialog(true)}
-                >{t(langKeys.stablishfilters)}
-                </Button>
+                <div style={{display:"flex",gap: 6}}>
+                    <GenericPdfDownloader
+                        downloadFileName={`kpi-${dataSummary.year}-${dataSummary.month}-${filteredDays}`}
+                    />
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        style={{ width: 200, backgroundColor: "#007bff" }}
+                        onClick={() => setOpenDialog(true)}
+                    >{t(langKeys.stablishfilters)}
+                    </Button>
+                </div>
             </div>
-            <div style={{ display: 'flex', gap: 16, flexDirection: 'column' }}>
+            <div ref={el} style={{ display: 'flex', gap: 16, flexDirection: 'column' }}>
                 <div className={classes.replacerowzyx}>
                     <Box
                         className={classes.columnCard2}
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.firstavgassignment)}
                         <div className={classes.datafieldquarter}>{dataSummary?.firstassignedtime_avg || "00:00:00"}</div>
-                        <div className={clsx(classes.subtitle, {[classes.less]: true, [classes.more]: false})}>poop</div>
+                        <div className={clsx(classes.subtitle, {[classes.less]: dataSummary.varperfata<0, [classes.more]: dataSummary.varperfata>0})}>{dataSummary.varperfata>0?"+":""}{dataSummary.varperfata}% {t(langKeys.vsprevmonth)}</div>
                         </div>
                     </Box>
                     <Box
@@ -374,6 +453,7 @@ const DashboardKPI: FC = () => {
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.averageholdingtime)}
                         <div className={classes.datafieldquarter}>{dataSummary?.holdingwaitingtime_avg || "00:00:00"}</div>
+                        <div className={clsx(classes.subtitle, {[classes.less]: dataSummary.varperhwta<0, [classes.more]: dataSummary.varperhwta>0})}>{dataSummary.varperhwta>0?"+":""}{dataSummary.varperhwta}% {t(langKeys.vsprevmonth)}</div>
                         </div>
                     </Box>
                     <Box
@@ -381,6 +461,7 @@ const DashboardKPI: FC = () => {
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.avg1stresponsetime)}
                         <div className={classes.datafieldquarter}>{dataSummary?.firstreplytime_avg || "00:00:00"}</div>
+                        <div className={clsx(classes.subtitle, {[classes.less]: dataSummary.varperfrta<0, [classes.more]: dataSummary.varperfrta>0})}>{dataSummary.varperfrta>0?"+":""}{dataSummary.varperfrta}% {t(langKeys.vsprevmonth)}</div>
                         </div>
                     </Box>
                     <Box
@@ -388,6 +469,7 @@ const DashboardKPI: FC = () => {
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.tmrprom)}
                         <div className={classes.datafieldquarter}>{dataSummary?.tmr_avg || "00:00:00"}</div>
+                        <div className={clsx(classes.subtitle, {[classes.less]: dataSummary.varpertmr_avg<0, [classes.more]: dataSummary.varpertmr_avg>0})}>{dataSummary.varpertmr_avg>0?"+":""}{dataSummary.varpertmr_avg}% {t(langKeys.vsprevmonth)}</div>
                         </div>
                     </Box>
                     <Box
@@ -395,6 +477,7 @@ const DashboardKPI: FC = () => {
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.tmeprom)}
                         <div className={classes.datafieldquarter}>{dataSummary?.tme_avg || "00:00:00"}</div>
+                        <div className={clsx(classes.subtitle, {[classes.less]: dataSummary.varpertme_avg<0, [classes.more]: dataSummary.varpertme_avg>0})}>{dataSummary.varpertme_avg>0?"+":""}{dataSummary.varpertme_avg}% {t(langKeys.vsprevmonth)}</div>
                         </div>
                     </Box>
                     <Box
@@ -402,6 +485,7 @@ const DashboardKPI: FC = () => {
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.asesoresprom)}
                         <div className={classes.datafieldquarter}>{dataSummary?.agents || "0"}</div>
+                        <div className={clsx(classes.subtitle, {[classes.less]: dataSummary.varperagents<0, [classes.more]: dataSummary.varperagents>0})}>{dataSummary.varperagents>0?"+":""}{dataSummary.varperagents}% {t(langKeys.vsprevmonth)}</div>
                         </div>
                     </Box>
                     <Box
@@ -409,6 +493,7 @@ const DashboardKPI: FC = () => {
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.ticketsprom)}
                         <div className={classes.datafieldquarter}>{dataSummary?.tickets_count || "0"}</div>
+                        <div className={clsx(classes.subtitle, {[classes.less]: dataSummary.varpertc<0, [classes.more]: dataSummary.varpertc>0})}>{dataSummary.varpertc>0?"+":""}{dataSummary.varpertc}% {t(langKeys.vsprevmonth)}</div>
                         </div>
                     </Box>
                     <Box
@@ -416,6 +501,7 @@ const DashboardKPI: FC = () => {
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.unattendedticketsavg)}
                         <div className={classes.datafieldquarter}>{dataSummary?.abandoned_tickets || "0"}</div>
+                        <div className={clsx(classes.subtitle, {[classes.less]: dataSummary.varperat<0, [classes.more]: dataSummary.varperat>0})}>{dataSummary.varperat>0?"+":""}{dataSummary.varperat}% {t(langKeys.vsprevmonth)}</div>
                         </div>
                     </Box>
                     <Box
@@ -423,8 +509,109 @@ const DashboardKPI: FC = () => {
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.nprombalanceos)}
                         <div className={classes.datafieldquarter}>{dataSummary?.balancetimes_avg || "0"}</div>
+                        <div className={clsx(classes.subtitle, {[classes.less]: dataSummary.varperbta<0, [classes.more]: dataSummary.varperbta>0})}>{dataSummary.varperbta>0?"+":""}{dataSummary.varperbta}% {t(langKeys.vsprevmonth)}</div>
                         </div>
                     </Box>
+                </div>
+                <div className="todown" style={{display:"flex", gap:8}}>
+
+                    <div className={classes.replacerowzyx} style={{width:"100%"}} >
+                        <Box
+                            className={classes.itemCard}
+                        >
+                            <ResponsiveContainer width="100%" aspect={4.0 / 2.0}>
+                                <LineChart data={dataSummary?.graphdata||[]} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                    <Legend verticalAlign="top"/>
+                                    <CartesianGrid stroke="#f5f5f5" />
+                                    <XAxis dataKey="date" />
+                                    <YAxis tickFormatter={v=>formattime(v)} width={100} domain={[0, (dataMax:any) => (Math.floor(dataMax * 1.1) + 5)]}/>
+                                    <RechartsTooltip formatter={(value: any, name: any) => [formattime(value), t(name)]} />
+                                    <Line type="monotone" name="TME" dataKey="tme" stroke="#c0504d" strokeWidth={2}>
+                                        <LabelList dataKey="tme" position="top" fill="#c0504d"/>
+                                    </Line>
+                                    <Line type="monotone" name="TMR" dataKey="tmr" stroke="#4f81bd" strokeWidth={2}>
+                                        <LabelList dataKey="tmr" position="top" fill="#4f81bd"/>
+                                    </Line>
+                                </LineChart>
+                            </ResponsiveContainer>                        
+                        </Box>
+                    </div>
+                    <div className={classes.replacerowzyx} style={{width:"100%"}} >
+                        <Box
+                            className={classes.itemCard}
+                        >
+                            <ResponsiveContainer width="100%" aspect={4.0 / 2.0}>
+                                <LineChart width={730} height={250} data={dataSummary?.graphdata||[]} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                    <Legend verticalAlign="top"/>
+                                    <CartesianGrid stroke="#f5f5f5" />
+                                    <XAxis dataKey="date" />
+                                    <YAxis tickFormatter={v=>(v)} width={50} domain={[0, (dataMax:any) => (Math.floor(dataMax * 1.1) + 5)]}/>
+                                    <RechartsTooltip formatter={(value: any, name: any) => [(value), t(name)]} />
+                                    <Line type="monotone" name={t(langKeys.ticketsattendedbyadvisor)} dataKey="tickets_agents" stroke="#c0504d" strokeWidth={2}>
+                                        <LabelList dataKey="tickets_agents" position="top"  fill="#c0504d"/>
+                                    </Line>
+                                    <Line type="monotone" name={t(langKeys.agent_plural)} dataKey="agents" stroke="#4f81bd" strokeWidth={2}>
+                                        <LabelList dataKey="agents" position="top" fill="#4f81bd"/>
+                                    </Line>
+                                    <Line type="monotone" name={t(langKeys.ticket_balancetimes)} dataKey="balancetimes_avg" stroke="#9bbb59" strokeWidth={2}>
+                                        <LabelList dataKey="balancetimes_avg" position="top" fill="#9bbb59"/>
+                                    </Line>
+                                </LineChart>
+                            </ResponsiveContainer>                        
+                        </Box>
+                    </div>
+                </div>
+                <div className="todown" style={{display:"flex", gap:8}}>
+                    <div className={classes.replacerowzyx} style={{width:"100%"}} >
+                        <Box
+                            className={classes.itemCard}
+                        >
+                            <ResponsiveContainer width="100%" aspect={4.0 / 2.0}>
+                                <LineChart width={730} height={250} data={dataSummary?.graphdata||[]} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                    <Legend verticalAlign="top"/>
+                                    <CartesianGrid stroke="#f5f5f5" />
+                                    <XAxis dataKey="date" />
+                                    <YAxis yAxisId="right" orientation="right" tickFormatter={v=>v + " %"} domain={[0,100]}/>
+                                    <YAxis yAxisId="left"width={100} domain={[0, (dataMax:any) => (Math.floor(dataMax * 1.1) + 5)]}/>
+                                    <RechartsTooltip formatter={(value: any, name: any, props:any) => [props.dataKey==="participacion"?value+"%":value, t(name)]} />
+                                    <Line yAxisId="left" type="monotone" name={t(langKeys.report_kpioperativo_tickets)} dataKey="tickets_count" stroke="#c0504d" strokeWidth={2}>
+                                        <LabelList dataKey="tickets_count" position="top"  fill="#4f81bd"/>
+                                    </Line>
+                                    <Line yAxisId="left" type="monotone" name={t(langKeys.report_kpioperativo_abandoned_tickets)} dataKey="abandoned_tickets" stroke="#4f81bd" strokeWidth={2}>
+                                        <LabelList dataKey="abandoned_tickets" position="top" fill="#c0504d"/>
+                                    </Line>
+                                    <Line yAxisId="right" type="monotone" name={t(langKeys.percparticipation)} dataKey="participacion" stroke="#9bbb59" strokeWidth={2}>
+                                        <LabelList dataKey="participacion" position="top"  fill="#9bbb59" formatter={(value: any, name: any) => [value + "%", t(name)]}/>
+                                    </Line>
+                                </LineChart>
+                            </ResponsiveContainer>                        
+                        </Box>
+                    </div>
+                    <div className={classes.replacerowzyx} style={{width:"100%"}} >
+                        <Box
+                            className={classes.itemCard}
+                        >
+                            <ResponsiveContainer width="100%" aspect={4.0 / 2.0}>
+                                <LineChart width={730} height={250} data={dataSummary?.graphdata||[]} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                    <Legend verticalAlign="top"/>
+                                    <CartesianGrid stroke="#f5f5f5" />
+                                    <XAxis dataKey="date" />
+                                    <YAxis tickFormatter={v=>formattime(v)}  width={50} domain={[0, (dataMax:any) => (Math.floor(dataMax * 1.1) + 5)]}/>
+                                    <RechartsTooltip formatter={(value: any, name: any) => [formattime(value), t(name)]} />
+                                    <Line type="monotone" name={t(langKeys.report_voicecall_holdingtime)} dataKey="holdingwaitingtime_avg" stroke="#c0504d" strokeWidth={2}>
+                                        <LabelList dataKey="holdingwaitingtime_avg" position="top"  fill="#c0504d"/>
+                                    </Line>
+                                    <Line type="monotone" name={t(langKeys.firstassignmenttime)} dataKey="firstassignedtime_avg" stroke="#4f81bd" strokeWidth={2}>
+                                        <LabelList dataKey="firstassignedtime_avg" position="top" fill="#4f81bd"/>
+                                    </Line>
+                                    <Line type="monotone" name={t(langKeys.ticket_tiempoprimerarespuesta)} dataKey="firstreplytime_avg" stroke="#9bbb59" strokeWidth={2}>
+                                        <LabelList dataKey="firstreplytime_avg" position="top"  fill="#9bbb59"/>
+                                    </Line>
+
+                                </LineChart>
+                            </ResponsiveContainer>                        
+                        </Box>
+                    </div>
                 </div>
             </div>
         </Fragment>

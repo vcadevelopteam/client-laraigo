@@ -177,6 +177,7 @@ const translation: LangKeys = {
   asesoresprom: "Asesores prom",
   unattendedticketsavg: "Tickets no atendidos prom",
   nprombalanceos: "N prom balanceos",
+  vsprevmonth: "VS mes ant.",
 
   billingSetup: 'Config. de Facturación',
   productivity: "Productividad",
@@ -405,6 +406,7 @@ const translation: LangKeys = {
   averageconversationsattendedbyhour: "Promedio conversaciones atendidas por hora",
   averageconversationsattendedbytheadvisorbyhour: "Promedio conversaciones atendidas del asesor por hora",
   averagenumberofadvisersconnectedbyhour: "Promedio de asesores conectados por hora",
+  percparticipation: "% Participación",
   conversationsattended: "Conversaciones atendidas",
   columntitle: "Título de la columna",
   tagrankingtooltip: "Muestra las opciones más consultadas dentro del flujo conversacional",
@@ -651,6 +653,7 @@ const translation: LangKeys = {
   opportunitywon: "Oportunidades ganadas",
   port: "Puerto",
   opportunityname: "Nombre de la oportunidad",
+  ticketsattendedbyadvisor:"Tickets atendidos por asesor",
   host: "Host",
   personAverageReplyTimexFecha: "Mapa de calor de tiempo promedio de respuesta del cliente",
   heatmap: "Mapa de calor",
@@ -1779,6 +1782,7 @@ const translation: LangKeys = {
   dashboard_managerial_summary_averagereplyagent: 'Tiempo promedio respuesta asesor',
   dashboard_managerial_summary_firstreplyclient: 'Tiempo primera respuesta cliente',
   dashboard_managerial_summary_averagereplyclient: 'Tiempo promedio respuesta cliente',
+  firstassignmenttime: "Tiempo primera asignación",
 
   dashboard_managerial_asesoresconectados_date: 'Fecha',
   dashboard_managerial_asesoresconectados_hour: 'Hora',
