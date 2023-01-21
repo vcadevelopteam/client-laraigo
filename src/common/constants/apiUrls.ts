@@ -1,4 +1,4 @@
-const ENV = "PRODUCTION";
+const ENV = "LOCAL";
 
 const APIS_URL = {
     DEVELOP: {
@@ -223,4 +223,7 @@ export const apiUrls = {
     PAYMENTORDER_PAY: `${BASE_URL}/payment/newpayment`,
 
     PRODUCT_IMPORT: `${BASE_URL}/product/import`,
+
+    PAYMENTORDER_NIUBIZ_CREATESESSIONTOKEN: `${BASE_URL}/paymentniubiz/createsessiontoken`,
+    PAYMENTORDER_NIUBIZ_AUTHORIZETRANSACTION: `${BASE_URL}/paymentniubiz/authorizetransaction`,
 };
