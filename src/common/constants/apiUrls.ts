@@ -127,6 +127,7 @@ export const apiUrls = {
     MAIN_EVENT_BOOKING_URL: `${BASE_URL}/event-booking/collection`,
     MAIN_URL_PUBLIC: `${BASE_URL}/main/public/domainvalues`,
     MAIN_URL_PAYMENTORDER: `${BASE_URL}/main/public/paymentorder`,
+    MAIN_URL_PAYMENTORDERNIUBIZ: `${BASE_URL}/main/public/paymentorderniubiz`,
     MAIN_MULTI: `${BASE_URL}/main/multi`,
     MAIN_MULTI_PUBLIC: `${BASE_URL}/main/public/multi/domainvalues`,
     EXECUTE_TRANSACTION: `${BASE_URL}/main/executetransaction`,
