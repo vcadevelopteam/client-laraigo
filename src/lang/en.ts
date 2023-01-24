@@ -1756,6 +1756,7 @@ const translation: LangKeys = {
   supervisionduration: 'Call supervision time',
   ticket_holdingwaitingtime: 'Waiting time in holding',
   ticket_holdingwaitingtime_help: "It is the time elapsed from the referral to the holding until the assignment in the advisor's tray.",
+  ticket_agentrol: 'Agent role',
   selectday: "Select the date(s) you want to assign specific hours",
   schedule_availability: "What hours are you available? ",
   reset_weekly_hours: "Reset to weekly hours",
