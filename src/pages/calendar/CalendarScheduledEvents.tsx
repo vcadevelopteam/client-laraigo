@@ -220,7 +220,7 @@ const DialogCancelBooking: React.FC<{
     const [waitSave, setWaitSave] = useState(false);
     const classes = useStyles();
     const saveRes = useSelector(state => state.main.execute);
-    const { register, setValue, getValues, reset, trigger } = useForm();
+    const { register, setValue, getValues, reset, trigger, formState: { errors } } = useForm();
 
     useEffect(() => {
         if (waitSave) {
