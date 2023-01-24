@@ -416,6 +416,7 @@ const DashboardKPI: FC = () => {
                         data={[
                             {value:"INBOUND"},
                             {value:"OUTBOUND"},
+                            {value:"EXTERNAL"},
                         ]}
                         optionValue="value"
                         optionDesc="value"
