@@ -1,22 +1,25 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
+import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Checkbox from '@material-ui/core/Checkbox';
 import Container from '@material-ui/core/Container';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Popus from 'components/layout/Popus';
 
-import { Helmet } from "react-helmet";
 import { apiUrls } from '../common/constants/apiUrls';
-import { niubizCreateSessionToken } from 'store/payment/actions';
+import { Dictionary } from '@types';
 import { FC, useEffect, useState } from 'react';
+import { formatNumber } from 'common/helpers';
 import { langKeys } from 'lang/keys';
+import { LaraigoLogo } from 'icons';
 import { makeStyles } from "@material-ui/core";
+import { niubizCreateSessionToken } from 'store/payment/actions';
+import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router';
 import { useSelector } from 'hooks';
 import { useTranslation } from 'react-i18next';
-import { Dictionary } from '@types';
-import { showSnackbar, showBackdrop } from 'store/popus/actions';
-import { LaraigoLogo } from 'icons';
-import { formatNumber } from 'common/helpers';
 
 const useStyles = makeStyles(theme => ({
     containerMain: {
@@ -88,6 +91,7 @@ export const PaymentOrderNiubiz: FC = () => {
 
     const { corpid, orgid, ordercode }: any = useParams();
 
+    const [termsAccepted, setTermsAccepted] = useState(false);
     const [paymentData, setPaymentData] = useState<Dictionary | null>(null);
     const [waitData, setWaitData] = useState(false);
 
@@ -95,6 +99,43 @@ export const PaymentOrderNiubiz: FC = () => {
         dispatch(niubizCreateSessionToken({ corpid: corpid, orgid: orgid, ordercode: ordercode }));
         setWaitData(true);
     }
+
+    const importUrlScript = (url: string) => {
+        const script = document.createElement('script');
+
+        script.async = true;
+        script.src = url;
+        script.type = "text/javascript";
+
+        document.body.appendChild(script);
+    };
+
+    const importManualScript = (data: any) => {
+        const script = document.createElement('script');
+
+        script.setAttribute('type', 'module');
+
+        script.async = true;
+        script.text = `document.getElementById('paymentButton').addEventListener('click', () => {
+            VisanetCheckout.configure({
+                sessiontoken:'${data.sessiontoken}',
+                channel:'web',
+                merchantid:'${data.merchantid}',
+                purchasenumber:'${data.paymentorderid}',
+                amount:'${formatNumber(data?.totalamount || 0)}',
+                expirationminutes:'20',
+                timeouturl:'${window.location.href}',
+                merchantlogo:'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/PROCESOSYCONSULTORIA/1f93f067-12aa-46d6-9247-77ae40058c7d/Logo%20Laraigo-removebg-preview%20%281%29_waifu2x_art_noise3.png',
+                action:'${apiUrls.PAYMENTORDER_NIUBIZ_AUTHORIZETRANSACTION}?corpid=${corpid}&orgid=${orgid}&ordercode=${ordercode}&totalamount=${data?.totalamount || 0}',
+                complete: function(params) {
+                  location.reload();
+                }
+              });
+              VisanetCheckout.open();
+        });`;
+
+        document.body.appendChild(script);
+    };
 
     useEffect(() => {
         fetchData();
@@ -109,6 +150,8 @@ export const PaymentOrderNiubiz: FC = () => {
 
                 if (resultSessionToken.data) {
                     setPaymentData(resultSessionToken.data);
+                    importUrlScript("https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true");
+                    importManualScript(resultSessionToken.data);
                 }
             } else if (resultSessionToken.error) {
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(resultSessionToken.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() }) }))
@@ -120,9 +163,6 @@ export const PaymentOrderNiubiz: FC = () => {
 
     if (resultSessionToken.loading) {
         return (<>
-            <Helmet>
-                <script type="text/javascript" src="https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true" />
-            </Helmet>
             <div className={classes.back}>
                 <CircularProgress />
             </div>
@@ -132,9 +172,6 @@ export const PaymentOrderNiubiz: FC = () => {
         if (paymentData) {
             if (paymentData.paymentstatus === "PENDING") {
                 return (<>
-                    <Helmet>
-                        <script type="text/javascript" src="https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true" />
-                    </Helmet>
                     <Container component="main" maxWidth="xs" className={classes.containerMain}>
                         <div className={classes.back}>
                             <div className={classes.containerSuccess}>
@@ -274,7 +311,38 @@ export const PaymentOrderNiubiz: FC = () => {
                                         </div>
                                     </div>
                                 </div>}
+                                <div style={{ width: '100%' }}>
+                                    <FormControlLabel
+                                        control={(
+                                            <Checkbox
+                                                checked={termsAccepted}
+                                                color="primary"
+                                                onChange={(e) => {
+                                                    if (e.target.checked) {
+                                                        setTermsAccepted(true);
+                                                    }
+                                                    else {
+                                                        setTermsAccepted(false);
+                                                    }
+                                                }}
+                                            />
+                                        )}
+                                        label={<div style={{ display: 'inline-flex', alignItems: 'center' }}>
+                                            <span>{t(langKeys.paymentorder_termandconditions)}</span>
+                                        </div>}
+                                    />
+                                </div>
                                 {(paymentData.totalamount && paymentData.sessiontoken) && <>
+                                    <Button
+                                        id='paymentButton'
+                                        variant="contained"
+                                        color="primary"
+                                        type="button"
+                                        startIcon={<AttachMoneyIcon color="secondary" />}
+                                        style={{ backgroundColor: "#55BD84" }}
+                                        disabled={resultSessionToken.loading || !termsAccepted}
+                                    >{t(langKeys.proceedpayment)}
+                                    </Button>
                                 </>}
                             </div>
                         </div>

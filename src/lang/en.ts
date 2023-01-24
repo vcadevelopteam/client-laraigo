@@ -4832,6 +4832,7 @@ const translation: LangKeys = {
   paymentorder_currency: "Currency",
   paymentorder_totalamount: "Total Amount",
   paymentorder_code: "Code",
+  paymentorder_termandconditions: "I have read and agree to the terms and conditions.",
 };
 
 const enResource: ResourceLanguage = {

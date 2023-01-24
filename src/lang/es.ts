@@ -4761,6 +4761,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   paymentorder_currency: "Moneda",
   paymentorder_totalamount: "Costo Total",
   paymentorder_code: "Código",
+  paymentorder_termandconditions: "He leido y acepto los terminos y condiciones.",
 };
 
 const esResource: ResourceLanguage = {

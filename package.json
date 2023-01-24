@@ -38,7 +38,6 @@
         "react-gauge-chart": "^0.4.0",
         "react-google-login": "^5.2.2",
         "react-grid-layout": "^1.3.0",
-        "react-helmet": "^6.1.0",
         "react-hook-form": "^7.27.1",
         "react-i18next": "^11.11.4",
         "react-image-lightbox": "^5.1.4",
