@@ -24,8 +24,8 @@ import voximplantReducer, { IState as IVoximplant } from './voximplant/reducer';
 import googleReducer, { IState as IGoogle } from './google/reducer';
 import calendarReducer, { IState as ICalendar } from './calendar/reducer';
 import productReducer, { IState as IProduct } from './product/reducer';
-import catalogReducer, { IState as ICatalog } from './catalog/reducer';
 import postHistoryReducer, { IState as IPostHistory } from './posthistory/reducer';
+import catalogReducer, { IState as ICatalog } from './catalog/reducer';
 
 export interface IRootState {
     login: ILogin,
@@ -49,8 +49,8 @@ export interface IRootState {
     google: IGoogle;
     calendar: ICalendar;
     product: IProduct;
-    catalog: ICatalog;
     postHistory: IPostHistory;
+    catalog: ICatalog;
 }
 
 declare global {

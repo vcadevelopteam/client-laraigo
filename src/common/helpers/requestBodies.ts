@@ -3196,18 +3196,11 @@ export const getPersonFromBooking = (params: Dictionary): IRequestBody => ({
     parameters: params
 });
 
-export const getPaginatedProductCatalog = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
+export const getPaginatedProductCatalog = ({ metacatalogid, enddate, filters, skip, sorts, startdate, take }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_PRODUCTCATALOG_SEL",
     methodCount: "UFN_PRODUCTCATALOG_TOTALRECORDS",
     parameters: {
-        startdate,
-        enddate,
-        skip,
-        take,
-        filters,
-        sorts,
-        origin: "productcatalog",
-        offset: (new Date().getTimezoneOffset() / 60) * -1
+        metacatalogid, enddate, filters, offset: (new Date().getTimezoneOffset() / 60) * -1, origin: "productcatalog", skip, sorts, startdate, take,
     }
 })
 export const getPaginatedReportVoiceCall = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
@@ -3227,11 +3220,7 @@ export const getPaginatedReportVoiceCall = ({ skip, take, filters, sorts, startd
 
 export const getProductCatalogSel = (id: number = 0, category: string = ''): IRequestBody => ({
     method: "UFN_PRODUCTCATALOG_SEL_NORMAL",
-    parameters: {
-        id: id,
-        category: category,
-        all: true
-    }
+    parameters: { all: true, category: category, id: id, }
 })
 export const getPostHistorySel = ({ status = "", communicationchannelid = 0, type = "", publishtatus = "", datestart = null, dateend = null }: Dictionary) => ({
     method: "UFN_POSTHISTORY_SEL",
@@ -3251,11 +3240,11 @@ export const postHistoryIns = ({ communicationchannelid, communicationchanneltyp
     }
 })
 
-export const productCatalogIns = ({ id, productid, title, link, imagelink, additionalimagelink, brand, condition, availability, category, material, color, pattern, currency, price, saleprice, customlabel1, customlabel2, customlabel3, customlabel4, customlabel5, labels, catalogid, catalogname, description, status, type, operation }: Dictionary): IRequestBody => ({
+export const productCatalogIns = ({ corpid, orgid, metacatalogid, id, productid, retailerid, title, description, descriptionshort, availability, category, condition, currency, price, saleprice, link, imagelink, additionalimagelink, brand, color, gender, material, pattern, size, datestart, datelaunch, dateexpiration, labels, customlabel0, customlabel1, customlabel2, customlabel3, customlabel4, reviewstatus, reviewdescription, status, type, username, operation }: Dictionary): IRequestBody => ({
     method: "UFN_PRODUCTCATALOG_INS",
     key: "UFN_PRODUCTCATALOG_INS",
     parameters: {
-        id, productid, title, link, imagelink, additionalimagelink, brand, condition, availability, category, material, color, pattern, currency, price, saleprice, customlabel1, customlabel2, customlabel3, customlabel4, customlabel5, labels, catalogid, catalogname, description, status, type, operation,
+        corpid, orgid, metacatalogid, id, productid, retailerid, title, description, descriptionshort, availability, category, condition, currency, price, saleprice, link, imagelink, additionalimagelink, brand, color, gender, material, pattern, size, datestart, datelaunch, dateexpiration, labels, customlabel0, customlabel1, customlabel2, customlabel3, customlabel4, reviewstatus, reviewdescription, status, type, username, operation
     }
 })
 
@@ -3711,22 +3700,14 @@ export const billingPeriodArtificialIntelligenceInsArray = (corpid: number, orgi
         table: JSON.stringify(table),
     },
 });
-export const productCatalogInsArray = (catalogid: string, catalogname: string, table: Dictionary[], username: string): IRequestBody => ({
+export const productCatalogInsArray = (metacatalogid: bigint, table: Dictionary[], username: string): IRequestBody => ({
     method: "UFN_PRODUCTCATALOG_INS_ARRAY",
-    parameters: {
-        catalogid: catalogid,
-        catalogname: catalogname,
-        table: JSON.stringify(table),
-        username: username,
-    }
+    parameters: { metacatalogid: metacatalogid, table: JSON.stringify(table), username: username }
 });
 
 export const productCatalogUpdArray = (table: Dictionary[], username: string): IRequestBody => ({
     method: "UFN_PRODUCTCATALOG_UPD_ARRAY",
-    parameters: {
-        table: JSON.stringify(table),
-        username: username,
-    }
+    parameters: { table: JSON.stringify(table), username: username }
 })
 
 export const paymentOrderSel = ({ corpid, orgid, conversationid, personid, paymentorderid, ordercode }: Dictionary): IRequestBody => ({
