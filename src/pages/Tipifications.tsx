@@ -25,9 +25,7 @@ import { TreeItem, TreeView } from '@material-ui/lab';
 import { useHistory } from 'react-router-dom';
 import paths from 'common/constants/paths';
 import { EmojiPickerZyx } from 'components'
-import { emojis } from "common/constants/emojis";
 
-const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
@@ -139,6 +137,15 @@ const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary}> = ({ dataClassT
 export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, externalUse = false, externalType, externalSaveHandler, externalCancelHandler,arrayBread }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
+    const [description, setDescription] = useState(row?.description||"");
+    const [order, setOrder] = useState(row?.order||"");
+    const [type, seType] = useState(row?.type||"TIPIFICACION");
+    const [auxVariables, seauxVariables] = useState({
+        communicationchannel: row?.communicationchannel || "",
+        tags: row?.tags || "",
+        order: row?.order || "",
+        parent: row?.parentid || 0,
+    });
     const [showAddAction, setShowAddAction] = useState(!!row?.jobplan || false);
     const [jobplan, setjobplan] = useState<Dictionary[]>(row && row.jobplan ? JSON.parse(row.jobplan) : [])
 
@@ -152,10 +159,10 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
     const dataParent = multiData[3] && multiData[3].success ? multiData[3].data : [];
 
     const datachannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
-    
-    const { register, handleSubmit, setValue, getValues,formState: { errors } } = useForm({
+    console.log(externalUse ? externalType : (row?.type || "TIPIFICACION"))
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            type: externalUse ? externalType : (row ? row?.type : 'TIPIFICACION'),
+            type: externalUse ? externalType : (row?.type || "TIPIFICACION"),
             id: row?.classificationid || 0,
             description: edit? (row?.description) : '',
             title: row?.title || '',
@@ -164,20 +171,32 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
             status: row?.status || 'ACTIVO',
             operation: row ? "EDIT" : "INSERT",
             path: row?.path || '',
-            tags: row?.tags || ''
+            tags: row?.tags || '',
+            order: row?.order || '',
+            catalogmaster: row?.catalogmaster || '',
         }
     });
 
     React.useEffect(() => {
         register('id');
-        register('title', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('title', { validate: {
+            noempty: (value) => (value && value.length) || t(langKeys.field_required),
+            limit: (value) => (getValues("type") === "CATEGORIA")? ((value && value.length && value.length<= 20) || t(langKeys.limit20char)): true,
+        }});
+        register('description', { validate: {
+            noempty: (value) => (value && value.length) || t(langKeys.field_required),
+            limit: (value) => (getValues("type") === "CATEGORIA")? ((value && value.length && value.length <= 75) || t(langKeys.limit20char)): true,
+        }});
         register('parent');
-        register('communicationchannel', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('communicationchannel', { validate: {
+            typeclassification: (value) => (getValues("type") !== "CATEGORIA")? ((value && value.length) || t(langKeys.field_required)): true,
+        }});
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('type');
+        register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('path');
         register('tags');
+        register('order');
+        register('catalogmaster');
     }, [edit, register]);
 
     useEffect(() => {
@@ -214,7 +233,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
     }
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            dispatch(execute(insClassification({ ...data, jobplan: JSON.stringify(jobplan) })));
+            dispatch(execute(insClassification({ ...data, jobplan: JSON.stringify(jobplan), order: order||"1" })));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -270,210 +289,238 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.classification)}
-                                className="col-6"
-                                onChange={(value) => setValue('title', value)}
-                                valueDefault={row ? (row.title || "") : ""}
-                                error={errors?.title?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.title)}
-                                value={row ? (row.title || "") : ""}
-                                className="col-6"
-                            />}
+                        <FieldEdit
+                            label={t(langKeys.classification)}
+                            className="col-6"
+                            onChange={(value) => setValue('title', value)}
+                            valueDefault={row?.title || ""}
+                            error={errors?.title?.message}
+                        />
                         <div className='col-6' style={{ position: 'relative' }}>
                             <>        
                                 <FieldEdit
                                     label={t(langKeys.description)}
-                                    onChange={(value) => setValue('description', value)}
-                                    valueDefault={row?.description || ""}
+                                    onChange={(value) => {setDescription(value);setValue('description', value)}}
+                                    valueDefault={description}
                                     error={errors?.description?.message}
                                 />        
                                 <EmojiPickerZyx
-                                    emojisIndexed={EMOJISINDEXED} 
-                                    style={{ position: "absolute", bottom: "10px", display: 'flex', justifyContent: 'end', right: 16 }}
-                                    onSelect={e => setValue('description', getValues("description") + e.native)} />
+                                    bottom={-370}
+                                    style={{ position: "absolute", top: "25px", display: 'flex', justifyContent: 'end', right: 16 }}
+                                    onSelect={e => {setDescription(description + e.native);setValue('description', description + e.native)}} />
     
                             </>
                         </div>
                     </div>
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.parent)}
-                                className="col-6"
-                                valueDefault={row ? (row.parentid || "") : ""}
-                                onChange={(value) => setValue('parent', value ? value.classificationid : 0)}
-                                error={errors?.parent?.message}
-                                data={dataParent}
-                                optionDesc="description"
-                                optionValue="classificationid"
-                            />
-                            : <FieldView
-                                label={t(langKeys.parent)}
-                                value={row ? (row.parent || "") : ""}
-                                className="col-6"
-                            />}
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.path)}
-                                className="col-6"
-                                valueDefault={row ? (row.path || "") : ""}
-                                onChange={(value) => setValue('path', value)}
-                                error={errors?.path?.message}
-                                disabled={true}
-                            />
-                            : <FieldView
-                                label={t(langKeys.path)}
-                                value={row ? (row.path || "") : ""}
-                                className="col-6"
-                            />}
-
+                        <FieldSelect
+                            label={t(langKeys.parent)}
+                            className="col-6"
+                            valueDefault={auxVariables.parent}
+                            onChange={(value) => setValue('parent', value?.classificationid || 0)}
+                            error={errors?.parent?.message}
+                            data={dataParent.filter(x=>x.type===type)}
+                            optionDesc="description"
+                            optionValue="classificationid"
+                        />
+                        <FieldEdit
+                            label={t(langKeys.path)}
+                            className="col-6"
+                            valueDefault={row?.path || ""}
+                            onChange={(value) => setValue('path', value)}
+                            error={errors?.path?.message}
+                            disabled={true}
+                        />
                     </div>
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldMultiSelect
-                                label={t(langKeys.channel_plural)}
-                                className="col-6"
-                                onChange={(value) => setValue('communicationchannel', value.map((o: Dictionary) => o.domainvalue).join())}
-                                valueDefault={row?.communicationchannel || ""}
-                                error={errors?.communicationchannel?.message}
-                                data={datachannels}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            />
-                            : <FieldView
-                                label={t(langKeys.channel_plural)}
-                                value={row ? (row.communicationchannelid || "") : ""}
-                                className="col-6"
-                            />}
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.status)}
-                                className="col-6"
-                                valueDefault={row?.status || "ACTIVO"}
-                                onChange={(value) => setValue('status', value ? value.domainvalue : '')}
-                                error={errors?.status?.message}
-                                data={dataStatus}
-                                uset={true}
-                                prefixTranslation="status_"
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            />
-                            : <FieldView
-                                label={t(langKeys.status)}
-                                value={row ? (row.status || "") : ""}
-                                className="col-6"
-                            />}
+                        <FieldSelect
+                            label={t(langKeys.status)}
+                            className="col-6"
+                            valueDefault={row?.status || "ACTIVO"}
+                            onChange={(value) => setValue('status', value?.domainvalue || '')}
+                            error={errors?.status?.message}
+                            data={dataStatus}
+                            uset={true}
+                            prefixTranslation="status_"
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
+                        <FieldSelect
+                            label={t(langKeys.type)}
+                            className="col-6"
+                            valueDefault={type}
+                            onChange={(value) => {
+                                setValue('communicationchannel', "")
+                                setValue('tags', "")
+                                setValue('order', "")
+                                setValue('parent', 0)
+                                seauxVariables({
+                                    communicationchannel: "",
+                                    tags: "",
+                                    order: "",
+                                    parent: 0,
+                                })
+                                setValue('type', value?.value || ''); 
+                                seType(value?.value || '')
+                            }}
+                            error={errors?.type?.message}
+                            data={[
+                                {value: "CATEGORIA", desc: t(langKeys.category)},
+                                {value: "TIPIFICACION", desc: t(langKeys.tipification)},
+                            ]}
+                            uset={true}
+                            optionDesc="desc"
+                            optionValue="value"
+                        />
                     </div>
+                    {type === "TIPIFICACION" &&
                     <div className="row-zyx">
-                        {edit ?
+                        <FieldMultiSelect
+                            label={t(langKeys.channel_plural)}
+                            className="col-6"
+                            onChange={(value) => {
+                                setValue('communicationchannel', value.map((o: Dictionary) => o.domainvalue).join())
+                                seauxVariables({...auxVariables, communicationchannel: value.map((o: Dictionary) => o.domainvalue).join()})
+                            }}
+                            valueDefault={auxVariables.communicationchannel}
+                            error={errors?.communicationchannel?.message}
+                            data={datachannels}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
+                        <FieldEdit
+                            label={t(langKeys.tag)}
+                            className="col-6"
+                            valueDefault={row?.tags || ""}
+                            onChange={(value) => setValue('tags', value)}
+                            error={errors?.tags?.message}
+                        />
+                    </div>}
+                    {type === "CATEGORIA" &&
+                    <>
+                        <div className="row-zyx">
                             <FieldEdit
-                                label={t(langKeys.tag)}
+                                label={t(langKeys.order)}
                                 className="col-6"
-                                valueDefault={row ? (row.tags || "") : ""}
-                                onChange={(value) => setValue('tags', value)}
-                                error={errors?.tags?.message}
+                                type="number"
+                                valueDefault={order}
+                                error={errors?.order?.message}
+                                onChange={(value) => {
+                                    setOrder(value)
+                                    setValue('order', value)
+                                }}
+                                InputProps={{
+                                    inputProps: { min: 1,step: "1" }
+                                }}
                             />
-                            : <FieldView
-                                label={t(langKeys.tag)}
-                                value={row ? (row.tags || "") : ""}
+                            <FieldSelect
+                                label={t(langKeys.catalogmaster)}
                                 className="col-6"
-                            />}
-                    </div>
-                    <div style={{ marginBottom: '16px' }}>
-                        <div className={classes.title}>{t(langKeys.actionplan)}</div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            {edit ?
-                                <TemplateSwitch
-                                    // className={classes.halfplace}
-                                    label={t(langKeys.hasactionplan)}
-                                    valueDefault={showAddAction ? "x" : ""}
-                                    onChange={(value) => setShowAddAction(value)}
-                                /> :
-                                <FieldView
-                                    label={t(langKeys.default_organization)}
-                                    value={row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
-                                />
-                            }
-                            {(edit && showAddAction) &&
-                                <div>
-                                    <Button
-                                        variant="contained"
-                                        type="button"
-                                        color="primary"
-                                        endIcon={<AddIcon style={{ color: "#deac32" }} />}
-                                        style={{ backgroundColor: "#6c757d" }}
-                                        onClick={() => addaction()}
-                                    >{t(langKeys.action)}
-                                    </Button>
-                                </div>
-                            }
-                        </div>
-
-                        {
-                            (edit && showAddAction) && jobplan.map((e: any, i: number) => (
-                                <div className="row-zyx" key={i}>
-                                    <FieldEdit
-                                        label={t(langKeys.action)}
-                                        className="col-6"
-                                        valueDefault={e.action ? e.action : ""}
-                                        onChange={(value) => setValueAction('action', value, i)}
+                                valueDefault={type}
+                                onChange={(value) => {
+                                    setValue('catalogmaster', value?.value || ''); 
+                                }}
+                                data={[]} //falta llenar la lista de maestro de catalogos
+                                optionDesc="desc"
+                                optionValue="value"
+                            />
+                        </div>                        
+                    </>
+                    }                    
+                    {type === "TIPIFICACION" &&
+                    <>
+                        <div style={{ marginBottom: '16px' }}>
+                            <div className={classes.title}>{t(langKeys.actionplan)}</div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                {edit ?
+                                    <TemplateSwitch
+                                        // className={classes.halfplace}
+                                        label={t(langKeys.hasactionplan)}
+                                        valueDefault={showAddAction ? "x" : ""}
+                                        onChange={(value) => setShowAddAction(value)}
+                                    /> :
+                                    <FieldView
+                                        label={t(langKeys.default_organization)}
+                                        value={row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
                                     />
-                                    <FieldSelect
-                                        label={t(langKeys.type)}
-                                        className="col-5"
-                                        valueDefault={e.type ? e.type : "Simple"}
-                                        //onChange={(value) => setValue('status', value ? value.domainvalue : '')}
-                                        error={errors?.status?.message}
-                                        data={dataTypeAction}
-                                        optionDesc="dat"
-                                        optionValue="dat"
-                                        onChange={(value) => setValueAction('type', value.dat, i)}
-                                    />
-                                    <div className="col-1" style={{ paddingTop: "15px" }}>
-                                        <IconButton aria-label="delete" onClick={() => deleteitem(i)}>
-                                            <DeleteIcon />
-                                        </IconButton>
+                                }
+                                {(edit && showAddAction) &&
+                                    <div>
+                                        <Button
+                                            variant="contained"
+                                            type="button"
+                                            color="primary"
+                                            endIcon={<AddIcon style={{ color: "#deac32" }} />}
+                                            style={{ backgroundColor: "#6c757d" }}
+                                            onClick={() => addaction()}
+                                        >{t(langKeys.action)}
+                                        </Button>
                                     </div>
-                                    {e.type === "Variable" ?
+                                }
+                            </div>
+
+                            {
+                                (edit && showAddAction) && jobplan.map((e: any, i: number) => (
+                                    <div className="row-zyx" key={i}>
                                         <FieldEdit
-                                            label={t(langKeys.variable)}
-                                            className={classes.dataaction}
-                                            valueDefault={e.variable ? e.variable : ""}
-                                            onChange={(value) => setValueAction('variable', value, i)}
+                                            label={t(langKeys.action)}
+                                            className="col-6"
+                                            valueDefault={e.action ? e.action : ""}
+                                            onChange={(value) => setValueAction('action', value, i)}
                                         />
-
-                                        : null}
-                                    {e.type === "Request" ?
-                                        <div>
-                                            <FieldEdit
-                                                label={t(langKeys.endpoint)}
-                                                className={classes.dataaction}
-                                                valueDefault={e.endpoint ? e.endpoint : ""}
-                                                onChange={(value) => setValueAction('endpoint', value, i)}
-                                            />
-                                            <FieldEditMulti
-                                                label={t(langKeys.data)}
-                                                className={classes.dataaction}
-                                                valueDefault={e.data ? e.data : ""}
-                                                onChange={(value) => setValueAction('data', value, i)}
-                                                maxLength={2048}
-                                            />
-
+                                        <FieldSelect
+                                            label={t(langKeys.type)}
+                                            className="col-5"
+                                            valueDefault={e.type ? e.type : "Simple"}
+                                            //onChange={(value) => setValue('status', value ? value.domainvalue : '')}
+                                            error={errors?.status?.message}
+                                            data={dataTypeAction}
+                                            optionDesc="dat"
+                                            optionValue="dat"
+                                            onChange={(value) => setValueAction('type', value.dat, i)}
+                                        />
+                                        <div className="col-1" style={{ paddingTop: "15px" }}>
+                                            <IconButton aria-label="delete" onClick={() => deleteitem(i)}>
+                                                <DeleteIcon />
+                                            </IconButton>
                                         </div>
-                                        : null}
-                                    <hr></hr>
-                                </div>
-                            ))
-                        }
+                                        {e.type === "Variable" ?
+                                            <FieldEdit
+                                                label={t(langKeys.variable)}
+                                                className={classes.dataaction}
+                                                valueDefault={e.variable ? e.variable : ""}
+                                                onChange={(value) => setValueAction('variable', value, i)}
+                                            />
 
-                    </div>
-                    <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                                            : null}
+                                        {e.type === "Request" ?
+                                            <div>
+                                                <FieldEdit
+                                                    label={t(langKeys.endpoint)}
+                                                    className={classes.dataaction}
+                                                    valueDefault={e.endpoint ? e.endpoint : ""}
+                                                    onChange={(value) => setValueAction('endpoint', value, i)}
+                                                />
+                                                <FieldEditMulti
+                                                    label={t(langKeys.data)}
+                                                    className={classes.dataaction}
+                                                    valueDefault={e.data ? e.data : ""}
+                                                    onChange={(value) => setValueAction('data', value, i)}
+                                                    maxLength={2048}
+                                                />
 
-                    </div>
+                                            </div>
+                                            : null}
+                                        <hr></hr>
+                                    </div>
+                                ))
+                            }
+
+                        </div>
+                        <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+
+                        </div>
+                    </>}
                 </div>
             </form>
         </div>
@@ -535,8 +582,23 @@ const Tipifications: FC = () => {
                 NoFilter: true
             },
             {
+                Header: t(langKeys.type),
+                accessor: 'type',
+                prefixTranslation: 'type_',
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const { type } = props.cell.row.original;
+                    return (t(`type_${type}`) || "").toUpperCase()
+                }
+            },
+            {
                 Header: t(langKeys.parent),
                 accessor: 'parentdesc',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.order),
+                accessor: 'order',
                 NoFilter: true
             },
             {
@@ -650,6 +712,7 @@ const Tipifications: FC = () => {
                         parent: x.parent || 0,
                         operation: "INSERT",
                         type: 'TIPIFICACION',
+                        oder: '1',
                         status: x.status || "ACTIVO",
                         id: 0,
                     }))
