@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, TemplateIcons, TitleDetail } from 'components';
-import { formatNumber, getOrderLineSel, getOrderSel, insCorp } from 'common/helpers';
+import { formatDate, formatNumber, getOrderLineSel, getOrderSel, insCorp } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -83,6 +83,11 @@ const Orders: FC = () => {
                 Header: t(langKeys.date),
                 accessor: 'createdate',
                 NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original.createdate;
+                    let formatteddate = formatDate(row, {withTime: false})
+                    return formatteddate
+                }
                 // Cell: (props: any) => {
                 //     const { type } = props.cell.row.original;
                 //     return (t(`type_corp_${type}`.toLowerCase()) || "").toUpperCase()
