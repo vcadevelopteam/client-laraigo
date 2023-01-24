@@ -173,6 +173,14 @@ export const getValuesFromDomain = (domainname: string, keytmp?: any, orgid?: nu
         corpid: corpid || undefined
     }
 });
+export const getCatalogMasterList = () => ({
+    method: "UFN_METACATALOG_SEL",
+    key: "UFN_METACATALOG_SEL",
+    parameters: {
+        metabusinessid: 0,
+        id:0,
+    }
+});
 export const getReportschedulerreportsSel = () => ({
     method: "UFN_REPORTSCHEDULER_REPORTSEL",
     key: "UFN_REPORTSCHEDULER_REPORTSEL",
@@ -759,11 +767,11 @@ export const insInvoice = ({ corpid = 0,
         }
     })
 
-export const insClassification = ({ id, title, description, parent, communicationchannel, status, type, operation, tags, jobplan = null, order = "1" }: Dictionary): IRequestBody => ({
+export const insClassification = ({ id, title, description, parent, communicationchannel, status, type, operation, tags, jobplan = null, order = "1", metacatalogid = 0 }: Dictionary): IRequestBody => ({
     method: "UFN_CLASSIFICATION_INS",
     key: "UFN_CLASSIFICATION_INS",
     parameters: {
-        id, title, description, parent, communicationchannel, status, type, operation, tags, jobplan, usergroup: 0, schedule: "",order
+        id, title, description, parent, communicationchannel, status, type, operation, tags, jobplan, usergroup: 0, schedule: "", order, metacatalogid
     }
 })
 //tabla paginada
@@ -3725,4 +3733,28 @@ export const paymentOrderSel = ({ corpid, orgid, conversationid, personid, payme
     method: "UFN_PAYMENTORDER_SEL",
     key: "UFN_PAYMENTORDER_SEL",
     parameters: { corpid, orgid, conversationid, personid, paymentorderid, ordercode }
+});
+
+export const metaCatalogIns = ({ corpid, orgid, metabusinessid, id, catalogid, catalogname, catalogdescription, catalogtype, description, status, type, username, operation }: Dictionary) => ({
+    method: "UFN_METACATALOG_INS",
+    key: "UFN_METACATALOG_INS",
+    parameters: { corpid, orgid, metabusinessid, id, catalogid, catalogname, catalogdescription, catalogtype, description, status, type, username, operation },
+});
+
+export const metaCatalogSel = ({ corpid, orgid, metabusinessid, id }: Dictionary) => ({
+    method: "UFN_METACATALOG_SEL",
+    key: "UFN_METACATALOG_SEL",
+    parameters: { corpid, orgid, metabusinessid, id },
+});
+
+export const metaBusinessIns = ({ corpid, orgid, id, businessid, businessname, accesstoken, userid, graphdomain, description, status, type, username, operation }: Dictionary) => ({
+    method: "UFN_METABUSINESS_INS",
+    key: "UFN_METABUSINESS_INS",
+    parameters: { corpid, orgid, id, businessid, businessname, accesstoken, userid, graphdomain, description, status, type, username, operation },
+});
+
+export const metaBusinessSel = ({ corpid, orgid, id }: Dictionary) => ({
+    method: "UFN_METABUSINESS_SEL",
+    key: "UFN_METABUSINESS_SEL",
+    parameters: { corpid, orgid, id },
 });

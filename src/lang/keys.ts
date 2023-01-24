@@ -1331,6 +1331,22 @@ export const langKeys = {
     type_domain_bot: 'type_domain_bot',
     type_domain_cliente: 'type_domain_client',
     type_domain_sistema: 'type_domain_sistema',
+
+    type_domain_mastercatalog_adoptable_pets: "type_domain_mastercatalog_adoptable_pets",
+    type_domain_mastercatalog_bookable: "type_domain_mastercatalog_bookable",
+    type_domain_mastercatalog_commerce: "type_domain_mastercatalog_commerce",
+    type_domain_mastercatalog_destinations: "type_domain_mastercatalog_destinations",
+    type_domain_mastercatalog_flights: "type_domain_mastercatalog_flights",
+    type_domain_mastercatalog_home_listings: "type_domain_mastercatalog_home_listings",
+    type_domain_mastercatalog_hotels: "type_domain_mastercatalog_hotels",
+    type_domain_mastercatalog_jobs: "type_domain_mastercatalog_jobs",
+    type_domain_mastercatalog_local_delivery_shipping_profiles: "type_domain_mastercatalog_local_delivery_shipping_profiles",
+    type_domain_mastercatalog_local_service_businesses: "type_domain_mastercatalog_local_service_businesses",
+    type_domain_mastercatalog_offer_items: "type_domain_mastercatalog_offer_items",
+    type_domain_mastercatalog_offline_commerce: "type_domain_mastercatalog_offline_commerce",
+    type_domain_mastercatalog_ticketed_experiences: "type_domain_mastercatalog_ticketed_experiences",
+    type_domain_mastercatalog_transactable_items: "type_domain_mastercatalog_transactable_items",
+    type_domain_mastercatalog_vehicles: "type_domain_mastercatalog_ vehicles",
   
     type_gender_femenino: 'type_gender_femenino',
     type_gender_masculino: 'type_gender_masculino',
@@ -4757,6 +4773,13 @@ export const langKeys = {
     paymentorder_currency: "paymentorder_currency",
     paymentorder_totalamount: "paymentorder_totalamount",
     paymentorder_code: "paymentorder_code",
+    catalogmaster_businessid: "catalogmaster_businessid",
+    catalogmaster_businessname: "catalogmaster_businessname",
+    catalogmaster_detail: "catalogmaster_detail",
+    catalogmaster_businessalert: "catalogmaster_businessalert",
+    catalogmaster_businesslink: "catalogmaster_businesslink",
+    catalogmaster_businesschoose: "catalogmaster_businesschoose",
+    catalogmaster_synchroalert: "catalogmaster_synchroalert",
   };
   
   export type LangKeys = typeof langKeys;

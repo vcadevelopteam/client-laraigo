@@ -491,6 +491,22 @@ const translation: LangKeys = {
   type_domain_bot: 'Bot domain',
   propertyiainiciodelimit: "Define the AI ​​at the beginning of the conversation if it will be active or inactive.",
 
+  type_domain_mastercatalog_adoptable_pets: "Adoptable Pets",
+  type_domain_mastercatalog_bookable: "Bookable",
+  type_domain_mastercatalog_commerce: "Online Commerce",
+  type_domain_mastercatalog_destinations: "Destinations",
+  type_domain_mastercatalog_flights: "Flights",
+  type_domain_mastercatalog_home_listings: "Home Listings",
+  type_domain_mastercatalog_hotels: "Hotels",
+  type_domain_mastercatalog_jobs: "Jobs",
+  type_domain_mastercatalog_local_delivery_shipping_profiles: "Local Delivery",
+  type_domain_mastercatalog_local_service_businesses: "Local Services",
+  type_domain_mastercatalog_offer_items: "Offer Items",
+  type_domain_mastercatalog_offline_commerce: "Offline Commerce",
+  type_domain_mastercatalog_ticketed_experiences: "Ticketed Experiences",
+  type_domain_mastercatalog_transactable_items: "Transactable Items",
+  type_domain_mastercatalog_vehicles: "Vehicles",
+
   type_gender_femenino: 'Female',
   type_gender_masculino: 'Male',
 
@@ -731,7 +747,7 @@ const translation: LangKeys = {
   hsm_template: 'HSM template',
   hsm_template_plural: 'HSM templates',
   data_origin: 'Data origin',
-  catalogmaster: "Catalog master",
+  catalogmaster: "Catalog Master",
   kpimanager: 'KPI Manager',
   kpimanager_detail: 'KPI Manager Detail',
   kpimanager_plural: 'KPI Manager',
@@ -4840,6 +4856,13 @@ const translation: LangKeys = {
   paymentorder_currency: "Currency",
   paymentorder_totalamount: "Total Amount",
   paymentorder_code: "Code",
+  catalogmaster_businessid: "Business ID",
+  catalogmaster_businessname: "Business Name",
+  catalogmaster_detail: "Catalog Master Detail",
+  catalogmaster_businessalert: "Can't find your Business Account? You can use this button to link the Facebook Business Account that you wish to use",
+  catalogmaster_businesslink: "Link your Business Account",
+  catalogmaster_businesschoose: "Business Account",
+  catalogmaster_synchroalert: "The catalogs that belong to the selected Business Account will be registered, or updated in the case that they were previously registered.",
 };
 
 const enResource: ResourceLanguage = {

@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, FieldEditMulti, DialogZyx, FieldEditWithSelect } from 'components';
-import { getParentSel, getValuesFromDomain, getClassificationSel, insClassification, uploadExcel, getValuesForTree, exportExcel, templateMaker } from 'common/helpers';
+import { getParentSel, getValuesFromDomain, getClassificationSel, insClassification, uploadExcel, getValuesForTree, exportExcel, templateMaker, getCatalogMasterList } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -159,7 +159,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
     const dataParent = multiData[3] && multiData[3].success ? multiData[3].data : [];
 
     const datachannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
-    console.log(externalUse ? externalType : (row?.type || "TIPIFICACION"))
+    const datamastercatalog = multiData[4] && multiData[4].success ? multiData[4].data : [];
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             type: externalUse ? externalType : (row?.type || "TIPIFICACION"),
@@ -173,7 +173,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
             path: row?.path || '',
             tags: row?.tags || '',
             order: row?.order || '',
-            catalogmaster: row?.catalogmaster || '',
+            metacatalogid: row?.metacatalogid || 0,
         }
     });
 
@@ -196,7 +196,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
         register('path');
         register('tags');
         register('order');
-        register('catalogmaster');
+        register('metacatalogid');
     }, [edit, register]);
 
     useEffect(() => {
@@ -416,13 +416,13 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                             <FieldSelect
                                 label={t(langKeys.catalogmaster)}
                                 className="col-6"
-                                valueDefault={type}
+                                valueDefault={row?.metacatalogid || 0}
                                 onChange={(value) => {
-                                    setValue('catalogmaster', value?.value || ''); 
+                                    setValue('metacatalogid', value?.metacatalogid || 0); 
                                 }}
-                                data={[]} //falta llenar la lista de maestro de catalogos
-                                optionDesc="desc"
-                                optionValue="value"
+                                data={datamastercatalog} //falta llenar la lista de maestro de catalogos
+                                optionDesc="catalogname"
+                                optionValue="metacatalogid"
                             />
                         </div>                        
                     </>
@@ -631,7 +631,8 @@ const Tipifications: FC = () => {
             getValuesFromDomain("ESTADOGENERICO"),
             getParentSel(),
             getValuesFromDomain("TIPOCANAL"),
-            getValuesForTree("TIPIFICACION")
+            getValuesForTree("TIPIFICACION"),
+            getCatalogMasterList(),
         ]));
     };
 
