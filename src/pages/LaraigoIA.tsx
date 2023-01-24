@@ -5,51 +5,18 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, TemplateIcons } from 'components';
-import { getChannelsByOrg, getIntelligentModels, getIntelligentModelsConfigurations, getValuesFromDomain, insInteligentModelConfiguration } from 'common/helpers';
-import { Dictionary } from "@types";
+import { TemplateBreadcrumbs } from 'components';
 import { makeStyles } from '@material-ui/core/styles';
-import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { useFieldArray, useForm } from 'react-hook-form';
-import { getCollection, resetAllMain, getMultiCollection, execute } from 'store/main/actions';
-import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import ClearIcon from '@material-ui/icons/Clear';
-import AddIcon from '@material-ui/icons/Add';
-import { Accordion, AccordionDetails, AccordionSummary, Box, Card, CardActionArea, CardContent, CardMedia, Grid, IconButton } from '@material-ui/core';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Typography from '@material-ui/core/Typography';
-import DeleteIcon from '@material-ui/icons/Delete';
-import { LaraigoLogo } from 'icons';
-import TableZyx from 'components/fields/table-simple';
+import { resetAllMain } from 'store/main/actions';
+import { showSnackbar, showBackdrop } from 'store/popus/actions';
+import {Box, Card, Grid } from '@material-ui/core';
+import { ConectoresIALogo, ConfiguracionIALogo, EntrenamientoIALogo, IntencionesIALogo, EntidadesIALogo } from 'icons';
 import { Intentions } from './assistant/Intentions';
 import { Entities } from './assistant/Entities';
 import IAConfiguration from './Iaservices';
 import IntelligentModels from './IntelligentModels';
-
-interface servicesData {
-    service: string,
-    intelligentmodelsid: number,
-    analyzemode: string,
-    analyzecustomer: boolean,
-    analyzebot: boolean,
-    analyzeuser: boolean,
-    id?: string,
-    categories?: boolean,
-    concepts?: boolean,
-    emotion?: boolean,
-    entities?: boolean,
-    keywords?: boolean,
-    semanticroles?: boolean,
-    sentiment?: boolean,
-    translationservice?: string
-}
-
-interface RowSelected {
-    row: Dictionary | null,
-    edit: boolean
-}
 
 interface DetailIaServiceProps {
     setViewSelected: (view: string) => void;
@@ -125,7 +92,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const IATraining: React.FC<DetailIaServiceProps> = ({ setViewSelected }) => {
-    const user = useSelector(state => state.login.validateToken.user);
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
@@ -149,11 +115,7 @@ const IATraining: React.FC<DetailIaServiceProps> = ({ setViewSelected }) => {
         }
     }
 
-    //const fetchData = () => dispatch(getCollection(getCorpSel(0)));
-    const fetchData = () => {debugger};
-
     useEffect(() => {
-        //fetchData();
         return () => {
             dispatch(resetAllMain());
         };
@@ -163,7 +125,6 @@ const IATraining: React.FC<DetailIaServiceProps> = ({ setViewSelected }) => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
-                //fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
@@ -221,7 +182,7 @@ const IATraining: React.FC<DetailIaServiceProps> = ({ setViewSelected }) => {
                                         </div>
                                         
                                         <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                            <LaraigoLogo style={{ height: 50, width:"100%" }} />
+                                            <IntencionesIALogo style={{ height: 200, width:"100%" }} />
                                         </div>
                                     </div>
                                 </Card>
@@ -245,7 +206,7 @@ const IATraining: React.FC<DetailIaServiceProps> = ({ setViewSelected }) => {
                                         </div>
                                         
                                         <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                            <LaraigoLogo style={{ height: 50, width:"100%" }} />
+                                            <EntidadesIALogo style={{ height: 200, width:"100%" }} />
                                         </div>
                                     </div>
                                 </Card>
@@ -318,7 +279,7 @@ const Iaservices: FC = () => {
                                     </div>
                                     
                                     <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                        <LaraigoLogo style={{ height: 50, width:"100%" }} />
+                                        <ConectoresIALogo style={{ height: 220, width:"100%" }} />
                                     </div>
                                 </div>
                             </Card>
@@ -342,7 +303,7 @@ const Iaservices: FC = () => {
                                     </div>
                                     
                                     <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                        <LaraigoLogo style={{ height: 50, width:"100%" }} />
+                                        <ConfiguracionIALogo style={{ height: 220, width:"100%" }} />
                                     </div>
                                 </div>
                             </Card>
@@ -366,7 +327,7 @@ const Iaservices: FC = () => {
                                     </div>
                                     
                                     <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                        <LaraigoLogo style={{ height: 50, width:"100%" }} />
+                                        <EntrenamientoIALogo style={{ height: 220, width:"100%" }} />
                                     </div>
                                 </div>
                             </Card>
