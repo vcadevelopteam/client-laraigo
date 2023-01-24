@@ -777,9 +777,9 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
             }
 
             if (dataArtificialIntelligence.length > 0) {
-                const uniqueDataArtificialIntelligence = new Set(dataArtificialIntelligence.map(dataRow => dataRow.type && dataRow.provider));
+                let duplicateCount = dataArtificialIntelligence.filter((value, index, self) => index === self.findIndex((t) => (t.type === value.type && t.provider === value.provider && t.status === 'ACTIVO')))?.length || 0;
 
-                if (uniqueDataArtificialIntelligence.size < dataArtificialIntelligence.length) {
+                if (duplicateCount < dataArtificialIntelligence.length) {
                     dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.aiduplicatealert) }));
                     return;
                 }
@@ -2261,12 +2261,12 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                     additional02service3: `$${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), ((datareport.additionalservicefee2 || 0) * datareport.taxrate)) : formatNumber((datareport.additionalservicefee2 || 0) * datareport.taxrate)}`,
                     additional02service4: `$${datareport.taxrate !== 1 ? getIgv(datareport.igv, ((datareport.additionalservicefee2 || 0) * datareport.taxrate)) : "0.00"}`,
                     additional02service5: `$${formatNumber((datareport.additionalservicefee2 || 0) * datareport.taxrate)}`,
-                    additional03service: datareport.additionalservicefee2 ? datareport.additionalservicename2 : "",
+                    additional03service: datareport.additionalservicefee3 ? datareport.additionalservicename3 : "",
                     additional03service1: "",
                     additional03service2: "",
-                    additional03service3: `$${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), ((datareport.additionalservicefee2 || 0) * datareport.taxrate)) : formatNumber((datareport.additionalservicefee2 || 0) * datareport.taxrate)}`,
-                    additional03service4: `$${datareport.taxrate !== 1 ? getIgv(datareport.igv, ((datareport.additionalservicefee2 || 0) * datareport.taxrate)) : "0.00"}`,
-                    additional03service5: `$${formatNumber((datareport.additionalservicefee2 || 0) * datareport.taxrate)}`,
+                    additional03service3: `$${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), ((datareport.additionalservicefee3 || 0) * datareport.taxrate)) : formatNumber((datareport.additionalservicefee3 || 0) * datareport.taxrate)}`,
+                    additional03service4: `$${datareport.taxrate !== 1 ? getIgv(datareport.igv, ((datareport.additionalservicefee3 || 0) * datareport.taxrate)) : "0.00"}`,
+                    additional03service5: `$${formatNumber((datareport.additionalservicefee3 || 0) * datareport.taxrate)}`,
                     totalamount1: "",
                     totalamount2: "",
                     totalamount3: `$${datareport.taxrate !== 1 ? getTaxableAmount((datareport.taxrate ? datareport.taxrate - 1 : 0), datareport.totalcharge || 0) : formatNumber(datareport.totalcharge)}`,
