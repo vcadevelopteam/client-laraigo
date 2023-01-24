@@ -316,7 +316,7 @@ const Dashboard: FC = () => {
                                 </CardActionArea>
                             </Card>
                         </Grid>}
-                        {(t(langKeys.dashboardkpi).toLowerCase().includes(searchValue.toLowerCase() ) && (user?.properties.environment!=="CLARO")) && <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                        {(t(langKeys.dashboardkpi).toLowerCase().includes(searchValue.toLowerCase() ) && (user?.properties.environment==="CLARO")) && <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                             <Card>
                                 <CardActionArea onClick={() => handleSelected("dashboardkpi")}>
                                     <CardMedia
