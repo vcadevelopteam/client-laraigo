@@ -14,6 +14,7 @@ import {
     CalendaryIcon,
     RulesIcon,
     ProductsIcon,
+    OrdersIcon,
 } from 'icons';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import { langKeys } from "lang/keys";
@@ -102,7 +103,7 @@ export const routes: RouteConfig[] = [
         description: <Trans i18nKey={langKeys.orders} count={2} />,
         tooltip: <Trans i18nKey={langKeys.orders} count={2} />,
         path: paths.ORDERS,
-        icon: (className) => <ProductsIcon style={{ width: 22, height: 26 }} className={className} />,
+        icon: (className) => <OrdersIcon style={{ width: 22, height: 26 }} className={className} />,
     },
     // {
     //     key: paths.EMAIL_INBOX,

@@ -806,6 +806,23 @@ export const calculateDateFromWeek = (datex: Date) => {
     })
 }
 
+interface Options {
+    withTime?: boolean;
+}
+
+
+export const formatDate = (strDate: string = "", options: Options = { withTime: true }) => {
+    if (!strDate || strDate === '') return '';
+
+    const date = new Date(typeof strDate === "number" ? strDate : strDate.replace("Z", ""));
+    const day = date.toLocaleDateString("en-US", { day: '2-digit' });
+    const month = date.toLocaleDateString("en-US", { month: '2-digit' });
+    const year = date.toLocaleDateString("en-US", { year: 'numeric' });
+    const time = date.toLocaleDateString("en-US", { hour: '2-digit', minute: '2-digit' });
+    return `${day}/${month}/${year}${options.withTime! ? time.split(',')[1] : ''}`;
+}
+
+
 export const hours = [
     { desc: "00:00", value: "00:00:00" },
     { desc: "00:30", value: "00:30:00" },
