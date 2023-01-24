@@ -3,7 +3,7 @@ import paths from "common/constants/paths";
 import {
     DashboardIcon, TicketIcon, ReportsIcon, MessageInboxIcon, SupervisorIcon, ConfigurationIcon, ExtrasIcon,
     BotDesignerIcon, BillingSetupIcon, InvoiceIcon,
-    IAServicesIcon,
+    //IAServicesIcon,
     OutboundIcon,
     MessageTemplateIcon,
     AIModelsIcon,
@@ -15,6 +15,7 @@ import {
     RulesIcon,
     ProductsIcon,
     PostCreatorIcon,
+    IALaraigoLogo,
 } from 'icons';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import { langKeys } from "lang/keys";
@@ -211,7 +212,8 @@ export const routes: RouteConfig[] = [
         description: <Trans i18nKey={langKeys.laraigoia} />,
         tooltip: <Trans i18nKey={langKeys.laraigoia} />,
         path: paths.IASERVICES,
-        icon: (className) => <IAServicesIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
+        //icon: (className) => <IAServicesIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
+        icon: (className) => <IALaraigoLogo style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
     },
     // {
     //     key: paths.EXTRAS,

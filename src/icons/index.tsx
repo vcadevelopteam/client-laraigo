@@ -225,3 +225,10 @@ export { ReactComponent as PostCreatorCalendar } from './postcreator-calendar.sv
 export { ReactComponent as PostCreatorPostHistory } from './postcreator-posthistory.svg';
 export { ReactComponent as PostCreatorPublish } from './postcreator-publish.svg';
 export { ReactComponent as PostCreatorStory } from './postcreator-story.svg';
+
+export { ReactComponent as IALaraigoLogo } from './IALaraigoLogo.svg';
+export { ReactComponent as ConectoresIALogo } from './ConectoresIALogo.svg';
+export { ReactComponent as ConfiguracionIALogo } from './ConfiguracionIALogo.svg';
+export { ReactComponent as EntrenamientoIALogo } from './EntrenamientoIALogo.svg';
+export { ReactComponent as IntencionesIALogo } from './IntencionesIALogo.svg';
+export { ReactComponent as EntidadesIALogo } from './EntidadesIALogo.svg';
