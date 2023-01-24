@@ -4930,6 +4930,7 @@ const translation: LangKeys = {
   productcatalog_dateexpiration: "Expiration Date",
   productcatalog_domain_gender_: "Empty",
   productcatalog_reviewdescription: "Review Description",
+  paymentorder_termandconditions: "I have read and agree to the terms and conditions.",
 };
 
 const enResource: ResourceLanguage = {

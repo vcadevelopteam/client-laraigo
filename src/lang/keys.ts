@@ -4847,6 +4847,7 @@ export const langKeys = {
     productcatalog_dateexpiration: "productcatalog_dateexpiration",
     productcatalog_domain_gender_: "productcatalog_domain_gender_",
     productcatalog_reviewdescription: "productcatalog_reviewdescription",
+    paymentorder_termandconditions: "paymentorder_termandconditions",
   };
   
   export type LangKeys = typeof langKeys;
