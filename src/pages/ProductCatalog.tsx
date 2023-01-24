@@ -4,15 +4,15 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import ClearIcon from '@material-ui/icons/Clear';
 import Paper from '@material-ui/core/Paper';
-import React, { FC, useEffect, useState, useCallback } from 'react';
+import React, { FC, useEffect, useState, useCallback, useMemo } from 'react';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import SaveIcon from '@material-ui/icons/Save';
-import TablePaginated from 'components/fields/table-paginated';
+import TablePaginated, { useQueryParams } from 'components/fields/table-paginated';
 
 import { Dictionary, MultiData, IFetchData } from "@types";
 import { DownloadIcon } from 'icons';
 import { formatNumber } from 'common/helpers';
-import { getCollectionPaginated, getMultiCollection, resetAllMain, setMemoryTable, cleanMemoryTable, uploadFile, resetCollectionPaginated } from 'store/main/actions';
+import { getCollectionPaginated, getMultiCollection, resetAllMain, uploadFile, resetCollectionPaginated } from 'store/main/actions';
 import { getValuesFromDomain, getPaginatedProductCatalog, metaCatalogSel } from 'common/helpers';
 import { googleCategory } from 'common/constants/googleCategory';
 import { IconButton, CircularProgress, FormControlLabel } from '@material-ui/core';
@@ -26,6 +26,7 @@ import { useForm } from 'react-hook-form';
 import { useSelector } from 'hooks';
 import { useTranslation } from 'react-i18next';
 import { catalogManageProduct, catalogDeleteProduct, catalogSynchroProduct, catalogImportProduct, catalogDownloadProduct } from "store/catalog/actions";
+import { useLocation } from 'react-router';
 
 interface RowSelected {
     edit: boolean;
@@ -75,11 +76,11 @@ const ProductCatalog: FC = () => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
+    const location = useLocation();
 
     const classes = useStyles();
     const mainPaginated = useSelector(state => state.main.mainPaginated);
     const mainResult = useSelector(state => state.main);
-    const memoryTable = useSelector(state => state.main.memoryTable);
     const resultDeleteProduct = useSelector(state => state.catalog.requestCatalogDeleteProduct);
     const resultDownloadProduct = useSelector(state => state.catalog.requestCatalogDownloadProduct);
     const resultManageProduct = useSelector(state => state.catalog.requestCatalogManageProduct);
@@ -109,6 +110,9 @@ const ProductCatalog: FC = () => {
 
     const arrayBread = [{ id: "view-1", name: t(langKeys.productcatalog) }];
     const selectionKey = 'productcatalogid';
+    const query = useMemo(() => new URLSearchParams(location.search), [location]);
+    const params = useQueryParams(query, { ignore: ['channelTypes'] });
+    console.log(params)
 
     const { trigger, register, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -142,13 +146,8 @@ const ProductCatalog: FC = () => {
             metaCatalogSel({ metabusinessid: 0, id: 0 }),
         ]));
 
-        dispatch(setMemoryTable({
-            id: PRODUCTCATALOG
-        }))
-
         return () => {
             dispatch(resetCollectionPaginated());
-            dispatch(cleanMemoryTable());
             dispatch(resetAllMain());
         };
     }, []);
@@ -623,7 +622,7 @@ const ProductCatalog: FC = () => {
                             </Button>
                         </div>
                     )}
-                    autotrigger={false}
+                    autotrigger={true}
                     columns={columns}
                     data={mainPaginated.data}
                     download={false}
@@ -639,9 +638,8 @@ const ProductCatalog: FC = () => {
                     titlemodule={t(langKeys.productcatalog)}
                     totalrow={totalrow}
                     useSelection={true}
-                    pageSizeDefault={PRODUCTCATALOG === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
-                    initialPageIndex={PRODUCTCATALOG === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
-                    initialStateFilter={PRODUCTCATALOG === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
+                    initialPageIndex={params.page}
+                    initialFilters={params.filters}
                 />
             </div>
         )
