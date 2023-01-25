@@ -341,6 +341,13 @@ const ManageCallInfoTicket: React.FC = () => {
                                 disabled={call.transfer?.statusCall !== "CONNECTED"}
                                 onClick={() => {
                                     if (call.transfer?.statusCall === "CONNECTED") {
+                                        if (call?.onhold) {
+                                            const timeToAdd = getSecondsUntelNow(convertLocalDate(call?.onholddate))
+                                            dispatch(execute(conversationCallHold({
+                                                holdtime: timeToAdd,
+                                                conversationid: ticketSelected?.conversationid
+                                            })))
+                                        }
                                         dispatch(completeTransferCall({
                                             call: call?.call,
                                             number: call.transfer?.transfernumber,
