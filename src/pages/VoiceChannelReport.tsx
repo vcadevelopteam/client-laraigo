@@ -21,7 +21,9 @@ import { useForm } from 'react-hook-form';
 import Graphic from 'components/fields/Graphic';
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import TablePaginated from 'components/fields/table-paginated';
-import { Tooltip } from '@material-ui/core';
+import { IconButton, Tooltip } from '@material-ui/core';
+import { CallRecordIcon } from 'icons';
+import { VoximplantService } from 'network';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -107,6 +109,7 @@ const DetailVoiceChannelReport: React.FC<DetailVoiceChannelReportProps> = ({ dat
     useEffect(() => {
         search()
     }, [])
+    
 
     const columns = React.useMemo(
         () => [
@@ -218,8 +221,48 @@ const VoiceChannelReport: FC = () => {
         }
     }, [])
     
+    const downloadCallRecord = async (ticket: Dictionary) => {
+        // dispatch(getCallRecord({call_session_history_id: ticket.postexternalid}));
+        // setWaitDownloadRecord(true);
+        try {
+            const axios_result = await VoximplantService.getCallRecord({call_session_history_id: ticket.postexternalid});
+            if (axios_result.status === 200) {
+                let buff = Buffer.from(axios_result.data, 'base64');
+                const blob = new Blob([buff], {type: axios_result.headers['content-type'].split(';').find((x: string) => x.includes('audio'))});
+                const objectUrl = window.URL.createObjectURL(blob);
+                let a = document.createElement('a');
+                a.href = objectUrl;
+                a.download = ticket.ticketnum;
+                a.click();
+            }
+        }
+        catch (error: any) {
+            const errormessage = t(error?.response?.data?.code || "error_unexpected_error")
+            dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+        }
+    }
+
     const columns = React.useMemo(
         () => [
+            {
+                accessor: 'postexternalid',
+                isComponent: true,
+                minWidth: 60,
+                width: '1%',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (row.postexternalid
+                        && row.callanswereddate ?
+                        <Tooltip title={t(langKeys.download_record) || ""}>
+                            <IconButton size="small" onClick={() => downloadCallRecord(row)}
+                            >
+                                <CallRecordIcon style={{ fill: '#7721AD' }} />
+                            </IconButton>
+                        </Tooltip>
+                        : null
+                    )
+                }
+            },
             {
                 Header: `N° ${t(langKeys.ticket_numeroticket)}`,
                 accessor: 'ticketnum',
