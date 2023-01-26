@@ -82,22 +82,22 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_send_hsm) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
-
-                const newInteractionSocket = {
-                    ...ticketSelected!!,
-                    interactionid: 0,
-                    typemessage: "text",
-                    typeinteraction: null,
-                    lastmessage: bodyCleaned,
-                    createdate: new Date().toISOString(),
-                    userid: 0,
-                    usertype: "agent",
-                    ticketWasAnswered: !ticketSelected!!.isAnswered,
-                }
-                dispatch(emitEvent({
-                    event: 'newMessageFromAgent',
-                    data: newInteractionSocket
-                }));
+                //already dont need this, because services send in real time
+                // const newInteractionSocket = {
+                //     ...ticketSelected!!,
+                //     interactionid: 0,
+                //     typemessage: "text",
+                //     typeinteraction: null,
+                //     lastmessage: bodyCleaned,
+                //     createdate: new Date().toISOString(),
+                //     userid: 0,
+                //     usertype: "agent",
+                //     ticketWasAnswered: !ticketSelected!!.isAnswered,
+                // }
+                // dispatch(emitEvent({
+                //     event: 'newMessageFromAgent',
+                //     data: newInteractionSocket
+                // }));
 
                 setWaitClose(false);
             } else if (sendingRes.error) {
