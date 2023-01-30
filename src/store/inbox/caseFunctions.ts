@@ -1053,10 +1053,7 @@ export const sendHSM = (state: IState): IState => ({
 
 export const sendHSMSuccess = (state: IState, action: IAction): IState => ({
     ...state,
-    triggerSendHSM: {
-        loading: false,
-        error: false,
-    },
+    triggerSendHSM: { ...state.triggerSendHSM, loading: false, error: false },
 });
 
 export const sendHSMFailure = (state: IState, action: IAction): IState => ({
