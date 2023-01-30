@@ -98,7 +98,7 @@ function PaginatedList<T>(props: PaginatedListProps<T>): JSX.Element {
         onFilterChange,
         onPageChange,
         onPageSizeChange,
-        pageSizeOptions = [10, 20, 50, 100],
+        pageSizeOptions = [5, 10, 20, 50, 100],
         skeleton,
     } = props;
     const classes = useStyles();
@@ -226,7 +226,7 @@ function PaginatedList<T>(props: PaginatedListProps<T>): JSX.Element {
                 </Box>
                 <Box>
                     <Trans
-                        i18nKey={langKeys.tableShowingRecordOf}
+                       i18nKey={(totalItems || 0) === 100000 ? langKeys.tableShowingRecordOfMore : langKeys.tableShowingRecordOf}
                         values={{ itemCount: data.length, totalItems }}
                     />
                 </Box>

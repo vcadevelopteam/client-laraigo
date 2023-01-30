@@ -876,7 +876,7 @@ const TableZyx = React.memo(({
                     </Box>
                     <Box>
                         <Trans
-                            i18nKey={langKeys.tableShowingRecordOf}
+                            i18nKey={(totalrow || 0) === 100000 ? langKeys.tableShowingRecordOfMore : langKeys.tableShowingRecordOf}
                             values={{ itemCount: page.length, totalItems: totalrow }}
                         />
                     </Box>
@@ -889,7 +889,7 @@ const TableZyx = React.memo(({
                                 setPageSize(Number(e.target.value))
                             }}
                         >
-                            {[10, 20, 50, 100].map(pageSize => (
+                            {[5, 10, 20, 50, 100].map(pageSize => (
                                 <MenuItem key={pageSize} value={pageSize}>
                                     {pageSize}
                                 </MenuItem >
