@@ -2221,6 +2221,7 @@ export const insPersonBody = (person: Dictionary): IRequestBody => ({
         corpid: null,
         orgid: null,
         phone: person?.phone?.replaceAll('+', ''),
+        district: person.district || "",
         observation: person.observation || '',
     },
 });
