@@ -157,6 +157,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataParent = multiData[3] && multiData[3].success ? multiData[3].data : [];
+    console.log(dataParent)
 
     const datachannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const datamastercatalog = multiData[4] && multiData[4].success ? multiData[4].data : [];
