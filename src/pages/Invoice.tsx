@@ -453,7 +453,7 @@ const CostPerPeriod: React.FC<{ dataCorp: any, dataOrg: any, dataPaymentPlan: an
                                 data={dataCorp}
                                 optionDesc="description"
                                 optionValue="corpid"
-                                disabled={["ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '')}
+                                disabled={["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(user?.roledesc || '')}
                                 orderbylabel={true}
                             />
                             <FieldSelect
@@ -2345,7 +2345,7 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                         data={dataCorp}
                         optionDesc="description"
                         optionValue="corpid"
-                        disabled={["ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '')}
+                        disabled={["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(user?.roledesc || '')}
                         orderbylabel={true}
                     />
                     <FieldSelect
@@ -3211,7 +3211,7 @@ const Payments: React.FC<{ dataCorp: any, dataOrg: any, setCustomSearch(value: R
                                 data={dataCorp}
                                 optionDesc="description"
                                 optionValue="corpid"
-                                disabled={["ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '')}
+                                disabled={["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(user?.roledesc || '')}
                                 orderbylabel={true}
                             />
                             <FieldSelect
@@ -4209,7 +4209,7 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
                                 data={dataCorp}
                                 optionDesc="description"
                                 optionValue="corpid"
-                                disabled={["ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '')}
+                                disabled={["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(user?.roledesc || '')}
                                 orderbylabel={true}
                             />
                             <FieldSelect
@@ -6478,7 +6478,7 @@ const MessagingPackages: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp
                                 data={dataCorp}
                                 optionDesc="description"
                                 optionValue="corpid"
-                                disabled={["ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '')}
+                                disabled={["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(user?.roledesc || '')}
                                 orderbylabel={true}
                             />
                             <FieldSelect
@@ -6653,7 +6653,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
         setCorpList({ loading: true, data: [] });
         setOrgList({ loading: false, data: [] });
 
-        dispatch(getMultiCollectionAux([getCorpSel(["ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '') ? user?.corpid || 0 : 0), getBillingMessagingCurrent(new Date().getFullYear(), new Date().getMonth(), user?.countrycode || ''), listPaymentCard({ corpid: user?.corpid || 0, id: 0, orgid: 0 })]));
+        dispatch(getMultiCollectionAux([getCorpSel(["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(user?.roledesc || '') ? user?.corpid || 0 : 0), getBillingMessagingCurrent(new Date().getFullYear(), new Date().getMonth(), user?.countrycode || ''), listPaymentCard({ corpid: user?.corpid || 0, id: 0, orgid: 0 })]));
 
         if (data?.row === null) {
             dispatch(getCollection(getAppsettingInvoiceSel()));
@@ -8092,7 +8092,7 @@ const Invoice: FC = () => {
                     </div>
                 }
             </div>}
-            {["ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '') && <div>
+            {["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(user?.roledesc || '') && <div>
                 <Tabs
                     value={pageSelected}
                     indicatorColor="primary"
