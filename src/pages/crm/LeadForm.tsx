@@ -492,6 +492,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         register('leadproduct', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('email', {
             validate: {
+                hasvalue:  (value) => ((value && value.length) ? true : t(langKeys.field_required) + ""),
                 isemail: (value) => ((!value || (/\S+@\S+\.\S+/.test(value))) || t(langKeys.emailverification) + "") 
             }
         });
