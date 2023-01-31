@@ -139,7 +139,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
     const [waitSave, setWaitSave] = useState(false);
     const [description, setDescription] = useState(row?.description||"");
     const [order, setOrder] = useState(row?.order||"");
-    const [type, seType] = useState(row?.type||"TIPIFICACION");
+    const [type, seType] = useState(externalUse ? externalType : (row?.type || "TIPIFICACION"));
     const [auxVariables, seauxVariables] = useState({
         communicationchannel: row?.communicationchannel || "",
         tags: row?.tags || "",
@@ -156,7 +156,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
     const { t } = useTranslation();
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataParent = multiData[3] && multiData[3].success ? multiData[3].data : [];
+    const dataParent = multiData[3] && multiData[3].success ? multiData[3].data.filter(x=>x.type===type) : [];
     console.log(dataParent)
 
     const datachannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
@@ -318,9 +318,12 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                             label={t(langKeys.parent)}
                             className="col-6"
                             valueDefault={auxVariables.parent}
-                            onChange={(value) => setValue('parent', value?.classificationid || 0)}
+                            onChange={(value) => {
+                                setValue('parent', value?.classificationid || 0)
+                                seauxVariables({...auxVariables, parent: value?.classificationid || 0})
+                            }}
                             error={errors?.parent?.message}
-                            data={dataParent.filter(x=>x.type===type)}
+                            data={dataParent}
                             optionDesc="description"
                             optionValue="classificationid"
                         />
@@ -346,35 +349,36 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
                         />
-                        <FieldSelect
-                            label={t(langKeys.type)}
-                            className="col-6"
-                            valueDefault={type}
-                            onChange={(value) => {
-                                setValue('communicationchannel', "")
-                                setValue('tags', "")
-                                setValue('order', "")
-                                setValue('parent', 0)
-                                seauxVariables({
-                                    communicationchannel: "",
-                                    tags: "",
-                                    order: "",
-                                    parent: 0,
-                                })
-                                setValue('type', value?.value || ''); 
-                                seType(value?.value || '')
-                            }}
-                            error={errors?.type?.message}
-                            data={[
-                                {value: "CATEGORIA", desc: t(langKeys.category)},
-                                {value: "TIPIFICACION", desc: t(langKeys.tipification)},
-                            ]}
-                            uset={true}
-                            optionDesc="desc"
-                            optionValue="value"
-                        />
+                        {!externalUse && <FieldSelect
+                                label={t(langKeys.type)}
+                                className="col-6"
+                                valueDefault={type}
+                                onChange={(value) => {
+                                    setValue('communicationchannel', "")
+                                    setValue('tags', "")
+                                    setValue('order', "")
+                                    setValue('parent', 0)
+                                    seauxVariables({
+                                        communicationchannel: "",
+                                        tags: "",
+                                        order: "",
+                                        parent: 0,
+                                    })
+                                    setValue('type', value?.value || ''); 
+                                    seType(value?.value || '')
+                                }}
+                                error={errors?.type?.message}
+                                data={[
+                                    {value: "CATEGORIA", desc: t(langKeys.category)},
+                                    {value: "TIPIFICACION", desc: t(langKeys.tipification)},
+                                ]}
+                                uset={true}
+                                optionDesc="desc"
+                                optionValue="value"
+                            />
+                        }
                     </div>
-                    {type === "TIPIFICACION" &&
+                    {(type === "TIPIFICACION"|| externalUse) &&
                     <div className="row-zyx">
                         <FieldMultiSelect
                             label={t(langKeys.channel_plural)}
@@ -428,7 +432,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                         </div>                        
                     </>
                     }                    
-                    {type === "TIPIFICACION" &&
+                    {(type === "TIPIFICACION"|| externalUse) &&
                     <>
                         <div style={{ marginBottom: '16px' }}>
                             <div className={classes.title}>{t(langKeys.actionplan)}</div>
