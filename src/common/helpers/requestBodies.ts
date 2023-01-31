@@ -2430,7 +2430,7 @@ export const getOneLeadSel = (id: string | number): IRequestBody => ({
         leadproduct: '',
         campaignid: 0,
         tags: '',
-        userid: 0, // filtro asesor
+        userid: "", // filtro asesor
         supervisorid: 0, // id del usuario de la sesión 
         all: false,
     },

@@ -213,7 +213,6 @@ const RecordHSMRecord: FC = () => {
             {
                 Header: t(langKeys.shippingreason),
                 accessor: 'name_translated',
-                NoFilter: true,
             },
             {
                 Header: t(langKeys.shippingdate),

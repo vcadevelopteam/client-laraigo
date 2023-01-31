@@ -675,9 +675,9 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
             register('expected_revenue', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
             register('priority', { validate: (value) => ((value && value > 0) ? true : t(langKeys.field_required) + "") });
 
-            register('lastname');
+            register('lastname', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
             register('firstname', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
-            register('email');
+            register('email', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
             register('phone', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
         }
     }, [openModal])
