@@ -1736,7 +1736,7 @@ const translation: LangKeys = {
   numberofHSMShipmentstooltip: 'Muestra la cantidad de HSM enviados por los diferentes aplicativos disponibles.',
   employeeaplication: 'Aplicativo Empleado',
   ticket_labels: 'Tag',
-  ticket_labels_help: 'Tags consultados de izquierda a derecha del ultimo consultado al primero, respectivamente.',
+  ticket_labels_help: 'Etiquetas acerca de las opciones más consultadas dentro de la conversación con el cliente.\nTags consultados de izquierda a derecha del último consultado al primero, respectivamente.',
   ticket_tdatime: 'Tiempo de espera antes de atención de asesor',
   supervisionduration: 'Tiempo de supervisión de llamada',
   ticket_tdatime_help: 'Suma de todos los tiempos en que la conversación es derivada a Holding hasta que el asesor brinda una respuesta.',
