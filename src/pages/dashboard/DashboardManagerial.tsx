@@ -13,7 +13,7 @@ import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import PersonIcon from '@material-ui/icons/Person';
 import ChatIcon from '@material-ui/icons/Chat';
 import AdbIcon from '@material-ui/icons/Adb';
-import { exportExcel, gerencialEncuesta2selData, gerencialEncuesta3selData, gerencialTMEselData, getDateCleaned } from 'common/helpers';
+import { exportExcel, formattimeMinutes, gerencialEncuesta2selData, gerencialEncuesta3selData, gerencialTMEselData, getDateCleaned } from 'common/helpers';
 import { useTranslation } from 'react-i18next';
 import { gerencialasesoresconectadosbarsel, gerencialconversationsel,gerencialEncuestassel,getdashboardgerencialconverstionxhoursel,gerencialasesoresconectadosbarseldata,gerencialinteractionseldata, 
     gerencialconversationseldata,gerencialencuestasel, gerencialinteractionsel,gerencialsummaryseldata, gerencialsummarysel, gerencialTMEsel, gerencialTMOsel,gerencialchannelsel,
@@ -436,11 +436,11 @@ const DashboardManagerial: FC = () => {
                 let hh = (Math.floor(seconds / 3600)) === 0 ? "" : (Math.floor(seconds / 3600) + "h ")
                 let mm = Math.floor((seconds % 3600) / 60) === 0 ? "" : (Math.floor((seconds % 3600) / 60) + "m ")
                 let ss = seconds % 60 + "s"
-                let objetivo_min = timetomin(target_min)
-                let objetivo_max = timetomin(target_max)
+                let objetivo_min = formattimeMinutes(target_min)
+                let objetivo_max = formattimeMinutes(target_max)
                 let dataTMO = `${hh}${mm}${ss}`
                 setData(p => ({ ...p, dataTMO: dataTMO }))
-                setData(p => ({ ...p, obj_max: `< ${objetivo_max}m `, obj_min: objetivo_min > 0 ? ` y > ${objetivo_min}m ` : '' }))
+                setData(p => ({ ...p, obj_max: `<${objetivo_max}`, obj_min: objetivo_min !== "0m" ? `${objetivo_min}< y ` : '' }))
 
                 let vartmo = timetoseconds(target_max) - seconds
                 vartmo = seconds < timetoseconds(target_min) ? Math.abs(vartmo) * -1 : vartmo
@@ -1430,7 +1430,7 @@ const DashboardManagerial: FC = () => {
                                 </div>
                                 <div className={classes.containerFields}>
                                     <div className={classes.label}>{t(langKeys.objective)}</div>
-                                    <div className={classes.datafield}>{data.obj_max}{data.obj_min}</div>
+                                    <div className={classes.datafield}>{data.obj_min}{data.obj_max}</div>
                                 </div>
                                 <div className={clsx(classes.containerFields, data.variacioncolor ? classes.colorgreen : classes.colorred)}>
                                     <div className={classes.label}>{t(langKeys.variation)}</div>
@@ -2106,7 +2106,7 @@ const DashboardManagerial: FC = () => {
                                     <Line type="monotone" dataKey="asesoresconectados" stroke="#8884d8" strokeWidth={2} />
                                     <CartesianGrid stroke="#ccc" />
                                     <XAxis domain={["",""]} type="category" dataKey="hora"><Label value={` ${t(langKeys.timeofday)} `} offset={-5} position="insideBottom" /></XAxis>
-                                    <YAxis domain={[0, (auto:any) => Math.floor(auto * 1.3)]}><Label value={` ${t(langKeys.assesor_plural)} `} angle={-90} offset={0} position="insideLeft" /></YAxis>
+                                    <YAxis allowDecimals={false} domain={[0, (auto:any) => Math.ceil(auto * 1.3)]}><Label value={` ${t(langKeys.assesor_plural)} `} angle={-90} offset={0} position="insideLeft" /></YAxis>
                                     <RechartsTooltip />
                                 </LineChart>
                             </ResponsiveContainer>
