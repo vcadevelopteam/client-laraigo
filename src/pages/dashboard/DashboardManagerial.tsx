@@ -514,10 +514,10 @@ const DashboardManagerial: FC = () => {
                 let hh = (Math.floor(seconds / 3600)) === 0 ? "" : (Math.floor(seconds / 3600) + "h ")
                 let mm = Math.floor((seconds % 3600) / 60) === 0 ? "" : (Math.floor((seconds % 3600) / 60) + "m ")
                 let ss = seconds % 60 + "s"
-                let objetivo_max = timetomin(target_max)
+                let objetivo_max = formattimeMinutes(target_max)
                 let dataTMO = `${hh}${mm}${ss}`
                 setDataTME(p => ({ ...p, dataTME: dataTMO }))
-                setDataTME(p => ({ ...p, obj_max: `< ${objetivo_max}m ` }))
+                setDataTME(p => ({ ...p, obj_max: `<${objetivo_max}m` }))
 
                 let vartmo = timetoseconds(target_max) - seconds
                 vartmo = seconds < timetoseconds(target_min) ? Math.abs(vartmo) * -1 : vartmo
