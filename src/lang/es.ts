@@ -85,6 +85,7 @@ const translation: LangKeys = {
   available: "Disponible",
   resume: "Resumen",
   emoticons: "Emoticones",
+  mustassigncustomer: "Debe asignar un cliente",
   filter: "Filtro",
   addfilter: "Añadir filtro",
   newinterval: "Nuevo intervalo",

@@ -317,6 +317,7 @@ interface LeadColumnProps extends Omit<BoxProps, 'title'> {
     provided?: DraggableProvided;
     columnid: string;
     total_revenue: number;
+    total_cards: number;
     deletable: boolean;
 }
 
@@ -370,6 +371,7 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
     onDelete,
     onAddCard,
     deletable,
+    total_cards,
     ...boxProps
 }) => {
     const classes = useLeadColumnStyles();
@@ -386,7 +388,6 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     const user = useSelector(state => state.login.validateToken.user);
-
     return (
         <Box {...boxProps}>
             <div className={classes.root}>
@@ -400,7 +401,10 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
                         <CloseIcon style={{ height: 22, width: 22 }} />
                     </IconButton>}
                 </div>
-                <span className={classes.currency}>{user?.currencysymbol||"S/."} {total_revenue?.toLocaleString('en-US') || 0}</span>
+                <div style={{display:"flex", justifyContent: "space-between", width: "100%"}}>
+                    <span className={classes.currency}>{user?.currencysymbol||"S/."} {total_revenue?.toLocaleString('en-US') || 0}</span>
+                    <span className={classes.currency} style={{paddingRight: 8}}>{total_cards}</span>
+                </div>
                 {children}
             </div>
         </Box>

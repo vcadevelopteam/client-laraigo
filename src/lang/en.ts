@@ -2206,6 +2206,7 @@ const translation: LangKeys = {
   report_voicecall_agent: "Name of last agent",
   report_voicecall_phone: "Phone",
   report_voicecall_name: "Person",
+  mustassigncustomer: "You must assign a customer",
   report_voicecall_origin: "Origin",
   report_voicecall_closetype: "Close type",
   report_voicecall_holdingtime: "Holding time",

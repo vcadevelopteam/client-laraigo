@@ -26,6 +26,7 @@ export const langKeys = {
     view: "view",
     documentsTooltip: "documentsTooltip",
     poweredbyTooltip: "poweredbyTooltip",
+    mustassigncustomer: "mustassigncustomer",
     propertyiainiciodelimit: "propertyiainiciodelimit",
     locationTooltip: "locationTooltip",
     cssheaderTooltip: "cssheaderTooltip",
