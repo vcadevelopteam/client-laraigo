@@ -1791,7 +1791,7 @@ const translation: LangKeys = {
   successpublish: "The post has been successfully published.",
   distributionbycategoryHSMtooltip: "Classifies the HSMs according to the defined category.",
   ticket_labels: "Tag",
-  ticket_labels_help: 'Tags consulted from left to right from the last consulted to the first, respectively.',
+  ticket_labels_help: 'Tags about the most consulted options within the conversation with the customer.\nTags consulted from left to right from the last consulted to the first, respectively.',
   ticket_tdatime: "Waiting time before adviser attention",
   ticket_tdatime_help: 'Sum of all the times in which the conversation is referred to Holding until the advisor provides a response.',
   supervisionduration: 'Call supervision time',
