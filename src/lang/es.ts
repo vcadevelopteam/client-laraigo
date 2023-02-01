@@ -548,7 +548,7 @@ const translation: LangKeys = {
   signup_with_facebook: "Registrate con Facebook",
   next: "Siguiente",
   managerial: "Gerencial",
-  emailverification: 'Debe insertar un correo valido',
+  emailverification: 'El correo ingresado no tiene los valores de un correo: @ y .',
   tagranking: "Ranking de tags",
   completedesc: 'Descripción completa',
   laststepsignup2: "Conocerte mejor nos ayuda a optimizar el servicio a lo que necesitan tus clientes",
