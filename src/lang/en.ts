@@ -972,7 +972,7 @@ const translation: LangKeys = {
   typify: 'Classify',
   typify_ticket: 'Classify ticket',
   validnumber: "Please insert a valid number",
-  emailverification: 'The email must be valid',
+  emailverification: 'The email entered does not have the values ​​of an email: @ and .',
   signup_with_facebook: "Sign up with Facebook",
   managerial: "Managerial",
   operationalpush: "Operational Push",
