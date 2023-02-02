@@ -188,6 +188,7 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                     "outbound": values.outbound,
                     "recordingstorage": values.recordingstorage,
                     "recordingquality": values.recordingquality,
+                    "voximplantcallsupervision": values.voximplantcallsupervision
                 },
                 "type": "VOXIMPLANTPHONE",
             })
