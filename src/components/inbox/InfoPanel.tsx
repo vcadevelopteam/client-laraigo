@@ -193,7 +193,7 @@ const InfoTab: React.FC = () => {
 
     const multiData = useSelector(state => state.main.multiDataAux);
     const { setValue, getValues, trigger, register, formState: { errors } } = useForm<any>({
-        defaultValues: { ...person, birthday: person?.birthday || '' }
+        defaultValues: { ...person, birthday: person?.birthday || '', district: person?.district || '' }
     });
 
     useEffect(() => {
@@ -214,6 +214,7 @@ const InfoTab: React.FC = () => {
         register('address');
         register('healthprofessional');
         register('referralchannel');
+        register('district');
 
         dispatch(getMultiCollectionAux([
             getValuesFromDomain("TIPODOCUMENTO"),

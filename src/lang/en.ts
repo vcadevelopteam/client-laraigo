@@ -763,6 +763,7 @@ const translation: LangKeys = {
   organizationclass: "Organization of Classifications",
   tablePageOf: 'Page <0>{{currentPage}}</0> of <1>{{totalPages}}</1>',
   tableShowingRecordOf: 'Showing {{itemCount}} records of {{totalItems}}',
+  tableShowingRecordOfMore: 'Showing {{itemCount}} records of {{totalItems}} or more',
   tipification: 'Tipification',
   tipification_plural: 'Classifications',
 

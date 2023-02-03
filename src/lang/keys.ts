@@ -1796,6 +1796,7 @@ export const langKeys = {
   
     tablePageOf: 'tablePageOf',
     tableShowingRecordOf: 'tableShowingRecordOf',
+    tableShowingRecordOfMore: 'tableShowingRecordOfMore',
   
     recordPerPage: 'recordPerPage',
     recordPerPage_plural: 'recordPerPage_plural',
