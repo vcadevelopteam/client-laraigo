@@ -19,6 +19,7 @@ export const langKeys = {
     set_your_weekly: "set_your_weekly",
     orders: "orders",
     orderlist: "orderlist",
+    web_form: "web_form",
     ordernumber: "ordernumber",
     orderstatus: "orderstatus",
     ordersdetail: "ordersdetail",

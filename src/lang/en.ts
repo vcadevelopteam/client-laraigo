@@ -4088,6 +4088,7 @@ const translation: LangKeys = {
   bot_training_scheduled: "The bot already has a scheduled training",
   bot_training_ongoing: "Bot training is in process",
   type_close_irrelevante: 'Irrelevant closure',
+  web_form: "Web form",
   type_close_llamada_desconectada: 'call disconnected',
   type_close_no_hay_asesores: 'No advisers to refer',
   type_close_nocompletado: 'Failed to complete care',
