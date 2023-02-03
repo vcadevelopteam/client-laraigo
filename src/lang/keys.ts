@@ -2312,6 +2312,7 @@ export const langKeys = {
     report_userproductivityhours_freetimewithinwork: 'report_userproductivityhours_freetimewithinwork',
     report_userproductivityhours_busytimeoutsidework: 'report_userproductivityhours_busytimeoutsidework',
     report_userproductivityhours_onlinetime: 'report_userproductivityhours_onlinetime',
+    report_userproductivityhours_availabletime: 'report_userproductivityhours_availabletime',
     report_userproductivityhours_idletime: 'report_userproductivityhours_idletime',
     report_userproductivityhours_qtytickets: 'report_userproductivityhours_qtytickets',
     report_userproductivityhours_qtyconnection: 'report_userproductivityhours_qtyconnection',
