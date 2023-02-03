@@ -1129,6 +1129,7 @@ const translation: LangKeys = {
   services_plural: "Servicios",
   tablePageOf: 'Página <0>{{currentPage}}</0> de <1>{{totalPages}}</1>',
   tableShowingRecordOf: 'Mostrando {{itemCount}} registros de {{totalItems}}',
+  tableShowingRecordOfMore: 'Mostrando {{itemCount}} registros de {{totalItems}} o más',
   least_user_or_group: 'Debe elegir al menos usuario o grupo',
   tipification: 'Clasificación',
   tipification_plural: 'Clasificaciones',

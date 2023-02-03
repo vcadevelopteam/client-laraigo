@@ -759,7 +759,7 @@ const TableZyxEditable = React.memo(({
                     </Box>
                     <Box>
                         <Trans
-                            i18nKey={langKeys.tableShowingRecordOf}
+                            i18nKey={(preGlobalFilteredRows || []).length === 100000 ? langKeys.tableShowingRecordOfMore : langKeys.tableShowingRecordOf}
                             values={{ itemCount: page.length, totalItems: preGlobalFilteredRows.length }}
                         />
                     </Box>
@@ -773,7 +773,7 @@ const TableZyxEditable = React.memo(({
                                 setPageSize(Number(e.target.value))
                             }}
                         >
-                            {[10, 20, 50, 100].map(pageSize => (
+                            {[5, 10, 20, 50, 100].map(pageSize => (
                                 <MenuItem key={pageSize} value={pageSize}>
                                     {pageSize}
                                 </MenuItem >

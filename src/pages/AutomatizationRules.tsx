@@ -313,15 +313,15 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                             label={t(langKeys.product_plural)}
                             className="col-6"
                             valueDefault={getValues('products')}
-                            onChange={(value: ({domaindesc: string} | string)[]) => {
-                                const products = value.map((o: any) => o.code || o).join(',');
+                            onChange={(value: ({title: string} | string)[]) => {
+                                const products = value.map((o: any) => o.productid || o).join(',');
                                 setValue('products', products);
                             }}
                             error={errors?.products?.message}
                             loading={false}
                             data={dataProducts}
-                            optionDesc="description"
-                            optionValue="code"
+                            optionDesc="title"
+                            optionValue="productid"
                         />
                     </div>
                     <div className="row-zyx">
