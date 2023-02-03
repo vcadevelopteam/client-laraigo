@@ -2167,6 +2167,7 @@ const translation: LangKeys = {
   report_userproductivityhours_freetimewithinwork: 'Free time within working hours',
   report_userproductivityhours_busytimeoutsidework: 'Busy time outside of work hours',
   report_userproductivityhours_onlinetime: 'Connected time',
+  report_userproductivityhours_availabletime: 'Available time',
   report_userproductivityhours_idletime: 'Time not busy',
   report_userproductivityhours_qtytickets: 'Ticket quantity',
   report_userproductivityhours_qtyconnection: 'Number of connections made',
