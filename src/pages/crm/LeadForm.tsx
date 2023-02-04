@@ -490,6 +490,12 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         register('userid', { validate: (value) => ((value && value > 0) ? true : t(langKeys.field_required) + "") });
         register('columnid', { validate: (value) => ((value !== null && value !== undefined && value !== '') || t(langKeys.field_required) + "") });
         register('leadproduct', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('email', {
+            validate: {
+                hasvalue:  (value) => ((value && value.length) ? true : t(langKeys.field_required) + ""),
+                isemail: (value) => ((!value || (/\S+@\S+\.\S+/.test(value))) || t(langKeys.emailverification) + "") 
+            }
+        });
     }, [register, t]);
 
     React.useEffect(() => {
@@ -537,12 +543,16 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                     }, true));
                 }
             };
-
-            dispatch(manageConfirmation({
-                visible: true,
-                question: t(langKeys.confirmation_save),
-                callback
-            }))
+            
+            if (edit || !!values?.displayname){
+                dispatch(manageConfirmation({
+                    visible: true,
+                    question: t(langKeys.confirmation_save),
+                    callback
+                }))
+            }else{
+                dispatch(showSnackbar({ show: true, severity: "warning", message:  t(langKeys.mustassigncustomer)}))
+            }
         }
     };
 
@@ -555,7 +565,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 fullname: '',
                 leadproduct: '',
                 tags: '',
-                userid: 0,
+                userid: "",
                 supervisorid: user?.userid || 0, // Obligatorio sin ser cero
                 persontype: "",
                 all: false,

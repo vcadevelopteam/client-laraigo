@@ -2221,6 +2221,7 @@ export const insPersonBody = (person: Dictionary): IRequestBody => ({
         corpid: null,
         orgid: null,
         phone: person?.phone?.replaceAll('+', ''),
+        district: person.district || "",
         observation: person.observation || '',
     },
 });
@@ -2413,7 +2414,7 @@ export const getOneLeadSel = (id: string | number): IRequestBody => ({
         leadproduct: '',
         campaignid: 0,
         tags: '',
-        userid: 0, // filtro asesor
+        userid: "", // filtro asesor
         supervisorid: 0, // id del usuario de la sesión 
         all: false,
     },

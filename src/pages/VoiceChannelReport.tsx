@@ -3,17 +3,16 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { DateRangePicker, DialogZyx, FieldSelect } from 'components';
-import { getDateCleaned, getPaginatedReportVoiceCall, getRecordHSMGraphic, getRecordHSMList, getRecordHSMReport, getReportGraphic, getVoiceCallReportExport } from 'common/helpers';
+import { DialogZyx, FieldSelect } from 'components';
+import { getPaginatedReportVoiceCall, getRecordHSMGraphic, getRecordHSMReport, getReportGraphic, getVoiceCallReportExport } from 'common/helpers';
 import { Dictionary, IFetchData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { cleanViewChange, exportData, getCollectionPaginated, getMainGraphic, getMultiCollection, getMultiCollectionAux2, resetMultiMain, setViewChange } from 'store/main/actions';
+import { cleanViewChange, exportData, getCollectionPaginated, getMainGraphic, getMultiCollectionAux2, resetMultiMain, setViewChange } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { CalendarIcon } from 'icons';
-import { Range } from 'react-date-range';
+import InfoIcon from '@material-ui/icons/Info';
 import ClearIcon from '@material-ui/icons/Clear';
 import {
     Search as SearchIcon,
@@ -22,6 +21,9 @@ import { useForm } from 'react-hook-form';
 import Graphic from 'components/fields/Graphic';
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import TablePaginated from 'components/fields/table-paginated';
+import { IconButton, Tooltip } from '@material-ui/core';
+import { CallRecordIcon } from 'icons';
+import { VoximplantService } from 'network';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -62,14 +64,23 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const columnsTemp = [
-    'name',
-    'shippingdate',
-    'from',
-    'total',
-    'satisfactory',
-    'failed',
-    'satisfactoryp',
-    'failedp'
+    "ticketnum",
+    "channel",
+    "ticketdate",
+    "tickettime",
+    "finishtime",
+    "handoffdate",
+    "agent",
+    "name",
+    "phone",
+    "origin",
+    "closetype",
+    "classification",
+    "totalduration",
+    "agentduration",
+    "customerwaitingduration",
+    "holdingtime",
+    "transferduration"
 ]
 
 const DetailVoiceChannelReport: React.FC<DetailVoiceChannelReportProps> = ({ data: { row }, setViewSelected }) => {
@@ -98,38 +109,39 @@ const DetailVoiceChannelReport: React.FC<DetailVoiceChannelReportProps> = ({ dat
     useEffect(() => {
         search()
     }, [])
+    
 
     const columns = React.useMemo(
         () => [
             {
                 Header: t(langKeys.recipientsname),
                 accessor: 'clientname',
-                NoFilter: true
+                NoFilter: false
             },
             {
                 Header: t(langKeys.contact),
                 accessor: 'contact',
-                NoFilter: true
+                NoFilter: false
             },
             {
                 Header: `${t(langKeys.channel)}`,
                 accessor: 'channel',
-                NoFilter: true
+                NoFilter: false
             },
             {
                 Header: `${t(langKeys.origin)}`,
                 accessor: 'origin',
-                NoFilter: true
+                NoFilter: false
             },
             {
                 Header: t(langKeys.group),
                 accessor: 'group',
-                NoFilter: true
+                NoFilter: false
             },
             {
                 Header: t(langKeys.status),
                 accessor: 'status',
-                NoFilter: true,
+                NoFilter: false,
                 prefixTranslation: 'status_',
                 Cell: (props: any) => {
                     const { status } = props.cell.row.original;
@@ -139,17 +151,17 @@ const DetailVoiceChannelReport: React.FC<DetailVoiceChannelReportProps> = ({ dat
             {
                 Header: t(langKeys.communicationtemplate),
                 accessor: 'templatename',
-                NoFilter: true
+                NoFilter: false
             },
             {
                 Header: t(langKeys.body),
                 accessor: 'body',
-                NoFilter: true
+                NoFilter: false
             },
             {
                 Header: t(langKeys.log),
                 accessor: 'log',
-                NoFilter: true
+                NoFilter: false
             },
         ],
         [t]
@@ -209,68 +221,153 @@ const VoiceChannelReport: FC = () => {
         }
     }, [])
     
+    const downloadCallRecord = async (ticket: Dictionary) => {
+        // dispatch(getCallRecord({call_session_history_id: ticket.postexternalid}));
+        // setWaitDownloadRecord(true);
+        try {
+            const axios_result = await VoximplantService.getCallRecord({call_session_history_id: ticket.postexternalid});
+            if (axios_result.status === 200) {
+                let buff = Buffer.from(axios_result.data, 'base64');
+                const blob = new Blob([buff], {type: axios_result.headers['content-type'].split(';').find((x: string) => x.includes('audio'))});
+                const objectUrl = window.URL.createObjectURL(blob);
+                let a = document.createElement('a');
+                a.href = objectUrl;
+                a.download = ticket.ticketnum;
+                a.click();
+            }
+        }
+        catch (error: any) {
+            const errormessage = t(error?.response?.data?.code || "error_unexpected_error")
+            dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+        }
+    }
+
     const columns = React.useMemo(
         () => [
             {
-                Header: t(langKeys.recipientsname),
-                accessor: 'clientname',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.contact),
-                accessor: 'contact',
-                NoFilter: true
-            },
-            {
-                Header: `${t(langKeys.channel)}`,
-                accessor: 'channel',
-                NoFilter: true
-            },
-            {
-                Header: `${t(langKeys.origin)}`,
-                accessor: 'origin',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.group),
-                accessor: 'group',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.status),
-                accessor: 'status',
-                NoFilter: true,
-                prefixTranslation: 'status_',
+                accessor: 'postexternalid',
+                isComponent: true,
+                minWidth: 60,
+                width: '1%',
                 Cell: (props: any) => {
-                    const { status } = props.cell.row.original;
-                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+                    const row = props.cell.row.original;
+                    return (row.postexternalid
+                        && row.callanswereddate ?
+                        <Tooltip title={t(langKeys.download_record) || ""}>
+                            <IconButton size="small" onClick={() => downloadCallRecord(row)}
+                            >
+                                <CallRecordIcon style={{ fill: '#7721AD' }} />
+                            </IconButton>
+                        </Tooltip>
+                        : null
+                    )
                 }
             },
             {
-                Header: t(langKeys.communicationtemplate),
-                accessor: 'templatename',
-                NoFilter: true
+                Header: `N° ${t(langKeys.ticket_numeroticket)}`,
+                accessor: 'ticketnum',
+                NoFilter: false,
             },
             {
-                Header: t(langKeys.body),
-                accessor: 'body',
-                NoFilter: true
+                Header: t(langKeys.channel),
+                accessor: 'channel',
+                NoFilter: false
             },
             {
-                Header: t(langKeys.log),
-                accessor: 'log',
-                NoFilter: true
+                Header: t(langKeys.date),
+                accessor: 'ticketdate',
+                NoFilter: false, 
+                type: 'date'
+            },
+            {
+                Header: `${t(langKeys.starttimecall)}`,
+                accessor: 'tickettime',
+                NoFilter: false,
+                type: 'time'
+            },
+            {
+                Header: `${t(langKeys.finishtimecall)}`,
+                accessor: 'finishtime',
+                NoFilter: false,
+                type: 'time'
+            },
+            {
+                Header: t(langKeys.transfertimecall),
+                accessor: 'handoffdate',
+                NoFilter: false,
+                helpText: t(langKeys.transfertimecall_tooltip),
+                type: 'time'
+            },
+            {
+                Header: t(langKeys.lastadvisername),
+                accessor: 'agent',
+                NoFilter: false,
+            },
+            {
+                Header: t(langKeys.person),
+                accessor: 'name',
+                NoFilter: false
+            },
+            {
+                Header: t(langKeys.phone),
+                accessor: 'phone',
+                NoFilter: false
+            },
+            {
+                Header: t(langKeys.origin),
+                accessor: 'origin',
+                NoFilter: false
+            },
+            {
+                Header: t(langKeys.closetype),
+                accessor: 'closetype',
+                NoFilter: false
+            },
+            {
+                Header: t(langKeys.tipification),
+                accessor: 'classification',
+                NoFilter: false,
+                helpText: t(langKeys.tipification_tooltip)
+            },
+            {
+                Header: t(langKeys.totalTime),
+                accessor: 'totalduration',
+                NoFilter: false,
+                helpText: t(langKeys.totalTime_tooltip),
+                type: 'time'
+            },
+            {
+                Header: t(langKeys.advisorattentiontime),
+                accessor: 'agentduration',
+                NoFilter: false,
+                helpText: t(langKeys.advisorattentiontime_tooltip),
+                type: 'time'
+            },
+            {
+                Header: t(langKeys.customerwaitingtime),
+                accessor: 'customerwaitingduration',
+                NoFilter: false,
+                helpText: t(langKeys.customerwaitingtime_tooltip),
+                type: 'time'
+            },
+            {
+                Header: t(langKeys.callwaitingtime),
+                accessor: 'holdingtime',
+                NoFilter: false,
+                helpText: t(langKeys.callwaitingtime_tooltip),
+                type: 'time'
+            },
+            {
+                Header: t(langKeys.transfertime),
+                accessor: 'transferduration',
+                NoFilter: false,
+                helpText: t(langKeys.transfertime_tooltip),
+                type: 'time'
             },
         ],
         [t]
     );
 
-    useEffect(() => {
-        return () => {
-            dispatch(resetMultiMain());
-        }
-    }, [])
-    
     useEffect(() => {
         if (!multiData.loading){
             dispatch(showBackdrop(false));
@@ -290,6 +387,12 @@ const VoiceChannelReport: FC = () => {
             },
         })))
     };
+    
+    useEffect(() => {
+        return () => {
+            dispatch(resetMultiMain());
+        }
+    }, [])
 
     useEffect(() => {
         if (waitExport) {
@@ -388,6 +491,7 @@ const VoiceChannelReport: FC = () => {
                         totalrow={totalrow}
                         download={true}
                         pageCount={pageCount}
+                        autotrigger={true}
                         filterrange={true}
                         filterGeneral={false}
                         exportPersonalized={triggerExportData}

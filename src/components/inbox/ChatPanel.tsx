@@ -13,7 +13,7 @@ import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipification
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { changeStatus, getConversationClassification2, insertClassificationConversation, insLeadPerson } from 'common/helpers';
 import { execute, getCollectionAux2 } from 'store/main/actions';
-import { DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView, FieldMultiSelectFreeSolo, FieldMultiSelectVirtualized } from 'components'
+import { DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView, FieldMultiSelectFreeSolo, FieldMultiSelectVirtualized, PhoneFieldEdit } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -82,22 +82,22 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_send_hsm) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
-
-                const newInteractionSocket = {
-                    ...ticketSelected!!,
-                    interactionid: 0,
-                    typemessage: "text",
-                    typeinteraction: null,
-                    lastmessage: bodyCleaned,
-                    createdate: new Date().toISOString(),
-                    userid: 0,
-                    usertype: "agent",
-                    ticketWasAnswered: !ticketSelected!!.isAnswered,
-                }
-                dispatch(emitEvent({
-                    event: 'newMessageFromAgent',
-                    data: newInteractionSocket
-                }));
+                //already dont need this, because services send in real time
+                // const newInteractionSocket = {
+                //     ...ticketSelected!!,
+                //     interactionid: 0,
+                //     typemessage: "text",
+                //     typeinteraction: null,
+                //     lastmessage: bodyCleaned,
+                //     createdate: new Date().toISOString(),
+                //     userid: 0,
+                //     usertype: "agent",
+                //     ticketWasAnswered: !ticketSelected!!.isAnswered,
+                // }
+                // dispatch(emitEvent({
+                //     event: 'newMessageFromAgent',
+                //     data: newInteractionSocket
+                // }));
 
                 setWaitClose(false);
             } else if (sendingRes.error) {
@@ -675,9 +675,14 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
             register('expected_revenue', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
             register('priority', { validate: (value) => ((value && value > 0) ? true : t(langKeys.field_required) + "") });
 
-            register('lastname');
+            register('lastname', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
             register('firstname', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
-            register('email');
+            register('email', {
+                validate: {
+                    hasvalue:  (value) => ((value && value.length) ? true : t(langKeys.field_required) + ""),
+                    isemail: (value) => ((!value || (/\S+@\S+\.\S+/.test(value))) || t(langKeys.emailverification) + "") 
+                }
+            });
             register('phone', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
         }
     }, [openModal])
@@ -741,12 +746,15 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
                         error={errors?.email?.message}
                         onChange={(value) => setValue('email', value)}
                     />
-                    <FieldEdit
+                    <PhoneFieldEdit
+                        value={"+" + getValues('phone')}
                         label={t(langKeys.phone)}
-                        valueDefault={getValues('phone')}
+                        name="phone"
+                        fullWidth
+                        defaultCountry={user!.countrycode.toLowerCase()}
                         className="flex-1"
+                        onChange={(v: any) => {setValue('phone', v);}}
                         error={errors?.phone?.message}
-                        onChange={(value) => setValue('phone', value)}
                     />
                 </div>
                 <FieldEdit
