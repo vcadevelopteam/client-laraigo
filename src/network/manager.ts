@@ -38,7 +38,7 @@ function createFormData(object: any, form?: FormData, namespace?: string): FormD
 function timeout(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-const statusAllowed = [400, 200, 401, 404, 500];
+const statusAllowed = [200, 201, 202, 204, 400, 401, 404, 500];
 export const APIManager = {
     async get<T = any>(url: string, config: IRequestConfig = {}, withToken = true) {
         const { params, responseType } = config;
