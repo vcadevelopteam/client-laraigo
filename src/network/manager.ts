@@ -23,19 +23,22 @@ function createFormData(object: any, form?: FormData, namespace?: string): FormD
     for (let property in object) {
         const formKey = namespace ? `${namespace}[${property}]` : property;
 
-        if (object[property] instanceof Date) 
+        if (object[property] instanceof Date)
             formData.append(formKey, object[property].toString());
         else if (typeof object[property] === 'object' && !(object[property] instanceof File))
             createFormData(object[property], formData, formKey);
-        else if (object[property] instanceof File) 
+        else if (object[property] instanceof File)
             formData.append('files', object[property]);
-        else 
+        else
             formData.append(formKey, object[property]);
     }
 
     return formData;
 }
-
+function timeout(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+const statusAllowed = [400, 200, 401, 404, 500];
 export const APIManager = {
     async get<T = any>(url: string, config: IRequestConfig = {}, withToken = true) {
         const { params, responseType } = config;
@@ -46,7 +49,33 @@ export const APIManager = {
     async post<T = any>(url: string, config: IRequestConfig = {}, withToken = true) {
         const { params, data, responseType } = config;
         const headers = await getHeaders(RequestType.POST, withToken);
-        return axios.post<T>(url, data, { params, headers, responseType });
+        let rr = null
+        let retry = 3;
+        retry = retry - 1;
+        while (true) {
+            try {
+                rr = await axios.post<T>(url, data, { params, headers, responseType })
+            } catch (error) {
+                if (error?.response) {
+                    if (!statusAllowed.includes(error?.response?.status) && retry !== 0) {
+                        retry = retry - 1;
+                        await timeout(3000);
+                        continue;
+                    }
+                    throw error
+                } else {
+                    if (retry !== 0) {
+                        retry = retry - 1;
+                        await timeout(3000);
+                        continue;
+                    }
+                    throw error
+                }
+            }
+            break;
+        }
+
+        return rr;
     },
 
     async put<T = any>(url: string, config: IRequestConfig = {}) {
@@ -89,7 +118,7 @@ async function getHeaders(type: RequestType, withToken = true): Promise<any> {
 export const ExternalRequestManager = {
     async get<T = any>(url: string, config: IRequestConfig = {}) {
         const { auth, headers } = config;
-        return axios.get<T>(url, await setConfig(auth, headers) );
+        return axios.get<T>(url, await setConfig(auth, headers));
     },
 
     async post<T = any>(url: string, config: IRequestConfig = {}) {
