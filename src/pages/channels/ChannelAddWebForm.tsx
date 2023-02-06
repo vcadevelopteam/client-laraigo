@@ -8,7 +8,7 @@ import { ColorChangeHandler } from 'react-color';
 import { Close } from '@material-ui/icons';
 import { useHistory, useLocation } from 'react-router';
 import { useForm, UseFormReturn } from 'react-hook-form';
-import { IChannel, IChatWebAdd, IChatWebAddFormField } from '@types';
+import { IChannel, IFormWebAdd, IChatWebAddFormField } from '@types';
 import { useDispatch } from 'react-redux';
 import { editChannel as getEditChannel, insertChannel2, resetInsertChannel, resetEditChannel } from 'store/channel/actions';
 import { useSelector } from 'hooks';
@@ -24,7 +24,7 @@ interface TabPanelProps {
 
 interface FieldTemplate {
     text: React.ReactNode;
-    node: (onClose: (key: string) => void, data: IChatWebAddFormField, form: UseFormReturn<IChatWebAdd>, index: number) => React.ReactNode;
+    node: (onClose: (key: string) => void, data: IChatWebAddFormField, form: UseFormReturn<IFormWebAdd>, index: number) => React.ReactNode;
     data: IChatWebAddFormField;
 }
 
@@ -101,7 +101,7 @@ const useTabInterfacetyles = makeStyles(theme => ({
     },
 }));
 
-const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
+const TabPanelInterface: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) => {
     const { setValue, getValues, formState: { errors } } = form;
     const classes = useTabInterfacetyles();
     const { t } = useTranslation();
@@ -216,7 +216,8 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
                             <FormControlLabel
                                 value={t(langKeys.recaptchaCheckbox)}
                                 control={<Checkbox color="primary" />}
-                                label="Top"
+                                onChange={(e) => {debugger}}
+                                label={t(langKeys.recaptchaCheckbox)}
                                 labelPlacement="top"
                             />
                         </Grid>
@@ -246,7 +247,7 @@ const useTabColorStyles = makeStyles(theme => ({
     },
 }));
 
-const TabPanelStyles: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
+const TabPanelStyles: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) => {
     const { setValue, getValues } = form;
     const classes = useTabColorStyles();
     const [headerColor, setHeaderColor] = useState(getValues('color.header'));
@@ -406,7 +407,7 @@ const useTemplateStyles = makeStyles(theme => ({
 
 interface NameTemplateProps {
     onClose: () => void;
-    form: UseFormReturn<IChatWebAdd>;
+    form: UseFormReturn<IFormWebAdd>;
     title: React.ReactNode;
     data: IChatWebAddFormField;
     index: number;
@@ -830,7 +831,7 @@ const templates: { [x: string]: FieldTemplate } = {
     },
 };
 
-const TabPanelForm: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
+const TabPanelForm: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) => {
     const classes = useTabFormStyles();
     const defFields = useRef<FieldTemplate[]>((form.getValues('form') || []).map(x => {
         return {
@@ -1034,7 +1035,7 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
 
     const channel = location.state as IChannel | null;
 
-    const service = useRef<IChatWebAdd | null>(null);
+    const service = useRef<IFormWebAdd | null>(null);
 
     if (channel && !service.current && channel.servicecredentials.length > 0) {
         service.current = JSON.parse(channel.servicecredentials);
@@ -1090,7 +1091,7 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dispatch, editChannel]);
 
-    const form: UseFormReturn<IChatWebAdd> = useForm<IChatWebAdd>({
+    const form: UseFormReturn<IFormWebAdd> = useForm<IFormWebAdd>({
         defaultValues: service.current || {
             interface: {
                 chattitle: "",
@@ -1132,6 +1133,7 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
 
                 botnameenabled: true,
                 botnametext: "",
+                recaptcha: false,
             },
         }
     });
