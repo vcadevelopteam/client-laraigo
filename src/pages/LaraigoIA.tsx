@@ -218,6 +218,8 @@ const IATraining: React.FC<DetailIaServiceProps> = ({ setViewSelected }) => {
         )
     }else if (viewSelectedTraining === "intentions") {
         return <Intentions 
+            setExternalViewSelected={functionChange}
+            arrayBread={arrayBread}
         />
     }else if (viewSelectedTraining === "entities") {
         return (
