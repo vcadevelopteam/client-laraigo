@@ -182,7 +182,7 @@ const IATraining: React.FC<DetailIaServiceProps> = ({ setViewSelected }) => {
                                         </div>
                                         
                                         <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                            <IntencionesIALogo style={{ height: 200, width:"100%" }} />
+                                            <IntencionesIALogo style={{ height: 220, width:"100%" }} />
                                         </div>
                                     </div>
                                 </Card>
@@ -206,7 +206,7 @@ const IATraining: React.FC<DetailIaServiceProps> = ({ setViewSelected }) => {
                                         </div>
                                         
                                         <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                            <EntidadesIALogo style={{ height: 200, width:"100%" }} />
+                                            <EntidadesIALogo style={{ height: 220, width:"100%" }} />
                                         </div>
                                     </div>
                                 </Card>
