@@ -6,6 +6,7 @@ import { Trans } from "react-i18next";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { ControlPoint as ControlPointIcon } from "@material-ui/icons";
+import ListAltIcon from '@material-ui/icons/ListAlt';
 import {
     LaraigoLogo,
     SmsColor,
@@ -219,6 +220,13 @@ const ThirdStep: FC = () => {
             key: 'chatWeb',
             onClick: () => toggleChannel('chatWeb'),
             selected: listchannels.chatWeb,
+        },
+        {
+            icon: <ListAltIcon className={classes.icon} />,
+            label: t(langKeys.web_form),
+            key: 'webForm',
+            onClick: () => toggleChannel('webForm'),
+            selected: listchannels.webForm,
         },
         {
             icon: <EmailColor className={classes.icon} />,

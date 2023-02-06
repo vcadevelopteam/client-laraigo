@@ -2816,6 +2816,7 @@ const translation: LangKeys = {
   chatHeaderSubtitle: 'Chat header subtitle',
   submitButtom: "Submit Buttom",
   inputstyles: "Input styles",
+  containeridExplained: "The containerid field must be replaced with the name of the container from the label",
   formbackgroundcolor: "Form background color",
   buttonstyles: "Button styles",
   styles: "Styles",

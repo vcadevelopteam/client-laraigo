@@ -50,8 +50,6 @@ export interface IFormWebAddExtra {
     colorBackgroundForm: string;
     stylesCSSInput: string;
     stylesCSSButton: string;
-    corpId: string;
-    orgId: string;
 }
 
 export interface IChatwebAddInterface {

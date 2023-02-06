@@ -1,20 +1,21 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
-import { AppBar, Box, Button, makeStyles, Link, Tab, Tabs, Typography, TextField, Grid, Select, IconButton, FormControl, MenuItem, Divider, Breadcrumbs, Checkbox, FormControlLabel } from '@material-ui/core';
-import { ColorInput, FieldEdit, IOSSwitch } from 'components';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { FC, useContext, useEffect, useState } from 'react';
+import { AppBar, Box, Button, makeStyles, Link, Tab, Tabs, Typography, TextField, Grid, Select, IconButton, FormControl, MenuItem, Divider, Breadcrumbs, InputAdornment, FormControlLabel, Checkbox } from '@material-ui/core';
+import { FieldEdit, IOSSwitch } from 'components';
 import { Trans, useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { langKeys } from 'lang/keys';
-import { ColorChangeHandler } from 'react-color';
-import { Close } from '@material-ui/icons';
-import { useHistory, useLocation } from 'react-router';
-import { useForm, UseFormReturn } from 'react-hook-form';
-import { IChannel, IFormWebAdd, IChatWebAddFormField } from '@types';
+import { ChromePicker, ColorChangeHandler } from 'react-color';
+import { ArrowDropDown, Close, DeleteOutline as DeleteOutlineIcon, Link as LinkIcon, LinkOff as LinkOffIcon } from '@material-ui/icons';
+import { useForm, useFormContext, UseFormReturn } from 'react-hook-form';
+import { IChatWebAddFormField, IFormWebAdd } from '@types';
 import { useDispatch } from 'react-redux';
-import { editChannel as getEditChannel, insertChannel2, resetInsertChannel, resetEditChannel } from 'store/channel/actions';
+import { resetInsertChannel } from 'store/channel/actions';
 import { useSelector } from 'hooks';
 import { showSnackbar } from 'store/popus/actions';
-import { getEditChatWebChannel, getInsertChatwebChannel } from 'common/helpers';
-import paths from 'common/constants/paths';
+import { getInsertChatwebChannel } from 'common/helpers';
+import { WebMessengerColor } from 'icons';
+import { MainData, SubscriptionContext } from './context';
 
 interface TabPanelProps {
     value: string;
@@ -25,10 +26,6 @@ interface FieldTemplate {
     text: React.ReactNode;
     node: (onClose: (key: string) => void, data: IChatWebAddFormField, form: UseFormReturn<IFormWebAdd>, index: number) => React.ReactNode;
     data: IChatWebAddFormField;
-}
-
-const isEmpty = (str?: string) => {
-    return !str || str.length === 0;
 }
 
 const useTabPanelStyles = makeStyles(theme => ({
@@ -85,7 +82,7 @@ const useTabInterfacetyles = makeStyles(theme => ({
 }));
 
 const TabPanelInterface: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) => {
-    const { setValue, getValues, formState: { errors } } = form;
+    const { setValue, getValues } = form;
     const classes = useTabInterfacetyles();
     const { t } = useTranslation();
 
@@ -108,8 +105,8 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) =
                                 size="small"
                                 defaultValue={getValues('extra.titleform')}
                                 onChange={(e) => setValue('extra.titleform', e.target.value)}
-                                error={!isEmpty(errors?.extra?.titleform?.message)}
-                                helperText={errors?.extra?.titleform?.message}
+                                error={!!form.formState.errors.extra?.titleform}
+                                helperText={form.formState.errors.extra?.titleform?.message}
                             />
                         </Grid>
                     </Grid>
@@ -150,12 +147,12 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) =
                                 variant="outlined"
                                 fullWidth
                                 placeholder={t(langKeys.submitButtomText)}
-                                name="subtitulo"
+                                name="footer"
                                 size="small"
                                 defaultValue={getValues('extra.textButtonSend')}
                                 onChange={(e) => setValue('extra.textButtonSend', e.target.value)}
-                                error={!isEmpty(errors?.extra?.textButtonSend?.message)}
-                                helperText={errors?.extra?.textButtonSend?.message}
+                                error={!!form.formState.errors.extra?.textButtonSend}
+                                helperText={form.formState.errors.extra?.textButtonSend?.message}
                             />
                         </Grid>
                     </Grid>
@@ -174,12 +171,12 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) =
                                 variant="outlined"
                                 fullWidth
                                 placeholder={t(langKeys.thankyoupagetext)}
-                                name="subtitulo"
+                                name="footer"
                                 size="small"
                                 defaultValue={getValues('extra.urlThanks')}
                                 onChange={(e) => setValue('extra.urlThanks', e.target.value)}
-                                error={!isEmpty(errors?.extra?.urlThanks?.message)}
-                                helperText={errors?.extra?.urlThanks?.message}
+                                error={!!form.formState.errors.extra?.urlThanks}
+                                helperText={form.formState.errors.extra?.urlThanks?.message}
                             />
                         </Grid>
                     </Grid>
@@ -208,6 +205,74 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) =
                 </Box>
             </Grid>
         </Grid>
+    );
+}
+
+const useColorInputStyles = makeStyles(theme => ({
+    colorInputContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        width: 60,
+        height: 30,
+        cursor: 'pointer',
+        borderRadius: 2,
+        position: 'relative',
+    },
+    colorInput: {
+        position: 'relative',
+        flexGrow: 1,
+        borderRadius: '0 2px 2px 0',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'white',
+    },
+    colorInputSplash: {
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        right: 0,
+        left: 0,
+        borderRadius: 2,
+        '&:hover': {
+            backgroundColor: 'black',
+            opacity: .15,
+        },
+    },
+    colorInputPreview: {
+        flexGrow: 1,
+        borderRadius: 2,
+    },
+    popover: {
+        position: 'absolute',
+        zIndex: 2,
+        top: 36,
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: 'white',
+    },
+}));
+
+const ColorInput: FC<{ hex: string, onChange: ColorChangeHandler }> = ({ hex, onChange }) => {
+    const classes = useColorInputStyles();
+    const [open, setOpen] = useState(false);
+
+    const iconStyle = { style: { width: 'unset', height: 'unset' } };
+    const Icon: FC = () => open ? <Close {...iconStyle} /> : <ArrowDropDown {...iconStyle} />;
+
+    return (
+        <div className={classes.colorInputContainer}>
+            <div style={{ backgroundColor: hex }} className={classes.colorInputPreview} />
+            <div className={classes.colorInput} onClick={() => setOpen(!open)}>
+                <Icon />
+                <div className={classes.colorInputSplash} />
+            </div>
+            {open && (
+                <div className={classes.popover}>
+                    <ChromePicker color={hex} onChange={onChange} />
+                </div>
+            )}
+        </div>
     );
 }
 
@@ -252,7 +317,6 @@ const TabPanelStyles: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) => {
         setColorBackgroundForm(e.hex);
         setValue('extra.colorBackgroundForm', e.hex);
     }
-
 
     return (
         <Grid container direction="row">
@@ -377,7 +441,6 @@ const useTemplateStyles = makeStyles(theme => ({
         border: `${theme.palette.primary.main} 1px solid`,
     },
 }));
-
 interface NameTemplateProps {
     onClose: () => void;
     form: UseFormReturn<IFormWebAdd>;
@@ -566,18 +629,18 @@ const useTabFormStyles = makeStyles(theme => ({
     },
 }));
 
-const FIRSTNAME_FIELD = "FIRSTNAME_FIELD";
+const NAME_FIELD = "NAME_FIELD";
 const LASTNAME_FIELD = "LASTNAME_FIELD";
 const PHONE_FIELD = "PHONE_FIELD";
 const EMAIL_FIELD = "EMAIL_FIELD";
 const DOCUMENT_FIELD = "DOCUMENT_FIELD";
 const BUSINESSNAME_FIELD = "BUSINESSNAME_FIELD";
-const SUPPLYNUMBER_FIELD = "SUPPLYNUMBER_FIELD";
-const CONTACT = "CONTACT_FIELD";
+const SUPPLUNUMBER_FIELD = "SUPPLUNUMBER_FIELD";
+const CONTACT = "CONTACT";
 const OTHER = "OTHER_FIELD";
 
 const templates: { [x: string]: FieldTemplate } = {
-    [FIRSTNAME_FIELD]: {
+    [NAME_FIELD]: {
         text: <Trans i18nKey={langKeys.name} />,
         node: (onClose, data, form, index) => {
             return (
@@ -585,8 +648,8 @@ const templates: { [x: string]: FieldTemplate } = {
                     form={form}
                     index={index}
                     data={data}
-                    onClose={() => onClose(FIRSTNAME_FIELD)}
-                    key={FIRSTNAME_FIELD}
+                    onClose={() => onClose(NAME_FIELD)}
+                    key={NAME_FIELD}
                     title={<Trans i18nKey={langKeys.name} />}
                 />
             );
@@ -727,7 +790,7 @@ const templates: { [x: string]: FieldTemplate } = {
             keyvalidation: "",
         },
     },
-    [SUPPLYNUMBER_FIELD]: {
+    [SUPPLUNUMBER_FIELD]: {
         text: <Trans i18nKey={langKeys.supplynumber} />,
         node: (onClose, data, form, index) => {
             return (
@@ -735,8 +798,8 @@ const templates: { [x: string]: FieldTemplate } = {
                     form={form}
                     index={index}
                     data={data}
-                    onClose={() => onClose(SUPPLYNUMBER_FIELD)}
-                    key={SUPPLYNUMBER_FIELD}
+                    onClose={() => onClose(SUPPLUNUMBER_FIELD)}
+                    key={SUPPLUNUMBER_FIELD}
                     title={<Trans i18nKey={langKeys.supplynumber} />}
                 />
             );
@@ -806,20 +869,13 @@ const templates: { [x: string]: FieldTemplate } = {
 
 const TabPanelForm: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) => {
     const classes = useTabFormStyles();
-    const defFields = useRef<FieldTemplate[]>((form.getValues('form') || []).map(x => {
-        return {
-            ...templates[`${x.field}_FIELD`],
-            data: x,
-        } as FieldTemplate;
-    }));
-
     const [enable, setEnable] = useState(false);
     const [fieldTemplate, setFieldTemplate] = useState<string>("");
-    const [fields, setFields] = useState<FieldTemplate[]>(defFields.current);
+    const [fields, setFields] = useState<FieldTemplate[]>([]);
 
     useEffect(() => {
         form.setValue('form', fields.map(x => x.data));
-    }, [fields, form]);
+    }, [fields]);
 
     const handleCloseTemplate = (key: string) => {
         const newFields = fields.filter(e => e.data.field !== templates[key].data.field)
@@ -899,11 +955,28 @@ const TabPanelForm: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) => {
 
 const useStyles = makeStyles(theme => ({
     root: {
-        width: 'inherit',
+        width: '100%',
         marginLeft: 'auto',
         marginRight: 'auto',
         display: 'flex',
         flexDirection: 'column',
+    },
+    rootextras: {
+        [theme.breakpoints.up('xs')]: {
+            paddingTop: "80%",
+        },
+        [theme.breakpoints.up('sm')]: {
+            paddingTop: "25%",
+        },
+        "@media (min-width: 960px)": {
+            paddingTop: "70%",
+        },
+        "@media (min-width: 1000px)": {
+            paddingTop: "40%",
+        },
+        [theme.breakpoints.up('lg')]: {
+            paddingTop: "25%",
+        },
     },
     title: {
         fontWeight: 500,
@@ -994,39 +1067,30 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
+export const ChannelAddWebForm: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const classes = useStyles();
-    const history = useHistory();
-    const location = useLocation();
-    const { t } = useTranslation();
+    const { foreground, submitObservable, setForeground } = useContext(SubscriptionContext);
+    const { getValues, register, unregister } = useFormContext<MainData>();
     const dispatch = useDispatch();
+    const [hasFinished, setHasFinished] = useState(false);
+    const [submitError, setSubmitError] = useState(false);
+    const [selectedView, setSelectedView] = useState("view1");
     const [tabIndex, setTabIndes] = useState('0');
-    const [showFinalStep, setShowFinalStep] = useState(false);
+    const { t } = useTranslation();
 
     const insertChannel = useSelector(state => state.channel.insertChannel);
-    const editChannel = useSelector(state => state.channel.editChannel);
-
-    const channel = location.state as IChannel | null;
-
-    const service = useRef<IFormWebAdd | null>(null);
-
-    if (channel && !service.current && channel.servicecredentials.length > 0) {
-        service.current = JSON.parse(channel.servicecredentials);
-    }
 
     useEffect(() => {
-        if (edit && !channel) {
-            history.push(paths.CHANNELS);
-        } else if (edit && channel && channel.servicecredentials.length === 0) {
-            history.push(paths.CHANNELS);
-        }
-
         return () => {
             dispatch(resetInsertChannel());
-            dispatch(resetEditChannel());
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [history, dispatch]);
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (foreground !== 'chatWeb' && selectedView !== "view1") {
+            setSelectedView("view1");
+        }
+    }, [foreground, selectedView]);
 
     useEffect(() => {
         if (insertChannel.loading) return;
@@ -1038,34 +1102,15 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
             }));
         } else if (insertChannel.value) {
             dispatch(showSnackbar({
-                message: t(langKeys.channelcreatesuccess),
+                message: "El canal se inserto con éxito",
                 show: true,
                 severity: "success"
             }));
         }
-    }, [dispatch, insertChannel, t]);
+    }, [insertChannel]);
 
-    useEffect(() => {
-        if (editChannel.loading) return;
-        if (editChannel.error === true) {
-            dispatch(showSnackbar({
-                message: editChannel.message!,
-                show: true,
-                severity: "error"
-            }));
-        } else if (editChannel.success) {
-            dispatch(showSnackbar({
-                message: t(langKeys.channeleditsuccess),
-                show: true,
-                severity: "success"
-            }));
-            history.push(paths.CHANNELS);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [dispatch, editChannel]);
-
-    const form: UseFormReturn<IFormWebAdd> = useForm<IFormWebAdd>({
-        defaultValues: service.current || {
+    const nestedForm: UseFormReturn<IFormWebAdd> = useForm<IFormWebAdd>({
+        defaultValues: {
             interface: {
                 chattitle: "",
                 chatsubtitle: "",
@@ -1118,53 +1163,95 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
                 stylesCSSInput: "display: block, margin: 10px",
                 stylesCSSButton: "display: block, margin: 10px",
             },
-        }
+        },
     });
 
     useEffect(() => {
-        const mandatoryStrField = (value: string) => {
-            return value.length === 0 ? t(langKeys.field_required) : undefined;
+        const strRequired = (value: string) => {
+            if (!value) {
+                return t(langKeys.field_required);
+            }
         }
 
-        form.register('extra.titleform', { validate: mandatoryStrField });
-        form.register('extra.textButtonSend', { validate: mandatoryStrField });
-        form.register('extra.urlThanks', { validate: mandatoryStrField });
-    }, [form, t]);
+        register('channels.chatWeb.description', { validate: strRequired, value: '' });
+        register('channels.chatWeb.build', {
+            value: values => {
+                return getInsertChatwebChannel(
+                    getValues('channels.chatWeb.description'),
+                    false,
+                    "#7721ad",
+                    nestedForm.getValues(),
+                );
+            }
+        });
 
-    const handleNext = () => {
-        form.handleSubmit((_) => setShowFinalStep(true))();
-    }
+        return () => {
+            unregister('channels.chatWeb');
+        }
+    }, [register, unregister]);
 
-    const handleSubmit = (name: string, auto: boolean, hexIconColor: string) => {
-        const values = form.getValues();
-        if (!channel) {
-            const body = getInsertChatwebChannel(name, auto, hexIconColor, values);
-            dispatch(insertChannel2(body));
+    useEffect(() => {
+        const strRequired = (value: string) => {
+            if (!value) {
+                return t(langKeys.field_required);
+            }
+        }
+
+        nestedForm.register('extra.titleform',{ validate: strRequired, value: '' });
+        nestedForm.register('extra.textButtonSend',{ validate: strRequired, value: '' });
+        nestedForm.register('extra.urlThanks',{ validate: strRequired, value: '' });
+
+        const cb = async () => {
+            const valid = await nestedForm.trigger();
+            setSubmitError(!valid);
+        }
+
+        submitObservable.addListener(cb);
+        return () => {
+            submitObservable.removeListener(cb);
+        }
+    }, [submitObservable, nestedForm.register, nestedForm.unregister, nestedForm.trigger]);
+
+    const setView = (option: "view1" | "view2") => {
+        if (option === "view1") {
+            setSelectedView(option);
+            setForeground(undefined);
         } else {
-            const id = channel.communicationchannelid;
-            const body = getEditChatWebChannel(id, channel, values, name, auto, hexIconColor);
-            dispatch(getEditChannel(body, "CHAZ"));
+            setSelectedView(option);
+            setForeground('chatWeb');
         }
-
     }
 
-    const handleGoBack: React.MouseEventHandler = (e) => {
-        e.preventDefault();
-        if (!insertChannel.value?.integrationid) history.push(paths.CHANNELS);
-    }
-
-    if (edit && !channel) {
-        return <div />;
+    if (selectedView === "view1") {
+        return (
+            <ChannelAddEnd
+                hasFinished={hasFinished}
+                loading={insertChannel.loading}
+                integrationId={insertChannel.value?.integrationid}
+                onNext={() => setView("view2")}
+                submitError={submitError}
+            />
+        );
     }
 
     return (
-        <div className={classes.root}>
-            <div style={{ display: showFinalStep ? 'none' : 'flex', flexDirection: 'column' }}>
-                <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key="mainview" href="/" onClick={handleGoBack}>
-                        {t(langKeys.previoustext)}
-                    </Link>
-                </Breadcrumbs>
+        <div className={clsx(classes.root, {
+            [classes.rootextras]: tabIndex === "4",
+        })}>
+            <Breadcrumbs aria-label="breadcrumb">
+                <Link
+                    color="textSecondary"
+                    key={"mainview"}
+                    href="/"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        setView("view1");
+                    }}
+                >
+                    {'<< '}<Trans i18nKey={langKeys.previoustext} />
+                </Link>
+            </Breadcrumbs>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <h2 className={classes.title}>
                     <Trans i18nKey={langKeys.activeLaraigoOnYourWebsite} />
                 </h2>
@@ -1181,127 +1268,108 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
                         <Tab className={clsx(classes.tab, tabIndex === "2" && classes.activetab)} label={<Trans i18nKey={langKeys.form} />} value="2" />
                     </Tabs>
                 </AppBar>
-                <TabPanel value="0" index={tabIndex}><TabPanelInterface form={form} /></TabPanel>
-                <TabPanel value="1" index={tabIndex}><TabPanelStyles form={form} /></TabPanel>
-                <TabPanel value="2" index={tabIndex}><TabPanelForm form={form} /></TabPanel>
+                <TabPanel value="0" index={tabIndex}><TabPanelInterface form={nestedForm} /></TabPanel>
+                <TabPanel value="1" index={tabIndex}><TabPanelStyles form={nestedForm} /></TabPanel>
+                <TabPanel value="2" index={tabIndex}><TabPanelForm form={nestedForm} /></TabPanel>
                 <div style={{ height: 20 }} />
-                <Button variant="contained" color="primary" onClick={handleNext}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={async () => {
+                        const valid = await nestedForm.trigger();
+                        if (valid) {
+                            setView("view1");
+                            setHasFinished(true);
+                        }
+                    }}
+                >
                     <Trans i18nKey={langKeys.next} />
                 </Button>
-            </div>
-            <div style={{ display: showFinalStep ? 'block' : 'none' }}>
-                <ChannelAddEnd
-                    loading={insertChannel.loading || editChannel.loading}
-                    integrationId={insertChannel.value?.integrationid}
-                    onSubmit={handleSubmit}
-                    onClose={() => setShowFinalStep(false)}
-                    channel={channel}
-                />
             </div>
         </div>
     );
 };
 
-const useFinalStepStyles = makeStyles(theme => ({
-    title: {
-        textAlign: "center",
-        fontWeight: "bold",
-        fontSize: "2em",
-        color: "#7721ad",
-        padding: "20px",
-        marginLeft: "auto",
-        marginRight: "auto",
-        maxWidth: "800px",
-    },
-    button: {
-        padding: 12,
-        fontWeight: 500,
-        fontSize: '14px',
-        textTransform: 'initial',
-        width: "180px"
-    },
-}));
-
 interface ChannelAddEndProps {
+    hasFinished: boolean;
     loading: boolean;
     integrationId?: string;
-    onSubmit: (name: string, auto: boolean, hexIconColor: string) => void;
-    onClose?: () => void;
-    channel: IChannel | null;
+    submitError: boolean;
+    onNext: () => void;
 }
 
-const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, integrationId, channel }) => {
-    const classes = useFinalStepStyles();
+const ChannelAddEnd: FC<ChannelAddEndProps> = ({
+    hasFinished,
+    submitError,
+    onNext,
+    loading,
+    integrationId,
+}) => {
+    const {
+        commonClasses,
+        deleteChannel,
+    } = useContext(SubscriptionContext);
     const { t } = useTranslation();
-    const history = useHistory();
-    const [name, setName] = useState(channel?.communicationchanneldesc || "");
-    const [auto] = useState(true);
-    const [hexIconColor, setHexIconColor] = useState(channel?.coloricon || "#7721ad");
-
-    const handleGoBack = (e: React.MouseEvent) => {
-        e.preventDefault();
-        if (!integrationId) onClose?.();
-    }
-
-    const handleSave = () => {
-        onSubmit(name, auto, hexIconColor);
-    }
+    const { getValues, setValue, formState: { errors } } = useFormContext<MainData>();
+    const [nextbutton2, setNextbutton2] = useState(true);
 
     return (
-        <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-            <Breadcrumbs aria-label="breadcrumb">
-                <Link color="textSecondary" key="mainview" href="/" onClick={handleGoBack}>
-                    {t(langKeys.previoustext)}
-                </Link>
-            </Breadcrumbs>
-            <div>
-                <div className={classes.title}>
-                    <Trans i18nKey={langKeys.commchannelfinishreg} />
-                </div>
-                <div className="row-zyx">
-                    <div className="col-3"></div>
-                    <FieldEdit
-                        onChange={(value) => setName(value)}
-                        label={t(langKeys.givechannelname)}
-                        className="col-6"
-                        disabled={loading || integrationId != null}
-                        valueDefault={channel?.communicationchanneldesc}
-                    />
-                </div>
-                <div style={{ paddingLeft: "80%" }}>
-                    <Button
-                        onClick={handleSave}
-                        className={classes.button}
-                        variant="contained"
+        <div className={clsx(commonClasses.root, submitError && commonClasses.rootError)}>
+            {!hasFinished && <Typography>
+                <Trans i18nKey={langKeys.subscription_genericconnect} />
+            </Typography>}
+            {!hasFinished && <WebMessengerColor className={commonClasses.leadingIcon} />}
+            {!hasFinished && <IconButton
+                color="primary"
+                className={commonClasses.trailingIcon}
+                onClick={() => deleteChannel('chatWeb')}
+            >
+                <DeleteOutlineIcon />
+            </IconButton>}
+            {hasFinished && <WebMessengerColor
+                style={{ width: 100, height: 100, alignSelf: 'center', fill: 'gray' }} />
+            }
+            {hasFinished && (
+                <div style={{ alignSelf: 'center' }}>
+                    <Typography
                         color="primary"
-                        disabled={loading || integrationId != null}
-                    >
-                        <Trans i18nKey={langKeys.finishreg} />
-                    </Button>
+                        style={{ fontSize: '1.5vw', fontWeight: 'bold', textAlign: 'center' }}>
+                        {t(langKeys.subscription_congratulations)}
+                    </Typography>
+                    <Typography
+                        color="primary"
+                        style={{ fontSize: '1.2vw', fontWeight: 500 }}>
+                        {t(langKeys.subscription_message1)} {t(langKeys.channel_chatweb)} {t(langKeys.subscription_message2)}
+                    </Typography>
                 </div>
-            </div>
-            <div style={{ display: integrationId ? 'flex' : 'none', height: 10 }} />
-            <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}>
-                {t(langKeys.chatwebstep)}
-            </div>
-            <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word' }}><code>
-                {`<script src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/test-FormWebClient.min.js" integrationid="${integrationId}" containerid="*reemplazar"></script>`}
-            </code></pre><div style={{ height: 20 }} />
-            <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}>
-                *{t(langKeys.containeridExplained)}
-            </div>
-            <div style={{width:"100%", gap:"8px",display:"flex"}}>
-                <Button variant="contained" style={{width:"50%"}} color="primary" onClick={() => history.push(paths.CHANNELS)}>
-                    {t(langKeys.close)}
+            )}
+            <FieldEdit
+                onChange={v => { setValue('channels.chatWeb.description', v); setNextbutton2(!v); }}
+                valueDefault={getValues('channels.chatWeb.description')}
+                label={t(langKeys.givechannelname)}
+                variant="outlined"
+                size="small"
+                disabled={loading || integrationId != null}
+                error={errors.channels?.chatWeb?.description?.message}
+                InputProps={{
+                    endAdornment: (
+                        <InputAdornment position="end">
+                            {hasFinished ? <LinkIcon color="primary" /> : <LinkOffIcon />}
+                        </InputAdornment>
+                    )
+                }}
+            />
+            {!hasFinished && (
+                <Button
+                    onClick={onNext}
+                    className={commonClasses.button}
+                    variant="contained"
+                    color="primary"
+                    disabled={loading || integrationId != null || nextbutton2}
+                >
+                    <Trans i18nKey={langKeys.next} />
                 </Button>
-                <Button variant="contained" style={{width:"50%"}} color="primary" onClick={() => history.push(paths.CHANNELS)}>
-                    {t(langKeys.close)}
-                </Button>
-            </div>
-            </div>
+            )}
         </div>
     );
 }
-
-
-export default ChannelAddWebForm

@@ -24,6 +24,7 @@ export const langKeys = {
     orderstatus: "orderstatus",
     styles: "styles",
     buttonColor: "buttonColor",
+    containeridExplained: "containeridExplained",
     buttonTextColor: "buttonTextColor",
     labelcolor: "labelcolor",
     formbackgroundcolor: "formbackgroundcolor",

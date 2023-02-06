@@ -804,6 +804,7 @@ const translation: LangKeys = {
   graphic_report_of: 'Reporte gráfico de {{report}} por {{column}}',
   grid_view: 'Vista lista',
   in_white: 'En blanco',
+  containeridExplained: "El campo containerid debe ser reemplazado por el nombre del contenedor de la etiqueta",
   shippingchannel: "Canal de envío",
   view_table: 'Ver tabla',
   reportscheduler: "Envíos Automáticos",
