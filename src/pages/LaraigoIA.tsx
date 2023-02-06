@@ -337,7 +337,6 @@ const Iaservices: FC = () => {
             </div>
         )
     }else if (viewSelected === "connectors") {
-        debugger
         return (
             <IntelligentModels
                 arrayBread={arrayBread}

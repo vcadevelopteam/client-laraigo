@@ -404,9 +404,25 @@ const IntelligentModels: React.FC<IAConnectors> = ({ setExternalViewSelected, ar
                 <TableZyx
                     onClickRow={handleEdit}
                     columns={columns}
+                    ButtonsElement={() => {
+                        if(!setExternalViewSelected){
+                            return <></>
+                        }else{
+                            return (
+                                <Button
+                                    disabled={mainResult.mainData.loading}
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    startIcon={<ClearIcon color="secondary" />}
+                                    style={{ backgroundColor: "#FB5F5F" }}
+                                    onClick={() => setExternalViewSelected("view-1")}
+                                >{t(langKeys.back)}</Button>
+                            )
+                        }}}
                     titlemodule={!!arrayBread?t(langKeys.iaconnectors):t(langKeys.intelligentmodels, { count: 2 })}
                     data={mainResult.mainData.data}
-                    download={true}
+                    download={!setExternalViewSelected}
                     loading={mainResult.mainData.loading}
                     register={true}
                     handleRegister={handleRegister}
