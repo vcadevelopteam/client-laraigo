@@ -40,6 +40,18 @@ export interface IFormWebAddExtra {
     botnameenabled: boolean;
     botnametext: string;
     recaptcha: boolean;
+
+    titleform: string;
+    footerform: string;
+    textButtonSend: string;
+    urlThanks: string;
+    colotBackgroundButton: string;
+    colorLabel: string;
+    colorBackgroundForm: string;
+    stylesCSSInput: string;
+    stylesCSSButton: string;
+    corpId: string;
+    orgId: string;
 }
 
 export interface IChatwebAddInterface {

@@ -214,9 +214,11 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) =
                         </Grid>
                         <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                             <FormControlLabel
-                                value={t(langKeys.recaptchaCheckbox)}
-                                control={<Checkbox color="primary" />}
-                                onChange={(e) => {debugger}}
+                                value={getValues('extra.recaptcha')}
+                                control={<Checkbox 
+                                    onChange={(e) => setValue('extra.recaptcha', e.target.checked)}
+                                    color="primary" />}
+                                //onChange={(e) => {setValue('extra.recaptcha', e.target.value === "true")}}
                                 label={t(langKeys.recaptchaCheckbox)}
                                 labelPlacement="top"
                             />
@@ -1133,7 +1135,19 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
 
                 botnameenabled: true,
                 botnametext: "",
+
                 recaptcha: false,
+                titleform: "titulo",
+                footerform: "pie de formulario",
+                textButtonSend: "Enviar",
+                urlThanks: "http://google.com",
+                colotBackgroundButton: "#E1E1E1",
+                colorLabel: "#000",
+                colorBackgroundForm: "#000",
+                stylesCSSInput: "display: block, margin: 10px",
+                stylesCSSButton: "display: block, margin: 10px",
+                corpId: "1",
+                orgId: "1"
             },
         }
     });
