@@ -791,6 +791,22 @@ const IAConfiguration: React.FC<IAConfigurationProps> = ({ setExternalViewSelect
                 </div>}
                 <TableZyx
                     onClickRow={handleEdit}
+                    ButtonsElement={() => {
+                        if(!setExternalViewSelected){
+                            return <></>
+                        }else{
+                            return (
+                                <Button
+                                    disabled={mainResult.mainData.loading}
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    startIcon={<ClearIcon color="secondary" />}
+                                    style={{ backgroundColor: "#FB5F5F" }}
+                                    onClick={() => setExternalViewSelected("view-1")}
+                                >{t(langKeys.back)}</Button>
+                            )
+                        }}}
                     columns={columns}
                     titlemodule={t(langKeys.iaconfiguration)}
                     data={mainResult.mainData.data}
