@@ -1,11 +1,11 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
-import { AppBar, Box, Button, makeStyles, Link, Tab, Tabs, Typography, TextField, Grid, Select, IconButton, FormControl, MenuItem, Divider, Breadcrumbs, FormHelperText } from '@material-ui/core';
+import { AppBar, Box, Button, makeStyles, Link, Tab, Tabs, Typography, TextField, Grid, Select, IconButton, FormControl, MenuItem, Divider, Breadcrumbs, Checkbox, FormControlLabel } from '@material-ui/core';
 import { ColorInput, FieldEdit, IOSSwitch } from 'components';
 import { Trans, useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { langKeys } from 'lang/keys';
 import { ColorChangeHandler } from 'react-color';
-import { Close, CloudUpload } from '@material-ui/icons';
+import { Close } from '@material-ui/icons';
 import { useHistory, useLocation } from 'react-router';
 import { useForm, UseFormReturn } from 'react-hook-form';
 import { IChannel, IChatWebAdd, IChatWebAddFormField } from '@types';
@@ -105,70 +105,6 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
     const { setValue, getValues, formState: { errors } } = form;
     const classes = useTabInterfacetyles();
     const { t } = useTranslation();
-    const [chatBtn, setChatBtn] = useState<File | string | null>(getValues('interface.iconbutton'));
-    const [headerBtn, setHeaderBtn] = useState<File | string | null>(getValues('interface.iconheader'));
-    const [botBtn, setBotBtn] = useState<File | string | null>(getValues('interface.iconbot'));
-
-    const handleChatBtnClick = () => {
-        const input = document.getElementById('chatBtnInput');
-        input!.click();
-    }
-
-    const handleHeaderBtnClick = () => {
-        const input = document.getElementById('headerBtnInput');
-        input!.click();
-    }
-
-    const handleBotBtnClick = () => {
-        const input = document.getElementById('botBtnInput');
-        input!.click();
-    }
-
-    const onChangeChatInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-        if (!e.target.files) return;
-        setChatBtn(e.target.files[0]);
-        setValue("interface.iconbutton", e.target.files[0]);
-    }
-
-    const onChangeHeaderInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-        if (!e.target.files) return;
-        setHeaderBtn(e.target.files[0]);
-        setValue('interface.iconheader', e.target.files[0]);
-    }
-
-    const onChangeBotInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-        if (!e.target.files) return;
-        setBotBtn(e.target.files[0]);
-        setValue('interface.iconbot', e.target.files[0]);
-    }
-
-    const handleCleanChatInput = () => {
-        if (!chatBtn) return;
-        const input = document.getElementById('chatBtnInput') as HTMLInputElement;
-        input.value = "";
-        setChatBtn(null);
-        setValue('interface.iconbutton', null);
-    }
-
-    const handleCleanHeaderInput = () => {
-        if (!headerBtn) return;
-        const input = document.getElementById('headerBtnInput') as HTMLInputElement;
-        input.value = "";
-        setHeaderBtn(null);
-        setValue('interface.iconheader', null);
-    }
-
-    const handleCleanBotInput = () => {
-        if (!botBtn) return;
-        const input = document.getElementById('botBtnInput') as HTMLInputElement;
-        input.value = "";
-        setBotBtn(null);
-        setValue('interface.iconbot', null);
-    }
-
-    const chatImgUrl = getImgUrl(chatBtn);
-    const headerImgUrl = getImgUrl(headerBtn);
-    const botImgUrl = getImgUrl(botBtn);
 
     return (
         <Grid container direction="column">
@@ -184,7 +120,7 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
                             <TextField
                                 variant="outlined"
                                 fullWidth
-                                placeholder={t(langKeys.chatHeaderTitle)} // "Título de la cabecera del chat"
+                                placeholder={t(langKeys.formHeaderTitle)} // "Título de la cabecera del chat"
                                 name="titulo"
                                 size="small"
                                 defaultValue={getValues('interface.chattitle')}
@@ -201,14 +137,38 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
                     <Grid container direction="row">
                         <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
                             <label className={classes.text}>
-                                <Trans i18nKey={langKeys.subtitle} />
+                                <Trans i18nKey={langKeys.formFooter} />
                             </label>
                         </Grid>
                         <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                             <TextField
                                 variant="outlined"
                                 fullWidth
-                                placeholder={t(langKeys.chatHeaderSubtitle)}
+                                placeholder={t(langKeys.formFooterText)}
+                                name="footer"
+                                size="small"
+                                defaultValue={getValues('interface.chattitle')}
+                                onChange={(e) => setValue('interface.chattitle', e.target.value)}
+                                error={!isEmpty(errors?.interface?.chattitle?.message)}
+                                helperText={errors?.interface?.chattitle?.message}
+                            />
+                        </Grid>
+                    </Grid>
+                </Box>
+            </Grid>
+            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                <Box m={1}>
+                    <Grid container direction="row">
+                        <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
+                            <label className={classes.text}>
+                                <Trans i18nKey={langKeys.submitButtom} />
+                            </label>
+                        </Grid>
+                        <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
+                            <TextField
+                                variant="outlined"
+                                fullWidth
+                                placeholder={t(langKeys.submitButtomText)}
                                 name="subtitulo"
                                 size="small"
                                 defaultValue={getValues('interface.chatsubtitle')}
@@ -225,33 +185,21 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
                     <Grid container direction="row">
                         <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
                             <label className={classes.text}>
-                                <Trans i18nKey={langKeys.chatButton} />
+                                <Trans i18nKey={langKeys.thankyoupage} />
                             </label>
                         </Grid>
                         <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-                                <div className={classes.imgContainer}>
-                                    {chatImgUrl && <img src={chatImgUrl} alt="icon button" className={classes.img} />}
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
-                                    <input
-                                        accept="image/*"
-                                        style={{ display: 'none' }}
-                                        id="chatBtnInput"
-                                        type="file"
-                                        onChange={onChangeChatInput}
-                                    />
-                                    <IconButton onClick={handleChatBtnClick}>
-                                        <CloudUpload className={classes.icon} />
-                                    </IconButton>
-                                    <IconButton onClick={handleCleanChatInput}>
-                                        <Close className={classes.icon} />
-                                    </IconButton>
-                                </div>
-                            </div>
-                            <FormHelperText error={!isEmpty(errors?.interface?.iconbutton?.message)} style={{ marginLeft: 14 }}>
-                                {errors?.interface?.iconbutton?.message}
-                            </FormHelperText>
+                            <TextField
+                                variant="outlined"
+                                fullWidth
+                                placeholder={t(langKeys.thankyoupagetext)}
+                                name="subtitulo"
+                                size="small"
+                                defaultValue={getValues('interface.chatsubtitle')}
+                                onChange={(e) => setValue('interface.chatsubtitle', e.target.value)}
+                                error={!isEmpty(errors?.interface?.chatsubtitle?.message)}
+                                helperText={errors?.interface?.chatsubtitle?.message}
+                            />
                         </Grid>
                     </Grid>
                 </Box>
@@ -261,69 +209,16 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
                     <Grid container direction="row">
                         <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
                             <label className={classes.text}>
-                                <Trans i18nKey={langKeys.header} />
+                                reCAPTCHA
                             </label>
                         </Grid>
                         <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-                                <div className={classes.imgContainer}>
-                                    {headerImgUrl && <img src={headerImgUrl} alt="header button" className={classes.img} />}
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
-                                    <input
-                                        accept="image/*"
-                                        style={{ display: 'none' }}
-                                        id="headerBtnInput"
-                                        type="file"
-                                        onChange={onChangeHeaderInput}
-                                    />
-                                    <IconButton onClick={handleHeaderBtnClick}>
-                                        <CloudUpload className={classes.icon} />
-                                    </IconButton>
-                                    <IconButton onClick={handleCleanHeaderInput}>
-                                        <Close className={classes.icon} />
-                                    </IconButton>
-                                </div>
-                            </div>
-                            <FormHelperText error={!isEmpty(errors?.interface?.iconheader?.message)} style={{ marginLeft: 14 }}>
-                                {errors?.interface?.iconheader?.message}
-                            </FormHelperText>
-                        </Grid>
-                    </Grid>
-                </Box>
-            </Grid>
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                <Box m={1}>
-                    <Grid container direction="row">
-                        <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                            <label className={classes.text}>
-                                <Trans i18nKey={langKeys.botButton} />
-                            </label>
-                        </Grid>
-                        <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-                                <div className={classes.imgContainer}>
-                                    {botImgUrl && <img src={botImgUrl} alt="bot button" className={classes.img} />}
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
-                                    <input
-                                        accept="image/*"
-                                        style={{ display: 'none' }}
-                                        id="botBtnInput"
-                                        type="file"
-                                        onChange={onChangeBotInput}
-                                    />
-                                    <IconButton onClick={handleBotBtnClick}>
-                                        <CloudUpload className={classes.icon} />
-                                    </IconButton>
-                                    <IconButton onClick={handleCleanBotInput}>
-                                        <Close className={classes.icon} />
-                                    </IconButton>
-                                </div>
-                            </div>
-                            <FormHelperText error={!isEmpty(errors?.interface?.iconbot?.message)} style={{ marginLeft: 14 }}>
-                                {errors?.interface?.iconbot?.message}
-                            </FormHelperText>
+                            <FormControlLabel
+                                value={t(langKeys.recaptchaCheckbox)}
+                                control={<Checkbox color="primary" />}
+                                label="Top"
+                                labelPlacement="top"
+                            />
                         </Grid>
                     </Grid>
                 </Box>
@@ -351,11 +246,12 @@ const useTabColorStyles = makeStyles(theme => ({
     },
 }));
 
-const TabPanelColors: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
+const TabPanelStyles: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
     const { setValue, getValues } = form;
     const classes = useTabColorStyles();
     const [headerColor, setHeaderColor] = useState(getValues('color.header'));
     const [backgroundColor, setBackgroundColor] = useState(getValues('color.background'));
+    const [backgroundFormColor, setBackgroundFormColor] = useState(getValues('color.background'));
     const [borderColor, setBorderColor] = useState(getValues('color.border'));
     const [clientMessageColor, setClientMessageColor] = useState(getValues('color.client'));
     const [botMessageColor, setBotMessageColor] = useState(getValues('color.bot'));
@@ -367,6 +263,10 @@ const TabPanelColors: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
 
     const handleBackgroundColorChange: ColorChangeHandler = (e) => {
         setBackgroundColor(e.hex);
+        setValue('color.background', e.hex);
+    }
+    const handleBackgroundFormColorChange: ColorChangeHandler = (e) => {
+        setBackgroundFormColor(e.hex);
         setValue('color.background', e.hex);
     }
 
@@ -393,7 +293,7 @@ const TabPanelColors: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                         <Grid container direction="row">
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
                                 <label className={classes.text}>
-                                    <Trans i18nKey={langKeys.chatHeader} />
+                                    <Trans i18nKey={langKeys.buttonColor} />
                                 </label>
                             </Grid>
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
@@ -405,7 +305,7 @@ const TabPanelColors: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                         <Grid container direction="row">
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
                                 <label className={classes.text}>
-                                    <Trans i18nKey={langKeys.chatBackground} />
+                                    <Trans i18nKey={langKeys.buttonTextColor} />
                                 </label>
                             </Grid>
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
@@ -417,11 +317,23 @@ const TabPanelColors: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                         <Grid container direction="row">
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
                                 <label className={classes.text}>
-                                    <Trans i18nKey={langKeys.chatBorder} />
+                                    <Trans i18nKey={langKeys.labelcolor} />
                                 </label>
                             </Grid>
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
                                 <ColorInput hex={borderColor} onChange={handleBorderColorChange} />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <Grid container direction="row">
+                            <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.formbackgroundcolor} />
+                                </label>
+                            </Grid>
+                            <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
+                                <ColorInput hex={backgroundFormColor} onChange={handleBackgroundFormColorChange} />
                             </Grid>
                         </Grid>
                     </Grid>
@@ -433,7 +345,7 @@ const TabPanelColors: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                         <Grid container direction="row">
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
                                 <label className={classes.text}>
-                                    <Trans i18nKey={langKeys.clientMessage} count={2} />
+                                    <Trans i18nKey={langKeys.inputstyles} count={2} />
                                 </label>
                             </Grid>
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
@@ -445,7 +357,7 @@ const TabPanelColors: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                         <Grid container direction="row">
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
                                 <label className={classes.text}>
-                                    <Trans i18nKey={langKeys.botMessage} count={2} />
+                                    <Trans i18nKey={langKeys.buttonstyles} count={2} />
                                 </label>
                             </Grid>
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
@@ -685,8 +597,10 @@ const LASTNAME_FIELD = "LASTNAME_FIELD";
 const PHONE_FIELD = "PHONE_FIELD";
 const EMAIL_FIELD = "EMAIL_FIELD";
 const DOCUMENT_FIELD = "DOCUMENT_FIELD";
+const BUSINESSNAME_FIELD = "BUSINESSNAME_FIELD";
 const SUPPLYNUMBER_FIELD = "SUPPLYNUMBER_FIELD";
 const CONTACT = "CONTACT_FIELD";
+const OTHER = "OTHER_FIELD";
 
 const templates: { [x: string]: FieldTemplate } = {
     [FIRSTNAME_FIELD]: {
@@ -814,6 +728,31 @@ const templates: { [x: string]: FieldTemplate } = {
             keyvalidation: "",
         },
     },
+    [BUSINESSNAME_FIELD]: {
+        text: <Trans i18nKey={langKeys.companybusinessname} />,
+        node: (onClose, data, form, index) => {
+            return (
+                <NameTemplate
+                    form={form}
+                    index={index}
+                    data={data}
+                    onClose={() => onClose(BUSINESSNAME_FIELD)}
+                    key={BUSINESSNAME_FIELD}
+                    title={<Trans i18nKey={langKeys.companybusinessname} />}
+                />
+            );
+        },
+        data: {
+            field: "BUSINESS",
+            type: "text",
+            required: true,
+            label: "",
+            placeholder: "",
+            validationtext: "",
+            inputvalidation: "",
+            keyvalidation: "",
+        },
+    },
     [SUPPLYNUMBER_FIELD]: {
         text: <Trans i18nKey={langKeys.supplynumber} />,
         node: (onClose, data, form, index) => {
@@ -855,6 +794,31 @@ const templates: { [x: string]: FieldTemplate } = {
         },
         data: {
             field: "CONTACT",
+            type: "text",
+            required: true,
+            label: "",
+            placeholder: "",
+            validationtext: "",
+            inputvalidation: "",
+            keyvalidation: "",
+        },
+    },
+    [OTHER]: {
+        text: <Trans i18nKey={langKeys.posthistory_other} />,
+        node: (onClose, data, form, index) => {
+            return (
+                <NameTemplate
+                    form={form}
+                    index={index}
+                    data={data}
+                    onClose={() => onClose(OTHER)}
+                    key={OTHER}
+                    title={<Trans i18nKey={langKeys.posthistory_other} />}
+                />
+            );
+        },
+        data: {
+            field: "OTHER",
             type: "text",
             required: true,
             label: "",
@@ -959,453 +923,6 @@ const TabPanelForm: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
     );
 }
 
-const useTabBubbleStyles = makeStyles(theme => ({
-    text: {
-        fontWeight: 500,
-        fontSize: 16,
-        color: '#381052',
-    },
-    icon: {
-        '&:hover': {
-            cursor: 'pointer',
-            color: theme.palette.primary.main,
-        }
-    },
-    imgContainer: {
-        borderRadius: 20,
-        backgroundColor: 'white',
-        width: 157,
-        height: 90,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    img: {
-        height: '80%',
-        width: 'auto',
-    },
-}));
-
-const TabPanelBubble: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
-    const { setValue, getValues } = form;
-    const classes = useTabBubbleStyles();
-    const { t } = useTranslation();
-    const [enable, setEnable] = useState(getValues('bubble.active'));
-    const [waitingImg, setWaitingImg] = useState<File | string | null>(getValues('bubble.iconbubble'));
-
-    const handleWaitingBtnClick = () => {
-        const input = document.getElementById('waitingBtnInput');
-        input!.click();
-    }
-
-    const onChangeWaitingInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-        if (!e.target.files) return;
-        setWaitingImg(e.target.files[0]);
-        setValue('bubble.iconbubble', e.target.files[0]);
-    }
-
-    const handleCleanWaitingInput = () => {
-        if (!waitingImg) return;
-        const input = document.getElementById('waitingBtnInput') as HTMLInputElement;
-        input.value = "";
-        setWaitingImg(null);
-        setValue('bubble.iconbubble', null);
-    }
-
-    const handleEnableChange = (checked: boolean) => {
-        setEnable(checked);
-        setValue('bubble.active', checked);
-    }
-
-    const waitingImgUrl = getImgUrl(waitingImg);
-
-    return (
-        <Grid container direction="column">
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                <Box m={1}>
-                    <Grid container direction="row">
-                        <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                            <label className={classes.text}>
-                                <Trans i18nKey={langKeys.enableWaitingMessage} />
-                            </label>
-                        </Grid>
-                        <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
-                            <IOSSwitch checked={enable} onChange={(_, v) => handleEnableChange(v)} />
-                        </Grid>
-                    </Grid>
-                </Box>
-            </Grid>
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                <Box m={1} style={{ display: enable ? 'block' : 'none' }}>
-                    <Grid container direction="row">
-                        <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                            <label className={classes.text}>{t(langKeys.text)}</label>
-                        </Grid>
-                        <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
-                            <TextField
-                                variant="outlined"
-                                fullWidth
-                                placeholder={t(langKeys.textOfTheMessage)}
-                                name="text"
-                                size="small"
-                                defaultValue={getValues('bubble.messagebubble')}
-                                onChange={e => setValue('bubble.messagebubble', e.target.value)}
-                            />
-                        </Grid>
-                    </Grid>
-                </Box>
-            </Grid>
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                <Box m={1} style={{ display: enable ? 'block' : 'none' }}>
-                    <Grid container direction="row">
-                        <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                            <label className={classes.text}>
-                                <Trans i18nKey={langKeys.waitingMessageStyle} />
-                            </label>
-                        </Grid>
-                        <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
-                            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-                                <div className={classes.imgContainer}>
-                                    {waitingImgUrl && <img src={waitingImgUrl} alt="bubble button" className={classes.img} />}
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
-                                    <input
-                                        accept="image/*"
-                                        style={{ display: 'none' }}
-                                        id="waitingBtnInput"
-                                        type="file"
-                                        onChange={onChangeWaitingInput}
-                                    />
-                                    <IconButton onClick={handleWaitingBtnClick}>
-                                        <CloudUpload className={classes.icon} />
-                                    </IconButton>
-                                    <IconButton onClick={handleCleanWaitingInput}>
-                                        <Close className={classes.icon} />
-                                    </IconButton>
-                                </div>
-                            </div>
-                        </Grid>
-                    </Grid>
-                </Box>
-            </Grid>
-        </Grid>
-    );
-}
-
-const useTabExtrasStyles = makeStyles(theme => ({
-    text: {
-        fontWeight: 500,
-        fontSize: 16,
-        color: '#381052',
-    },
-}));
-
-const TabPanelExtras: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
-    const { setValue, getValues } = form;
-    const classes = useTabExtrasStyles();
-    const { t } = useTranslation();
-
-    const [uploadFile, setUploadFile] = useState(getValues('extra.uploadfile'));
-    const [uploadVideo, setUploadVideo] = useState(getValues('extra.uploadvideo'));
-    const [uploadImage, setUploadImage] = useState(getValues('extra.uploadimage'));
-    const [uploadAudio, setUploadAudio] = useState(getValues('extra.uploadaudio'));
-    const [uploadLocation, setUploadLocation] = useState(getValues('extra.uploadlocation'));
-    const [reloadChat, setReloadChat] = useState(getValues('extra.reloadchat'));
-    const [poweredBy, setPoweredBy] = useState(getValues('extra.poweredby'));
-
-    const [persistentInput, setPersistentInput] = useState(getValues('extra.persistentinput'));
-    const [abandonEvent, setAbandonEvent] = useState(getValues('extra.abandonevent'));
-    const [alertSound, setAlertSound] = useState(getValues('extra.alertsound'));
-    const [formHistory, setFormHistory] = useState(getValues('extra.formhistory'));
-    const [enableMetadata, setEnableMetadata] = useState(getValues('extra.enablemetadata'));
-
-    const [enableBotName, setEnableBotName] = useState(getValues('extra.botnameenabled'));
-
-    const handleUploadFileChange = (checked: boolean) => {
-        setUploadFile(checked);
-        setValue('extra.uploadfile', checked);
-    }
-
-    const handleUploadVideoChange = (checked: boolean) => {
-        setUploadVideo(checked);
-        setValue('extra.uploadvideo', checked);
-    }
-
-    const handleUploadImageChange = (checked: boolean) => {
-        setUploadImage(checked);
-        setValue('extra.uploadimage', checked);
-    }
-
-    const handleUploadAudioChange = (checked: boolean) => {
-        setUploadAudio(checked);
-        setValue('extra.uploadaudio', checked);
-    }
-
-    const handleUploadLocationChange = (checked: boolean) => {
-        setUploadLocation(checked);
-        setValue('extra.uploadlocation', checked);
-    }
-
-    const handleReloadChatChange = (checked: boolean) => {
-        setReloadChat(checked);
-        setValue('extra.reloadchat', checked);
-    }
-
-    const handlePoweredByChange = (checked: boolean) => {
-        setPoweredBy(checked);
-        setValue('extra.poweredby', checked);
-    }
-
-    const handlePersistentInputChange = (checked: boolean) => {
-        setPersistentInput(checked);
-        setValue('extra.persistentinput', checked);
-    }
-
-    const handleAbandonEventChange = (checked: boolean) => {
-        setAbandonEvent(checked);
-        setValue('extra.abandonevent', checked);
-    }
-
-    const handleAlertSoundChange = (checked: boolean) => {
-        setAlertSound(checked);
-        setValue('extra.alertsound', checked);
-    }
-
-    const handleFormHistoryChange = (checked: boolean) => {
-        setFormHistory(checked);
-        setValue('extra.formhistory', checked);
-    }
-
-    const handleEnableMetadataChange = (checked: boolean) => {
-        setEnableMetadata(checked);
-        setValue('extra.enablemetadata', checked);
-    }
-
-    const handleEnableBotNameChange = (checked: boolean) => {
-        setEnableBotName(checked);
-        setValue('extra.botnameenabled', checked);
-    }
-
-    return (
-        <Grid container direction="column">
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                <Grid container direction="row">
-                    <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                        <Grid container direction="row">
-                            <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>
-                                    <Trans i18nKey={langKeys.uploadFile} count={2} />
-                                </label>
-                            </Grid>
-                            <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                <IOSSwitch checked={uploadFile} onChange={(_, v) => handleUploadFileChange(v)} />
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                    <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                        <Grid container direction="row">
-                            <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>
-                                    <Trans i18nKey={langKeys.uploadVideo} />
-                                </label>
-                            </Grid>
-                            <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                <IOSSwitch checked={uploadVideo} onChange={(_, v) => handleUploadVideoChange(v)} />
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                    <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                        <Grid container direction="row">
-                            <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>
-                                    <Trans i18nKey={langKeys.sendLocation} />
-                                </label>
-                            </Grid>
-                            <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                <IOSSwitch checked={uploadLocation} onChange={(_, v) => handleUploadLocationChange(v)} />
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </Grid>
-            </Grid>
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                <Grid container direction="row">
-                    <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                        <Grid container direction="row">
-                            <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>
-                                    <Trans i18nKey={langKeys.uploadImage} count={2} />
-                                </label>
-                            </Grid>
-                            <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                <IOSSwitch checked={uploadImage} onChange={(_, v) => handleUploadImageChange(v)} />
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                    <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                        <Grid container direction="row">
-                            <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>
-                                    <Trans i18nKey={langKeys.uploadAudio} />
-                                </label>
-                            </Grid>
-                            <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                <IOSSwitch checked={uploadAudio} onChange={(_, v) => handleUploadAudioChange(v)} />
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                    <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                        <Grid container direction="row">
-                            <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>
-                                    <Trans i18nKey={langKeys.refreshChat} />
-                                </label>
-                            </Grid>
-                            <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                <IOSSwitch checked={reloadChat} onChange={(_, v) => handleReloadChatChange(v)} />
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </Grid>
-            </Grid>
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                <Grid container direction="row">
-                    <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                        <Grid container direction="row">
-                            <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>Powered by</label>
-                            </Grid>
-                            <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                <IOSSwitch checked={poweredBy} onChange={(_, v) => handlePoweredByChange(v)} />
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </Grid>
-            </Grid>
-            <Divider style={{ margin: '22px 0 38px 0' }} />
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                <Grid container direction="row">
-                    <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                        <Grid container direction="row">
-                            <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>
-                                    <Trans i18nKey={langKeys.inputAlwaysEnabled} />
-                                </label>
-                            </Grid>
-                            <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                <IOSSwitch checked={persistentInput} onChange={(_, v) => handlePersistentInputChange(v)} />
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                    <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                        <Grid container direction="row">
-                            <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>
-                                    <Trans i18nKey={langKeys.abandonmentEvent} />
-                                </label>
-                            </Grid>
-                            <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                <IOSSwitch checked={abandonEvent} onChange={(_, v) => handleAbandonEventChange(v)} />
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                    <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                        <Grid container direction="row">
-                            <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>
-                                    <Trans i18nKey={langKeys.newMessageRing} />
-                                </label>
-                            </Grid>
-                            <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                <IOSSwitch checked={alertSound} onChange={(_, v) => handleAlertSoundChange(v)} />
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </Grid>
-            </Grid>
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                <Grid container direction="row">
-                    <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                        <Grid container direction="row">
-                            <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>
-                                    <Trans i18nKey={langKeys.formBaseHistory} />
-                                </label>
-                            </Grid>
-                            <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                <IOSSwitch checked={formHistory} onChange={(_, v) => handleFormHistoryChange(v)} />
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                    <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                        <Grid container direction="row">
-                            <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>
-                                    <Trans i18nKey={langKeys.sendMetaData} />
-                                </label>
-                            </Grid>
-                            <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                <IOSSwitch checked={enableMetadata} onChange={(_, v) => handleEnableMetadataChange(v)} />
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </Grid>
-            </Grid>
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                <TextField
-                    variant="outlined"
-                    placeholder="CSS Header"
-                    multiline
-                    minRows={5}
-                    maxRows={10}
-                    fullWidth
-                    defaultValue={getValues('extra.customcss')}
-                    onChange={e => setValue('extra.customcss', e.target.value)}
-                />
-            </Grid>
-            <div style={{ height: 20 }} />
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                <TextField
-                    variant="outlined"
-                    placeholder="JS Script"
-                    multiline
-                    minRows={5}
-                    maxRows={10}
-                    fullWidth
-                    defaultValue={getValues('extra.customjs')}
-                    onChange={e => setValue('extra.customjs', e.target.value)}
-                />
-            </Grid>
-            <Divider style={{ margin: '22px 0 38px 0' }} />
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                <Grid container direction="row">
-                    <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                        <Grid container direction="row">
-                            <Grid item xs={12} sm={10} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>
-                                    <Trans i18nKey={langKeys.enableBotName} />
-                                </label>
-                            </Grid>
-                            <Grid item xs={12} sm={2} md={3} lg={3} xl={3}>
-                                <IOSSwitch checked={enableBotName} onChange={(_, v) => handleEnableBotNameChange(v)} />
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </Grid>
-            </Grid>
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ display: enableBotName ? 'block' : 'none' }}>
-                <TextField
-                    variant="outlined"
-                    placeholder={t(langKeys.botName)}
-                    fullWidth
-                    defaultValue={getValues('extra.botnametext')}
-                    onChange={e => setValue('extra.botnametext', e.target.value)}
-                />
-            </Grid>
-        </Grid>
-    );
-}
-
 const useStyles = makeStyles(theme => ({
     root: {
         width: 'inherit',
@@ -1503,7 +1020,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export const ChannelAddChatForm: FC<{ edit: boolean }> = ({ edit }) => {
+export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
     const classes = useStyles();
     const history = useHistory();
     const location = useLocation();
@@ -1629,10 +1146,6 @@ export const ChannelAddChatForm: FC<{ edit: boolean }> = ({ edit }) => {
         }
 
         form.register('interface.chattitle', { validate: mandatoryStrField });
-        form.register('interface.chatsubtitle', { validate: mandatoryStrField });
-        form.register('interface.iconbutton', { validate: mandatoryFileField });
-        form.register('interface.iconheader', { validate: mandatoryFileField });
-        form.register('interface.iconbot', { validate: mandatoryFileField });
     }, [form, t]);
 
     const handleNext = () => {
@@ -1681,17 +1194,13 @@ export const ChannelAddChatForm: FC<{ edit: boolean }> = ({ edit }) => {
                         TabIndicatorProps={{ style: { display: 'none' } }}
                     >
                         <Tab className={clsx(classes.tab, tabIndex === "0" && classes.activetab)} label={<Trans i18nKey={langKeys.interface} />} value="0" />
-                        <Tab className={clsx(classes.tab, tabIndex === "1" && classes.activetab)} label={<Trans i18nKey={langKeys.color} count={2} />} value="1" />
+                        <Tab className={clsx(classes.tab, tabIndex === "1" && classes.activetab)} label={<Trans i18nKey={langKeys.styles} count={2} />} value="1" />
                         <Tab className={clsx(classes.tab, tabIndex === "2" && classes.activetab)} label={<Trans i18nKey={langKeys.form} />} value="2" />
-                        <Tab className={clsx(classes.tab, tabIndex === "3" && classes.activetab)} label={<Trans i18nKey={langKeys.bubble} />} value="3" />
-                        <Tab className={clsx(classes.tab, tabIndex === "4" && classes.activetab)} label={<Trans i18nKey={langKeys.extra} count={2} />} value="4" />
                     </Tabs>
                 </AppBar>
                 <TabPanel value="0" index={tabIndex}><TabPanelInterface form={form} /></TabPanel>
-                <TabPanel value="1" index={tabIndex}><TabPanelColors form={form} /></TabPanel>
+                <TabPanel value="1" index={tabIndex}><TabPanelStyles form={form} /></TabPanel>
                 <TabPanel value="2" index={tabIndex}><TabPanelForm form={form} /></TabPanel>
-                <TabPanel value="3" index={tabIndex}><TabPanelBubble form={form} /></TabPanel>
-                <TabPanel value="4" index={tabIndex}><TabPanelExtras form={form} /></TabPanel>
                 <div style={{ height: 20 }} />
                 <Button variant="contained" color="primary" onClick={handleNext}>
                     <Trans i18nKey={langKeys.next} />
@@ -1777,18 +1286,6 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                         valueDefault={channel?.communicationchanneldesc}
                     />
                 </div>
-                <div className="row-zyx">
-                    <div className="col-3"></div>
-                    <div className="col-6">
-                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                            {t(langKeys.givechannelcolor)}
-                        </Box>
-                        <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                            <ZyxmeMessengerIcon style={{ fill: `${coloricon}`, width: "100px" }} />
-                            <ColorInput hex={hexIconColor} onChange={e => { setHexIconColor(e.hex); setcoloricon(e.hex) }} />
-                        </div>
-                    </div>
-                </div>
                 <div style={{ paddingLeft: "80%" }}>
                     <Button
                         onClick={handleSave}
@@ -1808,13 +1305,18 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
             <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word' }}><code>
                 {`<script src="https://zyxmelinux.zyxmeapp.com/zyxme/chat/src/chatwebclient.min.js" integrationid="${integrationId}"></script>`}
             </code></pre><div style={{ height: 20 }} />
-                <Button variant="contained" color="primary" onClick={() => history.push(paths.CHANNELS)}>
+            <div style={{width:"100%", gap:"8px",display:"flex"}}>
+                <Button variant="contained" style={{width:"50%"}} color="primary" onClick={() => history.push(paths.CHANNELS)}>
                     {t(langKeys.close)}
                 </Button>
+                <Button variant="contained" style={{width:"50%"}} color="primary" onClick={() => history.push(paths.CHANNELS)}>
+                    {t(langKeys.close)}
+                </Button>
+            </div>
             </div>
         </div>
     );
 }
 
 
-export default ChannelAddChatForm
+export default ChannelAddWebForm

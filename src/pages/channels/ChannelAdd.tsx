@@ -190,7 +190,7 @@ export const ChannelAdd: FC = () => {
         {
             icon: c => <ListAltIcon className={c} />,
             label: t(langKeys.web_form),
-            onClick: () => history.push(paths.CHANNELS_ADD_CHATFORM),
+            onClick: () => history.push(paths.CHANNELS_ADD_WEBFORM),
         },
         {
             icon: c => <EmailColor className={c} />,

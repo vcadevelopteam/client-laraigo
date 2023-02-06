@@ -1,7 +1,7 @@
 export { Channels } from './Channels';
 export { ChannelAdd } from './ChannelAdd';
 export { ChannelAddChatWeb } from './ChannelAddChatWeb';
-export { ChannelAddChatForm } from './ChannelAddChatForm';
+export { ChannelAddWebForm } from './ChannelAddWebForm';
 export { ChannelAddFacebook } from './ChannelAddFacebook';
 export { ChannelAddMessenger } from './ChannelAddMessenger';
 export { ChannelAddInstagram } from './ChannelAddInstagram';
