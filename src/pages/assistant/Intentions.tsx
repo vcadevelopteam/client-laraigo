@@ -690,7 +690,7 @@ export const Intentions: React.FC<IntentionProps> = ({ setExternalViewSelected, 
                 <div style={{ width: "100%" }}>
                     {!!arrayBread && <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
+                            breadcrumbs={[...arrayBread,{ id: "view-1", name:  t(langKeys.intentions) }]}
                             handleClick={setExternalViewSelected}
                         />
                     </div>}
