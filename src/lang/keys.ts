@@ -64,6 +64,8 @@ export const langKeys = {
     listview: "listview",
     limit20char: "limit20char",
     limit75char: "limit75char",
+    intentionnametooltip: "intentionnametooltip",
+    intentiondescriptiontooltip: "intentiondescriptiontooltip",
     startnewconversation: "startnewconversation",
     startnewconversationTooltip: "startnewconversationTooltip",
     laraigoia: "laraigoia",
