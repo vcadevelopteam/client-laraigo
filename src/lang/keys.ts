@@ -27,6 +27,8 @@ export const langKeys = {
     listview: "listview",
     entitynametooltip: "entitynametooltip",
     entitykeywordtooltip: "entitykeywordtooltip",
+    keywordsandsinonyms: "keywordsandsinonyms",
+    keyword: "keyword",
     entitysinonimtooltip: "entitysinonimtooltip",
     intentionnametooltip: "intentionnametooltip",
     intentiondescriptiontooltip: "intentiondescriptiontooltip",
