@@ -200,12 +200,12 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
-                    <div className={classes.title}>{t(langKeys.keywords)} & {t(langKeys.sinonims)}</div>
+                    <div className={classes.title}>{t(langKeys.keywordsandsinonyms)}</div>
                     <div className="row-zyx">
                         <div className='col-6'>
 
                             <FieldEdit
-                                label={t(langKeys.keywords)} 
+                                label={t(langKeys.keyword)} 
                                 className={classes.containerFields}
                                 onChange={(value) => {
                                     setkeyword(value);
@@ -231,7 +231,7 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                         <Button
                             variant="contained"
                             type="button"
-                            className='col-3'
+                            className='col-1'
                             disabled={disableCreate}
                             color="primary"
                             startIcon={<AddIcon color="secondary" />}

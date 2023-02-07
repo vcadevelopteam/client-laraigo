@@ -66,6 +66,8 @@ export const langKeys = {
     limit75char: "limit75char",
     entitynametooltip: "entitynametooltip",
     entitykeywordtooltip: "entitykeywordtooltip",
+    keywordsandsinonyms: "keywordsandsinonyms",
+    keyword: "keyword",
     entitysinonimtooltip: "entitysinonimtooltip",
     intentionnametooltip: "intentionnametooltip",
     intentiondescriptiontooltip: "intentiondescriptiontooltip",
