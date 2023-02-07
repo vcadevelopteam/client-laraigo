@@ -46,6 +46,7 @@ export interface IFormWebAddExtra {
     textButtonSend: string;
     urlThanks: string;
     colotBackgroundButton: string;
+    colorButtonLabel: string;
     colorLabel: string;
     colorBackgroundForm: string;
     stylesCSSInput: string;

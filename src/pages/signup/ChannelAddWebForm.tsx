@@ -300,7 +300,7 @@ const TabPanelStyles: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) => {
     const { setValue, getValues } = form;
     const classes = useTabColorStyles();
     const [colotBackgroundButton, setcolotBackgroundButton] = useState(getValues('extra.colotBackgroundButton'));
-    const [backgroundColor, setBackgroundColor] = useState(getValues('color.background'));
+    const [colorButtonLabel, setcolorButtonLabel] = useState(getValues('extra.colorButtonLabel'));
     const [colorBackgroundForm, setColorBackgroundForm] = useState(getValues('extra.colorBackgroundForm'));
     const [colorLabel, setColorLabel] = useState(getValues('extra.colorLabel'));
 
@@ -317,6 +317,11 @@ const TabPanelStyles: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) => {
         setColorBackgroundForm(e.hex);
         setValue('extra.colorBackgroundForm', e.hex);
     }
+    const handleColorButtonLabelChange: ColorChangeHandler = (e) => {
+        setcolorButtonLabel(e.hex);
+        setValue('extra.colorButtonLabel', e.hex);
+    }
+
 
     return (
         <Grid container direction="row">
@@ -342,7 +347,7 @@ const TabPanelStyles: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) => {
                                 </label>
                             </Grid>
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
-                                <ColorInput hex={backgroundColor} onChange={handlecolotBackgroundButtonChange} />
+                                <ColorInput hex={colorButtonLabel} onChange={handleColorButtonLabelChange} />
                             </Grid>
                         </Grid>
                     </Grid>
@@ -1158,6 +1163,7 @@ export const ChannelAddWebForm: FC<{ setOpenWarning: (param: any) => void }> = (
                 textButtonSend: "",
                 urlThanks: "",
                 colotBackgroundButton: "#E1E1E1",
+                colorButtonLabel: "#000",
                 colorLabel: "#000",
                 colorBackgroundForm: "#000",
                 stylesCSSInput: "display: block, margin: 10px",
