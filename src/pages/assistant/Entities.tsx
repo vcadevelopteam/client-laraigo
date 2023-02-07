@@ -56,6 +56,9 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 'bold',
         color: theme.palette.text.primary,
     },
+    containerFields: {
+        paddingRight: "16px"
+    },
 }));
 
 
@@ -63,10 +66,15 @@ const useStyles = makeStyles((theme) => ({
 const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,setViewSelected, setExternalViewSelected, arrayBread }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
-    const [keywords, setkeywords] = useState<any>(row?.datajson?.keywords || []);
+    const [keyword, setkeyword] = useState("");
+    const [synonim, setsynonim] = useState("");
+    const [disableCreate, setDisableCreate] = useState(true);
+    const [dataKeywords, setDataKeywords] = useState<any>(row?.datajson?.keywords || []);
+    const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
+    const selectionKey= "keyword"
 
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
@@ -105,7 +113,7 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(execute(insertentity({...data, datajson:JSON.stringify({...row?.datajson,
-                keywords:keywords,
+                keywords:dataKeywords,
                 lookups: ["keywords"],
                 name:data.name,
                 roles: [row?.datajson?.roles? (row?.datajson?.roles[0]):data.name]
@@ -120,6 +128,28 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
             callback
         }))
     });
+
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.keywords),
+                accessor: 'keyword',
+                NoFilter: true,
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.sinonims),
+                accessor: 'synonyms',
+                NoFilter: true,
+                width: "auto",
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return row.synonyms.join();
+                }
+            },
+        ],
+        []
+    );
 
     return (
         <div style={{width: '100%'}}>
@@ -157,94 +187,96 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                     <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.newentity)} 
-                            className="col-12"
+                            className={classes.containerFields}
                             onChange={(value) => {
                                 setValue('name', value)
                             }}
                             valueDefault={row?.name || ""}
                             error={errors?.name?.message}
                         />
+                        <div style={{ paddingTop:"8px",paddingBottom:"16px"}}>{t(langKeys.entitynametooltip)}</div>
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                        <div style={{ flex: .55 }} className={classes.containerDetail}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <div className={classes.title}>{t(langKeys.keywords)}</div>
-                            </div>
-                            <div>
-                                <TableContainer>
-                                    <Table size="small">
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell>
-                                                    <IconButton
-                                                        size="small"
-                                                        onClick={async () => {
-                                                            setkeywords([...keywords,{ keyword: '', synonyms: [] }])
-                                                        }}
-                                                    >
-                                                        <AddIcon />
-                                                    </IconButton>
-                                                </TableCell>
-                                                <TableCell>{t(langKeys.keywords)}</TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody style={{ marginTop: 5 }}>
-                                            {keywords.map((item: any, i: number) =>
-                                                <TableRow key={i}>
-                                                    <TableCell width={30}>
-                                                        <div style={{ display: 'flex' }}>
-                                                            <IconButton
-                                                                size="small"
-                                                                onClick={() => { setkeywords(keywords.splice(i,1)) }}
-                                                            >
-                                                                <DeleteIcon style={{ color: '#777777' }} />
-                                                            </IconButton>
-                                                        </div>
-                                                    </TableCell>
-                                                    <TableCell style={{ width: 200 }}>
-                                                        <FieldEditArray
-                                                            valueDefault={keywords[i].keyword}
-                                                            onChange={(value) => {
-                                                                let tempkeywords = keywords
-                                                                tempkeywords[i].keyword = value
-                                                                setkeywords(tempkeywords)
-                                                            }}
-                                                        />
-                                                    </TableCell>
-                                                </TableRow>
-                                            )}
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
-                            </div>
-                        </div>
+                    <div className={classes.title}>{t(langKeys.keywords)} & {t(langKeys.sinonims)}</div>
+                    <div className="row-zyx">
+                        <div className='col-6'>
 
-                        <div style={{ flex: .45 }} className={classes.containerDetail}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: "45px" }}>
-                                <div className={classes.title}>{t(langKeys.sinonims)}</div>
-                            </div>
-                            <div>
-                                
-                                {keywords.map((item: any, i: number) =>
-                                
-                                    <FieldMultiSelectFreeSolo
-                                        valueDefault={keywords[i].synonyms.join()||""}
-                                        className={classes.field}
-                                        key={i}
-                                        onChange={(value) => {
-                                            let tempkeywords = keywords
-                                            tempkeywords[i].synonyms = value
-                                            setkeywords(tempkeywords)
-                                        }}
-                                        loading={false}
-                                        data={keywords[i].synonyms.map((x:any) => ({ value: x }))}
-                                        optionDesc="value"
-                                        optionValue="value"
-                                    />
+                            <FieldEdit
+                                label={t(langKeys.keywords)} 
+                                className={classes.containerFields}
+                                onChange={(value) => {
+                                    setkeyword(value);
+                                    setDisableCreate(value==="")
+                                }}
+                                valueDefault={keyword}
+                            />
+                            <div style={{ paddingTop:"8px",paddingBottom:"16px"}}>{t(langKeys.entitykeywordtooltip)}</div>
+                        </div>
+                        <div className='col-6'>
+                            <FieldEdit
+                                label={t(langKeys.sinonims)} 
+                                className={classes.containerFields}
+                                onChange={(value) => {
+                                    setsynonim(value)
+                                }}
+                                valueDefault={synonim}
+                            />
+                            <div style={{ paddingTop:"8px"}}>{t(langKeys.entitysinonimtooltip)}</div>
+                        </div>
+                    </div>
+                    <div className="row-zyx">
+                        <Button
+                            variant="contained"
+                            type="button"
+                            className='col-3'
+                            disabled={disableCreate}
+                            color="primary"
+                            startIcon={<AddIcon color="secondary" />}
+                            style={{ backgroundColor: disableCreate?"#dbdbdc":"#0078f6" }}
+                            onClick={() => {
+                                let partialdata = dataKeywords
+                                let alreadyin = partialdata.filter((x:any)=>x.keyword === keyword)
+                                if(!!alreadyin.length){
+                                    alreadyin[0].synonyms = synonim.split(',')
+                                    setDataKeywords(partialdata)
+
+                                }else{
+                                    setDataKeywords([...dataKeywords,{keyword: keyword, synonyms: synonim.split(',')}])
+                                }
+                                setkeyword("")
+                                setsynonim("")
+                                setDisableCreate(true)    
+                            }}
+                        >{t(langKeys.add)}</Button>
+                    </div>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                        <div style={{ width: '100%' }}>
+                            <TableZyx
+                                columns={columns}
+                                data={dataKeywords}
+                                filterGeneral={false}
+                                useSelection={true}
+                                selectionKey={selectionKey}
+                                setSelectedRows={setSelectedRows}
+                                ButtonsElement={() => (
+                                    <div style={{display: "flex", justifyContent: "end", width: "100%"}}>
+                                        <Button
+                                            disabled={Object.keys(selectedRows).length===0}
+                                            variant="contained"
+                                            type="button"
+                                            color="primary"
+                                            startIcon={<ClearIcon color="secondary" />}
+                                            style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
+                                            onClick={() => {setDataKeywords(dataKeywords.filter((x:any)=>!Object.keys(selectedRows).includes(x.keyword)))}}
+                                        >{t(langKeys.delete)}</Button>
+                                    </div>
                                 )}
-                            </div>
+                                register={false}
+                                download={false}
+                                pageSizeDefault={20}
+                                initialPageIndex={0}
+                            />
                         </div>
                     </div>
                 </div>                 
