@@ -25,6 +25,8 @@ export const langKeys = {
     jsscriptTooltip: "jsscriptTooltip",
     kanbanview: "kanbanview",
     listview: "listview",
+    intentionnametooltip: "intentionnametooltip",
+    intentiondescriptiontooltip: "intentiondescriptiontooltip",
     startnewconversation: "startnewconversation",
     startnewconversationTooltip: "startnewconversationTooltip",
     laraigoia: "laraigoia",

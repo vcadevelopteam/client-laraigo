@@ -15,6 +15,7 @@ import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/acti
 import { execute, getCollection, getCollectionAux, getCollectionAux2, resetAllMain } from 'store/main/actions';
 import { insertutterance, selEntities, selIntent, selUtterance, utterancedelete } from 'common/helpers/requestBodies';
 import { filterPipe } from 'common/helpers';
+import AddIcon from '@material-ui/icons/Add';
 
 
 interface RowSelected {
@@ -45,6 +46,9 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
         background: '#fff',
+    },
+    containerFields: {
+        paddingRight: "16px"
     },
 }));
 
@@ -212,7 +216,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                 width: "auto",
             },
             {
-                Header: t(langKeys.added),
+                Header: t(langKeys.date),
                 accessor: 'updatedate',
                 NoFilter: true,
                 width: "auto",
@@ -318,7 +322,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                         <FieldEdit
                             label={t(langKeys.name)} 
                             disabled={!disableSave}
-                            className="col-12"
+                            className={classes.containerFields}
                             onChange={(value) => {
                                 setValue('name', value)
                                 setDisableCreate(getValues("description")===""||value==="")
@@ -326,10 +330,11 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                             valueDefault={row?.name || ""}
                             error={errors?.name?.message}
                         />
+                        <div style={{ paddingTop:"8px",paddingBottom:"16px"}}>{t(langKeys.intentionnametooltip)}</div>
                         <FieldEdit
                             label={t(langKeys.description)} 
                             disabled={!disableSave}
-                            className="col-12"
+                            className={classes.containerFields}
                             onChange={(value) => {
                                 setValue('description', value)
                                 setDisableCreate(getValues("name")===""||value==="")
@@ -337,8 +342,9 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                             valueDefault={row?.description || ""}
                             error={errors?.description?.message}
                         />
+                        <div style={{ paddingTop:"8px"}}>{t(langKeys.intentiondescriptiontooltip)}</div>
                     </div>
-                    {!row &&
+                    {(disableSave) &&
                         <div className="row-zyx">
                             <Button
                                 variant="contained"
@@ -387,6 +393,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                             className='col-3'
                             disabled={newIntention.name===""}
                             color="primary"
+                            startIcon={<AddIcon color="secondary" />}
                             style={{ backgroundColor: newIntention.name===""?"#dbdbdc":"#0078f6" }}
                             onClick={() => {
                                 let holdingpos=0
