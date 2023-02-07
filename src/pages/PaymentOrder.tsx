@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         borderRadius: 8,
         boxShadow: '0 1px 8px 0 rgb(0 0 0 / 8%)',
-        width: '420px',
+        width: '440px',
         minWidth: '380px',
         alignItems: 'center',
         justifyContent: 'center',
@@ -66,12 +66,16 @@ const useStyles = makeStyles(theme => ({
         padding: '8px',
         fontWeight: 'bold',
         color: 'white',
-        overflowWrap: 'break-word'
+        overflowWrap: 'break-word',
+        height: '100%',
+        lineBreak: 'anywhere',
     },
     textField: {
         border: '1px solid #EBEAED',
         padding: '8px',
-        overflowWrap: 'break-word'
+        overflowWrap: 'break-word',
+        height: '100%',
+        lineBreak: 'anywhere',
     }
 }));
 

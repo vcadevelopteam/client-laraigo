@@ -4960,6 +4960,23 @@ const translation: LangKeys = {
   productcatalog_domain_gender_: "Empty",
   productcatalog_reviewdescription: "Review Description",
   paymentorder_termandconditions: "I have read and agree to the terms and conditions.",
+  paymentorder_termandconditions: "I have read and agree to the ",
+  paymentorder_termandconditionsnext: " Terms and Conditions",
+  paymentorder_cardnotvalid: "Invalid card",
+  paymentorder_payconstancy: "Pay Constancy",
+  paymentorder_paysuccess: "Payment Success",
+  paymentorder_payfailure: "Payment Failure",
+  paymentorder_payfailuremotive: "Failure Motive",
+  paymentorder_externalid: "External ID",
+  paymentorder_transaction: "Transaction ID",
+  paymentorder_datetime: "Date and Time",
+  paymentorder_cardnumber: "Card Number",
+  paymentorder_amount: "Amount",
+  paymentorder_paymentcount: "Dues",
+  paymentorder_commercecode: "Commerce Code",
+  paymentorder_paymail: "E-Mail",
+  paymentorder_payname: "Owner Name",
+  paymentorder_orderid: "Order ID",
 };
 
 const enResource: ResourceLanguage = {
