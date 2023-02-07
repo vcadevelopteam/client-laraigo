@@ -134,7 +134,7 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
     const columns = React.useMemo(
         () => [
             {
-                Header: t(langKeys.keywords),
+                Header: t(langKeys.keyword),
                 accessor: 'keyword',
                 NoFilter: true,
                 width: "auto",

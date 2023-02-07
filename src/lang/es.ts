@@ -1288,7 +1288,7 @@ const translation: LangKeys = {
   entitykeywordtooltip: "Agrega una palabra clave que este asociado a la entidad.",
   entitysinonimtooltip: "También puedes agregar sinonimos. Por ejemplo(palabra clave: Equipo, los sinonimos pueden ser, equipo post pago, equipo prepago)",
   keyword: "Palabra clave",
-  keywordsandsinonyms: "Palabras claves y sinónimos",
+  keywordsandsinonyms: "Palabra clave y sinónimos",
   userexample: "Ejemplo de usuario",
   key: 'Llave',
   addheader: 'Añadir cabecera',
