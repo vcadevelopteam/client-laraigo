@@ -4750,6 +4750,22 @@ export const langKeys = {
     paymentorder_totalamount: "paymentorder_totalamount",
     paymentorder_code: "paymentorder_code",
     paymentorder_termandconditions: "paymentorder_termandconditions",
+    paymentorder_termandconditionsnext: "paymentorder_termandconditionsnext",
+    paymentorder_cardnotvalid: "paymentorder_cardnotvalid",
+    paymentorder_payconstancy: "paymentorder_payconstancy",
+    paymentorder_paysuccess: "paymentorder_paysuccess",
+    paymentorder_payfailure: "paymentorder_payfailure",
+    paymentorder_payfailuremotive: "paymentorder_payfailuremotive",
+    paymentorder_externalid: "paymentorder_externalid",
+    paymentorder_transaction: "paymentorder_transaction",
+    paymentorder_datetime: "paymentorder_datetime",
+    paymentorder_cardnumber: "paymentorder_cardnumber",
+    paymentorder_amount: "paymentorder_amount",
+    paymentorder_paymentcount: "paymentorder_paymentcount",
+    paymentorder_commercecode: "paymentorder_commercecode",
+    paymentorder_paymail: "paymentorder_paymail",
+    paymentorder_payname: "paymentorder_payname",
+    paymentorder_orderid: "paymentorder_orderid",
   };
   
   export type LangKeys = typeof langKeys;
