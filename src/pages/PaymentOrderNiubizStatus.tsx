@@ -313,12 +313,36 @@ export const PaymentOrderNiubizStatus: FC = () => {
                                 <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
                                     <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
                                         <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_orderid)}
+                                            {t(langKeys.paymentorder_authcode)}
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                        <div className={classes.textField}>
+                                            {resultData?.order?.authorizationCode}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                        <div className={classes.textTitle}>
+                                            {t(langKeys.paymentorder_purchasenumber)}
                                         </div>
                                     </div>
                                     <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
                                         <div className={classes.textField}>
                                             {paymentData?.paymentorderid}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                        <div className={classes.textTitle}>
+                                            {t(langKeys.paymentorder_orderid)}
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                        <div className={classes.textField}>
+                                            {paymentData?.ordercode}
                                         </div>
                                     </div>
                                 </div>

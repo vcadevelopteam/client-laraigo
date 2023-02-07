@@ -4976,6 +4976,8 @@ const translation: LangKeys = {
   paymentorder_paymail: "E-Mail",
   paymentorder_payname: "Owner Name",
   paymentorder_orderid: "Order ID",
+  paymentorder_authcode: "Authorization Code",
+  paymentorder_purchasenumber: "Purchase Number",
 };
 
 const enResource: ResourceLanguage = {
