@@ -4778,6 +4778,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   paymentorder_paymail: "Correo Electrónico",
   paymentorder_payname: "Titular",
   paymentorder_orderid: "ID Orden",
+  paymentorder_authcode: "Código Autorización",
+  paymentorder_purchasenumber: "Número de Pedido",
 };
 
 const esResource: ResourceLanguage = {
