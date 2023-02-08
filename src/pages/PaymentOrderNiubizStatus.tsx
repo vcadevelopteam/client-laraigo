@@ -106,7 +106,6 @@ export const PaymentOrderNiubizStatus: FC = () => {
 
     const [paymentData, setPaymentData] = useState<Dictionary | null>(null);
     const [resultData, setResultData] = useState<Dictionary | null>(null);
-    const [commerceData, setCommerceData] = useState<Dictionary | null>(null);
     const [showSuccess, setShowSuccess] = useState(false);
     const [waitData, setWaitData] = useState(false);
 
@@ -136,10 +135,6 @@ export const PaymentOrderNiubizStatus: FC = () => {
                         if (resultSessionToken.data.lastdata) {
                             setResultData(JSON.parse(resultSessionToken.data.lastdata));
                         }
-                    }
-
-                    if (resultSessionToken.data.authcredentials) {
-                        setCommerceData(JSON.parse(resultSessionToken.data.authcredentials));
                     }
                 }
             } else if (resultSessionToken.error) {

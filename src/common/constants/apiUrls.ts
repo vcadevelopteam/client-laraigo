@@ -15,6 +15,7 @@ const APIS_URL = {
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
+        NIUBIZSCRIPT: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true',
     },
     TESTING: {
         API: 'https://testapix.laraigo.com/api',
@@ -29,6 +30,7 @@ const APIS_URL = {
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
+        NIUBIZSCRIPT: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true',
     },
     PRODUCTION: {
         API: 'https://apiprd.laraigo.com/api',
@@ -43,6 +45,7 @@ const APIS_URL = {
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
+        NIUBIZSCRIPT: 'https://static-content.vnforapps.com/v2/js/checkout.js',
     },
     CLARO: {
         API: 'https://claroapi.laraigo.com/api',
@@ -57,6 +60,7 @@ const APIS_URL = {
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
+        NIUBIZSCRIPT: 'https://static-content.vnforapps.com/v2/js/checkout.js',
     },
     CLOUD: {
         API: 'https://cloudapi.laraigo.com/api',
@@ -71,6 +75,7 @@ const APIS_URL = {
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
+        NIUBIZSCRIPT: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true',
     },
     DEMO: {
         API: 'https://demoapix.laraigo.com/api',
@@ -85,6 +90,7 @@ const APIS_URL = {
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
+        NIUBIZSCRIPT: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true',
     },
     LOCAL: {
         API: 'http://localhost:6065/api',
@@ -101,6 +107,7 @@ const APIS_URL = {
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
+        NIUBIZSCRIPT: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true',
     }
 }
 
@@ -116,6 +123,7 @@ const GOOGLECLIENTID_CHANNEL = APIS_URL[ENV].GOOGLECLIENTID_CHANNEL
 const FACEBOOKVERSION = APIS_URL[ENV].FACEBOOKVERSION
 const DIALOG360PARTNERID = APIS_URL[ENV].DIALOG360PARTNERID
 const GOOGLECLIENTID_CALENDAR = APIS_URL[ENV].GOOGLECLIENTID_CALENDAR
+const NIUBIZSCRIPT = APIS_URL[ENV].NIUBIZSCRIPT
 
 export const apiUrls = {
     WS_URL,
@@ -128,6 +136,7 @@ export const apiUrls = {
     FACEBOOKVERSION,
     DIALOG360PARTNERID,
     GOOGLECLIENTID_CALENDAR,
+    NIUBIZSCRIPT,
     LOGIN_URL: `${BASE_URL}/auth`,
     CONNECT_INBOX: `${BASE_URL}/auth/connect`,
     CHANGE_ORGANIZATION: `${BASE_URL}/auth/changeorganization`,
