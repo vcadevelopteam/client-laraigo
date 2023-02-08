@@ -178,150 +178,6 @@ export const PaymentOrderNiubizStatus: FC = () => {
                                         {t(langKeys.paymentorder_payfailure)}
                                     </div>
                                 </>}
-                                {!showSuccess && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_payfailuremotive)}
-                                        </div>
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {paymentData.laststatus === 'Accept' ? t(langKeys.paymentorder_cardnotvalid) : paymentData.laststatus}
-                                        </div>
-                                    </div>
-                                </div>}
-                                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_currency)}
-                                        </div>
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {paymentData?.currency}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_totalamount)}
-                                        </div>
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {formatNumber(paymentData?.totalamount || 0)}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_paymentcount)}
-                                        </div>
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {resultData?.order?.installment}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_externalid)}
-                                        </div>
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {paymentData?.ordercode}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_transaction)}
-                                        </div>
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {resultData?.order?.transactionId}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_datetime)}
-                                        </div>
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {(new Date(paymentData?.changedate.toString())).toLocaleDateString() + ' ' + (new Date(paymentData?.changedate.toString())).toLocaleTimeString()}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_cardnumber)}
-                                        </div>
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {resultData?.dataMap?.CARD}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_commercecode)}
-                                        </div>
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {commerceData?.merchantId}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_payname)}
-                                        </div>
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {paymentData?.userfirstname + ' ' + paymentData?.userlastname}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_paymail)}
-                                        </div>
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {paymentData?.paymentby || paymentData?.changeby}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_authcode)}
-                                        </div>
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {resultData?.order?.authorizationCode}
-                                        </div>
-                                    </div>
-                                </div>
                                 <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
                                     <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
                                         <div className={classes.textTitle}>
@@ -334,18 +190,102 @@ export const PaymentOrderNiubizStatus: FC = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                {showSuccess && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
                                     <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
                                         <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_orderid)}
+                                            {t(langKeys.paymentorder_payname)}
                                         </div>
                                     </div>
                                     <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
                                         <div className={classes.textField}>
-                                            {paymentData?.ordercode}
+                                            {paymentData?.userfirstname + ' ' + paymentData?.userlastname}
+                                        </div>
+                                    </div>
+                                </div>}
+                                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                        <div className={classes.textTitle}>
+                                            {t(langKeys.paymentorder_datetime)}
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                        <div className={classes.textField}>
+                                            {(new Date(paymentData?.changedate.toString())).toLocaleDateString() + ' ' + (new Date(paymentData?.changedate.toString())).toLocaleTimeString()}
                                         </div>
                                     </div>
                                 </div>
+                                {!showSuccess && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                        <div className={classes.textTitle}>
+                                            {t(langKeys.paymentorder_payfailuremotive)}
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                        <div className={classes.textField}>
+                                            {paymentData.laststatus === 'Accept' ? t(langKeys.paymentorder_cardnotvalid) : paymentData.laststatus}
+                                        </div>
+                                    </div>
+                                </div>}
+                                {showSuccess && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                        <div className={classes.textTitle}>
+                                            {t(langKeys.paymentorder_totalamount)}
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                        <div className={classes.textField}>
+                                            {formatNumber(paymentData?.totalamount || 0)}
+                                        </div>
+                                    </div>
+                                </div>}
+                                {showSuccess && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                        <div className={classes.textTitle}>
+                                            {t(langKeys.paymentorder_currency)}
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                        <div className={classes.textField}>
+                                            {paymentData?.currency}
+                                        </div>
+                                    </div>
+                                </div>}
+                                {showSuccess && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                        <div className={classes.textTitle}>
+                                            {t(langKeys.description)}
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                        <div className={classes.textField}>
+                                            {paymentData?.description}
+                                        </div>
+                                    </div>
+                                </div>}
+                                {showSuccess && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                        <div className={classes.textTitle}>
+                                            {t(langKeys.paymentorder_cardnumber)}
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                        <div className={classes.textField}>
+                                            {resultData?.dataMap?.CARD}
+                                        </div>
+                                    </div>
+                                </div>}
+                                {showSuccess && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                        <div className={classes.textTitle}>
+                                            {t(langKeys.paymentorder_cardbrand)}
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                        <div className={classes.textField}>
+                                            {resultData?.dataMap?.BRAND}
+                                        </div>
+                                    </div>
+                                </div>}
                             </div>
                         </div>
                         <Popus />
