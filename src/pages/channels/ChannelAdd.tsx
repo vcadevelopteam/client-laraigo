@@ -4,6 +4,7 @@ import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router";
 import paths from "common/constants/paths";
+import ListAltIcon from '@material-ui/icons/ListAlt';
 import {
     VoiceColor,
     AndroidColor, EmailColor, FacebookColor, FacebookMessengerColor, InstagramColor, IosColor, SmsColor, TelegramColor, TwitterColor, WebMessengerColor, WhatsappColor, /*TikTokColor,*/ YouTubeColor, LinkedInColor, TeamsColor, BloggerColor
@@ -185,6 +186,11 @@ export const ChannelAdd: FC = () => {
             icon: c => <WebMessengerColor className={c} />,
             label: t(langKeys.channel_chatweb),
             onClick: () => history.push(paths.CHANNELS_ADD_CHATWEB),
+        },
+        {
+            icon: c => <ListAltIcon className={c} />,
+            label: t(langKeys.web_form),
+            onClick: () => history.push(paths.CHANNELS_ADD_WEBFORM),
         },
         {
             icon: c => <EmailColor className={c} />,

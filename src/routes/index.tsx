@@ -59,6 +59,7 @@ const AutomatizationRules = lazy(() => import('pages/AutomatizationRules'));
 const Channels = lazy(() => import('pages/channels/Channels'));
 const ChannelAdd = lazy(() => import('pages/channels/ChannelAdd'));
 const ChannelAddChatWeb = lazy(() => import('pages/channels/ChannelAddChatWeb'));
+const ChannelAddWebForm = lazy(() => import('pages/channels/ChannelAddWebForm'));
 const ChannelAddFacebook = lazy(() => import('pages/channels/ChannelAddFacebook'));
 const ChannelAddMessenger = lazy(() => import('pages/channels/ChannelAddMessenger'));
 const ChannelAddInstagram = lazy(() => import('pages/channels/ChannelAddInstagram'));
@@ -216,6 +217,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.CHANNELS} component={() => (<Layout mainClasses={classes.main}><Channels /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD} component={() => (<Layout mainClasses={classes.main}><ChannelAdd /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_CHATWEB} component={() => (<Layout mainClasses={classes.main}><ChannelAddChatWeb edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_WEBFORM} component={() => (<Layout mainClasses={classes.main}><ChannelAddWebForm edit={false} /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_FACEBOOK.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddFacebook /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_MESSENGER.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddMessenger /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_INSTAGRAM.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddInstagram /></Layout>)} />
@@ -237,6 +239,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.CHANNELS_ADD_WHATSAPPONBOARDING.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddWhatsAppOnboarding /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_EDIT.path} component={() => (<Layout mainClasses={classes.main}><ChannelEdit /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_EDIT_CHATWEB.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddChatWeb edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_WEBFORM.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddWebForm edit /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_EDIT_WHATSAPP.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddWhatsapp edit /></Layout>)} />
 					<ProtectRoute exact path={paths.CORPORATIONS} component={() => (<Layout mainClasses={classes.main}><Corporations /></Layout>)} />
 					<ProtectRoute exact path={paths.ORGANIZATIONS} component={() => (<Layout mainClasses={classes.main}><Organizations /></Layout>)} />

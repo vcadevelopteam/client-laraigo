@@ -116,6 +116,7 @@ const paths = {
     },
     CHANNELS_ADD: '/channels/add',
     CHANNELS_ADD_CHATWEB: '/channels/add/chatweb',
+    CHANNELS_ADD_WEBFORM: '/channels/add/webform',
     CHANNELS_ADD_TIKTOK: {
         path: '/channels/:id/add/ChannelAddTikTok',
         resolve: (channelId: string | number) => `/channels/${channelId}/add/ChannelAddTikTok`,
@@ -147,6 +148,10 @@ const paths = {
     CHANNELS_EDIT_CHATWEB: {
         path: '/channels/edit/:id/chatweb',
         resolve: (channelId: string | number) => `/channels/edit/${channelId}/chatweb`,
+    },
+    CHANNELS_EDIT_WEBFORM: {
+        path: '/channels/edit/:id/webform',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/webform`,
     },
     CHANNELS_EDIT_WHATSAPP: {
         path: '/channels/edit/:id/whatsapp',
