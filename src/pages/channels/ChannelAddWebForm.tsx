@@ -391,6 +391,7 @@ interface NameTemplateProps {
 }
 
 const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index }) => {
+    const { setValue, register, formState: { errors } } = form;
     const classes = useTemplateStyles();
     const { t } = useTranslation();
     const [required, setRequired] = useState(data.required);
@@ -440,15 +441,21 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                                             </Grid>
                                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                                 <TextField
+                                                    {...register(`form.${index}.label`, {
+                                                            validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                        })
+                                                    }
                                                     placeholder={t(langKeys.label)}
                                                     variant="outlined"
                                                     size="small"
                                                     fullWidth
                                                     onChange={e => {
-                                                        form.setValue(`form.${index}.label`, e.target.value)
+                                                        setValue(`form.${index}.label`, e.target.value)
                                                         data.label = e.target.value
                                                     }}
                                                     defaultValue={data.label}
+                                                    error={!isEmpty(errors?.form?.[index]?.label?.message)}
+                                                    helperText={errors?.form?.[index]?.label?.message}
                                                 />
                                             </Grid>
                                         </Grid>
@@ -816,8 +823,7 @@ const TabPanelForm: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) => {
             data: x,
         } as FieldTemplate;
     }));
-
-    const [enable, setEnable] = useState(false);
+    
     const [fieldTemplate, setFieldTemplate] = useState<string>("");
     const [fields, setFields] = useState<FieldTemplate[]>(defFields.current);
 
@@ -849,19 +855,7 @@ const TabPanelForm: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) => {
     return (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
             <Grid container direction="column">
-                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                    <Grid container direction="row">
-                        <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                            <Typography className={classes.text}>
-                                <Trans i18nKey={langKeys.wantAddFormToSiteQuestion} />
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
-                            <IOSSwitch checked={enable} onChange={(_, v) => setEnable(v)} />
-                        </Grid>
-                    </Grid>
-                </Grid>
-                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ display: enable ? 'block' : 'none' }}>
+                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ display: 'block' }}>
                     <Grid container direction="row">
                         <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                             <Typography className={classes.text}>
@@ -1137,18 +1131,25 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
     }, [form, t]);
 
     const handleNext = () => {
-        form.handleSubmit((_) => setShowFinalStep(true))();
+        if(!!form.getValues("form").length){
+            form.handleSubmit((_) => setShowFinalStep(true))();
+        }else{
+            dispatch(showSnackbar({
+                message: t(langKeys.emptyformerror),
+                show: true,
+                severity: "warning"
+            }));
+        }
     }
 
-    const handleSubmit = (name: string, auto: boolean, hexIconColor: string) => {
-        debugger
+    const handleSubmit = (name: string, auto: boolean) => {
         const values = form.getValues();
         if (!channel) {
-            const body = getInsertChatwebChannel(name, auto, hexIconColor, values);
+            const body = getInsertChatwebChannel(name, auto, "", values, "FORM");
             dispatch(insertChannel2(body));
         } else {
             const id = channel.communicationchannelid;
-            const body = getEditChatWebChannel(id, channel, values, name, auto, hexIconColor);
+            const body = getEditChatWebChannel(id, channel, values, name, auto, "", "FORM");
             dispatch(getEditChannel(body, "CHAZ"));
         }
 
@@ -1231,7 +1232,7 @@ const useFinalStepStyles = makeStyles(theme => ({
 interface ChannelAddEndProps {
     loading: boolean;
     integrationId?: string;
-    onSubmit: (name: string, auto: boolean, hexIconColor: string) => void;
+    onSubmit: (name: string, auto: boolean) => void;
     onClose?: () => void;
     channel: IChannel | null;
 }
@@ -1242,7 +1243,6 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
     const history = useHistory();
     const [name, setName] = useState(channel?.communicationchanneldesc || "");
     const [auto] = useState(true);
-    const [hexIconColor, setHexIconColor] = useState(channel?.coloricon || "#7721ad");
 
     const handleGoBack = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -1250,7 +1250,13 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
     }
 
     const handleSave = () => {
-        onSubmit(name, auto, hexIconColor);
+        onSubmit(name, auto);
+    }
+    const downloadHTML = () => {
+        /*var fs = require('fs');
+        var htmlContent = `<script src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/test-FormWebClient.min.js" integrationid="${integrationId}" containerid="*reemplazar"></script>`;
+        fs.writeFile(`/${name}.html`, htmlContent);
+        window.open(fs)*/
     }
 
     return (
@@ -1288,17 +1294,17 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
             </div>
             <div style={{ display: integrationId ? 'flex' : 'none', height: 10 }} />
             <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}>
-                {t(langKeys.chatwebstep)}
+                {t(langKeys.webformstep)}
             </div>
             <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word' }}><code>
                 {`<script src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/test-FormWebClient.min.js" integrationid="${integrationId}" containerid="*reemplazar"></script>`}
             </code></pre><div style={{ height: 20 }} />
-            <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}>
+            <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column', marginBottom: 20 }}>
                 *{t(langKeys.containeridExplained)}
             </div>
             <div style={{width:"100%", gap:"8px",display:"flex"}}>
-                <Button variant="contained" style={{width:"50%"}} color="primary" onClick={() => history.push(paths.CHANNELS)}>
-                    {t(langKeys.close)}
+                <Button variant="contained" style={{width:"50%"}} color="primary" onClick={downloadHTML}>
+                    {t(langKeys.downloadhtmlform)}
                 </Button>
                 <Button variant="contained" style={{width:"50%"}} color="primary" onClick={() => history.push(paths.CHANNELS)}>
                     {t(langKeys.close)}

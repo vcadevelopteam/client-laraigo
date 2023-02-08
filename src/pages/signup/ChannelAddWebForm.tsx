@@ -455,6 +455,7 @@ interface NameTemplateProps {
 }
 
 const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index }) => {
+    const { setValue, register, formState: { errors } } = form;
     const classes = useTemplateStyles();
     const { t } = useTranslation();
     const [required, setRequired] = useState(data.required);
@@ -504,6 +505,10 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                                             </Grid>
                                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                                 <TextField
+                                                    {...register(`form.${index}.label`, {
+                                                            validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                        })
+                                                    }
                                                     placeholder={t(langKeys.label)}
                                                     variant="outlined"
                                                     size="small"
@@ -513,6 +518,8 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                                                         data.label = e.target.value
                                                     }}
                                                     defaultValue={data.label}
+                                                    error={!!errors?.form?.[index]?.label}
+                                                    helperText={errors?.form?.[index]?.label?.message}
                                                 />
                                             </Grid>
                                         </Grid>
@@ -874,7 +881,6 @@ const templates: { [x: string]: FieldTemplate } = {
 
 const TabPanelForm: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) => {
     const classes = useTabFormStyles();
-    const [enable, setEnable] = useState(false);
     const [fieldTemplate, setFieldTemplate] = useState<string>("");
     const [fields, setFields] = useState<FieldTemplate[]>([]);
 
@@ -906,19 +912,7 @@ const TabPanelForm: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) => {
     return (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
             <Grid container direction="column">
-                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                    <Grid container direction="row">
-                        <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                            <Typography className={classes.text}>
-                                <Trans i18nKey={langKeys.wantAddFormToSiteQuestion} />
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
-                            <IOSSwitch checked={enable} onChange={(_, v) => setEnable(v)} />
-                        </Grid>
-                    </Grid>
-                </Grid>
-                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ display: enable ? 'block' : 'none' }}>
+                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ display: 'block' }}>
                     <Grid container direction="row">
                         <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                             <Typography className={classes.text}>
@@ -1282,10 +1276,18 @@ export const ChannelAddWebForm: FC<{ setOpenWarning: (param: any) => void }> = (
                     variant="contained"
                     color="primary"
                     onClick={async () => {
-                        const valid = await nestedForm.trigger();
-                        if (valid) {
-                            setView("view1");
-                            setHasFinished(true);
+                        if(!!nestedForm.getValues("form").length){
+                            const valid = await nestedForm.trigger();
+                            if (valid) {
+                                setView("view1");
+                                setHasFinished(true);
+                            }
+                        }else{
+                            dispatch(showSnackbar({
+                                message: t(langKeys.emptyformerror),
+                                show: true,
+                                severity: "warning"
+                            }));
                         }
                     }}
                 >
