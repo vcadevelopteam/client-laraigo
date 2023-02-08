@@ -1252,12 +1252,6 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
     const handleSave = () => {
         onSubmit(name, auto);
     }
-    const downloadHTML = () => {
-        /*var fs = require('fs');
-        var htmlContent = `<script src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/test-FormWebClient.min.js" integrationid="${integrationId}" containerid="*reemplazar"></script>`;
-        fs.writeFile(`/${name}.html`, htmlContent);
-        window.open(fs)*/
-    }
 
     return (
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -1297,19 +1291,14 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                 {t(langKeys.webformstep)}
             </div>
             <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word' }}><code>
-                {`<script src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/test-FormWebClient.min.js" integrationid="${integrationId}" containerid="*reemplazar"></script>`}
+                {`<script src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/test-FormWebClient.min.js" integrationid="${integrationId}" containerid="${name}"></script>`}
             </code></pre><div style={{ height: 20 }} />
             <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column', marginBottom: 20 }}>
                 *{t(langKeys.containeridExplained)}
             </div>
-            <div style={{width:"100%", gap:"8px",display:"flex"}}>
-                <Button variant="contained" style={{width:"50%"}} color="primary" onClick={downloadHTML}>
-                    {t(langKeys.downloadhtmlform)}
-                </Button>
-                <Button variant="contained" style={{width:"50%"}} color="primary" onClick={() => history.push(paths.CHANNELS)}>
+                <Button variant="contained" color="primary" onClick={() => history.push(paths.CHANNELS)}>
                     {t(langKeys.close)}
                 </Button>
-            </div>
             </div>
         </div>
     );
