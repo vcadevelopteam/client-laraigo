@@ -170,7 +170,7 @@ export const PaymentOrderNiubiz: FC = () => {
 
                 if (resultSessionToken.data) {
                     setPaymentData(resultSessionToken.data);
-                    importUrlScript("https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true");
+                    importUrlScript("https://static-content.vnforapps.com/v2/js/checkout.js");
                     importManualScript(resultSessionToken.data);
                 }
             } else if (resultSessionToken.error) {
