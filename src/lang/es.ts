@@ -4913,6 +4913,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   paymentorder_orderid: "ID Orden",
   paymentorder_authcode: "Código Autorización",
   paymentorder_purchasenumber: "Número de Pedido",
+  paymentorder_cardbrand: "Marca de Tarjeta",
 };
 
 const esResource: ResourceLanguage = {
