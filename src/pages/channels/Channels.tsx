@@ -92,9 +92,9 @@ export const Channels: FC = () => {
             history.push({ pathname: paths.CHANNELS_EDIT_WHATSAPP.resolve(row.communicationchannelid), state: whatsAppData });
         }
         else {
-            const pathname = row.type === "CHAZ" ?
-                paths.CHANNELS_EDIT_CHATWEB.resolve(row.communicationchannelid) :
-                paths.CHANNELS_EDIT.resolve(row.communicationchannelid);
+            let pathname = paths.CHANNELS_EDIT.resolve(row.communicationchannelid);
+            if(row.type === "CHAZ") pathname =  paths.CHANNELS_EDIT_CHATWEB.resolve(row.communicationchannelid);
+            if(row.type === "FORM")pathname =  paths.CHANNELS_EDIT_WEBFORM.resolve(row.communicationchannelid);
 
             history.push({
                 pathname,
