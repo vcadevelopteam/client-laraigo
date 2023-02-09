@@ -320,7 +320,7 @@ const TableZyx = React.memo(({
     ButtonsElement,
     triggerExportPersonalized,
     exportPersonalized,
-    pageSizeDefault = 20,
+    pageSizeDefault = 10,
     importCSV,
     handleTemplate,
     filterGeneral = true,

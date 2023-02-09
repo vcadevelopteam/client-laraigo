@@ -450,7 +450,7 @@ const TableZyx = React.memo(({
         {
             columns,
             data,
-            initialState: { pageIndex: initialPageIndex, pageSize: 20, selectedRowIds: initialSelectedRows || {} },
+            initialState: { pageIndex: initialPageIndex, pageSize: 10, selectedRowIds: initialSelectedRows || {} },
             manualPagination: true, // Tell the usePagination
             pageCount: controlledPageCount,
             useControlledState: (state: any) => {
