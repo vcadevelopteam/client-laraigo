@@ -15,6 +15,7 @@ import { useSelector } from 'hooks';
 import { showSnackbar } from 'store/popus/actions';
 import { getEditChatWebChannel, getInsertChatwebChannel } from 'common/helpers';
 import paths from 'common/constants/paths';
+import { apiUrls } from 'common/constants';
 
 interface TabPanelProps {
     value: string;
@@ -1243,7 +1244,6 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
     const history = useHistory();
     const [name, setName] = useState(channel?.communicationchanneldesc || "");
     const [auto] = useState(true);
-    const user = useSelector(state => state.login.validateToken.user);
     
 
     const handleGoBack = (e: React.MouseEvent) => {
@@ -1295,9 +1295,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
             <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word' }}><code>
                 {`
                 <div id="${name}"></div>
-                <script src="${(user?.properties?.environment === "PRODUCTION")?"https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js":
-                    ((user?.properties?.environment === "TESTING")?"https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/testing-form.min.js":
-                    "https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/test-FormWebClient.min.js")}" integrationid="${integrationId}" containerid="${name}"></script>
+                <script src="${apiUrls.WEBFORMCHANNEL_FORM}" integrationid="${integrationId}" containerid="${name}"></script>
                 `}
             </code></pre><div style={{ height: 20 }} />
             <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column', marginBottom: 20 }}>
