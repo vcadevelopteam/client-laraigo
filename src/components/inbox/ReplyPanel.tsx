@@ -138,13 +138,12 @@ const ItemFile: React.FC<{ item: IFile, setFiles: (param: any) => void }> = ({ i
 
 const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void }> = ({ classes, setText }) => {
     const [open, setOpen] = React.useState(false);
-    const [quickReplies, setquickReplies] = useState<Dictionary[]>([])
+    const quickReplies = useSelector(state => state.inbox.quickreplies);
     const [quickRepliesToShow, setquickRepliesToShow] = useState<Dictionary[]>([])
     const handleClick = () => setOpen((prev) => !prev);
     const [showSearch, setShowSearch] = useState(false);
     const [search, setSearch] = useState("");
     const { t } = useTranslation();
-    const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const user = useSelector(state => state.login.validateToken.user);
     const variablecontext = useSelector(state => state.inbox.person.data?.variablecontext);
@@ -152,18 +151,14 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
     const handleClickAway = () => setOpen(false);
 
     useEffect(() => {
-        if (!multiData.loading && !multiData.error && multiData?.data[4]) {
-            setquickReplies(multiData?.data[4].data)
-            setquickRepliesToShow(multiData?.data[4].data.filter(x => !!x.favorite))
-
-        }
-    }, [multiData])
+        setquickRepliesToShow(quickReplies.data.filter(x => !!x.favorite))
+    }, [quickReplies])
 
     useEffect(() => {
         if (search === "") {
-            setquickRepliesToShow(quickReplies.filter(x => !!x.favorite))
+            setquickRepliesToShow(quickReplies.data.filter(x => !!x.favorite))
         } else {
-            setquickRepliesToShow(quickReplies.filter(x => x.description.toLowerCase().includes(search.toLowerCase())))
+            setquickRepliesToShow(quickReplies.data.filter(x => x.description.toLowerCase().includes(search.toLowerCase())))
         }
     }, [search, quickReplies])
 
@@ -464,7 +459,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const groupInteractionList = useSelector(state => state.inbox.interactionList);
 
     const [typeHotKey, setTypeHotKey] = useState("")
-    const [quickReplies, setquickReplies] = useState<Dictionary[]>([])
+    const quickReplies = useSelector(state => state.inbox.quickreplies);
     const [emojiNoShow, setemojiNoShow] = useState<string[]>([])
     const [emojiFavorite, setemojiFavorite] = useState<string[]>([])
     const [inappropiatewordsList, setinnappropiatewordsList] = useState<Dictionary[]>([])
@@ -658,14 +653,15 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
 
     useEffect(() => {
         if (!multiData.loading && !multiData.error && multiData?.data[4]) {
-            setquickReplies(multiData?.data?.[4]?.data || [])
-            setquickRepliesToShow(multiData?.data?.[4]?.data.filter(x => !!x.favorite) || [])
             setemojiNoShow(multiData?.data?.[10]?.data.filter(x => (!!x.restricted)).map(x => x.emojihex) || [])
             setemojiFavorite(multiData?.data?.[10]?.data.filter(x => (!!x.favorite)).map(x => x.emojihex) || [])
             setinnappropiatewordsList(multiData?.data?.[11]?.data || [])
             // setinnappropiatewords(multiData?.data[11].data.filter(x => (x.status === "ACTIVO")).map(y => (y.description)) || [])
         }
     }, [multiData])
+    useEffect(() => {
+        setquickRepliesToShow(quickReplies?.data?.filter(x => !!x.favorite) || [])
+    }, [quickReplies])
 
     useEffect(() => {
         if (text.substring(0, 2).toLowerCase() === "\\q") {
@@ -673,9 +669,9 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             setOpenDialogHotKey(true);
             const textToSearch = text.trim().split(text.trim().includes("\\q") ? "\\q" : "\\Q")[1];
             if (textToSearch === "")
-                setquickRepliesToShow(quickReplies.filter(x => !!x.favorite))
+                setquickRepliesToShow(quickReplies.data.filter(x => !!x.favorite))
             else
-                setquickRepliesToShow(quickReplies.filter(x => x.description.toLowerCase().includes(textToSearch.toLowerCase())))
+                setquickRepliesToShow(quickReplies.data.filter(x => x.description.toLowerCase().includes(textToSearch.toLowerCase())))
         } else if (text.substring(0, 2).toLowerCase() === "\\r") {
             setTypeHotKey("richresponse")
             setOpenDialogHotKey(true);
@@ -799,7 +795,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                     positionEditable="top"
                                     spellCheck
                                     onKeyPress={handleKeyPress}
-                                    quickReplies={multiData?.data[4]?.data || []}
+                                    quickReplies={quickReplies.data}
                                     refresh={refresh}
                                     placeholder="Send your message..."
                                     emojiNoShow={emojiNoShow}

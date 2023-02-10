@@ -1,7 +1,7 @@
 import { IActionCall, IAgent, IInteraction, ITicket, ISendHSM, ICloseTicketsParams, IMassiveCloseTicketsParams, IReplyTicketParams, INewMessageParams, IReassignicketParams, IDeleteTicketParams, IPerson, Dictionary } from "@types";
 import { CommonService, InboxService } from "network";
 import actionTypes from "./actionTypes";
-import { getUsersBySupervisor, getTicketsByFilter, getBlocksUserFromChatfow, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson, getClassificationLevel2, getCommChannelLst, getMessageTemplateLst } from 'common/helpers';
+import { getUsersBySupervisor, getTicketsByFilter, getBlocksUserFromChatfow, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson, getClassificationLevel2, getCommChannelLst, getMessageTemplateLst, getListQuickReply } from 'common/helpers';
 
 export const getAgents = (): IActionCall => ({
     callAPI: () => CommonService.main(getUsersBySupervisor()),
@@ -321,3 +321,16 @@ export const triggerBlock = (parameters: Dictionary): IActionCall => ({
     },
     type: null,
 });
+
+
+export const getQuickreplies = (): IActionCall => ({
+    callAPI: () => CommonService.main(getListQuickReply()),
+    types: {
+        loading: actionTypes.GET_QUICKREPLIES,
+        success: actionTypes.GET_QUICKREPLIES_SUCCESS,
+        failure: actionTypes.GET_QUICKREPLIES_FAILURE,
+    },
+    type: null,
+});
+
+export const resetQuickreplies = (): IActionCall => ({ type: actionTypes.GET_QUICKREPLIES_RESET });

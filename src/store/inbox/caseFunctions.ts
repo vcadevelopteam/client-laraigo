@@ -1248,3 +1248,33 @@ export const setDataUser = (state: IState, action: IAction): IState => ({
     userGroup: action.payload.userGroup,
     role: action.payload.role
 });
+
+export const getDataQuickreplies = (state: IState): IState => ({
+    ...state,
+    quickreplies: { ...state.quickreplies, loading: true, error: false },
+});
+
+export const getDataQuickrepliesSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    quickreplies: {
+        data: action.payload.data || [],
+        loading: false,
+        error: false,
+    },
+});
+
+export const getDataQuickrepliesFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    quickreplies: {
+        ...state.quickreplies,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    },
+});
+
+export const getDataQuickrepliesReset = (state: IState): IState => ({
+    ...state,
+    quickreplies: initialState.quickreplies,
+});
