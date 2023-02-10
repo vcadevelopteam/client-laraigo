@@ -3240,7 +3240,7 @@ export const getPaginatedReportVoiceCall = ({ skip, take, filters, sorts, startd
         take,
         filters,
         sorts,
-        origin: "productcatalog",
+        origin: "reportvoicecall",
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
