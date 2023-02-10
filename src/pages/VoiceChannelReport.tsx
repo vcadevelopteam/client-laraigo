@@ -283,20 +283,32 @@ const VoiceChannelReport: FC = () => {
                 Header: `${t(langKeys.starttimecall)}`,
                 accessor: 'tickettime',
                 NoFilter: false,
-                type: 'time'
+                type: 'time',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (row.tickettime||"00:00:00")
+                }
             },
             {
                 Header: `${t(langKeys.finishtimecall)}`,
                 accessor: 'finishtime',
                 NoFilter: false,
-                type: 'time'
+                type: 'time',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (row.finishtime||"00:00:00")
+                }
             },
             {
                 Header: t(langKeys.transfertimecall),
                 accessor: 'handoffdate',
                 NoFilter: false,
                 helpText: t(langKeys.transfertimecall_tooltip),
-                type: 'time'
+                type: 'time',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (row.handoffdate||"00:00:00")
+                }
             },
             {
                 Header: t(langKeys.lastadvisername),
@@ -334,35 +346,55 @@ const VoiceChannelReport: FC = () => {
                 accessor: 'totalduration',
                 NoFilter: false,
                 helpText: t(langKeys.totalTime_tooltip),
-                type: 'time'
+                type: 'time',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (row.totalduration||"00:00:00")
+                }
             },
             {
                 Header: t(langKeys.advisorattentiontime),
                 accessor: 'agentduration',
                 NoFilter: false,
                 helpText: t(langKeys.advisorattentiontime_tooltip),
-                type: 'time'
+                type: 'time',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (row.agentduration||"00:00:00")
+                }
             },
             {
                 Header: t(langKeys.customerwaitingtime),
                 accessor: 'customerwaitingduration',
                 NoFilter: false,
                 helpText: t(langKeys.customerwaitingtime_tooltip),
-                type: 'time'
+                type: 'time',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (row.customerwaitingduration||"00:00:00")
+                }
             },
             {
                 Header: t(langKeys.callwaitingtime),
                 accessor: 'holdingtime',
                 NoFilter: false,
                 helpText: t(langKeys.callwaitingtime_tooltip),
-                type: 'time'
+                type: 'time',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (row.holdingtime||"00:00:00")
+                }
             },
             {
                 Header: t(langKeys.transfertime),
                 accessor: 'transferduration',
                 NoFilter: false,
                 helpText: t(langKeys.transfertime_tooltip),
-                type: 'time'
+                type: 'time',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (row.transferduration||"00:00:00")
+                }
             },
         ],
         [t]
