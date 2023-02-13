@@ -193,7 +193,7 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) =
                         </Grid>
                         <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                             <FormControlLabel
-                                value={recaptcha}
+                                checked={recaptcha}
                                 control={<Checkbox 
                                     onChange={(e) => {setrecaptcha(e.target.checked);setValue('extra.recaptcha', e.target.checked)}}
                                     color="primary" />}
