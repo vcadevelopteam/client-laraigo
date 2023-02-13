@@ -1,18 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useRef, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box, AppBar, Tabs, Tab, Grid, IconButton, FormHelperText, Tooltip, TextField, withStyles, Typography, FormControl, Select, Divider, MenuItem, Menu } from '@material-ui/core';
+import { makeStyles, Breadcrumbs, Button, Box, AppBar, Tabs, Tab, Grid, IconButton, FormHelperText, Tooltip, TextField, withStyles, Typography, FormControl, Select, Divider, MenuItem, Menu, InputAdornment } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import Link from '@material-ui/core/Link';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
-import { ColorInput, FieldEdit, FieldEditMulti, FieldSelect, IOSSwitch } from "components";
+import { ColorInput, FieldEdit, FieldSelect, IOSSwitch } from "components";
 import { useHistory, useLocation } from "react-router";
 import paths from "common/constants/paths";
 import { useForm, UseFormReturn } from 'react-hook-form';
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { insertChannel, insertChannel2 } from "store/channel/actions";
+import { insertChannel2 } from "store/channel/actions";
 import { AndroidIcon } from "icons";
 import clsx from 'clsx';
 import { Close, CloudUpload } from "@material-ui/icons";
@@ -25,6 +25,7 @@ import { editChannel as getEditChannel} from 'store/channel/actions';
 import { getMultiCollection } from "store/main/actions";
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+import SendIcon from '@material-ui/icons/Send';
 
 interface TabPanelProps {
     value: string;
@@ -32,7 +33,7 @@ interface TabPanelProps {
 }
 interface FieldTemplate {
     text: React.ReactNode;
-    node: (onClose: (key: string) => void, data: IChatWebAddFormField, form: UseFormReturn<IChatWebAdd>, index: number,fields:any, setFields: (key: any) => void) => React.ReactNode;
+    node: (onClose: (key: string) => void, data: IChatWebAddFormField, form: UseFormReturn<IAndroidSDKAdd>, index: number,fields:any, setFields: (key: any) => void) => React.ReactNode;
     data: IChatWebAddFormField;
 }
 const useTabPanelStyles = makeStyles(theme => ({
@@ -113,7 +114,7 @@ const CONTACT = "CONTACT_FIELD";
 
 interface NameTemplateProps {
     onClose: () => void;
-    form: UseFormReturn<IChatWebAdd>;
+    form: UseFormReturn<IAndroidSDKAdd>;
     title: React.ReactNode;
     data: IChatWebAddFormField;
     index: number;
@@ -1010,16 +1011,23 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                                     id= "circleopenmenu"
                                     style={{padding:0}}
                                 >
-                                    <AddCircleIcon style={{width:35, height:35}}/>
+                                    <AddCircleIcon style={{width:35, height:35, color: getValues('color.iconscolor')}}/>
                                 </IconButton>  
                             </div>
-                            <div style={{width: '80%'}}>                            
+                            <div style={{width: '90%'}}>                            
                                 <TextField
                                     variant="outlined"
                                     fullWidth
                                     disabled={!persistentInput}
                                     size="small"
                                     style={{backgroundColor: "white"}}
+                                    InputProps={{
+                                      endAdornment: (
+                                        <InputAdornment position="end">
+                                          <SendIcon  style={{color: getValues('color.iconscolor')}}/>
+                                        </InputAdornment>
+                                      ),
+                                    }}
                                 />
                             </div>
                         </div>
@@ -1204,6 +1212,7 @@ export const AndroidColor: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
     const [borderColor, setBorderColor] = useState(getValues('color.border'));
     const [clientMessageColor, setClientMessageColor] = useState(getValues('color.client'));
     const [botMessageColor, setBotMessageColor] = useState(getValues('color.bot'));
+    const [iconscolor, seticonscolor] = useState(getValues('color.iconscolor'));
 
     const handleHeaderColorChange: ColorChangeHandler = (e) => {
         setHeaderColor(e.hex);
@@ -1228,6 +1237,10 @@ export const AndroidColor: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
     const handleBotMessageColorChange: ColorChangeHandler = (e) => {
         setBotMessageColor(e.hex);
         setValue('color.bot', e.hex);
+    }
+    const handleiconscolorChange: ColorChangeHandler = (e) => {
+        seticonscolor(e.hex);
+        setValue('color.iconscolor', e.hex);
     }
 
     return <>
@@ -1316,6 +1329,22 @@ export const AndroidColor: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                                     </Grid>
                                 </Grid>
                             </Grid>
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{padding:10}}>
+                                <Grid container direction="row">
+                                    <Grid item xs={1} sm={1} md={1} lg={1} xl={1}></Grid>
+                                    <Grid item xs={8} sm={8} md={8} lg={8} xl={8}>
+                                        <label className={classes.text}>
+                                            <Trans i18nKey={langKeys.iconscolorMessage} count={2} />
+                                            <Tooltip title={`${t(langKeys.iconscolorMessageTooltip)}`} placement="top-start">
+                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            </Tooltip>
+                                        </label>
+                                    </Grid>
+                                    <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
+                                        <ColorInput hex={iconscolor} onChange={handleiconscolorChange} />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
                         </Grid>
                     </Grid>
                 </Grid>
@@ -1336,6 +1365,36 @@ export const AndroidColor: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                             <div style={{height: "auto", width: "80%", border:"1px solid", borderColor: borderColor, backgroundColor: botMessageColor, borderRadius: 8,  marginLeft: 10, padding:10, fontSize: "1.1em", paddingTop: 5}}>Te saluda {getValues('extra.botnametext')||"bot"}. en qúe puedo ayudarte</div>
                         </div>
                         <div style={{height: "auto", width: "80%", border:"1px solid", borderColor: borderColor, borderRadius: 8, backgroundColor: clientMessageColor,  marginLeft: "20%", marginTop: 10, padding:10, fontSize: "1.1em", paddingTop: 5}}>Hola</div>
+                    </div>
+                    <div style={{padding:5, margin:"0 20px", width:"calc(100% - 40px)", height: 'calc(100% - 160px)', border: '1px solid', borderRadius: "0 0 6px 6px", backgroundColor: "#e7e7e7", borderColor: getValues('color.border')}}> 
+                        <div style={{width: "100%", display:'flex'}}>
+                            <div style={{paddingRight: 10}}>   
+                                <IconButton
+                                    id= "circleopenmenu"
+                                    style={{padding:0}}
+                                >
+                                    <AddCircleIcon style={{width:35, height:35, color: getValues('color.iconscolor')}}/>
+                                </IconButton>  
+                            </div>
+                            <div style={{width: '90%'}}>                            
+                                <TextField
+                                    variant="outlined"
+                                    fullWidth
+                                    disabled={true}
+                                    size="small"
+                                    style={{backgroundColor: "white"}}
+                                    InputProps={{
+                                      endAdornment: (
+                                        <InputAdornment position="end">
+                                          <SendIcon  style={{color: getValues('color.iconscolor')}}/>
+                                        </InputAdornment>
+                                      ),
+                                    }}
+                                />
+                            </div>
+                        </div>
+                        {//poweredBy && <div style={{width: "100%", textAlign:'center'}}>Powered by Laraigo</div>
+                        }
                     </div>
                 </div>
             </div>
@@ -1975,6 +2034,7 @@ export const ChannelAddAndroid: FC = () => {
                 border: "#EBEAED",
                 client: "#fff",
                 bot: "#aa53e0",
+                iconscolor: "#aa53e0",
             },
             form: [],
             bubble: {

@@ -11,8 +11,7 @@ import { useForm, useFormContext, UseFormReturn } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useSelector } from 'hooks';
 import { showSnackbar } from "store/popus/actions";
-import { IAndroidSDKAdd, IChatWebAdd, IChatWebAddFormField } from "@types";
-import { getInsertChatwebChannel } from "common/helpers/requestBodies";
+import { IAndroidSDKAdd, IChatWebAddFormField } from "@types";
 import clsx from 'clsx';
 import InfoIcon from '@material-ui/icons/Info';
 import React from "react";
@@ -27,7 +26,7 @@ interface TabPanelProps {
 
 interface FieldTemplate {
     text: React.ReactNode;
-    node: (onClose: (key: string) => void, data: IChatWebAddFormField, form: UseFormReturn<IChatWebAdd>, index: number,fields:any, setFields: (key: any) => void) => React.ReactNode;
+    node: (onClose: (key: string) => void, data: IChatWebAddFormField, form: UseFormReturn<IAndroidSDKAdd>, index: number,fields:any, setFields: (key: any) => void) => React.ReactNode;
     data: IChatWebAddFormField;
 }
 
@@ -101,7 +100,7 @@ const useTemplateStyles = makeStyles(theme => ({
 
 interface NameTemplateProps {
     onClose: () => void;
-    form: UseFormReturn<IChatWebAdd>;
+    form: UseFormReturn<IAndroidSDKAdd>;
     title: React.ReactNode;
     data: IChatWebAddFormField;
     index: number;
@@ -1256,6 +1255,7 @@ export const AndroidColorForm: FC<{setTabIndex: (f:string)=>void, form: UseFormR
     const [borderColor, setBorderColor] = useState(getValues('color.border'));
     const [clientMessageColor, setClientMessageColor] = useState(getValues('color.client'));
     const [botMessageColor, setBotMessageColor] = useState(getValues('color.bot'));
+    const [iconscolor, seticonscolor] = useState(getValues('color.iconscolor'));
 
     const handleHeaderColorChange: ColorChangeHandler = (e) => {
         setHeaderColor(e.hex);
@@ -1280,6 +1280,10 @@ export const AndroidColorForm: FC<{setTabIndex: (f:string)=>void, form: UseFormR
     const handleBotMessageColorChange: ColorChangeHandler = (e) => {
         setBotMessageColor(e.hex);
         setValue('color.bot', e.hex);
+    }
+    const handleiconscolorChange: ColorChangeHandler = (e) => {
+        seticonscolor(e.hex);
+        setValue('color.iconscolor', e.hex);
     }
 
     return <>
@@ -1366,6 +1370,22 @@ export const AndroidColorForm: FC<{setTabIndex: (f:string)=>void, form: UseFormR
                                     </Grid>
                                     <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
                                         <ColorInput hex={botMessageColor} onChange={handleBotMessageColorChange} />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{padding:10}}>
+                                <Grid container direction="row">
+                                    <Grid item xs={1} sm={1} md={1} lg={1} xl={1}></Grid>
+                                    <Grid item xs={8} sm={8} md={8} lg={8} xl={8}>
+                                        <label className={classes.text}>
+                                            <Trans i18nKey={langKeys.iconscolorMessage} count={2} />
+                                            <Tooltip title={`${t(langKeys.iconscolorMessageTooltip)}`} placement="top-start">
+                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            </Tooltip>
+                                        </label>
+                                    </Grid>
+                                    <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
+                                        <ColorInput hex={iconscolor} onChange={handleiconscolorChange} />
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -1813,7 +1833,7 @@ export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = (
         }
     }, [insertChannel]);
 
-    const nestedForm: UseFormReturn<IChatWebAdd> = useForm<IChatWebAdd>({
+    const nestedForm: UseFormReturn<IAndroidSDKAdd> = useForm<IAndroidSDKAdd>({
         defaultValues: {
             interface: {
                 chattitle: "",
@@ -1828,6 +1848,7 @@ export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = (
                 border: "#EBEAED",
                 client: "#fff",
                 bot: "#aa53e0",
+                iconscolor: "#aa53e0",
             },
             form: [],
             bubble: {

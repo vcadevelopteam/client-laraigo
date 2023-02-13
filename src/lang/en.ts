@@ -2074,6 +2074,8 @@ const translation: LangKeys = {
   kanbanview: "Kanban view",
   listview: "List view",
   orderbiggerthan1: "Order can only have values ​greater than 1",
+  iconscolorMessage: "Icon Color",
+  iconscolorMessageTooltip: "Color of icons for sending, attachments, etc.",
   mustbeinteger: "Value must be an integer",
   report_interaction_intent: "Intention",
   report_interaction_intent_help:

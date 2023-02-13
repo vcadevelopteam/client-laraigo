@@ -26,6 +26,8 @@ export const langKeys = {
     view: "view",
     documentsTooltip: "documentsTooltip",
     poweredbyTooltip: "poweredbyTooltip",
+    iconscolorMessage: "iconscolorMessage",
+    iconscolorMessageTooltip: "iconscolorMessageTooltip",
     mustassigncustomer: "mustassigncustomer",
     propertyiainiciodelimit: "propertyiainiciodelimit",
     locationTooltip: "locationTooltip",

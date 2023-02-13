@@ -8,7 +8,7 @@ export interface IChatWebAdd {
 
 export interface IAndroidSDKAdd {
     interface: IChatwebAddInterface;
-    color: IChatWebAddColor;
+    color: IAndroidSDKAddColor;
     form: IChatWebAddFormField[];
     bubble: IChatWebAddBubble;
     extra: IChatWebAddExtra;
@@ -21,7 +21,14 @@ export interface IChatwebAddInterface {
     iconheader: string | File | null;
     iconbot: string | File | null;
 }
-
+export interface IAndroidSDKAddColor {
+    header: string;
+    background: string;
+    border: string;
+    client: string;
+    bot: string;
+    iconscolor: string;
+}
 export interface IChatWebAddColor {
     header: string;
     background: string;
