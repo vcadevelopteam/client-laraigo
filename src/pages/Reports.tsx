@@ -68,7 +68,11 @@ const getArrayBread = (nametmp: string, nameView1: string) => ([
 
 const useStyles = makeStyles((theme) => ({
     container: {
-        width: '100%'
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        // overflowY: "auto"
+        // flex: 1
     },
     containerDetails: {
         marginTop: theme.spacing(3)
@@ -155,7 +159,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-    
+
     // const columns = React.useMemo(() => [{ Header: 'null', accessor: 'null', type: 'null' }] as any, []);
     const columns = React.useMemo(() => reportColumns.map(x => {
         switch (x.proargtype) {
@@ -171,7 +175,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                     return {
                         Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                         accessor: x.proargnames,
-                        helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help")? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
+                        helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                         type: "number"
                     }
 
@@ -180,7 +184,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                 return {
                     Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                     accessor: x.proargnames,
-                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help")? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
+                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                     type: "boolean",
                     Cell: (props: any) => {
                         const column = props.cell.column;
@@ -192,7 +196,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                 return {
                     Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                     accessor: x.proargnames,
-                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help")? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
+                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                     type: "date",
                     Cell: (props: any) => {
                         const column = props.cell.column;
@@ -214,7 +218,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                 return {
                     Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                     accessor: x.proargnames,
-                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help")? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
+                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                     type: "date",
                     Cell: (props: any) => {
                         const column = props.cell.column;
@@ -240,7 +244,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                 return {
                                     Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                                     accessor: x.proargnames,
-                                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help")? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
+                                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                                     type: "string",
                                     Cell: (props: any) => {
                                         const { status } = props.cell.row.original;
@@ -251,7 +255,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                 return {
                                     Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                                     accessor: x.proargnames,
-                                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help")? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
+                                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                                     type: "string"
                                 }
                         }
@@ -262,11 +266,11 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                 return {
                                     Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                                     accessor: x.proargnames,
-                                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help")? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
+                                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                                     type: "string",
                                     Cell: (props: any) => {
                                         const { interactiontext } = props.cell.row.original;
-                                        let texttoshow = interactiontext.length<40? interactiontext: interactiontext.substring(0, 40) + "... "
+                                        let texttoshow = interactiontext.length < 40 ? interactiontext : interactiontext.substring(0, 40) + "... "
                                         return texttoshow
                                     }
                                 }
@@ -274,11 +278,11 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                 return {
                                     Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                                     accessor: x.proargnames,
-                                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help")? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
+                                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                                     type: "string",
                                     Cell: (props: any) => {
                                         const { question } = props.cell.row.original;
-                                        let texttoshow = question.length<40? question: question.substring(0, 40) + "... "
+                                        let texttoshow = question.length < 40 ? question : question.substring(0, 40) + "... "
                                         return texttoshow
                                     }
                                 }
@@ -286,7 +290,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                 return {
                                     Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                                     accessor: x.proargnames,
-                                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help")? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
+                                    helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                                     type: "string"
                                 }
                         }
@@ -294,7 +298,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                         return {
                             Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
                             accessor: x.proargnames,
-                            helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help")? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
+                            helpText: t('report_' + row?.origin + '_' + x.proargnames + "_help") === ('report_' + row?.origin + '_' + x.proargnames + "_help") ? "" : t('report_' + row?.origin + '_' + x.proargnames + "_help"),
                             type: "string"
                         }
                 }
@@ -391,7 +395,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
     }
 
     return (
-        <div style={{ width: '100%' }}>
+        <div style={{ width: '100%', display: "flex", flex: 1, flexDirection: "column" }}>
             <TemplateBreadcrumbs
                 breadcrumbs={getArrayBread(t('report_' + row?.origin), t(langKeys.report_plural))}
                 handleClick={handleSelected}
@@ -434,7 +438,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                                         />
                                                         :
                                                         <FieldSelect
-                                                            valueDefault={allParameters[filtro.values[0].parameterName]}    
+                                                            valueDefault={allParameters[filtro.values[0].parameterName]}
                                                             label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
                                                             className={classes.filterComponent}
                                                             key={filtro.values[0].filter}
@@ -670,7 +674,7 @@ const ReportConversationWhatsapp: FC = () => {
     }, [])
 
     useEffect(() => {
-        if (!multiData.loading){
+        if (!multiData.loading) {
             dispatch(showBackdrop(false));
             setGridData((multiData.data[0]?.data || []).map(d => ({
                 ...d,
@@ -746,8 +750,8 @@ const ReportConversationWhatsapp: FC = () => {
                 columns={columns}
                 data={gridData}
                 ButtonsElement={() => (
-                    <div className={classes.containerHeader} style={{display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'space-between'}}>
-                        <div style={{display: 'flex', gap: 8}}>
+                    <div className={classes.containerHeader} style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', gap: 8 }}>
                             <DateRangePicker
                                 open={openDateRangeCreateDateModal}
                                 setOpen={setOpenDateRangeCreateDateModal}
@@ -837,7 +841,7 @@ const Reports: FC = () => {
                             summaries: x.summaryjson ? JSON.parse(x.summaryjson) : [],
                             reporttype: "custom"
                         }))
-                    ].filter((y:any) => superadmin ? true : !['invoice'].includes(y?.origin));
+                    ].filter((y: any) => superadmin ? true : !['invoice'].includes(y?.origin));
                     setAllReports(rr);
                     setallReportsToShow(rr);
                 }
@@ -849,10 +853,10 @@ const Reports: FC = () => {
     useEffect(() => {
         if (searchValue.length >= 3 || searchValue.length === 0) {
             let temparray = allReports.filter((el: any) => {
-                if(el.reporttype === "default")
+                if (el.reporttype === "default")
                     return (t((langKeys as any)[`report_${el.origin}`]) + "").toLowerCase().includes(searchValue.toLowerCase())
                 return el.description.toLowerCase().includes(searchValue.toLowerCase())
-                })
+            })
             setallReportsToShow(temparray)
         }
     }, [searchValue]);
@@ -958,7 +962,7 @@ const Reports: FC = () => {
                                     title={t(langKeys.heatmap)}
                                 />
                                 <CardContent>
-                                    <Typography gutterBottom variant="h6" component="div" style={{fontSize: "130%"}}>
+                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                         {t(langKeys.heatmap)}
                                     </Typography>
                                 </CardContent>
@@ -979,7 +983,7 @@ const Reports: FC = () => {
                                     title={t(langKeys.recordhsmreport)}
                                 />
                                 <CardContent>
-                                    <Typography gutterBottom variant="h6" component="div" style={{fontSize: "130%"}}>
+                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                         {t(langKeys.recordhsmreport)}
                                     </Typography>
                                 </CardContent>
@@ -1000,7 +1004,7 @@ const Reports: FC = () => {
                                     title={t(langKeys.hsmhistory)}
                                 />
                                 <CardContent>
-                                    <Typography gutterBottom variant="h6" component="div" style={{fontSize: "130%"}}>
+                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                         {t(langKeys.hsmhistory)}
                                     </Typography>
                                 </CardContent>
@@ -1021,7 +1025,7 @@ const Reports: FC = () => {
                                     title={t(langKeys.conversation_plural) + " Whatsapp"}
                                 />
                                 <CardContent>
-                                    <Typography gutterBottom variant="h6" component="div" style={{fontSize: "130%"}}>
+                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                         {t(langKeys.conversation_plural) + " Whatsapp"}
                                     </Typography>
                                 </CardContent>
@@ -1042,7 +1046,7 @@ const Reports: FC = () => {
                                     title={t(langKeys.invoice)}
                                 />
                                 <CardContent>
-                                    <Typography gutterBottom variant="h6" component="div" style={{fontSize: "130%"}}>
+                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                         {t(langKeys.invoice)}
                                     </Typography>
                                 </CardContent>
@@ -1063,7 +1067,7 @@ const Reports: FC = () => {
                                     title={t(langKeys.kpimanager)}
                                 />
                                 <CardContent>
-                                    <Typography gutterBottom variant="h6" component="div" style={{fontSize: "130%"}}>
+                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                         {t(langKeys.kpimanager)}
                                     </Typography>
                                 </CardContent>
@@ -1084,7 +1088,7 @@ const Reports: FC = () => {
                                     title={t(langKeys.report_ticketvsasesor)}
                                 />
                                 <CardContent>
-                                    <Typography gutterBottom variant="h6" component="div"  style={{fontSize: "130%"}}>
+                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                         {t(langKeys.report_ticketvsasesor)}
                                     </Typography>
                                 </CardContent>
@@ -1105,7 +1109,7 @@ const Reports: FC = () => {
                                     title={t(langKeys.campaign)}
                                 />
                                 <CardContent>
-                                    <Typography gutterBottom variant="h6" component="div" style={{fontSize: "130%"}}>
+                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                         {t(langKeys.campaign)}
                                     </Typography>
                                 </CardContent>
@@ -1114,7 +1118,7 @@ const Reports: FC = () => {
                     </Grid>
                 )
             case 'UNIQUECONTACTS':
-                if(user?.roledesc === "SUPERADMIN"){
+                if (user?.roledesc === "SUPERADMIN") {
                     return (
                         <Grid item key={"uniquecontactsreport"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
                             <Card >
@@ -1127,7 +1131,7 @@ const Reports: FC = () => {
                                         title={t(langKeys.uniquecontactsreport)}
                                     />
                                     <CardContent>
-                                        <Typography gutterBottom variant="h6" component="div" style={{fontSize: "130%"}}>
+                                        <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                             {t(langKeys.uniquecontactsreport)}
                                         </Typography>
                                     </CardContent>
@@ -1135,7 +1139,7 @@ const Reports: FC = () => {
                             </Card>
                         </Grid>
                     )
-                }else{
+                } else {
                     return (<></>)
                 }
             case 'VOICECALL':
@@ -1151,7 +1155,7 @@ const Reports: FC = () => {
                                     title={t('report_' + report?.origin)}
                                 />
                                 <CardContent>
-                                    <Typography gutterBottom variant="h6" component="div" style={{fontSize: "130%"}}>
+                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                         {t('report_' + report?.origin)}
                                     </Typography>
                                 </CardContent>
@@ -1172,7 +1176,7 @@ const Reports: FC = () => {
                                     title={t('report_' + report?.origin)}
                                 />
                                 <CardContent>
-                                    <Typography gutterBottom variant="h6" component="div" style={{fontSize: "130%"}}>
+                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                         {t('report_' + report?.origin)}
                                     </Typography>
                                 </CardContent>
@@ -1186,7 +1190,7 @@ const Reports: FC = () => {
     if (viewSelected === "view-1") {
         return (
             <div className={classes.container}>
-                {(!reportsResult.mainData.loading && !reportsResult.mainAux.loading) && 
+                {(!reportsResult.mainData.loading && !reportsResult.mainAux.loading) &&
                     <>
                         <Box className={classes.containerFilterGeneral}>
                             <span></span>
@@ -1217,7 +1221,7 @@ const Reports: FC = () => {
                 }
                 <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" style={{ marginBottom: 8 }}>
                     <span className={classes.title}>
-                        {t(langKeys.defaultreports)} ({allReportsToShow.filter(x=>x.reporttype === "default").length})
+                        {t(langKeys.defaultreports)} ({allReportsToShow.filter(x => x.reporttype === "default").length})
                     </span>
                 </Box>
                 {(reportsResult.mainData.loading || reportsResult.mainAux.loading) ? (
@@ -1226,10 +1230,10 @@ const Reports: FC = () => {
                     <>
                         <div className={classes.containerDetails}>
                             <Grid container spacing={3} >
-                                {allReportsToShow.filter(x=>x.reporttype === "default").filter(x => !!x.image).map((report, index) => (
+                                {allReportsToShow.filter(x => x.reporttype === "default").filter(x => !!x.image).map((report, index) => (
                                     reportSwitch(report, index)
                                 ))}
-                                {allReportsToShow.filter(x=>x.reporttype === "default").filter(x => !x.image).map((report, index) => (
+                                {allReportsToShow.filter(x => x.reporttype === "default").filter(x => !x.image).map((report, index) => (
                                     <Grid item key={"report_" + report.reporttemplateid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
                                         <Card style={{ position: 'relative' }}>
                                             <CardActionArea
@@ -1247,7 +1251,7 @@ const Reports: FC = () => {
                                                 />
 
                                                 <CardContent>
-                                                    <Typography gutterBottom variant="h6" component="div" style={{fontSize: "130%"}}>
+                                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                                         {report.description}
                                                     </Typography>
                                                 </CardContent>
@@ -1309,7 +1313,7 @@ const Reports: FC = () => {
 
                 <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" style={{ marginBottom: 8, marginTop: 16 }}>
                     <span className={classes.title}>
-                        {t(langKeys.customreports)} ({allReportsToShow.filter(x=>x.reporttype !== "default").length})
+                        {t(langKeys.customreports)} ({allReportsToShow.filter(x => x.reporttype !== "default").length})
                     </span>
                 </Box>
                 {(reportsResult.mainData.loading || reportsResult.mainAux.loading) ? (
@@ -1318,10 +1322,10 @@ const Reports: FC = () => {
                     <>
                         <div className={classes.containerDetails}>
                             <Grid container spacing={3} >
-                                {allReportsToShow.filter(x=>x.reporttype !== "default").filter(x => !!x.image).map((report, index) => (
+                                {allReportsToShow.filter(x => x.reporttype !== "default").filter(x => !!x.image).map((report, index) => (
                                     reportSwitch(report, index)
                                 ))}
-                                {allReportsToShow.filter(x=>x.reporttype !== "default").filter(x => !x.image).map((report, index) => (
+                                {allReportsToShow.filter(x => x.reporttype !== "default").filter(x => !x.image).map((report, index) => (
                                     <Grid item key={"report_" + report.reporttemplateid + "_" + index} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
                                         <Card style={{ position: 'relative' }}>
                                             <CardActionArea
@@ -1339,7 +1343,7 @@ const Reports: FC = () => {
                                                 />
 
                                                 <CardContent>
-                                                    <Typography gutterBottom variant="h6" component="div" style={{fontSize: "130%"}}>
+                                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
                                                         {report.description}
                                                     </Typography>
                                                 </CardContent>
@@ -1427,7 +1431,7 @@ const Reports: FC = () => {
         return (
 
             <Fragment>
-                <div style={{ width: '100%' }}>
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
                     <TemplateBreadcrumbs
                         breadcrumbs={getArrayBread(t('report_heatmap'), t(langKeys.report_plural))}
                         handleClick={handleSelectedString}
@@ -1439,7 +1443,7 @@ const Reports: FC = () => {
     } else if (viewSelected === "recordhsmreport") {
         return (
             <>
-                <div style={{ width: '100%' }}>
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
                     <TemplateBreadcrumbs
                         breadcrumbs={getArrayBread(t('report_recordhsmreport'), t(langKeys.report_plural))}
                         handleClick={handleSelectedString}
@@ -1451,7 +1455,7 @@ const Reports: FC = () => {
     } else if (viewSelected === "uniquecontactsreport") {
         return (
             <>
-                <div style={{ width: '100%' }}>
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
                     <TemplateBreadcrumbs
                         breadcrumbs={getArrayBread(t('report_uniquecontactsreport'), t(langKeys.report_plural))}
                         handleClick={handleSelectedString}
@@ -1463,7 +1467,7 @@ const Reports: FC = () => {
     } else if (viewSelected === "voicecallreport") {
         return (
             <>
-                <div style={{ width: '100%' }}>
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
                     <TemplateBreadcrumbs
                         breadcrumbs={getArrayBread(t('report_voicecall'), t(langKeys.report_plural))}
                         handleClick={handleSelectedString}
@@ -1475,7 +1479,7 @@ const Reports: FC = () => {
     } else if (viewSelected === "hsmhistory") {
         return (
             <>
-                <div style={{ width: '100%' }}>
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
                     <TemplateBreadcrumbs
                         breadcrumbs={getArrayBread(t('hsmhistory'), t(langKeys.report_plural))}
                         handleClick={handleSelectedString}
@@ -1487,7 +1491,7 @@ const Reports: FC = () => {
     } else if (viewSelected === "reportconversationwhatsapp") {
         return (
             <>
-                <div style={{ width: '100%' }}>
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
                     <TemplateBreadcrumbs
                         breadcrumbs={getArrayBread(t(langKeys.conversation_plural) + " Whatsapp", t(langKeys.report_plural))}
                         handleClick={handleSelectedString}
@@ -1499,7 +1503,7 @@ const Reports: FC = () => {
     } else if (viewSelected === "reportinvoice") {
         return (
             <>
-                <div style={{ width: '100%' }}>
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
                     <TemplateBreadcrumbs
                         breadcrumbs={getArrayBread(t('report_invoice'), t(langKeys.report_plural))}
                         handleClick={handleSelectedString}
@@ -1511,7 +1515,7 @@ const Reports: FC = () => {
     } else if (viewSelected === "kpioperativo") {
         return (
             <>
-                <div style={{ width: '100%' }}>
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
                     <TemplateBreadcrumbs
                         breadcrumbs={getArrayBread(t('report_kpioperativo'), t(langKeys.report_plural))}
                         handleClick={handleSelectedString}
@@ -1523,7 +1527,7 @@ const Reports: FC = () => {
     } else if (viewSelected === "report_ticketvsasesor") {
         return (
             <>
-                <div style={{ width: '100%' }}>
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
                     <TemplateBreadcrumbs
                         breadcrumbs={getArrayBread(t('report_ticketvsasesor'), t(langKeys.report_plural))}
                         handleClick={handleSelectedString}
@@ -1535,7 +1539,7 @@ const Reports: FC = () => {
     } else if (viewSelected === "campaign") {
         return (
             <>
-                <div style={{ width: '100%' }}>
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
                     <TemplateBreadcrumbs
                         breadcrumbs={getArrayBread(t('report_campaign'), t(langKeys.report_plural))}
                         handleClick={handleSelectedString}

@@ -320,7 +320,7 @@ const TableZyx = React.memo(({
     ButtonsElement,
     triggerExportPersonalized,
     exportPersonalized,
-    pageSizeDefault = 10,
+    pageSizeDefault = 20,
     importCSV,
     handleTemplate,
     filterGeneral = true,
@@ -507,11 +507,6 @@ const TableZyx = React.memo(({
         const { value, operator, type } = filterValue;
         return rows.filter((row: any) => {
             const cellvalue = row.values[id] === null || row.values[id] === undefined ? "" : row.values[id];
-            // if (cellvalue === undefined)
-            //     return false;
-
-            // if (!(['isempty', 'isnotempty', 'isnull', 'isnotnull'].includes(operator) || type === 'boolean') && (value || '') === '')
-            //     return true;
 
             if (value === '' && !['isempty', 'isnotempty', 'isnull', 'isnotnull'].includes(operator))
                 return true;
@@ -759,7 +754,7 @@ const TableZyx = React.memo(({
     )
 
     return (
-        <Box width={1} >
+        <Box width={1} style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto" }}>
             <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
                 {titlemodule ? <span className={classes.title}>
                     {titlemodule}
@@ -876,8 +871,8 @@ const TableZyx = React.memo(({
 
             {HeadComponent && <HeadComponent />}
 
-            <TableContainer style={{ position: "relative" }}>
-                <Box overflow="auto" >
+            <TableContainer style={{ position: "relative", flex: 1, display: "flex", flexDirection: "column" }}>
+            <Box overflow="auto" style={{ flex: 1 }}>
                     <Table size="small" {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
                         <TableHead style={{ display: 'table-header-group' }}>
                             {headerGroups.map((headerGroup) => (
@@ -935,51 +930,49 @@ const TableZyx = React.memo(({
                             {...getTableBodyProps()}
                             style={{ backgroundColor: 'white' }}
                         >
-                            {loading ?
-                                <LoadingSkeleton columns={headerGroups[0].headers.length} /> :
-                                useSelection ?
-                                    <FixedSizeList
-                                        style={{ overflowX: 'hidden' }}
-                                        direction="vertical"
-                                        width="auto"
-                                        height={window.innerHeight - 470}
-                                        itemCount={page.length}
-                                        itemSize={heightWithCheck}
+                            {loading && <LoadingSkeleton columns={headerGroups[0].headers.length} />}
+                            {(!loading && useSelection) && (
+                                <FixedSizeList
+                                    style={{ overflowX: 'hidden' }}
+                                    direction="vertical"
+                                    width="auto"
+                                    height={window.innerHeight - 470}
+                                    itemCount={page.length}
+                                    itemSize={heightWithCheck}
+                                >
+                                    {RenderRow}
+                                </FixedSizeList>
+                            )}
+                            {(!loading && !useSelection) && page.map(row => {
+                                prepareRow(row);
+                                return (
+                                    <TableRow
+                                        {...row.getRowProps()}
+                                        hover
+                                        style={{ cursor: onClickRow ? 'pointer' : 'default' }}
                                     >
-                                        {RenderRow}
-                                    </FixedSizeList>
-                                    :
-                                    page.map(row => {
-                                        prepareRow(row);
-                                        return (
-                                            <TableRow
-                                                {...row.getRowProps()}
-                                                hover
-                                                style={{ cursor: onClickRow ? 'pointer' : 'default' }}
+                                        {row.cells.map((cell, i) =>
+                                            <TableCell
+                                                {...cell.getCellProps({
+                                                    style: {
+                                                        minWidth: cell.column.minWidth,
+                                                        width: cell.column.width,
+                                                        maxWidth: cell.column.maxWidth,
+                                                        overflow: 'hidden',
+                                                        textOverflow: 'ellipsis',
+                                                        whiteSpace: 'nowrap',
+                                                        ...(toolsFooter ? {} : { padding: '0px' }),
+                                                        textAlign: cell.column.type === "number" ? "right" : (cell.column.type?.includes('centered') ? "center" : "left"),
+                                                    },
+                                                })}
+                                                onClick={() => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original, cell?.column?.id) : null}
                                             >
-                                                {row.cells.map((cell, i) =>
-                                                    <TableCell
-                                                        {...cell.getCellProps({
-                                                            style: {
-                                                                minWidth: cell.column.minWidth,
-                                                                width: cell.column.width,
-                                                                maxWidth: cell.column.maxWidth,
-                                                                overflow: 'hidden',
-                                                                textOverflow: 'ellipsis',
-                                                                whiteSpace: 'nowrap',
-                                                                ...(toolsFooter ? {} : { padding: '0px' }),
-                                                                textAlign: cell.column.type === "number" ? "right" : (cell.column.type?.includes('centered') ? "center" : "left"),
-                                                            },
-                                                        })}
-                                                        onClick={() => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original, cell?.column?.id) : null}
-                                                    >
-                                                        {cell.render('Cell')}
-                                                    </TableCell>
-                                                )}
-                                            </TableRow>
-                                        )
-                                    })
-                            }
+                                                {cell.render('Cell')}
+                                            </TableCell>
+                                        )}
+                                    </TableRow>
+                                )
+                            })}
                         </TableBody>
                         {useFooter && <TableFooter>
                             {footerGroups.map(group => (
@@ -1051,7 +1044,7 @@ const TableZyx = React.memo(({
                                 <Trans
                                     i18nKey={langKeys.tablePageOf}
                                     values={{ currentPage: (pageOptions.length === 0 ? 0 : pageIndex + 1), totalPages: pageOptions.length }}
-                                    components={[<Box fontWeight="700" component="span"></Box>, <Box fontWeight="700" component="span"></Box>]}
+                                    components={[<Box fontWeight="700" component="span" key={"ke4e1"}></Box>, <Box fontWeight="700" component="span" key={"ke4e2"}></Box>]}
                                 />
                             </Box>
                         </Box>
