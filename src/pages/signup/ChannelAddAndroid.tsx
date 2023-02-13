@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useContext, useEffect, useRef, useState } from "react";
-import { IconButton, Typography, InputAdornment, makeStyles, Button, Breadcrumbs, Link, AppBar, Tabs, Tab, Grid, Tooltip, Box, FormHelperText, TextField, withStyles, Avatar, FormControl, MenuItem, Select } from '@material-ui/core';
+import { IconButton, Typography, InputAdornment, makeStyles, Button, Breadcrumbs, Link, AppBar, Tabs, Tab, Grid, Tooltip, Box, FormHelperText, TextField, Avatar, FormControl, MenuItem, Select } from '@material-ui/core';
 import { Close, CloudUpload, DeleteOutline as DeleteOutlineIcon, Link as LinkIcon, LinkOff as LinkOffIcon } from '@material-ui/icons';
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
@@ -11,8 +11,7 @@ import { useForm, useFormContext, UseFormReturn } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useSelector } from 'hooks';
 import { showSnackbar } from "store/popus/actions";
-import { IAndroidSDKAdd, IChatWebAdd, IChatWebAddFormField } from "@types";
-import { getInsertChatwebChannel } from "common/helpers/requestBodies";
+import { IAndroidSDKAdd, IChatWebAddFormField } from "@types";
 import clsx from 'clsx';
 import InfoIcon from '@material-ui/icons/Info';
 import React from "react";
@@ -27,7 +26,7 @@ interface TabPanelProps {
 
 interface FieldTemplate {
     text: React.ReactNode;
-    node: (onClose: (key: string) => void, data: IChatWebAddFormField, form: UseFormReturn<IChatWebAdd>, index: number,fields:any, setFields: (key: any) => void) => React.ReactNode;
+    node: (onClose: (key: string) => void, data: IChatWebAddFormField, form: UseFormReturn<IAndroidSDKAdd>, index: number,fields:any, setFields: (key: any) => void) => React.ReactNode;
     data: IChatWebAddFormField;
 }
 
@@ -101,7 +100,7 @@ const useTemplateStyles = makeStyles(theme => ({
 
 interface NameTemplateProps {
     onClose: () => void;
-    form: UseFormReturn<IChatWebAdd>;
+    form: UseFormReturn<IAndroidSDKAdd>;
     title: React.ReactNode;
     data: IChatWebAddFormField;
     index: number;
@@ -522,17 +521,6 @@ const templates: { [x: string]: FieldTemplate } = {
     },
 };
 
-
-const HtmlTooltip = withStyles((theme) => ({
-    tooltip: {
-      backgroundColor: '#f5f5f9',
-      color: 'rgba(0, 0, 0, 0.87)',
-      maxWidth: 220,
-      fontSize: theme.typography.pxToRem(12),
-      border: '1px solid #dadde9',
-    },
-}))(Tooltip);
-
 const useStyles = makeStyles(theme => ({
     root: {
         width: '100%',
@@ -835,14 +823,6 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
     const { setValue, getValues, formState: { errors } } = form;
     const { t } = useTranslation();
     const [enable, setEnable] = useState(getValues('bubble.active'));
-    const [msgTooltip, setMsgTooltip] = useState(getValues('bubble.messagebubble'));
-    const [chatTittle, setchatTittle] = useState(getValues('interface.chattitle'));
-    const [chatSubtittle, setchatSubtittle] = useState(getValues('interface.chatsubtitle'));
-    const [botnametext, setbotnametext] = useState(getValues('extra.botnametext'));
-    const [msgTooltipIMGPosition, setMsgTooltipIMGPosition] = useState({
-        right: document?.getElementById("msgtooltip")?.clientWidth||0,
-        bottom: document?.getElementById("msgtooltip")?.clientHeight||0
-    });
     const [chatBtn, setChatBtn] = useState<File | string | null>(getValues('interface.iconbutton'));
     const [waitingImg, setWaitingImg] = useState<File | string | null>(getValues('bubble.iconbubble'));
     const [headerBtn, setHeaderBtn] = useState<File | string | null>(getValues('interface.iconheader'));
@@ -851,14 +831,6 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
     const waitingImgUrl = getImgUrl(waitingImg);
     const headerImgUrl = getImgUrl(headerBtn);
     const botImgUrl = getImgUrl(botBtn);
-
-
-    useEffect(() => {
-        setMsgTooltipIMGPosition({
-            right: document?.getElementById("msgtooltip")?.clientWidth||0,
-            bottom: document?.getElementById("msgtooltip")?.clientHeight||0
-        })
-    }, [msgTooltip])
 
     const handleEnableChange = (checked: boolean) => {
         setEnable(checked);
@@ -1017,7 +989,7 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
                                         name="text"
                                         size="small"
                                         defaultValue={getValues('bubble.messagebubble')}
-                                        onChange={e => {setValue('bubble.messagebubble', e.target.value);setMsgTooltip(e.target.value);}}
+                                        onChange={e => {setValue('bubble.messagebubble', e.target.value);}}
                                     />
                                 </Grid>
                             </Grid>
@@ -1075,7 +1047,7 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
                                         size="small"
                                         placeholder={t(langKeys.chatHeaderTitle)} // "Título de la cabecera del chat"
                                         defaultValue={getValues('interface.chattitle')}
-                                        onChange={(e) => {setValue('interface.chattitle', e.target.value); setchatTittle(e.target.value)}}
+                                        onChange={(e) => {setValue('interface.chattitle', e.target.value);}}
                                         error={!isEmpty(errors?.interface?.chattitle?.message)}
                                         helperText={errors?.interface?.chattitle?.message}
                                     />
@@ -1102,7 +1074,7 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
                                         name="subtitulo"
                                         size="small"
                                         defaultValue={getValues('interface.chatsubtitle')}
-                                        onChange={(e) => {setValue('interface.chatsubtitle', e.target.value);setchatSubtittle(e.target.value)}}
+                                        onChange={(e) => {setValue('interface.chatsubtitle', e.target.value);}}
                                         error={!isEmpty(errors?.interface?.chatsubtitle?.message)}
                                         helperText={errors?.interface?.chatsubtitle?.message}
                                     />
@@ -1199,7 +1171,7 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
                                         size="small"
                                         placeholder={t(langKeys.botName)}
                                         defaultValue={getValues('extra.botnametext')}
-                                        onChange={e => {setValue('extra.botnametext', e.target.value); setbotnametext(e.target.value)}}
+                                        onChange={e => {setValue('extra.botnametext', e.target.value);}}
                                     />
                                 </Grid>
                             </Grid>
@@ -1207,42 +1179,6 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
                     </Grid>
                 </Grid>
             </div>            
-            {/*<div style={{width: "50%", minWidth: 500, display:"flex", paddingLeft: 24, paddingBottom: 24, flexDirection: 'column', gap: 8}}>
-                <div><Typography variant="h6" >{t(langKeys.homepage)}</Typography></div>
-                <div style={{ display: 'flex', width: "100%"}} className={classes.tab}>   
-                    <HtmlTooltip  arrow 
-                        open={enable}
-                        placement="top-end"
-                        title={
-                            <React.Fragment>
-                                {!!waitingImgUrl &&
-                                    <Avatar src={waitingImgUrl||""}  style={{width: 50, height: 50, border: '0.1px solid lightgray', position:'absolute', right: msgTooltipIMGPosition.right, bottom: msgTooltipIMGPosition.bottom }}/>
-                                }
-                                <Typography color="inherit" id="msgtooltip">{msgTooltip}</Typography>
-                            </React.Fragment>
-                            }
-                    >  
-                        <Avatar src={chatImgUrl||""}  style={{width: 75, height: 75, border: '0.1px solid lightgray', top: "calc(50% - 38px)", left: "calc(50% - 38px)" }}/>
-                    </HtmlTooltip>
-                </div>
-                <div><Typography variant="h6" >Chat</Typography></div>
-                <div style={{ display: 'flex', width: "100%", flexDirection: 'column' }} className={classes.tab}>
-                    <div style={{padding:20, margin:"20px 20px 0 20px", display:"flex", width:"calc(100% - 40px)", height: 75, border: '#A59F9F 1px solid', borderRadius: "6px 6px 0 0 "}}>
-                         <Avatar src={headerImgUrl||""}  style={{width: 35, height: 35, border: '0.1px solid lightgray' }}/>
-                        <div style={{height: "100%", width: "100%",  paddingLeft: 25, fontSize: "1.1em", paddingTop: 5}}>{chatTittle}</div>
-                    </div>
-                    <div style={{padding:5, margin:"0 20px", display:"flex", width:"calc(100% - 40px)", height: 45, border: '#A59F9F 1px solid'}}>  
-                        <div style={{height: "100%", width: "100%",  textAlign: 'center', fontSize: "1em", paddingTop: 5}}>{chatSubtittle}</div>
-                    </div>
-                    <div style={{padding:5, margin:"0 20px", display:"flex", width:"calc(100% - 40px)", height: 'calc(100% - 160px)', border: '#A59F9F 1px solid', flexDirection: 'column', borderRadius: "0 0 6px 6px"}}>  
-                        <div style={{fontSize: "0.8em", paddingTop: 5, width: 50, textAlign: 'center',whiteSpace: "initial", wordWrap: 'break-word'}}>{botnametext}</div>
-                        <div style={{display:"flex", height: 30, paddingLeft: 10, }}>
-                            <Avatar src={botImgUrl||""}  style={{width: 30, height: 30, border: '0.1px solid lightgray' }}/>
-                            <div style={{height: "100%", width: "100%",  paddingLeft: 10, fontSize: "1.1em", paddingTop: 5}}>Te saluda {botnametext}. en qúe puedo ayudarte</div>
-                        </div>
-                    </div>
-                </div>
-            </div>*/}
         </div>
     </>
 }
@@ -1256,6 +1192,7 @@ export const AndroidColorForm: FC<{setTabIndex: (f:string)=>void, form: UseFormR
     const [borderColor, setBorderColor] = useState(getValues('color.border'));
     const [clientMessageColor, setClientMessageColor] = useState(getValues('color.client'));
     const [botMessageColor, setBotMessageColor] = useState(getValues('color.bot'));
+    const [iconscolor, seticonscolor] = useState(getValues('color.iconscolor'));
 
     const handleHeaderColorChange: ColorChangeHandler = (e) => {
         setHeaderColor(e.hex);
@@ -1280,6 +1217,10 @@ export const AndroidColorForm: FC<{setTabIndex: (f:string)=>void, form: UseFormR
     const handleBotMessageColorChange: ColorChangeHandler = (e) => {
         setBotMessageColor(e.hex);
         setValue('color.bot', e.hex);
+    }
+    const handleiconscolorChange: ColorChangeHandler = (e) => {
+        seticonscolor(e.hex);
+        setValue('color.iconscolor', e.hex);
     }
 
     return <>
@@ -1369,31 +1310,26 @@ export const AndroidColorForm: FC<{setTabIndex: (f:string)=>void, form: UseFormR
                                     </Grid>
                                 </Grid>
                             </Grid>
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{padding:10}}>
+                                <Grid container direction="row">
+                                    <Grid item xs={1} sm={1} md={1} lg={1} xl={1}></Grid>
+                                    <Grid item xs={8} sm={8} md={8} lg={8} xl={8}>
+                                        <label className={classes.text}>
+                                            <Trans i18nKey={langKeys.iconscolorMessage} count={2} />
+                                            <Tooltip title={`${t(langKeys.iconscolorMessageTooltip)}`} placement="top-start">
+                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            </Tooltip>
+                                        </label>
+                                    </Grid>
+                                    <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
+                                        <ColorInput hex={iconscolor} onChange={handleiconscolorChange} />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
                         </Grid>
                     </Grid>
                 </Grid>
             </div>
-            {/* 
-                <div style={{width: "50%", minWidth: 500, display:"flex", paddingLeft: 24, paddingBottom: 24, flexDirection: 'column', gap: 8}}>
-                    <div style={{ display: 'flex', width: "100%", flexDirection: 'column' }} className={classes.tab}>
-                        <div style={{padding:20, margin:"20px 20px 0 20px", display:"flex", width:"calc(100% - 40px)", height: 75, border: '1px solid', borderRadius: "6px 6px 0 0 ", backgroundColor: headerColor, borderColor: borderColor}}>
-                            <Avatar src={getImgUrl(getValues('interface.iconheader'))||""}  style={{width: 35, height: 35, border: '0.1px solid lightgray' }}/>
-                            <div style={{height: "100%", width: "100%",  paddingLeft: 25, fontSize: "1.1em", paddingTop: 5}}>{getValues('interface.chattitle')}</div>
-                        </div>
-                        <div style={{padding:5, margin:"0 20px", display:"flex", width:"calc(100% - 40px)", height: 45, border: '1px solid', backgroundColor: headerColor, borderColor: borderColor}}>  
-                            <div style={{height: "100%", width: "100%",  textAlign: 'center', fontSize: "1em", paddingTop: 5}}>{getValues('interface.chatsubtitle')}</div>
-                        </div>
-                        <div style={{padding:5, margin:"0 20px", display:"flex", width:"calc(100% - 40px)", height: 'calc(100% - 160px)', border: '1px solid', flexDirection: 'column', borderRadius: "0 0 6px 6px", backgroundColor: backgroundColor, borderColor: borderColor}}>  
-                            <div style={{fontSize: "0.8em", paddingTop: 5, width: 50, textAlign: 'center',whiteSpace: "initial", wordWrap: 'break-word'}}>{getValues('extra.botnametext')}</div>
-                            <div style={{display:"flex", height: "auto", paddingLeft: 10, }}>
-                                <Avatar src={getImgUrl(getValues('interface.iconbot'))||""}  style={{width: 30, height: 30, border: '0.1px solid', borderColor: borderColor }}/>
-                                <div style={{height: "auto", width: "80%", border:"1px solid", borderColor: borderColor, backgroundColor: botMessageColor, borderRadius: 8,  marginLeft: 10, padding:10, fontSize: "1.1em", paddingTop: 5}}>Te saluda {getValues('extra.botnametext')||"bot"}. en qúe puedo ayudarte</div>
-                            </div>
-                            <div style={{height: "auto", width: "80%", border:"1px solid", borderColor: borderColor, borderRadius: 8, backgroundColor: clientMessageColor,  marginLeft: "20%", marginTop: 10, padding:10, fontSize: "1.1em", paddingTop: 5}}>Hola</div>
-                        </div>
-                    </div>
-                </div>
-            */}
         </div>
     </>
 }
@@ -1727,52 +1663,6 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                     </Grid>
                 </Grid>
             </div>
-            {/* 
-            
-            <div style={{width: "50%", minWidth: 250, padding: 10}}>
-                <div style={{ display: 'flex', width: "100%", flexDirection: 'column' }}>
-                    <div style={{padding:20, margin:"20px 20px 0 20px", display:"flex", width:"calc(100% - 40px)", height: 75, border: '1px solid', borderRadius: "6px 6px 0 0 ", backgroundColor: getValues('color.header'), borderColor: getValues('color.border')}}>
-                        <Avatar src={getImgUrl(getValues('interface.iconheader'))||""}  style={{width: 35, height: 35, border: '0.1px solid lightgray' }}/>
-                        <div style={{height: "100%", width: "100%",  paddingLeft: 25, fontSize: "1.1em", paddingTop: 5}}>{getValues('interface.chattitle')}</div>
-                    </div>
-                    <div style={{padding:5, margin:"0 20px", display:"flex", width:"calc(100% - 40px)", height: 45, border: '1px solid', backgroundColor: getValues('color.header'), borderColor: getValues('color.border')}}>  
-                        <div style={{height: "100%", width: "100%",  textAlign: 'center', fontSize: "1em", paddingTop: 5}}>{getValues('interface.chatsubtitle')}</div>
-                    </div>
-                    <div style={{padding:5, margin:"0 20px", display:"flex", width:"calc(100% - 40px)", height: 200, border: '1px solid', flexDirection: 'column', backgroundColor: getValues('color.background'), borderColor: getValues('color.border')}}> 
-                    </div>
-                    <div style={{padding:5, margin:"0 20px", width:"calc(100% - 40px)", height: 'calc(100% - 160px)', border: '1px solid', borderRadius: "0 0 6px 6px", backgroundColor: "#e7e7e7", borderColor: getValues('color.border')}}> 
-                        <div style={{width: "100%", display:'flex'}}>
-                            <div style={{paddingRight: 10}}>   
-                                <Box style={{backgroundColor: "white", zIndex: 99, width: 160, marginRight: -160, position: 'relative',
-                                bottom: (Number(uploadAudio) + Number(uploadFile) + Number(uploadImage) + Number(uploadLocation) + Number(uploadVideo))*37, marginBottom: -(Number(uploadAudio) + Number(uploadFile) + Number(uploadImage) + Number(uploadLocation) + Number(uploadVideo))*37 }}>
-                                    {uploadAudio && <MenuItem style={{border: '1px solid #ebeaed'}}>{t(langKeys.uploadAudio)}</MenuItem>}
-                                    {uploadFile && <MenuItem style={{border: '1px solid #ebeaed'}}>{t(langKeys.uploadFile)}</MenuItem>}
-                                    {uploadImage && <MenuItem style={{border: '1px solid #ebeaed'}}>{t(langKeys.uploadImage)}</MenuItem>}
-                                    {uploadLocation && <MenuItem style={{border: '1px solid #ebeaed'}}>{t(langKeys.sendLocation)}</MenuItem>}
-                                    {uploadVideo && <MenuItem style={{border: '1px solid #ebeaed'}}>{t(langKeys.uploadVideo)}</MenuItem>}
-                                </Box>
-                                <IconButton
-                                    id= "circleopenmenu"
-                                    style={{padding:0}}
-                                >
-                                    <AddCircleIcon style={{width:35, height:35}}/>
-                                </IconButton>  
-                            </div>
-                            <div style={{width: '80%'}}>                            
-                                <TextField
-                                    variant="outlined"
-                                    fullWidth
-                                    disabled={!persistentInput}
-                                    size="small"
-                                    style={{backgroundColor: "white"}}
-                                />
-                            </div>
-                        </div>
-                        {poweredBy && <div style={{width: "100%", textAlign:'center'}}>Powered by Laraigo</div>}
-                    </div>
-                </div>
-            </div>               
-            */ }
         </div>
     </>
 }
@@ -1780,7 +1670,7 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
 export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const classes = useStyles();
     const { foreground, submitObservable, setForeground } = useContext(SubscriptionContext);
-    const { getValues, register, unregister } = useFormContext<MainData>();
+    const { register, unregister } = useFormContext<MainData>();
     const dispatch = useDispatch();
     const [submitError, setSubmitError] = useState(false);
     const [selectedView, setSelectedView] = useState("view1");
@@ -1813,7 +1703,7 @@ export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = (
         }
     }, [insertChannel]);
 
-    const nestedForm: UseFormReturn<IChatWebAdd> = useForm<IChatWebAdd>({
+    const nestedForm: UseFormReturn<IAndroidSDKAdd> = useForm<IAndroidSDKAdd>({
         defaultValues: {
             interface: {
                 chattitle: "",
@@ -1828,6 +1718,7 @@ export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = (
                 border: "#EBEAED",
                 client: "#fff",
                 bot: "#aa53e0",
+                iconscolor: "#aa53e0",
             },
             form: [],
             bubble: {
@@ -2022,7 +1913,7 @@ export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = (
 
 export const AndroidForm: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn<IAndroidSDKAdd>}> = ({setTabIndex,form}) => {    
     const classes = useChannelAddStyles();
-    const { setValue, getValues } = form;
+    const { getValues } = form;
     const { t } = useTranslation();
     const defFields = useRef<FieldTemplate[]>((form.getValues('form') || []).map(x => {
         return {
