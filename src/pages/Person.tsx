@@ -813,7 +813,10 @@ export const Person: FC = () => {
     }, [selectedRows])
 
     return (
-        <div style={{ height: '100%', width: 'inherit' }}>
+        <div style={{ height: '100%', width: 'inherit', 
+        display: 'flex',
+        flexDirection: 'column',
+        flex: 1 }}>
 
             <div style={{ display: 'flex', gap: 8, flexDirection: 'row', marginBottom: 12, marginTop: 4 }}>
                 <div style={{ flexGrow: 1 }} >
