@@ -2823,7 +2823,7 @@ const translation: LangKeys = {
   formbackgroundcolor: "Form background color",
   buttonstyles: "Button styles",
   styles: "Styles",
-  buttonColor: "Button color",
+  buttonColor: "Button background color",
   buttonTextColor: "Button text color",
   labelcolor: "Label color",
   submitButtomText: "Submit form button text",
