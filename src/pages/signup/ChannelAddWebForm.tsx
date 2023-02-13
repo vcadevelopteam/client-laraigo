@@ -194,7 +194,7 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) =
                             <FormControlLabel
                                 value={getValues('extra.recaptcha')}
                                 control={<Checkbox 
-                                    onChange={(e) => setValue('extra.recaptcha', e.target.checked)}
+                                    onChange={(e) => {setrecaptcha(e.target.checked);setValue('extra.recaptcha', e.target.checked)}}
                                     color="primary" />}
                                 //onChange={(e) => {setValue('extra.recaptcha', e.target.value === "true")}}
                                 label={t(langKeys.recaptchaCheckbox)}
