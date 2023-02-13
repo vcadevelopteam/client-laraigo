@@ -396,11 +396,12 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
 
     return (
         <div style={{ width: '100%', display: "flex", flex: 1, flexDirection: "column" }}>
-            <TemplateBreadcrumbs
-                breadcrumbs={getArrayBread(t('report_' + row?.origin), t(langKeys.report_plural))}
-                handleClick={handleSelected}
-            />
-            <div style={{ height: 10 }}></div>
+            <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
+                <TemplateBreadcrumbs
+                    breadcrumbs={getArrayBread(t('report_' + row?.origin), t(langKeys.report_plural))}
+                    handleClick={handleSelected}
+                />
+            </div>
             {multiData.length > 0 ?
                 <>
                     {customReport ?
@@ -411,7 +412,6 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                         />
                         :
                         <>
-                            <div className={classes.container}>
                                 {view === "GRID" ? (
                                     <TablePaginated
                                         columns={columns}
@@ -469,6 +469,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                         exportPersonalized={triggerExportData}
                                     />
                                 ) : (
+                                    <div className={classes.container}>
                                     <Graphic
                                         graphicType={view.split("-")?.[1] || "BAR"}
                                         column={view.split("-")?.[2] || "summary"}
@@ -511,8 +512,8 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                             </>
                                         )}
                                     />
+                                    </div>
                                 )}
-                            </div>
                         </>
                     }
                 </>
