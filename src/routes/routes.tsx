@@ -228,7 +228,7 @@ export const routes: RouteConfig[] = [
         tooltip: <Trans i18nKey={langKeys.laraigoia} />,
         path: paths.IASERVICES,
         //icon: (className) => <IAServicesIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
-        icon: (className) => <IALaraigoLogo style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
+        icon: (className) => <IALaraigoLogo style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
     },
     // {
     //     key: paths.EXTRAS,
