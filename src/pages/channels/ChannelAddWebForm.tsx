@@ -1116,8 +1116,8 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
                 colorButtonLabel: "#000",
                 colorLabel: "#000",
                 colorBackgroundForm: "#000",
-                stylesCSSInput: "display: block, margin: 10px",
-                stylesCSSButton: "display: block, margin: 10px",
+                stylesCSSInput: "display: block; margin: 10px",
+                stylesCSSButton: "display: block; margin: 10px",
             },
         }
     });
@@ -1129,7 +1129,6 @@ export const ChannelAddWebForm: FC<{ edit: boolean }> = ({ edit }) => {
 
         form.register('extra.titleform', { validate: mandatoryStrField });
         form.register('extra.textButtonSend', { validate: mandatoryStrField });
-        form.register('extra.urlThanks', { validate: mandatoryStrField });
     }, [form, t]);
 
     const handleNext = () => {

@@ -1162,8 +1162,8 @@ export const ChannelAddWebForm: FC<{ setOpenWarning: (param: any) => void }> = (
                 colorButtonLabel: "#000",
                 colorLabel: "#000",
                 colorBackgroundForm: "#000",
-                stylesCSSInput: "display: block, margin: 10px",
-                stylesCSSButton: "display: block, margin: 10px",
+                stylesCSSInput: "display: block; margin: 10px",
+                stylesCSSButton: "display: block; margin: 10px",
             },
         },
     });
@@ -1201,7 +1201,6 @@ export const ChannelAddWebForm: FC<{ setOpenWarning: (param: any) => void }> = (
 
         nestedForm.register('extra.titleform',{ validate: strRequired, value: '' });
         nestedForm.register('extra.textButtonSend',{ validate: strRequired, value: '' });
-        nestedForm.register('extra.urlThanks',{ validate: strRequired, value: '' });
 
         const cb = async () => {
             const valid = await nestedForm.trigger();
