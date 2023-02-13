@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useRef, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box, AppBar, Tabs, Tab, Grid, IconButton, FormHelperText, Tooltip, TextField, withStyles, Typography, FormControl, Select, Divider, MenuItem, Menu, InputAdornment } from '@material-ui/core';
+import { makeStyles, Breadcrumbs, Button, Box, AppBar, Tabs, Tab, Grid, IconButton, FormHelperText, Tooltip, TextField, withStyles, Typography, FormControl, Select, MenuItem, InputAdornment } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import Link from '@material-ui/core/Link';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
@@ -17,7 +17,7 @@ import { AndroidIcon } from "icons";
 import clsx from 'clsx';
 import { Close, CloudUpload } from "@material-ui/icons";
 import InfoIcon from '@material-ui/icons/Info';
-import { IActionCall, IAndroidSDKAdd, IChannel, IChatWebAdd, IChatWebAddFormField } from "@types";
+import { IActionCall, IAndroidSDKAdd, IChannel, IChatWebAddFormField } from "@types";
 import { ColorChangeHandler } from "react-color";
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { getEditChatWebChannel, getInputValidationSel, getInsertChatwebChannel } from "common/helpers";
@@ -656,7 +656,7 @@ const getImgUrl = (file: File | string | null): string | null => {
     }
 }
 
-export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn<IAndroidSDKAdd>}> = ({setTabIndex,form}) => {    
+export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn<IAndroidSDKAdd>}> = ({form}) => {    
     const classes = useChannelAddStyles();
     const { setValue, getValues } = form;
     const { t } = useTranslation();
@@ -1366,7 +1366,7 @@ export const AndroidColor: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                         </div>
                         <div style={{height: "auto", width: "80%", border:"1px solid", borderColor: borderColor, borderRadius: 8, backgroundColor: clientMessageColor,  marginLeft: "20%", marginTop: 10, padding:10, fontSize: "1.1em", paddingTop: 5}}>Hola</div>
                     </div>
-                    <div style={{padding:5, margin:"0 20px", width:"calc(100% - 40px)", height: 'calc(100% - 160px)', border: '1px solid', borderRadius: "0 0 6px 6px", backgroundColor: "#e7e7e7", borderColor: getValues('color.border')}}> 
+                    <div style={{padding:5, margin:"0 20px", width:"calc(100% - 40px)", border: '1px solid', borderRadius: "0 0 6px 6px", backgroundColor: "#e7e7e7", borderColor: getValues('color.border')}}> 
                         <div style={{width: "100%", display:'flex'}}>
                             <div style={{paddingRight: 10}}>   
                                 <IconButton
@@ -1393,8 +1393,6 @@ export const AndroidColor: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                                 />
                             </div>
                         </div>
-                        {//poweredBy && <div style={{width: "100%", textAlign:'center'}}>Powered by Laraigo</div>
-                        }
                     </div>
                 </div>
             </div>
