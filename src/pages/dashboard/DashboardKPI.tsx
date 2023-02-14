@@ -1,16 +1,14 @@
 import { Box, Button, createStyles, makeStyles, Theme } from "@material-ui/core";
-import { Dictionary } from "@types";
-import { getDisconnectionTimes, getDateCleaned, getUserAsesorByOrgID, getValuesFromDomain, timetoseconds, formattime, exportExcel, getUserGroupsSel, dataYears, dataMonths, datesInMonth, dashboardKPISummaryGraphSel, dashboardKPISummarySel, addTimes, varpercTime, varpercnumber, divisionTimeNumber} from "common/helpers";
-import { DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect } from "components";
+import { timetoseconds, formattime, getUserGroupsSel, dataYears, dataMonths, datesInMonth, dashboardKPISummaryGraphSel, dashboardKPISummarySel, addTimes, varpercTime, varpercnumber, divisionTimeNumber} from "common/helpers";
+import { DialogZyx, FieldMultiSelect, FieldSelect } from "components";
 import { useSelector } from "hooks";
-import { CalendarIcon, DownloadIcon } from "icons";
+import { DownloadIcon } from "icons";
 import { langKeys } from "lang/keys";
-import { FC, Fragment, FunctionComponent, useEffect, useState } from "react";
-import { Range } from 'react-date-range';
+import { FC, Fragment, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis, Pie, PieChart, Legend, LineChart, CartesianGrid, Line, LabelList } from "recharts";
-import { cleanViewChange, getMultiCollection, getMultiCollectionAux, resetMainAux, resetMultiMainAux, setViewChange } from "store/main/actions";
+import { ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis, Legend, LineChart, CartesianGrid, Line, LabelList } from "recharts";
+import { getMultiCollection, getMultiCollectionAux, resetMainAux, resetMultiMainAux } from "store/main/actions";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import DomToImage from 'dom-to-image';
 import clsx from 'clsx';
@@ -256,7 +254,8 @@ const DashboardKPI: FC = () => {
                     gg.style.display = 'flex';
                     gg.style.flexDirection = 'column';
                     gg.style.gap = '8px';
-                    gg.style.width = '190mm';
+                    gg.style.width = '440mm';
+                    gg.style.paddingTop = '27mm';
                     gg.id = "newexportcontainer"
 
                     gg.innerHTML = el.current.innerHTML;
@@ -264,15 +263,15 @@ const DashboardKPI: FC = () => {
                     gg.querySelectorAll(".interaction-gmap").forEach(x => x.remove())
                     gg.querySelectorAll(".interaction-gmap-text").forEach(x => (x as HTMLDivElement).style.display = "")
                     document.body.appendChild(gg);
-                    const pdf = new jsPDF.jsPDF('p', 'mm');
+                    const pdf = new jsPDF.jsPDF('l', 'mm');
                     if (pdf) {
                         DomToImage.toPng(gg)
                             .then(imgData => {
-                                var imgWidth = 200;
-                                var pageHeight = 297;
+                                var imgWidth = 280;
+                                var pageHeight = 210;
                                 var imgHeight = Math.ceil(gg.scrollHeight * 0.2645833333);
                                 var heightLeft = imgHeight;
-                                var doc = new jsPDF.jsPDF('p', 'mm');
+                                var doc = new jsPDF.jsPDF('l', 'mm');
                                 var topPadding = 10;
                                 var position = topPadding; // give some top padding to first page
 
@@ -313,6 +312,13 @@ const DashboardKPI: FC = () => {
         const dataDays = remultiaux?.data?.[1]?.data?.filter(x=>selectedDays.includes(String(x.day)))||[]
         console.log(remultiaux)
         //tme: timetoseconds(dataDays.filter(y=>String(y.day)===x)?.[0]?.tme_avg || "00:00:00")
+        function compareFn(a:any,b:any){
+            let na = Number(a.date.split(" ")[1])
+            let nb = Number(b.date.split(" ")[1])
+            if(na<nb) return -1;
+            if(na>nb) return 1;
+            return 0;
+        }
         let graphdata = selectedDays.reduce((acc:any,x:string)=>{
             let foundDay = dataDays.filter(y=>String(y.day)===x)?.[0];
             return [...acc, {
@@ -330,6 +336,7 @@ const DashboardKPI: FC = () => {
             firstreplytime_avg: timetoseconds(foundDay?.firstreplytime_avg || "00:00:00"),
             participacion: foundDay?.stake||0,
         }]}, [])
+        
         setDataSummary({
             month: actmonth.month,
             year: actmonth.year,
@@ -351,7 +358,7 @@ const DashboardKPI: FC = () => {
             varpertc: varpercnumber(actmonth.tickets_count + actmonth.abandoned_tickets, prevmonth.tickets_count + prevmonth.abandoned_tickets,0),
             varperat: varpercnumber(actmonth.abandoned_tickets, prevmonth.abandoned_tickets,0),
             varperbta: varpercnumber(actmonth.balancetimes_avg, prevmonth.balancetimes_avg,0),
-            graphdata: graphdata,
+            graphdata: graphdata.sort(compareFn),
         })
     }
     return (
