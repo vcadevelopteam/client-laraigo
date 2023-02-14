@@ -147,7 +147,7 @@ const useStyles = makeStyles((theme: Theme) =>
         columnCard2: {
             backgroundColor: "#FFF",
             display: 'flex',
-            height: '100%',
+            minHeight: '100%',
             flex: 1,
             textAlign: "center",
             padding: theme.spacing(2),
@@ -440,7 +440,7 @@ const DashboardKPI: FC = () => {
                 </div>
             </div>
             <div ref={el} style={{ display: 'flex', gap: 16, flexDirection: 'column' }}>
-                <div className={classes.replacerowzyx}>
+                <div className={classes.replacerowzyx} style={{alignItems: "stretch"}}>
                     <Box
                         className={classes.columnCard2}
                     >
