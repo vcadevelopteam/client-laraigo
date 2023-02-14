@@ -180,6 +180,7 @@ const DialogLinkPerson: React.FC<{
             handleClickButton1={() => setOpenModal(false)}
             handleClickButton2={linkPersons}
             maxWidth="md"
+            height="100%"
         >
             <div style={{ display: "flex", gap: 10 }}>
                 <Avatar className={classes.image} alt="" style={{ width: 120, height: 120 }} src={personParent?.imageurldef} />
@@ -262,7 +263,7 @@ const DialogLinkPerson: React.FC<{
                 *Al realizar la vinculación, los tickets y canales de esta persona se trasladaran a la persona seleccionada
             </div>
             {step === "view-table" && (
-                <div>
+                <div style={{ width: "100%", display: 'flex', flexDirection: 'column', flex: 1, height: "400px" }}>
                     <TablePaginated
                         columns={columns}
                         data={personList.data}
