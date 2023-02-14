@@ -221,14 +221,15 @@ interface TemplateDialogProps {
     button2Type?: "button" | "submit" | "reset";
     button3Type?: "button" | "submit" | "reset";
     maxWidth?: false | "sm" | "xs" | "md" | "lg" | "xl" | undefined;
+    height?: string;
 }
 
-export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText0, buttonText1, buttonText2, buttonText3, handleClickButton0, handleClickButton1, handleClickButton2, handleClickButton3, title, maxWidth = "sm", button1Type = "button", button2Type = "button", zIndex = 1300, showClose = false }) => (
+export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText0, buttonText1, buttonText2, buttonText3, handleClickButton0, handleClickButton1, handleClickButton2, handleClickButton3, title, maxWidth = "sm", button1Type = "button", button2Type = "button", zIndex = 1300, showClose = false, height="auto" }) => (
     <Dialog
         open={open}
         fullWidth
         maxWidth={maxWidth}
-        style={{ zIndex }}>
+        style={{ zIndex, height }}>
         <form onSubmit={(button1Type === "submit" ? handleClickButton1 : (button2Type === "submit" ? handleClickButton2 : undefined))}>
             {title && (
                 <DialogTitle>
