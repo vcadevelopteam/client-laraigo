@@ -283,7 +283,6 @@ const VoiceChannelReport: FC = () => {
                 Header: `${t(langKeys.starttimecall)}`,
                 accessor: 'tickettime',
                 NoFilter: false,
-                type: 'time',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (row.tickettime||"00:00:00")
@@ -293,7 +292,6 @@ const VoiceChannelReport: FC = () => {
                 Header: `${t(langKeys.finishtimecall)}`,
                 accessor: 'finishtime',
                 NoFilter: false,
-                type: 'time',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (row.finishtime||"00:00:00")
@@ -304,7 +302,6 @@ const VoiceChannelReport: FC = () => {
                 accessor: 'handoffdate',
                 NoFilter: false,
                 helpText: t(langKeys.transfertimecall_tooltip),
-                type: 'time',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (row.handoffdate||"00:00:00")
@@ -346,7 +343,6 @@ const VoiceChannelReport: FC = () => {
                 accessor: 'totalduration',
                 NoFilter: false,
                 helpText: t(langKeys.totalTime_tooltip),
-                type: 'time',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (row.totalduration||"00:00:00")
@@ -357,7 +353,6 @@ const VoiceChannelReport: FC = () => {
                 accessor: 'agentduration',
                 NoFilter: false,
                 helpText: t(langKeys.advisorattentiontime_tooltip),
-                type: 'time',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (row.agentduration||"00:00:00")
@@ -368,7 +363,6 @@ const VoiceChannelReport: FC = () => {
                 accessor: 'customerwaitingduration',
                 NoFilter: false,
                 helpText: t(langKeys.customerwaitingtime_tooltip),
-                type: 'time',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (row.customerwaitingduration||"00:00:00")
@@ -379,7 +373,6 @@ const VoiceChannelReport: FC = () => {
                 accessor: 'holdingtime',
                 NoFilter: false,
                 helpText: t(langKeys.callwaitingtime_tooltip),
-                type: 'time',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (row.holdingtime||"00:00:00")
@@ -390,7 +383,6 @@ const VoiceChannelReport: FC = () => {
                 accessor: 'transferduration',
                 NoFilter: false,
                 helpText: t(langKeys.transfertime_tooltip),
-                type: 'time',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (row.transferduration||"00:00:00")
