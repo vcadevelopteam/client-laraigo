@@ -410,6 +410,8 @@ const TabPanelColors: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
     const [borderColor, setBorderColor] = useState(getValues('color.border'));
     const [clientMessageColor, setClientMessageColor] = useState(getValues('color.client'));
     const [botMessageColor, setBotMessageColor] = useState(getValues('color.bot'));
+    const [iconscolor, seticonscolor] = useState(getValues('color.iconscolor'));
+
 
     const handleHeaderColorChange: ColorChangeHandler = (e) => {
         setHeaderColor(e.hex);
@@ -434,6 +436,10 @@ const TabPanelColors: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
     const handleBotMessageColorChange: ColorChangeHandler = (e) => {
         setBotMessageColor(e.hex);
         setValue('color.bot', e.hex);
+    }
+    const handleiconscolorChange: ColorChangeHandler = (e) => {
+        seticonscolor(e.hex);
+        setValue('color.iconscolor', e.hex);
     }
 
     return (
@@ -501,6 +507,22 @@ const TabPanelColors: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                             </Grid>
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
                                 <ColorInput hex={botMessageColor} onChange={handleBotMessageColorChange} />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
+            <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                <Grid container direction="column">
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <Grid container direction="row">
+                            <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.iconscolorMessage} count={2} />
+                                </label>
+                            </Grid>
+                            <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
+                                <ColorInput hex={iconscolor} onChange={handleiconscolorChange} />
                             </Grid>
                         </Grid>
                     </Grid>
@@ -1620,6 +1642,7 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
                 border: "#EBEAED",
                 client: "#fff",
                 bot: "#aa53e0",
+                iconscolor: "#aa53e0",
             },
             form: [],
             bubble: {

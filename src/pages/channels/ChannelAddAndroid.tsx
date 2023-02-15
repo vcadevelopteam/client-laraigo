@@ -17,7 +17,7 @@ import { AndroidIcon } from "icons";
 import clsx from 'clsx';
 import { Close, CloudUpload } from "@material-ui/icons";
 import InfoIcon from '@material-ui/icons/Info';
-import { IActionCall, IAndroidSDKAdd, IChannel, IChatWebAddFormField } from "@types";
+import { IActionCall, IChatWebAdd, IChannel, IChatWebAddFormField } from "@types";
 import { ColorChangeHandler } from "react-color";
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { getEditChatWebChannel, getInputValidationSel, getInsertChatwebChannel } from "common/helpers";
@@ -33,7 +33,7 @@ interface TabPanelProps {
 }
 interface FieldTemplate {
     text: React.ReactNode;
-    node: (onClose: (key: string) => void, data: IChatWebAddFormField, form: UseFormReturn<IAndroidSDKAdd>, index: number,fields:any, setFields: (key: any) => void) => React.ReactNode;
+    node: (onClose: (key: string) => void, data: IChatWebAddFormField, form: UseFormReturn<IChatWebAdd>, index: number,fields:any, setFields: (key: any) => void) => React.ReactNode;
     data: IChatWebAddFormField;
 }
 const useTabPanelStyles = makeStyles(theme => ({
@@ -114,7 +114,7 @@ const CONTACT = "CONTACT_FIELD";
 
 interface NameTemplateProps {
     onClose: () => void;
-    form: UseFormReturn<IAndroidSDKAdd>;
+    form: UseFormReturn<IChatWebAdd>;
     title: React.ReactNode;
     data: IChatWebAddFormField;
     index: number;
@@ -656,7 +656,7 @@ const getImgUrl = (file: File | string | null): string | null => {
     }
 }
 
-export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn<IAndroidSDKAdd>}> = ({form}) => {    
+export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn<IChatWebAdd>}> = ({form}) => {    
     const classes = useChannelAddStyles();
     const { setValue, getValues } = form;
     const { t } = useTranslation();
@@ -1038,7 +1038,7 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
         </div>
     </>
 }
-export const AndroidForm: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn<IAndroidSDKAdd>}> = ({setTabIndex,form}) => {    
+export const AndroidForm: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn<IChatWebAdd>}> = ({setTabIndex,form}) => {    
     const classes = useChannelAddStyles();
     const { setValue, getValues } = form;
     const { t } = useTranslation();
@@ -1203,7 +1203,7 @@ export const AndroidForm: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn
         </div>
     </>
 }
-export const AndroidColor: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn<IAndroidSDKAdd>}> = ({setTabIndex,form}) => {    
+export const AndroidColor: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn<IChatWebAdd>}> = ({setTabIndex,form}) => {    
     const classes = useChannelAddStyles();
     const { setValue, getValues } = form;
     const { t } = useTranslation();
@@ -1399,7 +1399,7 @@ export const AndroidColor: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
         </div>
     </>
 }
-export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn<IAndroidSDKAdd>}> = ({setTabIndex,form}) => {    
+export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn<IChatWebAdd>}> = ({setTabIndex,form}) => {    
     const classes = useChannelAddStyles();
     const { setValue, getValues, formState: { errors } } = form;
     const { t } = useTranslation();
@@ -1814,7 +1814,7 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
         </div>
     </>
 }
-export const ChannelAddAndroidDetail: FC<{form: UseFormReturn<IAndroidSDKAdd>, setView: (val:string)=>void}> = ({form,setView}) => {    
+export const ChannelAddAndroidDetail: FC<{form: UseFormReturn<IChatWebAdd>, setView: (val:string)=>void}> = ({form,setView}) => {    
     const classes = useChannelAddStyles();
     const [tabIndex, setTabIndex] = useState('0');
     const { t } = useTranslation();
@@ -1965,7 +1965,7 @@ export const ChannelAddAndroid: FC = () => {
     const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const service = useRef<IAndroidSDKAdd | null>(null);
+    const service = useRef<IChatWebAdd | null>(null);
     const location = useLocation<whatsAppData>();
     const channel = location.state as IChannel | null;
     const insertChannel = useSelector(state => state.channel.insertChannel);
@@ -2017,7 +2017,7 @@ export const ChannelAddAndroid: FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dispatch, editChannel]);
 
-    const form: UseFormReturn<IAndroidSDKAdd> = useForm<IAndroidSDKAdd>({
+    const form: UseFormReturn<IChatWebAdd> = useForm<IChatWebAdd>({
         defaultValues: service.current || {
             interface: {
                 chattitle: "",
