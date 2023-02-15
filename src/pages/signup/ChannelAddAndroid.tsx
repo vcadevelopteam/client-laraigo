@@ -11,7 +11,7 @@ import { useForm, useFormContext, UseFormReturn } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useSelector } from 'hooks';
 import { showSnackbar } from "store/popus/actions";
-import { IAndroidSDKAdd, IChatWebAddFormField } from "@types";
+import { IChatWebAdd, IChatWebAddFormField } from "@types";
 import clsx from 'clsx';
 import InfoIcon from '@material-ui/icons/Info';
 import React from "react";
@@ -26,7 +26,7 @@ interface TabPanelProps {
 
 interface FieldTemplate {
     text: React.ReactNode;
-    node: (onClose: (key: string) => void, data: IChatWebAddFormField, form: UseFormReturn<IAndroidSDKAdd>, index: number,fields:any, setFields: (key: any) => void) => React.ReactNode;
+    node: (onClose: (key: string) => void, data: IChatWebAddFormField, form: UseFormReturn<IChatWebAdd>, index: number,fields:any, setFields: (key: any) => void) => React.ReactNode;
     data: IChatWebAddFormField;
 }
 
@@ -100,7 +100,7 @@ const useTemplateStyles = makeStyles(theme => ({
 
 interface NameTemplateProps {
     onClose: () => void;
-    form: UseFormReturn<IAndroidSDKAdd>;
+    form: UseFormReturn<IChatWebAdd>;
     title: React.ReactNode;
     data: IChatWebAddFormField;
     index: number;
@@ -818,7 +818,7 @@ const isEmpty = (str?: string) => {
     return !str || str.length === 0;
 }
 
-export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn<IAndroidSDKAdd>}> = ({setTabIndex,form}) => {    
+export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn<IChatWebAdd>}> = ({setTabIndex,form}) => {    
     const classes = useChannelAddStyles();
     const { setValue, getValues, formState: { errors } } = form;
     const { t } = useTranslation();
@@ -1183,7 +1183,7 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
     </>
 }
 
-export const AndroidColorForm: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn<IAndroidSDKAdd>}> = ({setTabIndex,form}) => {    
+export const AndroidColorForm: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn<IChatWebAdd>}> = ({setTabIndex,form}) => {    
     const classes = useChannelAddStyles();
     const { setValue, getValues } = form;
     const { t } = useTranslation();
@@ -1333,7 +1333,7 @@ export const AndroidColorForm: FC<{setTabIndex: (f:string)=>void, form: UseFormR
         </div>
     </>
 }
-export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn<IAndroidSDKAdd>}> = ({setTabIndex,form}) => {    
+export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn<IChatWebAdd>}> = ({setTabIndex,form}) => {    
     const classes = useChannelAddStyles();
     const { setValue, getValues } = form;
     const { t } = useTranslation();
@@ -1703,7 +1703,7 @@ export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = (
         }
     }, [insertChannel]);
 
-    const nestedForm: UseFormReturn<IAndroidSDKAdd> = useForm<IAndroidSDKAdd>({
+    const nestedForm: UseFormReturn<IChatWebAdd> = useForm<IChatWebAdd>({
         defaultValues: {
             interface: {
                 chattitle: "",
@@ -1911,7 +1911,7 @@ export const ChannelAddAndroid: FC<{ setOpenWarning: (param: any) => void }> = (
 }
 
 
-export const AndroidForm: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn<IAndroidSDKAdd>}> = ({setTabIndex,form}) => {    
+export const AndroidForm: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn<IChatWebAdd>}> = ({setTabIndex,form}) => {    
     const classes = useChannelAddStyles();
     const { getValues } = form;
     const { t } = useTranslation();
