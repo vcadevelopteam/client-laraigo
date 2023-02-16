@@ -118,6 +118,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
     const [generalstate, setgeneralstate] = useState({
         eventcode: row?.code || '',
         duration: row?.timeduration || 0,
+        maximumCapacity: row?.maximumCapacity || 0,
         timebeforeeventduration: row?.timebeforeeventduration || 0,
         timeaftereventduration: row?.timeaftereventduration || 0,
         daysintothefuture: row?.daysduration || 0,
