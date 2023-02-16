@@ -47,6 +47,7 @@ const translation: LangKeys = {
   disconnections: "Disconnections",
   totaltimeduetodisconnectionreasons: "Total time due to disconnection reasons",
   timeconnectedvstimeoff: "Time Connected vs. Time Off",
+  timeconnectedvstimeoffperasesor: "Time Connected vs. Time Off per Adviser",
   align: "Align",
   show_all: 'Show all',
   size: "Size",
@@ -500,6 +501,8 @@ const translation: LangKeys = {
 
   type_domain_mastercatalog_adoptable_pets: "Adoptable Pets",
   type_domain_mastercatalog_bookable: "Bookable",
+  timeconnected: "Time connected",
+  timedesconnected: "Time desconnected",
   type_domain_mastercatalog_commerce: "Online Commerce",
   type_domain_mastercatalog_destinations: "Destinations",
   type_domain_mastercatalog_flights: "Flights",
