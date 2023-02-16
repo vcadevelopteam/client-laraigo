@@ -3385,7 +3385,7 @@ export const getUserAsesorByOrgID = (): IRequestBody => ({
     parameters: {}
 });
 
-export const getDisconnectionTimes = ({ startdate, enddate, asesorid, supervisorid }: Dictionary): IRequestBody => ({
+export const getDisconnectionTimes = ({ startdate, enddate, asesorid, supervisorid, groups }: Dictionary): IRequestBody => ({
     method: "UFN_DASHBOARD_DICONNECTIONTIMES_SEL",
     key: "UFN_DASHBOARD_DICONNECTIONTIMES_SEL",
     parameters: {
@@ -3393,6 +3393,7 @@ export const getDisconnectionTimes = ({ startdate, enddate, asesorid, supervisor
         enddate,
         asesorid,
         supervisorid,
+        groups,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })

@@ -1,7 +1,7 @@
 import { Box, Button, createStyles, makeStyles, Theme } from "@material-ui/core";
 import { Dictionary } from "@types";
 import { getDisconnectionTimes, getDateCleaned, getUserAsesorByOrgID, getValuesFromDomain, timetoseconds, formattime, exportExcel} from "common/helpers";
-import { DateRangePicker, DialogZyx, FieldSelect } from "components";
+import { DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect } from "components";
 import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
 import { langKeys } from "lang/keys";
@@ -164,10 +164,13 @@ const DashboardDisconnections: FC = () => {
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
     const [dataasesors, setdataasesors] = useState<any>([]);
+    const [grupos, setGrupos] = useState<any>([]);
     const [datatotaltime, setdatatotaltime] = useState<any>([]);
     const [disconnectiontypes, setdisconnectiontypes] = useState<any>([]);
     const [tcovstdc, settcovstdc] = useState<any>([]);
     const [usersearch, setusersearch] = useState(0);
+    const [groupFilter, setGroupFilter] = useState("");
+    const [groupData, setGroupData] = useState<any>([]);
     const user = useSelector(state => state.login.validateToken.user);
     
     async function funcsearch() {
@@ -175,6 +178,7 @@ const DashboardDisconnections: FC = () => {
             startdate: dateRangeCreateDate.startDate, 
             enddate: dateRangeCreateDate.endDate, 
             asesorid: usersearch, 
+            groups: groupFilter, 
             supervisorid: user?.userid||0,
         }
         dispatch(showBackdrop(true));
@@ -219,6 +223,7 @@ const DashboardDisconnections: FC = () => {
             let multiData = mainResult.multiData.data;
             setdataasesors(multiData[0] && multiData[0].success ? multiData[0].data : []);
             setdisconnectiontypes(multiData[1]?.data?.reduce((acc:any,x)=>[...acc,x.domainvalue],[]))
+            setGrupos(multiData[2] && multiData[2].success ? multiData[2].data : []);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mainResult])
@@ -226,6 +231,7 @@ const DashboardDisconnections: FC = () => {
         dispatch(getMultiCollection([
             getUserAsesorByOrgID(),
             getValuesFromDomain("TIPODESCONEXION"),
+            getValuesFromDomain("GRUPOS"),
         ]));
         funcsearch()
         return () => {
@@ -297,11 +303,34 @@ const DashboardDisconnections: FC = () => {
                         label={t(langKeys.user)}
                         className={classes.fieldsfilter}
                         variant="outlined"
-                        onChange={(value) => setusersearch(value?.userid||0)}
+                        onChange={(value) => {
+                            setusersearch(value?.userid||0)
+                            setGroupFilter("")
+                            if (value){
+                                if (value.groups==="")
+                                    setGroupData(grupos);
+                                else
+                                    setGroupData(grupos.filter((x:any)=>value.groups.split(',').includes(x.domainvalue)));
+                            }else{
+                                setGroupData([]);
+                            }
+                        }}
                         valueDefault={usersearch}
                         data={dataasesors}
                         optionDesc="userdesc"
                         optionValue="userid"
+                    />
+                </div>
+                <div className="row-zyx" style={{ marginTop: "15px" }}>
+                    <FieldMultiSelect
+                        label={t(langKeys.group)}
+                        variant="outlined"
+                        className={classes.fieldsfilter}
+                        valueDefault={groupFilter}
+                        onChange={(value) => setGroupFilter(value.map((o: any) => o.domainvalue).join())}
+                        data={groupData}
+                        optionDesc="domaindesc"
+                        optionValue="domainvalue"
                     />
                 </div>
             </DialogZyx>
