@@ -4929,6 +4929,7 @@ export const langKeys = {
     paymentorder_authcode: "paymentorder_authcode",
     paymentorder_purchasenumber: "paymentorder_purchasenumber",
     paymentorder_cardbrand: "paymentorder_cardbrand",
+    customnumber: "customnumber",
   };
   
   export type LangKeys = typeof langKeys;

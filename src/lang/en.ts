@@ -5014,6 +5014,7 @@ const translation: LangKeys = {
   paymentorder_authcode: "Authorization Code",
   paymentorder_purchasenumber: "Purchase Number",
   paymentorder_cardbrand: "Card Brand",
+  customnumber: "Custom Number",
 };
 
 const enResource: ResourceLanguage = {
