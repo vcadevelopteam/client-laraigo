@@ -249,7 +249,7 @@ function closeTicket(motive, obs = "") {
     } else {
         if (retryClose < 3) {
             setTimeout(() => {
-                closeTicket(motive)
+                closeTicket(motive, obs)
             }, 1000);
         }
         retryClose = retryClose + 1;
