@@ -2144,6 +2144,7 @@ const translation: LangKeys = {
   report_productivity_tmoagent: 'TMO agent',
   report_productivity_tmoagent_help: 'Time it took for the advisor to attend to the ticket since it was received.',
   report_productivity_tmeagent: 'TME agent',
+  report_productivity_tmeagent_help: 'Average time of the first response given by the advisor to the client.',
   report_productivity_holdingholdtime: 'Holding hold time',
   report_productivity_holdingholdtime_help: 'It is the time that a ticket was found in holding, until being referred to an advisor.',
   report_productivity_tags: 'Tags',
