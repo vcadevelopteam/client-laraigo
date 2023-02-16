@@ -1,7 +1,7 @@
 import { Box, Button, createStyles, makeStyles, Theme } from "@material-ui/core";
 import { Dictionary } from "@types";
 import { getDisconnectionTimes, getDateCleaned, getUserAsesorByOrgID, getValuesFromDomain, timetoseconds, formattime, exportExcel} from "common/helpers";
-import { DateRangePicker, DialogZyx, FieldSelect } from "components";
+import { DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect } from "components";
 import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
 import { langKeys } from "lang/keys";
@@ -9,7 +9,7 @@ import { FC, Fragment, useEffect, useState } from "react";
 import { Range } from 'react-date-range';
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis, Pie, PieChart, Legend } from "recharts";
+import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis, Pie, PieChart, Legend, LabelList } from "recharts";
 import { cleanViewChange, getMultiCollection, getMultiCollectionAux, resetMainAux, resetMultiMainAux, setViewChange } from "store/main/actions";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
@@ -164,10 +164,14 @@ const DashboardDisconnections: FC = () => {
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
     const [dataasesors, setdataasesors] = useState<any>([]);
+    const [grupos, setGrupos] = useState<any>([]);
     const [datatotaltime, setdatatotaltime] = useState<any>([]);
     const [disconnectiontypes, setdisconnectiontypes] = useState<any>([]);
     const [tcovstdc, settcovstdc] = useState<any>([]);
     const [usersearch, setusersearch] = useState(0);
+    const [groupFilter, setGroupFilter] = useState("");
+    const [groupData, setGroupData] = useState<any>([]);
+    const [dataperuser, setdataperuser] = useState<any>([]);
     const user = useSelector(state => state.login.validateToken.user);
     
     async function funcsearch() {
@@ -175,6 +179,7 @@ const DashboardDisconnections: FC = () => {
             startdate: dateRangeCreateDate.startDate, 
             enddate: dateRangeCreateDate.endDate, 
             asesorid: usersearch, 
+            groups: groupFilter, 
             supervisorid: user?.userid||0,
         }
         dispatch(showBackdrop(true));
@@ -190,6 +195,14 @@ const DashboardDisconnections: FC = () => {
                 let arraydisconnectiontimes =disconnectiontypes.map((x:any)=>0)
                 let userereasons = remultiaux?.data[0]?.data || []
                 let timestotal = [0,0]
+                let dataauxuser=userereasons.reduce((acc:any,x)=>{
+                    let timetotal = timetoseconds(x.conectedtime) + timetoseconds(x.desconectedtime)
+                    if (timetotal === 0 )  return acc;
+                    let percConnected =timetoseconds(x.conectedtime)*100/timetotal;
+                    let percDesconnected = 100-percConnected;
+                    return [...acc,{...x,percConnected,percDesconnected}]
+                },[])
+                setdataperuser(dataauxuser)
                 userereasons.forEach(x=>{
                     if(x.desconectedtimejson){
                         timestotal[0]+=timetoseconds(x.conectedtime)
@@ -219,6 +232,7 @@ const DashboardDisconnections: FC = () => {
             let multiData = mainResult.multiData.data;
             setdataasesors(multiData[0] && multiData[0].success ? multiData[0].data : []);
             setdisconnectiontypes(multiData[1]?.data?.reduce((acc:any,x)=>[...acc,x.domainvalue],[]))
+            setGrupos(multiData[2] && multiData[2].success ? multiData[2].data : []);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mainResult])
@@ -226,6 +240,7 @@ const DashboardDisconnections: FC = () => {
         dispatch(getMultiCollection([
             getUserAsesorByOrgID(),
             getValuesFromDomain("TIPODESCONEXION"),
+            getValuesFromDomain("GRUPOS"),
         ]));
         funcsearch()
         return () => {
@@ -297,11 +312,34 @@ const DashboardDisconnections: FC = () => {
                         label={t(langKeys.user)}
                         className={classes.fieldsfilter}
                         variant="outlined"
-                        onChange={(value) => setusersearch(value?.userid||0)}
+                        onChange={(value) => {
+                            setusersearch(value?.userid||0)
+                            setGroupFilter("")
+                            if (value){
+                                if (value.groups==="")
+                                    setGroupData(grupos);
+                                else
+                                    setGroupData(grupos.filter((x:any)=>value.groups.split(',').includes(x.domainvalue)));
+                            }else{
+                                setGroupData([]);
+                            }
+                        }}
                         valueDefault={usersearch}
                         data={dataasesors}
                         optionDesc="userdesc"
                         optionValue="userid"
+                    />
+                </div>
+                <div className="row-zyx" style={{ marginTop: "15px" }}>
+                    <FieldMultiSelect
+                        label={t(langKeys.group)}
+                        variant="outlined"
+                        className={classes.fieldsfilter}
+                        valueDefault={groupFilter}
+                        onChange={(value) => setGroupFilter(value.map((o: any) => o.domainvalue).join())}
+                        data={groupData}
+                        optionDesc="domaindesc"
+                        optionValue="domainvalue"
                     />
                 </div>
             </DialogZyx>
@@ -372,6 +410,46 @@ const DashboardDisconnections: FC = () => {
                                         </Pie>
                                         <Legend verticalAlign="bottom"/>
                                     </PieChart>
+                                </ResponsiveContainer>
+                            </div>
+
+                        </div>
+                    </Box>
+                </div>
+            </div>
+            <div style={{ display: 'flex', gap: 16, flexDirection: 'column' }}>
+                <div className={classes.replacerowzyx}>
+                    <Box
+                        className={classes.itemCard}
+                        style={{width:"100%"}}
+                    >
+                        <div className={classes.downloadiconcontainer}>                            
+                            <CloudDownloadIcon onClick={()=>downloaddata(dataperuser,t(langKeys.timeconnectedvstimeoffperasesor))} className={classes.styleicon}/>
+                        </div>
+                        <div style={{width: "100%"}}> 
+                            <div style={{display: "flex"}}>
+                                <div style={{fontWeight: "bold",fontSize: "1.6em",}}> {t(langKeys.timeconnectedvstimeoffperasesor)} </div>
+                            </div>
+                        </div>
+                        <div style={{width: "100%", display:"flex"}}>
+                            <div style={{width: "100%", paddingTop: 50}}>
+                                <ResponsiveContainer width="100%" aspect={5.0 / 2.0}>
+                                <BarChart
+                                        data={dataperuser}
+                                        layout="vertical"
+                                    >
+                                    <XAxis type="number" hide/> 
+                                    <YAxis dataKey={"fullname"} type="category"/>
+                                    <RechartsTooltip formatter={(value: any, name: any, props:any) => {let cond = name==="percConnected";
+                                        return [formattime(timetoseconds(props.payload[cond?"conectedtime":"desconectedtime"])), t(cond?langKeys.timeconnected: langKeys.timedesconnected)]
+                                    }} />
+                                    <Bar dataKey="percConnected" stackId="a" fill="#a8d08c" barSize={50}>
+                                        <LabelList dataKey="percConnected" position="inside" formatter={(value: any) => [value.toFixed(2)+"%"]} />
+                                    </Bar>
+                                    <Bar dataKey="percDesconnected" stackId="a" fill="#ff5353" barSize={50}>
+                                        <LabelList dataKey="percDesconnected" position="inside" formatter={(value: any) => [value.toFixed(2)+"%"]} />
+                                    </Bar>
+                                </BarChart>
                                 </ResponsiveContainer>
                             </div>
 
