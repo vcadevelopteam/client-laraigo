@@ -1399,7 +1399,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             disabled={!edit}
                             error={errors?.customnumber0?.message}
                             label={`${t(langKeys.customnumber)} 0`}
-                            onChange={(value) => setValue('customnumber0', value)}
+                            onChange={(value) => setValue('customnumber0', (value || value === 0) ? value.toString() : '')}
                             type="number"
                             valueDefault={row?.customnumber0 || ''}
                         />
@@ -1408,7 +1408,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             disabled={!edit}
                             error={errors?.customnumber1?.message}
                             label={`${t(langKeys.customnumber)} 1`}
-                            onChange={(value) => setValue('customnumber1', value)}
+                            onChange={(value) => setValue('customnumber1', (value || value === 0) ? value.toString() : '')}
                             type="number"
                             valueDefault={row?.customnumber1 || ''}
                         />
@@ -1419,7 +1419,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             disabled={!edit}
                             error={errors?.customnumber2?.message}
                             label={`${t(langKeys.customnumber)} 2`}
-                            onChange={(value) => setValue('customnumber2', value)}
+                            onChange={(value) => setValue('customnumber2', (value || value === 0) ? value.toString() : '')}
                             type="number"
                             valueDefault={row?.customnumber2 || ''}
                         />
@@ -1428,7 +1428,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             disabled={!edit}
                             error={errors?.customnumber3?.message}
                             label={`${t(langKeys.customnumber)} 3`}
-                            onChange={(value) => setValue('customnumber3', value)}
+                            onChange={(value) => setValue('customnumber3', (value || value === 0) ? value.toString() : '')}
                             type="number"
                             valueDefault={row?.customnumber3 || ''}
                         />
@@ -1439,7 +1439,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             disabled={!edit}
                             error={errors?.customnumber4?.message}
                             label={`${t(langKeys.customnumber)} 4`}
-                            onChange={(value) => setValue('customnumber4', value)}
+                            onChange={(value) => setValue('customnumber4', (value || value === 0) ? value.toString() : '')}
                             type="number"
                             valueDefault={row?.customnumber4 || ''}
                         />
