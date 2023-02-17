@@ -112,6 +112,7 @@ const DraggablesCategories : FC<{column:any,deletable:boolean, index:number, han
             deletable={deletable}
             onDelete={hanldeDeleteColumn}
             total_revenue={column.total_revenue!}
+            total_cards={column.items.length}
             // onAddCard={() => history.push(paths.CRM_ADD_LEAD.resolve(column.columnid, column.column_uuid))}
           >
               <Droppable droppableId={column.column_uuid} type="task">
@@ -231,7 +232,7 @@ const CRM: FC = () => {
             leadproduct: boardFilter.products,
             persontype: boardFilter.persontype,
             tags: boardFilter.tags,
-            userid: boardFilter.asesorid,
+            userid: String(boardFilter.asesorid || ""),
             supervisorid: user?.userid || 0,
           }),
           // adviserSel(),
@@ -286,7 +287,7 @@ const CRM: FC = () => {
         leadproduct: boardFilter.products,
         persontype: boardFilter.persontype,
         tags: boardFilter.tags,
-        userid: boardFilter.asesorid,
+        userid: String(boardFilter.asesorid||""),
         supervisorid: user?.userid || 0,
       }),
       // adviserSel(),
@@ -457,9 +458,9 @@ const CRM: FC = () => {
   }
 
   const initialAsesorId = useMemo(() => {
-    if (!user) return 0;
+    if (!user) return "";
     if (user.roledesc === "ASESOR") return user.userid;
-    else return otherParams.asesorid || mainMulti.data[2]?.data?.map(d => d.userid).includes(user?.userid) ? (user?.userid || 0) : 0;
+    else return otherParams.asesorid || mainMulti.data[2]?.data?.map(d => d.userid).includes(user?.userid) ? (user?.userid || "") : "";
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [otherParams, user]);
 
@@ -473,9 +474,9 @@ const CRM: FC = () => {
   const voxiConnection = useSelector(state => state.voximplant.connection);
   const callOnLine = useSelector(state => state.voximplant.callOnLine);
   const userConnected = useSelector(state => state.inbox.userConnected);
-  const [allParameters, setAllParametersPrivate] = useState<{ contact: string, channel: string, asesorid: number, persontype: string }>({
+  const [allParameters, setAllParametersPrivate] = useState<{ contact: string, channel: string, asesorid: string, persontype: string }>({
     // asesorid: otherParams.asesorid || mainMulti.data[2]?.data?.map(d => d.userid).includes(user?.userid) ? (user?.userid || 0) : 0,
-    asesorid: initialAsesorId,
+    asesorid: String(initialAsesorId),
     channel: otherParams.channels,
     contact: otherParams.contact,
     persontype: otherParams.persontype,
@@ -487,8 +488,8 @@ const CRM: FC = () => {
   const setAllParameters = useCallback((prop: typeof allParameters) => {
     if (!user) return;
 
-    if (user.roledesc === "ASESOR" && prop.asesorid !== user.userid) {
-      setAllParametersPrivate({ ...prop, asesorid: user.userid });
+    if (user.roledesc === "ASESOR" && prop.asesorid !== String(user.userid||"")) {
+      setAllParametersPrivate({ ...prop, asesorid: String(user.userid||"") });
     } else {
       setAllParametersPrivate(prop);
     }
@@ -841,16 +842,16 @@ const CRM: FC = () => {
 
   const filtersElement = useMemo(() => (
     <>
-      {(user && user.roledesc !== "ASESOR") && <FieldSelect
-        variant="outlined"
-        label={t(langKeys.agent)}
-        className={classes.filterComponent}
-        valueDefault={allParameters.asesorid}
-        onChange={(value) => setAllParameters({...allParameters, asesorid: value?.userid})}
-        data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
-        optionDesc={'fullname'}
-        optionValue={'userid'}
-        disabled={user?.roledesc === "ASESOR" || false}
+      {(user && user.roledesc !== "ASESOR") && <FieldMultiSelect
+          variant="outlined"
+          label={t(langKeys.agent)}
+          className={classes.filterComponent}
+          valueDefault={allParameters.asesorid}
+          onChange={(value) => {debugger;setAllParameters({...allParameters, asesorid: value?.map((o: Dictionary) => o['userid']).join(',')})}}
+          data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
+          optionDesc={'fullname'}
+          optionValue={'userid'}
+          disabled={user?.roledesc === "ASESOR" || false}
       />}
       <FieldMultiSelect
           variant="outlined"
@@ -917,17 +918,16 @@ const CRM: FC = () => {
         {display === 'BOARD' &&
         <div style={{ display: "flex", flexDirection: 'column', height: "100%" }}>
           <div className={classes.canvasFiltersHeader}>
-            {(user && user.roledesc !== "ASESOR") && <FieldSelect
-              variant="outlined"
-              label={t(langKeys.agent)}
-              className={classes.filterComponent}
-              valueDefault={boardFilter.asesorid}
-              onChange={(value) => setBoardFilter(prev => ({...prev, asesorid: value?.userid || 0}))}
-              data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
-              optionDesc="fullname"
-              optionValue="userid"
-              loading={mainMulti.loading}
-              disabled={user?.roledesc === "ASESOR" || false}
+            {(user && user.roledesc !== "ASESOR") && <FieldMultiSelect
+                variant="outlined"
+                label={t(langKeys.agent)}
+                className={classes.filterComponent}
+                valueDefault={boardFilter.asesorid}
+                onChange={(value) => setBoardFilter(prev => ({...prev, asesorid: value?.map((o: Dictionary) => o['userid']).join(',')}))}
+                data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
+                optionDesc={'fullname'}
+                optionValue={'userid'}
+                disabled={user?.roledesc === "ASESOR" || false}
             />}
             <FieldSelect
               variant="outlined"

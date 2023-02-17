@@ -5,6 +5,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import IconButton from '@material-ui/core/IconButton';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Link from '@material-ui/core/Link';
+import 'emoji-mart/css/emoji-mart.css'
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import { Trans, useTranslation } from 'react-i18next';
@@ -220,14 +221,15 @@ interface TemplateDialogProps {
     button2Type?: "button" | "submit" | "reset";
     button3Type?: "button" | "submit" | "reset";
     maxWidth?: false | "sm" | "xs" | "md" | "lg" | "xl" | undefined;
+    height?: string;
 }
 
-export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText0, buttonText1, buttonText2, buttonText3, handleClickButton0, handleClickButton1, handleClickButton2, handleClickButton3, title, maxWidth = "sm", button1Type = "button", button2Type = "button", zIndex = 1300, showClose = false }) => (
+export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText0, buttonText1, buttonText2, buttonText3, handleClickButton0, handleClickButton1, handleClickButton2, handleClickButton3, title, maxWidth = "sm", button1Type = "button", button2Type = "button", zIndex = 1300, showClose = false, height="auto" }) => (
     <Dialog
         open={open}
         fullWidth
         maxWidth={maxWidth}
-        style={{ zIndex }}>
+        style={{ zIndex, height }}>
         <form onSubmit={(button1Type === "submit" ? handleClickButton1 : (button2Type === "submit" ? handleClickButton2 : undefined))}>
             {title && (
                 <DialogTitle>
@@ -1308,6 +1310,7 @@ interface EmojiPickerZyxProps {
     onSelect: (e: any) => void;
     style?: React.CSSProperties;
     icon?: (onClick: () => void) => React.ReactNode;
+    bottom?: number;
 }
 
 const emojiPickerStyle = makeStyles({
@@ -1322,7 +1325,7 @@ const emojiPickerStyle = makeStyles({
 });
 
 
-export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, emojisNoShow = [], emojiFavorite = [], onSelect, style, icon }) => {
+export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, emojisNoShow = [], emojiFavorite = [], onSelect, style, icon, bottom = 50 }) => {
     const [open, setOpen] = React.useState(false);
     const classes = emojiPickerStyle();
     const handleClick = () => setOpen((prev) => !prev);
@@ -1337,7 +1340,7 @@ export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisIndexed, e
                 {open && (
                     <div style={{
                         position: 'absolute',
-                        bottom: 50,
+                        bottom: bottom,
                         zIndex: 1201
                     }}>
                         <Picker

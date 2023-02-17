@@ -29,10 +29,11 @@ const selectionKey = 'conversationid';
 
 const useStyles = makeStyles((theme) => ({
     container: {
-        display: 'flex',
-        flexDirection: 'column',
         gap: 8,
         width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        flex: 1
     },
     title: {
         fontSize: '22px',
@@ -1001,6 +1002,10 @@ const Tickets = () => {
             {
                 Header: t(langKeys.ticket_supervisor),
                 accessor: 'supervisor'
+            },
+            {
+                Header: t(langKeys.ticket_agentrol),
+                accessor: 'rolasesor'
             },
             {
                 Header: t(langKeys.ticket_empresa),

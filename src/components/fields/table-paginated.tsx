@@ -601,7 +601,7 @@ const TableZyx = React.memo(({
             setSelectedRows && setSelectedRows({})
             setCleanSelection && setCleanSelection(false)
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cleanSelection])
 
     useEffect(() => {
@@ -654,7 +654,7 @@ const TableZyx = React.memo(({
     }
 
     return (
-        <Box width={1}>
+        <Box width={1} style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto" }}>
             {titlemodule && <div className={classes.title}>{titlemodule}</div>}
             <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center">
                 <div className={clsx({
@@ -678,7 +678,7 @@ const TableZyx = React.memo(({
                                     {getDateCleaned(dateRange.startDate!) + " - " + getDateCleaned(dateRange.endDate!)}
                                 </Button>
                             </DateRangePicker>
-                            {FiltersElement && FiltersElement}
+                            {FiltersElement}
                             <Button
                                 disabled={loading}
                                 variant="contained"
@@ -751,8 +751,8 @@ const TableZyx = React.memo(({
 
             {HeadComponent && <HeadComponent />}
 
-            <TableContainer style={{ position: "relative" }}>
-                <Box overflow="auto">
+            <TableContainer style={{ position: "relative", flex: 1, display: "flex", flexDirection: "column" }}>
+                <Box overflow="auto" style={{ flex: 1 }}>
                     <MaUTable {...getTableProps()} aria-label="enhanced table" size="small" aria-labelledby="tableTitle">
                         <TableHead>
                             {headerGroups.map((headerGroup) => (
@@ -849,7 +849,6 @@ const TableZyx = React.memo(({
                             }
                         </TableBody>
                     </MaUTable>
-
                 </Box>
                 <Box className={classes.footerTable}>
                     <Box>
@@ -876,7 +875,7 @@ const TableZyx = React.memo(({
                     </Box>
                     <Box>
                         <Trans
-                            i18nKey={langKeys.tableShowingRecordOf}
+                            i18nKey={(totalrow || 0) === 100000 ? langKeys.tableShowingRecordOfMore : langKeys.tableShowingRecordOf}
                             values={{ itemCount: page.length, totalItems: totalrow }}
                         />
                     </Box>
@@ -889,7 +888,7 @@ const TableZyx = React.memo(({
                                 setPageSize(Number(e.target.value))
                             }}
                         >
-                            {[10, 20, 50, 100].map(pageSize => (
+                            {[5, 10, 20, 50, 100].map(pageSize => (
                                 <MenuItem key={pageSize} value={pageSize}>
                                     {pageSize}
                                 </MenuItem >
@@ -900,8 +899,8 @@ const TableZyx = React.memo(({
                         </Box>
                     </Box>
                 </Box>
-            </TableContainer>
-        </Box>
+            </TableContainer >
+        </Box >
     )
 })
 

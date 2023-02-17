@@ -334,7 +334,7 @@ const Whitelist: FC = () => {
     if (viewSelected === "view-1") {
 
         return (
-            <div style={{width:"100%"}}>
+            <div style={{ width: "100%", display: 'flex', flexDirection: 'column', flex: 1 }}>
                 <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
                         <TemplateBreadcrumbs
                             breadcrumbs={arrayBread}

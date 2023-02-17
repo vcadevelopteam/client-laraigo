@@ -162,8 +162,8 @@ const FilterDynamic: FC<{ filter: Dictionary, setFiltersDynamic: (param: any) =>
     const [dateRange, setDateRange] = useState<Range>(initialRange);
     const classes = useStyles();
     const { t } = useTranslation();
-    const choosenwidth=filter.description.length*18
-    
+    const choosenwidth = filter.description.length * 18
+
     useEffect(() => {
         setFiltersDynamic((prev: any) => ({
             ...prev,
@@ -199,7 +199,7 @@ const FilterDynamic: FC<{ filter: Dictionary, setFiltersDynamic: (param: any) =>
             <FieldEdit
                 label={filter.type === "variable" ? filter.description : t(`personalizedreport_${filter.description}`)}
                 variant="outlined"
-                width={choosenwidth<250?250:choosenwidth}
+                width={choosenwidth < 250 ? 250 : choosenwidth}
                 disabled={filter.type_filter === "unique_value"}
                 size="small"
                 valueDefault={filter.type_filter === "unique_value" ? t(langKeys.filter_unique_value) : filter.filter || ""}
@@ -274,7 +274,7 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
                     const cc = t(`type_close_${(x.conversationclosetype || "").toLowerCase().replace(/ /gi, "_")}`)
                     return {
                         ...x,
-                        conversationclosetype:  cc.includes("type_close") ? x.conversationclosetype : cc
+                        conversationclosetype: cc.includes("type_close") ? x.conversationclosetype : cc
                     }
                 })
             }
@@ -317,7 +317,7 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
         }
     }, [mainDynamic])
 
-    const onSearch = (isExport: Boolean = false) => {
+    const onSearch = (isExport: boolean = false) => {
         const body = {
             columns,
             parameters: {
@@ -337,7 +337,7 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
 
     return (
         <>
-            <div style={{ width: '100%' }}>
+            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
                 <TemplateBreadcrumbs
                     breadcrumbs={getArrayBread(description, t(langKeys.report_plural))}
                     handleClick={setViewSelected}

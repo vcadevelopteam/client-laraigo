@@ -256,7 +256,7 @@ export interface ICrmLeadSel {
     /**tags filter */
     tags: string; 
     /**filtro asesor por ID */
-    userid: number;
+    userid: string;
     /**id del usuario de la sesión - OBLIGATORIO no puede ser cero */
     supervisorid: number;
     persontype: string;

@@ -5,7 +5,8 @@ export * from './apiUrls';
 export * from './paths';
 export * from './icons';
 export * from './variablesTemplate';
+export * from './googleCategory';
 
 export const version = {
-    build: "1.16.2"
+    build: "1.17.0"
 }

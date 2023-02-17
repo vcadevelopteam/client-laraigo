@@ -631,7 +631,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
         } catch (error) {
             return null
         }
-    } else if (interactiontype === "audio" || (interactiontype === "video" && interactiontext.includes(".oga"))) {
+    } else if (interactiontype === "audio" || (interactiontype === "video" && interactiontext.includes(".oga")) || (interactiontype === "file" && interactiontext.includes(".mp3"))) {
         return (
             <div className={classes.interactionImage} style={{ borderRadius: 0, height: 50, backgroundColor: 'transparent' }}>
                 <audio controls src={interactiontext} className={classes.imageCard} style={{}}></audio>

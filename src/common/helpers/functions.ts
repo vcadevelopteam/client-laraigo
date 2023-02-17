@@ -195,11 +195,24 @@ export function formatNumberNoDecimals(num: number) {
 
 
 
+export function formattimeMinutes(cc: any) {
+    let seconds = 0
+    if(typeof(cc)==="string") seconds = timetoseconds(cc);
+    else seconds = cc;
+
+    if (!seconds)
+        return "0";
+    let hh = Math.floor(seconds / 3600) > 0 ? `${Math.floor(seconds / 3600)}h ` : ""
+    let mm = Math.floor((seconds % 3600) / 60) > 0 ? `${Math.floor((seconds % 3600) / 60)}m` : "0m"
+    return `${hh}${mm}`
+}
+
+
 export function formattime(cc: any) {
     if (!cc)
         return "0";
     let hh = Math.floor(cc / 3600) > 0 ? `${Math.floor(cc / 3600)}h ` : ""
-    let mm = Math.floor((cc % 3600) / 60) > 0 ? `${Math.floor((cc % 3600) / 60)}m ` : ""
+    let mm = Math.floor((cc % 3600) / 60) > 0 ? `${Math.floor((cc % 3600) / 60)}m` : ""
     let ss = `${cc % 60}s`
     return `${hh}${mm}${ss}`
 }
@@ -1015,6 +1028,23 @@ export const calculateDateFromWeek = (datex: Date) => {
         }
     })
 }
+
+interface Options {
+    withTime?: boolean;
+}
+
+
+export const formatDate = (strDate: string = "", options: Options = { withTime: true }) => {
+    if (!strDate || strDate === '') return '';
+
+    const date = new Date(typeof strDate === "number" ? strDate : strDate.replace("Z", ""));
+    const day = date.toLocaleDateString("en-US", { day: '2-digit' });
+    const month = date.toLocaleDateString("en-US", { month: '2-digit' });
+    const year = date.toLocaleDateString("en-US", { year: 'numeric' });
+    const time = date.toLocaleDateString("en-US", { hour: '2-digit', minute: '2-digit' });
+    return `${day}/${month}/${year}${options.withTime! ? time.split(',')[1] : ''}`;
+}
+
 
 export const hours = [
     { desc: "00:00", value: "00:00:00" },

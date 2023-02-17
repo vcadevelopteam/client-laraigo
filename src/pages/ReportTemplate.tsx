@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import clsx from 'clsx';
 import Button from '@material-ui/core/Button';
-import { TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldEditArray } from 'components';
+import { TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldEditArray, DialogZyx } from 'components';
 import { insertReportTemplate, getColumnsOrigin } from 'common/helpers';
 import { Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
@@ -24,7 +24,6 @@ import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { DialogZyx } from 'components'
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { SearchIcon } from 'icons';

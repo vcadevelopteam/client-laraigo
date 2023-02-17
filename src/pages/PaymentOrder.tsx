@@ -4,7 +4,7 @@ import CulqiModal from 'components/fields/CulqiModal';
 import Container from '@material-ui/core/Container';
 import Popus from 'components/layout/Popus';
 
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState,useRef } from 'react';
 import { langKeys } from 'lang/keys';
 import { makeStyles } from "@material-ui/core";
 import { useDispatch } from 'react-redux';
@@ -20,33 +20,30 @@ import { formatNumber } from 'common/helpers';
 
 const useStyles = makeStyles(theme => ({
     containerMain: {
-        height: '100vh',
         display: 'flex',
         alignItems: 'center'
     },
     back: {
-        backgroundColor: '#fbfcfd',
-        height: '100vh',
-        width: '100vw',
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center'
     },
     containerSuccess: {
-        minHeight: 600,
+        minHeight: "90vh",
+        marginTop: 20,
         backgroundColor: 'white',
         display: 'flex',
         borderRadius: 8,
         boxShadow: '0 1px 8px 0 rgb(0 0 0 / 8%)',
         width: '420px',
-        minWidth: '40px',
+        minWidth: '380px',
         alignItems: 'center',
         justifyContent: 'center',
         padding: theme.spacing(3),
         [theme.breakpoints.down('xs')]: {
-            width: '100vw',
+            width: '70vw',
         },
         flexDirection: 'column',
+        flexWrap: 'wrap',
     },
     containerFinish: {
         minHeight: 600,
@@ -93,6 +90,7 @@ export const PaymentOrder: FC = () => {
     const [publicKey, setPublicKey] = useState('');
     const [waitData, setWaitData] = useState(false);
     const [waitPay, setWaitPay] = useState(false);
+    const windowWidth = useRef(window.innerWidth);
 
     const fetchData = () => {
         dispatch(getCollectionPaymentOrder(paymentOrderSel({ corpid: corpid, orgid: orgid, conversationid: 0, personid: 0, paymentorderid: 0, ordercode: ordercode })));
@@ -111,10 +109,8 @@ export const PaymentOrder: FC = () => {
                 setWaitData(false);
 
                 if (mainResult.data.length) {
-                    if (!mainResult.data[0].expired) {
                         setPaymentData(mainResult.data[0]);
                         setPublicKey(mainResult.data[0].publickey);
-                    }
                 }
             } else if (mainResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(mainResult.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() }) }))
@@ -150,11 +146,10 @@ export const PaymentOrder: FC = () => {
         if (paymentData) {
             if (paymentData.paymentstatus === "PENDING") {
                 return (
-                    <Container component="main" maxWidth="xs" className={classes.containerMain}>
-                        <div className={classes.back}>
+                    <div className={classes.back}>
                             <div className={classes.containerSuccess}>
                                 <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                    <LaraigoLogo style={{ height: 120, margin: '20px' }} />
+                                    <LaraigoLogo style={{ height: 120, margin: '20px', width: "auto" }} />
                                 </div>
                                 <div style={{ fontWeight: 'bold', fontSize: 20, marginBottom: '20px' }}>{t(langKeys.paymentorder_success)}</div>
                                 {paymentData.ordercode && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
@@ -305,10 +300,9 @@ export const PaymentOrder: FC = () => {
                                     type="PAYMENTORDER"
                                 >
                                 </CulqiModal>}
-                            </div>
                         </div>
                         <Popus />
-                    </Container>
+                    </div>
                 )
             }
             else {

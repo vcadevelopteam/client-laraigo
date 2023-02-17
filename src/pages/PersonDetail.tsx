@@ -711,16 +711,16 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                         </Grid>
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                             <Property
-                                title={<Trans i18nKey={langKeys.healthprofessional} />}
+                                title={<Trans i18nKey={langKeys.district} />}
                                 subtitle={(
                                     <TextField
                                         fullWidth
-                                        placeholder={t(langKeys.healthprofessional)}
-                                        defaultValue={getValues("healthprofessional")}
-                                        value={getValues("healthprofessional")}
+                                        placeholder={t(langKeys.district)}
+                                        defaultValue={getValues("district")}
+                                        value={getValues("district")}
                                         onChange={e => {
-                                            setValue('healthprofessional', e.target.value)
-                                            trigger("healthprofessional")
+                                            setValue('district', e.target.value)
+                                            trigger("district")
                                         }}
                                     />
                                 )}
@@ -739,6 +739,24 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         onChange={e => {
                                             setValue('referralchannel', e.target.value)
                                             trigger("referralchannel")
+                                        }}
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.healthprofessional} />}
+                                subtitle={(
+                                    <TextField
+                                        fullWidth
+                                        placeholder={t(langKeys.healthprofessional)}
+                                        defaultValue={getValues("healthprofessional")}
+                                        value={getValues("healthprofessional")}
+                                        onChange={e => {
+                                            setValue('healthprofessional', e.target.value)
+                                            trigger("healthprofessional")
                                         }}
                                     />
                                 )}
@@ -825,15 +843,15 @@ const nameschannel: { [x: string]: string } = {
     "FBMS": "FACEBOOK MESSENGER",
     "FBDM": "FACEBOOK MESSENGER",
     "FBWA": "FACEBOOK MURO",
-    "WEBM": "WEB MESSENGER",
+    "WEBM": "CHAT WEB",
     "TELE": "TELEGRAM",
     "INST": "INSTAGRAM",
     "INMS": "INSTAGRAM",
     "INDM": "INSTAGRAM",
     "ANDR": "ANDROID",
     "APPL": "IOS",
-    "CHATZ": "WEB MESSENGER",
-    "CHAZ": "WEB MESSENGER",
+    "CHATZ": "CHAT WEB",
+    "CHAZ": "CHAT WEB",
     "MAIL": "EMAIL",
     "MAII": "EMAIL",
     "YOUT": "YOUTUBE",
@@ -1964,6 +1982,7 @@ const PersonDetail2: FC<{ person: any;}> = ({ person }) => {
             occupation: person?.occupation || '',
             educationlevel: person?.educationlevel || '',
             address: person?.address || '',
+            district: person?.district || '',
             healthprofessional: person?.healthprofessional || '',
             referralchannel: person?.referralchannel || '',
             referringpersonid: person?.referringpersonid || 0,
@@ -1998,6 +2017,7 @@ const PersonDetail2: FC<{ person: any;}> = ({ person }) => {
                 person.occupation = '';
                 person.educationlevel = '';
                 person.address = '';
+                person.district = '';
                 person.healthprofessional = '';
                 person.referralchannel = '';
                 person.referringpersonid = 0;
