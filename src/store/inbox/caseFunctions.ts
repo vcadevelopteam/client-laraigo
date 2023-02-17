@@ -12,7 +12,7 @@ const getGroupInteractions = (interactions: IInteraction[], hideLogs: boolean = 
         item.indexImage = indexImage;
         item.listImage = listImages;
         item.onlyTime = toTime24HR(convertLocalDate(item.createdate, false).toLocaleTimeString())
-        const currentUser = item.usertype === "BOT" ? "BOT" : (item.userid ? "agent" : "client");
+        const currentUser = item?.usertype === "BOT" ? "BOT" : (item.userid ? "agent" : "client");
         
         if (item.interactiontype.includes("image"))
             indexImage++;
