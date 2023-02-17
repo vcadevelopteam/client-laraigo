@@ -196,6 +196,8 @@ export const ChannelAddBlogger: FC = () => {
     if (viewSelected === "view1") {
         return (
             <>
+                <meta name="google-signin-client_id" content={apiUrls.GOOGLECLIENTID_CHANNEL} />
+                <script src="https://apis.google.com/js/platform.js" async defer></script>
                 <div style={{ width: '100%' }}>
                     <Breadcrumbs aria-label="breadcrumb">
                         <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData) }}>
