@@ -262,8 +262,8 @@ const DashboardKPI: FC = () => {
                     gg.style.display = 'flex';
                     gg.style.flexDirection = 'column';
                     gg.style.gap = '8px';
-                    gg.style.width = '440mm';
-                    gg.style.paddingTop = '27mm';
+                    gg.style.width = '460mm';
+                    gg.style.paddingTop = '14mm';
                     gg.id = "newexportcontainer"
 
                     gg.innerHTML = el.current.innerHTML;
