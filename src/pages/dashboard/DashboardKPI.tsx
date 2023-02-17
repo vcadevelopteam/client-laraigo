@@ -1,18 +1,20 @@
 import { Box, Button, createStyles, makeStyles, Theme } from "@material-ui/core";
-import { timetoseconds, formattime, getUserGroupsSel, dataYears, dataMonths, datesInMonth, dashboardKPISummaryGraphSel, dashboardKPISummarySel, addTimes, varpercTime, varpercnumber, divisionTimeNumber} from "common/helpers";
-import { DialogZyx, FieldMultiSelect, FieldSelect } from "components";
+import { timetoseconds, formattime, getUserGroupsSel, dashboardKPISummaryGraphSel, dashboardKPISummarySel, addTimes, varpercTime, varpercnumber, divisionTimeNumber, getDateCleaned} from "common/helpers";
+import { DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect } from "components";
 import { useSelector } from "hooks";
 import { DownloadIcon } from "icons";
 import { langKeys } from "lang/keys";
 import { FC, Fragment, useEffect, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
+import { Range } from 'react-date-range';
 import { ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis, Legend, LineChart, CartesianGrid, Line, LabelList } from "recharts";
 import { getMultiCollection, getMultiCollectionAux, resetMainAux, resetMultiMainAux } from "store/main/actions";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import DomToImage from 'dom-to-image';
 import clsx from 'clsx';
 import React from "react";
+import { CalendarIcon } from "icons";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -169,6 +171,12 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 
+const initialRange = {
+    startDate: new Date(new Date().setDate(1)),
+    endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+    key: 'selection'
+}
+
   
 const DashboardKPI: FC = () => {
     const classes = useStyles();
@@ -180,30 +188,30 @@ const DashboardKPI: FC = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [dataGroup, setDataGroup] = useState<any>([]);
     const [dataSummary, setDataSummary] = useState<any>([]);
-    const [filteredDays, setfilteredDays] = useState("1");
+    const [filteredDays, setfilteredDays] = useState("");
     const el = React.useRef<null | HTMLDivElement>(null);
+    const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
+    const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
     const [searchfields, setsearchfields] = useState({
-        day: "1",
-        month: String(new Date().getMonth()+1).padStart(2, '0'),
-        year: String(new Date().getFullYear()),
         groups: "",
         origin: "",
     });
-    const [dayData, setDayData] = useState<any>([]);
     const user = useSelector(state => state.login.validateToken.user);
     
-    useEffect(() => {
-        setDayData(datesInMonth(+searchfields.year, +searchfields.month))
-    }, [searchfields.month, searchfields.year])
-
     async function funcsearch() {
+        let mes = String((dateRangeCreateDate?.endDate?.getMonth()||0)+1).padStart(2, '0')
+        let year = dateRangeCreateDate?.endDate?.getFullYear()
         let tosend = { 
-            date: `${searchfields.year}-${searchfields.month}-01`, 
+            date: `${year}-${mes}-01`, 
             origin: searchfields.origin,
             usergroup: searchfields.groups,
             supervisorid: user?.userid||0,
         }
-        setfilteredDays((searchfields.day.split(",")).sort().join())
+        let days=[]
+        for (let i = dateRangeCreateDate?.startDate?.getDate()||1; i <= (dateRangeCreateDate?.endDate?.getDate()||1); i++) {
+            days.push(i);            
+        }
+        setfilteredDays(days.join())
         dispatch(showBackdrop(true));
         setOpenDialog(false)
         dispatch(getMultiCollectionAux([
@@ -372,38 +380,22 @@ const DashboardKPI: FC = () => {
                 handleClickButton2={() => funcsearch()}
             >
                 <div className="row-zyx" style={{ marginTop: "15px" }}>
-                    <FieldMultiSelect
-                        label={t(langKeys.day)}
-                        className={classes.fieldsfilter}
-                        variant="outlined"
-                        valueDefault={searchfields.day}
-                        onChange={(value) => setsearchfields(p => ({ ...p, day: value.map((o: any) => o.val).join() }))}
-                        data={dayData}
-                        optionValue="val"
-                        optionDesc="val"
-                    />
-                    <FieldSelect
-                        label={t(langKeys.month)}
-                        className={classes.fieldsfilter}
-                        valueDefault={searchfields.month}
-                        variant="outlined"
-                        onChange={(value) => setsearchfields({...searchfields, month: value?.val || String(new Date().getMonth()+1).padStart(2, '0')})}
-                        data={dataMonths}
-                        uset={true}
-                        prefixTranslation="month_"
-                        optionDesc="val"
-                        optionValue="val"
-                    />
-                    <FieldSelect
-                        label={t(langKeys.year)}
-                        className={classes.fieldsfilter}
-                        variant="outlined"
-                        valueDefault={searchfields.year}
-                        onChange={(value) => setsearchfields({...searchfields, year: value?.value || new Date().getFullYear()})}
-                        data={dataYears}
-                        optionDesc="value"
-                        optionValue="value"
-                    />
+                    <DateRangePicker
+                        open={openDateRangeCreateDateModal}
+                        setOpen={setOpenDateRangeCreateDateModal}
+                        range={dateRangeCreateDate}
+                        onSelect={setDateRangeCreateDate}
+                        //months={1}
+                        limitMonth={1}
+                    >
+                        <Button
+                            className={classes.itemDate}
+                            startIcon={<CalendarIcon />}
+                            onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+                        >
+                            {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
+                        </Button>
+                    </DateRangePicker>
                     <FieldMultiSelect
                         label={t(langKeys.group)}
                         className={classes.fieldsfilter}

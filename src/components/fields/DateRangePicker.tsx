@@ -24,6 +24,7 @@ interface DateRangePickerProps extends Omit<PDateRangePickerProps, 'ranges'> {
     title?: React.ReactNode;
     open: boolean;
     range: Range;
+    limitMonth?: number;
     setOpen: (open: boolean) => void;
     onSelect?: (props: Range) => void;
 }
@@ -70,6 +71,7 @@ const DateRangePicker: FC<DateRangePickerProps> = (props) => {
         direction = "horizontal",
         showSelectionPreview = true,
         moveRangeOnFirstSelection = false,
+        limitMonth = 0,
         ...res
     } = props;
     const dispatch = useDispatch();
@@ -135,11 +137,12 @@ const DateRangePicker: FC<DateRangePickerProps> = (props) => {
                         <PDateRangePicker
                             onChange={(range) => {
                                 const selection = (range as { selection: RangeWithKey }).selection;
-                                if (rangeDateFilter) {
+                                const limitExec = limitMonth || rangeDateFilter;
+                                if (limitExec) {
                                     const { startDate, endDate } = selection;
                                     const diffYear = endDate!!.getFullYear() - startDate!!.getFullYear()
                                     const diffmonth = endDate!!.getMonth() + 12 * diffYear - startDate!!.getMonth()
-                                    if ((diffmonth + 1) > rangeDateFilter) {
+                                    if ((diffmonth + 1) > limitExec) {
                                         setSearch(false)
                                         return dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.validate_time_filter) }))
                                     }
