@@ -1,5 +1,5 @@
 import { Box, Button, createStyles, makeStyles, Theme } from "@material-ui/core";
-import { timetoseconds, formattime, getUserGroupsSel, dataYears, datesInMonth, dashboardKPISummaryGraphSel, dashboardKPISummarySel, addTimes, varpercTime, varpercnumber, divisionTimeNumber, getDateCleaned} from "common/helpers";
+import { timetoseconds, formattime, getUserGroupsSel, dashboardKPISummaryGraphSel, dashboardKPISummarySel, addTimes, varpercTime, varpercnumber, divisionTimeNumber, getDateCleaned} from "common/helpers";
 import { DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect } from "components";
 import { useSelector } from "hooks";
 import { DownloadIcon } from "icons";
@@ -188,26 +188,30 @@ const DashboardKPI: FC = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [dataGroup, setDataGroup] = useState<any>([]);
     const [dataSummary, setDataSummary] = useState<any>([]);
-    const [filteredDays, setfilteredDays] = useState("1");
+    const [filteredDays, setfilteredDays] = useState("");
     const el = React.useRef<null | HTMLDivElement>(null);
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
     const [searchfields, setsearchfields] = useState({
-        year: String(new Date().getFullYear()),
         groups: "",
         origin: "",
     });
     const user = useSelector(state => state.login.validateToken.user);
     
     async function funcsearch() {
-        let mes = String(dateRangeCreateDate?.endDate?.getMonth()||0+1).padStart(2, '0')
+        let mes = String((dateRangeCreateDate?.endDate?.getMonth()||0)+1).padStart(2, '0')
+        let year = dateRangeCreateDate?.endDate?.getFullYear()
         let tosend = { 
-            date: `${searchfields.year}-${mes}-01`, 
+            date: `${year}-${mes}-01`, 
             origin: searchfields.origin,
             usergroup: searchfields.groups,
             supervisorid: user?.userid||0,
         }
-        //setfilteredDays((searchfields.day.split(",")).sort().join())
+        let days=[]
+        for (let i = dateRangeCreateDate?.startDate?.getDate()||1; i <= (dateRangeCreateDate?.endDate?.getDate()||1); i++) {
+            days.push(i);            
+        }
+        setfilteredDays(days.join())
         dispatch(showBackdrop(true));
         setOpenDialog(false)
         dispatch(getMultiCollectionAux([
@@ -381,7 +385,8 @@ const DashboardKPI: FC = () => {
                         setOpen={setOpenDateRangeCreateDateModal}
                         range={dateRangeCreateDate}
                         onSelect={setDateRangeCreateDate}
-                        months={1}
+                        //months={1}
+                        limitMonth={1}
                     >
                         <Button
                             className={classes.itemDate}
@@ -391,16 +396,6 @@ const DashboardKPI: FC = () => {
                             {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
                         </Button>
                     </DateRangePicker>
-                    <FieldSelect
-                        label={t(langKeys.year)}
-                        className={classes.fieldsfilter}
-                        variant="outlined"
-                        valueDefault={searchfields.year}
-                        onChange={(value) => setsearchfields({...searchfields, year: value?.value || new Date().getFullYear()})}
-                        data={dataYears}
-                        optionDesc="value"
-                        optionValue="value"
-                    />
                     <FieldMultiSelect
                         label={t(langKeys.group)}
                         className={classes.fieldsfilter}
