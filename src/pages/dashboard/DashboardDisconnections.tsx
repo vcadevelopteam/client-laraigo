@@ -439,7 +439,7 @@ const DashboardDisconnections: FC = () => {
                                         layout="vertical"
                                     >
                                     <XAxis type="number" hide/> 
-                                    <YAxis dataKey={"fullname"} type="category"/>
+                                    <YAxis dataKey={"fullname"} type="category" width={150}/>
                                     <RechartsTooltip formatter={(value: any, name: any, props:any) => {let cond = name==="percConnected";
                                         return [formattime(timetoseconds(props.payload[cond?"conectedtime":"desconectedtime"])), t(cond?langKeys.timeconnected: langKeys.timedesconnected)]
                                     }} />
@@ -447,7 +447,7 @@ const DashboardDisconnections: FC = () => {
                                         <LabelList dataKey="percConnected" position="inside" formatter={(value: any) => [value.toFixed(2)+"%"]} />
                                     </Bar>
                                     <Bar dataKey="percDesconnected" stackId="a" fill="#ff5353" barSize={50}>
-                                        <LabelList dataKey="percDesconnected" position="inside" formatter={(value: any) => [value.toFixed(2)+"%"]} />
+                                        <LabelList dataKey="percDesconnected" position="inside" formatter={(value: any) => [value>=5?value.toFixed(2)+"%":""]} />
                                     </Bar>
                                 </BarChart>
                                 </ResponsiveContainer>
