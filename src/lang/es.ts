@@ -4865,6 +4865,10 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   productcatalog_dateexpiration: "Fecha de Expiración",
   productcatalog_domain_gender_: "Vacio",
   productcatalog_reviewdescription: "Descripción de Revisión",
+  datetimestart_campaign: "Fecha y hora de ejecución",
+  executiontype_campaign: "Tipo de ejecución",
+  executiontype_MANUAL: "MANUAL",
+  executiontype_SCHEDULED:"PROGRAMADO",
 };
 
 const esResource: ResourceLanguage = {

@@ -4852,6 +4852,10 @@ export const langKeys = {
     productcatalog_dateexpiration: "productcatalog_dateexpiration",
     productcatalog_domain_gender_: "productcatalog_domain_gender_",
     productcatalog_reviewdescription: "productcatalog_reviewdescription",
+    datetimestart_campaign: 'datetimestart_campaign',
+    executiontype_campaign: 'executiontype_campaign',
+    executiontype_MANUAL: 'executiontype_MANUAL',
+    executiontype_SCHEDULED:'executiontype_SCHEDULED',
   };
   
   export type LangKeys = typeof langKeys;
