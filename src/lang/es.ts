@@ -4943,6 +4943,10 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   paymentorder_purchasenumber: "Número de Pedido",
   paymentorder_cardbrand: "Marca de Tarjeta",
   customnumber: "Número Personalizado",
+  datetimestart_campaign: "Fecha y hora de ejecución",
+  executiontype_campaign: "Tipo de ejecución",
+  executiontype_MANUAL: "MANUAL",
+  executiontype_SCHEDULED:"PROGRAMADO",
 };
 
 const esResource: ResourceLanguage = {

@@ -144,6 +144,16 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 Cell: cell
             },
             {
+                Header: t(langKeys.executiontype_campaign),
+                accessor: 'executiontype',
+                NoFilter: false,
+                prefixTranslation: 'executiontype',
+                Cell: (props: any) => {
+                    const { executiontype } = props.cell.row.original;
+                    return executiontype !== undefined ? t(`executiontype_${executiontype}`.toLowerCase()) : '';
+                }
+            },
+            {
                 Header: t(langKeys.total),
                 accessor: 'total',
                 type: 'number',

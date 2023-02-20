@@ -5015,6 +5015,10 @@ const translation: LangKeys = {
   paymentorder_purchasenumber: "Purchase Number",
   paymentorder_cardbrand: "Card Brand",
   customnumber: "Custom Number",
+  datetimestart_campaign: "Date and time of execution",
+  executiontype_campaign: "Execution type",
+  executiontype_MANUAL: "MANUAL",
+  executiontype_SCHEDULED:"SCHEDULED",
 };
 
 const enResource: ResourceLanguage = {

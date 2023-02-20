@@ -4930,6 +4930,10 @@ export const langKeys = {
     paymentorder_purchasenumber: "paymentorder_purchasenumber",
     paymentorder_cardbrand: "paymentorder_cardbrand",
     customnumber: "customnumber",
+    datetimestart_campaign: 'datetimestart_campaign',
+    executiontype_campaign: 'executiontype_campaign',
+    executiontype_MANUAL: 'executiontype_MANUAL',
+    executiontype_SCHEDULED:'executiontype_SCHEDULED',
   };
   
   export type LangKeys = typeof langKeys;
