@@ -150,7 +150,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected, externa
                 prefixTranslation: 'executiontype',
                 Cell: (props: any) => {
                     const { executiontype } = props.cell.row.original;
-                    return t(`executiontype_${executiontype}` || '').toUpperCase()
+                    return executiontype !== undefined ? t(`executiontype_${executiontype}`.toLowerCase()) : '';
                 }
             },
             {

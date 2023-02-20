@@ -188,7 +188,7 @@ export const Campaign: FC = () => {
                 prefixTranslation: 'datetimestart',
                 Cell: (props: any) => {
                     const { datetimestart } = props.cell.row.original;
-                    const formattedDate = formatDate(datetimestart, { withTime: true }) || 'Null';
+                    const formattedDate = formatDate(datetimestart, { withTime: true }) || '';
                     return formattedDate;
                 }
             },
