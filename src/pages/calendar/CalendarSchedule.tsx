@@ -365,16 +365,16 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                                     color="primary"
                                     type="number"
                                     fullWidth
-                                    value={generalstate.maximumCapacity}
-                                    error={!!errors?.maximumCapacity?.message}
-                                    helperText={errors?.maximumCapacity?.message || null}
+                                    value={generalstate.maximumcapacity}
+                                    error={!!errors?.maximumcapacity?.message}
+                                    helperText={errors?.maximumcapacity?.message || null}
                                     onInput={(e: any) => {
                                         let val = Number(e.target.value.replace(/[^0-9 ]/g, ""))
                                         e.target.value = String(val)
                                     }}
                                     onChange={(e) => {
-                                        setgeneralstate({ ...generalstate, maximumCapacity: Number(e.target.value) });
-                                        setValue('maximumCapacity', Number(e.target.value))
+                                        setgeneralstate({ ...generalstate, maximumcapacity: Number(e.target.value) });
+                                        setValue('maximumcapacity', Number(e.target.value))
                                     }}
                                 />
                             </div>
