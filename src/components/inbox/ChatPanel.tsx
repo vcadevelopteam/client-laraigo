@@ -1021,7 +1021,6 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                 if (mainAux2.data?.length > 0) {
                     setCheckTipification(true);
                     setOpenModalCloseticket(true);
-                    // setTypeStatus(newstatus);
                     setTypeStatus("CERRADO");
                 }
                 else {
@@ -1037,7 +1036,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
             <div className={classes.containerButtonsChat}>
                 {(!voxiConnection.error && userConnected && ticketSelected?.communicationchanneltype !== "VOXI" && location.pathname === "/message_inbox") &&
                     <Tooltip title={t(langKeys.make_call) + ""} arrow placement="top">
-                        <IconButton onClick={() => voxiConnection.error ? dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) })) : dispatch(setModalCall(true))}>
+                        <IconButton onClick={() => voxiConnection.error ? dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.nochannelvoiceassociated) })) : dispatch(setModalCall(true))}>
                             <PhoneIcon width={24} height={24} fill="#8F92A1" />
                         </IconButton>
                     </Tooltip>
