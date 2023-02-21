@@ -143,7 +143,7 @@ export const PaymentOrderNiubiz: FC = () => {
                 channel:'web',
                 merchantid:'${data.merchantid}',
                 purchasenumber:'${data.paymentorderid}',
-                amount:'${formatNumber(data?.totalamount || 0)}',
+                amount:'${formatNumber(data?.totalamount || 0).split(',').join('')}',
                 expirationminutes:'20',
                 timeouturl:'${window.location.href}',
                 merchantlogo:'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/PROCESOSYCONSULTORIA/1f93f067-12aa-46d6-9247-77ae40058c7d/Logo%20Laraigo-removebg-preview%20%281%29_waifu2x_art_noise3.png',
