@@ -665,6 +665,7 @@ export const Person: FC = () => {
         if (file) {
             let excel: any = await uploadExcel(file, undefined);
             let data: IPersonImport[] = array_trimmer(excel);
+            debugger
             data = data.filter((f: IPersonImport) =>
                 (f.documenttype === undefined || Object.keys(domains.value?.docTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.documenttype))
                 && (f.persontype === undefined || Object.keys(domains.value?.personGenTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.persontype))
@@ -674,6 +675,11 @@ export const Person: FC = () => {
                 && (f.civilstatus === undefined || Object.keys(domains.value?.civilStatuses.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.civilstatus))
                 && (f.occupation === undefined || Object.keys(domains.value?.occupations.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.occupation))
                 && (f.groups === undefined || Object.keys(domains.value?.groups.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.groups))
+                && (f.email === undefined || (/\S+@\S+\.\S+/.test(f.email)))
+                && (f.alternativeemail === undefined || (/\S+@\S+\.\S+/.test(f.alternativeemail)))
+                && (f.phone === undefined || (f.phone.startsWith("+51")? f.phone.length === 12:true))
+                && (f.alternativephone === undefined || (f.alternativephone.startsWith("+51")? f.alternativephone.length === 12:true))
+                && (f.documenttype === undefined || (f.documenttype === "DNI" && f.documentnumber?.length === 8) || (f.documenttype === "RUC" && f.documentnumber?.length === 11)|| (f.documenttype === "CE" && f.documentnumber?.length <= 12))
                 //&& (f.channeltype === undefined || Object.keys(domains.value?.channelTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.channeltype))
             );
             if (data.length > 0) {
