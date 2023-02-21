@@ -170,7 +170,6 @@ const DashboardDisconnections: FC = () => {
     const [tcovstdc, settcovstdc] = useState<any>([]);
     const [usersearch, setusersearch] = useState(0);
     const [groupFilter, setGroupFilter] = useState("");
-    const [groupData, setGroupData] = useState<any>([]);
     const [dataperuser, setdataperuser] = useState<any>([]);
     const user = useSelector(state => state.login.validateToken.user);
     
@@ -232,7 +231,14 @@ const DashboardDisconnections: FC = () => {
             let multiData = mainResult.multiData.data;
             setdataasesors(multiData[0] && multiData[0].success ? multiData[0].data : []);
             setdisconnectiontypes(multiData[1]?.data?.reduce((acc:any,x)=>[...acc,x.domainvalue],[]))
-            setGrupos(multiData[2] && multiData[2].success ? multiData[2].data : []);
+            console.log(user?.groups)
+            let usergroups = user?.groups?.split(',')
+            let unfilteredGroups=multiData[2] && multiData[2].success ? multiData[2].data : []
+            if(!!usergroups){
+                setGrupos(unfilteredGroups.filter(x=>usergroups?.includes(x.domainvalue)));
+            }else{
+                setGrupos(unfilteredGroups);
+            }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mainResult])
@@ -257,7 +263,7 @@ const DashboardDisconnections: FC = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-    
+
     const RADIAN = Math.PI / 180;
     const renderCustomizedLabel = ({cx, cy, midAngle, innerRadius, outerRadius, percent, index,}:Dictionary) => {
         const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
@@ -308,38 +314,32 @@ const DashboardDisconnections: FC = () => {
                     </Button>
                 </DateRangePicker>
                 <div className="row-zyx" style={{ marginTop: "15px" }}>
+                    <FieldMultiSelect
+                        label={t(langKeys.group)}
+                        variant="outlined"
+                        className={classes.fieldsfilter}
+                        valueDefault={groupFilter}
+                        onChange={(value) => {
+                            setusersearch(0)
+                            setGroupFilter(value.map((o: any) => o.domainvalue).join())
+                        }}
+                        data={grupos}
+                        optionDesc="domaindesc"
+                        optionValue="domainvalue"
+                    />
+                </div>
+                <div className="row-zyx" style={{ marginTop: "15px" }}>
                     <FieldSelect
                         label={t(langKeys.user)}
                         className={classes.fieldsfilter}
                         variant="outlined"
                         onChange={(value) => {
                             setusersearch(value?.userid||0)
-                            setGroupFilter("")
-                            if (value){
-                                if (value.groups==="")
-                                    setGroupData(grupos);
-                                else
-                                    setGroupData(grupos.filter((x:any)=>value.groups.split(',').includes(x.domainvalue)));
-                            }else{
-                                setGroupData([]);
-                            }
                         }}
                         valueDefault={usersearch}
-                        data={dataasesors}
+                        data={!!groupFilter?dataasesors.filter((x:any)=>x.groups.split(',').reduce((acc:any,y:any)=>acc + groupFilter.split(',').includes(y),0)):dataasesors}
                         optionDesc="userdesc"
                         optionValue="userid"
-                    />
-                </div>
-                <div className="row-zyx" style={{ marginTop: "15px" }}>
-                    <FieldMultiSelect
-                        label={t(langKeys.group)}
-                        variant="outlined"
-                        className={classes.fieldsfilter}
-                        valueDefault={groupFilter}
-                        onChange={(value) => setGroupFilter(value.map((o: any) => o.domainvalue).join())}
-                        data={groupData}
-                        optionDesc="domaindesc"
-                        optionValue="domainvalue"
                     />
                 </div>
             </DialogZyx>
