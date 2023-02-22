@@ -866,7 +866,7 @@ const Leads: React.FC = () => {
 
     return (
         <div className={`scroll-style-go`} style={{ overflowY: 'auto', flex: 1, backgroundColor: 'transparent' }}>
-            {listLead.map(({ leadid, lead, expected_revenue, priority, column }) => (
+            {listLead.map(({ leadid, lead, expected_revenue, priority, column, products }) => (
                 <div
                     key={leadid}
                     className={classes.containerAttachment}
@@ -874,7 +874,8 @@ const Leads: React.FC = () => {
                     <div style={{width: "100%"}}>
                         <div className={classes.label} style={{ textAlign: "right" }}>{priority}</div>
                         <div>{lead}</div>
-                        <div>{column}</div>
+                        {products && <div>{products}</div>}
+                        <div>{t(column?.toLowerCase())}</div>
                         <div style={{fontWeight: "bold"}}>{parseFloat(expected_revenue).toFixed(2)}</div>
                     </div>
                 </div>
