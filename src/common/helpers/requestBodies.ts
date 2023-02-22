@@ -1050,10 +1050,11 @@ export const getChannelSel = (id: number, orgid?: number, corpid?: number): IReq
         corpid
     }
 });
-export const getasesoresbyorgid = (closedby: string): IRequestBody => ({
+export const getasesoresbyorgid = (closedby: string, communicationchannel: string): IRequestBody => ({
     method: "UFN_USER_REPORT_HEATMAP_ASESOR_LST",
     parameters: {
-        bot: closedby.includes("BOT")
+        bot: closedby.includes("BOT"),
+        communicationchannel
     }
 });
 
