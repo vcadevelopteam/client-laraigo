@@ -435,7 +435,7 @@ const IntelligentModels: React.FC<IAConnectors> = ({ setExternalViewSelected, ar
         return (
             <DetailIntelligentModels
                 data={rowSelected}
-                setViewSelected={setViewSelected}
+                setViewSelected={functionChange}
                 multiData={mainResult.multiData.data}
                 fetchData={fetchData}
                 arrayBread2={arrayBread}
