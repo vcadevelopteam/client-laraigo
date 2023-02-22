@@ -7,7 +7,7 @@ import { FieldMultiSelect } from "components";
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { getasesoresbyorgid, getValuesFromDomain, heatmappage1, heatmappage1detail, heatmappage2, heatmappage2detail1, heatmappage2detail2, heatmappage3, heatmappage3detail } from 'common/helpers/requestBodies';
+import { getasesoresbyorgid, getCommChannelLst, getValuesFromDomain, heatmappage1, heatmappage1detail, heatmappage2, heatmappage2detail1, heatmappage2detail2, heatmappage3, heatmappage3detail } from 'common/helpers/requestBodies';
 import { cleanViewChange, getCollectionAux, getMultiCollection, getMultiCollectionAux, getMultiCollectionAux2, resetMainAux, resetMultiMain, resetMultiMainAux, resetMultiMainAux2, setViewChange } from 'store/main/actions';
 import { useSelector } from 'hooks';
 import { Dictionary } from '@types';
@@ -92,7 +92,7 @@ const ModalHeatMap: React.FC<ModalProps> = ({ openModal, setOpenModal, title = '
     )
 }
 
-const MainHeatMap: React.FC = () => {
+const MainHeatMap: React.FC<{dataChannels: any}> = ({dataChannels}) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const [realizedsearch, setrealizedsearch] = useState(false);  
@@ -1049,6 +1049,18 @@ const MainHeatMap: React.FC = () => {
                         size="small"
                     />
                 </div>
+                <div style={{flex:1, paddingRight: 10}}>
+                    <FieldMultiSelect 
+                        label={t(langKeys.channel)}
+                        className={classes.fieldsfilter}
+                        variant="outlined"
+                        onChange={(value) => { setdataMainHeatMap(p => ({ ...p, communicationchannel: value.map((o: Dictionary) => o.communicationchannelid).join() })) }}
+                        valueDefault={dataMainHeatMap.communicationchannel}
+                        data={dataChannels}
+                        optionDesc="communicationchanneldesc"
+                        optionValue="communicationchannelid"
+                    />
+                </div>
                 <div style={{flex:1}}>
 
                     <FieldMultiSelect
@@ -1164,7 +1176,7 @@ const MainHeatMap: React.FC = () => {
     )
 }
 
-const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({companydomain,groupsdomain}) => {
+const HeatMapAsesor: React.FC<{dataChannels:any, companydomain: any,groupsdomain: any}> = ({dataChannels,companydomain,groupsdomain}) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const [realizedsearch, setrealizedsearch] = useState(false);
@@ -1884,7 +1896,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
             dispatch(showBackdrop(true))
             dispatch(getMultiCollection([
                 heatmappage2(dataMainHeatMap),
-                getasesoresbyorgid(dataMainHeatMap.closedby)
+                getasesoresbyorgid(dataMainHeatMap.closedby, dataMainHeatMap.communicationchannel)
             ]));
         }
     }
@@ -1912,6 +1924,18 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
                         onChange={(e)=>handleDateChange(e.target.value)}
                         value={dataMainHeatMap.datetoshow}
                         size="small"
+                    />
+                </div>
+                <div style={{flex:1, paddingRight: 10}}>
+                    <FieldMultiSelect 
+                        label={t(langKeys.channel)}
+                        className={classes.fieldsfilter}
+                        variant="outlined"
+                        onChange={(value) => { setdataMainHeatMap(p => ({ ...p, communicationchannel: value.map((o: Dictionary) => o.communicationchannelid).join() })) }}
+                        valueDefault={dataMainHeatMap.communicationchannel}
+                        data={dataChannels}
+                        optionDesc="communicationchanneldesc"
+                        optionValue="communicationchannelid"
                     />
                 </div>
                 <div style={{flex:1,paddingRight: 10}}>
@@ -2097,7 +2121,7 @@ const HeatMapAsesor: React.FC<{companydomain: any,groupsdomain: any}> = ({compan
         </div>
     )
 }
-const HeatMapTicket: React.FC = () => {
+const HeatMapTicket: React.FC<{dataChannels: any}> = ({dataChannels}) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -2286,6 +2310,18 @@ const HeatMapTicket: React.FC = () => {
                         size="small"
                     />
                 </div>
+                <div style={{flex:1, paddingRight: 10}}>
+                    <FieldMultiSelect 
+                        label={t(langKeys.channel)}
+                        className={classes.fieldsfilter}
+                        variant="outlined"
+                        onChange={(value) => { setdataMainHeatMap(p => ({ ...p, communicationchannel: value.map((o: Dictionary) => o.communicationchannelid).join() })) }}
+                        valueDefault={dataMainHeatMap.communicationchannel}
+                        data={dataChannels}
+                        optionDesc="communicationchanneldesc"
+                        optionValue="communicationchannelid"
+                    />
+                </div>
                 <div style={{flex:1, paddingLeft: 20}}>
                     <Button
                         variant="contained"
@@ -2325,18 +2361,21 @@ const Heatmap: FC = () => {
     const [pageSelected, setPageSelected] = useState(0);    
     const [companydomain, setcompanydomain] = useState<any>([]);
     const [groupsdomain, setgroupsdomain] = useState<any>([]);
+    const [dataChannels, setDataChannels] = useState<any>([]);
     const multiDataAux = useSelector(state => state.main.multiDataAux);
     const dispatch = useDispatch();
     useEffect(() => {
         if(!multiDataAux.loading){
             setcompanydomain(multiDataAux.data[0]?.data||[]) 
             setgroupsdomain(multiDataAux.data[1]?.data||[])    
+            setDataChannels(multiDataAux.data[2]?.data||[])    
         }
     }, [multiDataAux])
     useEffect(() => {
         dispatch(getMultiCollectionAux([
             getValuesFromDomain("EMPRESA"),
-            getValuesFromDomain("GRUPOS")
+            getValuesFromDomain("GRUPOS"),
+            getCommChannelLst(),
         ]))
         return () => {
             dispatch(resetMainAux());
@@ -2360,9 +2399,9 @@ const Heatmap: FC = () => {
                 <AntTab label={t(langKeys.heatmapasesor)}/>
                 <AntTab label={t(langKeys.heatmapticket)}/>
             </Tabs>
-            {pageSelected === 0 && <MainHeatMap />}
-            {pageSelected === 1 && <HeatMapAsesor companydomain={companydomain} groupsdomain={groupsdomain}/>}
-            {pageSelected === 2 && <HeatMapTicket />}
+            {pageSelected === 0 && <MainHeatMap dataChannels={dataChannels}/>}
+            {pageSelected === 1 && <HeatMapAsesor dataChannels={dataChannels} companydomain={companydomain} groupsdomain={groupsdomain}/>}
+            {pageSelected === 2 && <HeatMapTicket dataChannels={dataChannels}/>}
         </Fragment>
     )
 }
