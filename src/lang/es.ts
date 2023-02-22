@@ -4866,6 +4866,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   productcatalog_dateexpiration: "Fecha de Expiración",
   productcatalog_domain_gender_: "Vacio",
   productcatalog_reviewdescription: "Descripción de Revisión",
+  greaterthanzero:"El valor de capacidad máxima del evento debe tener un numero mayor a 0"
 };
 
 const esResource: ResourceLanguage = {

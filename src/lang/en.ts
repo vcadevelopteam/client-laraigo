@@ -4938,6 +4938,7 @@ const translation: LangKeys = {
   productcatalog_dateexpiration: "Expiration Date",
   productcatalog_domain_gender_: "Empty",
   productcatalog_reviewdescription: "Review Description",
+  greaterthanzero:"The maximum capacity value of the event must have a number greater than 0"
 };
 
 const enResource: ResourceLanguage = {
