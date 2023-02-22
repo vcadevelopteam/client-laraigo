@@ -127,7 +127,7 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
                     <div style={{ display: "flex", width: "100%", borderRight: '1px solid #EBEAED' }}>
                         <IconButton 
                             style={{ marginLeft: "auto", marginTop: 40, marginRight: "auto", width: 80, height: 80, borderRadius: "50%", backgroundColor: showcall ? "#7721ad" : "#bdbdbd" }}
-                            onClick={() => voxiConnection.error? dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) })):dispatch(setModalCall(true))}
+                            onClick={() => voxiConnection.error? dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.nochannelvoiceassociated) })):dispatch(setModalCall(true))}
                             disabled={calls.some(call => call.statusCall === "CONNECTED")}
                         >
                             <WifiCalling style={{ color: "white", width: "80px", height: "80px" }} />
