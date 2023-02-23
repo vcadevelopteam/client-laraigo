@@ -2052,6 +2052,7 @@ const translation: LangKeys = {
   daysintothefuture: "Days into the future",
   withinadaterange: "Within a date range",
   unitofmeasure: "Unit of time",
+  maximumCapacity: 'Maximum capacity of the event',
   choosebotorasesor: "You must select at least one option “Advisor” or “Bot”.",
   newinterval: "New interval",
 
@@ -5022,6 +5023,7 @@ const translation: LangKeys = {
   executiontype_campaign: "Execution type",
   executiontype_MANUAL: "MANUAL",
   executiontype_SCHEDULED:"SCHEDULED",
+  greaterthanzero:"The maximum capacity value of the event must have a number greater than 0"
 };
 
 const enResource: ResourceLanguage = {

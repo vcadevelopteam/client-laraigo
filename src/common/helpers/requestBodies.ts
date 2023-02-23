@@ -3178,7 +3178,7 @@ export const insCalendar = ({
     id = 0, description, descriptionobject, status, type,
     code, name, locationtype, location, eventlink, color, notificationtype, messagetemplateid,
     daterange, daysduration, startdate, enddate,
-    timeduration, timeunit,
+    timeduration, timeunit,maximumcapacity,
     availability,
     timebeforeeventduration, timebeforeeventunit, timeaftereventduration, timeaftereventunit,
     increments,
@@ -3192,7 +3192,7 @@ export const insCalendar = ({
         descriptionobject: JSON.stringify(descriptionobject), status, type,
         code, name, locationtype, location, eventlink, color, notificationtype, messagetemplateid,
         daterange, daysduration, daystype: "CALENDAR", startdate, enddate,
-        timeduration, timeunit,
+        timeduration,timeunit,maximumcapacity,
         availability: JSON.stringify(availability),
         timebeforeeventduration, timebeforeeventunit, timeaftereventduration, timeaftereventunit,
         increments, reminderperiod, reminderfrecuency,
@@ -3204,7 +3204,7 @@ export const insCalendar = ({
 });
 
 export const getEventByCode = (orgid: number, code: string, personid: number, calendarbookinguuid: string | null | undefined = ""): IRequestBody => ({
-    key: "QUERY_EVENT_BY_CODE",
+    key: "QUERY_EVENT_BY_COsDE",
     method: calendarbookinguuid ? "QUERY_EVENT_BY_CODE_WITH_BOOKINGUUID" : "QUERY_EVENT_BY_CODE",
     parameters: {
         orgid, code, personid, calendarbookinguuid
