@@ -162,7 +162,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
             hsmtemplatename: row?.hsmtemplatename || "",
             intervals: row?.availability || [],
             durationtype: row?.timeunit || "MINUTE",
-            maximumcapacity: row?.maximuncapacity || 0,
+            maximumcapacity: row?.maximumcapacity || 0,
             duration: row?.timeduration || 0,
             timebeforeeventunit: row?.timebeforeeventunit || "MINUTE",
             timebeforeeventduration: row?.timebeforeeventduration || 0,
@@ -292,7 +292,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                     messagetemplateid: data.hsmtemplateid,
                     availability: data.intervals,
                     timeduration: data.duration,
-                    maximumcapacity: generalstate.maximumcapacity,
+                    maximumcapacity: data.maximumcapacity,
                     timeunit: data.durationtype,
                     reminderenable: data.statusreminder === "ACTIVO",
                     notificationmessage: replaceVariables(templateVariables, bodyMessage),
@@ -304,7 +304,6 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                     daysduration: diffDays,
                     increments: "00:30",
                 }
-                console.log("data",datatosend)
                 dispatch(execute(insCalendar(datatosend)));
                 dispatch(showBackdrop(true));
                 setWaitSave(true)
