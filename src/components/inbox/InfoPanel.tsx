@@ -773,7 +773,6 @@ const Attachments: React.FC = () => {
 
     useEffect(() => {
         if (!mainAux2.loading && !mainAux2.error && mainAux2.key === "QUERY_SELECT_ATTACHMENT") {
-            dispatch(updateClassificationPerson(mainAux2.data.length > 0))
             setListFiles(mainAux2?.data.map(x => ({
                 url: x.interactiontext,
                 filename: x.interactiontext.split("/").pop(),
@@ -843,7 +842,6 @@ const Leads: React.FC = () => {
 
     useEffect(() => {
         if (!mainAux2.loading && !mainAux2.error && mainAux2.key === "QUERY_SELECT_LEADS_BY_USER_PERSON") {
-            dispatch(updateClassificationPerson(mainAux2.data.length > 0))
             setlistLead(mainAux2?.data)
         }
     }, [mainAux2])
