@@ -217,6 +217,8 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_DATA_FOR_OUTBOUND_RESET]: caseFunctions.getDataForOutboundReset,
 
 
+    [actionTypes.UPD_QUICKREPLIES]: caseFunctions.updQuickreplies,
+
     [actionTypes.GET_QUICKREPLIES]: caseFunctions.getDataQuickreplies,
     [actionTypes.GET_QUICKREPLIES_SUCCESS]: caseFunctions.getDataQuickrepliesSuccess,
     [actionTypes.GET_QUICKREPLIES_FAILURE]: caseFunctions.getDataQuickrepliesFailure,

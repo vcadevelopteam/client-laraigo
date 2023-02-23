@@ -1249,6 +1249,19 @@ export const setDataUser = (state: IState, action: IAction): IState => ({
     role: action.payload.role
 });
 
+
+export const updQuickreplies = (state: IState, action: IAction): IState => ({
+    ...state,
+    quickreplies: { 
+        data: (action.payload.operation==="DELETE"?state.quickreplies.data.filter((x:any)=>x.quickreplyid !== action.payload.id): [...state.quickreplies.data,
+        {
+            quickreplyid: action.payload.id,
+            description:  action.payload.description,
+            quickreply:  action.payload.quickreply,
+            favorite: state.quickreplies.data.filter(x=>x.quickreplyid !== action.payload.id)?.[0]?.favorite||null
+        }]),loading: true, error: false },
+});
+
 export const getDataQuickreplies = (state: IState): IState => ({
     ...state,
     quickreplies: { ...state.quickreplies, loading: true, error: false },
