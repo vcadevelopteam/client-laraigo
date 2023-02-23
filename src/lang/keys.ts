@@ -347,7 +347,7 @@ export const langKeys = {
     notificationtemplate: "notificationtemplate",
     eventcode: "eventcode",
     unitofmeasure: "unitofmeasure",
-    maximumCapacity: "maximumCapacity",
+    maximumcapacity: "maximumcapacity",
     eventname: "eventname",
     filter: "filter",
     seeagendapage: "seeagendapage",

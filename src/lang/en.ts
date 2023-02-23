@@ -2021,7 +2021,7 @@ const translation: LangKeys = {
   daysintothefuture: "Days into the future",
   withinadaterange: "Within a date range",
   unitofmeasure: "Unit of time",
-  maximumCapacity: 'Maximum capacity of the event',
+  maximumcapacity: 'Maximum capacity of the event ',
   choosebotorasesor: "You must select at least one option “Advisor” or “Bot”.",
   newinterval: "New interval",
 

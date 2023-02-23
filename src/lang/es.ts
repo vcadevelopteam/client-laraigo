@@ -69,7 +69,7 @@ const translation: LangKeys = {
   saturday: "Sábado",
   availability: " Disponibilidad",
   unitofmeasure: "Unidad de tiempo",
-  maximumCapacity: "Capacidad máxima del evento",
+  maximumcapacity: "Capacidad máxima del evento",
   settimebeforetheevent: "Tiempo antes del evento",
   settimeaftertheevent: "Tiempo despues del evento",
   conditional: "Condicional",
