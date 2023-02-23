@@ -14,7 +14,7 @@ import { resetInsertChannel } from 'store/channel/actions';
 import { useSelector } from 'hooks';
 import { showSnackbar } from 'store/popus/actions';
 import { getInsertChatwebChannel } from 'common/helpers';
-import { WebMessengerColor } from 'icons';
+import ListAltIcon from '@material-ui/icons/ListAlt';
 import { MainData, SubscriptionContext } from './context';
 
 interface TabPanelProps {
@@ -1078,7 +1078,6 @@ export const ChannelAddWebForm: FC<{ setOpenWarning: (param: any) => void }> = (
     const [selectedView, setSelectedView] = useState("view1");
     const [tabIndex, setTabIndes] = useState('0');
     const { t } = useTranslation();
-
     const insertChannel = useSelector(state => state.channel.insertChannel);
 
     useEffect(() => {
@@ -1088,7 +1087,7 @@ export const ChannelAddWebForm: FC<{ setOpenWarning: (param: any) => void }> = (
     }, [dispatch]);
 
     useEffect(() => {
-        if (foreground !== 'chatWeb' && selectedView !== "view1") {
+        if (foreground !== 'webForm' && selectedView !== "view1") {
             setSelectedView("view1");
         }
     }, [foreground, selectedView]);
@@ -1219,7 +1218,7 @@ export const ChannelAddWebForm: FC<{ setOpenWarning: (param: any) => void }> = (
             setForeground(undefined);
         } else {
             setSelectedView(option);
-            setForeground('chatWeb');
+            setForeground('webForm');
         }
     }
 
@@ -1229,74 +1228,73 @@ export const ChannelAddWebForm: FC<{ setOpenWarning: (param: any) => void }> = (
                 hasFinished={hasFinished}
                 loading={insertChannel.loading}
                 integrationId={insertChannel.value?.integrationid}
-                onNext={() => setView("view2")}
+                onNext={() => {setView("view2")}}
                 submitError={submitError}
             />
         );
+    }else{
+        return (
+            <div className={classes.root}>
+                <Breadcrumbs aria-label="breadcrumb">
+                    <Link
+                        color="textSecondary"
+                        key={"mainview"}
+                        href="/"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setView("view1");
+                        }}
+                    >
+                        {'<< '}<Trans i18nKey={langKeys.previoustext} />
+                    </Link>
+                </Breadcrumbs>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <h2 className={classes.title}>
+                        <Trans i18nKey={langKeys.activeLaraigoOnYourWebsite} />
+                    </h2>
+                    <div style={{ height: 20 }} />
+                    <AppBar position="static" elevation={0}>
+                        <Tabs
+                            value={tabIndex}
+                            onChange={(_, i: string) => setTabIndes(i)}
+                            className={classes.tabs}
+                            TabIndicatorProps={{ style: { display: 'none' } }}
+                        >
+                            <Tab className={clsx(classes.tab, tabIndex === "0" && classes.activetab)} label={<Trans i18nKey={langKeys.interface} />} value="0" />
+                            <Tab className={clsx(classes.tab, tabIndex === "1" && classes.activetab)} label={<Trans i18nKey={langKeys.styles} count={2} />} value="1" />
+                            <Tab className={clsx(classes.tab, tabIndex === "2" && classes.activetab)} label={<Trans i18nKey={langKeys.form} />} value="2" />
+                        </Tabs>
+                    </AppBar>
+                    <TabPanel value="0" index={tabIndex}><TabPanelInterface form={nestedForm} /></TabPanel>
+                    <TabPanel value="1" index={tabIndex}><TabPanelStyles form={nestedForm} /></TabPanel>
+                    <TabPanel value="2" index={tabIndex}><TabPanelForm form={nestedForm} /></TabPanel>
+                    <div style={{ height: 20 }} />
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={async () => {
+                            if(!!nestedForm.getValues("form").length){
+                                const valid = await nestedForm.trigger();
+                                if (valid) {
+                                    setView("view1");
+                                    setHasFinished(true);
+                                }
+                            }else{
+                                dispatch(showSnackbar({
+                                    message: t(langKeys.emptyformerror),
+                                    show: true,
+                                    severity: "warning"
+                                }));
+                            }
+                        }}
+                    >
+                        <Trans i18nKey={langKeys.next} />
+                    </Button>
+                </div>
+            </div>
+        );
     }
 
-    return (
-        <div className={clsx(classes.root, {
-            [classes.rootextras]: tabIndex === "4",
-        })}>
-            <Breadcrumbs aria-label="breadcrumb">
-                <Link
-                    color="textSecondary"
-                    key={"mainview"}
-                    href="/"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        setView("view1");
-                    }}
-                >
-                    {'<< '}<Trans i18nKey={langKeys.previoustext} />
-                </Link>
-            </Breadcrumbs>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <h2 className={classes.title}>
-                    <Trans i18nKey={langKeys.activeLaraigoOnYourWebsite} />
-                </h2>
-                <div style={{ height: 20 }} />
-                <AppBar position="static" elevation={0}>
-                    <Tabs
-                        value={tabIndex}
-                        onChange={(_, i: string) => setTabIndes(i)}
-                        className={classes.tabs}
-                        TabIndicatorProps={{ style: { display: 'none' } }}
-                    >
-                        <Tab className={clsx(classes.tab, tabIndex === "0" && classes.activetab)} label={<Trans i18nKey={langKeys.interface} />} value="0" />
-                        <Tab className={clsx(classes.tab, tabIndex === "1" && classes.activetab)} label={<Trans i18nKey={langKeys.styles} count={2} />} value="1" />
-                        <Tab className={clsx(classes.tab, tabIndex === "2" && classes.activetab)} label={<Trans i18nKey={langKeys.form} />} value="2" />
-                    </Tabs>
-                </AppBar>
-                <TabPanel value="0" index={tabIndex}><TabPanelInterface form={nestedForm} /></TabPanel>
-                <TabPanel value="1" index={tabIndex}><TabPanelStyles form={nestedForm} /></TabPanel>
-                <TabPanel value="2" index={tabIndex}><TabPanelForm form={nestedForm} /></TabPanel>
-                <div style={{ height: 20 }} />
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={async () => {
-                        if(!!nestedForm.getValues("form").length){
-                            const valid = await nestedForm.trigger();
-                            if (valid) {
-                                setView("view1");
-                                setHasFinished(true);
-                            }
-                        }else{
-                            dispatch(showSnackbar({
-                                message: t(langKeys.emptyformerror),
-                                show: true,
-                                severity: "warning"
-                            }));
-                        }
-                    }}
-                >
-                    <Trans i18nKey={langKeys.next} />
-                </Button>
-            </div>
-        </div>
-    );
 };
 
 interface ChannelAddEndProps {
@@ -1327,7 +1325,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
             {!hasFinished && <Typography>
                 <Trans i18nKey={langKeys.subscription_genericconnect} />
             </Typography>}
-            {!hasFinished && <WebMessengerColor className={commonClasses.leadingIcon} />}
+            {!hasFinished && <ListAltIcon className={commonClasses.leadingIcon} />}
             {!hasFinished && <IconButton
                 color="primary"
                 className={commonClasses.trailingIcon}
@@ -1335,7 +1333,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
             >
                 <DeleteOutlineIcon />
             </IconButton>}
-            {hasFinished && <WebMessengerColor
+            {hasFinished && <ListAltIcon
                 style={{ width: 100, height: 100, alignSelf: 'center', fill: 'gray' }} />
             }
             {hasFinished && (
@@ -1348,7 +1346,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
                     <Typography
                         color="primary"
                         style={{ fontSize: '1.2vw', fontWeight: 500 }}>
-                        {t(langKeys.subscription_message1)} {t(langKeys.channel_chatweb)} {t(langKeys.subscription_message2)}
+                        {t(langKeys.subscription_message1)} {t(langKeys.web_form)} {t(langKeys.subscription_message2)}
                     </Typography>
                 </div>
             )}
