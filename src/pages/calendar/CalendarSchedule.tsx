@@ -326,10 +326,10 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
             <div style={{ display: 'flex', flexWrap: "wrap", gap: 16 }} >
                 <div style={{ flex: 1, minWidth: 250 }}>
                     <div className="col-12" style={{ padding: 5 }}>
-                        <Box fontWeight={500} lineHeight="18px" fontSize={16} mb={1} color="textPrimary">{t(langKeys.duration)} asdasdad</Box>
+                        <Box fontWeight={500} lineHeight="18px" fontSize={16} mb={1} color="textPrimary">{t(langKeys.duration)}</Box>
                         <div className="row-zyx" >
                             <div className="col-6">
-                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">{t(langKeys.quantity)} sasss</Box>
+                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">{t(langKeys.quantity)}</Box>
                                 <TextField
                                     color="primary"
                                     type="number"
@@ -360,14 +360,14 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                         </div>
                         <div className="row-zyx" >
                             <div className="col-6">
-                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">{t(langKeys.maximumCapacity)}</Box>
+                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">{t(langKeys.maximumcapacity)}</Box>
                                 <TextField
                                        color="primary"
                                        type="number"
                                        fullWidth
                                        value={generalstate.maximumcapacity}
                                        error={!!errors?.maximumcapacity?.message}
-                                       helperText={errors?.maximumcapacity?.message || null}
+                                       helperText={errors?.maximumcapacity?.message}
                                        onInput={(e: any) => {
                                            let val = Number(e.target.value.replace(/[^0-9 ]/g, ""))
                                            e.target.value = String(val)
