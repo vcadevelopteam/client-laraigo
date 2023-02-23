@@ -119,7 +119,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
     const [generalstate, setgeneralstate] = useState({
         eventcode: row?.code || '',
         duration: row?.timeduration || 0,
-        maximumcapacity: row?.maximumcapacity || 0,
+        maximumcapacity: row?.maximumcapacity || 1,
         timebeforeeventduration: row?.timebeforeeventduration || 0,
         timeaftereventduration: row?.timeaftereventduration || 0,
         daysintothefuture: row?.daysduration || 0,
@@ -162,7 +162,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
             hsmtemplatename: row?.hsmtemplatename || "",
             intervals: row?.availability || [],
             durationtype: row?.timeunit || "MINUTE",
-            maximumcapacity: row?.maximumcapacity || 0,
+            maximumcapacity: row?.maximumcapacity || 1,
             duration: row?.timeduration || 0,
             timebeforeeventunit: row?.timebeforeeventunit || "MINUTE",
             timebeforeeventduration: row?.timebeforeeventduration || 0,
@@ -190,7 +190,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
         register('communicationchannelid', { validate: (value) => getValues("notificationtype") !== "HSM" ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
         register('durationtype', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('duration', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.field_required)) });
-        register('maximumcapacity', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.field_required)) });
+        register('maximumcapacity', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.greaterthanzero)) });
         register('timebeforeeventunit', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('timebeforeeventduration', { validate: (value) => Boolean(value >= 0) || String(t(langKeys.field_required)) });
         register('timeaftereventunit', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
