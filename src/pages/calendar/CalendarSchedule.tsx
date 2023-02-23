@@ -362,20 +362,20 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                             <div className="col-6">
                                 <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">{t(langKeys.maximumCapacity)}</Box>
                                 <TextField
-                                    color="primary"
-                                    type="number"
-                                    fullWidth
-                                    value={generalstate.maximumcapacity}
-                                    error={!!errors?.maximumcapacity?.message}
-                                    helperText={errors?.maximumcapacity?.message || null}
-                                    onInput={(e: any) => {
-                                        let val = Number(e.target.value.replace(/[^0-9 ]/g, ""))
-                                        e.target.value = String(val)
-                                    }}
-                                    onChange={(e) => {
-                                        setgeneralstate({ ...generalstate, maximumcapacity: Number(e.target.value) });
-                                        setValue('maximumcapacity', Number(e.target.value))
-                                    }}
+                                       color="primary"
+                                       type="number"
+                                       fullWidth
+                                       value={generalstate.maximumcapacity}
+                                       error={!!errors?.maximumcapacity?.message}
+                                       helperText={errors?.maximumcapacity?.message || null}
+                                       onInput={(e: any) => {
+                                           let val = Number(e.target.value.replace(/[^0-9 ]/g, ""))
+                                           e.target.value = String(val)
+                                       }}
+                                       onChange={(e) => {
+                                           setgeneralstate({ ...generalstate, maximumcapacity: Number(e.target.value) });
+                                           setValue('maximumcapacity', Number(e.target.value))
+                                       }}
                                 />
                             </div>
                         </div>
