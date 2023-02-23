@@ -400,8 +400,9 @@ export const CalendarEvent: FC = () => {
 
     useEffect(() => {
         if (!resMain.loading) {
-            if (!resMain.error) {
-                if (resMain.key === "QUERY_EVENT_BY_CODE") {
+            
+           if (!resMain.error) {
+                if (resMain.key === "QUERY_EVENT_BY_COsDE") {
                     if (resMain.data.length > 0) {
                         setEvent(resMain.data[0]);
                     } else {

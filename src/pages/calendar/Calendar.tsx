@@ -115,10 +115,11 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
         endDate: row?.enddate ? new Date(row?.enddate + "T00:00:00") : new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
         key: 'selection'
     }
+    console.log("row",row?.maximumcapacity)
     const [generalstate, setgeneralstate] = useState({
         eventcode: row?.code || '',
         duration: row?.timeduration || 0,
-        maximumcapacity: row?.maximumcapacity || 1,
+        maximumcapacity: row?.maximumcapacity,
         timebeforeeventduration: row?.timebeforeeventduration || 0,
         timeaftereventduration: row?.timeaftereventduration || 0,
         daysintothefuture: row?.daysduration || 0,
@@ -161,7 +162,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
             hsmtemplatename: row?.hsmtemplatename || "",
             intervals: row?.availability || [],
             durationtype: row?.timeunit || "MINUTE",
-            maximumcapacity: row?.maximuncapacity || 1,
+            maximumcapacity: row?.maximuncapacity ,
             duration: row?.timeduration || 0,
             timebeforeeventunit: row?.timebeforeeventunit || "MINUTE",
             timebeforeeventduration: row?.timebeforeeventduration || 0,
