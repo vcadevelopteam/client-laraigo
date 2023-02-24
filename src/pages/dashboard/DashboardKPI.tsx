@@ -187,6 +187,11 @@ const DashboardKPI: FC = () => {
     const { t } = useTranslation();
     const [openDialog, setOpenDialog] = useState(false);
     const [dataGroup, setDataGroup] = useState<any>([]);
+    const [auxdata, setauxdata] = useState({
+        mes: "",
+        year: ""
+    });
+
     const [dataSummary, setDataSummary] = useState<any>([]);
     const [filteredDays, setfilteredDays] = useState("");
     const el = React.useRef<null | HTMLDivElement>(null);
@@ -200,7 +205,10 @@ const DashboardKPI: FC = () => {
     
     async function funcsearch() {
         let mes = String((dateRangeCreateDate?.endDate?.getMonth()||0)+1).padStart(2, '0')
-        let year = dateRangeCreateDate?.endDate?.getFullYear()
+        let year = String(dateRangeCreateDate?.endDate?.getFullYear())||""
+        setauxdata({
+            mes,year
+        })
         let tosend = { 
             date: `${year}-${mes}-01`, 
             origin: searchfields.origin,
@@ -313,8 +321,19 @@ const DashboardKPI: FC = () => {
 
 
     function processSummary() {
-        const prevmonth= remultiaux?.data?.[0]?.data[0];
-        const actmonth= remultiaux?.data?.[0]?.data[1];
+        const emptydata={
+            firstassignedtime_avg: "00:00:00",
+            holdingwaitingtime_avg: "00:00:00",
+            firstreplytime_avg: "00:00:00",
+            tmr_avg: "00:00:00",
+            tme_avg: "00:00:00",
+            agents: 0,
+            tickets_count: 0,
+            abandoned_tickets: 0,
+            balancetimes_avg: "00:00:00",
+        }
+        const prevmonth= remultiaux?.data?.[0]?.data[0]||emptydata;
+        const actmonth= remultiaux?.data?.[0]?.data[1]||emptydata;
         const selectedDays = filteredDays.split(",")
         const cantdays = selectedDays.length
         const dataDays = remultiaux?.data?.[1]?.data?.filter(x=>selectedDays.includes(String(x.day)))||[]
@@ -344,10 +363,9 @@ const DashboardKPI: FC = () => {
             firstreplytime_avg: timetoseconds(foundDay?.firstreplytime_avg || "00:00:00"),
             participacion: foundDay?.stake||0,
         }]}, [])
-        
         setDataSummary({
-            month: actmonth.month,
-            year: actmonth.year,
+            month: auxdata.mes,
+            year: auxdata.year,
             firstassignedtime_avg: divisionTimeNumber(dataDays.reduce((acc,x)=>(addTimes(acc,x.firstassignedtime_avg)),"00:00:00"),cantdays),
             holdingwaitingtime_avg: divisionTimeNumber(dataDays.reduce((acc,x)=>(addTimes(acc,x.holdingwaitingtime_avg)),"00:00:00"),cantdays),
             firstreplytime_avg: divisionTimeNumber(dataDays.reduce((acc,x)=>(addTimes(acc,x.firstreplytime_avg)),"00:00:00"),cantdays),
