@@ -56,6 +56,9 @@ const dataSummarization = [
     { function: 'mode', type: ["double precision", "bigint", "integer", "numeric", "interval", "boolean", "character varying", "text", "variable"] },
 ];
 
+const dataTransformDate = [{ key: "date" }, { key: "time" }, { key: "time_date" }];
+const dataTransformTime = [{ key: "time" }, { key: "seconds" }, { key: "minutes" }, { key: "hours" }];
+
 const arrayBread = (view1: string, view2: string) => [
     { id: "view-1", name: view1 },
     { id: "view-2", name: view2 }
@@ -114,6 +117,7 @@ type IColumnTemplate = {
     join_on: string;
     join_table: string;
     tablename: string;
+    format?: string;
     type: string;
     alias: string;
     id: any;
@@ -444,7 +448,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
 
     useEffect(() => {
         if (columnsSelected.length > 0) {
-            columnsAppend(columnsSelected.map(x => ({ ...x, alias: x.descriptionT })));
+            columnsAppend(columnsSelected.map(x => ({ ...x, alias: x.descriptionT, format: x.type.includes("timestamp") ? "time_date" : (x.type === "interval" ? "time" : x.type) })));
         }
     }, [columnsSelected]);
 
@@ -513,6 +517,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
             move(source.index, destination.index);
         }
     };
+
 
     return (
         <>
@@ -602,6 +607,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                         <TableCell>{t(langKeys.column)}</TableCell>
                                         <TableCell>{t(langKeys.description)}</TableCell>
                                         <TableCell>{t(langKeys.type)}</TableCell>
+                                        <TableCell>{t(langKeys.format)}</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <DragDropContext onDragEnd={handleDrag}>
@@ -658,8 +664,32 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                                             onChange={(value) => setValue(`columns.${index}.alias`, value)}
                                                                         />
                                                                     </TableCell>
-                                                                    <TableCell>
+                                                                    <TableCell style={{ width: 150 }}>
                                                                         {t(`typepg_${item?.type}`)}
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                        {(item?.type.includes("timestamp") || item?.type === "interval") && (
+                                                                            <FieldSelect
+                                                                                label={t(langKeys.typefilter)}
+                                                                                valueDefault={getValues(`columns.${index}.format`)}
+                                                                                fregister={{
+                                                                                    ...register(`columns.${index}.format`, {
+                                                                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                                                    })
+                                                                                }}
+                                                                                variant='outlined'
+                                                                                onChange={(value) => {
+                                                                                    setValue(`columns.${index}.format`, value?.key || '');
+                                                                                }}
+                                                                                error={errors?.columns?.[index]?.format?.message}
+                                                                                data={item?.type.includes("timestamp") ? dataTransformDate : dataTransformTime}
+                                                                                optionDesc="key"
+                                                                                uset={true}
+                                                                                prefixTranslation={item?.type.includes("timestamp") ? "format_transform_date_" : "format_transform_time_"}
+                                                                                optionValue="key"
+                                                                            />
+                                                                        )}
+                                                                        {!(item?.type.includes("timestamp") || item?.type === "interval") && t(`typepg_${item?.type}`)}
                                                                     </TableCell>
                                                                 </TableRow>)}
                                                         </Draggable>

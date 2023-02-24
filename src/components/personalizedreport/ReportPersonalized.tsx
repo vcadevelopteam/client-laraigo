@@ -287,8 +287,15 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
                             if (!!x[columnclean]) {
                                 const date = new Date(x[columnclean]);
                                 if (!isNaN(date.getTime())) {
-                                    if (y.type === "timestamp without time zone")
-                                        x[columnclean] = date.toLocaleString();
+                                    if (y.type === "timestamp without time zone") {
+                                        if (y.format === "time") {
+                                            x[columnclean] = date.toLocaleString().replace(",", "").split(" ")[1];
+                                        } else if (y.format === "date") {
+                                            x[columnclean] = date.toLocaleString().replace(",", "").split(" ")[0];
+                                        } else {
+                                            x[columnclean] = date.toLocaleString();
+                                        }
+                                    }
                                     else
                                         x[columnclean] = date.toLocaleDateString();
                                 } else {
@@ -304,6 +311,8 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
                                     })
                                 }
                             }
+                        } else if (y.type === "interval") {
+                            
                         }
                         if (["boolean"].includes(y.type)) {
                             x[columnclean] = x[columnclean] ? t("yes") : t("no")
