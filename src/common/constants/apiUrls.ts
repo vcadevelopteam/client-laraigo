@@ -1,4 +1,4 @@
-const ENV = "DEVELOP";
+const ENV = "CLAROHISTORICAL";
 
 const APIS_URL = {
     DEVELOP: {
@@ -46,6 +46,20 @@ const APIS_URL = {
     },
     CLARO: {
         API: 'https://claroapi.laraigo.com/api',
+        WS: 'https://clarobroker.laraigo.com',
+        CHATFLOW: 'https://chatflow-claro.s3-web.us-east.cloud-object-storage.appdomain.cloud',
+        FACEBOOKAPP: '1980305408682607',
+        INSTAGRAMAPP: '1924971937716955',
+        CATALOGAPP: '2131127810437236',
+        CULQIKEY: 'pk_test_041501e753dcb2f9',
+        GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
+        GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
+        FACEBOOKVERSION: 'v15.0',
+        DIALOG360PARTNERID: 'nPJXndPA',
+        GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
+    },
+    CLAROHISTORICAL: {
+        API: 'http://10.240.65.10:6066/api',
         WS: 'https://clarobroker.laraigo.com',
         CHATFLOW: 'https://chatflow-claro.s3-web.us-east.cloud-object-storage.appdomain.cloud',
         FACEBOOKAPP: '1980305408682607',
