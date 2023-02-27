@@ -12,11 +12,11 @@ import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import AddIcon from '@material-ui/icons/Add';
-import { getCollection, getCollectionAux, getCollectionAux2, resetAllMain } from 'store/main/actions';
-import { exportintent, selEntities, selIntent, selUtterance } from 'common/helpers/requestBodies';
 import { convertLocalDate, exportExcel, filterPipe, uploadExcel } from 'common/helpers';
 import { intentdel, intentimport, intentutteranceins, trainwitai } from 'store/witia/actions';
+import { execute, getCollection, getCollectionAux, getCollectionAux2, resetAllMain } from 'store/main/actions';
+import { exportintent, insertutterance, selEntities, selIntent, selUtterance, utterancedelete } from 'common/helpers/requestBodies';
+import AddIcon from '@material-ui/icons/Add';
 
 
 interface RowSelected {
@@ -292,7 +292,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        <div className="col-12">
+                        <div className={classes.containerFields}>
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">{t(langKeys.name)}</Box>
                             <TextField
                                 color="primary"
@@ -314,6 +314,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                                 }}
                             />
                         </div>
+                        <div style={{ paddingTop:"8px",paddingBottom:"16px"}}>{t(langKeys.intentionnametooltip)}</div>
                         <FieldEdit
                             label={t(langKeys.description)} 
                             disabled={!disableSave}
