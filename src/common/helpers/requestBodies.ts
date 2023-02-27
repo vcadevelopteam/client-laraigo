@@ -3378,6 +3378,15 @@ export const conversationSupervisionStatus = ({ conversationid, status, type }: 
         type
     },
 });
+export const conversationTransferStatus = ({ conversationid, status, type }: Dictionary) => ({
+    method: "UFN_CONVERSATION_TRANSFERSTATUS",
+    key: "UFN_CONVERSATION_TRANSFERSTATUS",
+    parameters: {
+        conversationid,
+        status,
+        type
+    },
+});
 export const conversationCloseUpd = ({ communicationchannelid, personid, personcommunicationchannel, conversationid, motive, obs }: Dictionary) => ({
     method: "UFN_CONVERSATION_CLOSE_UPD",
     key: "UFN_CONVERSATION_CLOSE_UPD",

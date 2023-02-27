@@ -25,7 +25,7 @@ export const setTransferAction = (payload?: boolean): IActionCall => ({ type: ac
 
 export const transferCall = (payload: { url: string, number?: string, transfername: string, transfernumber: string, conversationid: number }): IActionCall => ({ type: actionTypes.TRANSFER_CALL, payload });
 
-export const completeTransferCall = (payload?: { call?: Call | null, number?: string }): IActionCall => ({ type: actionTypes.COMPLETE_TRANSFER_CALL, payload });
+export const completeTransferCall = (payload?: { call?: Call | null, number?: string, conversationid: number }): IActionCall => ({ type: actionTypes.COMPLETE_TRANSFER_CALL, payload });
 
 export const hangupTransferCall = (payload?: Call | null): IActionCall => ({ type: actionTypes.HANGUP_TRANSFER_CALL, payload });
 
