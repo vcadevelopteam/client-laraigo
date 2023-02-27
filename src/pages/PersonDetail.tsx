@@ -872,6 +872,7 @@ const nameschannel: { [x: string]: string } = {
     "TWIT": "TWITTER",
     "TWMS": "TWITTER",
     "VOXI": "T_VOICECHANNEL",
+    "FORM": "FORMULARIO WEB",
 };
 
 const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {

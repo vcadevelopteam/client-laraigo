@@ -15,6 +15,7 @@ const APIS_URL = {
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
+        WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/test-FormWebClient.min.js',
     },
     TESTING: {
         API: 'https://testapix.laraigo.com/api',
@@ -29,6 +30,7 @@ const APIS_URL = {
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
+        WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/testing-form.min.js',
     },
     PRODUCTION: {
         API: 'https://apiprd.laraigo.com/api',
@@ -43,6 +45,7 @@ const APIS_URL = {
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
+        WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
     },
     CLARO: {
         API: 'https://claroapi.laraigo.com/api',
@@ -57,6 +60,7 @@ const APIS_URL = {
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
+        WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
     },
     CLAROHISTORICAL: {
         API: 'http://10.240.65.10:6066/api',
@@ -85,6 +89,7 @@ const APIS_URL = {
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
+        WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
     },
     DEMO: {
         API: 'https://demoapix.laraigo.com/api',
@@ -99,6 +104,7 @@ const APIS_URL = {
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
+        WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
     },
     LOCAL: {
         API: 'http://localhost:6065/api',
@@ -115,6 +121,7 @@ const APIS_URL = {
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
+        WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/test-FormWebClient.min.js',
     }
 }
 
@@ -130,6 +137,7 @@ const GOOGLECLIENTID_CHANNEL = APIS_URL[ENV].GOOGLECLIENTID_CHANNEL
 const FACEBOOKVERSION = APIS_URL[ENV].FACEBOOKVERSION
 const DIALOG360PARTNERID = APIS_URL[ENV].DIALOG360PARTNERID
 const GOOGLECLIENTID_CALENDAR = APIS_URL[ENV].GOOGLECLIENTID_CALENDAR
+const WEBFORMCHANNEL_FORM = APIS_URL[ENV].WEBFORMCHANNEL_FORM
 
 export const apiUrls = {
     WS_URL,
@@ -142,6 +150,7 @@ export const apiUrls = {
     FACEBOOKVERSION,
     DIALOG360PARTNERID,
     GOOGLECLIENTID_CALENDAR,
+    WEBFORMCHANNEL_FORM,
     LOGIN_URL: `${BASE_URL}/auth`,
     CONNECT_INBOX: `${BASE_URL}/auth/connect`,
     CHANGE_ORGANIZATION: `${BASE_URL}/auth/changeorganization`,
