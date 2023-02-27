@@ -4941,6 +4941,7 @@ const translation: LangKeys = {
   productcatalog_dateexpiration: "Expiration Date",
   productcatalog_domain_gender_: "Empty",
   productcatalog_reviewdescription: "Review Description",
+  customnumber: "Custom Number",
 };
 
 const enResource: ResourceLanguage = {
