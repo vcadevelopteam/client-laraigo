@@ -4916,7 +4916,27 @@ export const langKeys = {
     executiontype_campaign: 'executiontype_campaign',
     executiontype_MANUAL: 'executiontype_MANUAL',
     executiontype_SCHEDULED:'executiontype_SCHEDULED',
-    greaterthanzero:"greaterthanzero"
+    greaterthanzero:"greaterthanzero",
+    paymentorder_termandconditions: "paymentorder_termandconditions",
+    paymentorder_termandconditionsnext: "paymentorder_termandconditionsnext",
+    paymentorder_cardnotvalid: "paymentorder_cardnotvalid",
+    paymentorder_payconstancy: "paymentorder_payconstancy",
+    paymentorder_paysuccess: "paymentorder_paysuccess",
+    paymentorder_payfailure: "paymentorder_payfailure",
+    paymentorder_payfailuremotive: "paymentorder_payfailuremotive",
+    paymentorder_externalid: "paymentorder_externalid",
+    paymentorder_transaction: "paymentorder_transaction",
+    paymentorder_datetime: "paymentorder_datetime",
+    paymentorder_cardnumber: "paymentorder_cardnumber",
+    paymentorder_amount: "paymentorder_amount",
+    paymentorder_paymentcount: "paymentorder_paymentcount",
+    paymentorder_commercecode: "paymentorder_commercecode",
+    paymentorder_paymail: "paymentorder_paymail",
+    paymentorder_payname: "paymentorder_payname",
+    paymentorder_orderid: "paymentorder_orderid",
+    paymentorder_authcode: "paymentorder_authcode",
+    paymentorder_purchasenumber: "paymentorder_purchasenumber",
+    paymentorder_cardbrand: "paymentorder_cardbrand",
   };
   
   export type LangKeys = typeof langKeys;

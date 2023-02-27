@@ -1,49 +1,64 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import CircularProgress from '@material-ui/core/CircularProgress';
-import CulqiModal from 'components/fields/CulqiModal';
 import Container from '@material-ui/core/Container';
 import Popus from 'components/layout/Popus';
 
-import { FC, useEffect, useState,useRef } from 'react';
+import { Dictionary } from '@types';
+import { FC, useEffect, useState } from 'react';
+import { formatNumber } from 'common/helpers';
 import { langKeys } from 'lang/keys';
+import { LaraigoLogo } from 'icons';
 import { makeStyles } from "@material-ui/core";
+import { niubizCreateSessionToken } from 'store/payment/actions';
+import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router';
 import { useSelector } from 'hooks';
 import { useTranslation } from 'react-i18next';
-import { Dictionary } from '@types';
-import { getCollectionPaymentOrder } from 'store/main/actions';
-import { paymentOrderSel } from 'common/helpers';
-import { showSnackbar, showBackdrop } from 'store/popus/actions';
-import { LaraigoLogo } from 'icons';
-import { formatNumber } from 'common/helpers';
 
 const useStyles = makeStyles(theme => ({
+    alertDiv: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'red',
+        color: 'white',
+        borderRadius: '6px',
+        padding: '10px',
+        fontSize: '14px',
+        fontWeight: 'bold',
+        marginBottom: '16px',
+    },
     containerMain: {
+        height: '100vh',
         display: 'flex',
         alignItems: 'center'
     },
     back: {
+        backgroundColor: '#fbfcfd',
+        height: '100vh',
+        width: '100vw',
         display: 'flex',
         justifyContent: 'center',
+        alignItems: 'center'
     },
     containerSuccess: {
-        minHeight: "90vh",
-        marginTop: 20,
+        minHeight: 600,
         backgroundColor: 'white',
         display: 'flex',
         borderRadius: 8,
         boxShadow: '0 1px 8px 0 rgb(0 0 0 / 8%)',
-        width: '440px',
+        width: '480px',
         minWidth: '40px',
         alignItems: 'center',
         justifyContent: 'center',
         padding: theme.spacing(3),
         [theme.breakpoints.down('xs')]: {
-            width: '70vw',
+            width: '100vw',
         },
         flexDirection: 'column',
-        flexWrap: 'wrap',
     },
     containerFinish: {
         minHeight: 600,
@@ -79,25 +94,23 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export const PaymentOrder: FC = () => {
+export const PaymentOrderNiubizStatus: FC = () => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const mainResult = useSelector(state => state.main.mainData);
-    const culqiResult = useSelector(state => state.culqi.request);
+    const resultSessionToken = useSelector(state => state.payment.requestNiubizCreateSessionToken);
 
     const { corpid, orgid, ordercode }: any = useParams();
 
     const [paymentData, setPaymentData] = useState<Dictionary | null>(null);
-    const [publicKey, setPublicKey] = useState('');
+    const [resultData, setResultData] = useState<Dictionary | null>(null);
+    const [showSuccess, setShowSuccess] = useState(false);
     const [waitData, setWaitData] = useState(false);
-    const [waitPay, setWaitPay] = useState(false);
-    const windowWidth = useRef(window.innerWidth);
 
     const fetchData = () => {
-        dispatch(getCollectionPaymentOrder(paymentOrderSel({ corpid: corpid, orgid: orgid, conversationid: 0, personid: 0, paymentorderid: 0, ordercode: ordercode })));
+        dispatch(niubizCreateSessionToken({ corpid: corpid, orgid: orgid, ordercode: ordercode, onlydata: true }));
         setWaitData(true);
     }
 
@@ -107,176 +120,108 @@ export const PaymentOrder: FC = () => {
 
     useEffect(() => {
         if (waitData) {
-            if (!mainResult.loading && !mainResult.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }))
+            if (!resultSessionToken.loading && !resultSessionToken.error) {
                 dispatch(showBackdrop(false));
                 setWaitData(false);
 
-                if (mainResult.data.length) {
-                        setPaymentData(mainResult.data[0]);
-                        setPublicKey(mainResult.data[0].publickey);
+                if (resultSessionToken.data) {
+                    setPaymentData(resultSessionToken.data);
+
+                    if (resultSessionToken.data.chargejson) {
+                        setResultData(resultSessionToken.data.chargejson);
+                        setShowSuccess(true);
+                    }
+                    else {
+                        if (resultSessionToken.data.lastdata) {
+                            setResultData(JSON.parse(resultSessionToken.data.lastdata));
+                        }
+                    }
                 }
-            } else if (mainResult.error) {
-                dispatch(showSnackbar({ show: true, severity: "error", message: t(mainResult.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() }) }))
+            } else if (resultSessionToken.error) {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(resultSessionToken.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() }) }))
                 dispatch(showBackdrop(false));
                 setWaitData(false);
             }
         }
-    }, [mainResult, waitData])
+    }, [resultSessionToken, waitData])
 
-    useEffect(() => {
-        if (waitPay) {
-            if (!culqiResult.loading && culqiResult.data) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: '' + t(culqiResult.message || langKeys.success) }))
-                dispatch(showBackdrop(false));
-                setWaitPay(false);
-            }
-            else if (culqiResult.error) {
-                dispatch(showSnackbar({ show: true, severity: "error", message: '' + t(culqiResult.message || langKeys.error_cos_unexpected) }))
-                dispatch(showBackdrop(false));
-                setWaitPay(false);
-            }
-        }
-    }, [culqiResult, waitPay]);
-
-    if (mainResult.loading) {
-        return (
+    if (resultSessionToken.loading) {
+        return (<>
             <div className={classes.back}>
                 <CircularProgress />
             </div>
-        )
+        </>)
     }
     else {
         if (paymentData) {
-            if (paymentData.paymentstatus === "PENDING") {
-                return (
-                    <div className={classes.back}>
+            if (paymentData.paymentstatus === "PAID" || paymentData.laststatus) {
+                return (<>
+                    <Container component="main" maxWidth="xs" className={classes.containerMain}>
+                        <div className={classes.back}>
                             <div className={classes.containerSuccess}>
                                 <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                    <LaraigoLogo style={{ height: 120, margin: '20px', width: "auto" }} />
+                                    <LaraigoLogo style={{ height: 120, margin: '20px' }} />
                                 </div>
-                                <div style={{ fontWeight: 'bold', fontSize: 20, marginBottom: '20px' }}>{t(langKeys.paymentorder_success)}</div>
-                                {paymentData.ordercode && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                <div style={{ fontWeight: 'bold', fontSize: 20, marginBottom: '20px' }}>{t(langKeys.paymentorder_payconstancy)}</div>
+                                {showSuccess && <>
+                                    <div className={classes.alertDiv} style={{ backgroundColor: 'green' }}>
+                                        {t(langKeys.paymentorder_paysuccess)}
+                                    </div>
+                                </>}
+                                {!showSuccess && <>
+                                    <div className={classes.alertDiv}>
+                                        {t(langKeys.paymentorder_payfailure)}
+                                    </div>
+                                </>}
+                                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
                                     <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
                                         <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_code)}
+                                            {t(langKeys.paymentorder_purchasenumber)}
                                         </div>
                                     </div>
                                     <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
                                         <div className={classes.textField}>
-                                            {paymentData?.ordercode}
+                                            {paymentData?.paymentorderid}
                                         </div>
                                     </div>
-                                </div>}
-                                {paymentData.concept && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                </div>
+                                {showSuccess && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
                                     <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
                                         <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_concept)}
+                                            {t(langKeys.paymentorder_payname)}
                                         </div>
                                     </div>
                                     <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
                                         <div className={classes.textField}>
-                                            {paymentData?.concept}
+                                            {paymentData?.userfirstname + ' ' + paymentData?.userlastname}
                                         </div>
                                     </div>
                                 </div>}
-                                {paymentData.userfirstname && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
                                     <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
                                         <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_firstname)}
+                                            {t(langKeys.paymentorder_datetime)}
                                         </div>
                                     </div>
                                     <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
                                         <div className={classes.textField}>
-                                            {paymentData?.userfirstname}
+                                            {(new Date(paymentData?.changedate.toString())).toLocaleDateString() + ' ' + (new Date(paymentData?.changedate.toString())).toLocaleTimeString()}
                                         </div>
                                     </div>
-                                </div>}
-                                {paymentData.userlastname && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                </div>
+                                {!showSuccess && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
                                     <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
                                         <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_lastname)}
+                                            {t(langKeys.paymentorder_payfailuremotive)}
                                         </div>
                                     </div>
                                     <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
                                         <div className={classes.textField}>
-                                            {paymentData?.userlastname}
+                                            {paymentData.laststatus === 'Accept' ? t(langKeys.paymentorder_cardnotvalid) : paymentData.laststatus}
                                         </div>
                                     </div>
                                 </div>}
-                                {paymentData.userphone && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_phone)}
-                                        </div>
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {paymentData?.userphone}
-                                        </div>
-                                    </div>
-                                </div>}
-                                {paymentData.usermail && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_mail)}
-                                        </div>
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {paymentData?.usermail}
-                                        </div>
-                                    </div>
-                                </div>}
-                                {paymentData.usercountry && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_country)}
-                                        </div>
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {paymentData?.usercountry}
-                                        </div>
-                                    </div>
-                                </div>}
-                                {paymentData.usercity && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_city)}
-                                        </div>
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {paymentData?.usercity}
-                                        </div>
-                                    </div>
-                                </div>}
-                                {paymentData.useraddress && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_address)}
-                                        </div>
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {paymentData?.useraddress}
-                                        </div>
-                                    </div>
-                                </div>}
-                                {paymentData.currency && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_currency)}
-                                        </div>
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {paymentData?.currency}
-                                        </div>
-                                    </div>
-                                </div>}
-                                {paymentData.totalamount && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '20px' }}>
+                                {showSuccess && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
                                     <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
                                         <div className={classes.textTitle}>
                                             {t(langKeys.paymentorder_totalamount)}
@@ -288,33 +233,66 @@ export const PaymentOrder: FC = () => {
                                         </div>
                                     </div>
                                 </div>}
-                                {(publicKey && paymentData.totalamount) && <CulqiModal
-                                    amount={Math.round(((paymentData.totalamount * 100) + Number.EPSILON) * 100) / 100}
-                                    buttontitle={t(langKeys.proceedpayment)}
-                                    callbackOnSuccess={fetchData}
-                                    corpid={paymentData.corpid}
-                                    currency={paymentData.currency}
-                                    description={paymentData.concept}
-                                    disabled={false}
-                                    paymentorderid={paymentData.paymentorderid}
-                                    orgid={paymentData.orgid}
-                                    publickey={publicKey}
-                                    successmessage={t(langKeys.success)}
-                                    title={paymentData.description}
-                                    type="PAYMENTORDER"
-                                >
-                                </CulqiModal>}
+                                {showSuccess && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                        <div className={classes.textTitle}>
+                                            {t(langKeys.paymentorder_currency)}
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                        <div className={classes.textField}>
+                                            {paymentData?.currency}
+                                        </div>
+                                    </div>
+                                </div>}
+                                {showSuccess && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                        <div className={classes.textTitle}>
+                                            {t(langKeys.description)}
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                        <div className={classes.textField}>
+                                            {paymentData?.description}
+                                        </div>
+                                    </div>
+                                </div>}
+                                {showSuccess && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                        <div className={classes.textTitle}>
+                                            {t(langKeys.paymentorder_cardnumber)}
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                        <div className={classes.textField}>
+                                            {resultData?.dataMap?.CARD}
+                                        </div>
+                                    </div>
+                                </div>}
+                                {showSuccess && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                        <div className={classes.textTitle}>
+                                            {t(langKeys.paymentorder_cardbrand)}
+                                        </div>
+                                    </div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                        <div className={classes.textField}>
+                                            {resultData?.dataMap?.BRAND}
+                                        </div>
+                                    </div>
+                                </div>}
+                            </div>
                         </div>
                         <Popus />
-                    </div>
-                )
+                    </Container>
+                </>)
             }
             else {
                 return (
                     <div className={classes.back}>
                         <div className={classes.containerFinish}>
-                            <div style={{ fontWeight: 'bold', fontSize: 20 }}>{t(langKeys.paymentorder_paid)}</div>
-                            <div style={{ marginTop: 16, textAlign: 'center' }} >{t(langKeys.paymentorder_paid_description)}</div>
+                            <div style={{ fontWeight: 'bold', fontSize: 20 }}>{t(langKeys.paymentorder_notfound)}</div>
+                            <div style={{ marginTop: 16, textAlign: 'center' }} >{t(langKeys.paymentorder_notfound_description)}</div>
                         </div>
                     </div>
                 )
@@ -333,4 +311,4 @@ export const PaymentOrder: FC = () => {
     }
 }
 
-export default PaymentOrder;
+export default PaymentOrderNiubizStatus;

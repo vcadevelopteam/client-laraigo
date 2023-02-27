@@ -5000,7 +5000,27 @@ const translation: LangKeys = {
   executiontype_campaign: "Execution type",
   executiontype_MANUAL: "MANUAL",
   executiontype_SCHEDULED:"SCHEDULED",
-  greaterthanzero:"The maximum capacity value of the event must have a number greater than 0"
+  greaterthanzero:"The maximum capacity value of the event must have a number greater than 0",
+  paymentorder_termandconditions: "I have read and agree to the ",
+  paymentorder_termandconditionsnext: " Terms and Conditions",
+  paymentorder_cardnotvalid: "Invalid card",
+  paymentorder_payconstancy: "Pay Constancy",
+  paymentorder_paysuccess: "Payment Success",
+  paymentorder_payfailure: "Payment Failure",
+  paymentorder_payfailuremotive: "Failure Motive",
+  paymentorder_externalid: "External ID",
+  paymentorder_transaction: "Transaction ID",
+  paymentorder_datetime: "Date and Time",
+  paymentorder_cardnumber: "Card Number",
+  paymentorder_amount: "Amount",
+  paymentorder_paymentcount: "Dues",
+  paymentorder_commercecode: "Commerce Code",
+  paymentorder_paymail: "E-Mail",
+  paymentorder_payname: "Owner Name",
+  paymentorder_orderid: "Order ID",
+  paymentorder_authcode: "Authorization Code",
+  paymentorder_purchasenumber: "Purchase Number",
+  paymentorder_cardbrand: "Card Brand",
 };
 
 const enResource: ResourceLanguage = {

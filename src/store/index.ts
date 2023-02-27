@@ -26,6 +26,7 @@ import calendarReducer, { IState as ICalendar } from './calendar/reducer';
 import productReducer, { IState as IProduct } from './product/reducer';
 import postHistoryReducer, { IState as IPostHistory } from './posthistory/reducer';
 import catalogReducer, { IState as ICatalog } from './catalog/reducer';
+import paymentReducer, { IState as IPayment } from './payment/reducer';
 
 export interface IRootState {
     login: ILogin,
@@ -51,6 +52,7 @@ export interface IRootState {
     product: IProduct;
     postHistory: IPostHistory;
     catalog: ICatalog;
+    payment: IPayment;
 }
 
 declare global {
@@ -83,6 +85,7 @@ const rootReducer = combineReducers<IRootState>({
     calendar: calendarReducer,
     product: productReducer,
     catalog: catalogReducer,
+    payment: paymentReducer,
 });
 
 export default function configureStore(preloadedState?: IRootState) {

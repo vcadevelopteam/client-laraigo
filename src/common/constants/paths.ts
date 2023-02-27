@@ -43,6 +43,14 @@ const paths = {
         path: "/paymentorder/:corpid/:orgid/:ordercode",
         resolve: (corpid: number, orgid: number, ordercode: string) => `/paymentorder/${corpid}/${orgid}/${ordercode}`,
     },
+    NIUBIZ_PAYMENTORDER: {
+        path: "/paymentorderniubiz/:corpid/:orgid/:ordercode",
+        resolve: (corpid: number, orgid: number, ordercode: string) => `/paymentorderniubiz/${corpid}/${orgid}/${ordercode}`,
+    },
+    NIUBIZ_PAYMENTORDERSTATUS: {
+        path: "/paymentorderniubizstatus/:corpid/:orgid/:ordercode",
+        resolve: (corpid: number, orgid: number, ordercode: string) => `/paymentorderniubizstatus/${corpid}/${orgid}/${ordercode}`,
+    },
     LOCATION: {
         path: "/getLocations/:token",
         resolve: (token: string) => `/getLocations/${token}`,
