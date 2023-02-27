@@ -4943,6 +4943,10 @@ const translation: LangKeys = {
   productcatalog_domain_gender_: "Empty",
   productcatalog_reviewdescription: "Review Description",
   customnumber: "Custom Number",
+  datetimestart_campaign: "Date and time of execution",
+  executiontype_campaign: "Execution type",
+  executiontype_MANUAL: "MANUAL",
+  executiontype_SCHEDULED:"SCHEDULED",
 };
 
 const enResource: ResourceLanguage = {
