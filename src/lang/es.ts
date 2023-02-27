@@ -83,6 +83,7 @@ const translation: LangKeys = {
   saturday: "Sábado",
   availability: " Disponibilidad",
   unitofmeasure: "Unidad de tiempo",
+  maximumcapacity: "Capacidad máxima del evento",
   settimebeforetheevent: "Tiempo antes del evento",
   settimeaftertheevent: "Tiempo despues del evento",
   conditional: "Condicional",
@@ -4916,6 +4917,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   executiontype_campaign: "Tipo de ejecución",
   executiontype_MANUAL: "MANUAL",
   executiontype_SCHEDULED:"PROGRAMADO",
+  greaterthanzero:"El valor de capacidad máxima del evento debe tener un numero mayor a 0"
 };
 
 const esResource: ResourceLanguage = {
