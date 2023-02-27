@@ -652,20 +652,13 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
         return (
             <div style={{ width: 200, backgroundColor: 'white', padding: '12px 13px', borderRadius: 4, position: 'relative' }}>
                 <a download rel="noreferrer" target="_blank" href={interactiontext} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 4 }}>
-                    {extension === "pdf" ? (
-                        <PdfIcon width="30" height="30" />
-                    ) : (extension === "doc" || extension === "docx") ? (
-                        <DocIcon width="30" height="30" />
-                    ) : (extension === "xls" || extension === "xlsx" || extension === "csv") ? (
-                        <XlsIcon width="30" height="30" />
-                    ) : (extension === "ppt" || extension === "pptx") ? (
-                        <PptIcon width="30" height="30" />
-                    ) : (extension === "text" || extension === "txt") ? (
-                        <TxtIcon width="30" height="30" />
-                    ) : (extension === "zip" || extension === "rar") ? (
-                        <ZipIcon width="30" height="30" />
-                    ) : <FileIcon width="30" height="30" />
-                    }
+                    {extension === "pdf" && <PdfIcon width="30" height="30" />}
+                    {(extension === "doc" || extension === "docx") && <DocIcon width="30" height="30" />}
+                    {(extension === "xls" || extension === "xlsx" || extension === "csv") && <XlsIcon width="30" height="30" />}
+                    {(extension === "ppt" || extension === "pptx") && <PptIcon width="30" height="30" />}
+                    {(extension === "zip" || extension === "rar") && <ZipIcon width="30" height="30" />}
+                    {(extension === "text" || extension === "txt") && <TxtIcon width="30" height="30" />}
+                    {!["pdf", "doc", "docx", "xls", "xlsx", "csv", "ppt", "pptx", "zip", "rar", "text", "txt",].includes(extension || "") && <FileIcon width="30" height="30" />}
                     <div style={{ color: '#171717', textOverflow: 'ellipsis', overflowX: 'hidden', flex: 1, whiteSpace: 'nowrap' }}>{filename}</div>
                     <DownloadIcon2 width="20" height="20" color="primary" />
                 </a>

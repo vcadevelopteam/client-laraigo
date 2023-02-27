@@ -2175,6 +2175,22 @@ export const getConversationClassification2 = (conversationid: number): IRequest
     }
 });
 
+export const getAttachmentsByPerson = (personid: number): IRequestBody => ({
+    method: 'QUERY_SELECT_ATTACHMENT',
+    key: "QUERY_SELECT_ATTACHMENT",
+    parameters: {
+        personid
+    }
+});
+
+export const getLeadsByUserPerson = (personid: number): IRequestBody => ({
+    method: 'QUERY_SELECT_LEADS_BY_USER_PERSON',
+    key: "QUERY_SELECT_LEADS_BY_USER_PERSON",
+    parameters: {
+        personid
+    }
+});
+
 /// Settings tab (drawer)
 export const getPropertyConfigurationsBody = (): IRequestBody[] => ([
     {

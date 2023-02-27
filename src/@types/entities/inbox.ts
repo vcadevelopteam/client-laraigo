@@ -14,6 +14,12 @@ export interface ICloseTicketsParams {
     isAnswered: boolean;
 }
 
+export interface IFile {
+    type: string;
+    url: string;
+    id: string;
+    error?: boolean;
+}
 export interface IMassiveCloseTicketsParams {
     listTickets: Dictionary[];
     motive: string;
