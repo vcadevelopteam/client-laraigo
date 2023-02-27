@@ -6,25 +6,21 @@ import CheckIcon from "@material-ui/icons/Check";
 import ClearIcon from "@material-ui/icons/Clear";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import MenuItem from "@material-ui/core/MenuItem";
-import React, { Suspense, FC, useCallback, useEffect, useState } from "react";
+import React, { Suspense, FC, useCallback, useEffect, useState, useMemo } from "react";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import RemoveIcon from "@material-ui/icons/Remove";
 import SaveIcon from "@material-ui/icons/Save";
-import TableZyx from "../components/fields/table-simple";
+import TablePaginated, { useQueryParams } from "components/fields/table-paginated";
 
-import { Box, CircularProgress, IconButton, Paper } from "@material-ui/core";
-import { Close, FileCopy, GetApp } from "@material-ui/icons";
-import { Descendant } from "slate";
-import { Dictionary, MultiData } from "@types";
 import {
     execute,
-    getCollection,
     getMultiCollection,
     resetAllMain,
     uploadFile,
-    cleanMemoryTable,
-    setMemoryTable,
+    getCollectionPaginated,
+    resetCollectionPaginated,
 } from "store/main/actions";
+
 import {
     FieldEdit,
     FieldEditMulti,
@@ -34,33 +30,28 @@ import {
     TemplateIcons,
     TitleDetail,
 } from "components";
+
 import {
-    getMessageTemplateSel,
+    dateToLocalDate,
+    getPaginatedMessageTemplate,
     getValuesFromDomain,
     insMessageTemplate,
     richTextToString,
     selCommunicationChannelWhatsApp,
-    dateToLocalDate,
 } from "common/helpers";
+
+import { Box, CircularProgress, IconButton, Paper } from "@material-ui/core";
+import { Close, FileCopy, GetApp, Delete, Search as SearchIcon } from "@material-ui/icons";
+import { Descendant } from "slate";
+import { Dictionary, MultiData, IFetchData } from "@types";
 import { langKeys } from "lang/keys";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-    manageConfirmation,
-    showBackdrop,
-    showSnackbar,
-} from "store/popus/actions";
-import {
-    RichText,
-    renderToString,
-    toElement,
-} from "components/fields/RichText";
-import {
-    synchronizeTemplate,
-    deleteTemplate,
-    addTemplate,
-} from "store/channel/actions";
+import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
+import { RichText, renderToString, toElement } from "components/fields/RichText";
+import { synchronizeTemplate, deleteTemplate, addTemplate } from "store/channel/actions";
 import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
+import { useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
 
@@ -85,8 +76,8 @@ const arrayBread = (view1: string, view2: string) => [
 
 const useStyles = makeStyles((theme) => ({
     btnButton: {
-        flexGrow: 0,
         flexBasis: 0,
+        flexGrow: 0,
         minHeight: "30px",
         minWidth: "max-content",
     },
@@ -118,9 +109,9 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: "0.25rem",
     },
     mediabutton: {
-        margin: theme.spacing(1),
         flexBasis: 0,
         flexGrow: 1,
+        margin: theme.spacing(1),
         minHeight: "30px",
         opacity: 0.8,
         padding: 0,
@@ -130,34 +121,42 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const IDMESSAGETEMPLATE = "IDMESSAGETEMPLATE";
 const MessageTemplates: FC = () => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
-    const deleteRequest = useSelector(
-        (state) => state.channel.requestDeleteTemplate
-    );
-    const executeResult = useSelector((state) => state.main.execute);
+    const location = useLocation();
+    const mainDelete = useSelector((state) => state.channel.requestDeleteTemplate);
+    const mainPaginated = useSelector((state) => state.main.mainPaginated);
     const mainResult = useSelector((state) => state.main);
-    const memoryTable = useSelector((state) => state.main.memoryTable);
-    const synchronizeRequest = useSelector(
-        (state) => state.channel.requestSynchronizeTemplate
-    );
+    const mainSynchronize = useSelector((state) => state.channel.requestSynchronizeTemplate);
+    const query = useMemo(() => new URLSearchParams(location.search), [location]);
+    const params = useQueryParams(query, { ignore: ["channelTypes"] });
+    const selectionKey = "id";
+
+    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({
+        daterange: null,
+        filters: {},
+        pageIndex: 0,
+        pageSize: 20,
+        sorts: {},
+    });
+
+    const [rowSelected, setRowSelected] = useState<RowSelected>({
+        edit: false,
+        row: null,
+    });
 
     const [communicationChannel, setCommunicationChannel] = useState<any>(null);
-    const [communicationChannelList, setCommunicationChannelList] = useState<
-        Dictionary[]
-    >([]);
-    const [rowSelected, setRowSelected] = useState<RowSelected>({
-        row: null,
-        edit: false,
-    });
+    const [communicationChannelList, setCommunicationChannelList] = useState<Dictionary[]>([]);
+    const [pageCount, setPageCount] = useState(0);
+    const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
+    const [selectedRows, setSelectedRows] = useState<any>({});
     const [showId, setShowId] = useState(false);
+    const [totalRow, setTotalRow] = useState(0);
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitDelete, setWaitDelete] = useState(false);
-    const [waitSave, setWaitSave] = useState(false);
     const [waitSynchronize, setWaitSynchronize] = useState(false);
 
     const columns = React.useMemo(
@@ -193,7 +192,7 @@ const MessageTemplates: FC = () => {
                       {
                           accessor: "templateid",
                           Header: t(langKeys.messagetemplateid),
-                          NoFilter: true,
+                          type: "number",
                           Cell: (props: any) => {
                               const row = props.cell.row.original;
                               if (row.showid) {
@@ -208,24 +207,20 @@ const MessageTemplates: FC = () => {
             {
                 accessor: "type",
                 Header: t(langKeys.type),
-                NoFilter: true,
                 prefixTranslation: "messagetemplate_",
             },
             {
                 accessor: "templatetype",
                 Header: t(langKeys.templatetype),
-                NoFilter: true,
                 prefixTranslation: "messagetemplate_",
             },
             {
                 accessor: "name",
                 Header: t(langKeys.name),
-                NoFilter: true,
             },
             {
                 accessor: "namespace",
                 Header: t(langKeys.namespace),
-                NoFilter: true,
             },
             {
                 accessor: "status",
@@ -234,9 +229,7 @@ const MessageTemplates: FC = () => {
                 prefixTranslation: "status_",
                 Cell: (props: any) => {
                     const { status } = props.cell.row.original;
-                    return (
-                        t(`status_${status}`.toLowerCase()) || ""
-                    ).toUpperCase();
+                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
                 },
             },
             {
@@ -245,10 +238,12 @@ const MessageTemplates: FC = () => {
                 NoFilter: true,
                 Cell: (props: any) => {
                     const { fromprovider } = props.cell.row.original;
-                    return (
-                        fromprovider ? t(langKeys.yes) : t(langKeys.no)
-                    ).toUpperCase();
+                    return (fromprovider ? t(langKeys.yes) : t(langKeys.no)).toUpperCase();
                 },
+            },
+            {
+                accessor: "communicationchanneldesc",
+                Header: t(langKeys.communicationchanneldesc),
             },
             {
                 accessor: "externalstatus",
@@ -256,26 +251,17 @@ const MessageTemplates: FC = () => {
                 NoFilter: true,
                 Cell: (props: any) => {
                     const { externalstatus } = props.cell.row.original;
-                    return (
-                        externalstatus
-                            ? t(`TEMPLATE_${externalstatus}`)
-                            : t(langKeys.none)
-                    ).toUpperCase();
+                    return (externalstatus ? t(`TEMPLATE_${externalstatus}`) : t(langKeys.none)).toUpperCase();
                 },
             },
         ],
         [showId]
     );
 
-    const fetchData = () => dispatch(getCollection(getMessageTemplateSel(0)));
-
     useEffect(() => {
-        fetchData();
-        dispatch(
-            setMemoryTable({
-                id: IDMESSAGETEMPLATE,
-            })
-        );
+        dispatch(resetCollectionPaginated());
+        fetchData(fetchDataAux);
+
         dispatch(
             getMultiCollection([
                 getValuesFromDomain("MESSAGETEMPLATECATEGORY"),
@@ -283,128 +269,120 @@ const MessageTemplates: FC = () => {
                 selCommunicationChannelWhatsApp(),
             ])
         );
+
         return () => {
+            dispatch(resetCollectionPaginated());
             dispatch(resetAllMain());
-            dispatch(cleanMemoryTable());
         };
     }, []);
 
+    const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
+        setfetchDataAux({ ...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts } });
+        dispatch(
+            getCollectionPaginated(
+                getPaginatedMessageTemplate({
+                    communicationchannelid: communicationChannel?.communicationchannelid || 0,
+                    enddate: daterange?.endDate!,
+                    filters: filters,
+                    skip: pageIndex * pageSize,
+                    sorts: sorts,
+                    startdate: daterange?.startDate!,
+                    take: pageSize,
+                })
+            )
+        );
+    };
+
     useEffect(() => {
-        if (waitSave) {
-            if (!executeResult.loading && !executeResult.error) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "success",
-                        message: t(langKeys.successful_delete),
-                    })
-                );
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-                fetchData();
-            } else if (executeResult.error) {
-                dispatch(
-                    showSnackbar({
-                        show: true,
-                        severity: "error",
-                        message: t(
-                            executeResult.code || "error_unexpected_error",
-                            {
-                                module: t(
-                                    langKeys.messagetemplate
-                                ).toLocaleLowerCase(),
-                            }
-                        ),
-                    })
-                );
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
+        if (!mainPaginated.loading && !mainPaginated.error) {
+            setPageCount(Math.ceil(mainPaginated.count / fetchDataAux.pageSize));
+            setTotalRow(mainPaginated.count);
         }
-    }, [executeResult, waitSave]);
+    }, [mainPaginated]);
+
+    useEffect(() => {
+        if (!(Object.keys(selectedRows).length === 0 && rowWithDataSelected.length === 0)) {
+            setRowWithDataSelected((p) =>
+                Object.keys(selectedRows).map(
+                    (x) =>
+                        mainPaginated?.data.find((y) => y.id === parseInt(x)) ||
+                        p.find((y) => y.id === parseInt(x)) ||
+                        {}
+                )
+            );
+        }
+    }, [selectedRows]);
 
     useEffect(() => {
         if (waitDelete) {
-            if (!deleteRequest.loading && !deleteRequest.error) {
+            if (!mainDelete.loading && !mainDelete.error) {
                 dispatch(
                     showSnackbar({
-                        show: true,
-                        severity: "success",
                         message: t(langKeys.successful_delete),
+                        severity: "success",
+                        show: true,
                     })
                 );
                 dispatch(showBackdrop(false));
                 setWaitDelete(false);
-                fetchData();
-            } else if (deleteRequest.error) {
+                fetchData(fetchDataAux);
+            } else if (mainDelete.error) {
                 dispatch(
                     showSnackbar({
-                        show: true,
+                        message: t(mainDelete.code || "error_unexpected_error", {
+                            module: t(langKeys.messagetemplate).toLocaleLowerCase(),
+                        }),
                         severity: "error",
-                        message: t(
-                            deleteRequest.code || "error_unexpected_error",
-                            {
-                                module: t(
-                                    langKeys.messagetemplate
-                                ).toLocaleLowerCase(),
-                            }
-                        ),
+                        show: true,
                     })
                 );
                 dispatch(showBackdrop(false));
                 setWaitDelete(false);
             }
         }
-    }, [deleteRequest, waitDelete]);
-
-    useEffect(() => {
-        if (mainResult.mainData.data.length > 0) {
-            setShowId(mainResult.mainData.data[0]?.showid);
-        }
-    }, [mainResult.mainData.data]);
-
-    useEffect(() => {
-        if (mainResult.multiData.data.length > 0) {
-            if (
-                mainResult.multiData.data[2] &&
-                mainResult.multiData.data[2].success
-            ) {
-                setCommunicationChannelList(
-                    mainResult.multiData.data[2].data || []
-                );
-            }
-        }
-    }, [mainResult.multiData.data]);
+    }, [mainDelete, waitDelete]);
 
     useEffect(() => {
         if (waitSynchronize) {
-            if (!synchronizeRequest.loading && !synchronizeRequest.error) {
+            if (!mainSynchronize.loading && !mainSynchronize.error) {
                 dispatch(
                     showSnackbar({
-                        show: true,
+                        message: t(mainSynchronize.code || "success"),
                         severity: "success",
-                        message: t(synchronizeRequest.code || "success"),
+                        show: true,
                     })
                 );
                 dispatch(showBackdrop(false));
                 setWaitSynchronize(false);
-                fetchData();
-            } else if (synchronizeRequest.error) {
+                fetchData(fetchDataAux);
+            } else if (mainSynchronize.error) {
                 dispatch(
                     showSnackbar({
-                        show: true,
+                        message: t(mainSynchronize.code || "error_unexpected_error"),
                         severity: "error",
-                        message: t(
-                            synchronizeRequest.code || "error_unexpected_error"
-                        ),
+                        show: true,
                     })
                 );
                 dispatch(showBackdrop(false));
                 setWaitSynchronize(false);
-                fetchData();
+                fetchData(fetchDataAux);
             }
         }
-    }, [synchronizeRequest, waitSynchronize]);
+    }, [mainSynchronize, waitSynchronize]);
+
+    useEffect(() => {
+        if (mainPaginated.data.length > 0) {
+            setShowId(mainPaginated.data[0]?.showid);
+        }
+    }, [mainPaginated.data]);
+
+    useEffect(() => {
+        if (mainResult.multiData.data.length > 0) {
+            if (mainResult.multiData.data[2] && mainResult.multiData.data[2].success) {
+                setCommunicationChannelList(mainResult.multiData.data[2].data || []);
+            }
+        }
+    }, [mainResult.multiData.data]);
 
     const handleRegister = () => {
         setViewSelected("view-2");
@@ -421,105 +399,129 @@ const MessageTemplates: FC = () => {
         setRowSelected({ row, edit: true });
     };
 
-    const handleSynchronize = (channel: any) => {
+    const handleSynchronize = (channel: any, selectedData: any) => {
         const callback = () => {
-            dispatch(synchronizeTemplate(channel));
+            dispatch(synchronizeTemplate({ communicationchannel: channel, messagetemplatelist: selectedData }));
             dispatch(showBackdrop(true));
             setWaitSynchronize(true);
         };
 
         dispatch(
             manageConfirmation({
-                visible: true,
-                question:
-                    t(langKeys.messagetemplate_synchronize_alert01) +
-                    `${channel.communicationchanneldesc} (${channel.phone})` +
-                    t(langKeys.messagetemplate_synchronize_alert02),
                 callback,
+                question: channel
+                    ? t(langKeys.messagetemplate_synchronize_alert01) +
+                      `${channel.communicationchanneldesc} (${channel.phone})` +
+                      t(langKeys.messagetemplate_synchronize_alert02)
+                    : t(langKeys.messagetemplate_synchronize_alert03),
+                visible: true,
             })
         );
     };
 
     const handleDelete = (row: Dictionary) => {
-        if (row?.fromprovider) {
-            const callback = () => {
-                dispatch(
-                    deleteTemplate({
-                        ...row,
-                        operation: "DELETE",
-                        status: "ELIMINADO",
-                        id: row.id,
-                    })
-                );
-                dispatch(showBackdrop(true));
-                setWaitDelete(true);
-            };
-
+        const callback = () => {
             dispatch(
-                manageConfirmation({
-                    visible: true,
-                    question: t(langKeys.confirmation_delete),
-                    callback,
-                })
-            );
-        } else {
-            const callback = () => {
-                dispatch(
-                    execute(
-                        insMessageTemplate({
+                deleteTemplate({
+                    messagetemplatelist: [
+                        {
                             ...row,
+                            id: row.id,
                             operation: "DELETE",
                             status: "ELIMINADO",
-                            id: row.id,
-                        })
-                    )
-                );
-                dispatch(showBackdrop(true));
-                setWaitSave(true);
-            };
-
-            dispatch(
-                manageConfirmation({
-                    visible: true,
-                    question: t(langKeys.confirmation_delete),
-                    callback,
+                        },
+                    ],
                 })
             );
-        }
+            dispatch(showBackdrop(true));
+            setWaitDelete(true);
+        };
+
+        dispatch(
+            manageConfirmation({
+                callback,
+                question: t(langKeys.confirmation_delete),
+                visible: true,
+            })
+        );
+    };
+
+    const handleBulkDelete = (dataSelected: Dictionary[]) => {
+        const callback = () => {
+            dispatch(
+                deleteTemplate({
+                    messagetemplatelist: dataSelected.reduce((ad: any[], d: any) => {
+                        ad.push({ ...d, operation: "DELETE", status: "ELIMINADO" });
+                        return ad;
+                    }, []),
+                })
+            );
+            dispatch(showBackdrop(true));
+            setWaitDelete(true);
+        };
+
+        dispatch(
+            manageConfirmation({
+                callback,
+                question: t(langKeys.confirmation_delete),
+                visible: true,
+            })
+        );
     };
 
     if (viewSelected === "view-1") {
-        if (mainResult.mainData.error) {
+        if (mainPaginated.error) {
             return <h1>ERROR</h1>;
         }
         return (
-            <TableZyx
-                onClickRow={handleEdit}
+            <TablePaginated
                 ButtonsElement={() => (
                     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        <Button
+                            onClick={() => {
+                                handleBulkDelete(rowWithDataSelected);
+                            }}
+                            color="primary"
+                            disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                            startIcon={<Delete style={{ color: "white" }} />}
+                            variant="contained"
+                        >
+                            {t(langKeys.delete)}
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                fetchData(fetchDataAux);
+                            }}
+                            color="primary"
+                            disabled={mainPaginated.loading}
+                            startIcon={<SearchIcon style={{ color: "white" }} />}
+                            style={{ width: 120, backgroundColor: "#55BD84" }}
+                            variant="contained"
+                        >
+                            {t(langKeys.search)}
+                        </Button>
                         <FieldSelect
-                            data={communicationChannelList}
-                            label={t(langKeys.communicationchannel)}
                             onChange={(value) => {
                                 setCommunicationChannel(value);
                             }}
+                            data={communicationChannelList}
+                            label={t(langKeys.communicationchanneldesc)}
                             optionDesc="communicationchanneldesc"
                             optionValue="communicationchannelid"
                             style={{ width: 300 }}
-                            valueDefault={
-                                communicationChannel?.communicationchannelid
-                            }
+                            valueDefault={communicationChannel?.communicationchannelid}
                             variant="outlined"
                         />
                         <Button
-                            color="primary"
-                            disabled={!communicationChannel}
                             onClick={() => {
-                                handleSynchronize(communicationChannel);
+                                handleSynchronize(communicationChannel, rowWithDataSelected);
                             }}
-                            startIcon={
-                                <RefreshIcon style={{ color: "white" }} />
+                            color="primary"
+                            disabled={
+                                mainPaginated.loading ||
+                                (!communicationChannel && Object.keys(selectedRows).length === 0)
                             }
+                            startIcon={<RefreshIcon style={{ color: "white" }} />}
                             style={{ width: 140, backgroundColor: "#55BD84" }}
                             variant="contained"
                         >
@@ -527,44 +529,31 @@ const MessageTemplates: FC = () => {
                         </Button>
                     </div>
                 )}
+                autotrigger={true}
                 columns={columns}
-                data={mainResult.mainData.data}
+                data={mainPaginated.data}
                 download={true}
+                fetchData={fetchData}
+                filterGeneral={true}
                 handleRegister={handleRegister}
-                initialPageIndex={
-                    IDMESSAGETEMPLATE === memoryTable.id
-                        ? memoryTable.page === -1
-                            ? 0
-                            : memoryTable.page
-                        : 0
-                }
-                initialStateFilter={
-                    IDMESSAGETEMPLATE === memoryTable.id
-                        ? Object.entries(memoryTable.filters).map(
-                              ([key, value]) => ({
-                                  id: key,
-                                  value,
-                              })
-                          )
-                        : undefined
-                }
-                loading={mainResult.mainData.loading}
-                pageSizeDefault={
-                    IDMESSAGETEMPLATE === memoryTable.id
-                        ? memoryTable.pageSize === -1
-                            ? 20
-                            : memoryTable.pageSize
-                        : 20
-                }
+                initialFilters={params.filters}
+                initialPageIndex={params.page}
+                loading={mainPaginated.loading}
+                onClickRow={handleEdit}
+                pageCount={pageCount}
                 register={true}
-                titlemodule={t(langKeys.messagetemplate_plural, { count: 2 })}
+                selectionKey={selectionKey}
+                setSelectedRows={setSelectedRows}
+                titlemodule={t(langKeys.messagetemplate_plural)}
+                totalrow={totalRow}
+                useSelection={true}
             />
         );
     } else
         return (
             <DetailMessageTemplates
                 data={rowSelected}
-                fetchData={fetchData}
+                fetchData={() => fetchData(fetchDataAux)}
                 multiData={mainResult.multiData.data}
                 setViewSelected={setViewSelected}
             />
@@ -573,9 +562,9 @@ const MessageTemplates: FC = () => {
 
 const DetailMessageTemplates: React.FC<DetailProps> = ({
     data: { row, edit },
-    setViewSelected,
-    multiData,
     fetchData,
+    multiData,
+    setViewSelected,
 }) => {
     const dispatch = useDispatch();
 
@@ -583,35 +572,26 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
     const addRequest = useSelector((state) => state.channel.requestAddTemplate);
     const classes = useStyles();
-    const dataCategory =
-        multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataChannel =
-        multiData[2] && multiData[2].success
-            ? multiData[2].data.filter((x) => x.type !== "WHAG")
-            : [];
-    const dataLanguage =
-        multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataCategory = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const dataChannel = multiData[2] && multiData[2].success ? multiData[2].data.filter((x) => x.type !== "WHAG") : [];
+    const dataLanguage = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const executeRes = useSelector((state) => state.main.execute);
     const uploadResult = useSelector((state) => state.main.uploadFile);
 
+    const [bodyObject, setBodyObject] = useState<Descendant[]>(
+        row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }]
+    );
+
     const [bodyAlert, setBodyAlert] = useState("");
     const [bodyAttachment, setBodyAttachment] = useState(row?.body || "");
-    const [bodyObject, setBodyObject] = useState<Descendant[]>(
-        row?.bodyobject || [
-            { type: "paragraph", children: [{ text: row?.body || "" }] },
-        ]
-    );
     const [disableInput, setDisableInput] = useState(false);
     const [disableNamespace, setDisableNamespace] = useState(false);
     const [fileAttachment, setFileAttachment] = useState<File | null>(null);
-    const [fileAttachmentTemplate, setFileAttachmentTemplate] =
-        useState<File | null>(null);
+    const [fileAttachmentTemplate, setFileAttachmentTemplate] = useState<File | null>(null);
     const [htmlEdit, setHtmlEdit] = useState(false);
     const [htmlLoad, setHtmlLoad] = useState<any | undefined>(undefined);
     const [isNew] = useState(row?.id ? false : true);
-    const [isProvider, setIsProvider] = useState(
-        row?.fromprovider ? true : false
-    );
+    const [isProvider, setIsProvider] = useState(row?.fromprovider ? true : false);
     const [waitAdd, setWaitAdd] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
@@ -804,9 +784,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             attachment: row?.attachment || "",
             body: row?.body || "",
             buttons: row ? row.buttons || [] : [],
-            buttonsenabled: ![null, undefined].includes(row?.buttonsenabled)
-                ? row?.buttonsenabled
-                : false,
+            buttonsenabled: ![null, undefined].includes(row?.buttonsenabled) ? row?.buttonsenabled : false,
             category: row?.category || "",
             communicationchannelid: row?.communicationchannelid || 0,
             communicationchanneltype: row?.communicationchanneltype || "",
@@ -815,14 +793,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             externalid: row?.externalid || "",
             externalstatus: row?.externalstatus || "NONE",
             footer: row?.footer || "",
-            footerenabled: ![null, undefined].includes(row?.footerenabled)
-                ? row?.footerenabled
-                : false,
+            footerenabled: ![null, undefined].includes(row?.footerenabled) ? row?.footerenabled : false,
             fromprovider: row?.fromprovider || false,
             header: row?.header || "",
-            headerenabled: ![null, undefined].includes(row?.headerenabled)
-                ? row?.headerenabled
-                : false,
+            headerenabled: ![null, undefined].includes(row?.headerenabled) ? row?.headerenabled : false,
             headertype: row?.headertype || "text",
             id: row ? row.id : 0,
             integrationid: row?.communicationchannelintegrationid || "",
@@ -831,8 +805,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             namespace: row?.namespace || "",
             operation: row ? "EDIT" : "INSERT",
             priority: row?.priority || 2,
-            servicecredentials:
-                row?.communicationchannelservicecredentials || "",
+            servicecredentials: row?.communicationchannelservicecredentials || "",
             status: row?.status || "ACTIVO",
             templatetype: row?.templatetype || "STANDARD",
             type: row?.type || "HSM",
@@ -840,18 +813,14 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         },
     });
 
-    const [templateTypeDisabled, setTemplateTypeDisabled] = useState(
-        ["SMS", "MAIL"].includes(getValues("type"))
-    );
+    const [templateTypeDisabled, setTemplateTypeDisabled] = useState(["SMS", "MAIL"].includes(getValues("type")));
 
     React.useEffect(() => {
         register("body", {
-            validate: (value) =>
-                (value && value.length) || t(langKeys.field_required),
+            validate: (value) => (value && value.length) || t(langKeys.field_required),
         });
         register("category", {
-            validate: (value) =>
-                (value && value.length) || t(langKeys.field_required),
+            validate: (value) => (value && value.length) || t(langKeys.field_required),
         });
         register("communicationchannelid");
         register("communicationchanneltype");
@@ -861,26 +830,21 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         register("fromprovider");
         register("integrationid");
         register("language", {
-            validate: (value) =>
-                (value && value.length) || t(langKeys.field_required),
+            validate: (value) => (value && value.length) || t(langKeys.field_required),
         });
         register("name", {
             validate: (value) =>
-                (value && (value || "").match("^[a-z0-9_]+$") !== null) ||
-                t(langKeys.nametemplate_validation),
+                (value && (value || "").match("^[a-z0-9_]+$") !== null) || t(langKeys.nametemplate_validation),
         });
         register("namespace", {
-            validate: (value) =>
-                (value && value.length) || t(langKeys.field_required),
+            validate: (value) => (value && value.length) || t(langKeys.field_required),
         });
         register("servicecredentials");
         register("templatetype", {
-            validate: (value) =>
-                (value && value.length) || t(langKeys.field_required),
+            validate: (value) => (value && value.length) || t(langKeys.field_required),
         });
         register("type", {
-            validate: (value) =>
-                (value && value.length) || t(langKeys.field_required),
+            validate: (value) => (value && value.length) || t(langKeys.field_required),
         });
         register("typeattachment");
     }, [edit, register]);
@@ -904,11 +868,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     showSnackbar({
                         show: true,
                         severity: "success",
-                        message: t(
-                            row
-                                ? langKeys.successful_edit
-                                : langKeys.successful_register
-                        ),
+                        message: t(row ? langKeys.successful_edit : langKeys.successful_register),
                     })
                 );
                 dispatch(showBackdrop(false));
@@ -920,14 +880,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     showSnackbar({
                         show: true,
                         severity: "error",
-                        message: t(
-                            addRequest.code || "error_unexpected_error",
-                            {
-                                module: t(
-                                    langKeys.messagetemplate
-                                ).toLocaleLowerCase(),
-                            }
-                        ),
+                        message: t(addRequest.code || "error_unexpected_error", {
+                            module: t(langKeys.messagetemplate).toLocaleLowerCase(),
+                        }),
                     })
                 );
                 dispatch(showBackdrop(false));
@@ -943,11 +898,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     showSnackbar({
                         show: true,
                         severity: "success",
-                        message: t(
-                            row
-                                ? langKeys.successful_edit
-                                : langKeys.successful_register
-                        ),
+                        message: t(row ? langKeys.successful_edit : langKeys.successful_register),
                     })
                 );
                 dispatch(showBackdrop(false));
@@ -959,14 +910,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     showSnackbar({
                         show: true,
                         severity: "error",
-                        message: t(
-                            executeRes.code || "error_unexpected_error",
-                            {
-                                module: t(
-                                    langKeys.messagetemplate
-                                ).toLocaleLowerCase(),
-                            }
-                        ),
+                        message: t(executeRes.code || "error_unexpected_error", {
+                            module: t(langKeys.messagetemplate).toLocaleLowerCase(),
+                        }),
                     })
                 );
                 dispatch(showBackdrop(false));
@@ -995,10 +941,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const onSubmit = handleSubmit((data) => {
         if (data.type === "MAIL") {
             data.body = renderToString(toElement(bodyObject));
-            if (
-                data.body ===
-                `<div data-reactroot=""><p><span></span></p></div>`
-            ) {
+            if (data.body === `<div data-reactroot=""><p><span></span></p></div>`) {
                 setBodyAlert(t(langKeys.field_required));
                 return;
             } else {
@@ -1019,10 +962,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             const callback = () => {
                 if (data.type === "MAIL") {
                     data.body = renderToString(toElement(bodyObject));
-                    if (
-                        data.body ===
-                        '<div data-reactroot=""><p><span></span></p></div>'
-                    ) {
+                    if (data.body === '<div data-reactroot=""><p><span></span></p></div>') {
                         setBodyAlert(t(langKeys.field_required));
                         return;
                     } else {
@@ -1055,10 +995,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             const callback = () => {
                 if (data.type === "MAIL") {
                     data.body = renderToString(toElement(bodyObject));
-                    if (
-                        data.body ===
-                        '<div data-reactroot=""><p><span></span></p></div>'
-                    ) {
+                    if (data.body === '<div data-reactroot=""><p><span></span></p></div>') {
                         setBodyAlert(t(langKeys.field_required));
                         return;
                     } else {
@@ -1075,11 +1012,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     }
                 }
 
-                dispatch(
-                    execute(
-                        insMessageTemplate({ ...data, bodyobject: bodyObject })
-                    )
-                );
+                dispatch(execute(insMessageTemplate({ ...data, bodyobject: bodyObject })));
                 dispatch(showBackdrop(true));
                 setWaitSave(true);
             };
@@ -1097,9 +1030,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     useEffect(() => {
         if (row) {
             if (row.fromprovider && row.communicationchanneltype) {
-                setDisableNamespace(
-                    row.communicationchanneltype === "WHAT" ? false : true
-                );
+                setDisableNamespace(row.communicationchanneltype === "WHAT" ? false : true);
             } else {
                 setDisableNamespace(false);
             }
@@ -1108,52 +1039,40 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
             if (type === "HSM") {
                 register("body", {
-                    validate: (value) =>
-                        (value && (value || "").length <= 1024) ||
-                        "" + t(langKeys.validationchar),
+                    validate: (value) => (value && (value || "").length <= 1024) || "" + t(langKeys.validationchar),
                 });
                 register("footer", { validate: (value) => value || true });
                 register("header", { validate: (value) => value || true });
                 register("name", {
                     validate: (value) =>
-                        (value &&
-                            (value || "").match("^[a-z0-9_]+$") !== null) ||
-                        t(langKeys.nametemplate_validation),
+                        (value && (value || "").match("^[a-z0-9_]+$") !== null) || t(langKeys.nametemplate_validation),
                 });
                 register("namespace", {
-                    validate: (value) =>
-                        (value && value.length) || t(langKeys.field_required),
+                    validate: (value) => (value && value.length) || t(langKeys.field_required),
                 });
 
                 if (row?.headerenabled) {
                     register("header", {
-                        validate: (value) =>
-                            (value && value.length) ||
-                            t(langKeys.field_required),
+                        validate: (value) => (value && value.length) || t(langKeys.field_required),
                     });
                 }
 
                 if (row?.footerenabled) {
                     register("footer", {
-                        validate: (value) =>
-                            (value && value.length) ||
-                            t(langKeys.field_required),
+                        validate: (value) => (value && value.length) || t(langKeys.field_required),
                     });
                 }
 
                 onChangeTemplateMedia();
             } else {
                 register("name", {
-                    validate: (value) =>
-                        (value && value.length) || t(langKeys.field_required),
+                    validate: (value) => (value && value.length) || t(langKeys.field_required),
                 });
                 register("namespace", { validate: (value) => value || true });
 
                 if (type === "SMS") {
                     register("body", {
-                        validate: (value) =>
-                            (value && (value || "").length <= 160) ||
-                            "" + t(langKeys.validationchar),
+                        validate: (value) => (value && (value || "").length <= 160) || "" + t(langKeys.validationchar),
                     });
                     register("footer", { validate: (value) => value || true });
                     register("header", { validate: (value) => value || true });
@@ -1161,9 +1080,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     register("body", { validate: (value) => value || true });
                     register("footer", { validate: (value) => value || true });
                     register("header", {
-                        validate: (value) =>
-                            (value && value.length) ||
-                            t(langKeys.field_required),
+                        validate: (value) => (value && value.length) || t(langKeys.field_required),
                     });
                 }
             }
@@ -1205,36 +1122,27 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 setValue("body", "");
 
                 register("body", {
-                    validate: (value) =>
-                        (value && (value || "").length <= 1024) ||
-                        "" + t(langKeys.validationchar),
+                    validate: (value) => (value && (value || "").length <= 1024) || "" + t(langKeys.validationchar),
                 });
                 register("footer", { validate: (value) => value || true });
                 register("header", { validate: (value) => value || true });
                 register("name", {
                     validate: (value) =>
-                        (value &&
-                            (value || "").match("^[a-z0-9_]+$") !== null) ||
-                        t(langKeys.nametemplate_validation),
+                        (value && (value || "").match("^[a-z0-9_]+$") !== null) || t(langKeys.nametemplate_validation),
                 });
                 register("namespace", {
-                    validate: (value) =>
-                        (value && value.length) || t(langKeys.field_required),
+                    validate: (value) => (value && value.length) || t(langKeys.field_required),
                 });
 
                 if (getValues("headerenabled")) {
                     register("header", {
-                        validate: (value) =>
-                            (value && value.length) ||
-                            t(langKeys.field_required),
+                        validate: (value) => (value && value.length) || t(langKeys.field_required),
                     });
                 }
 
                 if (getValues("footerenabled")) {
                     register("footer", {
-                        validate: (value) =>
-                            (value && value.length) ||
-                            t(langKeys.field_required),
+                        validate: (value) => (value && value.length) || t(langKeys.field_required),
                     });
                 }
 
@@ -1250,12 +1158,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 register("body", { validate: (value) => value || true });
                 register("footer", { validate: (value) => value || true });
                 register("header", {
-                    validate: (value) =>
-                        (value && value.length) || t(langKeys.field_required),
+                    validate: (value) => (value && value.length) || t(langKeys.field_required),
                 });
                 register("name", {
-                    validate: (value) =>
-                        (value && value.length) || t(langKeys.field_required),
+                    validate: (value) => (value && value.length) || t(langKeys.field_required),
                 });
                 register("namespace", { validate: (value) => value || true });
 
@@ -1268,15 +1174,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 setValue("namespace", "");
 
                 register("body", {
-                    validate: (value) =>
-                        (value && (value || "").length <= 160) ||
-                        "" + t(langKeys.validationchar),
+                    validate: (value) => (value && (value || "").length <= 160) || "" + t(langKeys.validationchar),
                 });
                 register("footer", { validate: (value) => value || true });
                 register("header", { validate: (value) => value || true });
                 register("name", {
-                    validate: (value) =>
-                        (value && value.length) || t(langKeys.field_required),
+                    validate: (value) => (value && value.length) || t(langKeys.field_required),
                 });
                 register("namespace", { validate: (value) => value || true });
 
@@ -1289,8 +1192,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const onChangeTemplateMedia = async () => {
         if (getValues("headerenabled")) {
             register("header", {
-                validate: (value) =>
-                    (value && value.length) || t(langKeys.field_required),
+                validate: (value) => (value && value.length) || t(langKeys.field_required),
             });
         } else {
             register("header", { validate: (value) => value || true });
@@ -1298,8 +1200,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
         if (getValues("footerenabled")) {
             register("footer", {
-                validate: (value) =>
-                    (value && value.length) || t(langKeys.field_required),
+                validate: (value) => (value && value.length) || t(langKeys.field_required),
             });
         } else {
             register("footer", { validate: (value) => value || true });
@@ -1314,9 +1215,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         await trigger("templatetype");
     };
 
-    const onClickHeaderToogle = async ({
-        value,
-    }: { value?: boolean | null } = {}) => {
+    const onClickHeaderToogle = async ({ value }: { value?: boolean | null } = {}) => {
         if (value) {
             setValue("headerenabled", value);
         } else {
@@ -1329,9 +1228,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         await onChangeTemplateMedia();
     };
 
-    const onClickFooterToogle = async ({
-        value,
-    }: { value?: boolean | null } = {}) => {
+    const onClickFooterToogle = async ({ value }: { value?: boolean | null } = {}) => {
         if (value) {
             setValue("footerenabled", value);
         } else {
@@ -1344,9 +1241,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         await onChangeTemplateMedia();
     };
 
-    const onClickButtonsToogle = async ({
-        value,
-    }: { value?: boolean | null } = {}) => {
+    const onClickButtonsToogle = async ({ value }: { value?: boolean | null } = {}) => {
         if (value) {
             setValue("buttonsenabled", value);
         } else {
@@ -1367,10 +1262,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
     const onClickAddButton = async () => {
         if (getValues("buttons") && getValues("buttons").length < 3) {
-            setValue("buttons", [
-                ...getValues("buttons"),
-                { title: "", type: "", payload: "" },
-            ]);
+            setValue("buttons", [...getValues("buttons"), { title: "", type: "", payload: "" }]);
         }
 
         await trigger("buttons");
@@ -1427,9 +1319,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     }, []);
 
     const handleCleanMediaInput = async (f: string) => {
-        const input = document.getElementById(
-            "attachmentInput"
-        ) as HTMLInputElement;
+        const input = document.getElementById("attachmentInput") as HTMLInputElement;
 
         if (input) {
             input.value = "";
@@ -1501,24 +1391,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     return (
         <div style={{ width: "100%" }}>
             <form onSubmit={onSubmit}>
-                <div
-                    style={{ display: "flex", justifyContent: "space-between" }}
-                >
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread(
-                                t(langKeys.messagetemplate),
-                                t(langKeys.messagetemplatedetail)
-                            )}
+                            breadcrumbs={arrayBread(t(langKeys.messagetemplate), t(langKeys.messagetemplatedetail))}
                             handleClick={setViewSelected}
                         />
-                        <TitleDetail
-                            title={
-                                row
-                                    ? `${row.name}`
-                                    : t(langKeys.newmessagetemplate)
-                            }
-                        />
+                        <TitleDetail title={row ? `${row.name}` : t(langKeys.newmessagetemplate)} />
                     </div>
                     <div
                         style={{
@@ -1591,9 +1470,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         disabled={disableInput}
                                         error={errors?.category?.message}
                                         label={t(langKeys.category)}
-                                        onChange={(value) =>
-                                            setValue("category", value?.value)
-                                        }
+                                        onChange={(value) => setValue("category", value?.value)}
                                         optionDesc="description"
                                         optionValue="value"
                                         valueDefault={getValues("category")}
@@ -1603,11 +1480,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <FieldView
                                         className="col-6"
                                         label={t(langKeys.category)}
-                                        value={
-                                            row
-                                                ? t(`TEMPLATE_${row.category}`)
-                                                : ""
-                                        }
+                                        value={row ? t(`TEMPLATE_${row.category}`) : ""}
                                     />
                                 )}
                             </>
@@ -1619,9 +1492,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 disabled={disableInput}
                                 error={errors?.category?.message}
                                 label={t(langKeys.category)}
-                                onChange={(value) =>
-                                    setValue("category", value?.domainvalue)
-                                }
+                                onChange={(value) => setValue("category", value?.domainvalue)}
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
                                 valueDefault={getValues("category")}
@@ -1634,9 +1505,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 disabled={disableInput}
                                 error={errors?.language?.message}
                                 label={t(langKeys.language)}
-                                onChange={(value) =>
-                                    setValue("language", value?.value)
-                                }
+                                onChange={(value) => setValue("language", value?.value)}
                                 optionDesc="description"
                                 optionValue="value"
                                 valueDefault={getValues("language")}
@@ -1649,9 +1518,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 disabled={disableInput}
                                 error={errors?.language?.message}
                                 label={t(langKeys.language)}
-                                onChange={(value) =>
-                                    setValue("language", value?.domainvalue)
-                                }
+                                onChange={(value) => setValue("language", value?.domainvalue)}
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
                                 uset={true}
@@ -1670,18 +1537,14 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 onChange={(value) => changeProvider(value)}
                                 optionDesc="communicationchanneldesc"
                                 optionValue="communicationchannelid"
-                                valueDefault={getValues(
-                                    "communicationchannelid"
-                                )}
+                                valueDefault={getValues("communicationchannelid")}
                             />
                             <FieldSelect
                                 className="col-6"
                                 data={dataExternalStatus}
                                 disabled={true}
                                 error={errors?.externalstatus?.message}
-                                label={t(
-                                    langKeys.messagetemplate_externalstatus
-                                )}
+                                label={t(langKeys.messagetemplate_externalstatus)}
                                 optionDesc="description"
                                 optionValue="value"
                                 valueDefault={getValues("externalstatus")}
@@ -1695,9 +1558,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 disabled={disableNamespace}
                                 error={errors?.namespace?.message}
                                 label={t(langKeys.namespace)}
-                                onChange={(value) =>
-                                    setValue("namespace", value)
-                                }
+                                onChange={(value) => setValue("namespace", value)}
                                 valueDefault={getValues("namespace")}
                             />
                         </div>
@@ -1715,88 +1576,67 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             valueDefault={getValues("templatetype")}
                         />
                     </div>
-                    {getValues("templatetype") === "MULTIMEDIA" &&
-                        getValues("type") === "HSM" && (
-                            <div className="row-zyx">
-                                <React.Fragment>
-                                    <Button
-                                        className={classes.mediabutton}
-                                        disabled={disableInput}
-                                        onClick={() => onClickHeaderToogle()}
-                                        startIcon={
-                                            <CheckIcon htmlColor="#FFFFFF" />
-                                        }
-                                        style={{
-                                            backgroundColor: getValues(
-                                                "headerenabled"
-                                            )
-                                                ? "#000000"
-                                                : "#AAAAAA",
-                                            color: "#FFFFFF",
-                                        }}
-                                        type="button"
-                                        variant="contained"
-                                    >
-                                        {t(langKeys.header)}
-                                    </Button>
-                                    <Button
-                                        className={classes.mediabutton}
-                                        disabled={disableInput}
-                                        startIcon={
-                                            <CheckIcon htmlColor="#FFFFFF" />
-                                        }
-                                        style={{
-                                            backgroundColor: "#000000",
-                                            color: "#FFFFFF",
-                                        }}
-                                        type="button"
-                                        variant="contained"
-                                    >
-                                        {t(langKeys.body)}
-                                    </Button>
-                                    <Button
-                                        className={classes.mediabutton}
-                                        disabled={disableInput}
-                                        onClick={() => onClickFooterToogle()}
-                                        startIcon={
-                                            <CheckIcon htmlColor="#FFFFFF" />
-                                        }
-                                        style={{
-                                            backgroundColor: getValues(
-                                                "footerenabled"
-                                            )
-                                                ? "#000000"
-                                                : "#AAAAAA",
-                                            color: "#FFFFFF",
-                                        }}
-                                        type="button"
-                                        variant="contained"
-                                    >
-                                        {t(langKeys.footer)}
-                                    </Button>
-                                    <Button
-                                        className={classes.mediabutton}
-                                        disabled={disableInput}
-                                        onClick={() => onClickButtonsToogle()}
-                                        startIcon={
-                                            <CheckIcon htmlColor="#FFFFFF" />
-                                        }
-                                        style={{
-                                            backgroundColor: getValues(
-                                                "buttonsenabled"
-                                            )
-                                                ? "#000000"
-                                                : "#AAAAAA",
-                                            color: "#FFFFFF",
-                                        }}
-                                        type="button"
-                                        variant="contained"
-                                    >
-                                        {t(langKeys.buttons)}
-                                    </Button>
-                                </React.Fragment>
-                            </div>
-                        )}
+                    {getValues("templatetype") === "MULTIMEDIA" && getValues("type") === "HSM" && (
+                        <div className="row-zyx">
+                            <React.Fragment>
+                                <Button
+                                    className={classes.mediabutton}
+                                    disabled={disableInput}
+                                    onClick={() => onClickHeaderToogle()}
+                                    startIcon={<CheckIcon htmlColor="#FFFFFF" />}
+                                    style={{
+                                        backgroundColor: getValues("headerenabled") ? "#000000" : "#AAAAAA",
+                                        color: "#FFFFFF",
+                                    }}
+                                    type="button"
+                                    variant="contained"
+                                >
+                                    {t(langKeys.header)}
+                                </Button>
+                                <Button
+                                    className={classes.mediabutton}
+                                    disabled={disableInput}
+                                    startIcon={<CheckIcon htmlColor="#FFFFFF" />}
+                                    style={{
+                                        backgroundColor: "#000000",
+                                        color: "#FFFFFF",
+                                    }}
+                                    type="button"
+                                    variant="contained"
+                                >
+                                    {t(langKeys.body)}
+                                </Button>
+                                <Button
+                                    className={classes.mediabutton}
+                                    disabled={disableInput}
+                                    onClick={() => onClickFooterToogle()}
+                                    startIcon={<CheckIcon htmlColor="#FFFFFF" />}
+                                    style={{
+                                        backgroundColor: getValues("footerenabled") ? "#000000" : "#AAAAAA",
+                                        color: "#FFFFFF",
+                                    }}
+                                    type="button"
+                                    variant="contained"
+                                >
+                                    {t(langKeys.footer)}
+                                </Button>
+                                <Button
+                                    className={classes.mediabutton}
+                                    disabled={disableInput}
+                                    onClick={() => onClickButtonsToogle()}
+                                    startIcon={<CheckIcon htmlColor="#FFFFFF" />}
+                                    style={{
+                                        backgroundColor: getValues("buttonsenabled") ? "#000000" : "#AAAAAA",
+                                        color: "#FFFFFF",
+                                    }}
+                                    type="button"
+                                    variant="contained"
+                                >
+                                    {t(langKeys.buttons)}
+                                </Button>
+                            </React.Fragment>
+                        </div>
+                    )}
                     {getValues("templatetype") === "MULTIMEDIA" &&
                         getValues("headerenabled") &&
                         getValues("type") === "HSM" && (
@@ -1814,31 +1654,23 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     />
                                     <FieldEdit
                                         className={classes.headerText}
-                                        disabled={
-                                            disableInput &&
-                                            getValues("header") === "text"
-                                        }
+                                        disabled={disableInput && getValues("header") === "text"}
                                         error={errors?.header?.message}
                                         label={t(langKeys.header)}
-                                        onChange={(value) =>
-                                            setValue("header", value)
-                                        }
+                                        onChange={(value) => setValue("header", value)}
                                         valueDefault={getValues("header")}
                                     />
                                 </React.Fragment>
                             </div>
                         )}
-                    {(getValues("type") === "SMS" ||
-                        getValues("type") === "HSM") && (
+                    {(getValues("type") === "SMS" || getValues("type") === "HSM") && (
                         <div className="row-zyx">
                             <FieldEditMulti
                                 className="col-12"
                                 disabled={disableInput}
                                 error={errors?.body?.message}
                                 label={t(langKeys.body)}
-                                maxLength={
-                                    getValues("type") === "SMS" ? 160 : 1024
-                                }
+                                maxLength={getValues("type") === "SMS" ? 160 : 1024}
                                 onChange={(value) => setValue("body", value)}
                                 valueDefault={getValues("body")}
                             />
@@ -1854,9 +1686,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     error={errors?.footer?.message}
                                     label={t(langKeys.footer)}
                                     maxLength={60}
-                                    onChange={(value) =>
-                                        setValue("footer", value)
-                                    }
+                                    onChange={(value) => setValue("footer", value)}
                                     rows={2}
                                     valueDefault={getValues("footer")}
                                 />
@@ -1865,14 +1695,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     {getValues("templatetype") === "MULTIMEDIA" &&
                         getValues("buttonsenabled") &&
                         getValues("type") === "HSM" && (
-                            <div
-                                className="row-zyx"
-                                style={{ alignItems: "flex-end" }}
-                            >
-                                <FieldView
-                                    className={classes.buttonTitle}
-                                    label={t(langKeys.buttons)}
-                                />
+                            <div className="row-zyx" style={{ alignItems: "flex-end" }}>
+                                <FieldView className={classes.buttonTitle} label={t(langKeys.buttons)} />
                                 {getValues("buttons")?.length < 3 && (
                                     <Button
                                         className={classes.btnButton}
@@ -1893,9 +1717,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         color="primary"
                                         disabled={disableInput}
                                         onClick={() => onClickRemoveButton()}
-                                        startIcon={
-                                            <RemoveIcon color="primary" />
-                                        }
+                                        startIcon={<RemoveIcon color="primary" />}
                                         style={{ margin: "10px" }}
                                         type="button"
                                         variant="outlined"
@@ -1910,132 +1732,61 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         getValues("type") === "HSM" && (
                             <div className="row-zyx">
                                 <React.Fragment>
-                                    {getValues("buttons")?.map(
-                                        (btn: any, i: number) => {
-                                            return (
-                                                <div
-                                                    key={`btn-${i}`}
-                                                    className="col-4"
-                                                >
-                                                    <FieldEdit
-                                                        fregister={{
-                                                            ...register(
-                                                                `buttons.${i}.title`,
-                                                                {
-                                                                    validate: (
-                                                                        value
-                                                                    ) =>
-                                                                        (value &&
-                                                                            value.length) ||
-                                                                        t(
-                                                                            langKeys.field_required
-                                                                        ),
-                                                                }
-                                                            ),
-                                                        }}
-                                                        className={classes.mb1}
-                                                        disabled={disableInput}
-                                                        error={
-                                                            errors?.buttons?.[i]
-                                                                ?.title?.message
-                                                        }
-                                                        label={t(
-                                                            langKeys.title
-                                                        )}
-                                                        onChange={(value) =>
-                                                            onChangeButton(
-                                                                i,
-                                                                "title",
-                                                                value
-                                                            )
-                                                        }
-                                                        valueDefault={
-                                                            btn?.title || ""
-                                                        }
-                                                    />
-                                                    <FieldSelect
-                                                        fregister={{
-                                                            ...register(
-                                                                `buttons.${i}.type`,
-                                                                {
-                                                                    validate: (
-                                                                        value
-                                                                    ) =>
-                                                                        (value &&
-                                                                            value.length) ||
-                                                                        t(
-                                                                            langKeys.field_required
-                                                                        ),
-                                                                }
-                                                            ),
-                                                        }}
-                                                        className={classes.mb1}
-                                                        data={dataButtonType}
-                                                        disabled={disableInput}
-                                                        error={
-                                                            errors?.buttons?.[i]
-                                                                ?.type?.message
-                                                        }
-                                                        label={t(langKeys.type)}
-                                                        onChange={(value) =>
-                                                            onChangeButton(
-                                                                i,
-                                                                "type",
-                                                                value?.value
-                                                            )
-                                                        }
-                                                        optionDesc="text"
-                                                        optionValue="value"
-                                                        valueDefault={
-                                                            btn?.type || ""
-                                                        }
-                                                    />
-                                                    <FieldEdit
-                                                        fregister={{
-                                                            ...register(
-                                                                `buttons.${i}.payload`,
-                                                                {
-                                                                    validate: (
-                                                                        value
-                                                                    ) =>
-                                                                        (value &&
-                                                                            value.length) ||
-                                                                        t(
-                                                                            langKeys.field_required
-                                                                        ),
-                                                                }
-                                                            ),
-                                                        }}
-                                                        className={classes.mb1}
-                                                        disabled={disableInput}
-                                                        error={
-                                                            errors?.buttons?.[i]
-                                                                ?.payload
-                                                                ?.message
-                                                        }
-                                                        label={t(
-                                                            langKeys.payload
-                                                        )}
-                                                        onChange={(value) =>
-                                                            onChangeButton(
-                                                                i,
-                                                                "payload",
-                                                                value
-                                                            )
-                                                        }
-                                                        valueDefault={
-                                                            btn?.payload || ""
-                                                        }
-                                                    />
-                                                </div>
-                                            );
-                                        }
-                                    )}
+                                    {getValues("buttons")?.map((btn: any, i: number) => {
+                                        return (
+                                            <div key={`btn-${i}`} className="col-4">
+                                                <FieldEdit
+                                                    fregister={{
+                                                        ...register(`buttons.${i}.title`, {
+                                                            validate: (value) =>
+                                                                (value && value.length) || t(langKeys.field_required),
+                                                        }),
+                                                    }}
+                                                    className={classes.mb1}
+                                                    disabled={disableInput}
+                                                    error={errors?.buttons?.[i]?.title?.message}
+                                                    label={t(langKeys.title)}
+                                                    onChange={(value) => onChangeButton(i, "title", value)}
+                                                    valueDefault={btn?.title || ""}
+                                                />
+                                                <FieldSelect
+                                                    fregister={{
+                                                        ...register(`buttons.${i}.type`, {
+                                                            validate: (value) =>
+                                                                (value && value.length) || t(langKeys.field_required),
+                                                        }),
+                                                    }}
+                                                    className={classes.mb1}
+                                                    data={dataButtonType}
+                                                    disabled={disableInput}
+                                                    error={errors?.buttons?.[i]?.type?.message}
+                                                    label={t(langKeys.type)}
+                                                    onChange={(value) => onChangeButton(i, "type", value?.value)}
+                                                    optionDesc="text"
+                                                    optionValue="value"
+                                                    valueDefault={btn?.type || ""}
+                                                />
+                                                <FieldEdit
+                                                    fregister={{
+                                                        ...register(`buttons.${i}.payload`, {
+                                                            validate: (value) =>
+                                                                (value && value.length) || t(langKeys.field_required),
+                                                        }),
+                                                    }}
+                                                    className={classes.mb1}
+                                                    disabled={disableInput}
+                                                    error={errors?.buttons?.[i]?.payload?.message}
+                                                    label={t(langKeys.payload)}
+                                                    onChange={(value) => onChangeButton(i, "payload", value)}
+                                                    valueDefault={btn?.payload || ""}
+                                                />
+                                            </div>
+                                        );
+                                    })}
                                 </React.Fragment>
                             </div>
                         )}
-                    {(getValues("type") === "MAIL" ||
-                        getValues("type") === "HTML") && (
+                    {(getValues("type") === "MAIL" || getValues("type") === "HTML") && (
                         <div className="row-zyx">
                             <FieldEdit
                                 className="col-6"
@@ -2051,9 +1802,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 disabled={disableInput}
                                 error={errors?.priority?.message}
                                 label={t(langKeys.priority)}
-                                onChange={(value) =>
-                                    setValue("priority", value?.value)
-                                }
+                                onChange={(value) => setValue("priority", value?.value)}
                                 optionDesc="text"
                                 optionValue="value"
                                 valueDefault={getValues("priority")}
@@ -2063,13 +1812,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     {getValues("type") === "MAIL" && (
                         <div className="row-zyx">
                             <React.Fragment>
-                                <Box
-                                    fontWeight={500}
-                                    lineHeight="18px"
-                                    fontSize={14}
-                                    mb={1}
-                                    color="textPrimary"
-                                >
+                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
                                     {t(langKeys.body)}
                                 </Box>
                                 <RichText
@@ -2097,37 +1840,21 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     )}
                     {getValues("type") === "HTML" && (
                         <div className="row-zyx">
-                            <Button
-                                component="label"
-                                disabled={disableInput}
-                                variant="contained"
-                            >
+                            <Button component="label" disabled={disableInput} variant="contained">
                                 <input
                                     accept=".html"
-                                    onChange={(e) =>
-                                        onChangeAttachmentTemplate(
-                                            e.target.files
-                                        )
-                                    }
+                                    onChange={(e) => onChangeAttachmentTemplate(e.target.files)}
                                     type="file"
                                 />
                             </Button>
-                            <FieldEdit
-                                className={classes.headerText}
-                                disabled={true}
-                                error={bodyAlert}
-                                label={""}
-                            />
+                            <FieldEdit className={classes.headerText} disabled={true} error={bodyAlert} label={""} />
                         </div>
                     )}
                     {getValues("type") === "HTML" && (
                         <div className="row-zyx">
                             {bodyAttachment && (
                                 <React.Fragment>
-                                    <MenuItem
-                                        onClick={() => setHtmlEdit(!htmlEdit)}
-                                        disabled={disableInput}
-                                    >
+                                    <MenuItem onClick={() => setHtmlEdit(!htmlEdit)} disabled={disableInput}>
                                         <ListItemIcon color="inherit">
                                             <RefreshIcon
                                                 style={{
@@ -2139,12 +1866,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         </ListItemIcon>
                                         <div style={{ fontSize: 16 }}>
                                             {htmlEdit
-                                                ? t(
-                                                      langKeys.messagetemplate_changetoview
-                                                  )
-                                                : t(
-                                                      langKeys.messagetemplate_changetoeditor
-                                                  )}
+                                                ? t(langKeys.messagetemplate_changetoview)
+                                                : t(langKeys.messagetemplate_changetoeditor)}
                                         </div>
                                     </MenuItem>
                                     {!htmlEdit ? (
@@ -2161,20 +1884,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             }}
                                         />
                                     ) : (
-                                        <Suspense
-                                            fallback={<div>Loading...</div>}
-                                        >
+                                        <Suspense fallback={<div>Loading...</div>}>
                                             <CodeMirror
                                                 extensions={htmlLoad}
                                                 height={"600px"}
                                                 onChange={(value) => {
-                                                    setValue(
-                                                        "body",
-                                                        value || ""
-                                                    );
-                                                    setBodyAttachment(
-                                                        value || ""
-                                                    );
+                                                    setValue("body", value || "");
+                                                    setBodyAttachment(value || "");
                                                 }}
                                                 value={getValues("body")}
                                             />
@@ -2184,28 +1900,21 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                             )}
                         </div>
                     )}
-                    {(getValues("type") === "MAIL" ||
-                        getValues("type") === "HTML") && (
+                    {(getValues("type") === "MAIL" || getValues("type") === "HTML") && (
                         <div className="row-zyx">
-                            <FieldView
-                                label={t(langKeys.messagetemplate_attachment)}
-                            />
+                            <FieldView label={t(langKeys.messagetemplate_attachment)} />
                             <React.Fragment>
                                 <input
                                     accept="file/*"
                                     disabled={disableInput}
                                     id="attachmentInput"
-                                    onChange={(e) =>
-                                        onChangeAttachment(e.target.files)
-                                    }
+                                    onChange={(e) => onChangeAttachment(e.target.files)}
                                     style={{ display: "none" }}
                                     type="file"
                                 />
                                 {
                                     <IconButton
-                                        disabled={
-                                            waitUploadFile || disableInput
-                                        }
+                                        disabled={waitUploadFile || disableInput}
                                         onClick={onClickAttachment}
                                         style={{ borderRadius: "0px" }}
                                     >
@@ -2219,16 +1928,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             <FilePreview
                                                 key={`attachment-${i}`}
                                                 src={f}
-                                                onClose={(f) =>
-                                                    handleCleanMediaInput(f)
-                                                }
+                                                onClose={(f) => handleCleanMediaInput(f)}
                                             />
                                         ))}
                                 {waitUploadFile && fileAttachment && (
-                                    <FilePreview
-                                        key={`attachment-x`}
-                                        src={fileAttachment}
-                                    />
+                                    <FilePreview key={`attachment-x`} src={fileAttachment} />
                                 )}
                             </React.Fragment>
                         </div>
@@ -2274,10 +1978,7 @@ const useFilePreviewStyles = makeStyles((theme) => ({
 const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
     const classes = useFilePreviewStyles();
 
-    const isUrl = useCallback(
-        () => typeof src === "string" && src.includes("http"),
-        [src]
-    );
+    const isUrl = useCallback(() => typeof src === "string" && src.includes("http"), [src]);
 
     const getFileName = useCallback(() => {
         if (isUrl()) {
@@ -2318,10 +2019,7 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
             {!isUrl() && !onClose && <CircularProgress color="primary" />}
             <div className={classes.btnContainer}>
                 {onClose && (
-                    <IconButton
-                        size="small"
-                        onClick={() => onClose(src as string)}
-                    >
+                    <IconButton size="small" onClick={() => onClose(src as string)}>
                         <Close />
                     </IconButton>
                 )}
