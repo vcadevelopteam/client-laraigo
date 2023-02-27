@@ -27,6 +27,7 @@ import productReducer, { IState as IProduct } from './product/reducer';
 import postHistoryReducer, { IState as IPostHistory } from './posthistory/reducer';
 import catalogReducer, { IState as ICatalog } from './catalog/reducer';
 import paymentReducer, { IState as IPayment } from './payment/reducer';
+import witaiReducer, { IState as IWitai } from './witia/reducer';
 
 export interface IRootState {
     login: ILogin,
@@ -53,6 +54,7 @@ export interface IRootState {
     postHistory: IPostHistory;
     catalog: ICatalog;
     payment: IPayment;
+    witai: IWitai;
 }
 
 declare global {
@@ -86,6 +88,7 @@ const rootReducer = combineReducers<IRootState>({
     product: productReducer,
     catalog: catalogReducer,
     payment: paymentReducer,
+    witai: witaiReducer,
 });
 
 export default function configureStore(preloadedState?: IRootState) {

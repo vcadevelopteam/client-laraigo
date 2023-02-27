@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import {  FieldEdit, FieldEditArray, FieldMultiSelectFreeSolo, TemplateBreadcrumbs } from 'components';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { Button, IconButton, makeStyles, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
+import { Box, Button, IconButton, makeStyles, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@material-ui/core';
 import TableZyx from 'components/fields/table-simple';
 import ClearIcon from '@material-ui/icons/Clear';
 import { Dictionary } from '@types';
@@ -14,8 +14,10 @@ import AddIcon from '@material-ui/icons/Add';
 import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import DeleteIcon from '@material-ui/icons/Delete';
-import { execute, getCollection, resetAllMain } from 'store/main/actions';
-import { entitydelete, insertentity, selEntities } from 'common/helpers/requestBodies';
+import { getCollection, resetAllMain } from 'store/main/actions';
+import { selEntities } from 'common/helpers/requestBodies';
+import { convertLocalDate, exportExcel, uploadExcel } from 'common/helpers';
+import { entitydel, entityimport, entityins } from 'store/witia/actions';
 
 
 interface RowSelected {
@@ -66,12 +68,12 @@ const useStyles = makeStyles((theme) => ({
 const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,setViewSelected, setExternalViewSelected, arrayBread }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
+    const operationRes = useSelector(state => state.witai.witaioperationresult);
     const [keyword, setkeyword] = useState("");
     const [synonim, setsynonim] = useState("");
     const [disableCreate, setDisableCreate] = useState(true);
     const [dataKeywords, setDataKeywords] = useState<any>(row?.datajson?.keywords || []);
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
-    const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const selectionKey= "keyword"
@@ -96,28 +98,28 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
 
     useEffect(() => {
         if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
+            if (!operationRes.loading && !operationRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.whitelist).toLocaleLowerCase() })
+            } else if (operationRes.error) {
+                const errormessage = t(operationRes.code || "error_unexpected_error", { module: t(langKeys.entities).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
         }
-    }, [executeRes, waitSave])
+    }, [operationRes, waitSave])
     
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            dispatch(execute(insertentity({...data, datajson:JSON.stringify({...row?.datajson,
+            dispatch(entityins({...data, datajson:JSON.stringify({...row?.datajson,
                 keywords:dataKeywords,
                 lookups: ["keywords"],
                 name:data.name,
                 roles: [row?.datajson?.roles? (row?.datajson?.roles[0]):data.name]
-            })})));
+            })}));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -302,7 +304,8 @@ export const Entities: React.FC<EntityProps> = ({ setExternalViewSelected, array
 
     const [viewSelected, setViewSelected] = useState("view-1");
     const selectionKey= "name"
-    const executeRes = useSelector(state => state.main.execute);
+    const operationRes = useSelector(state => state.witai.witaioperationresult);
+    const [waitImport, setWaitImport] = useState(false);
 
     const fetchData = () => {dispatch(getCollection(selEntities()))};
     
@@ -316,19 +319,19 @@ export const Entities: React.FC<EntityProps> = ({ setExternalViewSelected, array
 
     useEffect(() => {
         if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
+            if (!operationRes.loading && !operationRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.messagingcost).toLocaleLowerCase() })
+            } else if (operationRes.error) {
+                const errormessage = t(operationRes.code || "error_unexpected_error", { module: t(langKeys.intentions).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
         }
-    }, [executeRes, waitSave])
+    }, [operationRes, waitSave])
 
     const columns = React.useMemo(
         () => [
@@ -379,6 +382,10 @@ export const Entities: React.FC<EntityProps> = ({ setExternalViewSelected, array
                 accessor: 'updatedate',
                 width: "auto",
                 NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return convertLocalDate(row.updatedate).toLocaleString()
+                }
             },
         ],
         []
@@ -389,7 +396,7 @@ export const Entities: React.FC<EntityProps> = ({ setExternalViewSelected, array
     }
     const handleDelete = () => {
         const callback = () => {
-            dispatch(execute(entitydelete({table:JSON.stringify(Object.keys(selectedRows).map(x=>({name:x})))})))
+            dispatch(entitydel({table:JSON.stringify(Object.keys(selectedRows).map(x=>({name:x})))}))
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -400,6 +407,53 @@ export const Entities: React.FC<EntityProps> = ({ setExternalViewSelected, array
             callback
         }))
     }
+    const triggerExportData = () => {
+        if (Object.keys(selectedRows).length === 0) {
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_record_selected)}));
+            return null;
+        }
+        let keys = Object.keys(selectedRows)
+        let filtereddata = mainResult.mainData.data.filter(x=>keys.includes(x.name))
+        exportExcel(t(langKeys.entities), filtereddata.map(x=>({...x,datajson: JSON.stringify(x.datajson)})))
+    };
+    useEffect(() => {
+        if (waitImport) {
+            if (!operationRes.loading && !operationRes.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
+                dispatch(showBackdrop(false));
+                setWaitImport(false);
+                fetchData();
+            } else if (operationRes.error) {
+                const errormessage = t(operationRes.code || "error_unexpected_error", { module: t(langKeys.intentions).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitImport(false);
+            }
+        }
+    }, [operationRes, waitImport]);
+
+    const handleUpload = async (files: any[]) => {
+        debugger
+        const file = files[0];
+        if (file) {
+            const data: any = (await uploadExcel(file, undefined) as any[]).filter((d: any) => !['', null, undefined].includes(d.name));
+            if (data.length > 0) {
+                dispatch(showBackdrop(true));
+                setWaitImport(true)
+                let datatosend = data.reduce((acc:any,d:any) => [...acc,{
+                    name: d.name, 
+                    datajson: JSON.parse(d.datajson), 
+                    operation: d.operation || 'INSERT',
+                }],[])
+
+                dispatch(entityimport({
+                    datajson: JSON.stringify(datatosend)
+                }))
+            
+            }
+        }
+    }
+    
 
     if (viewSelected==="view-1"){
         return (

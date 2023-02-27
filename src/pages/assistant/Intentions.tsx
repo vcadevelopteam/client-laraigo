@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { FieldEdit, FieldEditWithSelect, TemplateBreadcrumbs, TitleDetail } from 'components';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { Button, makeStyles } from '@material-ui/core';
+import { Box, Button, makeStyles, TextField } from '@material-ui/core';
 import TableZyx from 'components/fields/table-simple';
 import ClearIcon from '@material-ui/icons/Clear';
 import { Dictionary } from '@types';
@@ -12,10 +12,11 @@ import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import { execute, getCollection, getCollectionAux, getCollectionAux2, resetAllMain } from 'store/main/actions';
-import { insertutterance, selEntities, selIntent, selUtterance, utterancedelete } from 'common/helpers/requestBodies';
-import { filterPipe } from 'common/helpers';
 import AddIcon from '@material-ui/icons/Add';
+import { getCollection, getCollectionAux, getCollectionAux2, resetAllMain } from 'store/main/actions';
+import { exportintent, selEntities, selIntent, selUtterance } from 'common/helpers/requestBodies';
+import { convertLocalDate, exportExcel, filterPipe, uploadExcel } from 'common/helpers';
+import { intentdel, intentimport, intentutteranceins, trainwitai } from 'store/witia/actions';
 
 
 interface RowSelected {
@@ -52,40 +53,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-/*{
-    name: "Quiero comprar un Samsung",
-    datajson: {
-        text: "Quiero comprar un Samsung",
-        intent: {
-            id: "525288882688594",
-            "name": "saludo"
-        },
-        traits: [],
-        entities: [
-            {
-                id: "1136777953889025",
-                end: 25,
-                body: "comprar un Samsung",
-                name: "marca",
-                role: "marca",
-                start: 7,
-                entities: [
-                    {
-                        id: "1767365776940765",
-                        end: 18,
-                        body: "Samsung",
-                        name: "documento",
-                        role: "documento",
-                        start: 11,
-                        entities: []
-                    }
-                ]
-            }
-        ]
-    }
-}*/
-
-
 class VariableHandler {
     show: boolean;
     item: any;
@@ -114,7 +81,9 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
     const [disableCreate, setDisableCreate] = useState(true);
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [dataEntities, setdataEntities] = useState<any>([]);
+    const [name, setname] = useState(row?.name || '');
     const [variableHandler, setVariableHandler] = useState<VariableHandler>(new VariableHandler());
+    const operationRes = useSelector(state => state.witai.witaioperationresult);
     const [newIntention, setnewIntention] = useState<Dictionary>({
         name: "",
         datajson: {
@@ -129,7 +98,6 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
     const [examples, setexamples] = useState<any>([]);
     const mainResult = useSelector(state => state.main.mainAux);
     const mainResultAux = useSelector(state => state.main.mainAux2);
-    const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const selectionKey= "name"
@@ -176,25 +144,25 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
 
     useEffect(() => {
         if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
+            if (!operationRes.loading && !operationRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.whitelist).toLocaleLowerCase() })
+            } else if (operationRes.error) {
+                const errormessage = t(operationRes.code || "error_unexpected_error", { module: t(langKeys.whitelist).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
         }
-    }, [executeRes, waitSave])
+    }, [operationRes, waitSave])
     
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             let tempexamples = examples
             tempexamples.forEach((e:any)=>delete e.updatedate)
-            dispatch(execute(insertutterance({...data, datajson: JSON.stringify({name: data.name}), utterance_datajson: JSON.stringify(tempexamples)})));
+            dispatch(intentutteranceins({...data, datajson: JSON.stringify({name: data.name}), utterance_datajson: JSON.stringify(tempexamples)}));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -220,6 +188,10 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                 accessor: 'updatedate',
                 NoFilter: true,
                 width: "auto",
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return convertLocalDate(row.updatedate).toLocaleString()
+                }
             },
         ],
         []
@@ -281,6 +253,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
         }
     }
 
+
     return (
         <div style={{width: '100%'}}>
             {!!arrayBread && <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -319,18 +292,28 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.name)} 
-                            disabled={!disableSave}
-                            className={classes.containerFields}
-                            onChange={(value) => {
-                                setValue('name', value)
-                                setDisableCreate(getValues("description")===""||value==="")
-                            }}
-                            valueDefault={row?.name || ""}
-                            error={errors?.name?.message}
-                        />
-                        <div style={{ paddingTop:"8px",paddingBottom:"16px"}}>{t(langKeys.intentionnametooltip)}</div>
+                        <div className="col-12">
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">{t(langKeys.name)}</Box>
+                            <TextField
+                                color="primary"
+                                fullWidth
+                                disabled={!disableSave}
+                                value={name}
+                                error={!!errors?.name?.message}
+                                helperText={errors?.name?.message || null}
+                                onInput={(e: any) => {
+                                    // eslint-disable-next-line no-useless-escape
+                                    if(!((/^[a-zA-Z_]/g).test(e.target.value) && (/[a-zA-Z0-9\_]$/g).test(e.target.value))){
+                                        if(e.target.value!=="") e.target.value = name
+                                    }
+                                }}
+                                onChange={(e) => {
+                                    setValue('name', e.target.value)
+                                    setname(e.target.value)
+                                    setDisableCreate(getValues("description")===""||e.target.value==="")
+                                }}
+                            />
+                        </div>
                         <FieldEdit
                             label={t(langKeys.description)} 
                             disabled={!disableSave}
@@ -483,13 +466,46 @@ export const Intentions: React.FC<IntentionProps> = ({ setExternalViewSelected, 
     const mainResult = useSelector(state => state.main);
     const [selectedRows, setSelectedRows] = useState<any>({});
     const [waitSave, setWaitSave] = useState(false);
-    const executeRes = useSelector(state => state.main.execute);
+    const [sendTrainCall, setSendTrainCall] = useState(false);
+    const operationRes = useSelector(state => state.witai.witaioperationresult);
+    const [waitExport, setWaitExport] = useState(false);
+    const mainResultAux = useSelector(state => state.main.mainAux);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
 
     const [viewSelected, setViewSelected] = useState("view-1");
+    const [waitImport, setWaitImport] = useState(false);
+    const trainResult = useSelector(state => state.witai.witaitrainresult);
 
     const fetchData = () => {dispatch(getCollection(selIntent()))};
     const selectionKey = 'name';
+
+    
+    useEffect(() => {
+        if(sendTrainCall){
+            if(!trainResult.loading && !trainResult.error){
+                let message="";
+                switch (trainResult.data.training_status) {
+                    case ("done"):
+                        message=t(langKeys.bot_training_done)
+                        break;
+                    case ("scheduled"):
+                        message=t(langKeys.bot_training_scheduled)
+                        break;
+                    case ("ongoing"):
+                        message=t(langKeys.bot_training_ongoing)
+                        break;
+                }
+                dispatch(showSnackbar({ show: true, severity: "success", message:  message}))
+                setSendTrainCall(false);
+                dispatch(showBackdrop(false));
+            }else if(trainResult.error){
+                const errormessage = t(trainResult.code || "error_unexpected_error", { module: t(langKeys.test).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                setSendTrainCall(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [trainResult,sendTrainCall]);
     
     useEffect(() => {
         fetchData();
@@ -501,19 +517,35 @@ export const Intentions: React.FC<IntentionProps> = ({ setExternalViewSelected, 
 
     useEffect(() => {
         if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
+            if (!operationRes.loading && !operationRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.messagingcost).toLocaleLowerCase() })
+            } else if (operationRes.error) {
+                const errormessage = t(operationRes.code || "error_unexpected_error", { module: t(langKeys.intentions).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
         }
-    }, [executeRes, waitSave])
+    }, [operationRes, waitSave])
+
+    useEffect(() => {
+        if (waitImport) {
+            if (!operationRes.loading && !operationRes.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
+                fetchData();
+                dispatch(showBackdrop(false));
+                setWaitImport(false);
+            } else if (operationRes.error) {
+                const errormessage = t(operationRes.code || "error_unexpected_error", { module: t(langKeys.intentions).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitImport(false);
+            }
+        }
+    }, [operationRes, operationRes]);
 
     const columns = React.useMemo(
         () => [
@@ -562,6 +594,10 @@ export const Intentions: React.FC<IntentionProps> = ({ setExternalViewSelected, 
                 accessor: 'updatedate',
                 width: "auto",
                 NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return convertLocalDate(row.updatedate).toLocaleString()
+                }
             },
         ],
         []
@@ -573,7 +609,7 @@ export const Intentions: React.FC<IntentionProps> = ({ setExternalViewSelected, 
     }
     const handleDelete = () => {
         const callback = () => {
-            dispatch(execute(utterancedelete({table:JSON.stringify(Object.keys(selectedRows).map(x=>({name:x})))})))
+            dispatch(intentdel({table:JSON.stringify(Object.keys(selectedRows).map(x=>({name:x})))}))
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -584,6 +620,75 @@ export const Intentions: React.FC<IntentionProps> = ({ setExternalViewSelected, 
             callback
         }))
     }
+
+    
+    const triggerExportData = () => {
+        if (Object.keys(selectedRows).length === 0) {
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_record_selected)}));
+            return null;
+        }
+        dispatch(getCollectionAux(exportintent({name_json: JSON.stringify(Object.keys(selectedRows).map(x=>({name:x})))})))    
+        dispatch(showBackdrop(true));
+        setWaitExport(true);
+    };
+
+    useEffect(() => {
+        if (waitExport) {
+            if (!mainResultAux.loading && !mainResultAux.error) {
+                dispatch(showBackdrop(false));
+                setWaitExport(false);
+                exportExcel(t(langKeys.intentions), mainResultAux.data.map(x=>({...x,intent_datajson: JSON.stringify(x.intent_datajson), utterance_datajson: JSON.stringify(x.utterance_datajson)})))
+            } else if (mainResultAux.error) {
+                const errormessage = t(mainResultAux.code || "error_unexpected_error", { module: t(langKeys.blacklist).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitExport(false);
+            }
+        }
+    }, [mainResultAux, waitExport]);
+
+    const handleUpload = async (files: any[]) => {
+        const file = files[0];
+        if (file) {
+            const data: any = (await uploadExcel(file, undefined) as any[]).filter((d: any) => !['', null, undefined].includes(d.intent_name));
+            if (data.length > 0) {
+                let datareduced = data.reduce((acc:any,element:any)=>{
+                    let repeatedindex = acc.findIndex((item:any)=>item.name === element.intent_name)
+                    if (repeatedindex < 0){
+                        return [...acc, {
+                            name: element.intent_name,
+                            description: element.intent_description,
+                            datajson: JSON.parse(element.intent_datajson),
+                            utterance_datajson: [{
+                                name: element.utterance_name,
+                                datajson: JSON.parse(element.utterance_datajson)
+                            }]
+                        }]
+                    }else{
+                        let newacc = acc
+                        newacc[repeatedindex].utterance_datajson.push(
+                            {
+                                name: element.utterance_name,
+                                datajson: JSON.parse(element.utterance_datajson)
+                            })                         
+                        return newacc
+
+                    }
+                },[])
+                dispatch(showBackdrop(true));
+                setWaitImport(true)
+                debugger
+                dispatch(intentimport({
+                    utterance_datajson: JSON.stringify(datareduced.reduce((acc:any,x:any) => [...acc,...x.utterance_datajson],[])),
+                    datajson: JSON.stringify(datareduced.map((x:any) => ({ name:x.name, description:x.description, datajson:x.datajson }))),
+                }))            
+            }
+            else {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) }));
+            }
+        }
+    }
+    
     if (viewSelected==="view-1"){
         return (
             <React.Fragment>
@@ -603,23 +708,35 @@ export const Intentions: React.FC<IntentionProps> = ({ setExternalViewSelected, 
                         titlemodule={!!arrayBread?t(langKeys.intentions):""}
                         selectionKey={selectionKey}
                         setSelectedRows={setSelectedRows}
-                        ButtonsElement={() => (
-                            <div style={{display: "flex", justifyContent: "end", width: "100%"}}>
-                                <Button
-                                    disabled={Object.keys(selectedRows).length===0}
-                                    variant="contained"
-                                    type="button"
-                                    color="primary"
-                                    startIcon={<ClearIcon color="secondary" />}
-                                    style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
-                                    onClick={handleDelete}
-                                >{t(langKeys.delete)}</Button>
+                        ButtonsElement={() => (     
+                            <div style={{display: "flex", justifyContent: "end", width: "100%"}}>                       
+                                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                                    <Button
+                                        disabled={Object.keys(selectedRows).length===0}
+                                        variant="contained"
+                                        type="button"
+                                        color="primary"
+                                        startIcon={<ClearIcon color="secondary" />}
+                                        style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
+                                        onClick={handleDelete}
+                                    >{t(langKeys.delete)}</Button>
+                                    <Button
+                                        variant="contained"
+                                        type="button"
+                                        color="primary"
+                                        style={{ backgroundColor: "#7721ad" }}
+                                        onClick={()=>{dispatch(trainwitai());setSendTrainCall(true)}}
+                                    >{t(langKeys.train)}</Button>
+                                </div>
                             </div>
                         )}
                         loading={mainResult.mainData.loading}
                         register={true}
-                        download={false}
+                        download={true}
+                        triggerExportPersonalized={true}
+                        exportPersonalized={triggerExportData}
                         handleRegister={handleRegister}
+                        importCSV={handleUpload}
                         pageSizeDefault={20}
                         initialPageIndex={0}
                     />
