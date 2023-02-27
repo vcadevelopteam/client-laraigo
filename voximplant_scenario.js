@@ -45,7 +45,8 @@ var request,
     userQueueIndex = 0,
     userQueueLimit = 10,
     userQueueLength,
-    userQueueData = [];
+    userQueueData = [],
+    retryClose = 0;
 
 VoxEngine.addEventListener(AppEvents.Started, (ev) => {
     accountID = ev.accountId;
@@ -212,38 +213,47 @@ function createTicket2(callback) {
     })
 }
 
-function closeTicket(motive) {
-    const splitIdentifier = identifier.split("-");
-    const bodyClose = {
-        "parameters": {
-            "p_corpid": parseInt(splitIdentifier[0]),
-            "p_orgid": parseInt(splitIdentifier[1]),
-            "p_conversationid": parseInt(splitIdentifier[3]),
-            "p_status": "CERRADO",
-            "p_obs": motive,
-            "p_motivo": motive,
-            "p_messagesourcekey1": `${callerid}_VOXI`,
-            "autoclosetime": 60,
-            "communicationchannelsite": site,
-            "communicationchanneltype": "VOXI",
-            "lastsupervisorid": 0,
-            "lastasesorid": lastagentid,
-            "p_username": "voxi-admin",
-            "p_userid": lastagentid,
-            "closeby": "CHATFLOW",
-            "closemessage": ""
+function closeTicket(motive, obs = "") {
+    if (identifier) {
+        const splitIdentifier = identifier.split("-");
+        const bodyClose = {
+            "parameters": {
+                "p_corpid": parseInt(splitIdentifier[0]),
+                "p_orgid": parseInt(splitIdentifier[1]),
+                "p_conversationid": parseInt(splitIdentifier[3]),
+                "p_status": "CERRADO",
+                "p_obs": obs ? obs : motive,
+                "p_motivo": motive,
+                "p_messagesourcekey1": `${callerid}_VOXI`,
+                "autoclosetime": 60,
+                "communicationchannelsite": site,
+                "communicationchanneltype": "VOXI",
+                "lastsupervisorid": 0,
+                "lastasesorid": lastagentid,
+                "p_username": "voxi-admin",
+                "p_userid": lastagentid,
+                "closeby": "CHATFLOW",
+                "closemessage": ""
+            }
         }
+        Logger.write("closeTicket-body: " + JSON.stringify(bodyClose));
+        Net.httpRequest(`${URL_SERVICES}ServiceLogicHook/CloseTicket`, (res) => {
+            Logger.write("closeTicket-res: " + res.text);
+        }, {
+            method: "POST",
+            postData: JSON.stringify(bodyClose),
+            headers: [
+                "Content-Type: application/json;charset=utf-8"
+            ]
+        })
+    } else {
+        if (retryClose < 3) {
+            setTimeout(() => {
+                closeTicket(motive, obs)
+            }, 1000);
+        }
+        retryClose = retryClose + 1;
     }
-    Logger.write("closeTicket-body: " + JSON.stringify(bodyClose));
-    Net.httpRequest(`${URL_SERVICES}ServiceLogicHook/CloseTicket`, (res) => {
-        Logger.write("closeTicket-res: " + res.text);
-    }, {
-        method: "POST",
-        postData: JSON.stringify(bodyClose),
-        headers: [
-            "Content-Type: application/json;charset=utf-8"
-        ]
-    })
 }
 function reasignAgent(agentid) {
     const body = {
@@ -303,7 +313,7 @@ function handleInboundCall(e) {
         // Add event listeners
         e.call.addEventListener(CallEvents.Connected, handleCallConnected);
         e.call.addEventListener(CallEvents.PlaybackFinished, handlePlaybackFinished);
-        e.call.addEventListener(CallEvents.Failed, () => cleanup("LLAMADA FALLIDA"));
+        e.call.addEventListener(CallEvents.Failed, (e) => cleanup(`LLAMADA FALLIDA`, `code: ${e.code} - reason ${e.reason} - name: ${e.name}`));
         e.call.addEventListener(CallEvents.Disconnected, () => cleanup("DESCONECTADO POR CLIENTE"));
         // Answer call
         createTicket("LLAMADA ENTRANTE", (newConversation) => {
@@ -384,10 +394,10 @@ function handleInboundCall(e) {
             originalCall.removeEventListener(CallEvents.Disconnected);
             e.call.removeEventListener(CallEvents.Disconnected);
 
-            originalCall.addEventListener(CallEvents.Failed, () => cleanup("LLAMADA FALLIDA"));
+            originalCall.addEventListener(CallEvents.Failed, (e) => cleanup(`LLAMADA FALLIDA`, `code: ${e.code} - reason ${e.reason} - name: ${e.name}`));
             originalCall.addEventListener(CallEvents.Disconnected, () => cleanup("DESCONECTADO POR CLIENTE"));
 
-            e.call.addEventListener(CallEvents.Failed, () => cleanup("LLAMADA FALLIDA"));
+            e.call.addEventListener(CallEvents.Failed, (e) => cleanup(`LLAMADA FALLIDA`, `code: ${e.code} - reason ${e.reason} - name: ${e.name}`));
             e.call.addEventListener(CallEvents.Disconnected, () => cleanup("DESCONECTADO POR ASESOR"));
 
             originalCall2 = e.call; // Call del agente
@@ -412,7 +422,7 @@ function holdCall(a, b) {
 }
 
 // Terminate call and session
-function cleanup(motive) {
+function cleanup(motive, obs = "") {
     Logger.write("cleanup-inTransfer: " + JSON.stringify(inTransfer));
     if (inTransfer) {
         inTransfer = null;
@@ -430,7 +440,7 @@ function cleanup(motive) {
             request.cancel();
             request = null;
         }
-        closeTicket(motive)
+        closeTicket(motive, obs)
         // terminate session
         VoxEngine.terminate();
     }
@@ -524,11 +534,11 @@ function handleACDQueue() {
     // Notify caller about his position in the queue
     request.addEventListener(ACDEvents.Waiting, function (acdevent) {
         Logger.write("ACDEvents-Waiting: " + JSON.stringify(acdevent));
-        var minutesLeft = acdevent.ewt + 1;
-        var minutesWord = " minuto.";
-        if (minutesLeft > 1) {
-            minutesWord = " minutos.";
-        }
+        // var minutesLeft = acdevent.ewt + 1;
+        // var minutesWord = " minuto.";
+        // if (minutesLeft > 1) {
+        //     minutesWord = " minutos.";
+        // }
         //ordinal_suffix_of(acdevent.position)
         //const speech = `Tú eres el número ${acdevent.position} en la cola. El asesor le responderá en ${(acdevent.ewt + 1)} ${minutesWord}`;
         //const speech = `Tú eres el número ${acdevent.position} en la cola.`;
