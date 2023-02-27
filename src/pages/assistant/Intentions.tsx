@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
-import { FieldEdit, FieldEditWithSelect, TitleDetail } from 'components';
+import { FieldEdit, FieldEditWithSelect, TemplateBreadcrumbs, TitleDetail } from 'components';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Button, makeStyles } from '@material-ui/core';
@@ -15,6 +15,7 @@ import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/acti
 import { execute, getCollection, getCollectionAux, getCollectionAux2, resetAllMain } from 'store/main/actions';
 import { insertutterance, selEntities, selIntent, selUtterance, utterancedelete } from 'common/helpers/requestBodies';
 import { filterPipe } from 'common/helpers';
+import AddIcon from '@material-ui/icons/Add';
 
 
 interface RowSelected {
@@ -26,6 +27,8 @@ interface DetailProps {
     data: RowSelected;
     fetchData?: () => void;
     setViewSelected: (view: string) => void;
+    setExternalViewSelected?: (view: string) => void;
+    arrayBread?: any;
 }
 const useStyles = makeStyles((theme) => ({
     labellink: {
@@ -43,6 +46,9 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
         background: '#fff',
+    },
+    containerFields: {
+        paddingRight: "16px"
     },
 }));
 
@@ -101,7 +107,7 @@ class VariableHandler {
     }
 }
 
-const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,setViewSelected }) => {
+const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,setViewSelected, setExternalViewSelected, arrayBread }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [disableSave, setDisableSave] = useState(!row);
@@ -210,7 +216,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                 width: "auto",
             },
             {
-                Header: t(langKeys.added),
+                Header: t(langKeys.date),
                 accessor: 'updatedate',
                 NoFilter: true,
                 width: "auto",
@@ -277,6 +283,12 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
 
     return (
         <div style={{width: '100%'}}>
+            {!!arrayBread && <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <TemplateBreadcrumbs
+                    breadcrumbs={[...arrayBread, { id: "view-2", name: t(langKeys.intentions) }]}
+                    handleClick={setExternalViewSelected}
+                />
+            </div>}
             <form onSubmit={onSubmit}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
@@ -310,7 +322,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                         <FieldEdit
                             label={t(langKeys.name)} 
                             disabled={!disableSave}
-                            className="col-12"
+                            className={classes.containerFields}
                             onChange={(value) => {
                                 setValue('name', value)
                                 setDisableCreate(getValues("description")===""||value==="")
@@ -318,10 +330,11 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                             valueDefault={row?.name || ""}
                             error={errors?.name?.message}
                         />
+                        <div style={{ paddingTop:"8px",paddingBottom:"16px"}}>{t(langKeys.intentionnametooltip)}</div>
                         <FieldEdit
                             label={t(langKeys.description)} 
                             disabled={!disableSave}
-                            className="col-12"
+                            className={classes.containerFields}
                             onChange={(value) => {
                                 setValue('description', value)
                                 setDisableCreate(getValues("name")===""||value==="")
@@ -329,8 +342,9 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                             valueDefault={row?.description || ""}
                             error={errors?.description?.message}
                         />
+                        <div style={{ paddingTop:"8px"}}>{t(langKeys.intentiondescriptiontooltip)}</div>
                     </div>
-                    {!row &&
+                    {(disableSave) &&
                         <div className="row-zyx">
                             <Button
                                 variant="contained"
@@ -379,6 +393,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                             className='col-3'
                             disabled={newIntention.name===""}
                             color="primary"
+                            startIcon={<AddIcon color="secondary" />}
                             style={{ backgroundColor: newIntention.name===""?"#dbdbdc":"#0078f6" }}
                             onClick={() => {
                                 let holdingpos=0
@@ -455,7 +470,12 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
     );
 }
 
-export const Intentions: FC = () => {
+interface IntentionProps {
+    setExternalViewSelected?: (view: string) => void;
+    arrayBread?: any;
+}
+
+export const Intentions: React.FC<IntentionProps> = ({ setExternalViewSelected, arrayBread }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -569,11 +589,18 @@ export const Intentions: FC = () => {
             <React.Fragment>
                 <div style={{ height: 10 }}></div>
                 <div style={{ width: "100%" }}>
+                    {!!arrayBread && <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={[...arrayBread,{ id: "view-1", name:  t(langKeys.intentions) }]}
+                            handleClick={setExternalViewSelected}
+                        />
+                    </div>}
                     <TableZyx
                         columns={columns}
                         data={mainResult.mainData.data}
                         filterGeneral={false}
                         useSelection={true}
+                        titlemodule={!!arrayBread?t(langKeys.intentions):""}
                         selectionKey={selectionKey}
                         setSelectedRows={setSelectedRows}
                         ButtonsElement={() => (
@@ -606,6 +633,8 @@ export const Intentions: FC = () => {
                     data={rowSelected}
                     fetchData={fetchData}
                     setViewSelected={setViewSelected}
+                    setExternalViewSelected={setExternalViewSelected}
+                    arrayBread={arrayBread}
                 />
             </div>
         );

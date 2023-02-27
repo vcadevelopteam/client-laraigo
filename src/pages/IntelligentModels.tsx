@@ -28,7 +28,8 @@ interface DetailIntelligentModelsProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
-    fetchData: () => void
+    fetchData: () => void;
+    arrayBread2?: any;
 }
 const arrayBread = [
     { id: "view-1", name: "Intelligent models" },
@@ -49,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, arrayBread2 }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
@@ -118,7 +119,10 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
+                            breadcrumbs={!!arrayBread2?[...arrayBread2,
+                                { id: "view-1", name: t(langKeys.iaconnectors) },
+                                { id: "view-2", name: `${t(langKeys.iaconnectors)} ${t(langKeys.detail)}` }
+                            ]:arrayBread}
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
@@ -241,7 +245,12 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
     );
 }
 
-const IntelligentModels: FC = () => {
+interface IAConnectors {
+    setExternalViewSelected?: (view: string) => void;
+    arrayBread?: any;
+}
+
+const IntelligentModels: React.FC<IAConnectors> = ({ setExternalViewSelected, arrayBread }) => {
     // const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -251,6 +260,14 @@ const IntelligentModels: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+
+    const functionChange = (change:string) => {
+        if(change==="view-0"){
+            setExternalViewSelected && setExternalViewSelected("view-1");
+        }else{
+            setViewSelected(change);
+        }
+    }
 
     const columns = React.useMemo(
         () => [
@@ -376,26 +393,52 @@ const IntelligentModels: FC = () => {
     if (viewSelected === "view-1") {
 
         return (
-            <TableZyx
-                onClickRow={handleEdit}
-                columns={columns}
-                titlemodule={t(langKeys.intelligentmodels, { count: 2 })}
-                data={mainResult.mainData.data}
-                download={true}
-                loading={mainResult.mainData.loading}
-                register={true}
-                handleRegister={handleRegister}
-            // fetchData={fetchData}
-            />
+            
+            <div style={{ width: "100%" }}>
+                {!!arrayBread && <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={[...arrayBread,{ id: "view-1", name:  t(langKeys.iaconnectors) }]}
+                        handleClick={functionChange}
+                    />
+                </div>}
+                <TableZyx
+                    onClickRow={handleEdit}
+                    columns={columns}
+                    ButtonsElement={() => {
+                        if(!setExternalViewSelected){
+                            return <></>
+                        }else{
+                            return (
+                                <Button
+                                    disabled={mainResult.mainData.loading}
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    startIcon={<ClearIcon color="secondary" />}
+                                    style={{ backgroundColor: "#FB5F5F" }}
+                                    onClick={() => setExternalViewSelected("view-1")}
+                                >{t(langKeys.back)}</Button>
+                            )
+                        }}}
+                    titlemodule={!!arrayBread?t(langKeys.iaconnectors):t(langKeys.intelligentmodels, { count: 2 })}
+                    data={mainResult.mainData.data}
+                    download={!setExternalViewSelected}
+                    loading={mainResult.mainData.loading}
+                    register={true}
+                    handleRegister={handleRegister}
+                // fetchData={fetchData}
+                />
+            </div>
         )
     }
     else if (viewSelected === "view-2") {
         return (
             <DetailIntelligentModels
                 data={rowSelected}
-                setViewSelected={setViewSelected}
+                setViewSelected={functionChange}
                 multiData={mainResult.multiData.data}
                 fetchData={fetchData}
+                arrayBread2={arrayBread}
             />
         )
     } else
