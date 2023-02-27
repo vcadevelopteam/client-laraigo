@@ -6,6 +6,14 @@ export interface IChatWebAdd {
     extra: IChatWebAddExtra;
 }
 
+export interface IAndroidSDKAdd {
+    interface: IChatwebAddInterface;
+    color: IChatWebAddColor;
+    form: IChatWebAddFormField[];
+    bubble: IChatWebAddBubble;
+    extra: IChatWebAddExtra;
+}
+
 export interface IFormWebAdd {
     interface: IChatwebAddInterface;
     color: IChatWebAddColor;
