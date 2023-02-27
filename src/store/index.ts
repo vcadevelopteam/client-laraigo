@@ -22,12 +22,12 @@ import getversionReducer, { IState as IGetVersion } from './getversion/reducer';
 import subscriptionReducer, { IState as ISubscription } from './subscription/reducer';
 import voximplantReducer, { IState as IVoximplant } from './voximplant/reducer';
 import googleReducer, { IState as IGoogle } from './google/reducer';
-import calendarReducer, { IState as ICalendar } from './calendar/reducer';
+import witaiReducer, { IState as IWitai } from './witia/reducer';
 import productReducer, { IState as IProduct } from './product/reducer';
+import calendarReducer, { IState as ICalendar } from './calendar/reducer';
 import postHistoryReducer, { IState as IPostHistory } from './posthistory/reducer';
 import catalogReducer, { IState as ICatalog } from './catalog/reducer';
 import paymentReducer, { IState as IPayment } from './payment/reducer';
-import witaiReducer, { IState as IWitai } from './witia/reducer';
 
 export interface IRootState {
     login: ILogin,
@@ -49,12 +49,12 @@ export interface IRootState {
     subscription: ISubscription;
     voximplant: IVoximplant;
     google: IGoogle;
+    witai: IWitai;
     calendar: ICalendar;
     product: IProduct;
     postHistory: IPostHistory;
     catalog: ICatalog;
     payment: IPayment;
-    witai: IWitai;
 }
 
 declare global {
@@ -82,13 +82,13 @@ const rootReducer = combineReducers<IRootState>({
     subscription: subscriptionReducer,
     voximplant: voximplantReducer,
     google: googleReducer,
+    witai: witaiReducer,
+    product: productReducer,
     postHistory: postHistoryReducer,
     getversion: getversionReducer,
     calendar: calendarReducer,
-    product: productReducer,
     catalog: catalogReducer,
     payment: paymentReducer,
-    witai: witaiReducer,
 });
 
 export default function configureStore(preloadedState?: IRootState) {
