@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
         borderRadius: 8,
         boxShadow: '0 1px 8px 0 rgb(0 0 0 / 8%)',
         width: '440px',
-        minWidth: '40px',
+        minWidth: '380px',
         alignItems: 'center',
         justifyContent: 'center',
         padding: theme.spacing(3),
