@@ -5009,12 +5009,6 @@ const translation: LangKeys = {
   productcatalog_dateexpiration: "Expiration Date",
   productcatalog_domain_gender_: "Empty",
   productcatalog_reviewdescription: "Review Description",
-  customnumber: "Custom Number",
-  datetimestart_campaign: "Date and time of execution",
-  executiontype_campaign: "Execution type",
-  executiontype_MANUAL: "MANUAL",
-  executiontype_SCHEDULED:"SCHEDULED",
-  greaterthanzero:"The maximum capacity value of the event must have a number greater than 0",
   paymentorder_termandconditions: "I have read and agree to the ",
   paymentorder_termandconditionsnext: " Terms and Conditions",
   paymentorder_cardnotvalid: "Invalid card",
@@ -5035,6 +5029,12 @@ const translation: LangKeys = {
   paymentorder_authcode: "Authorization Code",
   paymentorder_purchasenumber: "Purchase Number",
   paymentorder_cardbrand: "Card Brand",
+  customnumber: "Custom Number",
+  datetimestart_campaign: "Date and time of execution",
+  executiontype_campaign: "Execution type",
+  executiontype_MANUAL: "MANUAL",
+  executiontype_SCHEDULED:"SCHEDULED",
+  greaterthanzero:"The maximum capacity value of the event must have a number greater than 0"
 };
 
 const enResource: ResourceLanguage = {
