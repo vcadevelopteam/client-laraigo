@@ -1919,6 +1919,18 @@ export const langKeys = {
     minute: 'minute',
     minute_plural: 'minute_plural',
     day: 'day',
+    format: 'format',
+    format_transform_date_date: 'format_transform_date_date',
+    format_transform_date_time: 'format_transform_date_time',
+    format_transform_date_time_date: 'format_transform_date_time_date',
+    format_transform_date_seconds: 'format_transform_date_seconds',
+    format_transform_date_minutes: 'format_transform_date_minutes',
+    format_transform_date_hours: 'format_transform_date_hours',
+
+    format_transform_time_time: 'format_transform_time_time',
+    format_transform_time_seconds: 'format_transform_time_seconds',
+    format_transform_time_minutes: 'format_transform_time_minutes',
+    format_transform_time_hours: 'format_transform_time_hours',
   
     upload_conversation_plural: 'upload_conversation_plural',
   

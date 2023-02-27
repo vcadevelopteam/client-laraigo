@@ -325,7 +325,7 @@ function handleInboundCall(e) {
             e.call.answer();
             if (red.recording) {
                 e.call.record({
-                    transcribe: true,
+                    transcribe: false,
                     language: ASRLanguage.SPANISH_ES,
                     name: identifier + ".mp3",
                     contentDispositionFilename: identifier + ".mp3",
