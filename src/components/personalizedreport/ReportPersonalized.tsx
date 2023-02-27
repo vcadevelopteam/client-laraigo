@@ -15,7 +15,7 @@ import { CalendarIcon, DownloadIcon } from 'icons';
 import { showSnackbar } from 'store/popus/actions';
 import { getCollectionDynamic, resetMainDynamic, exportDynamic, resetExportMainDynamic } from 'store/main/actions';
 import { Range } from 'react-date-range';
-import { getDateCleaned } from 'common/helpers/functions'
+import { getDateCleaned, secondsToTime } from 'common/helpers/functions'
 import { useForm } from 'react-hook-form';
 import Graphic from 'components/fields/Graphic';
 import ListIcon from '@material-ui/icons/List';
@@ -267,7 +267,7 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
             let datato = mainDynamic.data;
             if (summaries.length > 0) {
                 setFooter(datato[0]);
-                delete datato[0]
+                datato.shift()
             }
             if (columns.some(x => x.columnname.replace(".", "") === "conversationclosetype")) {
                 datato = datato.map(x => {
@@ -278,7 +278,7 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
                     }
                 })
             }
-            const columnsDate = columns.filter(x => ["timestamp without time zone", "date", "boolean"].includes(x.type));
+            const columnsDate = columns.filter(x => ["timestamp without time zone", "date", "boolean", "interval"].includes(x.type));
             if (columnsDate.length > 0) {
                 setDataCleaned(datato.map(x => {
                     columnsDate.forEach(y => {
@@ -311,8 +311,8 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
                                     })
                                 }
                             }
-                        } else if (y.type === "interval") {
-                            
+                        } else if (y.type === "interval" && x[columnclean]) {
+                            x[columnclean] = secondsToTime(x[columnclean], y.format)
                         }
                         if (["boolean"].includes(y.type)) {
                             x[columnclean] = x[columnclean] ? t("yes") : t("no")
