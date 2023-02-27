@@ -545,10 +545,10 @@ const DashboardKPI: FC = () => {
                                     <YAxis tickFormatter={v=>formattime(v)} width={100} domain={[0, (dataMax:any) => (Math.floor(dataMax * 1.1) + 5)]}/>
                                     <RechartsTooltip formatter={(value: any, name: any) => [formattime(value), t(name)]} />
                                     <Line type="monotone" name="TME" dataKey="tme" stroke="#c0504d" strokeWidth={2}>
-                                        <LabelList dataKey="tme" position="top" fill="#c0504d"/>
+                                        <LabelList dataKey="tme" position="top" fill="#c0504d" formatter={(v:any)=>formattime(v)}/>
                                     </Line>
                                     <Line type="monotone" name="TMR" dataKey="tmr" stroke="#4f81bd" strokeWidth={2}>
-                                        <LabelList dataKey="tmr" position="top" fill="#4f81bd"/>
+                                        <LabelList dataKey="tmr" position="top" fill="#4f81bd" formatter={(v:any)=>formattime(v)}/>
                                     </Line>
                                 </LineChart>
                             </ResponsiveContainer>                        
@@ -617,13 +617,13 @@ const DashboardKPI: FC = () => {
                                     <YAxis tickFormatter={v=>formattime(v)}  width={50} domain={[0, (dataMax:any) => (Math.floor(dataMax * 1.1) + 5)]}/>
                                     <RechartsTooltip formatter={(value: any, name: any) => [formattime(value), t(name)]} />
                                     <Line type="monotone" name={t(langKeys.report_voicecall_holdingtime)} dataKey="holdingwaitingtime_avg" stroke="#c0504d" strokeWidth={2}>
-                                        <LabelList dataKey="holdingwaitingtime_avg" position="top"  fill="#c0504d"/>
+                                        <LabelList dataKey="holdingwaitingtime_avg" position="top"  fill="#c0504d" formatter={(v:any)=>formattime(v)}/>
                                     </Line>
                                     <Line type="monotone" name={t(langKeys.firstassignmenttime)} dataKey="firstassignedtime_avg" stroke="#4f81bd" strokeWidth={2}>
-                                        <LabelList dataKey="firstassignedtime_avg" position="top" fill="#4f81bd"/>
+                                        <LabelList dataKey="firstassignedtime_avg" position="top" fill="#4f81bd" formatter={(v:any)=>formattime(v)}/>
                                     </Line>
                                     <Line type="monotone" name={t(langKeys.ticket_tiempoprimerarespuesta)} dataKey="firstreplytime_avg" stroke="#9bbb59" strokeWidth={2}>
-                                        <LabelList dataKey="firstreplytime_avg" position="top"  fill="#9bbb59"/>
+                                        <LabelList dataKey="firstreplytime_avg" position="top"  fill="#9bbb59" formatter={(v:any)=>formattime(v)}/>
                                     </Line>
 
                                 </LineChart>
