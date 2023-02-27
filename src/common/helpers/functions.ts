@@ -557,7 +557,14 @@ export const toTime24HR = (time: string): string => {
     return `${hint.toString().padStart(2, "0")}:${m}`
 }
 
-export const secondsToTime = (seconds: number): string => {
+export const secondsToTime = (seconds: number, format: string = "time"): string => {
+    if (format === "seconds") {
+        return seconds + ""
+    } else if (format === "minutes") {
+        return (seconds / 60).toFixed()
+    } else if (format === "hours") {
+        return (seconds / 3600).toFixed()
+    }
     const hh = Math.floor(seconds / 3600);
     const mm = Math.floor((seconds / 60) % 60);
     const ss = Math.floor(seconds % 60);
