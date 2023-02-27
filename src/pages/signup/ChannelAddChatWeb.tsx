@@ -1845,7 +1845,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
                     <Typography
                         color="primary"
                         style={{ fontSize: '1.5vw', fontWeight: 'bold', textAlign: 'center' }}>
-                        {t(langKeys.subscription_congratulations)}poop
+                        {t(langKeys.subscription_congratulations)}
                     </Typography>
                     <Typography
                         color="primary"
