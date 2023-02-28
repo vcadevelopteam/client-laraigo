@@ -304,7 +304,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                     <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={[
-                                ...arrayBread,
+                                ...(arrayBread || []),
                                 { id: "view-1", name: t(langKeys.iaconfiguration) },
                                 { id: "view-2", name: `${t(langKeys.iaconfiguration)} ${t(langKeys.detail)}` }
                             ]}
@@ -439,7 +439,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                                     }}
                                                     label={t(langKeys.type_service)}
                                                     className={classes.mb2}
-                                                    valueDefault={(item.type_of_service) ? item.type_of_service : ''}
+                                                    valueDefault={getValues(`services.${i}.type_of_service`)}
                                                     error={errors?.services?.[i]?.type_of_service?.message}
                                                     data={serviceTypes}
                                                     optionDesc="type"
@@ -477,7 +477,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                                         className={classes.mb2}
                                                         valueDefault={getValues(`services.${i}.service`)}
                                                         error={errors?.services?.[i]?.service?.message}
-                                                        data={serviceTypes.filter((y: any) => y.type === getValues(`services.${i}.type_of_service`))[0]?.options}
+                                                        data={serviceTypes.find((y: any) => y.type === getValues(`services.${i}.type_of_service`))?.options || []}
                                                         optionDesc="value"
                                                         optionValue="value"
                                                     />
