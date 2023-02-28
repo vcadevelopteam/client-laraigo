@@ -4300,7 +4300,8 @@ export const langKeys = {
     messagetemplate_synchronize: "messagetemplate_synchronize",
     messagetemplate_synchronize_alert01: "messagetemplate_synchronize_alert01",
     messagetemplate_synchronize_alert02: "messagetemplate_synchronize_alert02",
-  
+    messagetemplate_synchronize_alert03: "messagetemplate_synchronize_alert03",
+
     TEMPLATE_ACCOUNT_UPDATE: "TEMPLATE_ACCOUNT_UPDATE",
     TEMPLATE_PAYMENT_UPDATE: "TEMPLATE_PAYMENT_UPDATE",
     TEMPLATE_PERSONAL_FINANCE_UPDATE: "TEMPLATE_PERSONAL_FINANCE_UPDATE",
