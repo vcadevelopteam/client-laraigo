@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import CircularProgress from '@material-ui/core/CircularProgress';
 import CulqiModal from 'components/fields/CulqiModal';
-import Container from '@material-ui/core/Container';
 import Popus from 'components/layout/Popus';
 
 import { FC, useEffect, useState,useRef } from 'react';

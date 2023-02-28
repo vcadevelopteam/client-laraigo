@@ -26,22 +26,12 @@ import { getMultiCollection } from "store/main/actions";
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import SendIcon from '@material-ui/icons/Send';
-
-interface TabPanelProps {
-    value: string;
-    index: string;
-}
+import { TabPanel } from "pages/crm/components";
 interface FieldTemplate {
     text: React.ReactNode;
     node: (onClose: (key: string) => void, data: IChatWebAddFormField, form: UseFormReturn<IChatWebAdd>, index: number,fields:any, setFields: (key: any) => void) => React.ReactNode;
     data: IChatWebAddFormField;
 }
-const useTabPanelStyles = makeStyles(theme => ({
-    root: {
-        border: '#A59F9F 1px solid',
-        borderRadius: 6,
-    },
-}));
 const HtmlTooltip = withStyles((theme) => ({
     tooltip: {
       backgroundColor: '#f5f5f9',
@@ -51,24 +41,6 @@ const HtmlTooltip = withStyles((theme) => ({
       border: '1px solid #dadde9',
     },
 }))(Tooltip);
-const TabPanel: FC<TabPanelProps> = ({ children, value, index }) => {
-    const classes = useTabPanelStyles();
-
-    return (
-        <div
-            role="tabpanel"
-            hidden={value !== index}
-            className={classes.root}
-            id={`wrapped-tabpanel-${index}`}
-            aria-labelledby={`wrapped-tab-${index}`}
-            style={{ display: value === index ? 'block' : 'none' }}
-        >
-            <Box p={3}>
-                {children}
-            </Box>
-        </div>
-    );
-}
 
 const useTemplateStyles = makeStyles(theme => ({
     root: {

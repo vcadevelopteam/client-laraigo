@@ -604,3 +604,36 @@ const ColumnTemplate: FC<ColumnTemplateProps> = ({ onSubmit }) => {
         </div>
     );
 }
+
+
+
+const useTabPanelStyles = makeStyles(theme => ({
+    root: {
+        border: '#A59F9F 1px solid',
+        borderRadius: 6,
+    },
+}));
+
+interface TabPanelProps {
+    value: string;
+    index: string;
+}
+
+export const TabPanel: FC<TabPanelProps> = ({ children, value, index }) => {
+    const classes = useTabPanelStyles();
+
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            className={classes.root}
+            id={`wrapped-tabpanel-${index}`}
+            aria-labelledby={`wrapped-tab-${index}`}
+            style={{ display: value === index ? 'block' : 'none' }}
+        >
+            <Box p={3}>
+                {children}
+            </Box>
+        </div>
+    );
+}
