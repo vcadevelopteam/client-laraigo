@@ -1,10 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import CircularProgress from '@material-ui/core/CircularProgress';
 import CulqiModal from 'components/fields/CulqiModal';
-import Container from '@material-ui/core/Container';
 import Popus from 'components/layout/Popus';
 
-import { FC, useEffect, useState,useRef } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { langKeys } from 'lang/keys';
 import { makeStyles } from "@material-ui/core";
 import { useDispatch } from 'react-redux';
@@ -13,10 +12,9 @@ import { useSelector } from 'hooks';
 import { useTranslation } from 'react-i18next';
 import { Dictionary } from '@types';
 import { getCollectionPaymentOrder } from 'store/main/actions';
-import { paymentOrderSel } from 'common/helpers';
+import { paymentOrderSel, formatNumber } from 'common/helpers';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import { LaraigoLogo } from 'icons';
-import { formatNumber } from 'common/helpers';
 
 const useStyles = makeStyles(theme => ({
     containerMain: {
@@ -94,7 +92,6 @@ export const PaymentOrder: FC = () => {
     const [publicKey, setPublicKey] = useState('');
     const [waitData, setWaitData] = useState(false);
     const [waitPay, setWaitPay] = useState(false);
-    const windowWidth = useRef(window.innerWidth);
 
     const fetchData = () => {
         dispatch(getCollectionPaymentOrder(paymentOrderSel({ corpid: corpid, orgid: orgid, conversationid: 0, personid: 0, paymentorderid: 0, ordercode: ordercode })));
@@ -113,8 +110,13 @@ export const PaymentOrder: FC = () => {
                 setWaitData(false);
 
                 if (mainResult.data.length) {
-                        setPaymentData(mainResult.data[0]);
-                        setPublicKey(mainResult.data[0].publickey);
+                    setPaymentData(mainResult.data[0]);
+
+                    const authCredentials = JSON.parse(mainResult.data[0].authcredentials || {});
+
+                    if (authCredentials) {
+                        setPublicKey(authCredentials.publicKey);
+                    }
                 }
             } else if (mainResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "error", message: t(mainResult.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() }) }))
@@ -151,159 +153,159 @@ export const PaymentOrder: FC = () => {
             if (paymentData.paymentstatus === "PENDING") {
                 return (
                     <div className={classes.back}>
-                            <div className={classes.containerSuccess}>
-                                <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                    <LaraigoLogo style={{ height: 120, margin: '20px', width: "auto" }} />
+                        <div className={classes.containerSuccess}>
+                            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                <LaraigoLogo style={{ height: 120, margin: '20px', width: "auto" }} />
+                            </div>
+                            <div style={{ fontWeight: 'bold', fontSize: 20, marginBottom: '20px' }}>{t(langKeys.paymentorder_success)}</div>
+                            {paymentData.ordercode && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textTitle}>
+                                        {t(langKeys.paymentorder_code)}
+                                    </div>
                                 </div>
-                                <div style={{ fontWeight: 'bold', fontSize: 20, marginBottom: '20px' }}>{t(langKeys.paymentorder_success)}</div>
-                                {paymentData.ordercode && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_code)}
-                                        </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textField}>
+                                        {paymentData?.ordercode}
                                     </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {paymentData?.ordercode}
-                                        </div>
+                                </div>
+                            </div>}
+                            {paymentData.concept && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textTitle}>
+                                        {t(langKeys.paymentorder_concept)}
                                     </div>
-                                </div>}
-                                {paymentData.concept && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_concept)}
-                                        </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textField}>
+                                        {paymentData?.concept}
                                     </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {paymentData?.concept}
-                                        </div>
+                                </div>
+                            </div>}
+                            {paymentData.userfirstname && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textTitle}>
+                                        {t(langKeys.paymentorder_firstname)}
                                     </div>
-                                </div>}
-                                {paymentData.userfirstname && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_firstname)}
-                                        </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textField}>
+                                        {paymentData?.userfirstname}
                                     </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {paymentData?.userfirstname}
-                                        </div>
+                                </div>
+                            </div>}
+                            {paymentData.userlastname && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textTitle}>
+                                        {t(langKeys.paymentorder_lastname)}
                                     </div>
-                                </div>}
-                                {paymentData.userlastname && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_lastname)}
-                                        </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textField}>
+                                        {paymentData?.userlastname}
                                     </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {paymentData?.userlastname}
-                                        </div>
+                                </div>
+                            </div>}
+                            {paymentData.userphone && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textTitle}>
+                                        {t(langKeys.paymentorder_phone)}
                                     </div>
-                                </div>}
-                                {paymentData.userphone && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_phone)}
-                                        </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textField}>
+                                        {paymentData?.userphone}
                                     </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {paymentData?.userphone}
-                                        </div>
+                                </div>
+                            </div>}
+                            {paymentData.usermail && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textTitle}>
+                                        {t(langKeys.paymentorder_mail)}
                                     </div>
-                                </div>}
-                                {paymentData.usermail && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_mail)}
-                                        </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textField}>
+                                        {paymentData?.usermail}
                                     </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {paymentData?.usermail}
-                                        </div>
+                                </div>
+                            </div>}
+                            {paymentData.usercountry && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textTitle}>
+                                        {t(langKeys.paymentorder_country)}
                                     </div>
-                                </div>}
-                                {paymentData.usercountry && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_country)}
-                                        </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textField}>
+                                        {paymentData?.usercountry}
                                     </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {paymentData?.usercountry}
-                                        </div>
+                                </div>
+                            </div>}
+                            {paymentData.usercity && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textTitle}>
+                                        {t(langKeys.paymentorder_city)}
                                     </div>
-                                </div>}
-                                {paymentData.usercity && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_city)}
-                                        </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textField}>
+                                        {paymentData?.usercity}
                                     </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {paymentData?.usercity}
-                                        </div>
+                                </div>
+                            </div>}
+                            {paymentData.useraddress && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textTitle}>
+                                        {t(langKeys.paymentorder_address)}
                                     </div>
-                                </div>}
-                                {paymentData.useraddress && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_address)}
-                                        </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textField}>
+                                        {paymentData?.useraddress}
                                     </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {paymentData?.useraddress}
-                                        </div>
+                                </div>
+                            </div>}
+                            {paymentData.currency && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textTitle}>
+                                        {t(langKeys.paymentorder_currency)}
                                     </div>
-                                </div>}
-                                {paymentData.currency && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_currency)}
-                                        </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textField}>
+                                        {paymentData?.currency}
                                     </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {paymentData?.currency}
-                                        </div>
+                                </div>
+                            </div>}
+                            {paymentData.totalamount && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '20px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textTitle}>
+                                        {t(langKeys.paymentorder_totalamount)}
                                     </div>
-                                </div>}
-                                {paymentData.totalamount && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '20px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textTitle}>
-                                            {t(langKeys.paymentorder_totalamount)}
-                                        </div>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
+                                    <div className={classes.textField}>
+                                        {formatNumber(paymentData?.totalamount || 0)}
                                     </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
-                                        <div className={classes.textField}>
-                                            {formatNumber(paymentData?.totalamount || 0)}
-                                        </div>
-                                    </div>
-                                </div>}
-                                {(publicKey && paymentData.totalamount) && <CulqiModal
-                                    amount={Math.round(((paymentData.totalamount * 100) + Number.EPSILON) * 100) / 100}
-                                    buttontitle={t(langKeys.proceedpayment)}
-                                    callbackOnSuccess={fetchData}
-                                    corpid={paymentData.corpid}
-                                    currency={paymentData.currency}
-                                    description={paymentData.concept}
-                                    disabled={false}
-                                    paymentorderid={paymentData.paymentorderid}
-                                    orgid={paymentData.orgid}
-                                    publickey={publicKey}
-                                    successmessage={t(langKeys.success)}
-                                    title={paymentData.description}
-                                    type="PAYMENTORDER"
-                                >
-                                </CulqiModal>}
+                                </div>
+                            </div>}
+                            {(publicKey && paymentData.totalamount) && <CulqiModal
+                                amount={Math.round(((paymentData.totalamount * 100) + Number.EPSILON) * 100) / 100}
+                                buttontitle={t(langKeys.proceedpayment)}
+                                callbackOnSuccess={fetchData}
+                                corpid={paymentData.corpid}
+                                currency={paymentData.currency}
+                                description={paymentData.concept}
+                                disabled={false}
+                                paymentorderid={paymentData.paymentorderid}
+                                orgid={paymentData.orgid}
+                                publickey={publicKey}
+                                successmessage={t(langKeys.success)}
+                                title={paymentData.description}
+                                type="PAYMENTORDER"
+                            >
+                            </CulqiModal>}
                         </div>
                         <Popus />
                     </div>
