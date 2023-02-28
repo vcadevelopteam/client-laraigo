@@ -41,7 +41,7 @@ const InputValidation = lazy(() => import('pages/InputValidation'));
 const IntegrationManager = lazy(() => import('pages/IntegrationManager'));
 const VariableConfiguration = lazy(() => import('pages/VariableConfiguration'));
 const Emojis = lazy(() => import('pages/Emojis'));
-const Iaservices = lazy(() => import('pages/LaraigoIA'));
+const Iaservices = lazy(() => import('pages/Iaservices'));
 const Campaign = lazy(() => import('pages/campaign/Campaign'));
 const NotFound = lazy(() => import('pages/NotFound'));
 const Forbidden = lazy(() => import('pages/Forbidden'));
