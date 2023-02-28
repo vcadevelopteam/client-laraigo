@@ -236,7 +236,7 @@ const SchedulePostHistory: FC<ScheduleInputProps> = ({ notPreviousDays = true, d
     const classes = useScheduleStyles();
 
     const [dateCurrent, setDateCurrent] = useState<{ month: number, year: number }>({ month: new Date().getMonth(), year: new Date().getFullYear() });
-    const [dates, setDates] = useState<Dictionary[]>([]);
+    // const [dates, setDates] = useState<Dictionary[]>([]);
     const [daySelected, setDaySelected] = useState<DayProp | undefined>(undefined);
     const [daysToShow, setDaysToShow] = useState<DayProp[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -246,7 +246,7 @@ const SchedulePostHistory: FC<ScheduleInputProps> = ({ notPreviousDays = true, d
     };
 
     useEffect(() => {
-        setDates(data);
+        // setDates(data);
         setDaysToShow(makeData(dateCurrent.year, dateCurrent.month, data));
     }, [dateCurrent, data])
 
@@ -336,8 +336,8 @@ const SchedulePostHistory: FC<ScheduleInputProps> = ({ notPreviousDays = true, d
                                     </div>
                                     <h3 style={{ marginBottom: '2px' }}>{postdata.texttitle}</h3>
                                     <h4 style={{ marginTop: '2px' }}>{postdata.textbody}</h4>
-                                    {postdata.publishtatus == "PUBLISHED" && <b style={{ color: 'green' }}>{t(langKeys.posthistory_published)}</b>}
-                                    {postdata.publishtatus == "ERROR" && <b style={{ color: 'red' }}>{t(langKeys.posthistory_error)}</b>}
+                                    {postdata.publishtatus === "PUBLISHED" && <b style={{ color: 'green' }}>{t(langKeys.posthistory_published)}</b>}
+                                    {postdata.publishtatus === "ERROR" && <b style={{ color: 'red' }}>{t(langKeys.posthistory_error)}</b>}
                                     <Button
                                         className={classes.button}
                                         color="primary"

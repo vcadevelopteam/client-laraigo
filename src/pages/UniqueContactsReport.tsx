@@ -238,7 +238,7 @@ export const RenderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadi
 
 const DetailUniqueContact: React.FC<DetailUniqueContactProps> = ({ row, setViewSelected }) => {
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
-    const [allParameters, setAllParameters] = useState<Dictionary>({});
+    // const [allParameters, setAllParameters] = useState<Dictionary>({});
     const mainPaginated = useSelector(state => state.main.mainPaginated);
     const [totalrow, settotalrow] = useState(0);
     const [pageCount, setPageCount] = useState(0);
@@ -262,7 +262,7 @@ const DetailUniqueContact: React.FC<DetailUniqueContactProps> = ({ row, setViewS
             filters: {
                 ...filters,
             },
-            ...allParameters
+            // ...allParameters
         })))
     };
     const columns = React.useMemo(
@@ -347,7 +347,7 @@ const DetailUniqueContact: React.FC<DetailUniqueContactProps> = ({ row, setViewS
             orgid: row.row.orgid,
             month:row.month,
             channeltype:row.channeltype,
-            ...allParameters
+            // ...allParameters
         }), "", "excel", false, columnsExport));
         dispatch(showBackdrop(true));
         setWaitExport(true);
@@ -555,7 +555,7 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                 month_1: 0, month_2: 0, month_3: 0, month_4: 0, month_5: 0, month_6: 0, month_7: 0, month_8: 0, month_9: 0, month_10: 0, month_11: 0, month_12: 0, total: 0
             }
             let rawdata: any[] = [];
-            multiData.data[1].data.map((x)=>{
+            multiData.data[1].data.forEach((x)=>{
                 rawdata.push({
                     client: `${x.corpdesc} - ${x.orgdesc}`,
                     corpid: x.corpid,
@@ -575,7 +575,7 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
                     total: 0
                 })
             })
-            mainResult.data.map(x=>{
+            mainResult.data.forEach(x=>{
                 let clientdata = multiData.data[1].data.filter(y=>(x.corpid === y.corpid && x.orgid===y.orgid))[0]
                 let indexField = rawdata?.findIndex((y:any)=>(y).client===`${clientdata?.corpdesc} - ${clientdata?.orgdesc}`)   
                 if(!(indexField<0)){
@@ -747,7 +747,7 @@ const UniqueContactsReportDetail: FC<{year:any; channelType:any}> = ({year,chann
 
 const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, setViewSelected }) => {
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
-    const [allParameters, setAllParameters] = useState<Dictionary>({});
+    // const [allParameters, setAllParameters] = useState<Dictionary>({});
     const mainPaginated = useSelector(state => state.main.mainPaginated);
     const mainResult = useSelector(state => state.main.mainAux2);
     const [totalrow, settotalrow] = useState(0);
@@ -779,7 +779,7 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
             filters: {
                 ...filters,
             },
-            ...allParameters
+            // ...allParameters
         })))
     };
     const columns = React.useMemo(
@@ -950,7 +950,7 @@ const DetailConversationQuantity: React.FC<DetailUniqueContactProps> = ({ row, s
             year: row.year,
             month:row.month,
             channeltype:row.channeltype,
-            ...allParameters
+            // ...allParameters
         }), "", "excel", false, columnsExport));
         dispatch(showBackdrop(true));
         setWaitExport(true);
@@ -1169,7 +1169,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                 month_1: 0, month_2: 0, month_3: 0, month_4: 0, month_5: 0, month_6: 0, month_7: 0, month_8: 0, month_9: 0, month_10: 0, month_11: 0, month_12: 0, total: 0
             }
             let rawdata: any[] = [];
-            multiData.data[1].data.map((x)=>{
+            multiData.data[1].data.forEach((x)=>{
                 rawdata.push({
                     client: `${x.corpdesc} - ${x.orgdesc}`,
                     corpid: x.corpid,
@@ -1189,7 +1189,7 @@ const ConversationQuantityReportDetail: FC<{year:any; channelType:any}> = ({year
                     total: 0
                 })
             })
-            mainResult.data.map(x=>{
+            mainResult.data.forEach(x=>{
                 let clientdata = multiData.data[1].data.filter(y=>(x.corpid === y.corpid && x.orgid===y.orgid))[0]
                 let indexField = rawdata?.findIndex((y:any)=>(y).client===`${clientdata?.corpdesc} - ${clientdata?.orgdesc}`)   
                 if(!(indexField<0)){

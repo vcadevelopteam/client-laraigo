@@ -2549,7 +2549,6 @@ const PersonDetail2: FC<{ person: any;}> = ({ person }) => {
 const PersonDetail: FC = () => {
     const dispatch = useDispatch();
     const history = useHistory();
-    const { t } = useTranslation();
     const location = useLocation<IPerson>();
     const executeResult = useSelector(state => state.main.execute);
     const [person, setperson] = useState<any>(location.state as IPerson | null);

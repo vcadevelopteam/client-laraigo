@@ -115,7 +115,6 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
     const colors = ['', 'cyan', 'red', 'violet', 'blue', 'blueviolet'];
     const history = useHistory();
     const user = useSelector(state => state.login.validateToken.user);
-    const { t } = useTranslation();
 
     const handleMoreVertClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);

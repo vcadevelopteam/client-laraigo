@@ -30,6 +30,7 @@ export const GoogleLogInFrame: FC<GoogleLogInFrameProps> = ({ setWaitExchange })
         onSuccess: tokenResponse => onGoogleLoginSucess(tokenResponse),
         onError: error => onGoogleLoginFailure(error),
         flow: 'auth-code',
+        // eslint-disable-next-line no-multi-str
         scope: 'https://www.googleapis.com/auth/gmail.compose \
         https://www.googleapis.com/auth/youtube.readonly \
         https://www.googleapis.com/auth/youtube.upload \
