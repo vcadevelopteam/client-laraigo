@@ -121,8 +121,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
     const [filteredFeelings, setFilteredFeelings] = useState<any>([]);
     const [mediaDisabled, setMediaDisabled] = useState(false);
     const [previewType, setPreviewType] = useState('');
-    const [statuspost, setstatuspost] = useState('');
-    const [tikTokEnabled] = useState(false);
+    // const [statuspost, setstatuspost] = useState('');
     const [waitOperation, setWaitOperation] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
 
@@ -223,22 +222,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
     useEffect(() => {
         if (waitOperation) {
             if (!executeRes.loading && !executeRes.error) {
-                let message = ""
-                switch (statuspost) {
-                    case "DRAFT":
-                        message = t(langKeys.successsavedraft) + ""
-                        break;
-                    case "SCHEDULED":
-                        message = t(langKeys.successpublish) + ""
-                        break;
-
-                    case "DELETED":
-                        message = t(langKeys.successful_delete) + ""
-                        break;
-
-                    default:
-                        break;
-                }
+                
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
@@ -274,7 +258,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
             default:
                 break;
         }
-        setstatuspost(data?.status);
+        // setstatuspost(data?.status);
         const callback = () => {
             setWaitOperation(true);
             dispatch(showBackdrop(true));

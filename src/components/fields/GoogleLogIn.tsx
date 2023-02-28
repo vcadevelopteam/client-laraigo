@@ -66,6 +66,7 @@ export const GoogleLogIn: FC<GoogleLogInProps> = ({ label, scope, googleDispatch
             }
 
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [resGoogleLogIn])
 
     return <Button

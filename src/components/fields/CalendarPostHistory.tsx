@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 
@@ -381,8 +382,8 @@ const CalendarPostHistory: FC<{ data: Dictionary[], date: Date; setDateRange: (p
                                     </div>
                                     <h3 style={{ marginBottom: '2px' }}>{postdata.texttitle}</h3>
                                     <h4 style={{ marginTop: '2px' }}>{postdata.textbody}</h4>
-                                    {postdata.publishtatus == "PUBLISHED" && <b style={{ color: 'green' }}>{t(langKeys.posthistory_published)}</b>}
-                                    {postdata.publishtatus == "ERROR" && <b style={{ color: 'red' }}>{t(langKeys.posthistory_error)}</b>}
+                                    {postdata.publishtatus === "PUBLISHED" && <b style={{ color: 'green' }}>{t(langKeys.posthistory_published)}</b>}
+                                    {postdata.publishtatus === "ERROR" && <b style={{ color: 'red' }}>{t(langKeys.posthistory_error)}</b>}
                                     <Button
                                         className={classes.button}
                                         color="primary"

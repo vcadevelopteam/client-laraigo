@@ -102,6 +102,7 @@ const DragDropFile: FC<{ setFiles: (param: any) => void, setfileimage?: (param: 
                 setWaitSave(false);
             }
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [waitSave, uploadResult, dispatch, setFiles, idUpload])
 
     const clickLabel = (e: any) => {

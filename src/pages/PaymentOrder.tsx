@@ -1,10 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import CircularProgress from '@material-ui/core/CircularProgress';
 import CulqiModal from 'components/fields/CulqiModal';
-import Container from '@material-ui/core/Container';
 import Popus from 'components/layout/Popus';
 
-import { FC, useEffect, useState,useRef } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { langKeys } from 'lang/keys';
 import { makeStyles } from "@material-ui/core";
 import { useDispatch } from 'react-redux';
@@ -94,7 +93,7 @@ export const PaymentOrder: FC = () => {
     const [publicKey, setPublicKey] = useState('');
     const [waitData, setWaitData] = useState(false);
     const [waitPay, setWaitPay] = useState(false);
-    const windowWidth = useRef(window.innerWidth);
+    // const windowWidth = useRef(window.innerWidth);
 
     const fetchData = () => {
         dispatch(getCollectionPaymentOrder(paymentOrderSel({ corpid: corpid, orgid: orgid, conversationid: 0, personid: 0, paymentorderid: 0, ordercode: ordercode })));

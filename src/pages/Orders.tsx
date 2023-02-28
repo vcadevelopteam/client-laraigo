@@ -3,15 +3,15 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, TemplateIcons, TitleDetail } from 'components';
-import { formatDate, formatNumber, getOrderLineSel, getOrderSel, insCorp } from 'common/helpers';
+import { formatDate, formatNumber, getOrderLineSel, getOrderSel } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useHistory } from 'react-router-dom';
-import { getCollection, execute, getMultiCollection } from 'store/main/actions';
-import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
+import { getCollection, getMultiCollection } from 'store/main/actions';
+import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import paths from 'common/constants/paths';
 import Button from '@material-ui/core/Button';
 import ClearIcon from '@material-ui/icons/Clear';
