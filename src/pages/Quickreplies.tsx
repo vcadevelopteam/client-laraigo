@@ -376,7 +376,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                 }else{
                     debugger
                     dispatch(emitEvent({
-                        event: 'reassignTicket',
+                        event: 'updateQuickreply',
                         data: {
                             ...dataUPD,
                             id: dataUPD.id||executeRes.data[0].ufn_quickreply_ins
