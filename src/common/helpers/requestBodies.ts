@@ -367,7 +367,7 @@ export const getOrgSelList = (id: number): IRequestBody => ({
 });
 
 export const insSLA = ({ id, description, type, company, communicationchannelid, usergroup, status, totaltmo, totaltmomin, totaltmopercentmax, usertmo, usertmomin, usertmopercentmax,
-    usertme, usertmepercentmax, productivitybyhour, operation }: Dictionary): IRequestBody => ({
+    usertme, usertmepercentmax, productivitybyhour, operation, criticality, service_times }: Dictionary): IRequestBody => ({
         method: "UFN_SLA_INS",
         parameters: {
             id,
@@ -394,7 +394,9 @@ export const insSLA = ({ id, description, type, company, communicationchannelid,
             usertmepercentmax: parseFloat(usertmepercentmax),
             usertmepercentmin: 0.01,
             productivitybyhour: parseFloat(productivitybyhour),
-            operation
+            operation, 
+            criticality: JSON.stringify(criticality),
+            service_times: JSON.stringify(service_times)
         }
     });
 

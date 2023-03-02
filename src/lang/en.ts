@@ -97,6 +97,8 @@ const translation: LangKeys = {
   firstreply: "First reply time",
   solutiontime: "Solution time",
   seconds: "Seconds",
+  hours: 'Hours',
+  minutes: 'Minutes',
   emoticons: "Emoticons",
   industry_foodsanddrinks: "Food and Drinks",
   industry_audiovisual: "Audiovisuales",

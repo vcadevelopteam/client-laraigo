@@ -307,6 +307,8 @@ export const langKeys = {
   huge: "huge",
   hsmhistory: "hsmhistory",
   emittername: "emittername",
+  hours: 'hours',
+  minutes: 'minutes',
   enter_details: "enter_details",
   confirm: "confirm",
   transfercall: "transfercall",
