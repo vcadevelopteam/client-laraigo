@@ -152,7 +152,7 @@ const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData }) => {
             <FieldSelect
                 label={t(langKeys.status)}
                 className="col-6"
-                valueDefault={row?.status || "ACTIVO"}
+                valueDefault={getValues("status")}
                 onChange={(value) => setValue('status', value? value.domainvalue: '')}
                 error={errors?.status?.message}
                 uset={true}
@@ -258,6 +258,7 @@ const TabCriticalityMatrix: React.FC<TabDetailProps> = ({ form,row, multiData })
     const [dataAddRow, setDataAddRow] = useState(startAddRow);
     const [errorAddRow, seterrorAddRow] = useState(startAddRow);
     const [dataCriticality, setDataCriticality] = useState<any>([]);
+    const [currentIndex, setCurrentIndex] = useState(0);
     const [openModal, setOpenModal] = useState(false);
     const dispatch = useDispatch();
 
@@ -302,7 +303,8 @@ const TabCriticalityMatrix: React.FC<TabDetailProps> = ({ form,row, multiData })
         })
         if(!Object.values(dataAddRow).includes('')){
             if(!dataCriticality.filter((x:any)=>(x.impact===dataAddRow.impact && x.urgency===dataAddRow.urgency)).length){
-                setDataCriticality([...dataCriticality, {...dataAddRow, index: dataCriticality.length}])
+                setDataCriticality([...dataCriticality, {...dataAddRow, index: currentIndex}])
+                setCurrentIndex(currentIndex+1);
                 setOpenModal(false)
                 seterrorAddRow(startAddRow)
                 setDataAddRow(startAddRow)
@@ -350,7 +352,7 @@ const TabCriticalityMatrix: React.FC<TabDetailProps> = ({ form,row, multiData })
                 <FieldSelect
                     label={t(langKeys.status)}
                     className="col-6"
-                    valueDefault={row?.status || "ACTIVO"}
+                    valueDefault={getValues("status")}
                     onChange={(value) => setValue('status', value? value.domainvalue: '')}
                     error={errors?.status?.message}
                     uset={true}
@@ -387,7 +389,7 @@ const TabCriticalityMatrix: React.FC<TabDetailProps> = ({ form,row, multiData })
                             color="primary"
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
-                            onClick={() => {setDataCriticality(dataCriticality.filter((x:any)=>!Object.keys(selectedRows).includes(x.name)))}}
+                            onClick={() => {setDataCriticality(dataCriticality.filter((x:any)=>!Object.keys(selectedRows).includes(x.index)))}}
                         >{t(langKeys.delete)}</Button>
                     </div>
                 )}
@@ -463,7 +465,7 @@ const TabServiceTimes: React.FC<TabDetailProps> = ({ form,row, multiData }) => {
     }
     const [dataAddRow, setDataAddRow] = useState(startAddRow);
     const [errorAddRow, seterrorAddRow] = useState(startAddRow);
-    const [dataCriticality, setDataCriticality] = useState<any>([]);
+    const [attentionTime, setAttentionTime] = useState<any>([]);
     const [openModal, setOpenModal] = useState(false);
     const dispatch = useDispatch();
 
@@ -516,8 +518,9 @@ const TabServiceTimes: React.FC<TabDetailProps> = ({ form,row, multiData }) => {
             umsolutiontime: dataAddRow.umsolutiontime===""?t(langKeys.field_required):"", 
         })
         if(!Object.values(dataAddRow).includes('')){
-            if(!dataCriticality.filter((x:any)=>(x.impact===dataAddRow.priority && x.urgency===dataAddRow.priority)).length){
-                setDataCriticality([...dataCriticality, dataAddRow])
+            debugger
+            if(!attentionTime.filter((x:any)=>(x.priority===dataAddRow.priority)).length){
+                setAttentionTime([...attentionTime, dataAddRow])
                 setOpenModal(false)
                 seterrorAddRow(startAddRow)
                 setDataAddRow(startAddRow)
@@ -565,7 +568,7 @@ const TabServiceTimes: React.FC<TabDetailProps> = ({ form,row, multiData }) => {
                 <FieldSelect
                     label={t(langKeys.status)}
                     className="col-6"
-                    valueDefault={row?.status || "ACTIVO"}
+                    valueDefault={getValues("status")}
                     onChange={(value) => setValue('status', value? value.domainvalue: '')}
                     error={errors?.status?.message}
                     uset={true}
@@ -579,7 +582,7 @@ const TabServiceTimes: React.FC<TabDetailProps> = ({ form,row, multiData }) => {
         <div style={{ width: '100%' }}>
             <TableZyx
                 columns={columns}
-                data={dataCriticality}
+                data={attentionTime}
                 filterGeneral={false}
                 useSelection={true}
                 selectionKey={selectionKey}
@@ -602,7 +605,7 @@ const TabServiceTimes: React.FC<TabDetailProps> = ({ form,row, multiData }) => {
                             color="primary"
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
-                            onClick={() => {setDataCriticality(dataCriticality.filter((x:any)=>!Object.keys(selectedRows).includes(x.name)))}}
+                            onClick={() => {setAttentionTime(attentionTime.filter((x:any)=>!Object.keys(selectedRows).includes(x.priority)))}}
                         >{t(langKeys.delete)}</Button>
                     </div>
                 )}
