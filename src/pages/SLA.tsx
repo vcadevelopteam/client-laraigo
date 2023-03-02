@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect, AntTab } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect, AntTab, DialogZyx } from 'components';
 import { getSLASel, getValuesFromDomain, insSLA,getCommChannelLst } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -19,6 +19,7 @@ import { DuplicateIcon } from 'icons';
 import { useHistory } from 'react-router-dom';
 import paths from 'common/constants/paths';
 import { Tabs } from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -66,12 +67,17 @@ const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData }) => {
     const classes = useStyles();
     const { t } = useTranslation();
     const user = useSelector(state => state.login.validateToken.user);
-    const { setValue, formState: { errors }  } = form;
+    const { setValue, getValues, formState: { errors }  } = form;
+    const [fieldFlags, setFieldFlags] = useState({
+        showChannels: getValues('type')==="LARAIGO"
+    });
+    
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataSupplier = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataGroups = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const datachannels = multiData[3] && multiData[3].success ? multiData[3].data : [];
+    const dataTipoSLA = multiData[4] && multiData[4].success ? multiData[4].data : [];
     
     return <div className={classes.containerDetail}>
         <div className="row-zyx">
@@ -84,12 +90,15 @@ const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData }) => {
                     disabled={true}
                 />
                 <FieldSelect
-                    label={t(langKeys.supplier)} 
+                    label={t(langKeys.type)} 
                     className="col-6"
-                    valueDefault={row?.company || ""}
-                    onChange={(value) => setValue('company', value? value.domainvalue: '')}
-                    error={errors?.company?.message}
-                    data={dataSupplier}
+                    valueDefault={row?.type || ""}
+                    onChange={(value) => {
+                        setValue('type', value?.domainvalue|| '')
+                        setFieldFlags({...fieldFlags,showChannels: value?.domainvalue === "LARAIGO"})
+                    }}
+                    error={errors?.type?.message}
+                    data={dataTipoSLA}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />
@@ -97,13 +106,24 @@ const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData }) => {
         <div className="row-zyx">
                 <FieldEdit
                     label={t(langKeys.description)} //transformar a multiselect
-                    className="col-12"
+                    className="col-6"
                     onChange={(value) => setValue('description', value)}
-                    valueDefault={row?.description|| ''}
+                    valueDefault={getValues('description')}
                     error={errors?.description?.message}
+                />
+                <FieldSelect
+                    label={t(langKeys.business)} 
+                    className="col-6"
+                    valueDefault={getValues('company')}
+                    onChange={(value) => setValue('company', value? value.domainvalue: '')}
+                    error={errors?.company?.message}
+                    data={dataSupplier}
+                    optionDesc="domaindesc"
+                    optionValue="domainvalue"
                 />
         </div>
         <div className="row-zyx">
+            {fieldFlags.showChannels &&
                 <FieldMultiSelect
                     label={t(langKeys.channel_plural)} //transformar a multiselect
                     className="col-12"
@@ -114,8 +134,10 @@ const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData }) => {
                     optionDesc="communicationchanneldesc"
                     optionValue="communicationchannelid"
                 />
+            }
         </div>
         <div className="row-zyx">
+            {fieldFlags.showChannels &&
                 <FieldMultiSelect
                     label={t(langKeys.group)} 
                     className="col-6"
@@ -126,29 +148,31 @@ const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData }) => {
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />
-                <FieldSelect
-                    label={t(langKeys.status)}
-                    className="col-6"
-                    valueDefault={row?.status || "ACTIVO"}
-                    onChange={(value) => setValue('status', value? value.domainvalue: '')}
-                    error={errors?.status?.message}
-                    uset={true}
-                    prefixTranslation="status_"
-                    data={dataStatus}
-                    optionDesc="domaindesc"
-                    optionValue="domainvalue"
-                />
+            }
+            <FieldSelect
+                label={t(langKeys.status)}
+                className="col-6"
+                valueDefault={row?.status || "ACTIVO"}
+                onChange={(value) => setValue('status', value? value.domainvalue: '')}
+                error={errors?.status?.message}
+                uset={true}
+                prefixTranslation="status_"
+                data={dataStatus}
+                optionDesc="domaindesc"
+                optionValue="domainvalue"
+            />
         </div>
-        <div style={{ marginBottom: '16px' }}>
-            <div className={classes.title}>{t(langKeys.detail)}</div>
-            <div className="row-zyx">
+        {fieldFlags.showChannels &&
+            <div style={{ marginBottom: '16px' }}>
+                <div className={classes.title}>{t(langKeys.detail)}</div>
+                <div className="row-zyx">
                     <FieldEdit
-                    type="time"
-                    label={"TMO total min (HH:MM)"} 
-                    className="col-4"
-                    onChange={(value) => setValue('totaltmomin', value)}
-                    valueDefault={row?.totaltmomin || ""}
-                    error={errors?.totaltmomin?.message}
+                        type="time"
+                        label={"TMO total min (HH:MM)"} 
+                        className="col-4"
+                        onChange={(value) => setValue('totaltmomin', value)}
+                        valueDefault={row?.totaltmomin || ""}
+                        error={errors?.totaltmomin?.message}
                     />
                     <FieldEdit
                         type="time"
@@ -166,8 +190,8 @@ const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData }) => {
                         valueDefault={row?.totaltmopercentmax || ""}
                         error={errors?.totaltmopercentmax?.message}
                     />
-            </div>
-            <div className="row-zyx">
+                </div>
+                <div className="row-zyx">
                     <FieldEdit
                     type="time"
                     label={"TMO user min (HH:MM)"} 
@@ -192,8 +216,8 @@ const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData }) => {
                         valueDefault={row?.usertmopercentmax || ""}
                         error={errors?.usertmopercentmax?.message}
                     />
-            </div>
-            <div className="row-zyx">
+                </div>
+                <div className="row-zyx">
                     <FieldEdit
                         type="time"
                         label={"TME user max (HH:MM)"} 
@@ -218,21 +242,81 @@ const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData }) => {
                         valueDefault={row?.productivitybyhour || 0}
                         error={errors?.productivitybyhour?.message}
                     />
+                </div>                
             </div>
-            
-        </div>
+        }
     </div>
 }
 const TabCriticalityMatrix: React.FC<TabDetailProps> = ({ form,row, multiData }) => {
     const classes = useStyles();
     const { t } = useTranslation();
     const user = useSelector(state => state.login.validateToken.user);
-    const { setValue, formState: { errors }  } = form;
+    const { setValue, getValues, formState: { errors }  } = form;
+    const selectionKey= "index"
+    const [selectedRows, setSelectedRows] = useState<Dictionary>({});
+    const startAddRow = { impact: "", urgency: "", priority: ""}
+    const [dataAddRow, setDataAddRow] = useState(startAddRow);
+    const [errorAddRow, seterrorAddRow] = useState(startAddRow);
+    const [dataCriticality, setDataCriticality] = useState<any>([]);
+    const [openModal, setOpenModal] = useState(false);
+    const dispatch = useDispatch();
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataSupplier = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const dataGroups = multiData[2] && multiData[2].success ? multiData[2].data : [];
-    const datachannels = multiData[3] && multiData[3].success ? multiData[3].data : [];
+    const dataImpact = multiData[5] && multiData[5].success ? multiData[5].data : [];
+    const dataUrgency = multiData[6] && multiData[6].success ? multiData[6].data : [];
+    const dataPriority = multiData[7] && multiData[7].success ? multiData[7].data : [];
+    
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.impact),
+                accessor: 'impact',
+                NoFilter: true,
+                width: '33%',
+
+            },
+            {
+                Header: t(langKeys.urgency),
+                accessor: 'urgency',
+                NoFilter: true,
+                width: '33%',
+
+            },
+            {
+                Header: t(langKeys.priority),
+                accessor: 'priority',
+                NoFilter: true,
+                width: '33%',
+
+            },           
+        ],
+        []
+    );
+
+    const onSubmit = () => {
+        seterrorAddRow({
+            impact: dataAddRow.impact===""?t(langKeys.field_required):"", 
+            urgency: dataAddRow.urgency===""?t(langKeys.field_required):"", 
+            priority: dataAddRow.priority===""?t(langKeys.field_required):"", 
+        })
+        if(!Object.values(dataAddRow).includes('')){
+            if(!dataCriticality.filter((x:any)=>(x.impact===dataAddRow.impact && x.urgency===dataAddRow.urgency)).length){
+                setDataCriticality([...dataCriticality, {...dataAddRow, index: dataCriticality.length}])
+                setOpenModal(false)
+                seterrorAddRow(startAddRow)
+                setDataAddRow(startAddRow)
+            }else{
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.combination_already_exists) }))
+            }            
+        }
+    }
+    
+    const closeModal = () => {
+        setOpenModal(false)
+        seterrorAddRow(startAddRow)
+        setDataAddRow(startAddRow)
+    }
     
     return <div className={classes.containerDetail}>
         <div className="row-zyx">
@@ -245,10 +329,10 @@ const TabCriticalityMatrix: React.FC<TabDetailProps> = ({ form,row, multiData })
                     disabled={true}
                 />
                 <FieldSelect
-                    label={t(langKeys.supplier)} 
+                    label={t(langKeys.business)} 
                     className="col-6"
-                    valueDefault={row?.company || ""}
-                    onChange={(value) => setValue('company', value? value.domainvalue: '')}
+                    valueDefault={getValues('company')}
+                    onChange={(value) => setValue('company', value?.domainvalue || '')}
                     error={errors?.company?.message}
                     data={dataSupplier}
                     optionDesc="domaindesc"
@@ -258,34 +342,10 @@ const TabCriticalityMatrix: React.FC<TabDetailProps> = ({ form,row, multiData })
         <div className="row-zyx">
                 <FieldEdit
                     label={t(langKeys.description)} //transformar a multiselect
-                    className="col-12"
-                    onChange={(value) => setValue('description', value)}
-                    valueDefault={row?.description|| ''}
-                    error={errors?.description?.message}
-                />
-        </div>
-        <div className="row-zyx">
-                <FieldMultiSelect
-                    label={t(langKeys.channel_plural)} //transformar a multiselect
-                    className="col-12"
-                    onChange={(value) => setValue('communicationchannelid', value.map((o: Dictionary) => o.communicationchannelid).join())}
-                    valueDefault={row?.communicationchannelid || ""}
-                    error={errors?.communicationchannelid?.message}
-                    data={datachannels}
-                    optionDesc="communicationchanneldesc"
-                    optionValue="communicationchannelid"
-                />
-        </div>
-        <div className="row-zyx">
-                <FieldMultiSelect
-                    label={t(langKeys.group)} 
                     className="col-6"
-                    onChange={(value) => setValue('usergroup', value.map((o: Dictionary) => o.domainvalue).join())}
-                    valueDefault={row?.usergroup || ""}
-                    error={errors?.usergroup?.message}
-                    data={dataGroups}
-                    optionDesc="domaindesc"
-                    optionValue="domainvalue"
+                    onChange={(value) => setValue('description', value)}
+                    valueDefault={getValues('description')}
+                    error={errors?.description?.message}
                 />
                 <FieldSelect
                     label={t(langKeys.status)}
@@ -300,100 +360,178 @@ const TabCriticalityMatrix: React.FC<TabDetailProps> = ({ form,row, multiData })
                     optionValue="domainvalue"
                 />
         </div>
-        <div style={{ marginBottom: '16px' }}>
-            <div className={classes.title}>{t(langKeys.detail)}</div>
-            <div className="row-zyx">
-                    <FieldEdit
-                    type="time"
-                    label={"TMO total min (HH:MM)"} 
-                    className="col-4"
-                    onChange={(value) => setValue('totaltmomin', value)}
-                    valueDefault={row?.totaltmomin || ""}
-                    error={errors?.totaltmomin?.message}
-                    />
-                    <FieldEdit
-                        type="time"
-                        label={"TMO total max (HH:MM)"} 
-                        className="col-4"
-                        onChange={(value) => setValue('totaltmo', value)}
-                        valueDefault={row?.totaltmo || ""}
-                        error={errors?.totaltmo?.message}
-                    />
-                    <FieldEdit
-                        type="number"
-                        label={`${t(langKeys.tmopercentobj)}%`} 
-                        className="col-4"
-                        onChange={(value) => setValue('totaltmopercentmax', value)}
-                        valueDefault={row?.totaltmopercentmax || ""}
-                        error={errors?.totaltmopercentmax?.message}
-                    />
-            </div>
-            <div className="row-zyx">
-                    <FieldEdit
-                    type="time"
-                    label={"TMO user min (HH:MM)"} 
-                    className="col-4"
-                    onChange={(value) => setValue('usertmomin', value)}
-                    valueDefault={row?.usertmomin || ""}
-                    error={errors?.usertmomin?.message}
-                    />
-                    <FieldEdit
-                        type="time"
-                        label={"TMO user max (HH:MM)"} 
-                        className="col-4"
-                        onChange={(value) => setValue('usertmo', value)}
-                        valueDefault={row?.usertmo || ""}
-                        error={errors?.usertmo?.message}
-                    />
-                    <FieldEdit
-                        type="number"
-                        label={`${t(langKeys.usertmopercentmax)}%`} 
-                        className="col-4"
-                        onChange={(value) => setValue('usertmopercentmax', value)}
-                        valueDefault={row?.usertmopercentmax || ""}
-                        error={errors?.usertmopercentmax?.message}
-                    />
-            </div>
-            <div className="row-zyx">
-                    <FieldEdit
-                        type="time"
-                        label={"TME user max (HH:MM)"} 
-                        className="col-4"
-                        onChange={(value) => setValue('usertme', value)}
-                        valueDefault={row?.usertme || ""}
-                        error={errors?.usertme?.message}
-                    />
-                    <FieldEdit
-                        type="number"
-                        label={`${t(langKeys.usertmepercentmax)}%`} 
-                        className="col-4"
-                        onChange={(value) => setValue('usertmepercentmax', value)}
-                        valueDefault={row?.usertmepercentmax || ""}
-                        error={errors?.usertmepercentmax?.message}
-                    />
-                    <FieldEdit
-                        label={t(langKeys.productivitybyhour)} 
-                        className="col-4"
-                        type='number'
-                        onChange={(value) => setValue('productivitybyhour', value)}
-                        valueDefault={row?.productivitybyhour || 0}
-                        error={errors?.productivitybyhour?.message}
-                    />
-            </div>
-            
+        <div className={classes.title}>{t(langKeys.criticality)}</div>
+        <div style={{ width: '100%' }}>
+            <TableZyx
+                columns={columns}
+                data={dataCriticality}
+                filterGeneral={false}
+                useSelection={true}
+                selectionKey={selectionKey}
+                setSelectedRows={setSelectedRows}
+                ButtonsElement={() => (
+                    <div style={{display: "flex", justifyContent: "end", width: "100%"}}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            className='col-3'
+                            color="primary"
+                            startIcon={<AddIcon color="secondary" />}
+                            style={{ backgroundColor: "#55bd84", marginRight: 8 }}
+                            onClick={() => {setOpenModal(true) }}
+                        >{t(langKeys.register)}</Button>
+                        <Button
+                            disabled={Object.keys(selectedRows).length===0}
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
+                            onClick={() => {setDataCriticality(dataCriticality.filter((x:any)=>!Object.keys(selectedRows).includes(x.name)))}}
+                        >{t(langKeys.delete)}</Button>
+                    </div>
+                )}
+                register={false}
+                download={false}
+                pageSizeDefault={20}
+                initialPageIndex={0}
+            />
         </div>
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.registervalue)}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.save)}
+            handleClickButton1={closeModal}
+            handleClickButton2={onSubmit}
+        >
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.impact)}
+                    className="col-12"
+                    valueDefault={dataAddRow.impact}
+                    onChange={(value) => setDataAddRow({...dataAddRow, impact: value?.domainvalue|| ''})}
+                    error={errorAddRow.impact}
+                    uset={true}
+                    data={dataImpact}
+                    optionDesc="domaindesc"
+                    optionValue="domainvalue"
+                />
+            </div>
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.urgency)}
+                    className="col-12"
+                    valueDefault={dataAddRow.urgency}
+                    onChange={(value) => setDataAddRow({...dataAddRow, urgency: value?.domainvalue|| ''})}
+                    error={errorAddRow.urgency}
+                    uset={true}
+                    data={dataUrgency}
+                    optionDesc="domaindesc"
+                    optionValue="domainvalue"
+                />
+            </div>
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.priority)}
+                    className="col-12"
+                    valueDefault={dataAddRow.priority}
+                    onChange={(value) => setDataAddRow({...dataAddRow, priority: value?.domainvalue|| ''})}
+                    error={errorAddRow.priority}
+                    uset={true}
+                    data={dataPriority}
+                    optionDesc="domaindesc"
+                    optionValue="domainvalue"
+                />
+            </div>
+        </DialogZyx>
     </div>
 }
 const TabServiceTimes: React.FC<TabDetailProps> = ({ form,row, multiData }) => {
     const classes = useStyles();
     const { t } = useTranslation();
     const user = useSelector(state => state.login.validateToken.user);
-    const { setValue, formState: { errors }  } = form;
+    const { setValue, getValues, formState: { errors }  } = form;
+    const selectionKey= "priority"
+    const [selectedRows, setSelectedRows] = useState<Dictionary>({});
+    const startAddRow = { 
+        priority: '',
+        firstreply: '',
+        umfirstreply: '',
+        solutiontime: '',
+        umsolutiontime: '',
+    }
+    const [dataAddRow, setDataAddRow] = useState(startAddRow);
+    const [errorAddRow, seterrorAddRow] = useState(startAddRow);
+    const [dataCriticality, setDataCriticality] = useState<any>([]);
+    const [openModal, setOpenModal] = useState(false);
+    const dispatch = useDispatch();
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataSupplier = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const dataGroups = multiData[2] && multiData[2].success ? multiData[2].data : [];
-    const datachannels = multiData[3] && multiData[3].success ? multiData[3].data : [];
+    const dataPriority = multiData[7] && multiData[7].success ? multiData[7].data : [];
+    
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.priority),
+                accessor: 'priority',
+                NoFilter: true,
+                width:'auto'
+            },           
+            {
+                Header: t(langKeys.firstreply),
+                accessor: 'firstreply',
+                NoFilter: true,
+                width:'auto'
+            },           
+            {
+                Header: 'UM ' + t(langKeys.firstreply),
+                accessor: 'umfirstreply',
+                NoFilter: true,
+                width:'auto'
+            },           
+            {
+                Header: t(langKeys.solutiontime),
+                accessor: 'solutiontime',
+                NoFilter: true,
+                width:'auto'
+            },           
+            {
+                Header: 'UM ' + t(langKeys.solutiontime),
+                accessor: 'umsolutiontime',
+                NoFilter: true,
+                width:'auto'
+            },           
+        ],
+        []
+    );
+
+    const onSubmit = () => {
+        seterrorAddRow({
+            priority: dataAddRow.priority===""?t(langKeys.field_required):"", 
+            firstreply: dataAddRow.firstreply===""?t(langKeys.field_required):"", 
+            umfirstreply: dataAddRow.umfirstreply===""?t(langKeys.field_required):"", 
+            solutiontime: dataAddRow.solutiontime===""?t(langKeys.field_required):"", 
+            umsolutiontime: dataAddRow.umsolutiontime===""?t(langKeys.field_required):"", 
+        })
+        if(!Object.values(dataAddRow).includes('')){
+            if(!dataCriticality.filter((x:any)=>(x.impact===dataAddRow.priority && x.urgency===dataAddRow.priority)).length){
+                setDataCriticality([...dataCriticality, dataAddRow])
+                setOpenModal(false)
+                seterrorAddRow(startAddRow)
+                setDataAddRow(startAddRow)
+            }else{
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.combination_already_exists) }))
+            }            
+        }
+    }
+    
+    const closeModal = () => {
+        setOpenModal(false)
+        seterrorAddRow(startAddRow)
+        setDataAddRow(startAddRow)
+    }
     
     return <div className={classes.containerDetail}>
         <div className="row-zyx">
@@ -406,10 +544,10 @@ const TabServiceTimes: React.FC<TabDetailProps> = ({ form,row, multiData }) => {
                     disabled={true}
                 />
                 <FieldSelect
-                    label={t(langKeys.supplier)} 
+                    label={t(langKeys.business)} 
                     className="col-6"
-                    valueDefault={row?.company || ""}
-                    onChange={(value) => setValue('company', value? value.domainvalue: '')}
+                    valueDefault={getValues('company')}
+                    onChange={(value) => setValue('company', value?.domainvalue || '')}
                     error={errors?.company?.message}
                     data={dataSupplier}
                     optionDesc="domaindesc"
@@ -419,34 +557,10 @@ const TabServiceTimes: React.FC<TabDetailProps> = ({ form,row, multiData }) => {
         <div className="row-zyx">
                 <FieldEdit
                     label={t(langKeys.description)} //transformar a multiselect
-                    className="col-12"
-                    onChange={(value) => setValue('description', value)}
-                    valueDefault={row?.description|| ''}
-                    error={errors?.description?.message}
-                />
-        </div>
-        <div className="row-zyx">
-                <FieldMultiSelect
-                    label={t(langKeys.channel_plural)} //transformar a multiselect
-                    className="col-12"
-                    onChange={(value) => setValue('communicationchannelid', value.map((o: Dictionary) => o.communicationchannelid).join())}
-                    valueDefault={row?.communicationchannelid || ""}
-                    error={errors?.communicationchannelid?.message}
-                    data={datachannels}
-                    optionDesc="communicationchanneldesc"
-                    optionValue="communicationchannelid"
-                />
-        </div>
-        <div className="row-zyx">
-                <FieldMultiSelect
-                    label={t(langKeys.group)} 
                     className="col-6"
-                    onChange={(value) => setValue('usergroup', value.map((o: Dictionary) => o.domainvalue).join())}
-                    valueDefault={row?.usergroup || ""}
-                    error={errors?.usergroup?.message}
-                    data={dataGroups}
-                    optionDesc="domaindesc"
-                    optionValue="domainvalue"
+                    onChange={(value) => setValue('description', value)}
+                    valueDefault={getValues('description')}
+                    error={errors?.description?.message}
                 />
                 <FieldSelect
                     label={t(langKeys.status)}
@@ -461,88 +575,116 @@ const TabServiceTimes: React.FC<TabDetailProps> = ({ form,row, multiData }) => {
                     optionValue="domainvalue"
                 />
         </div>
-        <div style={{ marginBottom: '16px' }}>
-            <div className={classes.title}>{t(langKeys.detail)}</div>
-            <div className="row-zyx">
-                    <FieldEdit
-                    type="time"
-                    label={"TMO total min (HH:MM)"} 
-                    className="col-4"
-                    onChange={(value) => setValue('totaltmomin', value)}
-                    valueDefault={row?.totaltmomin || ""}
-                    error={errors?.totaltmomin?.message}
-                    />
-                    <FieldEdit
-                        type="time"
-                        label={"TMO total max (HH:MM)"} 
-                        className="col-4"
-                        onChange={(value) => setValue('totaltmo', value)}
-                        valueDefault={row?.totaltmo || ""}
-                        error={errors?.totaltmo?.message}
-                    />
-                    <FieldEdit
-                        type="number"
-                        label={`${t(langKeys.tmopercentobj)}%`} 
-                        className="col-4"
-                        onChange={(value) => setValue('totaltmopercentmax', value)}
-                        valueDefault={row?.totaltmopercentmax || ""}
-                        error={errors?.totaltmopercentmax?.message}
-                    />
-            </div>
-            <div className="row-zyx">
-                    <FieldEdit
-                    type="time"
-                    label={"TMO user min (HH:MM)"} 
-                    className="col-4"
-                    onChange={(value) => setValue('usertmomin', value)}
-                    valueDefault={row?.usertmomin || ""}
-                    error={errors?.usertmomin?.message}
-                    />
-                    <FieldEdit
-                        type="time"
-                        label={"TMO user max (HH:MM)"} 
-                        className="col-4"
-                        onChange={(value) => setValue('usertmo', value)}
-                        valueDefault={row?.usertmo || ""}
-                        error={errors?.usertmo?.message}
-                    />
-                    <FieldEdit
-                        type="number"
-                        label={`${t(langKeys.usertmopercentmax)}%`} 
-                        className="col-4"
-                        onChange={(value) => setValue('usertmopercentmax', value)}
-                        valueDefault={row?.usertmopercentmax || ""}
-                        error={errors?.usertmopercentmax?.message}
-                    />
-            </div>
-            <div className="row-zyx">
-                    <FieldEdit
-                        type="time"
-                        label={"TME user max (HH:MM)"} 
-                        className="col-4"
-                        onChange={(value) => setValue('usertme', value)}
-                        valueDefault={row?.usertme || ""}
-                        error={errors?.usertme?.message}
-                    />
-                    <FieldEdit
-                        type="number"
-                        label={`${t(langKeys.usertmepercentmax)}%`} 
-                        className="col-4"
-                        onChange={(value) => setValue('usertmepercentmax', value)}
-                        valueDefault={row?.usertmepercentmax || ""}
-                        error={errors?.usertmepercentmax?.message}
-                    />
-                    <FieldEdit
-                        label={t(langKeys.productivitybyhour)} 
-                        className="col-4"
-                        type='number'
-                        onChange={(value) => setValue('productivitybyhour', value)}
-                        valueDefault={row?.productivitybyhour || 0}
-                        error={errors?.productivitybyhour?.message}
-                    />
-            </div>
-            
+        <div className={classes.title}>{t(langKeys.servicetimes)}</div>
+        <div style={{ width: '100%' }}>
+            <TableZyx
+                columns={columns}
+                data={dataCriticality}
+                filterGeneral={false}
+                useSelection={true}
+                selectionKey={selectionKey}
+                setSelectedRows={setSelectedRows}
+                ButtonsElement={() => (
+                    <div style={{display: "flex", justifyContent: "end", width: "100%"}}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            className='col-3'
+                            color="primary"
+                            startIcon={<AddIcon color="secondary" />}
+                            style={{ backgroundColor: "#55bd84", marginRight: 8 }}
+                            onClick={() => {setOpenModal(true) }}
+                        >{t(langKeys.register)}</Button>
+                        <Button
+                            disabled={Object.keys(selectedRows).length===0}
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
+                            onClick={() => {setDataCriticality(dataCriticality.filter((x:any)=>!Object.keys(selectedRows).includes(x.name)))}}
+                        >{t(langKeys.delete)}</Button>
+                    </div>
+                )}
+                register={false}
+                download={false}
+                pageSizeDefault={20}
+                initialPageIndex={0}
+            />
         </div>
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.registervalue)}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.save)}
+            handleClickButton1={closeModal}
+            handleClickButton2={onSubmit}
+        >
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.priority)}
+                    className="col-12"
+                    valueDefault={dataAddRow.priority}
+                    onChange={(value) => setDataAddRow({...dataAddRow, priority: value?.domainvalue|| ''})}
+                    error={errorAddRow.priority}
+                    data={dataPriority}
+                    optionDesc="domaindesc"
+                    optionValue="domainvalue"
+                />
+            </div>
+            <div className="row-zyx">
+                <FieldEdit
+                    label={t(langKeys.firstreply)}
+                    className="col-12"
+                    type='number'
+                    onChange={(value) => setDataAddRow({...dataAddRow, firstreply: value})}
+                    valueDefault={dataAddRow.firstreply}
+                    error={errorAddRow.firstreply}
+                />
+            </div>
+            <div className="row-zyx">
+                <FieldSelect
+                    label={'UM ' + t(langKeys.firstreply)}
+                    className="col-12"
+                    valueDefault={dataAddRow.umfirstreply}
+                    onChange={(value) => setDataAddRow({...dataAddRow, umfirstreply: value?.value|| ''})}
+                    error={errorAddRow.umfirstreply}
+                    data={[
+                        {value: 'HOURS', desc: t(langKeys.hour_plural)},
+                        {value: 'MINUTES', desc: t(langKeys.minute_plural)},
+                        {value: 'SECONDS', desc: t(langKeys.seconds)},
+                    ]}
+                    optionDesc="desc"
+                    optionValue="value"
+                />
+            </div>
+            <div className="row-zyx">
+                <FieldEdit
+                    label={t(langKeys.solutiontime)}
+                    className="col-12"
+                    type='number'
+                    onChange={(value) => setDataAddRow({...dataAddRow, solutiontime: value})}
+                    valueDefault={dataAddRow.solutiontime}
+                    error={errorAddRow.solutiontime}
+                />
+            </div>
+            <div className="row-zyx">
+                <FieldSelect
+                    label={'UM ' + t(langKeys.solutiontime)}
+                    className="col-12"
+                    valueDefault={dataAddRow.umsolutiontime}
+                    onChange={(value) => setDataAddRow({...dataAddRow, umsolutiontime: value?.value|| ''})}
+                    error={errorAddRow.umsolutiontime}
+                    data={[
+                        {value: 'HOURS', desc: t(langKeys.hour_plural)},
+                        {value: 'MINUTES', desc: t(langKeys.minute_plural)},
+                        {value: 'SECONDS', desc: t(langKeys.seconds)},
+                    ]}
+                    optionDesc="desc"
+                    optionValue="value"
+                />
+            </div>
+        </DialogZyx>
     </div>
 }
 
@@ -556,7 +698,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row }, setViewSelected, m
 
     const form = useForm({
         defaultValues: {
-            type: 'NINGUNO',
+            type: row?.type || '',
             id: row?.slaid || 0,
             description: row?.description || '',
             company: row?.company || '',
@@ -579,23 +721,23 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row }, setViewSelected, m
     });
 
     React.useEffect(() => {
-        form.register('type');
         form.register('id');
         form.register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        form.register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         form.register('company');
         form.register('usergroup');
         form.register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        form.register('totaltmo', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        form.register('totaltmomin', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        form.register('totaltmopercentmax', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        form.register('usertmo', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        form.register('usertmomin', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        form.register('usertmopercentmax', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        form.register('usertme', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        form.register('productivitybyhour', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        form.register('usertmepercentmax', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        form.register('totaltmo', { validate: (value) => form.getValues('type')==="LARAIGO"?(value && value.length) || t(langKeys.field_required):true });
+        form.register('totaltmomin', { validate: (value) => form.getValues('type')==="LARAIGO"?(value && value.length) || t(langKeys.field_required):true });
+        form.register('totaltmopercentmax', { validate: (value) => form.getValues('type')==="LARAIGO"?(value && value.length) || t(langKeys.field_required):true });
+        form.register('usertmo', { validate: (value) => form.getValues('type')==="LARAIGO"?(value && value.length) || t(langKeys.field_required):true });
+        form.register('usertmomin', { validate: (value) => form.getValues('type')==="LARAIGO"?(value && value.length) || t(langKeys.field_required):true });
+        form.register('usertmopercentmax', { validate: (value) => form.getValues('type')==="LARAIGO"?(value && value.length) || t(langKeys.field_required):true });
+        form.register('usertme', { validate: (value) => form.getValues('type')==="LARAIGO"?(value && value.length) || t(langKeys.field_required):true });
+        form.register('productivitybyhour', { validate: (value) => form.getValues('type')==="LARAIGO"?(value && value.length) || t(langKeys.field_required):true });
+        form.register('usertmepercentmax', { validate: (value) => form.getValues('type')==="LARAIGO"?(value && value.length) || t(langKeys.field_required):true });
 
-        form.register('communicationchannelid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        form.register('communicationchannelid', { validate: (value) => form.getValues('type')==="LARAIGO"?(value && value.length) || t(langKeys.field_required):true });
         form.register('organization');
     }, [form.register]);
 
@@ -670,7 +812,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row }, setViewSelected, m
                     textColor="primary"
                     onChange={(_, value) => setPageSelected(value)}
                 >
-                    <AntTab label={t(langKeys.detail)} />
+                    <AntTab label={t(langKeys.sla)} />
                     <AntTab label={t(langKeys.criticalitymatrix)} />
                     <AntTab label={t(langKeys.servicetimes)} />
                 </Tabs>
@@ -806,7 +948,11 @@ const SLA: FC = () => {
             getValuesFromDomain("ESTADOGENERICO"),
             getValuesFromDomain("EMPRESA"),
             getValuesFromDomain("GRUPOS"),
-            getCommChannelLst()
+            getCommChannelLst(),
+            getValuesFromDomain("TIPOSLA"),
+            getValuesFromDomain("IMPACTO"),
+            getValuesFromDomain("URGENCIA"),
+            getValuesFromDomain("PRIORIDAD"),
         ]));
         return () => {
             dispatch(resetAllMain());
