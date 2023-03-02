@@ -804,9 +804,10 @@ const Quickreplies: FC = () => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(insertexcel?langKeys.successful_edit: langKeys.successful_delete) }))
-                if(!insertexcel){             
+                if(!insertexcel){       
+                    debugger      
                     dispatch(emitEvent({
-                        event: 'reassignTicket',
+                        event: 'updateQuickreply',
                         data: {
                             ...dataUPD
                         }
