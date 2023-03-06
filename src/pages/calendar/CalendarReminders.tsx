@@ -51,8 +51,12 @@ interface CalendarRemindersProps {
 
     templateVariables: any;
     setTemplateVariables: (value: any) => void;
+    templateVariablesEmail: any;
+    setTemplateVariablesEmail: (value: any) => void;
     bodyMessage: any;
     setBodyMessage: (value: any) => void;
+    bodyMessageEmail: any;
+    setBodyMessageEmail: (value: any) => void;
 
     emailVariables: any;
     setEmailVariables: (value: any) => void;
@@ -81,8 +85,13 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
 
     templateVariables,
     setTemplateVariables,
+
+    templateVariablesEmail,
+    setTemplateVariablesEmail,
     bodyMessage,
     setBodyMessage,
+    bodyMessageEmail,
+    setBodyMessageEmail,
 
     emailVariables,
     setEmailVariables,
@@ -93,6 +102,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
     setHsmVariables,
     bodyMessageReminderHSM,
     setBodyMessageReminderHSM,
+
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -121,6 +131,20 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
             setBodyMessage('');
             setTemplateVariables({})
             setValue('hsmtemplateid', 0);
+        }
+    }
+    const onSelectTemplateEmail = (value: Dictionary) => {
+        if (value) {
+            setBodyMessageEmail(value.body);
+            setTemplateVariablesEmail((value.body?.match(/{{/g) || []).reduce((acc: any, x: any, i: number) => { return { ...acc, [`variable#${i}`]: `` } }, {}))
+            setValue('emailtemplateid', value ? value.id : 0);
+            setValue('emailtemplatename', value ? value.name : '');
+        }
+        else {
+            setValue('emailtemplatename', '');
+            setBodyMessageEmail('');
+            setTemplateVariablesEmail({})
+            setValue('emailtemplateid', 0);
         }
     }
     
@@ -202,12 +226,13 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                 error={errors?.notificationtype?.message}
                                 data={[
                                     { desc: "HSM", val: "HSM" },
-                                    { desc: t(langKeys.email), val: "EMAIL" }
+                                    { desc: t(langKeys.email), val: "EMAIL" },
+                                    { desc: "HSM + " + t(langKeys.email), val: "HSMEMAIL" }
                                 ]}
                                 optionDesc="desc"
                                 optionValue="val"
                             />
-                            {!!getValues("notificationtype") && <FieldSelect
+                            {(!!getValues("notificationtype") && getValues("notificationtype")!=="HSMEMAIL") && <FieldSelect
                                 label={t(langKeys.notificationtemplate)}
                                 className="col-6"
                                 valueDefault={getValues('hsmtemplateid')}
@@ -218,6 +243,106 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                 optionValue="id"
                             />}
                         </div>
+                        {getValues("notificationtype") === "HSMEMAIL" && <div style={{width:"100%"}}>
+                            <div className='row-zyx'>
+                                <div className='col-6'>
+                                    <Typography style={{fontWeight: 'bold', flexBasis: '100%', marginBottom:8}}>HSM</Typography>
+                                    <FieldSelect
+                                        label={t(langKeys.notificationtemplate)}
+                                        className="col-12"
+                                        valueDefault={getValues('hsmtemplateid')}
+                                        error={errors?.hsmtemplateid?.message}
+                                        onChange={onSelectTemplate}
+                                        data={dataTemplates.filter(x => x.type === "HSM")}
+                                        optionDesc="name"
+                                        optionValue="id"
+                                        style={{marginBottom:8}}
+                                    />
+                                    <FieldSelect
+                                        label={t(langKeys.communicationchannel)}
+                                        className="col-12"
+                                        valueDefault={getValues('communicationchannelid')}
+                                        error={errors?.communicationchannelid?.message}
+                                        onChange={(value) => setValue('communicationchannelid', value?.communicationchannelid || 0)}
+                                        data={dataChannels.filter(x => x.type.startsWith('WHA'))}
+                                        optionDesc="communicationchanneldesc"
+                                        optionValue="communicationchannelid"
+                                        style={{marginBottom:8}}
+                                    />
+                                </div>
+                                <div className='col-6'>
+                                    <Typography style={{fontWeight: 'bold', flexBasis: '100%', marginBottom:8}}>{t(langKeys.email)}</Typography>
+                                    <FieldSelect
+                                        label={t(langKeys.notificationtemplate)}
+                                        className="col-12"
+                                        valueDefault={getValues('emailtemplateid')}
+                                        error={errors?.emailtemplateid?.message}
+                                        onChange={onSelectTemplateEmail}
+                                        data={dataTemplates.filter(x => x.type === "MAIL")}
+                                        optionDesc="name"
+                                        optionValue="id"
+                                    />
+                                </div>
+                                <div  className='row-zyx'>
+                                    <div className='col-6'>
+                                        <React.Fragment>
+                                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                                {t(langKeys.message)}
+                                                <Tooltip title={`${t(langKeys.calendar_messate_tooltip)}`} placement="top-start">
+                                                    <InfoIcon style={{ padding: "5px 0 0 5px" }} />
+                                                </Tooltip>
+                                            </Box>
+                                            <div dangerouslySetInnerHTML={{ __html: bodyMessage }} />
+                                            <div className="col-12" >
+                                                {Object.keys(templateVariables).map((x, i) => {
+                                                    return (
+                                                        <div key={`templateVariables-${i + 1}`} style={{ paddingTop: 10 }}>
+                                                            <FieldSelect
+                                                                label={`Variable #${i + 1}`}
+                                                                className="col-6"
+                                                                valueDefault={templateVariables[x]}
+                                                                onChange={(value) => { setTemplateVariables({ ...templateVariables, [x]: value?.domainvalue || "" }) }}
+                                                                data={dataVariables}
+                                                                uset={true}
+                                                                optionDesc="domaindesc"
+                                                                optionValue="domainvalue"
+                                                            />
+                                                        </div>)
+                                                })}
+                                            </div>
+                                        </React.Fragment>
+                                    </div>
+                                    <div className='col-6'>
+                                        <React.Fragment>
+                                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                                {t(langKeys.message)}
+                                                <Tooltip title={`${t(langKeys.calendar_messate_tooltip)}`} placement="top-start">
+                                                    <InfoIcon style={{ padding: "5px 0 0 5px" }} />
+                                                </Tooltip>
+                                            </Box>
+                                            <div dangerouslySetInnerHTML={{ __html: bodyMessageEmail }} />
+                                            <div className="col-12" >
+                                                {Object.keys(templateVariablesEmail).map((x, i) => {
+                                                    return (
+                                                        <div key={`templateVariablesEmail-${i + 1}`} style={{ paddingTop: 10 }}>
+                                                            <FieldSelect
+                                                                label={`Variable #${i + 1}`}
+                                                                className="col-6"
+                                                                valueDefault={templateVariablesEmail[x]}
+                                                                onChange={(value) => { setTemplateVariablesEmail({ ...templateVariablesEmail, [x]: value?.domainvalue || "" }) }}
+                                                                data={dataVariables}
+                                                                uset={true}
+                                                                optionDesc="domaindesc"
+                                                                optionValue="domainvalue"
+                                                            />
+                                                        </div>)
+                                                })}
+                                            </div>
+                                        </React.Fragment>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>}
                         {getValues("notificationtype") === 'HSM' && <div className="row-zyx" >
                             <FieldSelect
                                 label={t(langKeys.communicationchannel)}
@@ -237,7 +362,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                 value={bodyMessage}
                                 tooltip={`${t(langKeys.calendar_messate_tooltip)}`}
                             />*/}
-                            {getValues("notificationtype") && <React.Fragment>
+                            {(!!getValues("notificationtype") && getValues("notificationtype")!=="HSMEMAIL") && <React.Fragment>
                                 <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
                                     {t(langKeys.message)}
                                     <Tooltip title={`${t(langKeys.calendar_messate_tooltip)}`} placement="top-start">

@@ -41,4 +41,6 @@ export type ICalendarFormFields = {
     reminderperiod: string,
     reminderfrecuency: number,
     reminderhsmcommunicationchannelid: number,
+    emailtemplateid: number,
+    emailtemplatename: string,
 }
