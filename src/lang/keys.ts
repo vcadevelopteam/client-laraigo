@@ -1714,6 +1714,9 @@ export const langKeys = {
   botdesigner: 'botdesigner',
   least_user_or_group: 'least_user_or_group',
   lead: 'lead',
+  servicedesk: 'servicedesk',
+  support: 'support',
+  request: 'request',
   lead_plural: 'lead_plural',
   lastnote: 'lastnote',
 

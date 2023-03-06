@@ -61,6 +61,51 @@ export interface ICrmLead {
     persontypedesc?: string;
 }
 
+export interface IServiceDeskLead {
+    changeby: string;
+    changedate: string;
+    column_uuid: string;
+    columnid: number;
+    conversationid: number | null;
+    corpid: number;
+    createby: string;
+    createdate: string;
+    date_deadline: string;
+    description: string;
+    displayname: string;
+    expected_revenue: string;
+    index: number;
+    leadid: number;
+    orgid: number;
+    personcommunicationchannel: string;
+    priority: string | undefined;
+    /**ACTIVO, CERRADO, ELIMINADO */
+    status: string;
+    /**separado por comas */
+    tags: string;
+    type: string;
+    phone: string | null;
+    firstname?: string | null;
+    lastname?: string | null;
+    documenttype?: string | null;
+    documentnumber?: string | null;
+    email: string | null;
+    personid?: bigint;
+    /**asesor */
+    userid: string | number | null;
+    phase: string | null;
+
+    /**separado por comas */
+    leadproduct: string;
+    campaignid: number;
+    /**descripción de la campaña (campaignid) */
+    campaign: string;
+    persontype: string;
+    persontypedesc?: string;
+    ticket?: string;
+    request?: string;
+}
+
 export interface ICRmSaveLead {
 	id: number;
 	description: string;

@@ -200,6 +200,12 @@ const paths = {
         path: '/crm/leads/:id',
         resolve: (leadId: string | number) => `/crm/leads/${leadId}`,
     },
+    SERVICE_DESK: '/servicedesk',
+    SERVICE_DESK_ADD_LEAD: '/servicedesk/leads/add',
+    SERVICE_DESK_EDIT_LEAD: {
+        path: '/servicedesk/leads/:id',
+        resolve: (leadId: string | number) => `/servicedesk/leads/${leadId}`,
+    },
     KPIMANAGER: '/kpimanager',
     CALENDAR: '/calendar',
     CHNAGE_PWD_FIRST_LOGIN: '/changePasswordOnFirstLogin',
