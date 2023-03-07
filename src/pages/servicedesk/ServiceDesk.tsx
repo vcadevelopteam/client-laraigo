@@ -13,16 +13,14 @@ import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/acti
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "components";
-import { Search as SearchIcon, ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon, Add as AddIcon } from '@material-ui/icons';
+import { Search as SearchIcon, ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, Sms as SmsIcon, Mail as MailIcon } from '@material-ui/icons';
 import { Button, IconButton, Tooltip } from "@material-ui/core";
-import PhoneIcon from '@material-ui/icons/Phone';
 import { Dictionary, ICampaignLst, IChannel, ICrmLead, IDomain, IFetchData } from "@types";
 import TablePaginated, { buildQueryFilters, useQueryParams } from 'components/fields/table-paginated';
 import { makeStyles } from '@material-ui/core/styles';
 import { Rating } from '@material-ui/lab';
 import { DialogSendTemplate, NewActivityModal, NewNoteModal } from "./Modals";
 import { WhatsappIcon } from "icons";
-import { setModalCall, setPhoneNumber } from "store/voximplant/actions";
 
 interface dataBackend {
   columnid: number,
@@ -471,7 +469,6 @@ const ServiceDesk: FC = () => {
   const [waitExport, setWaitExport] = useState(false);
   const voxiConnection = useSelector(state => state.voximplant.connection);
   const callOnLine = useSelector(state => state.voximplant.callOnLine);
-  const userConnected = useSelector(state => state.inbox.userConnected);
   const [allParameters, setAllParametersPrivate] = useState<{ contact: string, channel: string, asesorid: string, persontype: string }>({
     // asesorid: otherParams.asesorid || mainMulti.data[2]?.data?.map(d => d.userid).includes(user?.userid) ? (user?.userid || 0) : 0,
     asesorid: String(initialAsesorId),
@@ -608,7 +605,7 @@ const ServiceDesk: FC = () => {
       },
       {
         Header: t(langKeys.ticket),
-        accessor: 'ticket',
+        accessor: 'numeroticket',
         isComponent: true,
         Cell: cell
       },
@@ -685,10 +682,6 @@ const ServiceDesk: FC = () => {
     dispatch(showBackdrop(true));
     setWaitExport(true);
   };
-
-  const goToAddLead = useCallback(() => {
-    history.push(paths.SERVICE_DESK_ADD_LEAD);
-  }, [history]);
 
   useEffect(() => {
     if (waitExport) {
@@ -917,16 +910,6 @@ const ServiceDesk: FC = () => {
             <Button
                 variant="contained"
                 color="primary"
-                disabled={mainMulti.loading}
-                startIcon={<AddIcon color="secondary" />}
-                onClick={goToAddLead}
-                style={{ backgroundColor: "#55BD84" }}
-              >
-                <Trans i18nKey={langKeys.register} />
-            </Button>
-            <Button
-                variant="contained"
-                color="primary"
                 startIcon={<SearchIcon style={{ color: 'white' }} />}
                 style={{ backgroundColor: '#55BD84', width: 120 }}
                 onClick={fetchBoardLeadsWithFilter}
@@ -934,8 +917,7 @@ const ServiceDesk: FC = () => {
             >
                 <Trans i18nKey={langKeys.search} />
             </Button>
-          </div>
-          <AddColumnTemplate onSubmit={(data) =>{ handleInsert(data,dataColumn, setDataColumn)}} /> 
+          </div> 
           <div style={{display:"flex", color: "white", paddingTop: 10, fontSize: "1.6em", fontWeight: "bold"}}>
             <div style={{minWidth: 280, maxWidth: 280, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.support)} N1</div>
             <div style={{minWidth: 280*dataColumn.filter((x:any)=>x.type==="QUALIFIED").length + 10*(dataColumn.filter((x:any)=>x.type==="QUALIFIED").length-1), 

@@ -102,7 +102,7 @@ export interface IServiceDeskLead {
     campaign: string;
     persontype: string;
     persontypedesc?: string;
-    ticket?: string;
+    numeroticket?:string;
     request?: string;
 }
 

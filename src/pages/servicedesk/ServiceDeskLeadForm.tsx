@@ -22,7 +22,7 @@ import {
     resetGetLeadLogNotes, resetGetLeadPhases, resetMarkDoneActivity, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLeadActivity, saveLeadLogNote, saveLeadWithFiles, saveLead as saveLeadAction,
     resetGetLeadProductsDomain, getLeadProductsDomain, getLeadTagsDomain, getPersonType, resetGetLeadTagsDomain, getLeadTemplates, getLeadChannels, resetGetLeadChannels, resetGetPersonType
 } from 'store/lead/actions';
-import { Dictionary, ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadHistory, ICrmLeadHistoryIns, ICrmLeadNote, ICrmLeadNoteSave, IDomain, IFetchData, IPerson } from '@types';
+import { Dictionary, ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadHistory, ICrmLeadHistoryIns, ICrmLeadNote, ICrmLeadNoteSave, IDomain, IFetchData, IPerson, IServiceDeskLead } from '@types';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { Rating, Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineSeparator } from '@material-ui/lab';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -42,6 +42,7 @@ import { emojis } from "common/constants/emojis";
 import { sendHSM } from 'store/inbox/actions';
 import { setModalCall, setPhoneNumber } from 'store/voximplant/actions';
 import MailIcon from '@material-ui/icons/Mail';
+import DialogInteractions from 'components/inbox/DialogInteractions';
 
 const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
 
@@ -120,6 +121,11 @@ const useLeadFormStyles = makeStyles(theme => ({
         '&:hover': {
             borderBottom: `2px solid ${theme.palette.text.primary}`,
         },
+    },
+    labellink: {
+        color: '#7721ad',
+        textDecoration: 'underline',
+        cursor: 'pointer'
     },
 }));
 
@@ -402,38 +408,46 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         column_uuid: match.params.columnuuid || '',
         columnid: Number(match.params.columnid),
         priority: 'LOW',
-    } as ICrmLead
+    } as IServiceDeskLead
     );
     const [tabIndex, setTabIndex] = useState(0);
     const [openPersonModal, setOpenPersonmodal] = useState(false);
-    const lead = useSelector(state => state.lead.lead);
-    const advisers = useSelector(state => state.lead.advisers);
-    const phases = useSelector(state => state.lead.leadPhases);
+    const lead = useSelector(state => state.servicedesk.lead);
+    const advisers = useSelector(state => state.servicedesk.advisers);
+    const phases = useSelector(state => state.servicedesk.leadPhases);
     const user = useSelector(state => state.login.validateToken.user);
-    const archiveLeadProcess = useSelector(state => state.lead.archiveLead);
-    const saveActivity = useSelector(state => state.lead.saveLeadActivity);
-    const saveNote = useSelector(state => state.lead.saveLeadNote);
-    const leadActivities = useSelector(state => state.lead.leadActivities);
-    const leadNotes = useSelector(state => state.lead.leadLogNotes);
-    const saveLead = useSelector(state => state.lead.saveLead);
-    const leadHistory = useSelector(state => state.lead.leadHistory);
-    const updateLeadTagProcess = useSelector(state => state.lead.updateLeadTags);
-    const leadProductsDomain = useSelector(state => state.lead.leadProductsDomain);
-    const leadTagsDomain = useSelector(state => state.lead.leadTagsDomain);
-    const personTypeDomain = useSelector(state => state.lead.personTypeDomain);
+    const archiveLeadProcess = useSelector(state => state.servicedesk.archiveLead);
+    const saveActivity = useSelector(state => state.servicedesk.saveLeadActivity);
+    const saveNote = useSelector(state => state.servicedesk.saveLeadNote);
+    const leadActivities = useSelector(state => state.servicedesk.leadActivities);
+    const leadNotes = useSelector(state => state.servicedesk.leadLogNotes);
+    const saveLead = useSelector(state => state.servicedesk.saveLead);
+    const leadHistory = useSelector(state => state.servicedesk.leadHistory);
+    const updateLeadTagProcess = useSelector(state => state.servicedesk.updateLeadTags);
+    const leadProductsDomain = useSelector(state => state.servicedesk.leadProductsDomain);
+    const leadTagsDomain = useSelector(state => state.servicedesk.leadTagsDomain);
+    const personTypeDomain = useSelector(state => state.servicedesk.personTypeDomain);
+    const mainResult = useSelector(state => state.main);
+    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
 
     const leadProductsChanges = useRef<ICrmLeadHistoryIns[]>([]);
     const leadTagsChanges = useRef<ICrmLeadHistoryIns[]>([]);
     const [openDialogTemplate, setOpenDialogTemplate] = useState(false)
     const voxiConnection = useSelector(state => state.voximplant.connection);
     const userConnected = useSelector(state => state.inbox.userConnected);
-    
+    const [openModal, setOpenModal] = useState(false);
+
     const [typeTemplate, setTypeTemplate] = useState<"HSM" | "SMS" | "MAIL">('MAIL');
     const [extraTriggers, setExtraTriggers] = useState({
         phone: lead.value?.phone || '',
         email: lead.value?.email || '',
     })
     
+    const openDialogInteractions = useCallback((row: any) => {
+        setOpenModal(true);
+        setRowSelected({ ...row, displayname: row.name, ticketnum: row.numeroticket })
+    }, [mainResult]);
+
     useEffect(() => {
         dispatch(getDomainsByTypename());
     }, []);
@@ -1013,7 +1027,6 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                             <Trans i18nKey={langKeys.opportunity} />
                         </Link>
                     </Breadcrumbs>
-
                     <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
                         <TitleDetail
                             variant="h1"
@@ -1113,15 +1126,66 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                         <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                             <Grid container direction="column">
                                 <FieldEdit
-                                    label={t(langKeys.description)}
+                                    label={t(langKeys.request)}
                                     className={classes.field}
                                     onChange={(value) => setValue('description', value)}
                                     valueDefault={getValues('description')}
-                                    error={errors?.description?.message}
                                     InputProps={{
-                                        readOnly: isStatusClosed() || iSProcessLoading(),
+                                        readOnly: true
                                     }}
                                 />
+                                <div className={classes.field}>
+                                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">
+                                        {t(langKeys.ticket)}
+                                    </Box>
+                                    <label
+                                        className={classes.labellink}
+                                        onClick={() => openDialogInteractions(lead)}
+                                    >
+                                        {lead.numeroticket}
+                                    </label>
+                                </div>
+                                {edit ?
+                                    (
+                                        <div className={clsx(classes.fakeInputContainer, classes.field)}>
+                                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                                                <div style={{ flexGrow: 1 }}>
+                                                    <FieldView
+                                                        label={t(langKeys.customer)}
+                                                        value={values?.displayname}
+                                                    />
+                                                </div>                                                
+                                                {(!!lead?.value?.personid) && <IconButton size="small" onClick={(e) => {
+                                                    e.preventDefault();
+                                                    history.push(`/extras/person/${lead?.value?.personid}`)
+                                                }}>
+                                                    <PersonIcon />
+                                                </IconButton>}
+                                            </div>
+                                        </div>
+                                    ) :
+                                    (<div style={{ display: 'flex', flexDirection: 'column' }} className={classes.field}>
+                                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                                            <div style={{ flexGrow: 1 }}>
+                                                <FieldView
+                                                    label={t(langKeys.customer)}
+                                                    value={values?.displayname}
+                                                />
+                                            </div>
+                                            <IconButton
+                                                color="primary"
+                                                onClick={() => setOpenPersonmodal(true)}
+                                                size="small"
+                                                disabled={isStatusClosed() || iSProcessLoading()}
+                                            >
+                                                <Add style={{ height: 22, width: 22 }} />
+                                            </IconButton>
+                                        </div>
+                                        <div style={{ flexGrow: 1, marginTop: (errors?.personcommunicationchannel?.message) ? '29px' : '3px' }} />
+                                        <div style={{ borderBottom: `solid ${(errors?.personcommunicationchannel?.message) ? '2px rgba(250,0,0,1)' : '1px rgba(0,0,0,0.42)'} `, marginBottom: '4px' }}></div>
+                                        <div style={{ display: (errors?.personcommunicationchannel?.message) ? 'inherit' : 'none', color: 'red', fontSize: '0.75rem' }}>{errors?.personcommunicationchannel?.message}</div>
+                                    </div>)
+                                }
                                 <FieldEdit
                                     label={t(langKeys.email)}
                                     className={classes.field}
@@ -1219,47 +1283,16 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                         </Grid>
                         <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                             <Grid container direction="column">
-                                {edit ?
-                                    (
-                                        <div className={clsx(classes.fakeInputContainer, classes.field)}>
-                                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                                                <div style={{ flexGrow: 1 }}>
-                                                    <FieldView
-                                                        label={t(langKeys.customer)}
-                                                        value={values?.displayname}
-                                                    />
-                                                </div>                                                
-                                                {(!!lead?.value?.personid) && <IconButton size="small" onClick={(e) => {
-                                                    e.preventDefault();
-                                                    history.push(`/extras/person/${lead?.value?.personid}`)
-                                                }}>
-                                                    <PersonIcon />
-                                                </IconButton>}
-                                            </div>
-                                        </div>
-                                    ) :
-                                    (<div style={{ display: 'flex', flexDirection: 'column' }} className={classes.field}>
-                                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                                            <div style={{ flexGrow: 1 }}>
-                                                <FieldView
-                                                    label={t(langKeys.customer)}
-                                                    value={values?.displayname}
-                                                />
-                                            </div>
-                                            <IconButton
-                                                color="primary"
-                                                onClick={() => setOpenPersonmodal(true)}
-                                                size="small"
-                                                disabled={isStatusClosed() || iSProcessLoading()}
-                                            >
-                                                <Add style={{ height: 22, width: 22 }} />
-                                            </IconButton>
-                                        </div>
-                                        <div style={{ flexGrow: 1, marginTop: (errors?.personcommunicationchannel?.message) ? '29px' : '3px' }} />
-                                        <div style={{ borderBottom: `solid ${(errors?.personcommunicationchannel?.message) ? '2px rgba(250,0,0,1)' : '1px rgba(0,0,0,0.42)'} `, marginBottom: '4px' }}></div>
-                                        <div style={{ display: (errors?.personcommunicationchannel?.message) ? 'inherit' : 'none', color: 'red', fontSize: '0.75rem' }}>{errors?.personcommunicationchannel?.message}</div>
-                                    </div>)
-                                }
+                                <FieldEdit
+                                    label={t(langKeys.description)}
+                                    className={classes.field}
+                                    onChange={(value) => setValue('description', value)}
+                                    valueDefault={getValues('description')}
+                                    error={errors?.description?.message}
+                                    InputProps={{
+                                        readOnly: isStatusClosed() || iSProcessLoading(),
+                                    }}
+                                />
                                 <PhoneFieldEdit
                                     value={"+" + getValues('phone')}
                                     label={t(langKeys.phone)}
@@ -1438,7 +1471,12 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                     setOpenModal={setOpenDialogTemplate}
                     persons={[{...lead?.value, ...extraTriggers}]}
                     type={typeTemplate}
-                />      
+                />  
+                <DialogInteractions
+                    openModal={openModal}
+                    setOpenModal={setOpenModal}
+                    ticket={rowSelected}
+                />    
             </div>
         </MuiPickersUtilsProvider>
     );

@@ -113,125 +113,6 @@ const useLeadCardStyles = makeStyles(theme => ({
     },
 }));
 
-export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snapshot, onDelete, onClick, onCloseLead, ...boxProps }) => {
-    const classes = useLeadCardStyles();
-    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-    const tags = lead.tags?.split(',')?.filter(e => e !== '') || [];
-    const products = (lead.leadproduct || null)?.split(',') || [];
-    const urgencyLevels = [null,'LOW','MEDIUM','HIGH'];
-    const colors = ['', 'cyan', 'red', 'violet', 'blue', 'blueviolet'];
-    const history = useHistory();
-    const user = useSelector(state => state.login.validateToken.user);
-    const { t } = useTranslation();
-
-    const handleMoreVertClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
-    const handleClick = useCallback(() => {
-        history.push({
-            pathname: paths.CRM_EDIT_LEAD.resolve(lead.leadid),
-        });
-    }, [lead, history]);
-
-    const handleDelete = () => {
-        setAnchorEl(null);
-        onDelete?.(lead);
-    };
-
-    const open = Boolean(anchorEl);
-    const id = open ? `lead-card-popover-${String(lead)}` : undefined;
-
-    return (
-        <Box {...boxProps} style={{ position: 'relative' }} pb={1}>
-            <div className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)} onClick={handleClick}>
-                <span className={classes.title}>{lead.description}</span>
-                {lead.campaign && <span className={classes.info}>
-                    <Trans i18nKey={langKeys.campaign} />
-                    {': '}
-                    {lead.campaign}
-                </span>}
-                <span className={classes.info}>{user?.currencysymbol||"S/."} {Number(lead.expected_revenue).toLocaleString('en-US')}</span>
-                <span className={classes.info}>{lead.displayname}</span>
-                {!!lead?.persontype && lead?.persontype !== null && <span style={{fontWeight: "bold"}} className={classes.info}>
-                    {lead.persontype}
-                </span>}
-                <div className={classes.tagsRow}>
-                    {tags.map((tag: String, index: number) =>
-                        <div className={classes.tag} key={index}>
-                            <div className={classes.tagCircle} style={{ backgroundColor: colors[1] }} />
-                            <div style={{ width: 6 }} />
-                            <div className={classes.tagtext}>{tag}</div>
-                        </div>
-                    )}
-                </div>
-                {products.length !== 0 && <div style={{ height: '0.25em' }} />}
-                <div className={classes.tagsRow}>
-                    {products.map((tag: String, index: number) =>
-                        <div className={classes.tag} key={index}>
-                            <div className={classes.tagCircle} style={{ backgroundColor: colors[2] }} />
-                            <div style={{ width: 6 }} />
-                            <div className={classes.tagtext}>{tag}</div>
-                        </div>
-                    )}
-                </div>
-                <div className={classes.footer}>
-                    <Rating
-                        name="hover-feedback"
-                        value={urgencyLevels.findIndex(x => x === lead.priority)}
-                        max={3}
-                        readOnly
-                    />
-                    <div style={{ flexGrow: 1 }} />
-                </div>
-            </div>
-            <div className={classes.floatingMenuIcon}>
-                <IconButton size="small" aria-describedby={id} onClick={handleMoreVertClick}>
-                    <MoreVertIcon style={{ height: 'inherit', width: 'inherit' }} />
-                </IconButton>
-                <Popover
-                    id={id}
-                    open={open}
-                    anchorEl={anchorEl}
-                    onClose={handleClose}
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                    }}
-                    PaperProps={{
-                        className: classes.popoverPaper,
-                    }}
-                >
-                    {/* <Button
-                        variant="text"
-                        color="inherit"
-                        fullWidth
-                        type="button"
-                        onClick={handleCloseLead}
-                        style={{ fontWeight: "normal", textTransform: "uppercase" }}
-                    >
-                        <Trans i18nKey={langKeys.close} />
-                    </Button> */}
-                    <Button
-                        variant="text"
-                        color="inherit"
-                        fullWidth
-                        type="button"
-                        onClick={handleDelete}
-                        style={{ fontWeight: "normal", textTransform: "uppercase" }}
-                    >
-                        <Trans i18nKey={langKeys.delete} />
-                    </Button>
-                </Popover>
-            </div>
-        </Box>
-    );
-}
-
 export const DraggableServiceDeskCardContent: FC<ServiceDeskCardContentProps> = ({ lead, snapshot, onDelete, onClick, onCloseLead, ...boxProps }) => {
     const classes = useLeadCardStyles();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -266,10 +147,10 @@ export const DraggableServiceDeskCardContent: FC<ServiceDeskCardContentProps> = 
     return (
         <Box {...boxProps} style={{ position: 'relative' }} pb={1}>
             <div className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)} onClick={handleClick}>
-                <span className={classes.title}>{lead?.request}</span>
+                <span className={classes.title}>{lead?.request||"request"}</span>
                 <span className={classes.info}>{lead.type}</span>
                 <span className={classes.info}>{lead.description}</span>
-                <span className={classes.info}>{lead.ticket}</span>
+                <span className={classes.info}>{lead?.numeroticket||"ticket"}</span>
                 <span className={classes.info}>{lead.displayname}</span>
                 <div className={classes.tagsRow}>
                     {tags.map((tag: String, index: number) =>
