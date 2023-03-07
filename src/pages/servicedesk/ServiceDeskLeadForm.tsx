@@ -427,7 +427,6 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
     const leadProductsDomain = useSelector(state => state.servicedesk.leadProductsDomain);
     const leadTagsDomain = useSelector(state => state.servicedesk.leadTagsDomain);
     const personTypeDomain = useSelector(state => state.servicedesk.personTypeDomain);
-    const mainResult = useSelector(state => state.main);
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
 
     const leadProductsChanges = useRef<ICrmLeadHistoryIns[]>([]);
@@ -445,8 +444,8 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
     
     const openDialogInteractions = useCallback((row: any) => {
         setOpenModal(true);
-        setRowSelected({ ...row, displayname: row.name, ticketnum: row.numeroticket })
-    }, [mainResult]);
+        setRowSelected({ conversationid: 9306057, displayname: values?.displayname, ticketnum: "0019712" })//TODO: cambiar por el ticketnum
+    }, []);
 
     useEffect(() => {
         dispatch(getDomainsByTypename());
@@ -1142,7 +1141,8 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                         className={classes.labellink}
                                         onClick={() => openDialogInteractions(lead)}
                                     >
-                                        {lead?.value?.numeroticket}
+                                        {"0019712"//TODO:CAMBIAR POR lead?.value?.numeroticket
+                                        }
                                     </label>
                                 </div>
                                 {edit ?
