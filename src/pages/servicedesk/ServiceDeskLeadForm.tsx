@@ -1142,7 +1142,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                         className={classes.labellink}
                                         onClick={() => openDialogInteractions(lead)}
                                     >
-                                        {lead.numeroticket}
+                                        {lead?.value?.numeroticket}
                                     </label>
                                 </div>
                                 {edit ?
