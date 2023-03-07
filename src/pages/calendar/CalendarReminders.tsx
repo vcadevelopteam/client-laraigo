@@ -618,6 +618,454 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                     </div>
                 </AccordionDetails>
             </Accordion>
+            <Accordion
+                style={{ marginBottom: '8px' }}
+                defaultExpanded={false}
+                expanded={accordionIndex === 2}
+                onChange={handleAccordion(2)}
+            >
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls='panel-reminder-content'
+                    id='panel-reminder-header'
+                >
+                    <Typography
+                        style={{fontWeight: 'bold', flexBasis: '100%'}}
+                    >
+                        {t(langKeys.reschedule_appointment)}
+                    </Typography>
+                    <Typography>
+                        {
+                            (getValues("statusreminder") === 'ACTIVO'
+                            ? t(langKeys.active)
+                            : t(langKeys.inactive)
+                            ).toUpperCase()
+                        }
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <div style={{ width: '100%' }}>
+                        <div className="row-zyx" >
+                            <FieldSelect
+                                label={t(langKeys.status)}
+                                className="col-6"
+                                valueDefault={getValues("statusreminder")}
+                                onChange={(value) => {
+                                    setValue('statusreminder', (value?.domainvalue || ""));
+                                    trigger("statusreminder");
+                                }}
+                                error={errors?.statusreminder?.message}
+                                data={dataStatus}
+                                uset={true}
+                                prefixTranslation="status_"
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                            />
+                        </div>
+
+                        {getValues("statusreminder") === "ACTIVO" &&
+                            <>
+                                <div className="row-zyx" >
+
+                                    <FieldSelect
+                                        fregister={{
+                                            ...register(`remindertype`, {
+                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                            })
+                                        }}
+                                        label={t(langKeys.notificationtype)}
+                                        className="col-6"
+                                        valueDefault={getValues("remindertype")}
+                                        onChange={(value) => {
+                                            setValue('remindertype', (value?.val || ""))
+                                            onSelectTemplateReminderEmail(null)
+                                            onSelectTemplateReminderHSM(null)
+                                            trigger("remindertype")
+                                        }}
+                                        error={errors?.remindertype?.message}
+                                        data={[
+                                            { desc: "HSM", val: "HSM" },
+                                            { desc: t(langKeys.email), val: "EMAIL" },
+                                            { desc: `HSM + ${t(langKeys.email)}`, val: "EMAIL/HSM" },
+                                        ]}
+                                        optionDesc="desc"
+                                        optionValue="val"
+                                    />
+                                </div>
+                                <div className="row-zyx" >
+                                    {getValues("remindertype").includes("EMAIL") &&
+                                        <div className="col-6" >
+                                            <div style={{ paddingBottom: 10, fontWeight: "bold", fontSize: "1.1em" }}>{t(langKeys.email)}</div>
+                                            <FieldSelect
+                                                fregister={{
+                                                    ...register(`remindermailtemplateid`, {
+                                                        validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
+                                                    })
+                                                }}
+                                                label={t(langKeys.notificationtemplate)}
+                                                className="col-6"
+                                                valueDefault={getValues('remindermailtemplateid')}
+                                                error={errors?.remindermailtemplateid?.message || dataTemplates.filter(x => x.type === "MAIL").length===0?t(langKeys.noavailabletemplates):""}
+                                                onChange={onSelectTemplateReminderEmail}
+                                                data={dataTemplates.filter(x => x.type === "MAIL")}
+                                                optionDesc="name"
+                                                optionValue="id"
+                                            />
+                                            <React.Fragment>
+                                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                                    {t(langKeys.message)}
+                                                    <Tooltip title={`${t(langKeys.calendar_messate_tooltip)}`} placement="top-start">
+                                                        <InfoIcon style={{ padding: "5px 0 0 5px" }} />
+                                                    </Tooltip>
+                                                </Box>
+                                                <div dangerouslySetInnerHTML={{ __html: bodyMessageReminderEmail }} />
+                                            </React.Fragment>
+                                        </div>
+                                    }
+                                    {getValues("remindertype").includes("HSM") &&
+                                        <div className="col-6" >
+                                            <div style={{ paddingBottom: 10, fontWeight: "bold", fontSize: "1.1em" }}>{t(langKeys.hsm)}</div>
+                                            <FieldSelect
+                                                fregister={{
+                                                    ...register(`reminderhsmtemplateid`, {
+                                                        validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
+                                                    })
+                                                }}
+                                                label={t(langKeys.notificationtemplate)}
+                                                className="col-6"
+                                                valueDefault={getValues('reminderhsmtemplateid')}
+                                                error={errors?.reminderhsmtemplateid?.message || dataTemplates.filter(x => x.type === "MAIL").length===0?t(langKeys.noavailabletemplates):""}
+                                                onChange={onSelectTemplateReminderHSM}
+                                                data={dataTemplates.filter(x => x.type === "HSM")}
+                                                optionDesc="name"
+                                                optionValue="id"
+                                            />
+                                            <div style={{ paddingTop: 10 }}>
+                                                <FieldSelect
+                                                    label={t(langKeys.communicationchannel)}
+                                                    className="col-12"
+                                                    valueDefault={getValues('reminderhsmcommunicationchannelid')}
+                                                    error={errors?.reminderhsmcommunicationchannelid?.message}
+                                                    onChange={(value) => setValue('reminderhsmcommunicationchannelid', value?.communicationchannelid || 0)}
+                                                    data={dataChannels.filter(x => x.type.startsWith('WHA'))}
+                                                    optionDesc="communicationchanneldesc"
+                                                    optionValue="communicationchannelid"
+                                                />
+                                            </div>
+                                            <React.Fragment>
+                                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                                    {t(langKeys.message)}
+                                                    <Tooltip title={`${t(langKeys.calendar_messate_tooltip)}`} placement="top-start">
+                                                        <InfoIcon style={{ padding: "5px 0 0 5px" }} />
+                                                    </Tooltip>
+                                                </Box>
+                                                <div dangerouslySetInnerHTML={{ __html: bodyMessageReminderHSM }} />
+                                            </React.Fragment>
+                                        </div>
+                                    }
+                                </div>
+                                <div className="row-zyx" >
+                                    {getValues("remindertype").includes("EMAIL") &&
+                                        <div className="col-6" >
+                                            {Object.keys(emailVariables).map((x, i) => {
+                                                return (
+                                                    <div key={`emailvariables-${i + 1}`} style={{ paddingTop: 10 }}>
+                                                        <FieldSelect
+                                                            label={`Email Variable #${i + 1}`}
+                                                            className="col-6"
+                                                            valueDefault={emailVariables[x]}
+                                                            onChange={(value) => { setEmailVariables({ ...emailVariables, [x]: value?.domainvalue || "" }) }}
+                                                            data={dataVariables}
+                                                            uset={true}
+                                                            optionDesc="domaindesc"
+                                                            optionValue="domainvalue"
+                                                        />
+                                                    </div>)
+                                            })}
+                                        </div>
+                                    }
+                                    {getValues("remindertype").includes("HSM") &&
+                                        <div className="col-6" >
+                                            {Object.keys(hsmVariables).map((x, i) => {
+                                                return (
+                                                    <div key={`hsmvariables-${i + 1}`} style={{ paddingTop: 10 }}>
+                                                        <FieldSelect
+                                                            label={`Email Variable #${i + 1}`}
+                                                            className="col-6"
+                                                            valueDefault={hsmVariables[x]}
+                                                            onChange={(value) => { setHsmVariables({ ...hsmVariables, [x]: value?.domainvalue || "" }) }}
+                                                            data={dataVariables}
+                                                            uset={true}
+                                                            optionDesc="domaindesc"
+                                                            optionValue="domainvalue"
+                                                        />
+                                                    </div>)
+                                            })}
+                                        </div>
+                                    }
+                                </div>
+                                <div className="row-zyx" >
+                                    <FieldSelect
+                                        fregister={{
+                                            ...register(`reminderperiod`, {
+                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                            })
+                                        }}
+                                        label={t(langKeys.reminderperiod)}
+                                        className="col-6"
+                                        valueDefault={getValues('reminderperiod')}
+                                        onChange={(value) => { setValue('reminderperiod', (value?.domainvalue || "")) }}
+                                        error={errors?.reminderperiod?.message}
+                                        data={dataRange}
+                                        uset={true}
+                                        prefixTranslation=""
+                                        optionDesc="domaindesc"
+                                        optionValue="domainvalue"
+                                    />
+                                    <FieldEdit
+                                        fregister={{
+                                            ...register(`reminderfrecuency`, {
+                                                validate: (value: any) => (value && value >= 0) || t(langKeys.field_required)
+                                            })
+                                        }}
+                                        label={t(langKeys.value)}
+                                        className="col-6"
+                                        type='number'
+                                        InputProps={{ inputProps: { min: 0 } }}
+                                        valueDefault={getValues('reminderfrecuency')}
+                                        onChange={(value) => { setValue('reminderfrecuency', value) }}
+                                        error={errors?.reminderfrecuency?.message}
+                                    />
+                                </div>
+                            </>
+                        }
+                    </div>
+                </AccordionDetails>
+            </Accordion>
+            <Accordion
+                style={{ marginBottom: '8px' }}
+                defaultExpanded={false}
+                expanded={accordionIndex === 3}
+                onChange={handleAccordion(3)}
+            >
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls='panel-reminder-content'
+                    id='panel-reminder-header'
+                >
+                    <Typography
+                        style={{fontWeight: 'bold', flexBasis: '100%'}}
+                    >
+                        {t(langKeys.appointment_cancellation)}
+                    </Typography>
+                    <Typography>
+                        {
+                            (getValues("statusreminder") === 'ACTIVO'
+                            ? t(langKeys.active)
+                            : t(langKeys.inactive)
+                            ).toUpperCase()
+                        }
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <div style={{ width: '100%' }}>
+                        <div className="row-zyx" >
+                            <FieldSelect
+                                label={t(langKeys.status)}
+                                className="col-6"
+                                valueDefault={getValues("statusreminder")}
+                                onChange={(value) => {
+                                    setValue('statusreminder', (value?.domainvalue || ""));
+                                    trigger("statusreminder");
+                                }}
+                                error={errors?.statusreminder?.message}
+                                data={dataStatus}
+                                uset={true}
+                                prefixTranslation="status_"
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                            />
+                        </div>
+
+                        {getValues("statusreminder") === "ACTIVO" &&
+                            <>
+                                <div className="row-zyx" >
+
+                                    <FieldSelect
+                                        fregister={{
+                                            ...register(`remindertype`, {
+                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                            })
+                                        }}
+                                        label={t(langKeys.notificationtype)}
+                                        className="col-6"
+                                        valueDefault={getValues("remindertype")}
+                                        onChange={(value) => {
+                                            setValue('remindertype', (value?.val || ""))
+                                            onSelectTemplateReminderEmail(null)
+                                            onSelectTemplateReminderHSM(null)
+                                            trigger("remindertype")
+                                        }}
+                                        error={errors?.remindertype?.message}
+                                        data={[
+                                            { desc: "HSM", val: "HSM" },
+                                            { desc: t(langKeys.email), val: "EMAIL" },
+                                            { desc: `HSM + ${t(langKeys.email)}`, val: "EMAIL/HSM" },
+                                        ]}
+                                        optionDesc="desc"
+                                        optionValue="val"
+                                    />
+                                </div>
+                                <div className="row-zyx" >
+                                    {getValues("remindertype").includes("EMAIL") &&
+                                        <div className="col-6" >
+                                            <div style={{ paddingBottom: 10, fontWeight: "bold", fontSize: "1.1em" }}>{t(langKeys.email)}</div>
+                                            <FieldSelect
+                                                fregister={{
+                                                    ...register(`remindermailtemplateid`, {
+                                                        validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
+                                                    })
+                                                }}
+                                                label={t(langKeys.notificationtemplate)}
+                                                className="col-6"
+                                                valueDefault={getValues('remindermailtemplateid')}
+                                                error={errors?.remindermailtemplateid?.message || dataTemplates.filter(x => x.type === "MAIL").length===0?t(langKeys.noavailabletemplates):""}
+                                                onChange={onSelectTemplateReminderEmail}
+                                                data={dataTemplates.filter(x => x.type === "MAIL")}
+                                                optionDesc="name"
+                                                optionValue="id"
+                                            />
+                                            <React.Fragment>
+                                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                                    {t(langKeys.message)}
+                                                    <Tooltip title={`${t(langKeys.calendar_messate_tooltip)}`} placement="top-start">
+                                                        <InfoIcon style={{ padding: "5px 0 0 5px" }} />
+                                                    </Tooltip>
+                                                </Box>
+                                                <div dangerouslySetInnerHTML={{ __html: bodyMessageReminderEmail }} />
+                                            </React.Fragment>
+                                        </div>
+                                    }
+                                    {getValues("remindertype").includes("HSM") &&
+                                        <div className="col-6" >
+                                            <div style={{ paddingBottom: 10, fontWeight: "bold", fontSize: "1.1em" }}>{t(langKeys.hsm)}</div>
+                                            <FieldSelect
+                                                fregister={{
+                                                    ...register(`reminderhsmtemplateid`, {
+                                                        validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
+                                                    })
+                                                }}
+                                                label={t(langKeys.notificationtemplate)}
+                                                className="col-6"
+                                                valueDefault={getValues('reminderhsmtemplateid')}
+                                                error={errors?.reminderhsmtemplateid?.message || dataTemplates.filter(x => x.type === "MAIL").length===0?t(langKeys.noavailabletemplates):""}
+                                                onChange={onSelectTemplateReminderHSM}
+                                                data={dataTemplates.filter(x => x.type === "HSM")}
+                                                optionDesc="name"
+                                                optionValue="id"
+                                            />
+                                            <div style={{ paddingTop: 10 }}>
+                                                <FieldSelect
+                                                    label={t(langKeys.communicationchannel)}
+                                                    className="col-12"
+                                                    valueDefault={getValues('reminderhsmcommunicationchannelid')}
+                                                    error={errors?.reminderhsmcommunicationchannelid?.message}
+                                                    onChange={(value) => setValue('reminderhsmcommunicationchannelid', value?.communicationchannelid || 0)}
+                                                    data={dataChannels.filter(x => x.type.startsWith('WHA'))}
+                                                    optionDesc="communicationchanneldesc"
+                                                    optionValue="communicationchannelid"
+                                                />
+                                            </div>
+                                            <React.Fragment>
+                                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                                    {t(langKeys.message)}
+                                                    <Tooltip title={`${t(langKeys.calendar_messate_tooltip)}`} placement="top-start">
+                                                        <InfoIcon style={{ padding: "5px 0 0 5px" }} />
+                                                    </Tooltip>
+                                                </Box>
+                                                <div dangerouslySetInnerHTML={{ __html: bodyMessageReminderHSM }} />
+                                            </React.Fragment>
+                                        </div>
+                                    }
+                                </div>
+                                <div className="row-zyx" >
+                                    {getValues("remindertype").includes("EMAIL") &&
+                                        <div className="col-6" >
+                                            {Object.keys(emailVariables).map((x, i) => {
+                                                return (
+                                                    <div key={`emailvariables-${i + 1}`} style={{ paddingTop: 10 }}>
+                                                        <FieldSelect
+                                                            label={`Email Variable #${i + 1}`}
+                                                            className="col-6"
+                                                            valueDefault={emailVariables[x]}
+                                                            onChange={(value) => { setEmailVariables({ ...emailVariables, [x]: value?.domainvalue || "" }) }}
+                                                            data={dataVariables}
+                                                            uset={true}
+                                                            optionDesc="domaindesc"
+                                                            optionValue="domainvalue"
+                                                        />
+                                                    </div>)
+                                            })}
+                                        </div>
+                                    }
+                                    {getValues("remindertype").includes("HSM") &&
+                                        <div className="col-6" >
+                                            {Object.keys(hsmVariables).map((x, i) => {
+                                                return (
+                                                    <div key={`hsmvariables-${i + 1}`} style={{ paddingTop: 10 }}>
+                                                        <FieldSelect
+                                                            label={`Email Variable #${i + 1}`}
+                                                            className="col-6"
+                                                            valueDefault={hsmVariables[x]}
+                                                            onChange={(value) => { setHsmVariables({ ...hsmVariables, [x]: value?.domainvalue || "" }) }}
+                                                            data={dataVariables}
+                                                            uset={true}
+                                                            optionDesc="domaindesc"
+                                                            optionValue="domainvalue"
+                                                        />
+                                                    </div>)
+                                            })}
+                                        </div>
+                                    }
+                                </div>
+                                <div className="row-zyx" >
+                                    <FieldSelect
+                                        fregister={{
+                                            ...register(`reminderperiod`, {
+                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                            })
+                                        }}
+                                        label={t(langKeys.reminderperiod)}
+                                        className="col-6"
+                                        valueDefault={getValues('reminderperiod')}
+                                        onChange={(value) => { setValue('reminderperiod', (value?.domainvalue || "")) }}
+                                        error={errors?.reminderperiod?.message}
+                                        data={dataRange}
+                                        uset={true}
+                                        prefixTranslation=""
+                                        optionDesc="domaindesc"
+                                        optionValue="domainvalue"
+                                    />
+                                    <FieldEdit
+                                        fregister={{
+                                            ...register(`reminderfrecuency`, {
+                                                validate: (value: any) => (value && value >= 0) || t(langKeys.field_required)
+                                            })
+                                        }}
+                                        label={t(langKeys.value)}
+                                        className="col-6"
+                                        type='number'
+                                        InputProps={{ inputProps: { min: 0 } }}
+                                        valueDefault={getValues('reminderfrecuency')}
+                                        onChange={(value) => { setValue('reminderfrecuency', value) }}
+                                        error={errors?.reminderfrecuency?.message}
+                                    />
+                                </div>
+                            </>
+                        }
+                    </div>
+                </AccordionDetails>
+            </Accordion>
         </div>
     )
 }

@@ -20,6 +20,8 @@ export const langKeys = {
     orders: "orders",
     orderlist: "orderlist",
     ordernumber: "ordernumber",
+    reschedule_appointment:"reschedule_appointment",
+    appointment_cancellation:"appointment_cancellation",
     orderstatus: "orderstatus",
     ordersdetail: "ordersdetail",
     timeconnected: "timeconnected",
