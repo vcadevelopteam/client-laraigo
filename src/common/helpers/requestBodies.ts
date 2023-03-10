@@ -3149,7 +3149,7 @@ export const insCalendar = ({
     availability,
     timebeforeeventduration, timebeforeeventunit, timeaftereventduration, timeaftereventunit,
     increments,
-    operation, reminderperiod, reminderfrecuency, reminderhsmmessage,
+    operation, reminderperiod, reminderfrecuency, reminderhsmmessage,notificationmessageemail,messagetemplateidemail,
     communicationchannelid, notificationmessage, reminderenable, remindertype, reminderhsmtemplateid, remindermailmessage, remindermailtemplateid, reminderhsmcommunicationchannelid
 }: Dictionary): IRequestBody => ({
     method: "UFN_CALENDAREVENT_INS",
@@ -3166,7 +3166,10 @@ export const insCalendar = ({
         reminderhsmtemplateid: reminderhsmtemplateid || 0, reminderhsmcommunicationchannelid,
         remindermailtemplateid: remindermailtemplateid || 0, reminderhsmmessage,
         operation, notificationmessage, reminderenable, remindertype, remindermailmessage,
-        communicationchannelid: communicationchannelid || 0
+        communicationchannelid: communicationchannelid || 0,
+        notificationmessageemail: notificationmessageemail, 
+        messagetemplateidemail,
+        maximumcapacity:''
     }
 });
 

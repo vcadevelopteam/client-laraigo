@@ -159,7 +159,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
             operation: operation === "DUPLICATE" ? "INSERT" : operation,
             communicationchannelid: row?.communicationchannelid || 0,
             hsmtemplateid: row?.messagetemplateid || 0,
-            emailtemplateid: row?.emailtemplateid || 0,
+            emailtemplateid: row?.messagetemplateidemail || 0,
             hsmtemplatename: row?.hsmtemplatename || "",
             emailtemplatename: row?.emailtemplatename || "",
             intervals: row?.availability || [],
@@ -240,7 +240,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
     useEffect(() => {
         if (row) {
             setTemplateVariables(getvariableValues(row?.messagetemplateid, row.notificationmessage))
-            setTemplateVariablesEmail(getvariableValues(row?.emailtemplateid, row.remindermailmessage))
+            setTemplateVariablesEmail(getvariableValues(row?.emailtemplateid, row.notificationmessageemail))
             setEmailVariables(getvariableValues(row?.remindermailtemplateid, row.remindermailmessage))
             setHsmVariables(getvariableValues(row?.reminderhsmtemplateid, row.reminderhsmmessage))
             if (row?.credentialsdate) {
@@ -291,11 +291,13 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                     locationtype: "",
                     eventlink: `${eventURL.host}${eventURL.pathname}`,
                     messagetemplateid: data.hsmtemplateid,
+                    messagetemplateidemail: data.emailtemplateid,
                     availability: data.intervals,
                     timeduration: data.duration,
                     timeunit: data.durationtype,
                     reminderenable: data.statusreminder === "ACTIVO",
                     notificationmessage: replaceVariables(templateVariables, bodyMessage),
+                    notificationmessageemail: replaceVariables(templateVariablesEmail, bodyMessageEmail),
                     remindermailmessage: replaceVariables(emailVariables, bodyMessageReminderEmail),
                     reminderhsmmessage: replaceVariables(hsmVariables, bodyMessageReminderHSM),
                     daterange: dateinterval,
