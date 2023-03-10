@@ -61,9 +61,10 @@ interface TabDetailProps {
     form: UseFormReturn<any>;
     row: any;
     multiData: MultiData[];
+    settype?:(x:any)=>void;
 }
 
-const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData }) => {
+const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData,settype }) => {
     const classes = useStyles();
     const { t } = useTranslation();
     const user = useSelector(state => state.login.validateToken.user);
@@ -95,6 +96,7 @@ const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData }) => {
                     valueDefault={row?.type || ""}
                     onChange={(value) => {
                         setValue('type', value?.domainvalue|| '')
+                        settype && settype(value?.domainvalue|| '')
                         setFieldFlags({...fieldFlags,showChannels: value?.domainvalue === "LARAIGO"})
                         setValue('communicationchannelid', '')
                         setValue('usergroup', '')
@@ -722,6 +724,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row }, setViewSelected, m
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [pageSelected, setPageSelected] = useState(0);
+    const [type, settype] = useState(row?.type || '');
     const form = useForm({
         defaultValues: {
             type: row?.type || '',
@@ -846,10 +849,10 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row }, setViewSelected, m
                     onChange={(_, value) => setPageSelected(value)}
                 >
                     <AntTab label={t(langKeys.sla)} />
-                    <AntTab label={t(langKeys.criticalitymatrix)} />
-                    <AntTab label={t(langKeys.servicetimes)} />
+                    {type==='SD' && <AntTab label={t(langKeys.criticalitymatrix)} />}
+                    {type==='SD' && <AntTab label={t(langKeys.servicetimes)} />}
                 </Tabs>
-                {pageSelected === 0 && <TabDetailSLA form={form} row={row} multiData={multiData} />}
+                {pageSelected === 0 && <TabDetailSLA form={form} row={row} multiData={multiData} settype={settype}/>}
                 {pageSelected === 1 && <TabCriticalityMatrix form={form} row={row} multiData={multiData} />}
                 {pageSelected === 2 && <TabServiceTimes form={form} row={row} multiData={multiData} />}
             </form>

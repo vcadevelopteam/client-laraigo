@@ -1,4 +1,4 @@
-import { DashboardTemplateSave, Dictionary, IChannel, IChatWebAdd, ICrmLead, ICrmLeadActivitySave, ICrmLeadHistoryIns, ICrmLeadNoteSave, ICrmLeadSel, ICrmLeadTagsSave, ILead, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
+import { DashboardTemplateSave, Dictionary, IChannel, IChatWebAdd, ICrmLead, ICrmLeadActivitySave, ICrmLeadHistoryIns, ICrmLeadNoteSave, ICrmLeadSel, ICrmLeadTagsSave, ILead, IPerson, IRequestBody, IRequestBodyPaginated, ISDLeadSel, IServiceDeskLead, IServiceDeskLead2 } from '@types';
 import { uuidv4 } from '.';
 
 type ID = string | number;
@@ -2331,10 +2331,28 @@ export const getColumnsSel = (id: number, lost: boolean = false): IRequestBody =
         lost
     }
 })
+export const getColumnsSDSel = (id: number, lost: boolean = false): IRequestBody => ({
+    method: "UFN_COLUMN_SD_SEL",
+    key: "UFN_COLUMN_SD_SEL",
+    parameters: {
+        id: id,
+        all: true,
+        lost
+    }
+})
 
 export const getLeadsSel = (params: ICrmLeadSel): IRequestBody => ({
     method: "UFN_LEAD_SEL",
     key: "UFN_LEAD_SEL",
+    parameters: {
+        ...params,
+        all: params.id === 0,
+    }
+})
+
+export const getLeadsSDSel = (params: ISDLeadSel): IRequestBody => ({
+    method: "UFN_LEAD_SD_SEL",
+    key: "UFN_LEAD_SD_SEL",
     parameters: {
         ...params,
         all: params.id === 0,
@@ -2426,6 +2444,17 @@ export const insLead = ({ leadid, description, status, type, expected_revenue, d
         email,
         phase,
         operation
+    }
+});
+
+export const insSDLead = (lead: IServiceDeskLead2|IServiceDeskLead, operation: "UPDATE" | "INSERT" | "DELETE" = "INSERT"): IRequestBody => ({
+    method: 'UFN_LEAD_SD_INS',
+    key: "UFN_LEAD_SD_INS",
+    parameters: {
+        ...lead,
+        id: lead.leadid,
+        username: null,
+        operation, 
     }
 });
 
@@ -2540,6 +2569,18 @@ export const getLeadExport = ({ filters, sorts, startdate, enddate, ...allParame
         contact: allParameters['contact'] ? allParameters['contact'] : "",
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
+});
+
+export const insArchiveServiceDesk = (lead: IServiceDeskLead2|IServiceDeskLead): IRequestBody => ({
+    method: 'UFN_LEAD_SD_INS',
+    key: "UFN_LEAD_SD_INS",
+    parameters: {
+        ...lead,
+        id: lead.leadid,
+        username: null,
+        status: "CERRADO",
+        operation: "UPDATE",
+    },
 });
 
 export const insArchiveLead = (lead: ICrmLead): IRequestBody => ({

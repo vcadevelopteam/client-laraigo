@@ -60,6 +60,78 @@ export interface ICrmLead {
     persontype: string;
     persontypedesc?: string;
 }
+export interface IServiceDeskLead2 {
+    leadid: number;
+    description:string, 
+    ticketnum:string, 
+    type:string, 
+    personid:string, 
+    company:string, 
+    email:string, 
+    phone:string, 
+    urgency:string, 
+    impact:string, 
+    priority:string,  
+    tags:string, 
+    leadgroups:string, 
+    userid:string, 
+    columnid:string, 
+    index:string, 
+    status:string, 
+    column_uuid:string, 
+}
+
+export interface IServiceDeskLead {
+    changeby: string;
+    changedate: string;
+    column_uuid: string;
+    columnid: number;
+    conversationid: number | null;
+    corpid: number;
+    createby: string;
+    createdate: string;
+    date_deadline: string;
+    description: string;
+    displayname: string;
+    expected_revenue: string;
+    index: number;
+    leadid: number;
+    orgid: number;
+    personcommunicationchannel: string;
+    priority: string | undefined;
+    /**ACTIVO, CERRADO, ELIMINADO */
+    status: string;
+    /**separado por comas */
+    tags: string;
+    type: string;
+    phone: string | null;
+    firstname?: string | null;
+    lastname?: string | null;
+    documenttype?: string | null;
+    documentnumber?: string | null;
+    email: string | null;
+    personid?: bigint;
+    /**asesor */
+    userid: string | number | null;
+    phase: string | null;
+
+    /**separado por comas */
+    leadproduct: string;
+    campaignid: number;
+    /**descripción de la campaña (campaignid) */
+    campaign: string;
+    persontypedesc?: string;
+    ticketnum?:string;
+    sd_request?: string;
+    company?: string;
+    impact?: string;
+    sla_date?: string | null;
+    resolution_date?: string | null;
+    leadgroups?: string;
+    urgency?: string;
+    first_contact_date?: string | null;
+    first_contact_deadline?: string | null;
+}
 
 export interface ICRmSaveLead {
 	id: number;
@@ -176,6 +248,7 @@ export interface IcrmLeadActivity {
 }
 
 export interface ICrmColumn {
+    criticality?: any;
     changeby: string;
     changedate: string;
     column_uuid: string;
@@ -260,5 +333,21 @@ export interface ICrmLeadSel {
     /**id del usuario de la sesión - OBLIGATORIO no puede ser cero */
     supervisorid: number;
     persontype: string;
+	all?: boolean;
+}
+
+export interface ISDLeadSel {
+    /**0 ==> all: true */
+    id: number;
+    /**customer fullname filter */
+	fullname: string;
+    /**products filter */
+	leadproduct: string;
+    /**tags filter */
+    tags: string; 
+    /**filtro asesor por ID */
+    supervisorid: number;
+    company: string;
+    groups: string;
 	all?: boolean;
 }
