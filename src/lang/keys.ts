@@ -24,6 +24,7 @@ export const langKeys = {
   ordernumber: "ordernumber",
   userwhoreported: "userwhoreported",
   reportdate: "reportdate",
+  needslaconfig: "needslaconfig",
   dateofresolution: "dateofresolution",
   dateofresolutiondeadline: "dateofresolutiondeadline",
   assigneduser: "assigneduser",

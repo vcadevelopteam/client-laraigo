@@ -1173,6 +1173,7 @@ const translation: LangKeys = {
   showmore: "Mostrar más",
   newcorporation: "Nueva Corporación",
   reportdate: "Fecha de reporte",
+  needslaconfig: "Falta configurar combinación en SLA",
   userwhoreported: "Usuario que reportó",
   dateofresolution: "Fecha de resolución",
   dateofresolutiondeadline: "Fecha límite de resolución",

@@ -486,6 +486,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         register('impact', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('urgency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('leadgroups');
+        register('priority');
         register('email', {
             validate: {
                 isemail: (value) => ((!value || (/\S+@\S+\.\S+/.test(value))) || t(langKeys.emailverification) + "") 
@@ -509,48 +510,53 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         console.log(errors)
         if (allOk) {
             const data = getValues();
-            const callback = () => {
-                const lostPhase = phases.data.find(x => x.description.toLowerCase() === 'lost');
-                if (lostPhase?.columnid === data.columnid) {
-                    data.status = "CERRADO";
-                }
+            if (!data.priority){
+                dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.needslaconfig) }))
+            } else{
 
-                if (edit) {
-                    dispatch(saveLeadAction([
-                        insSDLead(data, data.operation),
-                        ...leadTagsChanges.current.map(leadHistoryIns),
-                    ], false));
-                } else {
-                    dispatch(saveLeadWithFiles(async (uploader) => {
-                        const notes = (data.notes || []) as ICrmLeadNoteSave[];
-                        for (let i = 0; i < notes.length; i++) {
-                            // subir los archivos de la nota que se va a agregar
-                            if (notes[i].media && Array.isArray(notes[i].media)) {
-                                const urls: String[] = [];
-                                for (const fileToUpload of notes[i].media as File[]) {
-                                    const url = await uploader(fileToUpload);
-                                    urls.push(url);
+                const callback = () => {
+                    const lostPhase = phases.data.find(x => x.description.toLowerCase() === 'lost');
+                    if (lostPhase?.columnid === data.columnid) {
+                        data.status = "CERRADO";
+                    }
+                    debugger
+                    if (edit) {
+                        dispatch(saveLeadAction([
+                            insSDLead(data, data.operation),
+                            ...leadTagsChanges.current.map(leadHistoryIns),
+                        ], false));
+                    } else {
+                        dispatch(saveLeadWithFiles(async (uploader) => {
+                            const notes = (data.notes || []) as ICrmLeadNoteSave[];
+                            for (let i = 0; i < notes.length; i++) {
+                                // subir los archivos de la nota que se va a agregar
+                                if (notes[i].media && Array.isArray(notes[i].media)) {
+                                    const urls: String[] = [];
+                                    for (const fileToUpload of notes[i].media as File[]) {
+                                        const url = await uploader(fileToUpload);
+                                        urls.push(url);
+                                    }
+                                    notes[i].media = urls.join(',');
                                 }
-                                notes[i].media = urls.join(',');
                             }
-                        }
-
-                        return {
-                            header: insSDLead(data, data.operation),
-                            detail: [
-                                ...notes.map((x: ICrmLeadNoteSave) => leadLogNotesIns(x)),
-                                ...(data.activities || []).map((x: ICrmLeadActivitySave) => leadActivityIns(x)),
-                            ],
-                        };
-                    }, true));
-                }
-            };
-            
-            dispatch(manageConfirmation({
-                visible: true,
-                question: t(langKeys.confirmation_save),
-                callback
-            }))
+    
+                            return {
+                                header: insSDLead(data, data.operation),
+                                detail: [
+                                    ...notes.map((x: ICrmLeadNoteSave) => leadLogNotesIns(x)),
+                                    ...(data.activities || []).map((x: ICrmLeadActivitySave) => leadActivityIns(x)),
+                                ],
+                            };
+                        }, true));
+                    }
+                };
+                
+                dispatch(manageConfirmation({
+                    visible: true,
+                    question: t(langKeys.confirmation_save),
+                    callback
+                }))
+            }
         }
     };
 
@@ -616,24 +622,8 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         }else{
             setValue('priority', '')
         }
+        trigger('priority')
     }
-
-    
-    useEffect(() => {
-        let impact= getValues('impact')
-        let urgency= getValues('urgency')
-        if(!!impact && !!urgency && !!slarules){
-            let filtereddata= slarules.data.filter(x=>x.type === "SD")
-            if(filtereddata.length>0){
-                let calcCriticallity=filtereddata?.[0].criticality.filter((x:any)=>x.impact===impact && x.urgency===urgency)
-                setValue('priority', calcCriticallity[0]?.priority||'')
-            }else{
-                setValue('priority', '')
-            }
-        }else{
-            setValue('priority', '')
-        } 
-    }, [slarules]);
 
     useEffect(() => {
         if (phases.loading) return;

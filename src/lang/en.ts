@@ -103,6 +103,7 @@ const translation: LangKeys = {
   hours: 'Hours',
   reportdate: "Report date",
   userwhoreported: "User who reported",
+  needslaconfig: "Missing to configure combination in SLA",
   dateofresolution: "Date of resolution",
   dateofresolutiondeadline: "Date of resolution deadline",
   assigneduser: "Assigned user",
