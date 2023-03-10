@@ -3169,7 +3169,7 @@ export const insCalendar = ({
         communicationchannelid: communicationchannelid || 0,
         notificationmessageemail: notificationmessageemail, 
         messagetemplateidemail,
-        maximumcapacity:''
+        maximumcapacity:0
     }
 });
 
