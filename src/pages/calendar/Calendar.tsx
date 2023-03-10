@@ -137,7 +137,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
     const [emailVariables, setEmailVariables] = useState<any>({});
     const [hsmVariables, setHsmVariables] = useState<any>({});
     const [bodyMessage, setBodyMessage] = useState(dataTemplates.filter(x => x.id === (row?.messagetemplateid || ""))[0]?.body || "");
-    const [bodyMessageEmail, setBodyMessageEmail] = useState(dataTemplates.filter(x => x.id === (row?.emailtemplateid || ""))[0]?.body || "");
+    const [bodyMessageEmail, setBodyMessageEmail] = useState(dataTemplates.filter(x => x.id === (row?.messagetemplateidemail || ""))[0]?.body || "");
     const [bodyMessageReminderEmail, setBodyMessageReminderEmail] = useState(dataTemplates.filter(x => x.id === (row?.remindermailtemplateid || ""))[0]?.body || "");
     const [bodyMessageReminderHSM, setBodyMessageReminderHSM] = useState(dataTemplates.filter(x => x.id === (row?.reminderhsmtemplateid || ""))[0]?.body || "");
     const user = useSelector(state => state.login.validateToken.user);
