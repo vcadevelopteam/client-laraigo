@@ -1,37 +1,38 @@
+/* eslint-disable no-useless-escape */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, IconButton, Checkbox, Tabs, Avatar, Paper, InputAdornment } from '@material-ui/core';
-import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, RadioGroudFieldEdit, TitleDetail, AntTabPanel, FieldEditArray, FieldMultiSelectVirtualized, DialogZyx, FieldEditMulti } from 'components';
+import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, RadioGroudFieldEdit, TitleDetail, AntTabPanel, FieldEditArray, DialogZyx, FieldEditMulti } from 'components';
 import { RichText } from 'components/fields/RichText';
 import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useRouteMatch } from 'react-router';
 import PhoneIcon from '@material-ui/icons/Phone';
-import PersonIcon from '@material-ui/icons/Person';
 import { getDomainsByTypename } from 'store/person/actions';
 import {
-    insLead2, adviserSel, getPaginatedPersonLead as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSel, insArchiveLead, leadHistorySel,
-    getLeadsSel, leadHistoryIns
+    adviserSel, getPaginatedPersonLead as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSDSel, leadHistorySel,
+    leadHistoryIns, getLeadsSDSel, insSDLead, getSLASel, insArchiveServiceDesk
 } from 'common/helpers';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import {
-    archiveLead, getAdvisers, getLead, getLeadActivities, getLeadHistory, getLeadLogNotes, getLeadPhases, markDoneActivity, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadHistory,
+    getAdvisers, getLead, getLeadActivities, getLeadHistory, getLeadLogNotes, getLeadPhases, markDoneActivity, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadHistory,
     resetGetLeadLogNotes, resetGetLeadPhases, resetMarkDoneActivity, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLeadActivity, saveLeadLogNote, saveLeadWithFiles, saveLead as saveLeadAction,
-    resetGetLeadProductsDomain, getLeadProductsDomain, getLeadTagsDomain, getPersonType, resetGetLeadTagsDomain, getLeadTemplates, getLeadChannels, resetGetLeadChannels, resetGetPersonType
+    getLeadTagsDomain, resetGetLeadTagsDomain, getLeadTemplates, getLeadChannels, resetGetLeadChannels
 } from 'store/lead/actions';
-import { Dictionary, ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadHistory, ICrmLeadHistoryIns, ICrmLeadNote, ICrmLeadNoteSave, IDomain, IFetchData, IPerson, IServiceDeskLead } from '@types';
+import { Dictionary, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadHistory, ICrmLeadHistoryIns, ICrmLeadNote, ICrmLeadNoteSave, IDomain, IFetchData, IPerson, IServiceDeskLead } from '@types';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import { Rating, Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineSeparator } from '@material-ui/lab';
+import { Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineSeparator } from '@material-ui/lab';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import TableZyx from 'components/fields/table-paginated';
-import { Add, AttachFile, Clear, Close, GetApp, Create, Done, FileCopy, Info, Mood } from '@material-ui/icons';
+import { AttachFile, Clear, Close, GetApp, Create, Done, FileCopy, Info, Mood } from '@material-ui/icons';
 import { getPersonListPaginated, resetGetPersonListPaginated } from 'store/person/actions';
 import clsx from 'clsx';
-import { AccessTime as AccessTimeIcon, Archive as ArchiveIcon, Flag as FlagIcon, Cancel as CancelIcon, Note as NoteIcon, LocalOffer as LocalOfferIcon, LowPriority as LowPriorityIcon, Star as StarIcon, History as HistoryIcon, TrackChanges as TrackChangesIcon } from '@material-ui/icons';
+import { AccessTime as AccessTimeIcon, Flag as FlagIcon, Cancel as CancelIcon, Note as NoteIcon, LocalOffer as LocalOfferIcon, LowPriority as LowPriorityIcon, Star as StarIcon, History as HistoryIcon, TrackChanges as TrackChangesIcon } from '@material-ui/icons';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { getCollection, resetMain } from 'store/main/actions';
 import { AntTab } from 'components';
@@ -43,6 +44,7 @@ import { sendHSM } from 'store/inbox/actions';
 import { setModalCall, setPhoneNumber } from 'store/voximplant/actions';
 import MailIcon from '@material-ui/icons/Mail';
 import DialogInteractions from 'components/inbox/DialogInteractions';
+import { archiveLead, getGroups, getImpact, getPriority, getUrgency, resetGetGroups, resetGetImpact, resetGetPriority, resetGetUrgency } from 'store/servicedesk/actions';
 
 const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
 
@@ -129,26 +131,6 @@ const useLeadFormStyles = makeStyles(theme => ({
     },
 }));
 
-function returnpriority(prio:number) {
-    switch (prio){
-        case 3:
-            return 'HIGH'
-        case 2:
-            return 'MEDIUM'
-        default:
-            return "LOW"
-    }    
-}
-function returnNumberprio(prio:string) {
-    switch (prio){
-        case 'HIGH':
-            return 3
-        case 'MEDIUM':
-            return 2
-        default:
-            return 1
-    }    
-}
 interface DialogSendTemplateProps {
     setOpenModal: (param: any) => void;
     openModal: boolean;
@@ -403,8 +385,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
     const history = useHistory();
     const match = useRouteMatch<{ id: string, columnid?: string, columnuuid?: string }>();
     const [phasemenu, setphasemenu] = useState<any[]>([])
-    const [prioritycontrol, setprioritycontrol] = useState(1)
-    const [values, setValues] = useState<ICrmLead>({
+    const [values, setValues] = useState<IServiceDeskLead>({
         column_uuid: match.params.columnuuid || '',
         columnid: Number(match.params.columnid),
         priority: 'LOW',
@@ -424,12 +405,14 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
     const saveLead = useSelector(state => state.servicedesk.saveLead);
     const leadHistory = useSelector(state => state.servicedesk.leadHistory);
     const updateLeadTagProcess = useSelector(state => state.servicedesk.updateLeadTags);
-    const leadProductsDomain = useSelector(state => state.servicedesk.leadProductsDomain);
     const leadTagsDomain = useSelector(state => state.servicedesk.leadTagsDomain);
-    const personTypeDomain = useSelector(state => state.servicedesk.personTypeDomain);
+    const slarules = useSelector(state => state.servicedesk.leadPhases);
+    const dataUrgency = useSelector(state => state.servicedesk.urgency);
+    const dataImpact = useSelector(state => state.servicedesk.impact);
+    const dataPriority = useSelector(state => state.servicedesk.priority);
+    const dataGroups = useSelector(state => state.servicedesk.groups);
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
 
-    const leadProductsChanges = useRef<ICrmLeadHistoryIns[]>([]);
     const leadTagsChanges = useRef<ICrmLeadHistoryIns[]>([]);
     const [openDialogTemplate, setOpenDialogTemplate] = useState(false)
     const voxiConnection = useSelector(state => state.voximplant.connection);
@@ -444,7 +427,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
     
     const openDialogInteractions = useCallback((row: any) => {
         setOpenModal(true);
-        setRowSelected({ conversationid: 9306057, displayname: values?.displayname, ticketnum: "0019712" })//TODO: cambiar por el ticketnum
+        setRowSelected({ conversationid: getValues('conversationid'), displayname: getValues('displayname'), ticketnum: getValues('ticketnum') })
     }, []);
 
     useEffect(() => {
@@ -455,24 +438,33 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         defaultValues: {
             leadid: 0,
             description: '',
-            status: 'ACTIVO',
-            type: 'NINGUNO',
-            expected_revenue: '',
-            date_deadline: '',
-            tags: '',
-            personcommunicationchannel: '',
-            priority: 'LOW',
-            conversationid: 0,
+            sd_request: '',
+            ticketnum: '',
+            createdate: null,
+            company: '',
+            phone: '',
+            impact: '',
+            sla_date: null,
+            resolution_date: null,
+            leadgroups: '',
+            type: '',
+            email: '',
             columnid: Number(match.params.columnid),
             column_uuid: match.params.columnuuid || '',
-            index: 0,
-            phone: '',
-            email: '',
-            operation: "INSERT",
+            priority: '',
+            urgency: '',
+            first_contact_date: null,
+            first_contact_deadline: null,
+            tags: '',
             userid: 0,
+            status: 'ACTIVO',
+            date_deadline: '',
+            personcommunicationchannel: '',
+            conversationid: 0,
+            index: 0,
+            operation: "INSERT",
             phase: '',
 
-            leadproduct: '',
             persontype: '',
             campaignid: 0,
             personid: 0,
@@ -486,29 +478,26 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
 
     const registerFormFieldOptions = useCallback(() => {
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('expected_revenue', {
-            validate: (value): any => {
-                if (!value || value.length === 0) {
-                    return t(langKeys.field_required);
-                } else if (Number(value) < 0) {
-                    return t(langKeys.field_nonnegative);
-                }
-
-                return undefined;
-            }
-        });
-        register('date_deadline', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('tags', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('personcommunicationchannel');
-        register('userid', { validate: (value) => ((value && value > 0) ? true : t(langKeys.field_required) + "") });
-        register('columnid', { validate: (value) => ((value !== null && value !== undefined && value !== '') || t(langKeys.field_required) + "") });
-        register('leadproduct', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('sd_request');
+        register('type');
+        register('createdate');
+        register('company');
+        register('phone');
+        register('impact', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('urgency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('leadgroups');
         register('email', {
             validate: {
-                hasvalue:  (value) => ((value && value.length) ? true : t(langKeys.field_required) + ""),
                 isemail: (value) => ((!value || (/\S+@\S+\.\S+/.test(value))) || t(langKeys.emailverification) + "") 
             }
         });
+        register('first_contact_date');
+        register('first_contact_deadline');
+        register('tags');
+        register('userid');
+        register('date_deadline');
+        register('personcommunicationchannel');
+        register('columnid', { validate: (value) => ((value !== null && value !== undefined && value !== '') || t(langKeys.field_required) + "") });
     }, [register, t]);
 
     React.useEffect(() => {
@@ -517,6 +506,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
 
     const onSubmit = async () => {
         const allOk = await trigger();
+        console.log(errors)
         if (allOk) {
             const data = getValues();
             const callback = () => {
@@ -527,8 +517,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
 
                 if (edit) {
                     dispatch(saveLeadAction([
-                        insLead2(data, data.operation),
-                        ...leadProductsChanges.current.map(leadHistoryIns),
+                        insSDLead(data, data.operation),
                         ...leadTagsChanges.current.map(leadHistoryIns),
                     ], false));
                 } else {
@@ -547,7 +536,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                         }
 
                         return {
-                            header: insLead2(data, data.operation),
+                            header: insSDLead(data, data.operation),
                             detail: [
                                 ...notes.map((x: ICrmLeadNoteSave) => leadLogNotesIns(x)),
                                 ...(data.activities || []).map((x: ICrmLeadActivitySave) => leadActivityIns(x)),
@@ -557,31 +546,26 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                 }
             };
             
-            if (edit || !!values?.displayname){
-                dispatch(manageConfirmation({
-                    visible: true,
-                    question: t(langKeys.confirmation_save),
-                    callback
-                }))
-            }else{
-                dispatch(showSnackbar({ show: true, severity: "warning", message:  t(langKeys.mustassigncustomer)}))
-            }
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_save),
+                callback
+            }))
         }
     };
 
     useEffect(() => {
         if (edit === true) {
             const leadId = match.params.id;
-            dispatch(getLead(getLeadsSel({
+            dispatch(getLead(getLeadsSDSel({
                 id: Number(leadId),
-                campaignid: 0,
                 fullname: '',
-                leadproduct: '',
                 tags: '',
-                userid: "",
-                supervisorid: user?.userid || 0, // Obligatorio sin ser cero
-                persontype: "",
+                leadproduct: '',
+                supervisorid: user?.userid || 0,
                 all: false,
+                company:'',
+                groups:'',
             })));
             dispatch(getLeadActivities(leadActivitySel(leadId)));
             dispatch(getLeadLogNotes(leadLogNotesSel(leadId)));
@@ -589,13 +573,15 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         }
 
         dispatch(getAdvisers(adviserSel()));
-        // dispatch(getLeadPhases(getValuesFromDomain("ESTADOSOPORTUNIDAD")));
-        dispatch(getLeadPhases(getColumnsSel(0, true)));
-        dispatch(getLeadProductsDomain());
+        dispatch(getLeadPhases(getSLASel(0)));
+        dispatch(getLeadPhases(getColumnsSDSel(0, true)));
         dispatch(getLeadTagsDomain(getValuesFromDomain('OPORTUNIDADETIQUETAS')));
         dispatch(getLeadTemplates());
         dispatch(getLeadChannels());
-        dispatch(getPersonType(getValuesFromDomain('TIPOPERSONA')));
+        dispatch(getGroups());
+        dispatch(getUrgency(getValuesFromDomain('URGENCIA')));
+        dispatch(getImpact(getValuesFromDomain('IMPACTO')));
+        dispatch(getPriority(getValuesFromDomain('PRIORIDAD')));
         
         return () => {
             dispatch(resetGetLead());
@@ -608,13 +594,46 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
             dispatch(resetGetLeadLogNotes());
             dispatch(resetSaveLeadLogNote());
             dispatch(resetGetLeadHistory());
-            dispatch(resetGetLeadProductsDomain());
             dispatch(resetGetLeadTagsDomain());
-            dispatch(resetGetPersonType());
             dispatch(resetGetLeadChannels());
+            dispatch(resetGetGroups());
+            dispatch(resetGetUrgency());
+            dispatch(resetGetImpact());
+            dispatch(resetGetPriority());
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [edit, match.params.id, dispatch]);
+
+    function setcriticallity(impact:string, urgency:string){
+        if(!!impact && !!urgency && !!slarules){
+            let filtereddata= slarules.data.filter(x=>x.type === "SD")
+            if(filtereddata.length>0){
+                let calcCriticallity=filtereddata?.[0].criticality.filter((x:any)=>x.impact===impact && x.urgency===urgency)
+                setValue('priority', calcCriticallity[0]?.priority||'')
+            }else{
+                setValue('priority', '')
+            }
+        }else{
+            setValue('priority', '')
+        }
+    }
+
+    
+    useEffect(() => {
+        let impact= getValues('impact')
+        let urgency= getValues('urgency')
+        if(!!impact && !!urgency && !!slarules){
+            let filtereddata= slarules.data.filter(x=>x.type === "SD")
+            if(filtereddata.length>0){
+                let calcCriticallity=filtereddata?.[0].criticality.filter((x:any)=>x.impact===impact && x.urgency===urgency)
+                setValue('priority', calcCriticallity[0]?.priority||'')
+            }else{
+                setValue('priority', '')
+            }
+        }else{
+            setValue('priority', '')
+        } 
+    }, [slarules]);
 
     useEffect(() => {
         if (phases.loading) return;
@@ -649,29 +668,35 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
             }));
         } else if (lead.value && edit) {
             setValues(lead.value!);
-            setprioritycontrol(returnNumberprio(lead.value?.priority||""))
             reset({
                 description: lead.value?.description,
-                status: lead.value?.status,
-                type: 'NINGUNO',
-                expected_revenue: lead.value?.expected_revenue,
-                date_deadline: lead.value?.date_deadline,
-                tags: lead.value?.tags,
-                personcommunicationchannel: lead.value?.personcommunicationchannel,
-                priority: lead.value?.priority,
-                conversationid: lead.value?.conversationid,
-                index: lead.value?.index,
+                sd_request: lead.value?.sd_request,
+                type: lead.value?.type,
+                ticketnum: lead.value?.ticketnum,
+                createdate: lead.value?.createdate,
+                company: lead.value?.company,
                 phone: lead.value?.phone,
-                email: lead.value?.email,
-                operation: "UPDATE",
-                userid: lead.value?.userid,
+                impact: lead.value?.impact,
+                priority: lead.value?.priority,
+                urgency: lead.value?.urgency,
+                sla_date: lead.value?.sla_date,
+                resolution_date: lead.value?.resolution_date,
+                leadgroups: lead.value?.leadgroups,
                 columnid: lead.value?.columnid,
                 column_uuid: lead.value?.column_uuid,
+                email: lead.value?.email,
+                first_contact_date: lead.value?.first_contact_date,
+                first_contact_deadline: lead.value?.first_contact_deadline,
+                tags: lead.value?.tags,
+                userid: lead.value?.userid,
+                status: lead.value?.status,
+                date_deadline: lead.value?.date_deadline,
+                personcommunicationchannel: lead.value?.personcommunicationchannel,
+                conversationid: lead.value?.conversationid,
+                index: lead.value?.index,
+                operation: "UPDATE",
                 leadid: match.params.id,
                 phase: lead.value?.phase,
-
-                leadproduct: lead.value?.leadproduct || '',
-                persontype: lead.value?.persontype || '',
                 campaignid: lead.value?.campaignid,
                 personid: lead.value?.personid||0,
 
@@ -834,25 +859,13 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         }
     }, [updateLeadTagProcess, match.params.id, edit, t, dispatch]);
 
-    useEffect(() => {
-        if (leadProductsDomain.loading) return;
-        if (leadProductsDomain.error) {
-            const errormessage = t(leadProductsDomain.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
-            dispatch(showSnackbar({
-                message: errormessage,
-                severity: "error",
-                show: true,
-            }));
-        }
-    }, [leadProductsDomain, match.params.id, edit, t, dispatch]);
-
     const handleCloseLead = useCallback(() => {
         if (!lead.value) return;
 
         dispatch(manageConfirmation({
             visible: true,
             question: t(langKeys.confirmation_close),
-            callback: () => dispatch(archiveLead(insArchiveLead(lead.value!))),
+            callback: () => dispatch(archiveLead(insArchiveServiceDesk(lead.value!))),
         }))
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [lead, dispatch]);
@@ -890,39 +903,6 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [lead, edit, match.params.id, dispatch]);
 
-    const handleUpdateLeadProducts = useCallback((value: any, action: "NEWPRODUCT" | "REMOVEPRODUCT") => {
-        if (edit === false || !lead.value) return;
-
-        const desc = String(typeof value === "object" ? value?.domaindesc || '-' : value);
-        const productAlreadyHasChange = leadProductsChanges.current.some(x => x.description === desc);
-        const previousProductsIncludeDesc = lead.value.leadproduct?.includes(desc);
-
-        if (
-            (!previousProductsIncludeDesc && !productAlreadyHasChange) ||
-            (action === "REMOVEPRODUCT" && previousProductsIncludeDesc && !productAlreadyHasChange)
-        ) {
-            leadProductsChanges.current.push({
-                description: desc,
-                status: "ACTIVO",
-                type: action,
-                leadid: Number(match.params.id),
-                operation: "INSERT",
-                historyleadid: 0,
-            });
-        } else if (action === "NEWPRODUCT" && !previousProductsIncludeDesc && productAlreadyHasChange) {
-            const historyBody = leadProductsChanges.current.find(x => x.description === desc);
-            if (historyBody) {
-                historyBody.type = action;
-            }
-        } else if (
-            (action === "REMOVEPRODUCT" && !previousProductsIncludeDesc && productAlreadyHasChange) ||
-            (action === "NEWPRODUCT" && previousProductsIncludeDesc && productAlreadyHasChange)
-        ) {
-            leadProductsChanges.current = leadProductsChanges.current.filter(x => x.description !== desc)
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [lead, edit, match.params.id, dispatch]);
-
     const iSProcessLoading = useCallback(() => {
         return (
             saveLead.loading ||
@@ -939,7 +919,6 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
     const onClickSelectPersonModal = useCallback((value: IPerson) => {
         setValue('personcommunicationchannel', "")
         setValue('personid', value?.personid)
-        setValue('persontype', value?.persontype || '')
         setValue('email', value?.email || '')
         setValue('phone', value?.phone || '')
         setExtraTriggers({
@@ -1095,7 +1074,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                 <Trans i18nKey={langKeys.send_sms} />
                             </Button>
                         }
-                        {(edit && lead.value && !isStatusClosed()) && (
+                        {/*((edit && lead.value && !isStatusClosed())) && (
                             <Button
                                 variant="contained"
                                 type="button"
@@ -1106,7 +1085,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                             >
                                 <Trans i18nKey={langKeys.sendToHistory} />
                             </Button>
-                        )}
+                        )*/}
                         {(!isStatusClosed() && !lead.loading) && <Button
                             className={classes.button}
                             variant="contained"
@@ -1127,11 +1106,9 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                 <FieldEdit
                                     label={t(langKeys.request)}
                                     className={classes.field}
-                                    onChange={(value) => setValue('description', value)}
-                                    valueDefault={getValues('description')}
-                                    InputProps={{
-                                        readOnly: true
-                                    }}
+                                    onChange={(value) => setValue('sd_request', value)}
+                                    valueDefault={getValues('sd_request')}
+                                    disabled={true}
                                 />
                                 <div className={classes.field}>
                                     <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">
@@ -1141,157 +1118,27 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                         className={classes.labellink}
                                         onClick={() => openDialogInteractions(lead)}
                                     >
-                                        {"0019712"//TODO:CAMBIAR POR lead?.value?.numeroticket
-                                        }
+                                        {getValues('ticketnum')}
                                     </label>
                                 </div>
-                                {edit ?
-                                    (
-                                        <div className={clsx(classes.fakeInputContainer, classes.field)}>
-                                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                                                <div style={{ flexGrow: 1 }}>
-                                                    <FieldView
-                                                        label={t(langKeys.customer)}
-                                                        value={values?.displayname}
-                                                    />
-                                                </div>                                                
-                                                {(!!lead?.value?.personid) && <IconButton size="small" onClick={(e) => {
-                                                    e.preventDefault();
-                                                    history.push(`/extras/person/${lead?.value?.personid}`)
-                                                }}>
-                                                    <PersonIcon />
-                                                </IconButton>}
-                                            </div>
-                                        </div>
-                                    ) :
-                                    (<div style={{ display: 'flex', flexDirection: 'column' }} className={classes.field}>
-                                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                                            <div style={{ flexGrow: 1 }}>
-                                                <FieldView
-                                                    label={t(langKeys.customer)}
-                                                    value={values?.displayname}
-                                                />
-                                            </div>
-                                            <IconButton
-                                                color="primary"
-                                                onClick={() => setOpenPersonmodal(true)}
-                                                size="small"
-                                                disabled={isStatusClosed() || iSProcessLoading()}
-                                            >
-                                                <Add style={{ height: 22, width: 22 }} />
-                                            </IconButton>
-                                        </div>
-                                        <div style={{ flexGrow: 1, marginTop: (errors?.personcommunicationchannel?.message) ? '29px' : '3px' }} />
-                                        <div style={{ borderBottom: `solid ${(errors?.personcommunicationchannel?.message) ? '2px rgba(250,0,0,1)' : '1px rgba(0,0,0,0.42)'} `, marginBottom: '4px' }}></div>
-                                        <div style={{ display: (errors?.personcommunicationchannel?.message) ? 'inherit' : 'none', color: 'red', fontSize: '0.75rem' }}>{errors?.personcommunicationchannel?.message}</div>
-                                    </div>)
-                                }
                                 <FieldEdit
-                                    label={t(langKeys.email)}
+                                    label={t(langKeys.reportdate)}
                                     className={classes.field}
-                                    onChange={(value) => {setValue('email', value);setExtraTriggers({...extraTriggers, email: value || ''})}}
-                                    valueDefault={getValues('email')}
-                                    error={errors?.email?.message}
-                                    InputProps={{
-                                        readOnly: isStatusClosed() || iSProcessLoading(),
+                                    type="datetime-local"
+                                    onChange={(value) => {
+                                        setValue('createdate', value);
                                     }}
-                                />
-                                <FieldSelect
-                                    label={t(langKeys.personType)}
-                                    className={classes.field}
-                                    valueDefault={getValues('persontype')}
-                                    loading={personTypeDomain.loading}
-                                    data={personTypeDomain.data}
-                                    prefixTranslation="type_personlevel_"
-                                    optionDesc="domainvalue"
-                                    optionValue="domainvalue"
-                                    onChange={(value) => setValue('persontype', value ? value.domainvalue : '')}
-                                    readOnly={isStatusClosed() || iSProcessLoading()}
+                                    valueDefault={(getValues('createdate') as string)?.replace(' ', 'T')?.substring(0, 16)}
+                                    disabled={true}
                                 />
                                 <FieldEdit
-                                    label={t(langKeys.expected_revenue)}
+                                    label={t(langKeys.business)}
                                     className={classes.field}
-                                    valueDefault={getValues('expected_revenue')}
-                                    error={errors?.expected_revenue?.message}
-                                    type="number"
-                                    onChange={(value) => setValue('expected_revenue', value)}
-                                    InputProps={{
-                                        startAdornment: !user ? null : (
-                                            <InputAdornment position="start">
-                                                {user!.currencysymbol}
-                                            </InputAdornment>
-                                        ),
-                                        style: { textAlign: 'right' },
-                                        readOnly: isStatusClosed() || iSProcessLoading(),
+                                    onChange={(value) => {
+                                        setValue('company', value);
                                     }}
-                                    inputProps={{
-                                        style: { textAlign: 'right' },
-                                    }}
-                                />
-                                <FieldMultiSelectFreeSolo
-                                    label={t(langKeys.tags)}
-                                    className={classes.field}
-                                    valueDefault={getValues('tags')}
-                                    onChange={(value: ({ domaindesc: string } | string)[], value2: { action: "create-option" | "remove-option" | "select-option", option: { option: string } }) => {
-                                        const tags = value.map((o: any) => o.domaindesc || o).join();
-                                        setValue('tags', tags);
-
-                                        handleUpdateLeadTags(
-                                            value2.option.option,
-                                            value2.action === "remove-option" ? "REMOVETAG" : "NEWTAG",
-                                        );
-                                    }}
-                                    error={errors?.tags?.message}
-                                    loading={false}
-                                    data={leadTagsDomain.data.concat(getValues('tags').split(',').filter((i: any) => i !== '' && (leadTagsDomain.data.findIndex(x => x.domaindesc === i)) < 0).map((domaindesc: any) => ({ domaindesc })))}
-                                    optionDesc="domaindesc"
-                                    optionValue="domaindesc"
-                                    readOnly={isStatusClosed() || iSProcessLoading()}
-                                />
-                                <FieldSelect
-                                    label={t(langKeys.agent)}
-                                    className={classes.field}
-                                    valueDefault={getValues('userid')}
-                                    loading={advisers.loading}
-                                    data={advisers.data}
-                                    optionDesc="fullname"
-                                    optionValue="userid"
-                                    onChange={(value) => setValue('userid', value ? value.userid : '')}
-                                    error={errors?.userid?.message}
-                                    readOnly={isStatusClosed() || iSProcessLoading()}
-                                />
-                                <FieldMultiSelectVirtualized
-                                    label={t(langKeys.product, { count: 2 })}
-                                    className={classes.field}
-                                    valueDefault={getValues('leadproduct')}
-                                    onChange={(v, value2: { action: "remove-option" | "select-option", option: { option: any } }) => {
-                                        const products = v?.map((o: Dictionary) => o['productid']).join(',') || '';
-                                        setValue('leadproduct', products);
-
-                                        handleUpdateLeadProducts(
-                                            value2.option.option,
-                                            value2.action === "remove-option" ? "REMOVEPRODUCT" : "NEWPRODUCT",
-                                        );
-                                    }}
-                                    data={leadProductsDomain.data}
-                                    loading={leadProductsDomain.loading}
-                                    optionDesc="title"
-                                    optionValue="productid"
-                                    error={errors?.leadproduct?.message}
-                                />
-                            </Grid>
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
-                            <Grid container direction="column">
-                                <FieldEdit
-                                    label={t(langKeys.description)}
-                                    className={classes.field}
-                                    onChange={(value) => setValue('description', value)}
-                                    valueDefault={getValues('description')}
-                                    error={errors?.description?.message}
-                                    InputProps={{
-                                        readOnly: isStatusClosed() || iSProcessLoading(),
-                                    }}
+                                    valueDefault={getValues('company')}
+                                    disabled={true}
                                 />
                                 <PhoneFieldEdit
                                     value={"+" + getValues('phone')}
@@ -1322,41 +1169,62 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                         )
                                     }}
                                 />
+                                <FieldSelect
+                                    label={t(langKeys.impact)}
+                                    className={classes.field}
+                                    valueDefault={getValues('impact')}
+                                    onChange={(value) => {
+                                        setcriticallity(value?.domainvalue || '', getValues('urgency'))
+                                        setValue('impact', value?.domainvalue || '')
+                                    }}
+                                    error={errors?.impact?.message}
+                                    data={dataImpact.data}
+                                    optionDesc="domaindesc"
+                                    optionValue="domainvalue"
+                                />
                                 <FieldEdit
-                                    label={t(langKeys.endDate)}
+                                    label={t(langKeys.date) + " SLA"}
                                     className={classes.field}
                                     type="datetime-local"
                                     onChange={(value) => {
                                         // datetime formaT: yyyy-MM-ddTHH:mm
-                                        setValue('date_deadline', value);
+                                        setValue('sla_date', value);
                                     }}
-                                    valueDefault={(getValues('date_deadline') as string)?.replace(' ', 'T')?.substring(0, 16)}
-                                    error={errors?.date_deadline?.message}
-                                    InputProps={{
-                                        readOnly: isStatusClosed() || iSProcessLoading(),
-                                    }}
+                                    valueDefault={(getValues('sla_date') as string)?.replace(' ', 'T')?.substring(0, 16)}
+                                    disabled={true}
                                 />
-                                <div className={classes.field} style={{ maxHeight: 55, minHeight: 55 }}>
-                                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                                        <Trans i18nKey={langKeys.priority} />
-                                    </Box>
-                                    <Rating
-                                        name="simple-controlled"
-                                        max={3}
-                                        value={prioritycontrol}
-                                        onChange={(event, newValue) => {
-                                            setValue('priority', returnpriority(newValue||0))
-                                            setprioritycontrol(newValue||0)
-                                        }}
-                                        readOnly={isStatusClosed() || iSProcessLoading()}
-                                    />
-                                </div>
-                                <div className={clsx(classes.fakeInputContainer, classes.field)}>
-                                    <FieldView
-                                        label={t(langKeys.campaign)}
-                                        value={lead.value?.campaign || ''}
-                                    />
-                                </div>
+                                <FieldEdit
+                                    label={t(langKeys.dateofresolutiondeadline)}
+                                    className={classes.field}
+                                    type="datetime-local"
+                                    onChange={(value) => {
+                                        // datetime formaT: yyyy-MM-ddTHH:mm
+                                        setValue('resolution_deadline', value);
+                                    }}
+                                    valueDefault={(getValues('resolution_deadline') as string)?.replace(' ', 'T')?.substring(0, 16)}
+                                    disabled={true}
+                                />
+                                <FieldEdit
+                                    label={t(langKeys.dateofresolution)}
+                                    className={classes.field}
+                                    type="datetime-local"
+                                    onChange={(value) => {
+                                        // datetime formaT: yyyy-MM-ddTHH:mm
+                                        setValue('resolution_date', value);
+                                    }}
+                                    valueDefault={(getValues('resolution_date') as string)?.replace(' ', 'T')?.substring(0, 16)}
+                                    disabled={true}
+                                />
+                                <FieldSelect
+                                    label={t(langKeys.group)}
+                                    className={classes.field}
+                                    valueDefault={getValues('leadgroups')}
+                                    onChange={(value) => setValue('leadgroups', value?.domainvalue || '')}
+                                    error={errors?.group?.message}
+                                    data={dataGroups.data}
+                                    optionDesc="domaindesc"
+                                    optionValue="domainvalue"
+                                />
                                 <RadioGroudFieldEdit
                                     aria-label="columnid"
                                     value={Number(getValues('columnid'))}
@@ -1374,6 +1242,126 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     }}
                                     label={<Trans i18nKey={langKeys.phase} />}
                                     error={errors?.columnid?.message}
+                                    readOnly={isStatusClosed() || iSProcessLoading()}
+                                />
+                            </Grid>
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
+                            <Grid container direction="column">
+                                <FieldEdit
+                                    label={t(langKeys.description)}
+                                    className={classes.field}
+                                    onChange={(value) => setValue('description', value)}
+                                    valueDefault={getValues('description')}
+                                    error={errors?.description?.message}
+                                    InputProps={{
+                                        readOnly: isStatusClosed() || iSProcessLoading(),
+                                    }}
+                                />
+                                <FieldSelect
+                                    label={t(langKeys.type)}
+                                    className={classes.field}
+                                    valueDefault={getValues('type')}
+                                    data={
+                                        [{domainvalue: "SS"},{domainvalue: "INC"}]
+                                    }
+                                    optionDesc="domainvalue"
+                                    optionValue="domainvalue"
+                                    onChange={(value) => setValue('type', value ? value.domainvalue : '')}
+                                />
+                                <div className={classes.field}>
+                                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">
+                                        {t(langKeys.userwhoreported)}
+                                    </Box>
+                                    <label>
+                                        {values?.displayname}
+                                    </label>
+                                </div>
+                                <FieldEdit
+                                    label={t(langKeys.email)}
+                                    className={classes.field}
+                                    onChange={(value) => {setValue('email', value);setExtraTriggers({...extraTriggers, email: value || ''})}}
+                                    valueDefault={getValues('email')}
+                                    error={errors?.email?.message}
+                                    InputProps={{
+                                        readOnly: isStatusClosed() || iSProcessLoading(),
+                                    }}
+                                />
+                                <FieldSelect
+                                    label={t(langKeys.urgency)}
+                                    className={classes.field}
+                                    valueDefault={getValues('urgency')}
+                                    onChange={(value) => {
+                                        setcriticallity(getValues('impact'),value?.domainvalue || '')
+                                        setValue('urgency', value?.domainvalue || '')
+                                    }}
+                                    error={errors?.urgency?.message}
+                                    data={dataUrgency.data}
+                                    optionDesc="domaindesc"
+                                    optionValue="domainvalue"
+                                />
+                                <FieldSelect
+                                    label={t(langKeys.priority)}
+                                    className={classes.field}
+                                    valueDefault={getValues('priority')}
+                                    onChange={(value) => setValue('priority', value?.domainvalue || '')}
+                                    disabled={true}
+                                    data={dataPriority.data}
+                                    optionDesc="domaindesc"
+                                    optionValue="domainvalue"
+                                />
+                                <FieldEdit
+                                    label={t(langKeys.firstContactDatedeadline)}
+                                    className={classes.field}
+                                    type="datetime-local"
+                                    onChange={(value) => {
+                                        // datetime formaT: yyyy-MM-ddTHH:mm
+                                        setValue('first_contact_deadline', value);
+                                    }}
+                                    valueDefault={(getValues('first_contact_deadline') as string)?.replace(' ', 'T')?.substring(0, 16)}
+                                    disabled={true}
+                                />
+                                <FieldEdit
+                                    label={t(langKeys.firstContactDate)}
+                                    className={classes.field}
+                                    type="datetime-local"
+                                    onChange={(value) => {
+                                        // datetime formaT: yyyy-MM-ddTHH:mm
+                                        setValue('first_contact_date', value);
+                                    }}
+                                    valueDefault={(getValues('first_contact_date') as string)?.replace(' ', 'T')?.substring(0, 16)}
+                                    disabled={true}
+                                />
+                                <FieldMultiSelectFreeSolo
+                                    label={t(langKeys.tags)}
+                                    className={classes.field}
+                                    valueDefault={getValues('tags')}
+                                    onChange={(value: ({ domaindesc: string } | string)[], value2: { action: "create-option" | "remove-option" | "select-option", option: { option: string } }) => {
+                                        const tags = value.map((o: any) => o.domaindesc || o).join();
+                                        setValue('tags', tags);
+
+                                        handleUpdateLeadTags(
+                                            value2.option.option,
+                                            value2.action === "remove-option" ? "REMOVETAG" : "NEWTAG",
+                                        );
+                                    }}
+                                    error={errors?.tags?.message}
+                                    loading={false}
+                                    data={leadTagsDomain.data.concat(getValues('tags').split(',').filter((i: any) => i !== '' && (leadTagsDomain.data.findIndex(x => x.domaindesc === i)) < 0).map((domaindesc: any) => ({ domaindesc })))}
+                                    optionDesc="domaindesc"
+                                    optionValue="domaindesc"
+                                    readOnly={isStatusClosed() || iSProcessLoading()}
+                                />
+                                <FieldSelect
+                                    label={t(langKeys.assigneduser)}
+                                    className={classes.field}
+                                    valueDefault={getValues('userid')}
+                                    loading={advisers.loading}
+                                    data={advisers.data}
+                                    optionDesc="fullname"
+                                    optionValue="userid"
+                                    onChange={(value) => setValue('userid', value ? value.userid : '')}
+                                    error={errors?.userid?.message}
                                     readOnly={isStatusClosed() || iSProcessLoading()}
                                 />
                             </Grid>
@@ -1539,10 +1527,6 @@ const SelectPersonModal: FC<SelectPersonModalProps> = ({ open, onClose, onClick 
             {
                 Header: t(langKeys.name),
                 accessor: 'name' as keyof IPerson,
-            },
-            {
-                Header: t(langKeys.personType),
-                accessor: 'persontype' as keyof IPerson,
             },
             {
                 Header: t(langKeys.email),

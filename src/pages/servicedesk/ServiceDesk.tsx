@@ -1,10 +1,11 @@
-import { convertLocalDate, getAdviserFilteredUserRol, getCampaignLst, getColumnsSel, getCommChannelLst, getLeadExport, getLeadsSel, getLeadTasgsSel, getPaginatedLead, getValuesFromDomain, insArchiveLead, insColumns, 
-  insLead2, updateColumnsLeads, updateColumnsOrder, uuidv4 } from "common/helpers";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { convertLocalDate, getAdviserFilteredUserRol, getColumnsSDSel, getCommChannelLst, getLeadExport, getLeadsSDSel, getLeadTasgsSel, getPaginatedLead, getUserGroupsSel, getValuesFromDomain, 
+  insArchiveServiceDesk, insSDLead, updateColumnsLeads, updateColumnsOrder } from "common/helpers";
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
-import { AddColumnTemplate, DraggableServiceDeskCardContent, DraggableLeadColumn, DroppableLeadColumnList } from "./components";
+import { DraggableServiceDeskCardContent, DraggableLeadColumn, DroppableLeadColumnList } from "./components";
 import { getMultiCollection, resetAllMain, execute, getCollectionPaginated, exportData } from "store/main/actions";
 import NaturalDragAnimation from "./prueba";
 import paths from "common/constants/paths";
@@ -13,9 +14,9 @@ import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/acti
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "components";
-import { Search as SearchIcon, ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, Sms as SmsIcon, Mail as MailIcon } from '@material-ui/icons';
+import { Search as SearchIcon, ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, Sms as SmsIcon, Mail as MailIcon, Add as AddIcon } from '@material-ui/icons';
 import { Button, IconButton, Tooltip } from "@material-ui/core";
-import { Dictionary, ICampaignLst, IChannel, ICrmLead, IDomain, IFetchData } from "@types";
+import { Dictionary, IDomain, IFetchData, IServiceDeskLead } from "@types";
 import TablePaginated, { buildQueryFilters, useQueryParams } from 'components/fields/table-paginated';
 import { makeStyles } from '@material-ui/core/styles';
 import { Rating } from '@material-ui/lab';
@@ -31,7 +32,7 @@ interface dataBackend {
   globalid: string,
   index: number,
   total_revenue?: number | null,
-  items?: ICrmLead[] | null
+  items?: IServiceDeskLead[] | null
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -77,8 +78,9 @@ interface IModalProps {
 }
 
 interface IBoardFilter {
+  company: string;
+  groups: string;
   /**ID de la campaña */
-  campaign: number;
   /**filtro por nombre completo */
   customer: string;
   /**separado por comas */
@@ -86,12 +88,10 @@ interface IBoardFilter {
   /**separados por coma */
   tags: string;
   /**id del asesor */
-  asesorid: number;
-  persontype: string;
 }
 
-const DraggablesCategories : FC<{column:any,deletable:boolean, index:number, hanldeDeleteColumn:(a:string)=>void, handleDelete:(lead: ICrmLead)=>void, handleCloseLead:(lead: ICrmLead)=>void}> = ({column, 
-  index, hanldeDeleteColumn, handleDelete, handleCloseLead, deletable }) => {
+const DraggablesCategories : FC<{column:any, index:number, handleDelete:(lead: IServiceDeskLead)=>void, handleCloseLead:(lead: IServiceDeskLead)=>void}> = ({column, 
+  index, handleDelete, handleCloseLead }) => {
     const { t } = useTranslation();
   return (
     <Draggable draggableId={column.column_uuid} index={index+1} key={column.column_uuid}>
@@ -106,10 +106,7 @@ const DraggablesCategories : FC<{column:any,deletable:boolean, index:number, han
             snapshot={null} 
             provided={provided} 
             columnid={column.column_uuid} 
-            deletable={deletable}
-            onDelete={hanldeDeleteColumn}
-            total_revenue={column.total_revenue!}
-            total_cards={column.items.length}
+            total_cards={column.items.length}            
           >
               <Droppable droppableId={column.column_uuid} type="task">
                 {(provided, snapshot) => {
@@ -174,7 +171,6 @@ const ServiceDesk: FC = () => {
   const dispatch = useDispatch();
   const [dataColumn, setDataColumn] = useState<dataBackend[]>([])
   const [openDialog, setOpenDialog] = useState(false);
-  const [deleteColumn, setDeleteColumn] = useState('')
   // const display = useSelector(state => state.lead.display);
   const mainMulti = useSelector(state => state.main.multiData);
   const { t } = useTranslation();
@@ -183,61 +179,51 @@ const ServiceDesk: FC = () => {
   const query = useMemo(() => new URLSearchParams(location.search), [location]);
   const params = useQueryParams(query, {
     ignore: [
-      'asesorid', 'channels', 'contact', 'display', 'products', 'tags', 'campaign', 'persontype'
+      'company', 'groups', 'channels', 'contact', 'display', 'products', 'tags',
     ],
   });
   const otherParams = useMemo(() => ({
-    asesorid: Number(query.get('asesorid')),
+    company: query.get('company'),
+    groups: query.get('groups'),
     channels: query.get('channels') || '',
     contact: query.get('contact') || '',
     products: query.get('products') || '',
-    persontype: query.get('persontype') || '',
     tags: query.get('tags') || '',
-    campaign: Number(query.get('campaign')),
   }), [query]);
   const [display, setDisplay] = useState(query.get('display') || 'BOARD');
   const [boardFilter, setBoardFilterPrivate] = useState<IBoardFilter>({
-    campaign: otherParams.campaign,
+    company: otherParams?.company||"",
+    groups: otherParams?.groups||"",
     customer: otherParams.contact,
     products: otherParams.products,
     tags: otherParams.tags,
-    asesorid: otherParams.asesorid,
-    persontype: otherParams.persontype,
   });
 
   const setBoardFilter = useCallback((prop: React.SetStateAction<typeof boardFilter>) => {
     if (!user) return;
-
-    if (user.roledesc === "ASESOR") {
-      setBoardFilterPrivate({
-        ...(typeof prop === "function" ? prop(boardFilter) : prop),
-        asesorid: user.userid,
-      });
-    } else {
-      setBoardFilterPrivate(prop);
-    }
+    setBoardFilterPrivate(prop);
   }, [user, boardFilter]);
 
   useEffect(() => {
       dispatch(getMultiCollection([
-          getColumnsSel(1),
-          getLeadsSel({
+          getColumnsSDSel(1),
+          getLeadsSDSel({
             id: 0,
-            campaignid: boardFilter.campaign,
-            fullname: boardFilter.customer,
+            company: boardFilter?.company||"",
+            groups: boardFilter.groups,
             leadproduct: boardFilter.products,
-            persontype: boardFilter.persontype,
             tags: boardFilter.tags,
-            userid: String(boardFilter.asesorid || ""),
+            fullname: boardFilter.customer,
             supervisorid: user?.userid || 0,
           }),
           // adviserSel(),
           getAdviserFilteredUserRol(),
           getCommChannelLst(),
-          getCampaignLst(),
+          getUserGroupsSel(),
           getValuesFromDomain('OPORTUNIDADPRODUCTOS'),
           getLeadTasgsSel(),
           getValuesFromDomain('TIPOPERSONA'),
+          getValuesFromDomain('EMPRESA'),
       ]));
       return () => {
           dispatch(resetAllMain());
@@ -247,17 +233,17 @@ const ServiceDesk: FC = () => {
 
   useEffect(() => {
     if (!mainMulti.error && !mainMulti.loading) {
-      if (mainMulti.data.length && mainMulti.data[0].key && mainMulti.data[0].key === "UFN_COLUMN_SEL") {
+      if (mainMulti.data.length && mainMulti.data[0].key && mainMulti.data[0].key === "UFN_COLUMN_SD_SEL") {
         const columns = (mainMulti.data[0] && mainMulti.data[0].success ? mainMulti.data[0].data : []) as dataBackend[]
-        const leads = (mainMulti.data[1] && mainMulti.data[1].success ? mainMulti.data[1].data : []) as ICrmLead[]
+        const leads = (mainMulti.data[1] && mainMulti.data[1].success ? mainMulti.data[1].data : []) as IServiceDeskLead[]
         let unordeneddatacolumns = columns.map((column) => {
           column.items = leads.filter( x => x.column_uuid === column.column_uuid);
           return {...column, total_revenue: (column.items.reduce((a,b) => a + parseFloat(b.expected_revenue), 0))}
         })
-        let ordereddata = [...unordeneddatacolumns.filter((x:any)=>x.type==="NEW"),
-          ...unordeneddatacolumns.filter((x)=>x.type==="QUALIFIED"),
-          ...unordeneddatacolumns.filter((x)=>x.type==="PROPOSITION"),
-          ...unordeneddatacolumns.filter((x)=>x.type==="WON"),
+        let ordereddata = [...unordeneddatacolumns.filter((x:any)=>x.type==="SOPORTE N1"),
+          ...unordeneddatacolumns.filter((x)=>x.type==="SOPORTE N2"),
+          ...unordeneddatacolumns.filter((x)=>x.type==="SOPORTE N3"),
+          ...unordeneddatacolumns.filter((x)=>x.type==="RESUELTO"),
         ];
         setDataColumn(ordereddata)
       }
@@ -266,33 +252,32 @@ const ServiceDesk: FC = () => {
 
   const fetchBoardLeadsWithFilter = useCallback(() => {
     const newParams = new URLSearchParams(location.search);
-    newParams.set('campaign', String(boardFilter.campaign));
+    newParams.set('company', String(boardFilter.company));
+    newParams.set('groups', String(boardFilter.groups));
     newParams.set('products', String(boardFilter.products));
-    newParams.set('persontype', String(boardFilter.persontype));
     newParams.set('tags', String(boardFilter.tags));
     newParams.set('contact', String(boardFilter.customer));
-    newParams.set('asesorid', String(boardFilter.asesorid));
     history.push({ search: newParams.toString() });
 
     dispatch(getMultiCollection([
-      getColumnsSel(1),
-      getLeadsSel({
+      getColumnsSDSel(1),
+      getLeadsSDSel({
         id: 0,
-        campaignid: boardFilter.campaign,
+        company: boardFilter?.company||"",
+        groups: boardFilter.groups,
         fullname: boardFilter.customer,
         leadproduct: boardFilter.products,
-        persontype: boardFilter.persontype,
         tags: boardFilter.tags,
-        userid: String(boardFilter.asesorid||""),
         supervisorid: user?.userid || 0,
       }),
       // adviserSel(),
       getAdviserFilteredUserRol(),
       getCommChannelLst(),
-      getCampaignLst(),
+      getUserGroupsSel(),
       getValuesFromDomain('OPORTUNIDADPRODUCTOS'),
       getLeadTasgsSel(),
       getValuesFromDomain('TIPOPERSONA'),
+      getValuesFromDomain('EMPRESA'),
     ]));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardFilter, dispatch]);
@@ -350,7 +335,7 @@ const ServiceDesk: FC = () => {
     }
   };
 
-  const handleCloseLead = (lead: ICrmLead) => {
+  const handleCloseLead = (lead: IServiceDeskLead) => {
     const callback = () => {
       const index = dataColumn.findIndex(c => c.column_uuid === lead.column_uuid)
       const column = dataColumn[index];
@@ -360,7 +345,7 @@ const ServiceDesk: FC = () => {
       const totalRevenue = copiedItems!.reduce((a,b) => a + parseFloat(b.expected_revenue), 0)
       const newData = Object.values({...dataColumn, [index]: {...column, total_revenue: totalRevenue, items: copiedItems}}) as dataBackend[]
       setDataColumn(newData);
-      dispatch(execute(insArchiveLead(lead)))
+      dispatch(execute(insArchiveServiceDesk(lead)))
     }
     dispatch(manageConfirmation({
       visible: true,
@@ -369,7 +354,7 @@ const ServiceDesk: FC = () => {
     }))
   }
 
-  const handleDelete = (lead: ICrmLead) => {
+  const handleDelete = (lead: IServiceDeskLead) => {
     const callback = () => {
       const index = dataColumn.findIndex(c => c.column_uuid === lead.column_uuid)
       const column = dataColumn[index];
@@ -379,7 +364,7 @@ const ServiceDesk: FC = () => {
       const totalRevenue = copiedItems!.reduce((a,b) => a + parseFloat(b.expected_revenue), 0)
       const newData = Object.values({...dataColumn, [index]: {...column, total_revenue: totalRevenue, items: copiedItems}}) as dataBackend[]
       setDataColumn(newData);
-      dispatch(execute(insLead2({ ...lead, status: 'ELIMINADO' }, "DELETE")));
+      dispatch(execute(insSDLead({...lead, status: 'ELIMINADO'}, "UPDATE")))
     }
     dispatch(manageConfirmation({
       visible: true,
@@ -387,78 +372,6 @@ const ServiceDesk: FC = () => {
       callback
     }))
   }
-
-  // No borrar
-  const handleInsert = (infa:any, columns:dataBackend[], setDataColumn:any) => {
-    const newIndex = columns.length
-    const uuid = uuidv4() // from common/helpers
-
-    const data = {
-      id: uuid,
-      description: infa.title,
-      type: infa.type,
-      status: 'ACTIVO',
-      edit: true,
-      index: newIndex,
-      operation: 'INSERT',
-    }
-    
-    const newColumn = {
-      columnid: null,
-      column_uuid: uuid,
-      description: infa.title,
-      status: 'ACTIVO',
-      type: infa.type,
-      globalid: '',
-      index: newIndex,
-      items: []
-    }
-    let unordeneddatacolumns = Object.values({...columns, newColumn})
-    let ordereddata = [...unordeneddatacolumns.filter((x:any)=>x.type==="NEW"),
-      ...unordeneddatacolumns.filter((x:any)=>x.type==="QUALIFIED"),
-      ...unordeneddatacolumns.filter((x:any)=>x.type==="PROPOSITION"),
-      ...unordeneddatacolumns.filter((x:any)=>x.type==="WON"),
-    ];
-    dispatch(execute(insColumns(data)))
-    setDataColumn(Object.values(ordereddata));
-  }
-
-  const hanldeDeleteColumn = (column_uuid : string, delete_all:boolean = true) => {
-    if (column_uuid === '00000000-0000-0000-0000-000000000000') return;
-
-    if (openDialog) {
-      const columns = [...dataColumn]
-      const sourceIndex = columns.findIndex(c => c.column_uuid === column_uuid)
-      const sourceColumn = columns[sourceIndex];
-      let newColumn:dataBackend[] = [];
-      if (delete_all) {
-        newColumn = columns
-      } else {
-        const destColumn = columns[0];
-        const sourceItems = [...sourceColumn.items!]
-        const removed = sourceItems!.splice(0)
-        const newDestItems = [...destColumn.items!].concat(removed)
-        newDestItems.map((item) => item.column_uuid = destColumn.column_uuid)
-        const destTotalRevenue = newDestItems!.reduce((a,b) => a+ parseFloat(b.expected_revenue), 0)
-        newColumn = Object.values({...columns, [sourceIndex]: {...sourceColumn, items: sourceItems}, 0: {...destColumn, total_revenue: destTotalRevenue, items: newDestItems}}) as dataBackend[]
-      }
-      setDataColumn(newColumn.filter(c => c.column_uuid !== column_uuid))
-      dispatch(execute(insColumns({...sourceColumn, status: 'ELIMINADO', delete_all, id: sourceColumn.column_uuid, operation: 'DELETE'})));
-      setOpenDialog(false)
-
-      return;
-    } else {
-      setDeleteColumn(column_uuid)
-      setOpenDialog(true)
-    }
-  }
-
-  const initialAsesorId = useMemo(() => {
-    if (!user) return "";
-    if (user.roledesc === "ASESOR") return user.userid;
-    else return otherParams.asesorid || mainMulti.data[2]?.data?.map(d => d.userid).includes(user?.userid) ? (user?.userid || "") : "";
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [otherParams, user]);
 
   const mainPaginated = useSelector(state => state.main.mainPaginated);
   const resExportData = useSelector(state => state.main.exportData);
@@ -469,12 +382,10 @@ const ServiceDesk: FC = () => {
   const [waitExport, setWaitExport] = useState(false);
   const voxiConnection = useSelector(state => state.voximplant.connection);
   const callOnLine = useSelector(state => state.voximplant.callOnLine);
-  const [allParameters, setAllParametersPrivate] = useState<{ contact: string, channel: string, asesorid: string, persontype: string }>({
-    // asesorid: otherParams.asesorid || mainMulti.data[2]?.data?.map(d => d.userid).includes(user?.userid) ? (user?.userid || 0) : 0,
-    asesorid: String(initialAsesorId),
-    channel: otherParams.channels,
+  const [allParameters, setAllParametersPrivate] = useState<{ company: string, groups: string, contact: string }>({
+    company: otherParams?.company||"",
+    groups: otherParams?.groups||"",
     contact: otherParams.contact,
-    persontype: otherParams.persontype,
   });
   const [selectedRows, setSelectedRows] = useState<Dictionary>({});
   const [personsSelected, setPersonsSelected] = useState<Dictionary[]>([]);
@@ -482,12 +393,7 @@ const ServiceDesk: FC = () => {
 
   const setAllParameters = useCallback((prop: typeof allParameters) => {
     if (!user) return;
-
-    if (user.roledesc === "ASESOR" && prop.asesorid !== String(user.userid||"")) {
-      setAllParametersPrivate({ ...prop, asesorid: String(user.userid||"") });
-    } else {
-      setAllParametersPrivate(prop);
-    }
+    setAllParametersPrivate(prop);
   }, [user]);
 
   const CustomCellRender = ({column, row}: any) => {
@@ -713,14 +619,6 @@ const ServiceDesk: FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [display, history]);
 
-  const campaigns = useMemo(() => {
-    if (!mainMulti.data[4]?.data || mainMulti.data[4]?.key !== "UFN_CAMPAIGN_LST") return [];
-    return (mainMulti.data[4].data as ICampaignLst[]).sort((a, b) => {
-      return a.description.localeCompare(b.description);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mainMulti.data[4]]);
-
   const tags = useMemo(() => {
     if (!mainMulti.data[6]?.data || mainMulti.data[6]?.key !== "UFN_LEAD_TAGSDISTINCT_SEL") return [];
     return (mainMulti.data[6].data as any[]).sort((a, b) => {
@@ -729,41 +627,29 @@ const ServiceDesk: FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mainMulti.data[6]]);
 
-  const channels = useMemo(() => {
-    if (!mainMulti.data[3]?.data || mainMulti.data[3]?.key !== "UFN_COMMUNICATIONCHANNEL_LST") return [];
-    return (mainMulti.data[3].data as IChannel[]).sort((a, b) => {
-      return a.communicationchanneldesc.localeCompare(b.communicationchanneldesc);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mainMulti.data[3]]);
-
-  const userType = useMemo(() => {
-    if (!mainMulti.data[7]?.data || mainMulti.data[7]?.key !== "UFN_DOMAIN_LST_VALORES") return [];
-    return (mainMulti.data[7].data);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mainMulti.data[7]]);
-
   const filtersElement = useMemo(() => (
     <>
-      <FieldMultiSelect
-          variant="outlined"
+      <FieldSelect
+        variant="outlined"
         label={t(langKeys.business)}
-        className={classes.filterComponent}
-        valueDefault={allParameters.asesorid}
-        onChange={(value) => {debugger;setAllParameters({...allParameters, asesorid: value?.map((o: Dictionary) => o['userid']).join(',')})}}
-        data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
-        optionDesc={'fullname'}
-        optionValue={'userid'}
+        className={classes.filterComponent}//cambiar
+        valueDefault={allParameters.company}
+        onChange={(value) => {setAllParameters({...allParameters, company: value?.domainvalue})}}
+        data={mainMulti.data[8]?.data || []}
+        optionDesc="domaindesc"
+        optionValue="domainvalue"
+        loading={mainMulti.loading}
       />
       <FieldMultiSelect
-          variant="outlined"
+        variant="outlined"
         label={t(langKeys.group)}
         className={classes.filterComponent}
-        valueDefault={allParameters.asesorid}
-        onChange={(value) => {debugger;setAllParameters({...allParameters, asesorid: value?.map((o: Dictionary) => o['userid']).join(',')})}}
-        data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
-        optionDesc={'fullname'}
-        optionValue={'userid'}
+        valueDefault={allParameters.groups}
+        onChange={(value) => {setAllParameters({...allParameters, groups: value?.map((o: Dictionary) => o['domainvalue']).join(',')})}}
+        data={mainMulti.data[4]?.data || []}
+        loading={mainMulti.loading}
+        optionDesc="domaindesc"
+        optionValue="domainvalue"
       />
       <FieldMultiSelect
         variant="outlined"
@@ -801,23 +687,13 @@ const ServiceDesk: FC = () => {
           valueDefault={allParameters.contact}
           onChange={(value) => setAllParameters({...allParameters, contact: value})}
       />
-      
-      <FieldMultiSelect
-        variant="outlined"
-        label={t(langKeys.corporation)}
-        className={classes.filterComponent}
-        valueDefault={allParameters.persontype}
-        onChange={(v) => {
-          const persontype = v?.map((o: IDomain) => o.domainvalue).join(',') || '';
-          setAllParameters({ ...allParameters, persontype });
-        }}
-        data={userType}
-        optionDesc="domainvalue"
-        optionValue="domainvalue"
-      />
     </>
     // eslint-disable-next-line react-hooks/exhaustive-deps
   ), [user, allParameters, classes, mainMulti, t]);
+
+  const goToAddLead = useCallback(() => {
+    history.push(paths.SERVICE_DESK_ADD_LEAD);
+  }, [history]);
 
   return (
       <div style={{ width: '100%', display: 'flex', flexDirection: 'column'}}>
@@ -848,26 +724,30 @@ const ServiceDesk: FC = () => {
         {display === 'BOARD' &&
         <div style={{ display: "flex", flexDirection: 'column', height: "100%" }}>
           <div className={classes.canvasFiltersHeader}>
-            <FieldMultiSelect
+            <FieldSelect
               variant="outlined"
               label={t(langKeys.business)}
-              className={classes.filterComponent}
-              valueDefault={boardFilter.asesorid}
-              onChange={(value) => setBoardFilter(prev => ({...prev, asesorid: value?.map((o: Dictionary) => o['userid']).join(',')}))}
-              data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
-              optionDesc={'fullname'}
-              optionValue={'userid'}
+              className={classes.filterComponent}//cambiar
+              valueDefault={boardFilter.company}
+              onChange={(value) => {setBoardFilter({...boardFilter, company: value?.domainvalue})}}
+              data={mainMulti.data[8]?.data || []}
+              optionDesc="domaindesc"
+              optionValue="domainvalue"
+              loading={mainMulti.loading}
             />
-            <FieldSelect
+            <FieldMultiSelect
               variant="outlined"
               label={t(langKeys.group)}
               className={classes.filterComponent}
-              valueDefault={boardFilter.campaign}
-              onChange={(v: ICampaignLst) => setBoardFilter(prev => ({ ...prev, campaign: v?.id || 0 }))}
-              data={campaigns}
+              valueDefault={boardFilter.groups}
+              onChange={(v) => {
+                const groups = v?.map((o: IDomain) => o.domainvalue).join(',') || '';
+                setBoardFilter(prev => ({ ...prev, groups }));
+              }}
+              data={mainMulti.data[4]?.data || []}
               loading={mainMulti.loading}
-              optionDesc="description"
-              optionValue="id"
+              optionDesc="domaindesc"
+              optionValue="domainvalue"
             />
             <FieldMultiSelect
               variant="outlined"
@@ -910,6 +790,16 @@ const ServiceDesk: FC = () => {
             <Button
                 variant="contained"
                 color="primary"
+                disabled={mainMulti.loading}
+                startIcon={<AddIcon color="secondary" />}
+                onClick={goToAddLead}
+                style={{ backgroundColor: "#55BD84" }}
+              >
+                <Trans i18nKey={langKeys.register} />
+            </Button>
+            <Button
+                variant="contained"
+                color="primary"
                 startIcon={<SearchIcon style={{ color: 'white' }} />}
                 style={{ backgroundColor: '#55BD84', width: 120 }}
                 onClick={fetchBoardLeadsWithFilter}
@@ -920,12 +810,9 @@ const ServiceDesk: FC = () => {
           </div> 
           <div style={{display:"flex", color: "white", paddingTop: 10, fontSize: "1.6em", fontWeight: "bold"}}>
             <div style={{minWidth: 280, maxWidth: 280, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.support)} N1</div>
-            <div style={{minWidth: 280*dataColumn.filter((x:any)=>x.type==="QUALIFIED").length + 10*(dataColumn.filter((x:any)=>x.type==="QUALIFIED").length-1), 
-                        maxWidth: 280*dataColumn.filter((x:any)=>x.type==="QUALIFIED").length + 10*(dataColumn.filter((x:any)=>x.type==="QUALIFIED").length-1), backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.support)} N2</div>
-            <div style={{minWidth: 280*dataColumn.filter((x:any)=>x.type==="PROPOSITION").length + 10*(dataColumn.filter((x:any)=>x.type==="PROPOSITION").length-1), 
-                        maxWidth: 280*dataColumn.filter((x:any)=>x.type==="PROPOSITION").length + 10*(dataColumn.filter((x:any)=>x.type==="PROPOSITION").length-1), backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.support)} N3</div>
-            <div style={{minWidth: 280*dataColumn.filter((x:any)=>x.type==="WON").length + 10*(dataColumn.filter((x:any)=>x.type==="WON").length-1), 
-                        maxWidth: 280*dataColumn.filter((x:any)=>x.type==="WON").length + 10*(dataColumn.filter((x:any)=>x.type==="WON").length-1), backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.resolved)}</div>
+            <div style={{minWidth: 280, maxWidth: 280, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.support)} N2</div>
+            <div style={{minWidth: 280, maxWidth: 280, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.support)} N3</div>
+            <div style={{minWidth: 280, maxWidth: 280, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.resolved)}</div>
           </div>
           <DragDropContext onDragEnd={result => onDragEnd(result, dataColumn, setDataColumn)}>
             <Droppable droppableId="all-columns" direction="horizontal" type="column" >
@@ -936,7 +823,7 @@ const ServiceDesk: FC = () => {
                   style={{display:'flex'}}
                 >
                   {dataColumn.map((column, index) => 
-                       <DraggablesCategories deletable={dataColumn.filter((x:any)=>x.type===column.type).length >1} column={column} index={index} hanldeDeleteColumn={hanldeDeleteColumn} handleDelete={handleDelete} handleCloseLead={handleCloseLead}/>
+                       <DraggablesCategories column={column} index={index} handleDelete={handleDelete} handleCloseLead={handleCloseLead}/>
                   )}
                 </div>
               )}
@@ -949,8 +836,6 @@ const ServiceDesk: FC = () => {
             buttonText2={t(langKeys.negative)}
             buttonText3={t(langKeys.affirmative)}
             handleClickButton1={() => setOpenDialog(false)}
-            handleClickButton2={() => hanldeDeleteColumn(deleteColumn, false)}
-            handleClickButton3={() => hanldeDeleteColumn(deleteColumn, true)}
             maxWidth={'xs'}
             >
             <div>{t(langKeys.question_delete_all_items)}</div>
@@ -1016,8 +901,6 @@ const ServiceDesk: FC = () => {
               FiltersElement={filtersElement}
               onFilterChange={f => {
                 const params = buildQueryFilters(f, location.search);
-                params.set('asesorid', String(allParameters.asesorid));
-                params.set('channels', String(allParameters.channel));
                 params.set('contact', String(allParameters.contact));
                 history.push({ search: params.toString() });
               }}

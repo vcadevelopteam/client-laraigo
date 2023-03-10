@@ -33,6 +33,10 @@ export interface IState {
     leadProductsDomain: IListState<IProduct>;
     leadTagsDomain: IListState<IDomain>;
     personTypeDomain: IListState<IDomain>;
+    urgency: IListState<IDomain>;
+    impact: IListState<IDomain>;
+    priority: IListState<IDomain>;
+    groups: IListState<Dictionary>;
 }
 
 export const initialState: IState = {
@@ -54,6 +58,10 @@ export const initialState: IState = {
     leadProductsDomain: initialListState,
     leadTagsDomain: initialListState,
     personTypeDomain: initialListState,
+    urgency: initialListState,
+    impact: initialListState,
+    priority: initialListState,
+    groups: initialListState,
 };
 
 export default createReducer<IState>(initialState, {
@@ -135,6 +143,21 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_PERSON_TYPE_FAILURE]: caseFUnctions.getPersonTypeFailure,
     [actionTypes.GET_PERSON_TYPE_RESET]: caseFUnctions.getPersonTypeReset,
 
+    [actionTypes.GET_URGENCY]: caseFUnctions.getUrgency,
+    [actionTypes.GET_URGENCY_SUCCESS]: caseFUnctions.getUrgencySuccess,
+    [actionTypes.GET_URGENCY_FAILURE]: caseFUnctions.getUrgencyFailure,
+    [actionTypes.GET_URGENCY_RESET]: caseFUnctions.getUrgencyReset,
+
+    [actionTypes.GET_IMPACT]: caseFUnctions.getImpact,
+    [actionTypes.GET_IMPACT_SUCCESS]: caseFUnctions.getImpactSuccess,
+    [actionTypes.GET_IMPACT_FAILURE]: caseFUnctions.getImpactFailure,
+    [actionTypes.GET_IMPACT_RESET]: caseFUnctions.getImpactReset,
+
+    [actionTypes.GET_PRIORITY]: caseFUnctions.getPriority,
+    [actionTypes.GET_PRIORITY_SUCCESS]: caseFUnctions.getPrioritySuccess,
+    [actionTypes.GET_PRIORITY_FAILURE]: caseFUnctions.getPriorityFailure,
+    [actionTypes.GET_PRIORITY_RESET]: caseFUnctions.getPriorityReset,
+
     [actionTypes.GET_LEAD_TEMPLATES]: caseFUnctions.getLeadTemplates,
     [actionTypes.GET_LEAD_TEMPLATES_SUCCESS]: caseFUnctions.getLeadTemplatesSuccess,
     [actionTypes.GET_LEAD_TEMPLATES_FAILURE]: caseFUnctions.getLeadTemplatesFailure,
@@ -144,4 +167,9 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_LEAD_CHANNELS_SUCCESS]: caseFUnctions.getLeadChannelsSuccess,
     [actionTypes.GET_LEAD_CHANNELS_FAILURE]: caseFUnctions.getLeadChannelsFailure,
     [actionTypes.GET_LEAD_CHANNELS_RESET]: caseFUnctions.getLeadChannelsReset,
+
+    [actionTypes.GET_GROUPS]: caseFUnctions.getGroups,
+    [actionTypes.GET_GROUPS_SUCCESS]: caseFUnctions.getGroupsSuccess,
+    [actionTypes.GET_GROUPS_FAILURE]: caseFUnctions.getGroupsFailure,
+    [actionTypes.GET_GROUPS_RESET]: caseFUnctions.getGroupsReset,
 });

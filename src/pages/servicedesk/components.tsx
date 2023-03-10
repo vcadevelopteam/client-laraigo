@@ -1,36 +1,26 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import clsx from 'clsx';
-import { Box, BoxProps, Button, IconButton, makeStyles, Popover, TextField } from '@material-ui/core';
+import { Box, BoxProps, Button, IconButton, makeStyles, Popover } from '@material-ui/core';
 import { Add, MoreVert as MoreVertIcon } from '@material-ui/icons';
-import CloseIcon from '@material-ui/icons/Close';
 import { DraggableProvided, DraggableStateSnapshot, DroppableStateSnapshot } from 'react-beautiful-dnd';
 import { langKeys } from 'lang/keys';
 import { Trans, useTranslation } from 'react-i18next';
-import { Rating } from '@material-ui/lab';
 import { useHistory } from 'react-router';
 import paths from 'common/constants/paths';
-import { ICrmLead, IServiceDeskLead } from '@types';
+import { IServiceDeskLead } from '@types';
 import { FieldEdit, FieldSelect } from 'components';
-import { useSelector } from 'hooks';
 
 const columnWidth = 275;
 const columnMinHeight = 500;
 const cardBorderRadius = 12;
 const inputTitleHeight = 50;
 
-interface LeadCardContentProps extends Omit<BoxProps, 'onClick'> {
-    lead: ICrmLead;
-    snapshot: DraggableStateSnapshot;
-    onDelete?: (value: ICrmLead) => void;
-    onClick?: (lead: ICrmLead) => void;
-    onCloseLead?: (lead: ICrmLead) => void;
-}
 interface ServiceDeskCardContentProps extends Omit<BoxProps, 'onClick'> {
     lead: IServiceDeskLead;
     snapshot: DraggableStateSnapshot;
-    onDelete?: (value: ICrmLead) => void;
-    onClick?: (lead: ICrmLead) => void;
-    onCloseLead?: (lead: ICrmLead) => void;
+    onDelete?: (value: IServiceDeskLead) => void;
+    onClick?: (lead: IServiceDeskLead) => void;
+    onCloseLead?: (lead: IServiceDeskLead) => void;
 }
 
 const useLeadCardStyles = makeStyles(theme => ({
@@ -118,7 +108,6 @@ export const DraggableServiceDeskCardContent: FC<ServiceDeskCardContentProps> = 
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const tags = lead.tags?.split(',')?.filter(e => e !== '') || [];
     const products = (lead.leadproduct || null)?.split(',') || [];
-    const urgencyLevels = [null,'LOW','MEDIUM','HIGH'];
     const colors = ['', 'cyan', 'red', 'violet', 'blue', 'blueviolet'];
     const history = useHistory();
 
@@ -143,14 +132,13 @@ export const DraggableServiceDeskCardContent: FC<ServiceDeskCardContentProps> = 
 
     const open = Boolean(anchorEl);
     const id = open ? `lead-card-popover-${String(lead)}` : undefined;
-
     return (
         <Box {...boxProps} style={{ position: 'relative' }} pb={1}>
             <div className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)} onClick={handleClick}>
-                <span className={classes.title}>{lead?.request||"request"}</span>
+                <span className={classes.title}>{lead?.sd_request||""}</span>
                 <span className={classes.info}>{lead.type}</span>
                 <span className={classes.info}>{lead.description}</span>
-                <span className={classes.info}>{lead?.numeroticket||"ticket"}</span>
+                <span className={classes.info}>{lead?.ticketnum}</span>
                 <span className={classes.info}>{lead.displayname}</span>
                 <div className={classes.tagsRow}>
                     {tags.map((tag: String, index: number) =>
@@ -163,12 +151,7 @@ export const DraggableServiceDeskCardContent: FC<ServiceDeskCardContentProps> = 
                 </div>
                 {products.length !== 0 && <div style={{ height: '0.25em' }} />}
                 <div className={classes.footer}>
-                    <Rating
-                        name="hover-feedback"
-                        value={urgencyLevels.findIndex(x => x === lead.priority)}
-                        max={3}
-                        readOnly
-                    />
+                    <span className={classes.info}>{lead.priority}</span>
                     <div style={{ flexGrow: 1 }} />
                 </div>
             </div>
@@ -204,88 +187,6 @@ export const DraggableServiceDeskCardContent: FC<ServiceDeskCardContentProps> = 
         </Box>
     );
 }
-
-interface InputTitleProps {
-    defaultValue: string;
-    edit: boolean;
-    onChange?: (value: string) => void;
-    onBlur?: (value: string) => void;
-    className?: string;
-    inputClasses?: string;
-}
-
-const useInputTitleStyles = makeStyles(theme => ({
-    root: {
-        maxHeight: inputTitleHeight,
-        height: inputTitleHeight,
-        width: 'inherit',
-        alignItems: 'center',
-        display: 'flex',
-        justifyContent: 'center',
-    },
-    title: {
-        fontSize: '1.5em',
-        fontWeight: 500,
-        width: 'inherit',
-    },
-    titleInput: {
-        fontSize: '1.35em',
-        fontWeight: 500,
-    },
-}));
-
-const InputTitle : FC<InputTitleProps> = ({ defaultValue, edit: enableEdit, onChange, onBlur, className, inputClasses }) => {
-    const classes = useInputTitleStyles();
-    const [edit, setEdit] = useState(false);
-    const [value, setValue] = useState(defaultValue);
-
-    useEffect(() => {
-        setEdit(enableEdit);
-    }, [enableEdit]);
-
-    const handleValueChange = useCallback((newValue: string) => {
-        setValue(newValue);
-        onChange?.(newValue);
-    }, [onChange]);
-
-    const handleOnBlur = useCallback(() => {
-        setEdit(false);
-        onBlur?.(value);
-    }, [value, onBlur]);
-    
-    if (!edit) {
-        return (
-            <div className={classes.root}>
-                <h2
-                    className={classes.title}
-                    // onClick={() => setEdit(true)}
-                >
-                    {value}
-                </h2>
-            </div>
-        );
-    }
-
-    return (
-        <div className={classes.root}>
-            <TextField
-                autoFocus
-                value={value}
-                size="small"
-                className={clsx(classes.title, className)}
-                onBlur={handleOnBlur}
-                InputProps={{
-                    classes: {
-                        input: clsx(classes.titleInput, inputClasses),
-                    },
-                    disableUnderline: false,
-                }}
-                onChange={e => handleValueChange(e.target.value)}
-            />
-        </div>
-    );
-}
-
 interface LeadColumnProps extends Omit<BoxProps, 'title'> {
     /**default title value */
     title: string;
@@ -295,9 +196,7 @@ interface LeadColumnProps extends Omit<BoxProps, 'title'> {
     onAddCard?: () => void;
     provided?: DraggableProvided;
     columnid: string;
-    total_revenue: number;
     total_cards: number;
-    deletable: boolean;
 }
 
 const useLeadColumnStyles = makeStyles(theme => ({
@@ -345,45 +244,17 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
     title,
     provided,
     columnid,
-    total_revenue,
     titleOnChange,
     onDelete,
     onAddCard,
-    deletable,
     total_cards,
     ...boxProps
 }) => {
     const classes = useLeadColumnStyles();
-    const edit = useRef(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    
-    const handleOnBlur = useCallback((value: string) => {
-        edit.current = false;
-        titleOnChange?.(value);
-    }, [titleOnChange]);
-
-    const handleDelete = useCallback(() => {
-        onDelete?.(columnid);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-    const user = useSelector(state => state.login.validateToken.user);
     return (
         <Box {...boxProps}>
             <div className={classes.root}>
-                <div className={classes.header} {...(provided?.dragHandleProps || {})}>
-                    <InputTitle
-                        defaultValue={title}
-                        edit={edit.current}
-                        onBlur={handleOnBlur}
-                    />
-                    {deletable && <IconButton size="small" onClick={handleDelete}>
-                        <CloseIcon style={{ height: 22, width: 22 }} />
-                    </IconButton>}
-                </div>
-                <div style={{display:"flex", justifyContent: "space-between", width: "100%"}}>
-                    <span className={classes.currency}>{user?.currencysymbol||"S/."} {total_revenue?.toLocaleString('en-US') || 0}</span>
-                    <span className={classes.currency} style={{paddingRight: 8}}>{total_cards}</span>
-                </div>
                 {children}
             </div>
         </Box>

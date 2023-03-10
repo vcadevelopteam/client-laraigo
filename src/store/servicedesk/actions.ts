@@ -1,5 +1,5 @@
 import { IActionCall, ICrmLeadNoteSave, IRequestBody, ITransaction } from "@types";
-import { getCommChannelLst, getMessageTemplateLst, getProductCatalogSel } from "common/helpers";
+import { getCommChannelLst, getMessageTemplateLst, getProductCatalogSel, getUserGroupsSel } from "common/helpers";
 import { CommonService } from "network";
 import actionTypes from "./actionTypes";
 
@@ -238,6 +238,42 @@ export const getPersonType = (body: IRequestBody): IActionCall => ({
 
 export const resetGetPersonType = (): IActionCall => ({ type: actionTypes.GET_PERSON_TYPE_RESET });
 
+export const getUrgency = (body: IRequestBody): IActionCall => ({
+    callAPI: () => CommonService.main(body),
+    types: {
+        loading: actionTypes.GET_URGENCY,
+        success: actionTypes.GET_URGENCY_SUCCESS,
+        failure: actionTypes.GET_URGENCY_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetUrgency = (): IActionCall => ({ type: actionTypes.GET_URGENCY_RESET });
+
+export const getImpact = (body: IRequestBody): IActionCall => ({
+    callAPI: () => CommonService.main(body),
+    types: {
+        loading: actionTypes.GET_IMPACT,
+        success: actionTypes.GET_IMPACT_SUCCESS,
+        failure: actionTypes.GET_IMPACT_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetImpact = (): IActionCall => ({ type: actionTypes.GET_IMPACT_RESET });
+
+export const getPriority = (body: IRequestBody): IActionCall => ({
+    callAPI: () => CommonService.main(body),
+    types: {
+        loading: actionTypes.GET_PRIORITY,
+        success: actionTypes.GET_PRIORITY_SUCCESS,
+        failure: actionTypes.GET_PRIORITY_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetPriority = (): IActionCall => ({ type: actionTypes.GET_PRIORITY_RESET });
+
 export const getLeadTemplates = (): IActionCall => ({
     callAPI: () => CommonService.main(getMessageTemplateLst('')),
     types: {
@@ -262,3 +298,15 @@ export const getLeadChannels = (): IActionCall => ({
 });
 
 export const resetGetLeadChannels = (): IActionCall => ({ type: actionTypes.GET_LEAD_CHANNELS_RESET });
+
+export const getGroups = (): IActionCall => ({
+    callAPI: () => CommonService.main(getUserGroupsSel()),
+    types: {
+        loading: actionTypes.GET_GROUPS,
+        success: actionTypes.GET_GROUPS_SUCCESS,
+        failure: actionTypes.GET_GROUPS_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetGroups = (): IActionCall => ({ type: actionTypes.GET_GROUPS_RESET });

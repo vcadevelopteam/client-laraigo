@@ -463,6 +463,95 @@ export const getPersonTypeReset = (state: IState): IState => ({
     personTypeDomain: initialState.personTypeDomain,
 });
 
+export const getUrgency = (state: IState): IState => ({
+    ...state,
+    urgency: { ...state.urgency, loading: true, error: false },
+});
+
+export const getUrgencySuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    urgency: {
+        data: action.payload.data || [],
+        loading: false,
+        error: false,
+    },
+});
+
+export const getUrgencyFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    urgency: {
+        ...state.personTypeDomain,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'getUrgencyFailure:error',
+        message: action.payload.message || 'Error al objtener el dominio URGENCY',
+    },
+});
+
+export const getUrgencyReset = (state: IState): IState => ({
+    ...state,
+    urgency: initialState.urgency,
+});
+
+export const getImpact = (state: IState): IState => ({
+    ...state,
+    impact: { ...state.impact, loading: true, error: false },
+});
+
+export const getImpactSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    impact: {
+        data: action.payload.data || [],
+        loading: false,
+        error: false,
+    },
+});
+
+export const getImpactFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    impact: {
+        ...state.personTypeDomain,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'getImpactFailure:error',
+        message: action.payload.message || 'Error al objtener el dominio URGENCY',
+    },
+});
+
+export const getImpactReset = (state: IState): IState => ({
+    ...state,
+    impact: initialState.impact,
+});
+
+export const getPriority = (state: IState): IState => ({
+    ...state,
+    priority: { ...state.priority, loading: true, error: false },
+});
+
+export const getPrioritySuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    priority: {
+        data: action.payload.data || [],
+        loading: false,
+        error: false,
+    },
+});
+
+export const getPriorityFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    priority: {
+        ...state.personTypeDomain,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'getPriorityFailure:error',
+        message: action.payload.message || 'Error al objtener el dominio URGENCY',
+    },
+});
+
+export const getPriorityReset = (state: IState): IState => ({
+    ...state,
+    priority: initialState.priority,
+});
 
 
 export const getLeadTemplates = (state: IState): IState => ({
@@ -524,4 +613,34 @@ export const getLeadChannelsFailure = (state: IState, action: IAction): IState =
 export const getLeadChannelsReset = (state: IState): IState => ({
     ...state,
     leadChannels: initialState.leadChannels,
+});
+
+export const getGroups = (state: IState): IState => ({
+    ...state,
+    groups: { ...state.groups, loading: true, error: false },
+});
+
+export const getGroupsSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    groups: {
+        data: (action.payload.data || []),
+        loading: false,
+        error: false,
+    },
+});
+
+export const getGroupsFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    groups: {
+        ...state.groups,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'getGroupsFailure:error',
+        message: action.payload.message || 'Error al objtener el dominio OPORTUNIDADPRODUCTOS',
+    },
+});
+
+export const getGroupsReset = (state: IState): IState => ({
+    ...state,
+    groups: initialState.groups,
 });
