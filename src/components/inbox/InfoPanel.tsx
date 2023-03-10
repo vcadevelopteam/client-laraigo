@@ -10,7 +10,7 @@ import { getTicketsPerson, showInfoPanel, updateClassificationPerson, updatePers
 import { GetIcon, FieldEdit, FieldSelect, AntTab, FieldEditMulti } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
-import { convertLocalDate, getConversationClassification2, getPropertySelByName, getValuesFromDomain, insertClassificationConversation, insPersonBody, validateIsUrl } from 'common/helpers';
+import { convertLocalDate, getAttachmentsByPerson, getConversationClassification2, getLeadsByUserPerson, getPropertySelByName, getValuesFromDomain, insertClassificationConversation, insPersonBody, validateIsUrl } from 'common/helpers';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import { Dictionary } from '@types';
@@ -340,24 +340,24 @@ const InfoTab: React.FC = () => {
                             prefixTranslation="type_gender_"
                             error={errors?.gender?.message}
                         />
-                        {multiData?.data?.[5]?.data?.[0].propertyvalue === "LIBRE"?
-                        <FieldEdit
-                            label={t(langKeys.occupation)}
-                            onChange={(value) => {setValue('occupation', value); setValue('occupationdesc', value)}}
-                            valueDefault={getValues('occupation')}
-                            error={errors?.occupation?.message}
-                        />:<FieldSelect
-                            onChange={(value) => {setValue('occupation', value?.domainvalue); setValue('occupationdesc', value?.domainvalue);}}
-                            label={t(langKeys.occupation)}
-                            loading={multiData.loading}
-                            data={multiData.data[2]?.data || []}
-                            optionValue="domainvalue"
-                            optionDesc="domainvalue"
-                            valueDefault={getValues('occupation')}
-                            uset={true}
-                            prefixTranslation="type_ocupation_"
-                            error={errors?.occupation?.message}
-                        />}
+                        {multiData?.data?.[5]?.data?.[0].propertyvalue === "LIBRE" ?
+                            <FieldEdit
+                                label={t(langKeys.occupation)}
+                                onChange={(value) => { setValue('occupation', value); setValue('occupationdesc', value) }}
+                                valueDefault={getValues('occupation')}
+                                error={errors?.occupation?.message}
+                            /> : <FieldSelect
+                                onChange={(value) => { setValue('occupation', value?.domainvalue); setValue('occupationdesc', value?.domainvalue); }}
+                                label={t(langKeys.occupation)}
+                                loading={multiData.loading}
+                                data={multiData.data[2]?.data || []}
+                                optionValue="domainvalue"
+                                optionDesc="domainvalue"
+                                valueDefault={getValues('occupation')}
+                                uset={true}
+                                prefixTranslation="type_ocupation_"
+                                error={errors?.occupation?.message}
+                            />}
                         <FieldSelect
                             onChange={(value) => setValue('civilstatus', value?.domainvalue)}
                             label={t(langKeys.civilStatus)}
@@ -582,7 +582,7 @@ const Variables: React.FC = () => {
                     return null;
                 }
                 return (
-                    <div key={index} className={classes.containerName}>
+                    <div key={variable} className={classes.containerName}>
                         <div style={{ fontWeight: fontbold ? 'bold' : 'normal' }}>
                             <div className={classes.label}>{description}</div>
                             <div style={{ color: fontcolor }} dangerouslySetInnerHTML={{ __html: validateIsUrl(variabletmp?.Value) || '-' }}>
@@ -620,7 +620,7 @@ const Classifications: React.FC = () => {
     useEffect(() => {
         if (!mainAux2.loading && !mainAux2.error) {
             dispatch(updateClassificationPerson(mainAux2.data.length > 0))
-            setClassifications(mainAux2?.data?.reverse() || [])
+            setClassifications([...mainAux2?.data].reverse())
         }
     }, [mainAux2])
 
@@ -669,7 +669,7 @@ const Classifications: React.FC = () => {
                     return (
                         <div className={classes.containerPreviewTicket} style={{ flexDirection: "initial", alignItems: "center" }} key={x.classificationid}>
                             <div style={{ flex: 1 }}>
-                                <div>- {x.path.replace("/", " / ")}</div>
+                                <div>- {x?.path?.replace("/", " / ")}</div>
                             </div>
                             <DeleteIcon style={{ color: "#B6B4BA" }} onClick={() => { handleDelete(x) }} />
                         </div>
@@ -730,7 +730,7 @@ const PreviewTickets: React.FC<{ order: number }> = ({ order }) => {
         })}>
             <div ref={el}></div>
             {previewTicketList.data?.map((ticket, index) => (
-                <div key={index}>
+                <div key={ticket.conversationid}>
                     <div className={classes.containerPreviewTicket} onClick={() => handleClickOpen(ticket)}>
                         <div className={classes.titlePreviewTicket}>
                             <GetIcon color={ticket.coloricon} channelType={ticket.communicationchanneltype} />
@@ -762,47 +762,34 @@ const PreviewTickets: React.FC<{ order: number }> = ({ order }) => {
 const Attachments: React.FC = () => {
     const classes = useStyles();
     const [listFiles, setListFiles] = useState<Dictionary[]>([]);
-    const interactionList = useSelector(state => state.inbox.interactionList);
     const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const mainAux2 = useSelector(state => state.main.mainAux2);
 
     useEffect(() => {
-        if (interactionList.data[0].interactiontype === "email") {
-            let interactions = interactionList.data.reduce<Dictionary[]>((acc, item) => [
-                ...acc,
-                ...(item.interactions || [])
-            ], []);
-            setListFiles(interactions.reduce<Dictionary[]>((acc, item) => {
-                if (item?.interactiontext?.split("&%MAIL%&")[2] && item?.interactiontext?.split("&%MAIL%&")[2] !== "{}") {
-                    const filesjson = JSON.parse(item.interactiontext.split("&%MAIL%&")[2])
-                    const keys = Object.keys(filesjson)
-                    let arrayres = keys.filter(key => (key.split(".").pop() !== "jpg" && key.split(".").pop() !== "png" && key.split(".").pop() !== "jpeg")).reduce<Dictionary[]>((acc1, key) => [
-                        ...acc1, {
-                            url: filesjson[String(key)],
-                            filename: decodeURI(key),
-                            extension: key.split(".").pop(),
-                            date: convertLocalDate(item.createdate).toLocaleString()
-                        }
-                    ], [])
+        dispatch(getCollectionAux2(getAttachmentsByPerson(ticketSelected?.personid!!)))
+    }, [])
 
-                    return [...acc, ...arrayres]
-
-                }
-                return [...acc]
-            }, []));
-
-        } else {
-            setListFiles(interactionList.data.reduce<Dictionary[]>((acc, item) => [
-                ...acc,
-                ...(item.interactions?.filter((x) => ["file", "video"].includes(x.interactiontype)) || []).map(x => ({
-                    url: x.interactiontext,
-                    // filename: x.interactiontext.split("/").pop(),
-                    filename: x.interactiontext.split("/").pop(),
-                    extension: ((x.interactiontext.split("/").pop() || '') || "").split(".").pop(),
-                    date: convertLocalDate(x.createdate).toLocaleString(),
-                }))
-            ], []));
+    useEffect(() => {
+        if (!mainAux2.loading && !mainAux2.error && mainAux2.key === "QUERY_SELECT_ATTACHMENT") {
+            setListFiles(mainAux2?.data.map(x => ({
+                url: x.interactiontext,
+                filename: x.interactiontext.split("/").pop(),
+                extension: ((x.interactiontext.split("/").pop() || '') || "").split(".").pop(),
+                date: convertLocalDate(x.createdate).toLocaleString(),
+                user: x.userid ? x.user : "Person",
+            })))
         }
-    }, [interactionList])
+    }, [mainAux2])
+
+    if (mainAux2.loading) {
+        return (
+            <div style={{ flex: 1, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <CircularProgress />
+            </div>
+        )
+    }
 
     if (listFiles.length === 0) {
         return (
@@ -814,35 +801,82 @@ const Attachments: React.FC = () => {
 
     return (
         <div className={`scroll-style-go`} style={{ overflowY: 'auto', flex: 1, backgroundColor: 'transparent' }}>
-            {listFiles.map(({ filename, date, url, extension }, index) => (
+            {listFiles.map(({ interactionid, filename, date, url, extension, user }) => (
                 <a
-                    key={index}
+                    key={interactionid}
                     className={classes.containerAttachment}
                     href={url}
                     download
                     style={{ textDecoration: 'none', color: 'inherit' }}
                     rel="noreferrer" target="_blank"
-                // onClick={() => window.open(url, "_blank")}
                 >
-                    {extension === "pdf" ? (
-                        <PdfIcon width="30" height="30" />
-                    ) : (extension === "doc" || extension === "docx") ? (
-                        <DocIcon width="30" height="30" />
-                    ) : (extension === "xls" || extension === "xlsx" || extension === "csv") ? (
-                        <XlsIcon width="30" height="30" />
-                    ) : (extension === "ppt" || extension === "pptx") ? (
-                        <PptIcon width="30" height="30" />
-                    ) : (extension === "zip" || extension === "rar") ? (
-                        <ZipIcon width="30" height="30" />
-                    ) : (extension === "text" || extension === "txt") ? (
-                        <TxtIcon width="30" height="30" />
-                    ) : <FileIcon width="30" height="30" />
-                    }
-                    <div>
+                    {extension === "pdf" && <PdfIcon width="30" height="30" />}
+                    {(extension === "doc" || extension === "docx") && <DocIcon width="30" height="30" />}
+                    {(extension === "xls" || extension === "xlsx" || extension === "csv") && <XlsIcon width="30" height="30" />}
+                    {(extension === "ppt" || extension === "pptx") && <PptIcon width="30" height="30" />}
+                    {(extension === "zip" || extension === "rar") && <ZipIcon width="30" height="30" />}
+                    {(extension === "text" || extension === "txt") && <TxtIcon width="30" height="30" />}
+                    {!["pdf", "doc", "docx", "xls", "xlsx", "csv", "ppt", "pptx", "zip", "rar", "text", "txt",].includes(extension) && <FileIcon width="30" height="30" />}
+                    <div style={{width: "100%"}}>
+                        <div className={classes.label} style={{ textAlign: "right" }}>{user}</div>
                         <div>{filename}</div>
                         <div className={classes.label}>{date}</div>
                     </div>
                 </a>
+            ))}
+        </div>
+    )
+}
+
+const Leads: React.FC = () => {
+    const classes = useStyles();
+    const [listLead, setlistLead] = useState<Dictionary[]>([]);
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const mainAux2 = useSelector(state => state.main.mainAux2);
+
+    useEffect(() => {
+        dispatch(getCollectionAux2(getLeadsByUserPerson(ticketSelected?.personid!!)))
+    }, [])
+
+    useEffect(() => {
+        if (!mainAux2.loading && !mainAux2.error && mainAux2.key === "QUERY_SELECT_LEADS_BY_USER_PERSON") {
+            setlistLead(mainAux2?.data)
+        }
+    }, [mainAux2])
+
+    if (mainAux2.loading) {
+        return (
+            <div style={{ flex: 1, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <CircularProgress />
+            </div>
+        )
+    }
+
+    if (listLead.length === 0) {
+        return (
+            <div className={classes.label} style={{ padding: 8, flex: 1 }}>
+                {t(langKeys.without_files)}
+            </div>
+        )
+    }
+
+    return (
+        <div className={`scroll-style-go`} style={{ overflowY: 'auto', flex: 1, backgroundColor: 'transparent' }}>
+            {listLead.map(({ leadid, lead, expected_revenue, priority, column, products }) => (
+                <div
+                    key={leadid}
+                    className={classes.containerAttachment}
+                >
+                    <div style={{width: "100%"}}>
+                        <div className={classes.label} style={{ textAlign: "right" }}>{priority}</div>
+                        <div>{lead}</div>
+                        {products && <div>{products}</div>}
+                        <div>{t(column?.toLowerCase())}</div>
+                        <div style={{fontWeight: "bold"}}>{parseFloat(expected_revenue).toFixed(2)}</div>
+                    </div>
+                </div>
             ))}
         </div>
     )
@@ -882,12 +916,14 @@ const InfoPanel: React.FC = () => {
                 <AntTab icon={<AttachFileIcon />} />
                 <AntTab label="Variables" />
                 <AntTab label={t(langKeys.classification_plural)} />
+                <AntTab label={t(langKeys.lead_plural)} />
             </Tabs>
             {pageSelected === 0 && <InfoTab />}
             {pageSelected === 1 && <PreviewTickets order={order} />}
             {pageSelected === 2 && <Attachments />}
             {pageSelected === 3 && <Variables />}
             {pageSelected === 4 && <Classifications />}
+            {pageSelected === 5 && <Leads />}
         </div>
     );
 }

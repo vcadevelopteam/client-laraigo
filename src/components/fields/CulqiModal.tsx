@@ -199,6 +199,7 @@ const CulqiModal: FC<CulqiModalProps> = ({ amount, buttontitle, buyamount, callb
                 resetRequest && resetRequest();
             }
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [culqiSelector, waitPay]);
 
     return (

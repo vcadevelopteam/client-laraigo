@@ -88,6 +88,7 @@ export interface ListChannels {
     linkedin: boolean;
     teams: boolean;
     blogger: boolean;
+    webForm: boolean;
 }
 
 export interface FacebookChannel {
@@ -312,6 +313,7 @@ const defaultListChannels: ListChannels = {
     linkedin: false,
     teams: false,
     blogger: false,
+    webForm: false,
 };
 
 export const SubscriptionContext = createContext<Subscription>({

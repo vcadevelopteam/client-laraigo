@@ -20,6 +20,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import DeleteIcon from '@material-ui/icons/Delete';
 import StopIcon from '@material-ui/icons/Stop';
+import { formatDate} from 'common/helpers';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -178,6 +179,28 @@ export const Campaign: FC = () => {
                 Cell: (props: any) => {
                     const { status } = props.cell.row.original;
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+                }
+            },
+            {
+                Header: t(langKeys.datetimestart_campaign),
+                accessor: 'datetimestart',
+                NoFilter: false,
+                prefixTranslation: 'datetimestart',
+                Cell: (props: any) => {
+                    const { datetimestart } = props.cell.row.original;
+                    const formattedDate = formatDate(datetimestart, { withTime: true }) || '';
+                    return formattedDate;
+                }
+            },
+            {
+                Header: t(langKeys.executiontype_campaign),
+                accessor: 'executiontype',
+                NoFilter: false,
+                prefixTranslation: 'executiontype',
+                Cell: (props: any) => {
+                    const { executiontype } = props.cell.row.original;
+                    console.log(`executiontype_${executiontype}`)
+                    return t(`executiontype_${executiontype}`).toUpperCase()
                 }
             },
             {

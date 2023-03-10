@@ -18,6 +18,7 @@ import { useSelector } from 'hooks';
 import { manageConfirmation, showSnackbar } from 'store/popus/actions';
 import { DashboardTemplate, IListStatePaginated } from '@types';
 import { deleteDashboardTemplate, resetDeleteDashboardTemplate } from 'store/dashboard/actions';
+import DashboardKPI from './DashboardKPI';
 
 
 const arrayBread = [
@@ -83,6 +84,7 @@ const Dashboard: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const dashboardtemplates = useSelector(state => state.main.mainData) as IListStatePaginated<DashboardTemplate>;
     const dashboardtemplateDelete = useSelector(state => state.dashboard.dashboardtemplateDelete);    
+    const user = useSelector(state => state.login.validateToken.user);
     const [searchValue, setSearchValue] = useState('');
     const [allDashboards, setAllDashboards] = useState<any>([]);
     const [allDashboardsToShow, setallDashboardsToShow] = useState<any[]>([]);
@@ -314,6 +316,25 @@ const Dashboard: FC = () => {
                                 </CardActionArea>
                             </Card>
                         </Grid>}
+                        {(t(langKeys.dashboardkpi).toLowerCase().includes(searchValue.toLowerCase() ) && (user?.properties.environment==="CLARO")) && <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                            <Card>
+                                <CardActionArea onClick={() => handleSelected("dashboardkpi")}>
+                                    <CardMedia
+                                        component="img"
+                                        height="140"
+                                        style={{objectFit: "contain"}}
+                                        className={classes.media}
+                                        image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/PROCESOSYCONSULTORIA/d4a7c4c3-1ff8-48ea-b10a-6a74a03142e4/desconexionestickets.png'}
+                                        title={t(langKeys.dashboardkpi)}
+                                    />
+                                    <CardContent>
+                                        <Typography gutterBottom variant="h6" component="div">
+                                            {t(langKeys.dashboardkpi)}
+                                        </Typography>
+                                    </CardContent>
+                                </CardActionArea>
+                            </Card>
+                        </Grid>}
                         {allDashboardsToShow.map((e:any, i:number) => (
                             <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }} key={i}>
                                 <DashboardCard
@@ -405,6 +426,20 @@ const Dashboard: FC = () => {
                         handleClick={handleSelected}
                     />
                     <DashboardDisconnections/>
+                </div>
+            </Fragment>
+        )
+    }    
+    else if(viewSelected === "dashboardkpi"){
+        return(
+            
+            <Fragment>
+                <div style={{ width: '100%' }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={[...arrayBread, {id: 'dashboardkpi', name: t(langKeys.dashboardkpi) }]}
+                        handleClick={handleSelected}
+                    />
+                    <DashboardKPI/>
                 </div>
             </Fragment>
         )

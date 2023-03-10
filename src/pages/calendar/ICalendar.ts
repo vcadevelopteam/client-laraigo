@@ -24,6 +24,7 @@ export type ICalendarFormFields = {
     variables: any[],
     durationtype: string,
     duration: number,
+    maximumcapacity: number,
     timebeforeeventunit: string,
     timebeforeeventduration: number,
     timeaftereventunit: string,

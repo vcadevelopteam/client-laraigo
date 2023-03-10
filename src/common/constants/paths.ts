@@ -43,6 +43,14 @@ const paths = {
         path: "/paymentorder/:corpid/:orgid/:ordercode",
         resolve: (corpid: number, orgid: number, ordercode: string) => `/paymentorder/${corpid}/${orgid}/${ordercode}`,
     },
+    NIUBIZ_PAYMENTORDER: {
+        path: "/paymentorderniubiz/:corpid/:orgid/:ordercode",
+        resolve: (corpid: number, orgid: number, ordercode: string) => `/paymentorderniubiz/${corpid}/${orgid}/${ordercode}`,
+    },
+    NIUBIZ_PAYMENTORDERSTATUS: {
+        path: "/paymentorderniubizstatus/:corpid/:orgid/:ordercode",
+        resolve: (corpid: number, orgid: number, ordercode: string) => `/paymentorderniubizstatus/${corpid}/${orgid}/${ordercode}`,
+    },
     LOCATION: {
         path: "/getLocations/:token",
         resolve: (token: string) => `/getLocations/${token}`,
@@ -108,6 +116,7 @@ const paths = {
     },
     CHANNELS_ADD: '/channels/add',
     CHANNELS_ADD_CHATWEB: '/channels/add/chatweb',
+    CHANNELS_ADD_WEBFORM: '/channels/add/webform',
     CHANNELS_ADD_TIKTOK: {
         path: '/channels/:id/add/ChannelAddTikTok',
         resolve: (channelId: string | number) => `/channels/${channelId}/add/ChannelAddTikTok`,
@@ -139,6 +148,10 @@ const paths = {
     CHANNELS_EDIT_CHATWEB: {
         path: '/channels/edit/:id/chatweb',
         resolve: (channelId: string | number) => `/channels/edit/${channelId}/chatweb`,
+    },
+    CHANNELS_EDIT_WEBFORM: {
+        path: '/channels/edit/:id/webform',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/webform`,
     },
     CHANNELS_EDIT_WHATSAPP: {
         path: '/channels/edit/:id/whatsapp',

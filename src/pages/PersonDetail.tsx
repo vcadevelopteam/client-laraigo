@@ -378,6 +378,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 subtitle={(
                                     <TextField
                                         fullWidth
+                                        type='number'
                                         placeholder={t(langKeys.docNumber)}
                                         defaultValue={getValues("documentnumber")}
                                         value={getValues("documentnumber")}
@@ -385,6 +386,8 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                             setValue('documentnumber', e.target.value)
                                             trigger('documentnumber')
                                         }}
+                                        error={errors?.documentnumber}
+                                        helperText={errors?.documentnumber?.message}
                                     />
                                 )}
                                 m={1}
@@ -450,6 +453,8 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                                     setValue('phone', value || "");
                                                     setExtraTriggers({...extraTriggers, phone: value?.replace("+",'') || ""})
                                                 }}
+                                                error={!!errors?.phone}
+                                                helperText={errors?.phone?.message}
                                                 InputProps={{
                                                     endAdornment: (
                                                         <InputAdornment position="end">
@@ -490,6 +495,8 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                                 onChange={(value: any) => {
                                                     setValue('alternativephone', value || "");
                                                 }}
+                                                error={!!errors?.alternativephone}
+                                                helperText={errors?.alternativephone?.message}
                                                 InputProps={{
                                                     endAdornment: (
                                                         <InputAdornment position="end">
@@ -528,6 +535,8 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                             setExtraTriggers({...extraTriggers, email: e.target.value || ""})
                                             trigger("email")
                                         }}
+                                        error={!!errors?.email}
+                                        helperText={errors?.email?.message}
                                     />
                                 )}
                                 m={1}
@@ -546,6 +555,8 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                             setValue('alternativeemail', e.target.value)
                                             trigger("alternativeemail")
                                         }}
+                                        error={!!errors?.alternativeemail}
+                                        helperText={errors?.alternativeemail?.message}
                                     />
                                 )}
                                 m={1}
@@ -861,6 +872,7 @@ const nameschannel: { [x: string]: string } = {
     "TWIT": "TWITTER",
     "TWMS": "TWITTER",
     "VOXI": "T_VOICECHANNEL",
+    "FORM": "FORMULARIO WEB",
 };
 
 const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
@@ -2024,6 +2036,33 @@ const PersonDetail2: FC<{ person: any;}> = ({ person }) => {
 
                 register('firstname', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
                 register('lastname', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
+                register('documentnumber',{
+                    validate:{
+                        validationDNI: (value) => getValues("documenttype") === "DNI"? (value.length === 8|| t(langKeys.validationDNI)+"") :true,
+                        validationRUC: (value) => getValues("documenttype") === "RUC"? (value.length === 11|| t(langKeys.validationRUC)+"") :true,
+                        validationCE: (value) => getValues("documenttype") === "CE"? (value.length <= 12|| t(langKeys.validationCE)+"") :true,
+                    }
+                });
+                register('email', {
+                    validate: {
+                        isemail: (value) => ((!value || (/\S+@\S+\.\S+/.test(value))) || t(langKeys.emailverification) + "") 
+                    }
+                });
+                register('alternativeemail', {
+                    validate: {
+                        isemail: (value) => ((!value || (/\S+@\S+\.\S+/.test(value))) || t(langKeys.emailverification) + "") 
+                    }
+                });
+                register('phone', {
+                    validate: {
+                        isperuphone: (value) => (value?.startsWith("+51")?(value.length === 12|| t(langKeys.validationphone)+""):true) 
+                    }
+                });
+                register('allternativephone', {
+                    validate: {
+                        isperuphone: (value) => (value?.startsWith("+51")?(value.length === 12|| t(langKeys.validationphone)+""):true) 
+                    }
+                });
             }
             dispatch(getDomainsByTypename());
         }
@@ -2510,7 +2549,6 @@ const PersonDetail2: FC<{ person: any;}> = ({ person }) => {
 const PersonDetail: FC = () => {
     const dispatch = useDispatch();
     const history = useHistory();
-    const { t } = useTranslation();
     const location = useLocation<IPerson>();
     const executeResult = useSelector(state => state.main.execute);
     const [person, setperson] = useState<any>(location.state as IPerson | null);

@@ -41,7 +41,7 @@ const InputValidation = lazy(() => import('pages/InputValidation'));
 const IntegrationManager = lazy(() => import('pages/IntegrationManager'));
 const VariableConfiguration = lazy(() => import('pages/VariableConfiguration'));
 const Emojis = lazy(() => import('pages/Emojis'));
-const Iaservices = lazy(() => import('pages/Iaservices'));
+const Iaservices = lazy(() => import('pages/LaraigoIA'));
 const Campaign = lazy(() => import('pages/campaign/Campaign'));
 const NotFound = lazy(() => import('pages/NotFound'));
 const Forbidden = lazy(() => import('pages/Forbidden'));
@@ -59,6 +59,7 @@ const AutomatizationRules = lazy(() => import('pages/AutomatizationRules'));
 const Channels = lazy(() => import('pages/channels/Channels'));
 const ChannelAdd = lazy(() => import('pages/channels/ChannelAdd'));
 const ChannelAddChatWeb = lazy(() => import('pages/channels/ChannelAddChatWeb'));
+const ChannelAddWebForm = lazy(() => import('pages/channels/ChannelAddWebForm'));
 const ChannelAddFacebook = lazy(() => import('pages/channels/ChannelAddFacebook'));
 const ChannelAddMessenger = lazy(() => import('pages/channels/ChannelAddMessenger'));
 const ChannelAddInstagram = lazy(() => import('pages/channels/ChannelAddInstagram'));
@@ -93,6 +94,8 @@ const LeadForm = lazy(() => import('pages/crm/LeadForm'));
 const ChangePwdFirstLogin = lazy(() => import('pages/ChangePwdFirstLogin'));
 const CalendarEvent = lazy(() => import('pages/CalendarEvent'));
 const PaymentOrder = lazy(() => import('pages/PaymentOrder'));
+const PaymentOrderNiubiz = lazy(() => import('pages/PaymentOrderNiubiz'));
+const PaymentOrderNiubizStatus = lazy(() => import('pages/PaymentOrderNiubizStatus'));
 const Assistant = lazy(() => import('pages/assistant/Assistant'));
 const Location = lazy(() => import('pages/Location'));
 const SecurityRules = lazy(() => import('pages/SecurityRules'));
@@ -201,6 +204,8 @@ const RouterApp: FC = () => {
 					<Route exact path={paths.CALENDAR_EVENT.path} render={() => <CalendarEvent />} />
 					<Route exact path={paths.CANCEL_EVENT.path} render={() => <CancelEvent />} />
 					<Route exact path={paths.CULQI_PAYMENTORDER.path} render={() => <PaymentOrder />} />
+					<Route exact path={paths.NIUBIZ_PAYMENTORDER.path} render={() => <PaymentOrderNiubiz />} />
+					<Route exact path={paths.NIUBIZ_PAYMENTORDERSTATUS.path} render={() => <PaymentOrderNiubizStatus />} />
 					<Route exact path={paths.PRIVACY} render={() => <Privacy />} />
 					<Route exact path={paths.ACTIVATE_USER.path} render={() => <ActivateUser />} />
 					<Route exact path={paths.RECOVER_PASSWORD.path} render={() => <RecoverPassword />} />
@@ -213,6 +218,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.CHANNELS} component={() => (<Layout mainClasses={classes.main}><Channels /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD} component={() => (<Layout mainClasses={classes.main}><ChannelAdd /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_CHATWEB} component={() => (<Layout mainClasses={classes.main}><ChannelAddChatWeb edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_WEBFORM} component={() => (<Layout mainClasses={classes.main}><ChannelAddWebForm edit={false} /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_FACEBOOK.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddFacebook /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_MESSENGER.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddMessenger /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_INSTAGRAM.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddInstagram /></Layout>)} />
@@ -234,6 +240,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.CHANNELS_ADD_WHATSAPPONBOARDING.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddWhatsAppOnboarding /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_EDIT.path} component={() => (<Layout mainClasses={classes.main}><ChannelEdit /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_EDIT_CHATWEB.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddChatWeb edit /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_EDIT_WEBFORM.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddWebForm edit /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_EDIT_WHATSAPP.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddWhatsapp edit /></Layout>)} />
 					<ProtectRoute exact path={paths.CORPORATIONS} component={() => (<Layout mainClasses={classes.main}><Corporations /></Layout>)} />
 					<ProtectRoute exact path={paths.ORGANIZATIONS} component={() => (<Layout mainClasses={classes.main}><Organizations /></Layout>)} />

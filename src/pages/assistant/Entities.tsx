@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
-import {  FieldEdit, FieldEditArray, FieldMultiSelectFreeSolo } from 'components';
+import {  FieldEdit, TemplateBreadcrumbs } from 'components';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { Button, IconButton, makeStyles, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
+import { Button, makeStyles } from '@material-ui/core';
 import TableZyx from 'components/fields/table-simple';
 import ClearIcon from '@material-ui/icons/Clear';
 import { Dictionary } from '@types';
@@ -13,9 +13,10 @@ import { useForm } from 'react-hook-form';
 import AddIcon from '@material-ui/icons/Add';
 import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import DeleteIcon from '@material-ui/icons/Delete';
-import { execute, getCollection, resetAllMain } from 'store/main/actions';
-import { entitydelete, insertentity, selEntities } from 'common/helpers/requestBodies';
+import { getCollection, resetAllMain } from 'store/main/actions';
+import { selEntities } from 'common/helpers/requestBodies';
+import { convertLocalDate } from 'common/helpers';
+import { entitydel, entityins } from 'store/witia/actions';
 
 
 interface RowSelected {
@@ -27,6 +28,8 @@ interface DetailProps {
     data: RowSelected;
     fetchData?: () => void;
     setViewSelected: (view: string) => void;
+    setExternalViewSelected?: (view: string) => void;
+    arrayBread?: any;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -54,17 +57,25 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 'bold',
         color: theme.palette.text.primary,
     },
+    containerFields: {
+        paddingRight: "16px"
+    },
 }));
 
 
 
-const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,setViewSelected }) => {
+const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,setViewSelected, setExternalViewSelected, arrayBread }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
-    const [keywords, setkeywords] = useState<any>(row?.datajson?.keywords || []);
-    const executeRes = useSelector(state => state.main.execute);
+    const operationRes = useSelector(state => state.witai.witaioperationresult);
+    const [keyword, setkeyword] = useState("");
+    const [synonim, setsynonim] = useState("");
+    const [disableCreate, setDisableCreate] = useState(true);
+    const [dataKeywords, setDataKeywords] = useState<any>(row?.datajson?.keywords || []);
+    const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const dispatch = useDispatch();
     const { t } = useTranslation();
+    const selectionKey= "keyword"
 
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
@@ -86,28 +97,28 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
 
     useEffect(() => {
         if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
+            if (!operationRes.loading && !operationRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.whitelist).toLocaleLowerCase() })
+            } else if (operationRes.error) {
+                const errormessage = t(operationRes.code || "error_unexpected_error", { module: t(langKeys.entities).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
         }
-    }, [executeRes, waitSave])
+    }, [operationRes, waitSave])
     
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            dispatch(execute(insertentity({...data, datajson:JSON.stringify({...row?.datajson,
-                keywords:keywords,
+            dispatch(entityins({...data, datajson:JSON.stringify({...row?.datajson,
+                keywords:dataKeywords,
                 lookups: ["keywords"],
                 name:data.name,
                 roles: [row?.datajson?.roles? (row?.datajson?.roles[0]):data.name]
-            })})));
+            })}));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -119,8 +130,36 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
         }))
     });
 
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.keyword),
+                accessor: 'keyword',
+                NoFilter: true,
+                width: "auto",
+            },
+            {
+                Header: t(langKeys.sinonims),
+                accessor: 'synonyms',
+                NoFilter: true,
+                width: "auto",
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return row.synonyms.join();
+                }
+            },
+        ],
+        []
+    );
+
     return (
         <div style={{width: '100%'}}>
+            {!!arrayBread && <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <TemplateBreadcrumbs
+                    breadcrumbs={[...arrayBread, { id: "view-2", name: t(langKeys.entities) }]}
+                    handleClick={setExternalViewSelected}
+                />
+            </div>}
             <form onSubmit={onSubmit}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
@@ -149,94 +188,96 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                     <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.newentity)} 
-                            className="col-12"
+                            className={classes.containerFields}
                             onChange={(value) => {
                                 setValue('name', value)
                             }}
                             valueDefault={row?.name || ""}
                             error={errors?.name?.message}
                         />
+                        <div style={{ paddingTop:"8px",paddingBottom:"16px"}}>{t(langKeys.entitynametooltip)}</div>
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                        <div style={{ flex: .55 }} className={classes.containerDetail}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <div className={classes.title}>{t(langKeys.keywords)}</div>
-                            </div>
-                            <div>
-                                <TableContainer>
-                                    <Table size="small">
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell>
-                                                    <IconButton
-                                                        size="small"
-                                                        onClick={async () => {
-                                                            setkeywords([...keywords,{ keyword: '', synonyms: [] }])
-                                                        }}
-                                                    >
-                                                        <AddIcon />
-                                                    </IconButton>
-                                                </TableCell>
-                                                <TableCell>{t(langKeys.keywords)}</TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody style={{ marginTop: 5 }}>
-                                            {keywords.map((item: any, i: number) =>
-                                                <TableRow key={i}>
-                                                    <TableCell width={30}>
-                                                        <div style={{ display: 'flex' }}>
-                                                            <IconButton
-                                                                size="small"
-                                                                onClick={() => { setkeywords(keywords.splice(i,1)) }}
-                                                            >
-                                                                <DeleteIcon style={{ color: '#777777' }} />
-                                                            </IconButton>
-                                                        </div>
-                                                    </TableCell>
-                                                    <TableCell style={{ width: 200 }}>
-                                                        <FieldEditArray
-                                                            valueDefault={keywords[i].keyword}
-                                                            onChange={(value) => {
-                                                                let tempkeywords = keywords
-                                                                tempkeywords[i].keyword = value
-                                                                setkeywords(tempkeywords)
-                                                            }}
-                                                        />
-                                                    </TableCell>
-                                                </TableRow>
-                                            )}
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
-                            </div>
-                        </div>
+                    <div className={classes.title}>{t(langKeys.keywordsandsinonyms)}</div>
+                    <div className="row-zyx">
+                        <div className='col-6'>
 
-                        <div style={{ flex: .45 }} className={classes.containerDetail}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: "45px" }}>
-                                <div className={classes.title}>{t(langKeys.sinonims)}</div>
-                            </div>
-                            <div>
-                                
-                                {keywords.map((item: any, i: number) =>
-                                
-                                    <FieldMultiSelectFreeSolo
-                                        valueDefault={keywords[i].synonyms.join()||""}
-                                        className={classes.field}
-                                        key={i}
-                                        onChange={(value) => {
-                                            let tempkeywords = keywords
-                                            tempkeywords[i].synonyms = value
-                                            setkeywords(tempkeywords)
-                                        }}
-                                        loading={false}
-                                        data={keywords[i].synonyms.map((x:any) => ({ value: x }))}
-                                        optionDesc="value"
-                                        optionValue="value"
-                                    />
+                            <FieldEdit
+                                label={t(langKeys.keyword)} 
+                                className={classes.containerFields}
+                                onChange={(value) => {
+                                    setkeyword(value);
+                                    setDisableCreate(value==="")
+                                }}
+                                valueDefault={keyword}
+                            />
+                            <div style={{ paddingTop:"8px",paddingBottom:"16px"}}>{t(langKeys.entitykeywordtooltip)}</div>
+                        </div>
+                        <div className='col-6'>
+                            <FieldEdit
+                                label={t(langKeys.sinonims)} 
+                                className={classes.containerFields}
+                                onChange={(value) => {
+                                    setsynonim(value)
+                                }}
+                                valueDefault={synonim}
+                            />
+                            <div style={{ paddingTop:"8px"}}>{t(langKeys.entitysinonimtooltip)}</div>
+                        </div>
+                    </div>
+                    <div className="row-zyx">
+                        <Button
+                            variant="contained"
+                            type="button"
+                            className='col-1'
+                            disabled={disableCreate}
+                            color="primary"
+                            startIcon={<AddIcon color="secondary" />}
+                            style={{ backgroundColor: disableCreate?"#dbdbdc":"#0078f6" }}
+                            onClick={() => {
+                                let partialdata = dataKeywords
+                                let alreadyin = partialdata.filter((x:any)=>x.keyword === keyword)
+                                if(!!alreadyin.length){
+                                    alreadyin[0].synonyms = synonim.split(',')
+                                    setDataKeywords(partialdata)
+
+                                }else{
+                                    setDataKeywords([...dataKeywords,{keyword: keyword, synonyms: synonim.split(',')}])
+                                }
+                                setkeyword("")
+                                setsynonim("")
+                                setDisableCreate(true)    
+                            }}
+                        >{t(langKeys.add)}</Button>
+                    </div>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                        <div style={{ width: '100%' }}>
+                            <TableZyx
+                                columns={columns}
+                                data={dataKeywords}
+                                filterGeneral={false}
+                                useSelection={true}
+                                selectionKey={selectionKey}
+                                setSelectedRows={setSelectedRows}
+                                ButtonsElement={() => (
+                                    <div style={{display: "flex", justifyContent: "end", width: "100%"}}>
+                                        <Button
+                                            disabled={Object.keys(selectedRows).length===0}
+                                            variant="contained"
+                                            type="button"
+                                            color="primary"
+                                            startIcon={<ClearIcon color="secondary" />}
+                                            style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
+                                            onClick={() => {setDataKeywords(dataKeywords.filter((x:any)=>!Object.keys(selectedRows).includes(x.keyword)))}}
+                                        >{t(langKeys.delete)}</Button>
+                                    </div>
                                 )}
-                            </div>
+                                register={false}
+                                download={false}
+                                pageSizeDefault={20}
+                                initialPageIndex={0}
+                            />
                         </div>
                     </div>
                 </div>                 
@@ -245,7 +286,12 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
     );
 }
 
-export const Entities: FC = () => {
+interface EntityProps {
+    setExternalViewSelected?: (view: string) => void;
+    arrayBread?: any;
+}
+
+export const Entities: React.FC<EntityProps> = ({ setExternalViewSelected, arrayBread }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -257,7 +303,8 @@ export const Entities: FC = () => {
 
     const [viewSelected, setViewSelected] = useState("view-1");
     const selectionKey= "name"
-    const executeRes = useSelector(state => state.main.execute);
+    const operationRes = useSelector(state => state.witai.witaioperationresult);
+    const [waitImport, setWaitImport] = useState(false);
 
     const fetchData = () => {dispatch(getCollection(selEntities()))};
     
@@ -271,19 +318,19 @@ export const Entities: FC = () => {
 
     useEffect(() => {
         if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
+            if (!operationRes.loading && !operationRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.messagingcost).toLocaleLowerCase() })
+            } else if (operationRes.error) {
+                const errormessage = t(operationRes.code || "error_unexpected_error", { module: t(langKeys.intentions).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
         }
-    }, [executeRes, waitSave])
+    }, [operationRes, waitSave])
 
     const columns = React.useMemo(
         () => [
@@ -334,6 +381,10 @@ export const Entities: FC = () => {
                 accessor: 'updatedate',
                 width: "auto",
                 NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return convertLocalDate(row.updatedate).toLocaleString()
+                }
             },
         ],
         []
@@ -344,7 +395,7 @@ export const Entities: FC = () => {
     }
     const handleDelete = () => {
         const callback = () => {
-            dispatch(execute(entitydelete({table:JSON.stringify(Object.keys(selectedRows).map(x=>({name:x})))})))
+            dispatch(entitydel({table:JSON.stringify(Object.keys(selectedRows).map(x=>({name:x})))}))
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -355,38 +406,64 @@ export const Entities: FC = () => {
             callback
         }))
     }
+   
+    useEffect(() => {
+        if (waitImport) {
+            if (!operationRes.loading && !operationRes.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
+                dispatch(showBackdrop(false));
+                setWaitImport(false);
+                fetchData();
+            } else if (operationRes.error) {
+                const errormessage = t(operationRes.code || "error_unexpected_error", { module: t(langKeys.intentions).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitImport(false);
+            }
+        }
+    }, [operationRes, waitImport]);
 
     if (viewSelected==="view-1"){
         return (
             <React.Fragment>
                 <div style={{ height: 10 }}></div>
-                <TableZyx
-                    columns={columns}
-                    data={mainResult.mainData.data}
-                    filterGeneral={false}
-                    useSelection={true}
-                    selectionKey={selectionKey}
-                    setSelectedRows={setSelectedRows}
-                    ButtonsElement={() => (
-                        <div style={{display: "flex", justifyContent: "end", width: "100%"}}>
-                            <Button
-                                disabled={Object.keys(selectedRows).length===0}
-                                variant="contained"
-                                type="button"
-                                color="primary"
-                                startIcon={<ClearIcon color="secondary" />}
-                                style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
-                                onClick={handleDelete}
-                            >{t(langKeys.delete)}</Button>
-                        </div>
-                    )}
-                    loading={mainResult.mainData.loading}
-                    register={true}
-                    download={false}
-                    handleRegister={handleRegister}
-                    pageSizeDefault={20}
-                    initialPageIndex={0}
-                />
+                
+                <div style={{ width: "100%" }}>
+                    {!!arrayBread && <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={[...arrayBread,{ id: "view-1", name:  t(langKeys.entities) }]}
+                            handleClick={setExternalViewSelected}
+                        />
+                    </div>}
+                    <TableZyx
+                        titlemodule={!!arrayBread?t(langKeys.entities):""}
+                        columns={columns}
+                        data={mainResult.mainData.data}
+                        filterGeneral={false}
+                        useSelection={true}
+                        selectionKey={selectionKey}
+                        setSelectedRows={setSelectedRows}
+                        ButtonsElement={() => (
+                            <div style={{display: "flex", justifyContent: "end", width: "100%"}}>
+                                <Button
+                                    disabled={Object.keys(selectedRows).length===0}
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    startIcon={<ClearIcon color="secondary" />}
+                                    style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
+                                    onClick={handleDelete}
+                                >{t(langKeys.delete)}</Button>
+                            </div>
+                        )}
+                        loading={mainResult.mainData.loading}
+                        register={true}
+                        download={false}
+                        handleRegister={handleRegister}
+                        pageSizeDefault={20}
+                        initialPageIndex={0}
+                    />
+                </div>
             </React.Fragment>
             );
     }else if (viewSelected==="view-2"){
@@ -396,6 +473,8 @@ export const Entities: FC = () => {
                     data={rowSelected}
                     fetchData={fetchData}
                     setViewSelected={setViewSelected}
+                    setExternalViewSelected={setExternalViewSelected}
+                    arrayBread={arrayBread}
                 />
             </div>
         );

@@ -1050,10 +1050,11 @@ export const getChannelSel = (id: number, orgid?: number, corpid?: number): IReq
         corpid
     }
 });
-export const getasesoresbyorgid = (closedby: string): IRequestBody => ({
+export const getasesoresbyorgid = (closedby: string, communicationchannel: string): IRequestBody => ({
     method: "UFN_USER_REPORT_HEATMAP_ASESOR_LST",
     parameters: {
-        bot: closedby.includes("BOT")
+        bot: closedby.includes("BOT"),
+        communicationchannel
     }
 });
 
@@ -1728,6 +1729,22 @@ export const gerencialEncuestassel = ({ startdate, enddate, channel, group, comp
         offset: (new Date().getTimezoneOffset() / 60) * -1,
     }
 });
+export const dashboardKPISummarySel = ({ date, origin, usergroup, supervisorid }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_KPI_SUMMARY_SEL',
+    key: "UFN_DASHBOARD_KPI_SUMMARY_SEL",
+    parameters: {
+        date, origin, usergroup, supervisorid,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+});
+export const dashboardKPISummaryGraphSel = ({ date, origin, usergroup, supervisorid }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_KPI_SUMMARY_GRAPH_SEL',
+    key: "UFN_DASHBOARD_KPI_SUMMARY_GRAPH_SEL",
+    parameters: {
+        date, origin, usergroup, supervisorid,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+});
 export const gerencialsummarysel = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_GERENCIAL_SUMMARY_SEL',
     key: "UFN_DASHBOARD_GERENCIAL_SUMMARY_SEL",
@@ -2171,6 +2188,22 @@ export const getConversationClassification2 = (conversationid: number): IRequest
     key: "UFN_CONVERSATIONCLASSIFICATION_SEL2",
     parameters: {
         conversationid
+    }
+});
+
+export const getAttachmentsByPerson = (personid: number): IRequestBody => ({
+    method: 'QUERY_SELECT_ATTACHMENT',
+    key: "QUERY_SELECT_ATTACHMENT",
+    parameters: {
+        personid
+    }
+});
+
+export const getLeadsByUserPerson = (personid: number): IRequestBody => ({
+    method: 'QUERY_SELECT_LEADS_BY_USER_PERSON',
+    key: "QUERY_SELECT_LEADS_BY_USER_PERSON",
+    parameters: {
+        personid
     }
 });
 
@@ -3145,7 +3178,7 @@ export const insCalendar = ({
     id = 0, description, descriptionobject, status, type,
     code, name, locationtype, location, eventlink, color, notificationtype, messagetemplateid,
     daterange, daysduration, startdate, enddate,
-    timeduration, timeunit,
+    timeduration, timeunit,maximumcapacity,
     availability,
     timebeforeeventduration, timebeforeeventunit, timeaftereventduration, timeaftereventunit,
     increments,
@@ -3159,7 +3192,7 @@ export const insCalendar = ({
         descriptionobject: JSON.stringify(descriptionobject), status, type,
         code, name, locationtype, location, eventlink, color, notificationtype, messagetemplateid,
         daterange, daysduration, daystype: "CALENDAR", startdate, enddate,
-        timeduration, timeunit,
+        timeduration,timeunit,maximumcapacity,
         availability: JSON.stringify(availability),
         timebeforeeventduration, timebeforeeventunit, timeaftereventduration, timeaftereventunit,
         increments, reminderperiod, reminderfrecuency,
@@ -3168,13 +3201,12 @@ export const insCalendar = ({
         operation, notificationmessage, reminderenable, remindertype, remindermailmessage,
         communicationchannelid: communicationchannelid || 0,
         notificationmessageemail: notificationmessageemail, 
-        messagetemplateidemail,
-        maximumcapacity:0
+        messagetemplateidemail
     }
 });
 
 export const getEventByCode = (orgid: number, code: string, personid: number, calendarbookinguuid: string | null | undefined = ""): IRequestBody => ({
-    key: "QUERY_EVENT_BY_CODE",
+    key: "QUERY_EVENT_BY_COsDE",
     method: calendarbookinguuid ? "QUERY_EVENT_BY_CODE_WITH_BOOKINGUUID" : "QUERY_EVENT_BY_CODE",
     parameters: {
         orgid, code, personid, calendarbookinguuid
@@ -3254,11 +3286,11 @@ export const postHistoryIns = ({ communicationchannelid, communicationchanneltyp
     }
 })
 
-export const productCatalogIns = ({ corpid, orgid, metacatalogid, id, productid, retailerid, title, description, descriptionshort, availability, category, condition, currency, price, saleprice, link, imagelink, additionalimagelink, brand, color, gender, material, pattern, size, datestart, datelaunch, dateexpiration, labels, customlabel0, customlabel1, customlabel2, customlabel3, customlabel4, reviewstatus, reviewdescription, status, type, username, operation }: Dictionary): IRequestBody => ({
+export const productCatalogIns = ({ corpid, orgid, metacatalogid, id, productid, retailerid, title, description, descriptionshort, availability, category, condition, currency, price, saleprice, link, imagelink, additionalimagelink, brand, color, gender, material, pattern, size, datestart, datelaunch, dateexpiration, labels, customlabel0, customlabel1, customlabel2, customlabel3, customlabel4, customnumber0, customnumber1, customnumber2, customnumber3, customnumber4, reviewstatus, reviewdescription, status, type, username, operation }: Dictionary): IRequestBody => ({
     method: "UFN_PRODUCTCATALOG_INS",
     key: "UFN_PRODUCTCATALOG_INS",
     parameters: {
-        corpid, orgid, metacatalogid, id, productid, retailerid, title, description, descriptionshort, availability, category, condition, currency, price, saleprice, link, imagelink, additionalimagelink, brand, color, gender, material, pattern, size, datestart, datelaunch, dateexpiration, labels, customlabel0, customlabel1, customlabel2, customlabel3, customlabel4, reviewstatus, reviewdescription, status, type, username, operation
+        corpid, orgid, metacatalogid, id, productid, retailerid, title, description, descriptionshort, availability, category, condition, currency, price, saleprice, link, imagelink, additionalimagelink, brand, color, gender, material, pattern, size, datestart, datelaunch, dateexpiration, labels, customlabel0, customlabel1, customlabel2, customlabel3, customlabel4, customnumber0, customnumber1, customnumber2, customnumber3, customnumber4, reviewstatus, reviewdescription, status, type, username, operation
     }
 })
 
@@ -3358,6 +3390,15 @@ export const conversationOutboundValidate = ({ number, communicationchannelid }:
 export const conversationSupervisionStatus = ({ conversationid, status, type }: Dictionary) => ({
     method: "UFN_CONVERSATION_SUPERVISIONSTATUS",
     key: "UFN_CONVERSATION_SUPERVISIONSTATUS",
+    parameters: {
+        conversationid,
+        status,
+        type
+    },
+});
+export const conversationTransferStatus = ({ conversationid, status, type }: Dictionary) => ({
+    method: "UFN_CONVERSATION_TRANSFERSTATUS",
+    key: "UFN_CONVERSATION_TRANSFERSTATUS",
     parameters: {
         conversationid,
         status,
@@ -3754,3 +3795,8 @@ export const metaBusinessSel = ({ corpid, orgid, id }: Dictionary) => ({
     key: "UFN_METABUSINESS_SEL",
     parameters: { corpid, orgid, id },
 });
+export const exportintent = ({name_json}:Dictionary): IRequestBody => ({
+    method: "UFN_WITAI_INTENT_EXPORT",
+    key: "UFN_WITAI_INTENT_EXPORT",
+    parameters: {name_json}
+})

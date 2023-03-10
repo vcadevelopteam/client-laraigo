@@ -15,6 +15,8 @@ const APIS_URL = {
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
+        NIUBIZSCRIPT: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true',
+        WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/test-FormWebClient.min.js',
     },
     TESTING: {
         API: 'https://testapix.laraigo.com/api',
@@ -29,6 +31,8 @@ const APIS_URL = {
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
+        NIUBIZSCRIPT: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true',
+        WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/testing-form.min.js',
     },
     PRODUCTION: {
         API: 'https://apiprd.laraigo.com/api',
@@ -43,9 +47,27 @@ const APIS_URL = {
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
+        NIUBIZSCRIPT: 'https://static-content.vnforapps.com/v2/js/checkout.js',
+        WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
     },
     CLARO: {
         API: 'https://claroapi.laraigo.com/api',
+        WS: 'https://clarobroker.laraigo.com',
+        CHATFLOW: 'https://chatflow-claro.s3-web.us-east.cloud-object-storage.appdomain.cloud',
+        FACEBOOKAPP: '1980305408682607',
+        INSTAGRAMAPP: '1924971937716955',
+        CATALOGAPP: '2131127810437236',
+        CULQIKEY: 'pk_test_041501e753dcb2f9',
+        GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
+        GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
+        FACEBOOKVERSION: 'v15.0',
+        DIALOG360PARTNERID: 'nPJXndPA',
+        GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
+        NIUBIZSCRIPT: 'https://static-content.vnforapps.com/v2/js/checkout.js',
+        WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
+    },
+    CLAROHISTORICAL: {
+        API: 'http://10.240.65.10:6066/api',
         WS: 'https://clarobroker.laraigo.com',
         CHATFLOW: 'https://chatflow-claro.s3-web.us-east.cloud-object-storage.appdomain.cloud',
         FACEBOOKAPP: '1980305408682607',
@@ -71,6 +93,8 @@ const APIS_URL = {
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
+        NIUBIZSCRIPT: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true',
+        WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
     },
     DEMO: {
         API: 'https://demoapix.laraigo.com/api',
@@ -85,6 +109,8 @@ const APIS_URL = {
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
+        NIUBIZSCRIPT: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true',
+        WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
     },
     LOCAL: {
         API: 'http://localhost:6065/api',
@@ -101,6 +127,8 @@ const APIS_URL = {
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
+        NIUBIZSCRIPT: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true',
+        WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/test-FormWebClient.min.js',
     }
 }
 
@@ -116,6 +144,8 @@ const GOOGLECLIENTID_CHANNEL = APIS_URL[ENV].GOOGLECLIENTID_CHANNEL
 const FACEBOOKVERSION = APIS_URL[ENV].FACEBOOKVERSION
 const DIALOG360PARTNERID = APIS_URL[ENV].DIALOG360PARTNERID
 const GOOGLECLIENTID_CALENDAR = APIS_URL[ENV].GOOGLECLIENTID_CALENDAR
+const NIUBIZSCRIPT = APIS_URL[ENV].NIUBIZSCRIPT
+const WEBFORMCHANNEL_FORM = APIS_URL[ENV].WEBFORMCHANNEL_FORM
 
 export const apiUrls = {
     WS_URL,
@@ -128,6 +158,8 @@ export const apiUrls = {
     FACEBOOKVERSION,
     DIALOG360PARTNERID,
     GOOGLECLIENTID_CALENDAR,
+    NIUBIZSCRIPT,
+    WEBFORMCHANNEL_FORM,
     LOGIN_URL: `${BASE_URL}/auth`,
     CONNECT_INBOX: `${BASE_URL}/auth/connect`,
     CHANGE_ORGANIZATION: `${BASE_URL}/auth/changeorganization`,
@@ -136,6 +168,7 @@ export const apiUrls = {
     MAIN_EVENT_BOOKING_URL: `${BASE_URL}/event-booking/collection`,
     MAIN_URL_PUBLIC: `${BASE_URL}/main/public/domainvalues`,
     MAIN_URL_PAYMENTORDER: `${BASE_URL}/main/public/paymentorder`,
+    MAIN_URL_PAYMENTORDERNIUBIZ: `${BASE_URL}/main/public/paymentorderniubiz`,
     MAIN_MULTI: `${BASE_URL}/main/multi`,
     MAIN_MULTI_PUBLIC: `${BASE_URL}/main/public/multi/domainvalues`,
     EXECUTE_TRANSACTION: `${BASE_URL}/main/executetransaction`,
@@ -158,6 +191,14 @@ export const apiUrls = {
     UPDATE_USER: `${BASE_URL}/user/update/info`,
     SAVE_USER: `${BASE_URL}/user/sendmail/password`,
     DEL_USER: `${BASE_URL}/user/delete`,
+    WITAITEST: `${BASE_URL}/witai/message`,
+    WITAITRAIN: `${BASE_URL}/witai/train_model`,
+    WITAIENTITYINS: `${BASE_URL}/witai/entity`,
+    WITAIUTTERANCEINS: `${BASE_URL}/witai/intent_utterance`,
+    WITAIINTENTDEL: `${BASE_URL}/witai/intent_del`,
+    WITAIENTITYDEL: `${BASE_URL}/witai/entity_del`,
+    WITAIENTITYIMPORT: `${BASE_URL}/witai/entity_import`,
+    WITAIINTENTIMPORT: `${BASE_URL}/witai/intent_import`,
     GETGEOCODE: `${BASE_URL}/gmaps/geocode`,
     GETLOCATION: `${BASE_URL}/flow/location`,
     GETVERSION: `${BASE_URL}/check/version`,
@@ -223,15 +264,14 @@ export const apiUrls = {
     DELETE_TEMPLATE: `${BASE_URL}/channel/deletetemplate`,
 
     BILLING_REPORTPDF: `${BASE_URL}/drawpdf`,
-
+    
+    PRODUCT_IMPORT: `${BASE_URL}/product/import`,
     POSTHISTORY_SCHEDULE: `${BASE_URL}/posthistory/schedulepost`,
     EVENTBOOKING_GOOGLE_LOGIN: `${BASE_URL}/event-booking/googlelogin`,
     EVENTBOOKING_GOOGLE_DISCONNECT: `${BASE_URL}/event-booking/googledisconnect`,
     EVENTBOOKING_GOOGLE_VALIDATE: `${BASE_URL}/event-booking/googlevalidate`,
 
     PAYMENTORDER_PAY: `${BASE_URL}/payment/newpayment`,
-
-    PRODUCT_IMPORT: `${BASE_URL}/product/import`,
 
     CATALOG_BUSINESSLIST: `${BASE_URL}/catalog/getbusinesslist`,
     CATALOG_MANAGECATALOG: `${BASE_URL}/catalog/managecatalog`,
@@ -241,4 +281,7 @@ export const apiUrls = {
     CATALOG_MANAGEPRODUCT: `${BASE_URL}/catalog/manageproduct`,
     CATALOG_DELETEPRODUCT: `${BASE_URL}/catalog/deleteproduct`,
     CATALOG_DOWNLOADPRODUCT: `${BASE_URL}/catalog/downloadproduct`,
+
+    PAYMENTORDER_NIUBIZ_CREATESESSIONTOKEN: `${BASE_URL}/paymentniubiz/createsessiontoken`,
+    PAYMENTORDER_NIUBIZ_AUTHORIZETRANSACTION: `${BASE_URL}/paymentniubiz/authorizetransaction`,
 };

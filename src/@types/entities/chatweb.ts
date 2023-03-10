@@ -6,6 +6,53 @@ export interface IChatWebAdd {
     extra: IChatWebAddExtra;
 }
 
+export interface IAndroidSDKAdd {
+    interface: IChatwebAddInterface;
+    color: IChatWebAddColor;
+    form: IChatWebAddFormField[];
+    bubble: IChatWebAddBubble;
+    extra: IChatWebAddExtra;
+}
+
+export interface IFormWebAdd {
+    interface: IChatwebAddInterface;
+    color: IChatWebAddColor;
+    form: IChatWebAddFormField[];
+    bubble: IChatWebAddBubble;
+    extra: IFormWebAddExtra;
+}
+
+export interface IFormWebAddExtra {
+    uploadfile: boolean;
+    uploadvideo: boolean;
+    uploadlocation: boolean;
+    uploadimage: boolean;
+    uploadaudio: boolean;
+    reloadchat: boolean;
+    poweredby: boolean;
+    persistentinput: boolean;
+    abandonevent: boolean;
+    alertsound: boolean;
+    formhistory: boolean;
+    enablemetadata: boolean;
+    customcss: string;
+    customjs: string;
+    botnameenabled: boolean;
+    botnametext: string;
+    recaptcha: boolean;
+
+    titleform: string;
+    footerform: string;
+    textButtonSend: string;
+    urlThanks: string;
+    colotBackgroundButton: string;
+    colorButtonLabel: string;
+    colorLabel: string;
+    colorBackgroundForm: string;
+    stylesCSSInput: string;
+    stylesCSSButton: string;
+}
+
 export interface IChatwebAddInterface {
     chattitle: string;
     chatsubtitle: string;

@@ -115,9 +115,11 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
         endDate: row?.enddate ? new Date(row?.enddate + "T00:00:00") : new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
         key: 'selection'
     }
+
     const [generalstate, setgeneralstate] = useState({
         eventcode: row?.code || '',
         duration: row?.timeduration || 0,
+        maximumcapacity: row?.maximumcapacity || 1,
         timebeforeeventduration: row?.timebeforeeventduration || 0,
         timeaftereventduration: row?.timeaftereventduration || 0,
         daysintothefuture: row?.daysduration || 0,
@@ -164,6 +166,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
             emailtemplatename: row?.emailtemplatename || "",
             intervals: row?.availability || [],
             durationtype: row?.timeunit || "MINUTE",
+            maximumcapacity: row?.maximumcapacity || 1,
             duration: row?.timeduration || 0,
             timebeforeeventunit: row?.timebeforeeventunit || "MINUTE",
             timebeforeeventduration: row?.timebeforeeventduration || 0,
@@ -192,6 +195,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
         register('communicationchannelid', { validate: (value) => getValues("notificationtype").includes("HSM") ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
         register('durationtype', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('duration', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.field_required)) });
+        register('maximumcapacity', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.greaterthanzero)) });
         register('timebeforeeventunit', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('timebeforeeventduration', { validate: (value) => Boolean(value >= 0) || String(t(langKeys.field_required)) });
         register('timeaftereventunit', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
@@ -282,6 +286,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                 const diffTime = Math.abs(date2 - date1);
                 const diffDays = (dateinterval === "DAYS") ? data.daysintothefuture : Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 const eventURL = new URL(`events/${user?.orgid}/${generalstate.eventcode}`, window.location.origin)
+          
                 let datatosend = {
                     ...data,
                     descriptionobject: bodyobject,
@@ -294,6 +299,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                     messagetemplateidemail: data.emailtemplateid,
                     availability: data.intervals,
                     timeduration: data.duration,
+                    maximumcapacity: data.maximumcapacity,
                     timeunit: data.durationtype,
                     reminderenable: data.statusreminder === "ACTIVO",
                     notificationmessage: replaceVariables(templateVariables, bodyMessage),
@@ -703,7 +709,6 @@ const Calendar: FC = () => {
     );
 
     const fetchData = () => dispatch(getCollection(selCalendar(0)));
-
     useEffect(() => {
         fetchData();
         dispatch(getMultiCollection([

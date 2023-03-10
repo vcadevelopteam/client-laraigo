@@ -1,3 +1,4 @@
+
 /* eslint-disable react-hooks/exhaustive-deps */
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import Box from '@material-ui/core/Box';
@@ -71,7 +72,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const PRODUCTCATALOG = 'PRODUCTCATALOG';
 const ProductCatalog: FC = () => {
     const dispatch = useDispatch();
 
@@ -114,7 +114,7 @@ const ProductCatalog: FC = () => {
     const params = useQueryParams(query, { ignore: ['channelTypes'] });
     console.log(params)
 
-    const { trigger, register, setValue, getValues, formState: { errors } } = useForm({
+    const { trigger, register, setValue, getValues } = useForm({
         defaultValues: {
             availabilityList: availabilityTemplate,
             currencyList: currencyTemplate,
@@ -522,6 +522,26 @@ const ProductCatalog: FC = () => {
                 accessor: 'customlabel4',
                 Header: `${t(langKeys.customlabel)} 4`,
             }] : []),
+            {
+                accessor: 'customnumber0',
+                Header: `${t(langKeys.customnumber)} 0`,
+            },
+            {
+                accessor: 'customnumber1',
+                Header: `${t(langKeys.customnumber)} 1`,
+            },
+            {
+                accessor: 'customnumber2',
+                Header: `${t(langKeys.customnumber)} 2`,
+            },
+            {
+                accessor: 'customnumber3',
+                Header: `${t(langKeys.customnumber)} 3`,
+            },
+            {
+                accessor: 'customnumber4',
+                Header: `${t(langKeys.customnumber)} 4`,
+            },
             {
                 accessor: 'status',
                 Header: t(langKeys.status),
@@ -984,6 +1004,11 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
             customlabel2: row?.customlabel2 || '',
             customlabel3: row?.customlabel3 || '',
             customlabel4: row?.customlabel4 || '',
+            customnumber0: row?.customnumber0 || '',
+            customnumber1: row?.customnumber1 || '',
+            customnumber2: row?.customnumber2 || '',
+            customnumber3: row?.customnumber3 || '',
+            customnumber4: row?.customnumber4 || '',
             reviewstatus: row?.reviewstatus || '',
             reviewdescription: row?.reviewdescription || '',
             status: row?.status || '',
@@ -1024,6 +1049,11 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
         register('customlabel2');
         register('customlabel3');
         register('customlabel4');
+        register('customnumber0');
+        register('customnumber1');
+        register('customnumber2');
+        register('customnumber3');
+        register('customnumber4');
         register('reviewstatus');
         register('reviewdescription');
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -1361,6 +1391,57 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             label={`${t(langKeys.customlabel)} 4`}
                             onChange={(value) => setValue('customlabel4', value)}
                             valueDefault={row?.customlabel4 || ''}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            className="col-6"
+                            disabled={!edit}
+                            error={errors?.customnumber0?.message}
+                            label={`${t(langKeys.customnumber)} 0`}
+                            onChange={(value) => setValue('customnumber0', (value || value === 0) ? value.toString() : '')}
+                            type="number"
+                            valueDefault={row?.customnumber0 || ''}
+                        />
+                         <FieldEdit
+                            className="col-6"
+                            disabled={!edit}
+                            error={errors?.customnumber1?.message}
+                            label={`${t(langKeys.customnumber)} 1`}
+                            onChange={(value) => setValue('customnumber1', (value || value === 0) ? value.toString() : '')}
+                            type="number"
+                            valueDefault={row?.customnumber1 || ''}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            className="col-6"
+                            disabled={!edit}
+                            error={errors?.customnumber2?.message}
+                            label={`${t(langKeys.customnumber)} 2`}
+                            onChange={(value) => setValue('customnumber2', (value || value === 0) ? value.toString() : '')}
+                            type="number"
+                            valueDefault={row?.customnumber2 || ''}
+                        />
+                         <FieldEdit
+                            className="col-6"
+                            disabled={!edit}
+                            error={errors?.customnumber3?.message}
+                            label={`${t(langKeys.customnumber)} 3`}
+                            onChange={(value) => setValue('customnumber3', (value || value === 0) ? value.toString() : '')}
+                            type="number"
+                            valueDefault={row?.customnumber3 || ''}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            className="col-12"
+                            disabled={!edit}
+                            error={errors?.customnumber4?.message}
+                            label={`${t(langKeys.customnumber)} 4`}
+                            onChange={(value) => setValue('customnumber4', (value || value === 0) ? value.toString() : '')}
+                            type="number"
+                            valueDefault={row?.customnumber4 || ''}
                         />
                     </div>
                     <div className="row-zyx">

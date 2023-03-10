@@ -29,6 +29,7 @@ import { FieldSelect } from "components";
 import { styled } from '@material-ui/core/styles';
 
 import MuiPhoneNumber from 'material-ui-phone-number';
+import { ChannelAddWebForm } from "./ChannelAddWebForm";
 
 const useLeftSideStyles = makeStyles(theme => ({
     root: {
@@ -594,6 +595,13 @@ const GetComponent: FC<GetComponentProps> = ({ channel: key, display, setOpenWar
             return (
                 <div style={{ display: display ? 'block' : 'none' }}>
                     <ChannelAddChatWeb setOpenWarning={setOpenWarning} />
+                </div>
+            );
+
+        case 'webForm':
+            return (
+                <div style={{ display: display ? 'block' : 'none' }}>
+                    <ChannelAddWebForm setOpenWarning={setOpenWarning} />
                 </div>
             );
 

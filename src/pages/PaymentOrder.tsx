@@ -1,10 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import CircularProgress from '@material-ui/core/CircularProgress';
 import CulqiModal from 'components/fields/CulqiModal';
-import Container from '@material-ui/core/Container';
 import Popus from 'components/layout/Popus';
 
-import { FC, useEffect, useState,useRef } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { langKeys } from 'lang/keys';
 import { makeStyles } from "@material-ui/core";
 import { useDispatch } from 'react-redux';
@@ -34,7 +33,7 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         borderRadius: 8,
         boxShadow: '0 1px 8px 0 rgb(0 0 0 / 8%)',
-        width: '420px',
+        width: '440px',
         minWidth: '380px',
         alignItems: 'center',
         justifyContent: 'center',
@@ -66,12 +65,16 @@ const useStyles = makeStyles(theme => ({
         padding: '8px',
         fontWeight: 'bold',
         color: 'white',
-        overflowWrap: 'break-word'
+        overflowWrap: 'break-word',
+        height: '100%',
+        lineBreak: 'anywhere',
     },
     textField: {
         border: '1px solid #EBEAED',
         padding: '8px',
-        overflowWrap: 'break-word'
+        overflowWrap: 'break-word',
+        height: '100%',
+        lineBreak: 'anywhere',
     }
 }));
 
@@ -90,7 +93,7 @@ export const PaymentOrder: FC = () => {
     const [publicKey, setPublicKey] = useState('');
     const [waitData, setWaitData] = useState(false);
     const [waitPay, setWaitPay] = useState(false);
-    const windowWidth = useRef(window.innerWidth);
+    // const windowWidth = useRef(window.innerWidth);
 
     const fetchData = () => {
         dispatch(getCollectionPaymentOrder(paymentOrderSel({ corpid: corpid, orgid: orgid, conversationid: 0, personid: 0, paymentorderid: 0, ordercode: ordercode })));

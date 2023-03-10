@@ -44,6 +44,16 @@ export const dataMonths = [
     }
 ];
 
+
+export function datesInMonth(year?:number, month?:number) {
+    if(!!year && !!month){
+        let lastdate = new Date(year, month, 0).getDate()
+        return Array.from(Array(lastdate).keys()).map(x => ({ val: `${x+1}` }));
+    }else{
+        return []
+    }
+}
+
 export const dataActivities = [
     {
         "activity_id": "1267092843327003",
@@ -171,7 +181,6 @@ export function formatNumber(num: number) {
         return parseFloat(num.toString()).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
     return "0.00"
 }
-
 export function formatNumberFourDecimals(num: number) {
     if (num)
         return parseFloat(num.toString()).toFixed(4).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1')
@@ -269,6 +278,42 @@ export function validateDomainCharactersSpecials(text: string, option: string) {
     }
 }
 
+export function addTimes(t1: string, t2: string) {
+    let t1seconds = timetoseconds(t1);
+    let t2seconds = timetoseconds(t2);
+    return secondsToTime(t1seconds + t2seconds)
+}
+export function substractiontimesTimes(after: string, before: string) {
+    let bcseconds = timetoseconds(before);
+    let acseconds = timetoseconds(after);
+    return secondsToTime(acseconds - bcseconds)
+}
+export function varpercTime(newt: string, oldt: string, decimals:number) {
+    if(!!newt && !!oldt){
+        let newtseconds = timetoseconds(newt);
+        let oldtseconds = timetoseconds(oldt);
+        return (((newtseconds-oldtseconds)/oldtseconds)*100).toFixed(decimals)
+    }else{
+        return (0).toFixed(decimals)
+    }
+}
+export function varpercnumber(newn: number, oldn: number, decimals:number) {
+    if(newn + oldn){
+        return (((newn-oldn)/oldn)*100).toFixed(decimals)
+    }else{
+        return (0).toFixed(decimals)
+    }
+}
+
+export function divisionTimeNumber(tim: string, n: number) {
+    if(!!n){
+        let timeseconds = timetoseconds(tim);
+        let divided = Math.floor(timeseconds/n)
+        return secondsToTime(divided)
+    }else{
+        return "00:00:00"
+    }
+}
 export function timetoseconds(cc: any) {
     if (!cc)
         return 0;
@@ -557,7 +602,14 @@ export const toTime24HR = (time: string): string => {
     return `${hint.toString().padStart(2, "0")}:${m}`
 }
 
-export const secondsToTime = (seconds: number): string => {
+export const secondsToTime = (seconds: number, format: string = "time"): string => {
+    if (format === "seconds") {
+        return seconds + ""
+    } else if (format === "minutes") {
+        return (seconds / 60).toFixed()
+    } else if (format === "hours") {
+        return (seconds / 3600).toFixed()
+    }
     const hh = Math.floor(seconds / 3600);
     const mm = Math.floor((seconds / 60) % 60);
     const ss = Math.floor(seconds % 60);

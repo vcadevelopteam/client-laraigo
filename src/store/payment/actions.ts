@@ -1,0 +1,28 @@
+import actionTypes from "./actionTypes";
+
+import { IActionCall } from "@types";
+import { PaymentService } from "network";
+
+export const niubizAuthorizeTransaction = (request: any): IActionCall => ({
+    callAPI: () => PaymentService.niubizAuthorizeTransaction(request),
+    types: {
+        loading: actionTypes.PAYMENT_NIUBIZ_AUTHORIZETRANSACTION,
+        success: actionTypes.PAYMENT_NIUBIZ_AUTHORIZETRANSACTION_SUCCESS,
+        failure: actionTypes.PAYMENT_NIUBIZ_AUTHORIZETRANSACTION_FAILURE,
+    },
+    type: null,
+});
+
+export const resetNiubizAuthorizeTransaction = (): IActionCall => ({ type: actionTypes.PAYMENT_NIUBIZ_AUTHORIZETRANSACTION_RESET });
+
+export const niubizCreateSessionToken = (request: any): IActionCall => ({
+    callAPI: () => PaymentService.niubizCreateSessionToken(request),
+    types: {
+        loading: actionTypes.PAYMENT_NIUBIZ_CREATESESSIONTOKEN,
+        success: actionTypes.PAYMENT_NIUBIZ_CREATESESSIONTOKEN_SUCCESS,
+        failure: actionTypes.PAYMENT_NIUBIZ_CREATESESSIONTOKEN_FAILURE,
+    },
+    type: null,
+});
+
+export const resetNiubizCreateSessionToken = (): IActionCall => ({ type: actionTypes.PAYMENT_NIUBIZ_CREATESESSIONTOKEN_RESET });

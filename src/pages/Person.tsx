@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { FieldEditMulti, FieldSelect, Title } from 'components';
@@ -14,9 +14,9 @@ import paths from 'common/constants/paths';
 import LockIcon from '@material-ui/icons/Lock';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import ListAltIcon from '@material-ui/icons/ListAlt';
-import { getPersonListPaginated, resetGetPersonListPaginated, getDomainsByTypename, editPerson, getChannelListByPerson, getLeadsByPerson, getReferrerListByPerson, getTicketListByPerson, resetEditPerson, resetGetChannelListByPerson, resetGetDomainsByTypename, resetGetLeadsByPerson, resetGetReferrerListByPerson, resetGetTicketListByPerson } from 'store/person/actions';
+import { getPersonListPaginated, resetGetPersonListPaginated, getDomainsByTypename } from 'store/person/actions';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import { useForm, useFieldArray, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { execute, resetAllMain, exportData } from 'store/main/actions';
 import { FieldMultiSelect, FieldEditArray, DialogZyx } from 'components';
 import TablePaginated, { buildQueryFilters, useQueryParams } from 'components/fields/table-paginated';
@@ -26,7 +26,6 @@ import { sendHSM } from 'store/inbox/actions';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Menu from '@material-ui/core/Menu';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import { makeStyles, styled } from '@material-ui/core/styles';
 import { getLeadPhases, resetGetLeadPhases } from 'store/lead/actions';
 
 const format = (datex: Date) => new Date(datex.setHours(10)).toISOString().substring(0, 10)
@@ -665,6 +664,7 @@ export const Person: FC = () => {
         if (file) {
             let excel: any = await uploadExcel(file, undefined);
             let data: IPersonImport[] = array_trimmer(excel);
+            debugger
             data = data.filter((f: IPersonImport) =>
                 (f.documenttype === undefined || Object.keys(domains.value?.docTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.documenttype))
                 && (f.persontype === undefined || Object.keys(domains.value?.personGenTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.persontype))
@@ -674,6 +674,11 @@ export const Person: FC = () => {
                 && (f.civilstatus === undefined || Object.keys(domains.value?.civilStatuses.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.civilstatus))
                 && (f.occupation === undefined || Object.keys(domains.value?.occupations.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.occupation))
                 && (f.groups === undefined || Object.keys(domains.value?.groups.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.groups))
+                && (f.email === undefined || (/\S+@\S+\.\S+/.test(f.email)))
+                && (f.alternativeemail === undefined || (/\S+@\S+\.\S+/.test(f.alternativeemail)))
+                && (f.phone === undefined || (f.phone.startsWith("+51")? f.phone.length === 12:true))
+                && (f.alternativephone === undefined || (f.alternativephone.startsWith("+51")? f.alternativephone.length === 12:true))
+                && (f.documenttype === undefined || (f.documenttype === "DNI" && f.documentnumber?.length === 8) || (f.documenttype === "RUC" && f.documentnumber?.length === 11)|| (f.documenttype === "CE" && f.documentnumber?.length <= 12))
                 //&& (f.channeltype === undefined || Object.keys(domains.value?.channelTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.channeltype))
             );
             if (data.length > 0) {
