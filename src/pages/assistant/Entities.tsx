@@ -17,7 +17,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { getCollection, resetAllMain } from 'store/main/actions';
 import { selEntities } from 'common/helpers/requestBodies';
 import { convertLocalDate, exportExcel, uploadExcel } from 'common/helpers';
-import { entitydel, entityimport, entityins } from 'store/witia/actions';
+import { entitydel, entityimport, entityins, trainwitai } from 'store/witia/actions';
 
 
 interface RowSelected {
@@ -307,6 +307,35 @@ export const Entities: React.FC<EntityProps> = ({ setExternalViewSelected, array
     const selectionKey= "name"
     const operationRes = useSelector(state => state.witai.witaioperationresult);
     const [waitImport, setWaitImport] = useState(false);
+    const [sendTrainCall, setSendTrainCall] = useState(false);
+    const trainResult = useSelector(state => state.witai.witaitrainresult);
+
+    useEffect(() => {
+        if(sendTrainCall){
+            if(!trainResult.loading && !trainResult.error){
+                let message="";
+                switch (trainResult.data.training_status) {
+                    case ("done"):
+                        message=t(langKeys.bot_training_done)
+                        break;
+                    case ("scheduled"):
+                        message=t(langKeys.bot_training_scheduled)
+                        break;
+                    case ("ongoing"):
+                        message=t(langKeys.bot_training_ongoing)
+                        break;
+                }
+                dispatch(showSnackbar({ show: true, severity: "success", message:  message}))
+                setSendTrainCall(false);
+                dispatch(showBackdrop(false));
+            }else if(trainResult.error){
+                const errormessage = t(trainResult.code || "error_unexpected_error", { module: t(langKeys.test).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                setSendTrainCall(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [trainResult,sendTrainCall]);
 
     const fetchData = () => {dispatch(getCollection(selEntities()))};
     
@@ -471,16 +500,25 @@ export const Entities: React.FC<EntityProps> = ({ setExternalViewSelected, array
                         selectionKey={selectionKey}
                         setSelectedRows={setSelectedRows}
                         ButtonsElement={() => (
-                            <div style={{display: "flex", justifyContent: "end", width: "100%"}}>
-                                <Button
-                                    disabled={Object.keys(selectedRows).length===0}
-                                    variant="contained"
-                                    type="button"
-                                    color="primary"
-                                    startIcon={<ClearIcon color="secondary" />}
-                                    style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
-                                    onClick={handleDelete}
-                                >{t(langKeys.delete)}</Button>
+                            <div style={{display: "flex", justifyContent: "end", width: "100%"}}>     
+                                <div style={{display: "flex", justifyContent: "end", width: "100%"}}>
+                                    <Button
+                                        disabled={Object.keys(selectedRows).length===0}
+                                        variant="contained"
+                                        type="button"
+                                        color="primary"
+                                        startIcon={<ClearIcon color="secondary" />}
+                                        style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
+                                        onClick={handleDelete}
+                                    >{t(langKeys.delete)}</Button>
+                                    <Button
+                                        variant="contained"
+                                        type="button"
+                                        color="primary"
+                                        style={{ backgroundColor: "#7721ad" }}
+                                        onClick={()=>{dispatch(trainwitai());setSendTrainCall(true)}}
+                                    >{t(langKeys.train)}</Button>
+                                </div>
                             </div>
                         )}
                         loading={mainResult.mainData.loading}
