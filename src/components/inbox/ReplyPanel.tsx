@@ -475,7 +475,6 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const [redotext, setredotext] = useState<any>([])
 
     useEffect(() => {
-        console.log("ticketSelected", ticketSelected)
         if ((ticketSelected?.conversationid) !== (previousTicket?.conversationid)) setpreviousTicket(ticketSelected)
         if (ticketSelected?.status !== "ASIGNADO")
             setShowReply(false);
