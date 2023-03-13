@@ -259,6 +259,7 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                                 useSelection={true}
                                 selectionKey={selectionKey}
                                 setSelectedRows={setSelectedRows}
+                                onClickRow={e=>{ setkeyword(e.keyword);setsynonim(e.synonyms.join()); setDisableCreate(false) }}
                                 ButtonsElement={() => (
                                     <div style={{display: "flex", justifyContent: "end", width: "100%"}}>
                                         <Button
@@ -347,7 +348,7 @@ export const Entities: React.FC<EntityProps> = ({ setExternalViewSelected, array
                                 setRowSelected({ row: row, edit: true })
                             }}
                         >
-                            {row.name}
+                            @{row.name}
                         </label>
                     )
                 }
@@ -367,12 +368,6 @@ export const Entities: React.FC<EntityProps> = ({ setExternalViewSelected, array
                         </label>
                     )
                 }
-            },
-            {
-                Header: "ID",
-                accessor: 'id',
-                width: "auto",
-                NoFilter: true,
             },
             {
                 Header: t(langKeys.lastUpdate),

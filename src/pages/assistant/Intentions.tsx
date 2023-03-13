@@ -533,7 +533,7 @@ export const Intentions: React.FC<IntentionProps> = ({ setExternalViewSelected, 
                                 setRowSelected({ row: row, edit: true })
                             }}
                         >
-                            {row.name}
+                            #{row.name}
                         </label>
                     )
                 }
@@ -542,12 +542,6 @@ export const Intentions: React.FC<IntentionProps> = ({ setExternalViewSelected, 
             {
                 Header: t(langKeys.description),
                 accessor: 'description',
-                width: "auto",
-                NoFilter: true,
-            },
-            {
-                Header: "ID",
-                accessor: 'id',
                 width: "auto",
                 NoFilter: true,
             },
