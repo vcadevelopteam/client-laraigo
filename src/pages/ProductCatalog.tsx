@@ -1,3 +1,4 @@
+
 /* eslint-disable react-hooks/exhaustive-deps */
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import Box from '@material-ui/core/Box';
@@ -71,7 +72,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const PRODUCTCATALOG = 'PRODUCTCATALOG';
 const ProductCatalog: FC = () => {
     const dispatch = useDispatch();
 
@@ -114,7 +114,7 @@ const ProductCatalog: FC = () => {
     const params = useQueryParams(query, { ignore: ['channelTypes'] });
     console.log(params)
 
-    const { trigger, register, setValue, getValues, formState: { errors } } = useForm({
+    const { trigger, register, setValue, getValues } = useForm({
         defaultValues: {
             availabilityList: availabilityTemplate,
             currencyList: currencyTemplate,

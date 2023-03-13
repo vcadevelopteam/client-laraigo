@@ -426,7 +426,7 @@ interface NameTemplateProps {
 }
 
 const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index }) => {
-    const { setValue, register, formState: { errors } } = form;
+    const { register, formState: { errors } } = form;
     const classes = useTemplateStyles();
     const { t } = useTranslation();
     const [required, setRequired] = useState(data.required);

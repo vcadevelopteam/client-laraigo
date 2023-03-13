@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { FieldEdit, FieldEditWithSelect, TemplateBreadcrumbs, TitleDetail } from 'components';
 import { useTranslation } from 'react-i18next';
@@ -14,8 +14,8 @@ import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { convertLocalDate, exportExcel, filterPipe, uploadExcel } from 'common/helpers';
 import { intentdel, intentimport, intentutteranceins, trainwitai } from 'store/witia/actions';
-import { execute, getCollection, getCollectionAux, getCollectionAux2, resetAllMain } from 'store/main/actions';
-import { exportintent, insertutterance, selEntities, selIntent, selUtterance, utterancedelete } from 'common/helpers/requestBodies';
+import { getCollection, getCollectionAux, getCollectionAux2, resetAllMain } from 'store/main/actions';
+import { exportintent, selEntities, selIntent, selUtterance } from 'common/helpers/requestBodies';
 import AddIcon from '@material-ui/icons/Add';
 
 

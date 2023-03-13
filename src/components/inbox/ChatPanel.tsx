@@ -59,7 +59,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
     const [templatesList, setTemplatesList] = useState<Dictionary[]>([]);
     const [channelsList, setchannelsList] = useState<Dictionary[]>([]);
     const [bodyMessage, setBodyMessage] = useState('');
-    const [bodyCleaned, setBodyCleaned] = useState('');
+    // const [bodyCleaned, setBodyCleaned] = useState('');
 
 
     const { control, register, handleSubmit, setValue, getValues, reset, trigger, formState: { errors } } = useForm<any>({
@@ -148,7 +148,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
             setBodyMessage(value.body);
             setValue('hsmtemplateid', value ? value.id : 0);
             setValue('hsmtemplatename', value ? value.name : '');
-            setBodyCleaned(value.body);
+            // setBodyCleaned(value.body);
             const variablesList = value.body.match(/({{)(.*?)(}})/g) || [];
             const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
             setValue('variables', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
@@ -161,12 +161,12 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
     }
 
     const onSubmit = handleSubmit((data) => {
-        setBodyCleaned(body => {
-            data.variables.forEach((x: Dictionary) => {
-                body = body.replace(`{{${x.name}}}`, x.variable !== 'custom' ? (person.data as Dictionary)[x.variable] : x.text)
-            })
-            return body
-        })
+        // setBodyCleaned(body => {
+        //     data.variables.forEach((x: Dictionary) => {
+        //         body = body.replace(`{{${x.name}}}`, x.variable !== 'custom' ? (person.data as Dictionary)[x.variable] : x.text)
+        //     })
+        //     return body
+        // })
         const bb = {
             hsmtemplateid: data.hsmtemplateid,
             hsmtemplatename: data.hsmtemplatename,

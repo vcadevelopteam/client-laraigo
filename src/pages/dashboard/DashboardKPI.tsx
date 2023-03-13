@@ -1,6 +1,6 @@
 import { Box, Button, createStyles, makeStyles, Theme } from "@material-ui/core";
 import { timetoseconds, formattime, getUserGroupsSel, dashboardKPISummaryGraphSel, dashboardKPISummarySel, addTimes, varpercTime, varpercnumber, divisionTimeNumber, getDateCleaned} from "common/helpers";
-import { DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect } from "components";
+import { DateRangePicker, DialogZyx, FieldMultiSelect } from "components";
 import { useSelector } from "hooks";
 import { DownloadIcon } from "icons";
 import { langKeys } from "lang/keys";

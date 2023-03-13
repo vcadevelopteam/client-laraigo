@@ -17,7 +17,7 @@ import { AndroidIcon } from "icons";
 import clsx from 'clsx';
 import { Close, CloudUpload } from "@material-ui/icons";
 import InfoIcon from '@material-ui/icons/Info';
-import { IActionCall, IChatWebAdd, IChannel, IChatWebAddFormField } from "@types";
+import { IChatWebAdd, IChannel, IChatWebAddFormField } from "@types";
 import { ColorChangeHandler } from "react-color";
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { getEditChatWebChannel, getInputValidationSel, getInsertChatwebChannel } from "common/helpers";
@@ -1012,7 +1012,7 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
 }
 export const AndroidForm: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn<IChatWebAdd>}> = ({setTabIndex,form}) => {    
     const classes = useChannelAddStyles();
-    const { setValue, getValues } = form;
+    const { getValues } = form;
     const { t } = useTranslation();
     const defFields = useRef<FieldTemplate[]>((form.getValues('form') || []).map(x => {
         return {
@@ -1876,10 +1876,10 @@ const ChannelAndroidAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loadi
     const [auto] = useState(true);
     const [hexIconColor, setHexIconColor] = useState(channel?.coloricon || "#90c900");
 
-    const handleGoBack = (e: React.MouseEvent) => {
-        e.preventDefault();
-        if (!integrationId) onClose?.();
-    }
+    // const handleGoBack = (e: React.MouseEvent) => {
+    //     e.preventDefault();
+    //     if (!integrationId) onClose?.();
+    // }
 
     const handleSave = () => {
         onSubmit(name, auto, hexIconColor);
@@ -2117,6 +2117,6 @@ export const ChannelAddAndroid: FC = () => {
 
 export default ChannelAddAndroid
 
-function dispatch(arg0: IActionCall) {
-    throw new Error("Function not implemented.");
-}
+// function dispatch(arg0: IActionCall) {
+//     throw new Error("Function not implemented.");
+// }

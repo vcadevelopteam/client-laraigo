@@ -103,7 +103,7 @@ const IATraining: React.FC<DetailIaServiceProps> = ({ setViewSelected }) => {
         { id: "view-0", name:  t(langKeys.laraigoia) },
         { id: "view-1", name: t(langKeys.training) }
     ];
-    const [mainData, setMainData] = useState<any>([]);
+    // const [mainData, setMainData] = useState<any>([]);
     const [waitSave, setWaitSave] = useState(false);
 
     
@@ -137,11 +137,11 @@ const IATraining: React.FC<DetailIaServiceProps> = ({ setViewSelected }) => {
     }, [executeResult, waitSave])
 
     useEffect(() => {
-        setMainData(mainResult.mainData.data.map(x => ({
-            ...x,
-            typedesc: (t(`type_corp_${x.type}`.toLowerCase()) || "").toUpperCase(),
-            statusdesc: (t(`status_${x.status}`.toLowerCase()) || "").toUpperCase()
-        })))
+        // setMainData(mainResult.mainData.data.map(x => ({
+        //     ...x,
+        //     typedesc: (t(`type_corp_${x.type}`.toLowerCase()) || "").toUpperCase(),
+        //     statusdesc: (t(`status_${x.status}`.toLowerCase()) || "").toUpperCase()
+        // })))
     }, [mainResult.mainData.data])
 
 

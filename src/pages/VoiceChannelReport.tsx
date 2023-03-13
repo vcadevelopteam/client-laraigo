@@ -12,11 +12,8 @@ import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { cleanViewChange, exportData, getCollectionPaginated, getMainGraphic, getMultiCollectionAux2, resetMultiMain, setViewChange } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import InfoIcon from '@material-ui/icons/Info';
 import ClearIcon from '@material-ui/icons/Clear';
-import {
-    Search as SearchIcon,
-} from '@material-ui/icons';
+
 import { useForm } from 'react-hook-form';
 import Graphic from 'components/fields/Graphic';
 import AssessmentIcon from '@material-ui/icons/Assessment';
@@ -34,11 +31,7 @@ interface DetailVoiceChannelReportProps {
     setViewSelected: (view: string) => void;
 }
 
-const initialRange = {
-    startDate: new Date(new Date().setDate(1)),
-    endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
-    key: 'selection'
-}
+
 const useStyles = makeStyles((theme) => ({
     containerHeader: {
         padding: theme.spacing(1),
@@ -201,7 +194,7 @@ const VoiceChannelReport: FC = () => {
     const { t } = useTranslation();
     const multiData = useSelector(state => state.main.multiData);
     const [viewSelected, setViewSelected] = useState("view-1");
-    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
+    // const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [openModal, setOpenModal] = useState(false);
     const [view, setView] = useState('GRID');
     const classes = useStyles()
@@ -479,11 +472,6 @@ const VoiceChannelReport: FC = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-    
-    const handleView = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected({ row, edit: false });
-    }
 
     const handlerSearchGraphic = (daterange: any, column: string) => {
         setfetchDataAux(prev => ({ ...prev, daterange }));
@@ -562,7 +550,7 @@ const VoiceChannelReport: FC = () => {
     else if (viewSelected === "view-2") {
         return (
             <DetailVoiceChannelReport
-                data={rowSelected}
+                data={{ row: null, edit: false }}
                 setViewSelected={setViewSelected}
             />
         )

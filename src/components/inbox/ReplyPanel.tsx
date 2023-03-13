@@ -40,7 +40,7 @@ import DragDropFile from 'components/fields/DragDropFile';
 
 const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
 
-const channelsWhatsapp = ["WHAT", "WHAD", "WHAP"];
+const channelsWhatsapp = ["WHAT", "WHAD", "WHAP", "WHAG"];
 
 const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (param: any) => void, initfile?: any, setfileimage?: (param: any) => void }> = ({ classes, setFiles, type, initfile, setfileimage }) => {
     const [valuefile, setvaluefile] = useState('')

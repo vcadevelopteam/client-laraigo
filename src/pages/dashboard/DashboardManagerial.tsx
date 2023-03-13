@@ -25,7 +25,7 @@ import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tool
 import InfoIcon from '@material-ui/icons/Info';
 import SettingsIcon from '@material-ui/icons/Settings';
 import Tooltip from "@material-ui/core/Tooltip"
-import { formatNumber,formattime, timetoseconds, timetomin, formatname } from 'common/helpers';
+import { formatNumber,formattime, timetoseconds, formatname } from 'common/helpers';
 
 const COLORS = ['#22b66e', '#b41a1a', '#ffcd56'];
 
