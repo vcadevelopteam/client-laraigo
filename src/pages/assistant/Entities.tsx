@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
-import {  FieldEdit, TemplateBreadcrumbs } from 'components';
+import {  FieldEdit, FieldEditArray, FieldMultiSelectFreeSolo, TemplateBreadcrumbs } from 'components';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { Button, makeStyles } from '@material-ui/core';
+import { Box, Button, IconButton, makeStyles, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@material-ui/core';
 import TableZyx from 'components/fields/table-simple';
 import ClearIcon from '@material-ui/icons/Clear';
 import { Dictionary } from '@types';
@@ -13,10 +13,11 @@ import { useForm } from 'react-hook-form';
 import AddIcon from '@material-ui/icons/Add';
 import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { getCollection, resetAllMain } from 'store/main/actions';
 import { selEntities } from 'common/helpers/requestBodies';
-import { convertLocalDate } from 'common/helpers';
-import { entitydel, entityins } from 'store/witia/actions';
+import { convertLocalDate, exportExcel, uploadExcel } from 'common/helpers';
+import { entitydel, entityimport, entityins } from 'store/witia/actions';
 
 
 interface RowSelected {
@@ -260,6 +261,7 @@ const DetailEntities: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                                 useSelection={true}
                                 selectionKey={selectionKey}
                                 setSelectedRows={setSelectedRows}
+                                onClickRow={e=>{ setkeyword(e.keyword);setsynonim(e.synonyms.join()); setDisableCreate(false) }}
                                 ButtonsElement={() => (
                                     <div style={{display: "flex", justifyContent: "end", width: "100%"}}>
                                         <Button
@@ -349,7 +351,7 @@ export const Entities: React.FC<EntityProps> = ({ setExternalViewSelected, array
                                 setRowSelected({ row: row, edit: true })
                             }}
                         >
-                            {row.name}
+                            @{row.name}
                         </label>
                     )
                 }
@@ -369,12 +371,6 @@ export const Entities: React.FC<EntityProps> = ({ setExternalViewSelected, array
                         </label>
                     )
                 }
-            },
-            {
-                Header: "ID",
-                accessor: 'id',
-                width: "auto",
-                NoFilter: true,
             },
             {
                 Header: t(langKeys.lastUpdate),
@@ -406,7 +402,15 @@ export const Entities: React.FC<EntityProps> = ({ setExternalViewSelected, array
             callback
         }))
     }
-   
+    const triggerExportData = () => {
+        if (Object.keys(selectedRows).length === 0) {
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_record_selected)}));
+            return null;
+        }
+        let keys = Object.keys(selectedRows)
+        let filtereddata = mainResult.mainData.data.filter(x=>keys.includes(x.name))
+        exportExcel(t(langKeys.entities), filtereddata.map(x=>({...x,datajson: JSON.stringify(x.datajson)})))
+    };
     useEffect(() => {
         if (waitImport) {
             if (!operationRes.loading && !operationRes.error) {
@@ -422,6 +426,29 @@ export const Entities: React.FC<EntityProps> = ({ setExternalViewSelected, array
             }
         }
     }, [operationRes, waitImport]);
+
+    const handleUpload = async (files: any[]) => {
+        debugger
+        const file = files[0];
+        if (file) {
+            const data: any = (await uploadExcel(file, undefined) as any[]).filter((d: any) => !['', null, undefined].includes(d.name));
+            if (data.length > 0) {
+                dispatch(showBackdrop(true));
+                setWaitImport(true)
+                let datatosend = data.reduce((acc:any,d:any) => [...acc,{
+                    name: d.name, 
+                    datajson: JSON.parse(d.datajson), 
+                    operation: d.operation || 'INSERT',
+                }],[])
+
+                dispatch(entityimport({
+                    datajson: JSON.stringify(datatosend)
+                }))
+            
+            }
+        }
+    }
+    
 
     if (viewSelected==="view-1"){
         return (
@@ -460,6 +487,7 @@ export const Entities: React.FC<EntityProps> = ({ setExternalViewSelected, array
                         register={true}
                         download={false}
                         handleRegister={handleRegister}
+                        importCSV={handleUpload}
                         pageSizeDefault={20}
                         initialPageIndex={0}
                     />
