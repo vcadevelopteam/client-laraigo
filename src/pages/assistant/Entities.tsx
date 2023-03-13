@@ -485,7 +485,7 @@ export const Entities: React.FC<EntityProps> = ({ setExternalViewSelected, array
                         )}
                         loading={mainResult.mainData.loading}
                         register={true}
-                        download={false}
+                        download={true}
                         triggerExportPersonalized={true}
                         exportPersonalized={triggerExportData}
                         handleRegister={handleRegister}
