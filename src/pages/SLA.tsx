@@ -93,7 +93,7 @@ const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData,settype })
                 <FieldSelect
                     label={t(langKeys.type)} 
                     className="col-6"
-                    valueDefault={row?.type || ""}
+                    valueDefault={getValues('type')}
                     onChange={(value) => {
                         setValue('type', value?.domainvalue|| '')
                         settype && settype(value?.domainvalue|| '')
@@ -264,7 +264,7 @@ const TabCriticalityMatrix: React.FC<TabDetailProps> = ({ form,row, multiData })
     const classes = useStyles();
     const { t } = useTranslation();
     const user = useSelector(state => state.login.validateToken.user);
-    const { setValue, getValues, formState: { errors }  } = form;
+    const { setValue, getValues,trigger, formState: { errors }  } = form;
     const selectionKey= "index"
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const startAddRow = { impact: "", urgency: "", priority: ""}
@@ -407,7 +407,9 @@ const TabCriticalityMatrix: React.FC<TabDetailProps> = ({ form,row, multiData })
                             color="primary"
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
-                            onClick={() => {setValue('criticality',getValues('criticality').filter((x:any)=>!Object.keys(selectedRows).includes(x.index)))}}
+                            onClick={() => {setValue('criticality',getValues('criticality').filter((x:any)=>!Object.keys(selectedRows).includes(String(x.index))))
+                            trigger('criticality')
+                        }}
                         >{t(langKeys.delete)}</Button>
                     </div>
                 )}

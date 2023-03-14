@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { convertLocalDate, getAdviserFilteredUserRol, getColumnsSDSel, getCommChannelLst, getLeadExport, getLeadsSDSel, getLeadTasgsSel, getPaginatedLead, getUserGroupsSel, getValuesFromDomain, 
+import { convertLocalDate, getAdviserFilteredUserRol, getColumnsSDSel, getCommChannelLst, getLeadExport, getLeadsSDSel, getLeadTasgsSel, getPaginatedSDLead, getUserGroupsSel, getValuesFromDomain, 
   insArchiveServiceDesk, insSDLead, updateColumnsLeads, updateColumnsOrder } from "common/helpers";
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from 'react-redux';
@@ -547,7 +547,8 @@ const ServiceDesk: FC = () => {
 
   const fetchGridData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
     setfetchDataAux({...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts }});
-    dispatch(getCollectionPaginated(getPaginatedLead(
+    debugger
+    dispatch(getCollectionPaginated(getPaginatedSDLead(
         {
           startdate: daterange.startDate!,
           enddate: daterange.endDate!,
