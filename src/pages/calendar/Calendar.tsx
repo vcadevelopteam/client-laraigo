@@ -191,7 +191,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
         register('status', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('notificationtype');
         register('hsmtemplateid', { validate: (value) => getValues("notificationtype").includes("EMAIL") ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
-        register('emailtemplateid', { validate: (value) => getValues("notificationtype").includes("HSMEMAIL") ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
+        register('emailtemplateid', { validate: (value) => !getValues("notificationtype").includes("HSMEMAIL") ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
         register('communicationchannelid', { validate: (value) => getValues("notificationtype").includes("HSM") ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
         register('durationtype', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('duration', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.field_required)) });
@@ -268,6 +268,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
     })
 
     const onSubmit = handleSubmit((data) => {
+        debugger
         data.description = renderToString(toElement(bodyobject));
         if (data.description === `<div data-reactroot=""><p><span></span></p></div>`) {
             setShowError(true);
@@ -317,6 +318,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                 setWaitSave(true)
             }
         }
+        debugger
 
         dispatch(manageConfirmation({
             visible: true,
