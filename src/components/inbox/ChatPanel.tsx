@@ -650,7 +650,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
                 setWaitInsLead(false);
                 dispatch(updatePerson({ ...personSelected!!, havelead: true }));
             } else if (insLeadRes.error) {
-                const message = t(insLeadRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
+                const message = t(insLeadRes.code || "error_unexpected_error", { module: t(langKeys.lead).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message }))
                 dispatch(showBackdrop(false));
                 setWaitInsLead(false);
