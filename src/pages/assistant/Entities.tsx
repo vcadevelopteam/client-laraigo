@@ -500,8 +500,8 @@ export const Entities: React.FC<EntityProps> = ({ setExternalViewSelected, array
                         selectionKey={selectionKey}
                         setSelectedRows={setSelectedRows}
                         ButtonsElement={() => (
-                            <div style={{display: "flex", justifyContent: "end", width: "100%"}}>     
-                                <div style={{display: "flex", justifyContent: "end", width: "100%"}}>
+                            <div style={{display: "flex", justifyContent: "end", width: "100%"}}>                                                     
+                                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                                     <Button
                                         disabled={Object.keys(selectedRows).length===0}
                                         variant="contained"
