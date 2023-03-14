@@ -2555,6 +2555,29 @@ export const getPaginatedLead = ({ skip, take, filters, sorts, startdate, enddat
     }
 })
 
+export const getPaginatedSDLead = ({ skip, take, filters, sorts, startdate, enddate, contact, leadproduct,tags,company,
+    groups, supervisorid, ...allParameters }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_LEADGRID_SD_SEL",
+    methodCount: "UFN_LEADGRID_SD_TOTALRECORDS",
+    parameters: {
+        origin: "lead",
+        startdate,
+        enddate,
+        skip,
+        take,
+        filters,
+        sorts,
+        fullname: contact,
+        leadproduct,
+        tags,
+        company,
+        groups,
+        supervisorid,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+        ...allParameters
+    }
+})
+
 export const getLeadExport = ({ filters, sorts, startdate, enddate, ...allParameters }: Dictionary): IRequestBody => ({
     method: "UFN_LEADGRID_EXPORT",
     key: "UFN_LEADGRID_EXPORT",
