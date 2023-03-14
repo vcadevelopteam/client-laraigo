@@ -2555,7 +2555,7 @@ export const getPaginatedLead = ({ skip, take, filters, sorts, startdate, enddat
     }
 })
 
-export const getPaginatedSDLead = ({ skip, take, filters, sorts, startdate, enddate, fullname, leadproduct,tags,company,
+export const getPaginatedSDLead = ({ skip, take, filters, sorts, startdate, enddate, contact, leadproduct,tags,company,
     groups, supervisorid, ...allParameters }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_LEADGRID_SD_SEL",
     methodCount: "UFN_LEADGRID_SD_TOTALRECORDS",
@@ -2567,7 +2567,7 @@ export const getPaginatedSDLead = ({ skip, take, filters, sorts, startdate, endd
         take,
         filters,
         sorts,
-        fullname,
+        fullname: contact,
         leadproduct,
         tags,
         company,

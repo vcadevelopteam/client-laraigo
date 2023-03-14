@@ -382,9 +382,10 @@ const ServiceDesk: FC = () => {
   const [waitExport, setWaitExport] = useState(false);
   const voxiConnection = useSelector(state => state.voximplant.connection);
   const callOnLine = useSelector(state => state.voximplant.callOnLine);
-  const [allParameters, setAllParametersPrivate] = useState<{ company: string, groups: string, contact: string }>({
+  const [allParameters, setAllParametersPrivate] = useState<{ company: string, groups: string, contact: string, leadproduct:string }>({
     company: otherParams?.company||"",
     groups: otherParams?.groups||"",
+    leadproduct: otherParams?.products||"",
     contact: otherParams.contact,
   });
   const [selectedRows, setSelectedRows] = useState<Dictionary>({});
@@ -485,7 +486,7 @@ const ServiceDesk: FC = () => {
     () => [
       {
         Header: t(langKeys.request),
-        accessor: 'opportunity',
+        accessor: 'sd_request',
         isComponent: true,
         Cell: cell
       },
@@ -511,13 +512,13 @@ const ServiceDesk: FC = () => {
       },
       {
         Header: t(langKeys.ticket),
-        accessor: 'numeroticket',
+        accessor: 'ticketnum',
         isComponent: true,
         Cell: cell
       },
       {
         Header: t(langKeys.user),
-        accessor: 'contact_name',
+        accessor: 'displayname',
         isComponent: true,
         NoFilter: true,
         Cell: cell
@@ -532,11 +533,10 @@ const ServiceDesk: FC = () => {
         Header: t(langKeys.priority),
         accessor: 'priority',
         isComponent: true,
-        Cell: cell
       },
       {
         Header: t(langKeys.business),
-        accessor: 'business',
+        accessor: 'company',
         isComponent: true,
         Cell: cell
       },
@@ -547,7 +547,6 @@ const ServiceDesk: FC = () => {
 
   const fetchGridData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
     setfetchDataAux({...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts }});
-    debugger
     dispatch(getCollectionPaginated(getPaginatedSDLead(
         {
           startdate: daterange.startDate!,
@@ -556,6 +555,8 @@ const ServiceDesk: FC = () => {
           filters: filters,
           take: pageSize,
           skip: pageIndex * pageSize,
+          tags: boardFilter.tags,
+          supervisorid: user?.userid || 0,
           ...allParameters,
         }
     )));
@@ -659,6 +660,7 @@ const ServiceDesk: FC = () => {
         valueDefault={boardFilter.products}
         onChange={(v) => {
           const products = v?.map((o: IDomain) => o.domainvalue).join(',') || '';
+          setAllParameters({...allParameters, leadproduct: products})
           setBoardFilter(prev => ({ ...prev, products }));
         }}
         data={mainMulti.data[5]?.data || []}
