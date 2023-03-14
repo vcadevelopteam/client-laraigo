@@ -2877,6 +2877,14 @@ export const getRecordHSMGraphic = ({ startdate, enddate, column, summarization 
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
+export const getRecordVoicecallGraphic = ({ startdate, enddate, column, summarization }: Dictionary): IRequestBody => ({
+    method: "UFN_REPORT_VOICECALL_GRAPHIC",
+    key: "UFN_REPORT_VOICECALL_GRAPHIC",
+    parameters: {
+        filters: {}, sorts: {}, startdate, enddate, column, summarization,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
 
 export const getDashboardTemplateSel = (dashboardtemplateId: number | string = 0) => ({
     method: "UFN_DASHBOARDTEMPLATE_SEL",

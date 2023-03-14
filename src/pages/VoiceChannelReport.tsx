@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { DialogZyx, FieldSelect } from 'components';
-import { getPaginatedReportVoiceCall, getRecordHSMGraphic, getRecordHSMReport, getReportGraphic, getVoiceCallReportExport } from 'common/helpers';
+import { getPaginatedReportVoiceCall, getRecordVoicecallGraphic, getRecordHSMReport, getReportGraphic, getVoiceCallReportExport } from 'common/helpers';
 import { Dictionary, IFetchData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -598,7 +598,7 @@ const SummaryGraphic: React.FC<SummaryGraphicProps> = ({ openModal, setOpenModal
     const triggerGraphic = (data: any) => {
         setView(`CHART-${data.graphictype}-${data.column}`);
         setOpenModal(false);
-        dispatch(getMainGraphic(getRecordHSMGraphic(
+        dispatch(getMainGraphic(getRecordVoicecallGraphic(
             {
                 startdate: daterange?.startDate!,
                 enddate: daterange?.endDate!,
