@@ -610,6 +610,36 @@ export const getLeadChannelsFailure = (state: IState, action: IAction): IState =
     },
 });
 
+export const getSlaRules = (state: IState): IState => ({
+    ...state,
+    slarules: { ...state.slarules, loading: true, error: false },
+});
+
+export const getSlaRulesSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    slarules: {
+        data: action.payload.data || [],
+        loading: false,
+        error: false,
+    },
+});
+
+export const getSlaRulesFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    slarules: {
+        ...state.slarules,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'getTicketsFailure:error',
+        message: action.payload.message || 'Error al cargar los asesores',
+    },
+});
+
+export const getSlaRulesReset = (state: IState): IState => ({
+    ...state,
+    slarules: initialState.slarules,
+});
+
 export const getLeadChannelsReset = (state: IState): IState => ({
     ...state,
     leadChannels: initialState.leadChannels,

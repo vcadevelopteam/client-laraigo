@@ -299,6 +299,18 @@ export const getLeadChannels = (): IActionCall => ({
 
 export const resetGetLeadChannels = (): IActionCall => ({ type: actionTypes.GET_LEAD_CHANNELS_RESET });
 
+export const getSlaRules = (body: IRequestBody): IActionCall => ({
+    callAPI: () => CommonService.main(body),
+    types: {
+        loading: actionTypes.GET_SLARULES,
+        success: actionTypes.GET_SLARULES_SUCCESS,
+        failure: actionTypes.GET_SLARULES_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetSlaRules = (): IActionCall => ({ type: actionTypes.GET_SLARULES_RESET });
+
 export const getGroups = (): IActionCall => ({
     callAPI: () => CommonService.main(getUserGroupsSel()),
     types: {
