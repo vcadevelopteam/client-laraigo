@@ -850,7 +850,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row }, setViewSelected, m
                     textColor="primary"
                     onChange={(_, value) => setPageSelected(value)}
                 >
-                    <AntTab label={t(langKeys.sla)} />
+                    <AntTab label={t(langKeys.generalinformation)} />
                     {type==='SD' && <AntTab label={t(langKeys.criticalitymatrix)} />}
                     {type==='SD' && <AntTab label={t(langKeys.servicetimes)} />}
                 </Tabs>
