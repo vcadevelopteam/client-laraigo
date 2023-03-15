@@ -272,6 +272,7 @@ function Search({ panTo,setMarker,directionData, setDirectionData, cleanDataAddr
 		setValue,
 		clearSuggestions,
 	} = usePlacesAutocomplete({
+		debounce: 1000,
 		requestOptions: {
 		location: { lat: () => 43.6532, lng: () => -79.3832 },
 		radius: 100 * 1000,
