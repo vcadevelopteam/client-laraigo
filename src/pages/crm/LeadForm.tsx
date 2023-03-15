@@ -231,7 +231,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             if (type === "MAIL") {
                 setPersonWithData(persons.filter(x => x.email && x.email.length > 0))
             } else if (type === "HSM") {
-                setPersonWithData(persons.filter(x => !!x.phonewhatsapp))
+                setPersonWithData(persons.filter(x => !!x.phone))
             } else {
                 setPersonWithData(persons.filter(x => x.phone && x.phone.length > 0))
             }
