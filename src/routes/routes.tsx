@@ -17,6 +17,7 @@ import {
     PostCreatorIcon,
     OrdersIcon,
     IALaraigoLogo,
+    ServiceDeskIcon,
 } from 'icons';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import { langKeys } from "lang/keys";
@@ -98,7 +99,7 @@ export const routes: RouteConfig[] = [
         description: <Trans i18nKey={langKeys.servicedesk} count={2} />,
         tooltip: <Trans i18nKey={langKeys.servicedesk} count={2} />,
         path: paths.SERVICE_DESK,
-        icon: (className) => <CRMIcon style={{ width: 22, height: 26 }} className={className} />,
+        icon: (className) => <ServiceDeskIcon style={{ width: 22, height: 26 }} className={className} />,
     },
     {
         key: paths.AUTOMATIZATIONRULES,
