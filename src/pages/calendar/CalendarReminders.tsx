@@ -776,36 +776,11 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                     >
                         {t(langKeys.appointment_cancellation)}
                     </Typography>
-                    <Typography>
-                        {
-                            (getValues("statusreminder") === 'ACTIVO'
-                            ? t(langKeys.active)
-                            : t(langKeys.inactive)
-                            ).toUpperCase()
-                        }
-                    </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <div style={{ width: '100%' }}>
-                        <div className="row-zyx" >
-                            <FieldSelect
-                                label={t(langKeys.status)}
-                                className="col-6"
-                                valueDefault={getValues("statusreminder")}
-                                onChange={(value) => {
-                                    setValue('statusreminder', (value?.domainvalue || ""));
-                                    trigger("statusreminder");
-                                }}
-                                error={errors?.statusreminder?.message}
-                                data={dataStatus}
-                                uset={true}
-                                prefixTranslation="status_"
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            />
-                        </div>
-
-                        {getValues("statusreminder") === "ACTIVO" &&
+                        
+                    {getValues("statusreminder") === "ACTIVO" &&
                             <>
                                 <div className="row-zyx" >
 
@@ -853,6 +828,15 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                                 optionDesc="name"
                                                 optionValue="id"
                                             />
+                                            <React.Fragment>
+                                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                                    {t(langKeys.message)}
+                                                    <Tooltip title={`${t(langKeys.calendar_messate_tooltip)}`} placement="top-start">
+                                                        <InfoIcon style={{ padding: "5px 0 0 5px" }} />
+                                                    </Tooltip>
+                                                </Box>
+                                                <div dangerouslySetInnerHTML={{ __html: bodyMessageReminderEmail }} />
+                                            </React.Fragment>
                                         </div>
                                     }
                                     {getValues("remindertype").includes("HSM") &&
@@ -885,8 +869,90 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                                     optionValue="communicationchannelid"
                                                 />
                                             </div>
+                                            <React.Fragment>
+                                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                                    {t(langKeys.message)}
+                                                    <Tooltip title={`${t(langKeys.calendar_messate_tooltip)}`} placement="top-start">
+                                                        <InfoIcon style={{ padding: "5px 0 0 5px" }} />
+                                                    </Tooltip>
+                                                </Box>
+                                                <div dangerouslySetInnerHTML={{ __html: bodyMessageReminderHSM }} />
+                                            </React.Fragment>
                                         </div>
                                     }
+                                </div>
+                                <div className="row-zyx" >
+                                    {getValues("remindertype").includes("EMAIL") &&
+                                        <div className="col-6" >
+                                            {Object.keys(emailVariables).map((x, i) => {
+                                                return (
+                                                    <div key={`emailvariables-${i + 1}`} style={{ paddingTop: 10 }}>
+                                                        <FieldSelect
+                                                            label={`Email Variable #${i + 1}`}
+                                                            className="col-6"
+                                                            valueDefault={emailVariables[x]}
+                                                            onChange={(value) => { setEmailVariables({ ...emailVariables, [x]: value?.domainvalue || "" }) }}
+                                                            data={dataVariables}
+                                                            uset={true}
+                                                            optionDesc="domaindesc"
+                                                            optionValue="domainvalue"
+                                                        />
+                                                    </div>)
+                                            })}
+                                        </div>
+                                    }
+                                    {getValues("remindertype").includes("HSM") &&
+                                        <div className="col-6" >
+                                            {Object.keys(hsmVariables).map((x, i) => {
+                                                return (
+                                                    <div key={`hsmvariables-${i + 1}`} style={{ paddingTop: 10 }}>
+                                                        <FieldSelect
+                                                            label={`Email Variable #${i + 1}`}
+                                                            className="col-6"
+                                                            valueDefault={hsmVariables[x]}
+                                                            onChange={(value) => { setHsmVariables({ ...hsmVariables, [x]: value?.domainvalue || "" }) }}
+                                                            data={dataVariables}
+                                                            uset={true}
+                                                            optionDesc="domaindesc"
+                                                            optionValue="domainvalue"
+                                                        />
+                                                    </div>)
+                                            })}
+                                        </div>
+                                    }
+                                </div>
+                                <div className="row-zyx" >
+                                    <FieldSelect
+                                        fregister={{
+                                            ...register(`reminderperiod`, {
+                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                            })
+                                        }}
+                                        label={t(langKeys.reminderperiod)}
+                                        className="col-6"
+                                        valueDefault={getValues('reminderperiod')}
+                                        onChange={(value) => { setValue('reminderperiod', (value?.domainvalue || "")) }}
+                                        error={errors?.reminderperiod?.message}
+                                        data={dataRange}
+                                        uset={true}
+                                        prefixTranslation=""
+                                        optionDesc="domaindesc"
+                                        optionValue="domainvalue"
+                                    />
+                                    <FieldEdit
+                                        fregister={{
+                                            ...register(`reminderfrecuency`, {
+                                                validate: (value: any) => (value && value >= 0) || t(langKeys.field_required)
+                                            })
+                                        }}
+                                        label={t(langKeys.value)}
+                                        className="col-6"
+                                        type='number'
+                                        InputProps={{ inputProps: { min: 0 } }}
+                                        valueDefault={getValues('reminderfrecuency')}
+                                        onChange={(value) => { setValue('reminderfrecuency', value) }}
+                                        error={errors?.reminderfrecuency?.message}
+                                    />
                                 </div>
                             </>
                         }
