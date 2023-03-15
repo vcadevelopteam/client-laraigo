@@ -12,7 +12,7 @@ import PhoneIcon from '@material-ui/icons/Phone';
 import { getDomainsByTypename } from 'store/person/actions';
 import {
     adviserSel, getPaginatedPersonLead as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSDSel, leadHistorySel,
-    leadHistoryIns, getLeadsSDSel, insSDLead, getSLASel, insArchiveServiceDesk
+    leadHistoryIns, getLeadsSDSel, insSDLead, getSLASel, insArchiveServiceDesk, convertLocalDate
 } from 'common/helpers';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
@@ -44,7 +44,7 @@ import { sendHSM } from 'store/inbox/actions';
 import { setModalCall, setPhoneNumber } from 'store/voximplant/actions';
 import MailIcon from '@material-ui/icons/Mail';
 import DialogInteractions from 'components/inbox/DialogInteractions';
-import { archiveLead, getGroups, getImpact, getPriority, getUrgency, resetGetGroups, resetGetImpact, resetGetPriority, resetGetUrgency } from 'store/servicedesk/actions';
+import { archiveLead, getGroups, getImpact, getPriority, getSlaRules, getUrgency, resetGetGroups, resetGetImpact, resetGetPriority, resetGetSlaRules, resetGetUrgency } from 'store/servicedesk/actions';
 
 const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
 
@@ -406,7 +406,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
     const leadHistory = useSelector(state => state.servicedesk.leadHistory);
     const updateLeadTagProcess = useSelector(state => state.servicedesk.updateLeadTags);
     const leadTagsDomain = useSelector(state => state.servicedesk.leadTagsDomain);
-    const slarules = useSelector(state => state.servicedesk.leadPhases);
+    const slarules = useSelector(state => state.servicedesk.slarules);
     const dataUrgency = useSelector(state => state.servicedesk.urgency);
     const dataImpact = useSelector(state => state.servicedesk.impact);
     const dataPriority = useSelector(state => state.servicedesk.priority);
@@ -519,7 +519,6 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                     if (lostPhase?.columnid === data.columnid) {
                         data.status = "CERRADO";
                     }
-                    debugger
                     if (edit) {
                         dispatch(saveLeadAction([
                             insSDLead(data, data.operation),
@@ -579,7 +578,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         }
 
         dispatch(getAdvisers(adviserSel()));
-        dispatch(getLeadPhases(getSLASel(0)));
+        dispatch(getSlaRules(getSLASel(0)));
         dispatch(getLeadPhases(getColumnsSDSel(0, true)));
         dispatch(getLeadTagsDomain(getValuesFromDomain('OPORTUNIDADETIQUETAS')));
         dispatch(getLeadTemplates());
@@ -594,6 +593,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
             dispatch(resetSaveLead());
             dispatch(resetGetPersonListPaginated());
             dispatch(resetGetLeadPhases());
+            dispatch(resetGetSlaRules());
             dispatch(resetArchiveLead());
             dispatch(resetGetLeadActivities());
             dispatch(resetSaveLeadActivity());
@@ -670,6 +670,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                 priority: lead.value?.priority,
                 urgency: lead.value?.urgency,
                 sla_date: lead.value?.sla_date,
+                resolution_deadline: lead.value?.resolution_deadline,
                 resolution_date: lead.value?.resolution_date,
                 leadgroups: lead.value?.leadgroups,
                 columnid: lead.value?.columnid,
@@ -922,21 +923,6 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         return lead.value?.status === "CERRADO";
     }, [lead]);
 
-    const canBeSentToHistory = useMemo(() => {
-        if (!lead.value || phases.data.length === 0) return false;
-
-        const wonIndex = phases.data.findIndex(x => x.description.toLowerCase() === 'won');
-        if (wonIndex !== -1 && phases.data[wonIndex].columnid === lead.value.columnid) {
-            return true;
-        }
-
-        const lostIndex = phases.data.findIndex(x => x.description.toLowerCase() === 'lost');
-        if (wonIndex !== -1 && phases.data[lostIndex].columnid === lead.value.columnid) {
-            return true;
-        }
-
-        return false;
-    }, [lead, phases]);
     function getOrderindex(type: string) {
         switch (type) {
             case "NEW":
@@ -1175,34 +1161,29 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                 <FieldEdit
                                     label={t(langKeys.date) + " SLA"}
                                     className={classes.field}
-                                    type="datetime-local"
                                     onChange={(value) => {
-                                        // datetime formaT: yyyy-MM-ddTHH:mm
                                         setValue('sla_date', value);
                                     }}
-                                    valueDefault={(getValues('sla_date') as string)?.replace(' ', 'T')?.substring(0, 16)}
+                                    valueDefault={(convertLocalDate(lead.value?.sla_date||"").toLocaleString())}
                                     disabled={true}
                                 />
                                 <FieldEdit
                                     label={t(langKeys.dateofresolutiondeadline)}
                                     className={classes.field}
-                                    type="datetime-local"
                                     onChange={(value) => {
-                                        // datetime formaT: yyyy-MM-ddTHH:mm
                                         setValue('resolution_deadline', value);
                                     }}
-                                    valueDefault={(getValues('resolution_deadline') as string)?.replace(' ', 'T')?.substring(0, 16)}
+                                    valueDefault={(convertLocalDate(lead.value?.resolution_deadline||"").toLocaleString())}
                                     disabled={true}
                                 />
                                 <FieldEdit
                                     label={t(langKeys.dateofresolution)}
                                     className={classes.field}
-                                    type="datetime-local"
                                     onChange={(value) => {
                                         // datetime formaT: yyyy-MM-ddTHH:mm
                                         setValue('resolution_date', value);
                                     }}
-                                    valueDefault={(getValues('resolution_date') as string)?.replace(' ', 'T')?.substring(0, 16)}
+                                    valueDefault={(convertLocalDate(lead.value?.resolution_date||"").toLocaleString())}
                                     disabled={true}
                                 />
                                 <FieldSelect
@@ -1303,23 +1284,20 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                 <FieldEdit
                                     label={t(langKeys.firstContactDatedeadline)}
                                     className={classes.field}
-                                    type="datetime-local"
                                     onChange={(value) => {
-                                        // datetime formaT: yyyy-MM-ddTHH:mm
                                         setValue('first_contact_deadline', value);
                                     }}
-                                    valueDefault={(getValues('first_contact_deadline') as string)?.replace(' ', 'T')?.substring(0, 16)}
+                                    valueDefault={(convertLocalDate(lead.value?.first_contact_deadline||"").toLocaleString())}
                                     disabled={true}
                                 />
                                 <FieldEdit
                                     label={t(langKeys.firstContactDate)}
                                     className={classes.field}
-                                    type="datetime-local"
                                     onChange={(value) => {
                                         // datetime formaT: yyyy-MM-ddTHH:mm
                                         setValue('first_contact_date', value);
                                     }}
-                                    valueDefault={(getValues('first_contact_date') as string)?.replace(' ', 'T')?.substring(0, 16)}
+                                    valueDefault={(convertLocalDate(lead.value?.first_contact_date||"").toLocaleString())}
                                     disabled={true}
                                 />
                                 <FieldMultiSelectFreeSolo

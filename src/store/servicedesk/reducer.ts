@@ -18,6 +18,7 @@ export interface IState {
     lead: IObjectState<IServiceDeskLead>;
     saveLead: IProcessState;
     advisers: IListState<any>;
+    slarules: IListState<any>;
     leadTemplates: IListState<Dictionary>;
     leadChannels: IListState<Dictionary>;
     leadPhases: IListState<ICrmColumn>;
@@ -43,6 +44,7 @@ export const initialState: IState = {
     lead: initialObjectState,
     saveLead: initialProccessState,
     advisers: initialListState,
+    slarules: initialListState,
     leadPhases: initialListState,
     leadActivities: initialListState,
     leadTemplates: initialListState,
@@ -80,6 +82,11 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_ADVISERS_FAILURE]: caseFUnctions.getAdvisersFailure,
     [actionTypes.GET_ADVISERS_RESET]: caseFUnctions.getAdvisersReset,
 
+    [actionTypes.GET_SLARULES]: caseFUnctions.getSlaRules,
+    [actionTypes.GET_SLARULES_SUCCESS]: caseFUnctions.getSlaRulesSuccess,
+    [actionTypes.GET_SLARULES_FAILURE]: caseFUnctions.getSlaRulesFailure,
+    [actionTypes.GET_SLARULES_RESET]: caseFUnctions.getSlaRulesReset,
+    
     [actionTypes.GET_PHASES]: caseFUnctions.getPhases,
     [actionTypes.GET_PHASES_SUCCESS]: caseFUnctions.getPhasesSuccess,
     [actionTypes.GET_PHASES_FAILURE]: caseFUnctions.getPhasesFailure,

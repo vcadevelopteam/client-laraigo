@@ -82,6 +82,7 @@ export interface IServiceDeskLead2 {
 }
 
 export interface IServiceDeskLead {
+    resolution_deadline: any;
     changeby: string;
     changedate: string;
     column_uuid: string;
