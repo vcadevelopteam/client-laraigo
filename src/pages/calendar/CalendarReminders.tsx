@@ -67,6 +67,16 @@ interface CalendarRemindersProps {
     setHsmVariables: (value: any) => void;
     bodyMessageReminderHSM: any;
     setBodyMessageReminderHSM: (value: any) => void;
+    
+    emailCancelVariables: any;
+    setEmailCancelVariables: (value: any) => void;
+    bodyMessageCancelEmail: any;
+    setBodyMessageCancelEmail: (value: any) => void;
+    
+    hsmCancelVariables: any;
+    setHsmCancelVariables: (value: any) => void;
+    bodyMessageCancelHSM: any;
+    setBodyMessageCancelHSM: (value: any) => void;
 }
 
 const CalendarReminders: React.FC<CalendarRemindersProps> = ({
@@ -102,6 +112,16 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
     setHsmVariables,
     bodyMessageReminderHSM,
     setBodyMessageReminderHSM,
+    
+    emailCancelVariables,
+    setEmailCancelVariables,
+    bodyMessageCancelEmail,
+    setBodyMessageCancelEmail,
+    
+    hsmCancelVariables,
+    setHsmCancelVariables,
+    bodyMessageCancelHSM,
+    setBodyMessageCancelHSM,
 
 }) => {
     const { t } = useTranslation();
@@ -174,6 +194,35 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
             setBodyMessageReminderHSM('');
             setHsmVariables({})
             setValue('reminderhsmtemplateid', 0);
+            setValue('reminderhsmcommunicationchannelid', 0);
+        }
+    }
+    const onSelectTemplateCancelEmail = (value: Dictionary | null) => {
+        if (value) {
+            setBodyMessageCancelEmail(value.body);
+            setEmailCancelVariables((value.body?.match(/{{/g) || []).reduce((acc: any, x: any, i: number) => { return { ...acc, [`variable#${i}`]: `` } }, {}))
+            setValue('canceltemplateidemail', value?.id || 0);
+            setValue('cancelemailtemplatename', value?.name || '');
+        }
+        else {
+            setValue('cancelemailtemplatename', '');
+            setBodyMessageCancelEmail('');
+            setEmailCancelVariables({})
+            setValue('canceltemplateidemail', 0);
+        }
+    }
+    const onSelectTemplateCancelHSM = (value: Dictionary | null) => {
+        if (value) {
+            setBodyMessageCancelHSM(value.body);
+            setHsmCancelVariables((value.body?.match(/{{/g) || []).reduce((acc: any, x: any, i: number) => { return { ...acc, [`variable#${i}`]: `` } }, {}))
+            setValue('canceltemplateidhsm', value ? value.id : 0);
+            setValue('cancelhsmtemplatename', value ? value.name : '');
+        }
+        else {
+            setValue('cancelhsmtemplatename', '');
+            setBodyMessageCancelHSM('');
+            setHsmCancelVariables({})
+            setValue('canceltemplateidhsm', 0);
             setValue('reminderhsmcommunicationchannelid', 0);
         }
     }
@@ -779,183 +828,145 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                 </AccordionSummary>
                 <AccordionDetails>
                     <div style={{ width: '100%' }}>
-                        
-                    {getValues("statusreminder") === "ACTIVO" &&
-                            <>
-                                <div className="row-zyx" >
+                        <div className="row-zyx" >
 
+                            <FieldSelect
+                                fregister={{
+                                    ...register(`canceltype`, {
+                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                    })
+                                }}
+                                label={t(langKeys.notificationtype)}
+                                className="col-6"
+                                valueDefault={getValues("canceltype")}
+                                onChange={(value) => {
+                                    setValue('canceltype', (value?.val || ""))
+                                    onSelectTemplateCancelEmail(null)
+                                    onSelectTemplateCancelHSM(null)
+                                    trigger("canceltype")
+                                }}
+                                error={errors?.canceltype?.message}
+                                data={[
+                                    { desc: "HSM", val: "HSM" },
+                                    { desc: t(langKeys.email), val: "EMAIL" },
+                                    { desc: `HSM + ${t(langKeys.email)}`, val: "EMAIL/HSM" },
+                                ]}
+                                optionDesc="desc"
+                                optionValue="val"
+                            />
+                        </div>
+                        <div className="row-zyx" >
+                            {getValues("canceltype").includes("EMAIL") &&
+                                <div className="col-6" >
+                                    <div style={{ paddingBottom: 10, fontWeight: "bold", fontSize: "1.1em" }}>{t(langKeys.email)}</div>
                                     <FieldSelect
                                         fregister={{
-                                            ...register(`remindertype`, {
-                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                            ...register(`canceltemplateidemail`, {
+                                                validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
                                             })
                                         }}
-                                        label={t(langKeys.notificationtype)}
+                                        label={t(langKeys.notificationtemplate)}
                                         className="col-6"
-                                        valueDefault={getValues("remindertype")}
-                                        onChange={(value) => {
-                                            setValue('remindertype', (value?.val || ""))
-                                            onSelectTemplateReminderEmail(null)
-                                            onSelectTemplateReminderHSM(null)
-                                            trigger("remindertype")
-                                        }}
-                                        error={errors?.remindertype?.message}
-                                        data={[
-                                            { desc: "HSM", val: "HSM" },
-                                            { desc: t(langKeys.email), val: "EMAIL" },
-                                            { desc: `HSM + ${t(langKeys.email)}`, val: "EMAIL/HSM" },
-                                        ]}
-                                        optionDesc="desc"
-                                        optionValue="val"
+                                        valueDefault={getValues('canceltemplateidemail')}
+                                        error={errors?.canceltemplateidemail?.message || dataTemplates.filter(x => x.type === "MAIL").length===0?t(langKeys.noavailabletemplates):""}
+                                        onChange={onSelectTemplateCancelEmail}
+                                        data={dataTemplates.filter(x => x.type === "MAIL")}
+                                        optionDesc="name"
+                                        optionValue="id"
                                     />
+                                    <React.Fragment>
+                                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                            {t(langKeys.message)}
+                                            <Tooltip title={`${t(langKeys.calendar_messate_tooltip)}`} placement="top-start">
+                                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
+                                            </Tooltip>
+                                        </Box>
+                                        <div dangerouslySetInnerHTML={{ __html: bodyMessageCancelEmail }} />
+                                    </React.Fragment>
                                 </div>
-                                <div className="row-zyx" >
-                                    {getValues("remindertype").includes("EMAIL") &&
-                                        <div className="col-6" >
-                                            <div style={{ paddingBottom: 10, fontWeight: "bold", fontSize: "1.1em" }}>{t(langKeys.email)}</div>
-                                            <FieldSelect
-                                                fregister={{
-                                                    ...register(`remindermailtemplateid`, {
-                                                        validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
-                                                    })
-                                                }}
-                                                label={t(langKeys.notificationtemplate)}
-                                                className="col-6"
-                                                valueDefault={getValues('remindermailtemplateid')}
-                                                error={errors?.remindermailtemplateid?.message || dataTemplates.filter(x => x.type === "MAIL").length===0?t(langKeys.noavailabletemplates):""}
-                                                onChange={onSelectTemplateReminderEmail}
-                                                data={dataTemplates.filter(x => x.type === "MAIL")}
-                                                optionDesc="name"
-                                                optionValue="id"
-                                            />
-                                            <React.Fragment>
-                                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                                                    {t(langKeys.message)}
-                                                    <Tooltip title={`${t(langKeys.calendar_messate_tooltip)}`} placement="top-start">
-                                                        <InfoIcon style={{ padding: "5px 0 0 5px" }} />
-                                                    </Tooltip>
-                                                </Box>
-                                                <div dangerouslySetInnerHTML={{ __html: bodyMessageReminderEmail }} />
-                                            </React.Fragment>
-                                        </div>
-                                    }
-                                    {getValues("remindertype").includes("HSM") &&
-                                        <div className="col-6" >
-                                            <div style={{ paddingBottom: 10, fontWeight: "bold", fontSize: "1.1em" }}>{t(langKeys.hsm)}</div>
-                                            <FieldSelect
-                                                fregister={{
-                                                    ...register(`reminderhsmtemplateid`, {
-                                                        validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
-                                                    })
-                                                }}
-                                                label={t(langKeys.notificationtemplate)}
-                                                className="col-6"
-                                                valueDefault={getValues('reminderhsmtemplateid')}
-                                                error={errors?.reminderhsmtemplateid?.message || dataTemplates.filter(x => x.type === "MAIL").length===0?t(langKeys.noavailabletemplates):""}
-                                                onChange={onSelectTemplateReminderHSM}
-                                                data={dataTemplates.filter(x => x.type === "HSM")}
-                                                optionDesc="name"
-                                                optionValue="id"
-                                            />
-                                            <div style={{ paddingTop: 10 }}>
+                            }
+                            {getValues("canceltype").includes("HSM") &&
+                                <div className="col-6" >
+                                    <div style={{ paddingBottom: 10, fontWeight: "bold", fontSize: "1.1em" }}>{t(langKeys.hsm)}</div>
+                                    <FieldSelect
+                                        fregister={{
+                                            ...register(`canceltemplateidhsm`, {
+                                                validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
+                                            })
+                                        }}
+                                        label={t(langKeys.notificationtemplate)}
+                                        className="col-6"
+                                        valueDefault={getValues('canceltemplateidhsm')}
+                                        error={errors?.canceltemplateidhsm?.message || dataTemplates.filter(x => x.type === "MAIL").length===0?t(langKeys.noavailabletemplates):""}
+                                        onChange={onSelectTemplateCancelHSM}
+                                        data={dataTemplates.filter(x => x.type === "HSM")}
+                                        optionDesc="name"
+                                        optionValue="id"
+                                    />
+                                    <div style={{ paddingTop: 10 }}>
+                                        <FieldSelect
+                                            label={t(langKeys.communicationchannel)}
+                                            className="col-12"
+                                            valueDefault={getValues('reminderhsmcommunicationchannelid')}
+                                            error={errors?.reminderhsmcommunicationchannelid?.message}
+                                            onChange={(value) => setValue('reminderhsmcommunicationchannelid', value?.communicationchannelid || 0)}
+                                            data={dataChannels.filter(x => x.type.startsWith('WHA'))}
+                                            optionDesc="communicationchanneldesc"
+                                            optionValue="communicationchannelid"
+                                        />
+                                    </div>
+                                    <React.Fragment>
+                                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                            {t(langKeys.message)}
+                                            <Tooltip title={`${t(langKeys.calendar_messate_tooltip)}`} placement="top-start">
+                                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
+                                            </Tooltip>
+                                        </Box>
+                                        <div dangerouslySetInnerHTML={{ __html: bodyMessageCancelHSM }} />
+                                    </React.Fragment>
+                                </div>
+                            }
+                        </div>
+                        <div className="row-zyx" >
+                            {getValues("canceltype").includes("EMAIL") &&
+                                <div className="col-6" >
+                                    {Object.keys(emailCancelVariables).map((x, i) => {
+                                        return (
+                                            <div key={`emailCancelVariables-${i + 1}`} style={{ paddingTop: 10 }}>
                                                 <FieldSelect
-                                                    label={t(langKeys.communicationchannel)}
-                                                    className="col-12"
-                                                    valueDefault={getValues('reminderhsmcommunicationchannelid')}
-                                                    error={errors?.reminderhsmcommunicationchannelid?.message}
-                                                    onChange={(value) => setValue('reminderhsmcommunicationchannelid', value?.communicationchannelid || 0)}
-                                                    data={dataChannels.filter(x => x.type.startsWith('WHA'))}
-                                                    optionDesc="communicationchanneldesc"
-                                                    optionValue="communicationchannelid"
+                                                    label={`Email Variable #${i + 1}`}
+                                                    className="col-6"
+                                                    valueDefault={emailCancelVariables[x]}
+                                                    onChange={(value) => { setEmailCancelVariables({ ...emailCancelVariables, [x]: value?.domainvalue || "" }) }}
+                                                    data={dataVariables}
+                                                    uset={true}
+                                                    optionDesc="domaindesc"
+                                                    optionValue="domainvalue"
                                                 />
-                                            </div>
-                                            <React.Fragment>
-                                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                                                    {t(langKeys.message)}
-                                                    <Tooltip title={`${t(langKeys.calendar_messate_tooltip)}`} placement="top-start">
-                                                        <InfoIcon style={{ padding: "5px 0 0 5px" }} />
-                                                    </Tooltip>
-                                                </Box>
-                                                <div dangerouslySetInnerHTML={{ __html: bodyMessageReminderHSM }} />
-                                            </React.Fragment>
-                                        </div>
-                                    }
+                                            </div>)
+                                    })}
                                 </div>
-                                <div className="row-zyx" >
-                                    {getValues("remindertype").includes("EMAIL") &&
-                                        <div className="col-6" >
-                                            {Object.keys(emailVariables).map((x, i) => {
-                                                return (
-                                                    <div key={`emailvariables-${i + 1}`} style={{ paddingTop: 10 }}>
-                                                        <FieldSelect
-                                                            label={`Email Variable #${i + 1}`}
-                                                            className="col-6"
-                                                            valueDefault={emailVariables[x]}
-                                                            onChange={(value) => { setEmailVariables({ ...emailVariables, [x]: value?.domainvalue || "" }) }}
-                                                            data={dataVariables}
-                                                            uset={true}
-                                                            optionDesc="domaindesc"
-                                                            optionValue="domainvalue"
-                                                        />
-                                                    </div>)
-                                            })}
-                                        </div>
-                                    }
-                                    {getValues("remindertype").includes("HSM") &&
-                                        <div className="col-6" >
-                                            {Object.keys(hsmVariables).map((x, i) => {
-                                                return (
-                                                    <div key={`hsmvariables-${i + 1}`} style={{ paddingTop: 10 }}>
-                                                        <FieldSelect
-                                                            label={`Email Variable #${i + 1}`}
-                                                            className="col-6"
-                                                            valueDefault={hsmVariables[x]}
-                                                            onChange={(value) => { setHsmVariables({ ...hsmVariables, [x]: value?.domainvalue || "" }) }}
-                                                            data={dataVariables}
-                                                            uset={true}
-                                                            optionDesc="domaindesc"
-                                                            optionValue="domainvalue"
-                                                        />
-                                                    </div>)
-                                            })}
-                                        </div>
-                                    }
+                            }
+                            {getValues("canceltype").includes("HSM") &&
+                                <div className="col-6" >
+                                    {Object.keys(hsmCancelVariables).map((x, i) => {
+                                        return (
+                                            <div key={`hsmCancelVariables-${i + 1}`} style={{ paddingTop: 10 }}>
+                                                <FieldSelect
+                                                    label={`Email Variable #${i + 1}`}
+                                                    className="col-6"
+                                                    valueDefault={hsmCancelVariables[x]}
+                                                    onChange={(value) => { setHsmCancelVariables({ ...hsmCancelVariables, [x]: value?.domainvalue || "" }) }}
+                                                    data={dataVariables}
+                                                    uset={true}
+                                                    optionDesc="domaindesc"
+                                                    optionValue="domainvalue"
+                                                />
+                                            </div>)
+                                    })}
                                 </div>
-                                <div className="row-zyx" >
-                                    <FieldSelect
-                                        fregister={{
-                                            ...register(`reminderperiod`, {
-                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                            })
-                                        }}
-                                        label={t(langKeys.reminderperiod)}
-                                        className="col-6"
-                                        valueDefault={getValues('reminderperiod')}
-                                        onChange={(value) => { setValue('reminderperiod', (value?.domainvalue || "")) }}
-                                        error={errors?.reminderperiod?.message}
-                                        data={dataRange}
-                                        uset={true}
-                                        prefixTranslation=""
-                                        optionDesc="domaindesc"
-                                        optionValue="domainvalue"
-                                    />
-                                    <FieldEdit
-                                        fregister={{
-                                            ...register(`reminderfrecuency`, {
-                                                validate: (value: any) => (value && value >= 0) || t(langKeys.field_required)
-                                            })
-                                        }}
-                                        label={t(langKeys.value)}
-                                        className="col-6"
-                                        type='number'
-                                        InputProps={{ inputProps: { min: 0 } }}
-                                        valueDefault={getValues('reminderfrecuency')}
-                                        onChange={(value) => { setValue('reminderfrecuency', value) }}
-                                        error={errors?.reminderfrecuency?.message}
-                                    />
-                                </div>
-                            </>
-                        }
+                            }
+                        </div>                      
                     </div>
                 </AccordionDetails>
             </Accordion>

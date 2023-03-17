@@ -44,4 +44,9 @@ export type ICalendarFormFields = {
     reminderhsmcommunicationchannelid: number,
     emailtemplateid: number,
     emailtemplatename: string,
+    canceltype: string,
+    canceltemplateidemail: any,
+    cancelemailtemplatename: any,
+    canceltemplateidhsm: any,
+    cancelhsmtemplatename: any,
 }
