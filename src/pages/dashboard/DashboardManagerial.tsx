@@ -1127,7 +1127,7 @@ const DashboardManagerial: FC = () => {
             })
         }
         // eslint-disable-next-line
-    },[openDialogPerRequest,fieldToFilter])
+    },[fieldToFilter])
 
 
     useEffect(() => {
