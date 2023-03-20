@@ -276,7 +276,7 @@ export const resetAllMain = (): IActionCall => ({ type: actionTypes.RESET_ALL })
 
 
 export const getCollEventBooking = (requestBody: IRequestBody): IActionCall => ({
-    callAPI: () => CommonService.mainEventBooking(requestBody),
+    callAPI: () => CommonService.mainEventCancelBooking(requestBody),
     types: {
         loading: actionTypes.MAIN_EVENT_BOOKING,
         success: actionTypes.MAIN_EVENT_BOOKING_SUCCESS,
