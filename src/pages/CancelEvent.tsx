@@ -5,7 +5,7 @@ import { useSelector } from 'hooks';
 import { Button, makeStyles, Snackbar, Typography } from "@material-ui/core";
 import { useParams } from 'react-router';
 import { FieldEditMulti } from "components";
-import { getCollEventBooking, resetAllMain } from 'store/main/actions';
+import { getCancelEventBooking, getCollEventBooking, resetAllMain } from 'store/main/actions';
 import { calendarBookingCancel2, calendarBookingSelOne } from 'common/helpers';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -169,7 +169,7 @@ export const CancelEvent: FC = () => {
                 id: data?.calendarbookingid,
                 cancelcomment: cancelcomment||"",
             }
-            dispatch(getCollEventBooking(calendarBookingCancel2(datat)));
+            dispatch(getCancelEventBooking(calendarBookingCancel2(datat)));
             setWaitSave(true);
         }else{
             setshowSnackbar({ open: true, severity: "error", msg: t(langKeys.cancelenventerror || "error_unexpected_error") })
