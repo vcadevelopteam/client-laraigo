@@ -98,17 +98,19 @@ const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData,settype })
                         setValue('type', value?.domainvalue|| '')
                         settype && settype(value?.domainvalue|| '')
                         setFieldFlags({...fieldFlags,showChannels: value?.domainvalue === "LARAIGO"})
-                        setValue('communicationchannelid', '')
-                        setValue('usergroup', '')
-                        setValue('totaltmomin', null)
-                        setValue('totaltmo', null)
-                        setValue('totaltmopercentmax', null)
-                        setValue('usertmomin', null)
-                        setValue('usertmo', null)
-                        setValue('usertmopercentmax', null)
-                        setValue('usertme', null)
-                        setValue('usertmepercentmax', null)
-                        setValue('productivitybyhour', null)
+                        if (value?.domainvalue!=="LARAIGO" ){
+                            setValue('communicationchannelid', '')
+                            setValue('usergroup', '')
+                            setValue('totaltmomin', null)
+                            setValue('totaltmo', null)
+                            setValue('totaltmopercentmax', null)
+                            setValue('usertmomin', null)
+                            setValue('usertmo', null)
+                            setValue('usertmopercentmax', null)
+                            setValue('usertme', null)
+                            setValue('usertmepercentmax', null)
+                            setValue('productivitybyhour', null)
+                        }
                     }}
                     error={errors?.type?.message}
                     data={dataTipoSLA}
@@ -141,7 +143,7 @@ const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData,settype })
                     label={t(langKeys.channel_plural)} //transformar a multiselect
                     className="col-12"
                     onChange={(value) => setValue('communicationchannelid', value.map((o: Dictionary) => o.communicationchannelid).join())}
-                    valueDefault={row?.communicationchannelid || ""}
+                    valueDefault={getValues('communicationchannelid')}
                     error={errors?.communicationchannelid?.message}
                     data={datachannels}
                     optionDesc="communicationchanneldesc"
@@ -184,7 +186,7 @@ const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData,settype })
                         label={"TMO total min (HH:MM)"} 
                         className="col-4"
                         onChange={(value) => setValue('totaltmomin', value)}
-                        valueDefault={row?.totaltmomin || ""}
+                        valueDefault={getValues('totaltmomin')}
                         error={errors?.totaltmomin?.message}
                     />
                     <FieldEdit
@@ -192,7 +194,7 @@ const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData,settype })
                         label={"TMO total max (HH:MM)"} 
                         className="col-4"
                         onChange={(value) => setValue('totaltmo', value)}
-                        valueDefault={row?.totaltmo || ""}
+                        valueDefault={getValues('totaltmo')}
                         error={errors?.totaltmo?.message}
                     />
                     <FieldEdit
@@ -200,7 +202,7 @@ const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData,settype })
                         label={`${t(langKeys.tmopercentobj)}%`} 
                         className="col-4"
                         onChange={(value) => setValue('totaltmopercentmax', value)}
-                        valueDefault={row?.totaltmopercentmax || ""}
+                        valueDefault={getValues('totaltmopercentmax')}
                         error={errors?.totaltmopercentmax?.message}
                     />
                 </div>
@@ -210,7 +212,7 @@ const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData,settype })
                     label={"TMO user min (HH:MM)"} 
                     className="col-4"
                     onChange={(value) => setValue('usertmomin', value)}
-                    valueDefault={row?.usertmomin || ""}
+                    valueDefault={getValues('usertmomin')}
                     error={errors?.usertmomin?.message}
                     />
                     <FieldEdit
@@ -218,7 +220,7 @@ const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData,settype })
                         label={"TMO user max (HH:MM)"} 
                         className="col-4"
                         onChange={(value) => setValue('usertmo', value)}
-                        valueDefault={row?.usertmo || ""}
+                        valueDefault={getValues('usertmo')}
                         error={errors?.usertmo?.message}
                     />
                     <FieldEdit
@@ -226,7 +228,7 @@ const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData,settype })
                         label={`${t(langKeys.usertmopercentmax)}%`} 
                         className="col-4"
                         onChange={(value) => setValue('usertmopercentmax', value)}
-                        valueDefault={row?.usertmopercentmax || ""}
+                        valueDefault={getValues('usertmopercentmax')}
                         error={errors?.usertmopercentmax?.message}
                     />
                 </div>
@@ -236,7 +238,7 @@ const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData,settype })
                         label={"TME user max (HH:MM)"} 
                         className="col-4"
                         onChange={(value) => setValue('usertme', value)}
-                        valueDefault={row?.usertme || ""}
+                        valueDefault={getValues('usertme')}
                         error={errors?.usertme?.message}
                     />
                     <FieldEdit
@@ -244,7 +246,7 @@ const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData,settype })
                         label={`${t(langKeys.usertmepercentmax)}%`} 
                         className="col-4"
                         onChange={(value) => setValue('usertmepercentmax', value)}
-                        valueDefault={row?.usertmepercentmax || ""}
+                        valueDefault={getValues('usertmepercentmax')}
                         error={errors?.usertmepercentmax?.message}
                     />
                     <FieldEdit
@@ -252,7 +254,7 @@ const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData,settype })
                         className="col-4"
                         type='number'
                         onChange={(value) => setValue('productivitybyhour', value)}
-                        valueDefault={row?.productivitybyhour || 0}
+                        valueDefault={getValues('productivitybyhour')}
                         error={errors?.productivitybyhour?.message}
                     />
                 </div>                
@@ -729,7 +731,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row }, setViewSelected, m
     const [type, settype] = useState(row?.type || '');
     const form = useForm({
         defaultValues: {
-            type: row?.type || '',
+            type: row?.type === "NINGUNO" ?"": (row?.type || ''),
             id: row?.slaid || 0,
             description: row?.description || '',
             company: row?.company || '',
