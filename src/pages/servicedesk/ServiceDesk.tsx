@@ -90,8 +90,8 @@ interface IBoardFilter {
   /**id del asesor */
 }
 
-const DraggablesCategories : FC<{column:any, index:number, handleDelete:(lead: IServiceDeskLead)=>void, handleCloseLead:(lead: IServiceDeskLead)=>void}> = ({column, 
-  index, handleDelete, handleCloseLead }) => {
+const DraggablesCategories : FC<{column:any, index:number, handleDelete:(lead: IServiceDeskLead)=>void, handleCloseLead:(lead: IServiceDeskLead)=>void, role:string}> = ({column, 
+  index, handleDelete, handleCloseLead, role }) => {
     const { t } = useTranslation();
   return (
     <Draggable draggableId={column.column_uuid} index={index+1} key={column.column_uuid}>
@@ -123,6 +123,7 @@ const DraggablesCategories : FC<{column:any, index:number, handleDelete:(lead: I
                             key={item.leadid}
                             draggableId={item.leadid.toString()}
                             index={index}
+                            isDragDisabled={role==="VISOR SD"}
                           >
                             {(provided, snapshot) => {
                               return(
@@ -142,6 +143,7 @@ const DraggablesCategories : FC<{column:any, index:number, handleDelete:(lead: I
                                         snapshot={snapshot}
                                         onDelete={handleDelete}
                                         onCloseLead={handleCloseLead}
+                                        edit={role!=="VISOR SD"}
                                       />
                                     </div>
                                   )}
@@ -477,7 +479,7 @@ const ServiceDesk: FC = () => {
   }
 
   const onClickRow = (row: any) => {
-    if (row.leadid) {
+    if (row.leadid && user?.roledesc !== "VISOR SD") {
       history.push({pathname: paths.SERVICE_DESK_EDIT_LEAD.resolve(row.leadid),});
     }
   }
@@ -826,7 +828,7 @@ const ServiceDesk: FC = () => {
                   style={{display:'flex'}}
                 >
                   {dataColumn.map((column, index) => 
-                       <DraggablesCategories column={column} index={index} handleDelete={handleDelete} handleCloseLead={handleCloseLead}/>
+                       <DraggablesCategories column={column} index={index} handleDelete={handleDelete} handleCloseLead={handleCloseLead} role={user?.roledesc||""}/>
                   )}
                 </div>
               )}

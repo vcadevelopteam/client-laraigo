@@ -21,6 +21,7 @@ interface ServiceDeskCardContentProps extends Omit<BoxProps, 'onClick'> {
     onDelete?: (value: IServiceDeskLead) => void;
     onClick?: (lead: IServiceDeskLead) => void;
     onCloseLead?: (lead: IServiceDeskLead) => void;
+    edit?: Boolean
 }
 
 const useLeadCardStyles = makeStyles(theme => ({
@@ -103,7 +104,7 @@ const useLeadCardStyles = makeStyles(theme => ({
     },
 }));
 
-export const DraggableServiceDeskCardContent: FC<ServiceDeskCardContentProps> = ({ lead, snapshot, onDelete, onClick, onCloseLead, ...boxProps }) => {
+export const DraggableServiceDeskCardContent: FC<ServiceDeskCardContentProps> = ({ lead, snapshot, onDelete, onClick, onCloseLead, edit, ...boxProps }) => {
     const classes = useLeadCardStyles();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const tags = lead.tags?.split(',')?.filter(e => e !== '') || [];
@@ -156,9 +157,11 @@ export const DraggableServiceDeskCardContent: FC<ServiceDeskCardContentProps> = 
                 </div>
             </div>
             <div className={classes.floatingMenuIcon}>
-                <IconButton size="small" aria-describedby={id} onClick={handleMoreVertClick}>
-                    <MoreVertIcon style={{ height: 'inherit', width: 'inherit' }} />
-                </IconButton>
+                {edit &&
+                    <IconButton size="small" aria-describedby={id} onClick={handleMoreVertClick}>
+                        <MoreVertIcon style={{ height: 'inherit', width: 'inherit' }} />
+                    </IconButton>
+                }
                 <Popover
                     id={id}
                     open={open}
