@@ -186,6 +186,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
             reminderfrecuency: row?.reminderfrecuency || 0,
             reminderhsmcommunicationchannelid: row?.reminderhsmcommunicationchannelid || 0,
             
+            cancelcommunicationchannelid: row?.cancelcommunicationchannelid || 0,
             canceltype: row?.canceltype || "",
             canceltemplateidemail: row?.canceltemplateidemail || "",
             canceltemplateidhsm: row?.canceltemplateidhsm || "",
@@ -211,11 +212,11 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
         register('reminderhsmcommunicationchannelid', { validate: (value) => !getValues("remindertype").includes("HSM") ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
         register('reminderhsmtemplateid', { validate: (value) => !getValues("remindertype").includes("HSM") ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
         register('remindermailtemplateid', { validate: (value) => !getValues("remindertype").includes("EMAIL") ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
-        //register('reminderhsmcommunicationchannelid', { validate: (value) => !getValues("canceltype").includes("HSM") ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
+        register('cancelcommunicationchannelid', { validate: (value) => !getValues("canceltype").includes("HSM") ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
         register('canceltemplateidhsm', { validate: (value) => !getValues("canceltype").includes("HSM") ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
         register('canceltemplateidemail', { validate: (value) => !getValues("canceltype").includes("EMAIL") ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
         register('remindertype', { validate: (value) => getValues("statusreminder") !== "ACTIVO" ? true : (Boolean(value && value.length) || String(t(langKeys.field_required))) });
-        register('canceltype', { validate: (value) => (Boolean(value && value.length) || String(t(langKeys.field_required))) });
+        register('canceltype');
         /*register('statusreminder', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });*/
     }, [register]);
 
@@ -260,7 +261,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
             setEmailVariables(getvariableValues(row?.remindermailtemplateid, row.remindermailmessage))
             setHsmVariables(getvariableValues(row?.reminderhsmtemplateid, row.reminderhsmmessage))
             setEmailCancelVariables(getvariableValues(row?.canceltemplateidemail , row.cancelnotificationemail))
-            hsmCancelVariables(getvariableValues(row?.canceltemplateidhsm, row.cancelnotificationhsm))
+            setHsmCancelVariables(getvariableValues(row?.canceltemplateidhsm, row.cancelnotificationhsm))
             if (row?.credentialsdate) {
                 dispatch(calendarGoogleValidate({ id: row?.calendareventid }))
                 setWaitGoogleValidate(true)
@@ -282,7 +283,6 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
     })
 
     const onSubmit = handleSubmit((data) => {
-        debugger
         data.description = renderToString(toElement(bodyobject));
         if (data.description === `<div data-reactroot=""><p><span></span></p></div>`) {
             setShowError(true);
@@ -334,7 +334,6 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                 setWaitSave(true)
             }
         }
-        debugger
 
         dispatch(manageConfirmation({
             visible: true,

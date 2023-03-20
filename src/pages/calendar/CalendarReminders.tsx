@@ -223,7 +223,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
             setBodyMessageCancelHSM('');
             setHsmCancelVariables({})
             setValue('canceltemplateidhsm', 0);
-            setValue('reminderhsmcommunicationchannelid', 0);
+            setValue('cancelcommunicationchannelid', 0);
         }
     }
     
@@ -831,11 +831,6 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                         <div className="row-zyx" >
 
                             <FieldSelect
-                                fregister={{
-                                    ...register(`canceltype`, {
-                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                    })
-                                }}
                                 label={t(langKeys.notificationtype)}
                                 className="col-6"
                                 valueDefault={getValues("canceltype")}
@@ -907,9 +902,9 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                         <FieldSelect
                                             label={t(langKeys.communicationchannel)}
                                             className="col-12"
-                                            valueDefault={getValues('reminderhsmcommunicationchannelid')}
-                                            error={errors?.reminderhsmcommunicationchannelid?.message}
-                                            onChange={(value) => setValue('reminderhsmcommunicationchannelid', value?.communicationchannelid || 0)}
+                                            valueDefault={getValues('cancelcommunicationchannelid')}
+                                            error={errors?.cancelcommunicationchannelid?.message}
+                                            onChange={(value) => setValue('cancelcommunicationchannelid', value?.communicationchannelid || 0)}
                                             data={dataChannels.filter(x => x.type.startsWith('WHA'))}
                                             optionDesc="communicationchanneldesc"
                                             optionValue="communicationchannelid"

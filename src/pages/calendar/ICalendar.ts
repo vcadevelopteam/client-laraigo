@@ -45,6 +45,7 @@ export type ICalendarFormFields = {
     emailtemplateid: number,
     emailtemplatename: string,
     canceltype: string,
+    cancelcommunicationchannelid: number,
     canceltemplateidemail: any,
     cancelemailtemplatename: any,
     canceltemplateidhsm: any,
