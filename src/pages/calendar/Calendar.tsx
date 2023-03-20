@@ -138,12 +138,16 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
     const [hsmVariables, setHsmVariables] = useState<any>({});
     const [emailCancelVariables, setEmailCancelVariables] = useState<any>({});
     const [hsmCancelVariables, setHsmCancelVariables] = useState<any>({});
+    const [hsmRescheduleVariables, setHsmRescheduleVariables] = useState<any>({});
+    const [emailRescheduleVariables, setEmailRescheduleVariables] = useState<any>({});
     const [bodyMessage, setBodyMessage] = useState(dataTemplates.filter(x => x.id === (row?.messagetemplateid || ""))[0]?.body || "");
     const [bodyMessageEmail, setBodyMessageEmail] = useState(dataTemplates.filter(x => x.id === (row?.messagetemplateidemail || ""))[0]?.body || "");
     const [bodyMessageReminderEmail, setBodyMessageReminderEmail] = useState(dataTemplates.filter(x => x.id === (row?.remindermailtemplateid || ""))[0]?.body || "");
     const [bodyMessageReminderHSM, setBodyMessageReminderHSM] = useState(dataTemplates.filter(x => x.id === (row?.reminderhsmtemplateid || ""))[0]?.body || "");
     const [bodyMessageCancelEmail, setBodyMessageCancelEmail] = useState(dataTemplates.filter(x => x.id === (row?.canceltemplateidemail || ""))[0]?.body || "");
     const [bodyMessageCancelHSM, setBodyMessageCancelHSM] = useState(dataTemplates.filter(x => x.id === (row?.canceltemplateidhsm || ""))[0]?.body || "");
+    const [bodyMessageRescheduleHSM, setBodyMessageRescheduleHSM] = useState(dataTemplates.filter(x => x.id === (row?.rescheduletemplateidhsm || ""))[0]?.body || "");
+    const [bodyMessageRescheduleEmail, setBodyMessageRescheduleEmail] = useState(dataTemplates.filter(x => x.id === (row?.rescheduletemplateidemail || ""))[0]?.body || "");
     const user = useSelector(state => state.login.validateToken.user);
 
     // Tab Connections
@@ -190,6 +194,11 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
             canceltype: row?.canceltype || "",
             canceltemplateidemail: row?.canceltemplateidemail || "",
             canceltemplateidhsm: row?.canceltemplateidhsm || "",
+            
+            reschedulecommunicationchannelid: row?.reschedulecommunicationchannelid || 0,
+            rescheduletemplateidhsm: row?.rescheduletemplateidhsm || "",
+            rescheduletype: row?.rescheduletype || "",
+            rescheduletemplateidemail: row?.rescheduletemplateidemail || "",
         }
     });
 
@@ -216,7 +225,10 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
         register('canceltemplateidhsm', { validate: (value) => !getValues("canceltype").includes("HSM") ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
         register('canceltemplateidemail', { validate: (value) => !getValues("canceltype").includes("EMAIL") ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
         register('remindertype', { validate: (value) => getValues("statusreminder") !== "ACTIVO" ? true : (Boolean(value && value.length) || String(t(langKeys.field_required))) });
-        register('canceltype');
+        register('reschedulecommunicationchannelid', { validate: (value) => !getValues("rescheduletype").includes("HSM") ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
+        register('rescheduletemplateidhsm', { validate: (value) => !getValues("rescheduletype").includes("HSM") ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
+        register('rescheduletemplateidemail', { validate: (value) => !getValues("rescheduletype").includes("EMAIL") ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
+        register('rescheduletype');
         /*register('statusreminder', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });*/
     }, [register]);
 
@@ -261,7 +273,9 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
             setEmailVariables(getvariableValues(row?.remindermailtemplateid, row.remindermailmessage))
             setHsmVariables(getvariableValues(row?.reminderhsmtemplateid, row.reminderhsmmessage))
             setEmailCancelVariables(getvariableValues(row?.canceltemplateidemail , row.cancelnotificationemail))
+            setEmailRescheduleVariables(getvariableValues(row?.rescheduletemplateidemail , row.reschedulenotificationemail))
             setHsmCancelVariables(getvariableValues(row?.canceltemplateidhsm, row.cancelnotificationhsm))
+            setHsmRescheduleVariables(getvariableValues(row?.rescheduletemplateidhsm, row.reschedulenotificationhsm))
             if (row?.credentialsdate) {
                 dispatch(calendarGoogleValidate({ id: row?.calendareventid }))
                 setWaitGoogleValidate(true)
@@ -323,6 +337,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                     reminderhsmmessage: replaceVariables(hsmVariables, bodyMessageReminderHSM),
                     cancelnotificationemail: replaceVariables(emailCancelVariables, bodyMessageCancelEmail),
                     cancelnotificationhsm: replaceVariables(hsmCancelVariables, bodyMessageCancelHSM),
+                    reschedulenotificationhsm: replaceVariables(hsmRescheduleVariables, bodyMessageRescheduleHSM),
+                    reschedulenotificationemail: replaceVariables(emailRescheduleVariables, bodyMessageRescheduleEmail),
                     daterange: dateinterval,
                     startdate: (dateinterval === "DAYS") ? new Date(new Date().setHours(10,0,0,0)).toISOString(): dateRangeCreateDate.startDate,
                     enddate: (dateinterval === "DAYS") ? new Date(new Date().setHours(10,0,0,0) + diffDays * 86400000) : dateRangeCreateDate.endDate,
@@ -501,6 +517,15 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                     setHsmCancelVariables={setHsmCancelVariables}
                     bodyMessageCancelHSM={bodyMessageCancelHSM}
                     setBodyMessageCancelHSM={setBodyMessageCancelHSM}
+                    
+                    hsmRescheduleVariables={hsmRescheduleVariables}
+                    setHsmRescheduleVariables={setHsmRescheduleVariables}
+                    bodyMessageRescheduleHSM={bodyMessageRescheduleHSM}
+                    setBodyMessageRescheduleHSM={setBodyMessageRescheduleHSM}
+                    emailRescheduleVariables={emailRescheduleVariables}
+                    setEmailRescheduleVariables={setEmailRescheduleVariables}
+                    bodyMessageRescheduleEmail={bodyMessageRescheduleEmail}
+                    setBodyMessageRescheduleEmail={setBodyMessageRescheduleEmail}
                     />
             </AntTabPanel>
             {operation === "EDIT" &&

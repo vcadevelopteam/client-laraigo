@@ -50,4 +50,12 @@ export type ICalendarFormFields = {
     cancelemailtemplatename: any,
     canceltemplateidhsm: any,
     cancelhsmtemplatename: any,
+    rescheduletype: string,
+    reschedulecommunicationchannelid: number,
+    rescheduletemplateidemail: any,
+    rescheduleemailtemplatename: any,
+    reschedulenotificationemail: any,
+    rescheduletemplateidhsm: any,
+    reschedulenotificationhsm: any,
+    reschedulehsmtemplatename: any,
 }
