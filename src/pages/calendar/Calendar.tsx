@@ -192,13 +192,13 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
             
             cancelcommunicationchannelid: row?.cancelcommunicationchannelid || 0,
             canceltype: row?.canceltype || "",
-            canceltemplateidemail: row?.canceltemplateidemail || "",
-            canceltemplateidhsm: row?.canceltemplateidhsm || "",
+            canceltemplateidemail: row?.canceltemplateidemail || 0,
+            canceltemplateidhsm: row?.canceltemplateidhsm || 0,
             
             reschedulecommunicationchannelid: row?.reschedulecommunicationchannelid || 0,
-            rescheduletemplateidhsm: row?.rescheduletemplateidhsm || "",
+            rescheduletemplateidhsm: row?.rescheduletemplateidhsm || 0,
             rescheduletype: row?.rescheduletype || "",
-            rescheduletemplateidemail: row?.rescheduletemplateidemail || "",
+            rescheduletemplateidemail: row?.rescheduletemplateidemail || 0,
         }
     });
 
