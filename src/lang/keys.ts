@@ -2241,6 +2241,8 @@ export const langKeys = {
   report_loginhistory_status: 'report_loginhistory_status',
   report_loginhistory_status_help: 'report_loginhistory_status_help',
   report_loginhistory_type: 'report_loginhistory_type',
+  report_loginhistory_motivedescription: 'report_loginhistory_motivedescription',
+  report_loginhistory_motivedescription_help: 'report_loginhistory_motivedescription_help',
 
   report_inputretry: 'report_inputretry',
   report_inputretry_ticketnum: 'report_inputretry_ticketnum',
