@@ -630,7 +630,8 @@ const ReportInvoice: FC = () => {
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     const column = props.cell.column.id;
-                    return <span style={{ color: row[`color_${i + 1}`] }}>{formatCurrencyNoDecimals(row[column])}</span>
+                    let color = row[`color_${i + 1}`] || "gray"
+                    return <span style={{ color: color }}>{formatCurrencyNoDecimals(row[column])}</span>
                 },
                 Footer: (props: any) => {
                     const total = React.useMemo(
