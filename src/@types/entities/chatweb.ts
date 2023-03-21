@@ -103,4 +103,12 @@ export interface IChatWebAddExtra {
     customjs: string;
     botnameenabled: boolean;
     botnametext: string;
+    withBorder?: boolean;
+    withHour?: boolean;
+    iconColorActive?: string;
+    iconColorDisabled?: string;
+    inputTextSize?: number;
+    inputTextWeight?: number;
+    chatTextSize?: number;
+    chatTextWeight?: number;
 }
