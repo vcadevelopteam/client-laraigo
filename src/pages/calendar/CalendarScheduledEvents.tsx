@@ -220,6 +220,7 @@ const DialogCancelBooking: React.FC<{
     const [waitSave, setWaitSave] = useState(false);
     const classes = useStyles();
     const saveRes = useSelector(state =>  state.main.mainEventBooking);
+    const user = useSelector(state => state.login.validateToken.user);
     const { register, setValue, getValues, reset, trigger } = useForm();
 
     useEffect(() => {
@@ -257,7 +258,19 @@ const DialogCancelBooking: React.FC<{
                     calendareventid: event.calendareventid,
                     id: booking?.calendarbookingid,
                     cancelcomment: data.comment || "",
+                    phone: booking?.personcontact||"",
+                    name: booking?.personname,
+                    email: booking?.personmail||"",
+                    canceltype: event?.canceltype,
+                    corpid: event?.corpid,
+                    orgid: event?.orgid,
+                    username: user?.usr,
+                    userid: user?.userid,
+                    otros: Object.keys(event).reduce((acc:any,x:any)=>[...acc,{name:x, text: String(event[x])}],[])
                 }
+                console.log(booking)
+                console.log(data)
+                console.log(event)
                 dispatch(getCancelEventBooking(calendarBookingCancel(datat)));
                 setValue("comment", "") 
                 setWaitSave(true);
