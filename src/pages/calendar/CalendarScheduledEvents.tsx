@@ -10,7 +10,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { execute, getCollectionAux, resetMainAux } from 'store/main/actions';
+import { execute, getCancelEventBooking, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import { Box, IconButton, ListItemIcon, Menu, MenuItem } from '@material-ui/core';
 import { Range } from 'react-date-range';
@@ -219,7 +219,7 @@ const DialogCancelBooking: React.FC<{
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
     const classes = useStyles();
-    const saveRes = useSelector(state => state.main.execute);
+    const saveRes = useSelector(state =>  state.main.mainEventBooking);
     const { register, setValue, getValues, reset, trigger } = useForm();
 
     useEffect(() => {
@@ -258,7 +258,7 @@ const DialogCancelBooking: React.FC<{
                     id: booking?.calendarbookingid,
                     cancelcomment: data.comment || "",
                 }
-                dispatch(execute(calendarBookingCancel(datat)));
+                dispatch(getCancelEventBooking(calendarBookingCancel(datat)));
                 setValue("comment", "") 
                 setWaitSave(true);
                 dispatch(showBackdrop(true));
