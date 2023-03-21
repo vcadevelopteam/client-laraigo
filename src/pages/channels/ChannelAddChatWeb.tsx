@@ -1129,14 +1129,30 @@ const TabPanelExtras: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
     const [uploadLocation, setUploadLocation] = useState(getValues('extra.uploadlocation'));
     const [reloadChat, setReloadChat] = useState(getValues('extra.reloadchat'));
     const [poweredBy, setPoweredBy] = useState(getValues('extra.poweredby'));
-
+    
     const [persistentInput, setPersistentInput] = useState(getValues('extra.persistentinput'));
     const [abandonEvent, setAbandonEvent] = useState(getValues('extra.abandonevent'));
     const [alertSound, setAlertSound] = useState(getValues('extra.alertsound'));
     const [formHistory, setFormHistory] = useState(getValues('extra.formhistory'));
     const [enableMetadata, setEnableMetadata] = useState(getValues('extra.enablemetadata'));
-
+    
     const [enableBotName, setEnableBotName] = useState(getValues('extra.botnameenabled'));
+    const [withBorder, setWithBorder] = useState(getValues('extra.withBorder'));
+    const [withHour, setWithHour] = useState(getValues('extra.withHour'));
+
+    const [iconColorActive, setIconColorActive] = useState(getValues('extra.iconColorActive'));
+    const [iconColorDisabled, setIconColorDisabled] = useState(getValues('extra.iconColorDisabled'));
+
+    
+    const handleIconColorActiveChange: ColorChangeHandler = (e) => {
+        setIconColorActive(e.hex);
+        setValue('extra.iconColorActive', e.hex);
+    }
+
+    const handleIconColorDisabledChange: ColorChangeHandler = (e) => {
+        setIconColorDisabled(e.hex);
+        setValue('extra.iconColorDisabled', e.hex);
+    }
 
     const handleUploadFileChange = (checked: boolean) => {
         setUploadFile(checked);
@@ -1171,6 +1187,15 @@ const TabPanelExtras: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
     const handlePoweredByChange = (checked: boolean) => {
         setPoweredBy(checked);
         setValue('extra.poweredby', checked);
+    }
+    
+    const handleWithBorderChange = (checked: boolean) => {
+        setWithBorder(checked);
+        setValue('extra.withBorder', checked);
+    }
+    const handleWithHourChange = (checked: boolean) => {
+        setWithHour(checked);
+        setValue('extra.withHour', checked);
     }
 
     const handlePersistentInputChange = (checked: boolean) => {
@@ -1419,6 +1444,109 @@ const TabPanelExtras: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                     onChange={e => setValue('extra.botnametext', e.target.value)}
                 />
             </Grid>
+            <Divider style={{ margin: '22px 0 38px 0' }} />
+            
+            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}  style={{padding: "0 8px"}}>
+                <Grid container direction="row">
+                    <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
+                        <Grid container direction="row">
+                            <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
+                                <label className={classes.text}>Border</label>
+                            </Grid>
+                            <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
+                                <IOSSwitch checked={withBorder} onChange={(_, v) => handleWithBorderChange(v)} />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
+                        <Grid container direction="row">
+                            <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
+                                <label className={classes.text}>Es necesario las horas</label>
+                            </Grid>
+                            <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
+                                <IOSSwitch checked={withHour} onChange={(_, v) => handleWithHourChange(v)} />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
+            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                <Grid container direction="row">
+                    <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                        <Grid container direction="column">
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                <Grid container direction="row">
+                                    <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
+                                        <label className={classes.text}>Icono de color activo</label>
+                                    </Grid>
+                                    <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
+                                        <ColorInput hex={iconColorActive||"#fff"} onChange={handleIconColorActiveChange} />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                        <Grid container direction="column">
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                <Grid container direction="row">
+                                    <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
+                                        <label className={classes.text}>Icono de color disabled</label>
+                                    </Grid>
+                                    <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
+                                        <ColorInput hex={iconColorDisabled||"#fff"} onChange={handleIconColorDisabledChange} />
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
+            <Grid container direction="row">
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6} style={{padding:8}}>
+                    <TextField
+                        variant="outlined"
+                        placeholder="Tamaño de las letras de cliente/bot"
+                        fullWidth
+                        type='number'
+                        defaultValue={getValues('extra.inputTextSize')}
+                        onChange={e => setValue('extra.inputTextSize', Number(e.target.value))}
+                    />
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6} style={{padding:8}}>
+                    <TextField
+                        variant="outlined"
+                        placeholder="Estilo de las letras de cliente/bot"
+                        fullWidth
+                        type='number'
+                        defaultValue={getValues('extra.inputTextWeight')}
+                        onChange={e => setValue('extra.inputTextWeight', Number(e.target.value))}
+                    />
+                </Grid>
+            </Grid>
+            
+            <Grid container direction="row">
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6} style={{padding:8}}>
+                    <TextField
+                        variant="outlined"
+                        placeholder="Tamaño de las letras del input de texto"
+                        fullWidth
+                        type='number'
+                        defaultValue={getValues('extra.chatTextSize')}
+                        onChange={e => setValue('extra.chatTextSize', Number(e.target.value))}
+                    />
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6} style={{padding:8}}>
+                    <TextField
+                        variant="outlined"
+                        placeholder="Estilo de las letras del input de texto"
+                        fullWidth
+                        type='number'
+                        defaultValue={getValues('extra.chatTextWeight')}
+                        onChange={e => setValue('extra.chatTextWeight', Number(e.target.value))}
+                    />
+                </Grid>
+            </Grid>
         </Grid>
     );
 }
@@ -1621,6 +1749,8 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
                 uploadvideo: true,
                 reloadchat: true,
                 poweredby: true,
+                withBorder: true,
+                withHour: true,
 
                 persistentinput: true,
                 abandonevent: true,
@@ -1630,9 +1760,15 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
 
                 customcss: "",
                 customjs: "",
+                iconColorActive: "#fff",
+                iconColorDisabled: "#fff",
 
                 botnameenabled: true,
                 botnametext: "",
+                inputTextSize: 20,
+                inputTextWeight: 20,
+                chatTextSize: 20,
+                chatTextWeight: 20,
             },
         }
     });
@@ -1659,6 +1795,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
 
     const handleSubmit = (name: string, auto: boolean, hexIconColor: string) => {
         const values = form.getValues();
+        debugger
         if (!channel) {
             const body = getInsertChatwebChannel(name, auto, hexIconColor, values);
             dispatch(insertChannel2(body));
