@@ -112,7 +112,6 @@ export const CancelEvent: FC = () => {
         if(waitFind){
             if(!mainResult.loading){
                 if(!mainResult.error){
-                    debugger
                     if(mainResult.data.length>0){
                         setData({
                             hourend: mainResult?.data?.[0]?.hourend||"",
@@ -162,26 +161,18 @@ export const CancelEvent: FC = () => {
     }, [mainResult, waitSave])
 
     const onSubmit = async () => {
-        debugger
         if(new Date(data?.monthdate + " " + data?.hourstart).getTime() >= new Date().getTime()){
+            let extradata= mainResult.data[0]
             const datat = {
                 corpid, orgid,
                 calendareventid: calendareventid,
                 id: data?.calendarbookingid,
                 cancelcomment: cancelcomment||"",
-
-                /*calendareventid: event.calendareventid,
-                id: booking?.calendarbookingid,
-                cancelcomment: data.comment || "",
-                phone: booking?.personcontact||"",
-                name: booking?.personname,
-                email: booking?.personmail||"",
-                canceltype: event?.canceltype,
-                corpid: event?.corpid,
-                orgid: event?.orgid,
-                username: user?.usr,
-                userid: user?.userid,
-                otros: Object.keys(event).reduce((acc:any,x:any)=>[...acc,{name:x, text: String(event[x])}],[])*/
+                phone: data?.personcontact||"",
+                name: data?.personname,
+                email: extradata?.personmail||"",
+                canceltype: extradata?.canceltype,
+                otros: Object.keys(extradata).reduce((acc:any,x:any)=>[...acc,{name:x, text: String(extradata[x])}],[])
             }
             dispatch(getCancelEventBooking(calendarBookingCancel2(datat)));
             setWaitSave(true);
@@ -253,6 +244,7 @@ export const CancelEvent: FC = () => {
                                     variant="contained"
                                     color="primary"
                                     onClick={onSubmit}
+                                    disabled={waitSave}
                                 >
                                     {t(langKeys.cancelevent)}
                                 </Button>
