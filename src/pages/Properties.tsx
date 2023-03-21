@@ -13,7 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import { cleanMemoryTable, setMemoryTable } from 'store/main/actions';
 import { Box, CircularProgress } from '@material-ui/core';
 import { Dictionary, MultiData } from '@types';
-import { FieldEdit, FieldEditArray, FieldSelect, FieldView, TemplateBreadcrumbs, TemplateSwitchArray, TitleDetail } from 'components';
+import { FieldEdit, FieldEditArray, FieldEditMulti, FieldSelect, FieldView, TemplateBreadcrumbs, TemplateSwitchArray, TitleDetail } from 'components';
 
 import { getDistinctPropertySel, getPropertySel, getValuesFromDomain, insProperty, getCorpSel, getOrgSel, getChannelSel } from 'common/helpers';
 import { getCollection, getCollectionAux, getMultiCollection, getMultiCollectionAux, resetMain, resetMainAux, execute, getCollectionAux2, resetMainAux2, getMultiCollectionAux2 } from 'store/main/actions';
@@ -727,7 +727,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
     const dispatch = useDispatch();
 
     var valueInput = null;
-
+    
     if (row) {
         switch (row?.inputtype) {
             case 'BOOL':
@@ -827,7 +827,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
             case 'TEXT':
                 if (edit) {
                     valueInput =
-                        <FieldEdit
+                        <FieldEditMulti
                             className={classes.mb2}
                             error={errors?.table?.[index]?.propertyvalue?.message}
                             /*fregister={{
@@ -837,6 +837,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                                     }
                                 })
                             }}*/
+                            rows={1}
                             label={t(langKeys.value)}
                             onChange={(value) => setValue(`table.${index}.propertyvalue`, value)}
                             valueDefault={row ? (row.propertyvalue || '') : ''}
