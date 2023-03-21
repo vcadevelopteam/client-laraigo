@@ -3139,7 +3139,7 @@ export const selBookingCalendar = (startdate: string, enddate: string, calendare
     },
 });
 
-export const calendarBookingCancel = ({ calendareventid, id, phone, name, username, email, canceltype, cancelcomment, corpid, orgid, userid, agentid, otros }: Dictionary) => ({
+export const calendarBookingCancel = ({ calendareventid, id, phone, name, username, email, canceltype, cancelcomment, corpid, orgid, userid, otros }: Dictionary) => ({
     method: "UFN_CALENDARBOOKING_CANCEL",
     key: "UFN_CALENDARBOOKING_CANCEL",
     phone,
@@ -3158,15 +3158,23 @@ export const calendarBookingCancel = ({ calendareventid, id, phone, name, userna
         otros,
     },
 });
-export const calendarBookingCancel2 = ({ corpid, orgid, calendareventid, id, cancelcomment }: Dictionary) => ({
+export const calendarBookingCancel2 = ({ calendareventid, id, phone, name, email, canceltype, cancelcomment, corpid, orgid, otros }: Dictionary) => ({
     method: "UFN_CALENDARBOOKING_CANCEL",
     key: "UFN_CALENDARBOOKING_CANCEL",
+    phone,
+    name,
+    email,
     parameters: {
-        corpid, orgid,
+        canceltype,
         calendareventid,
         id,
         cancelcomment,
+        corpid,
+        orgid,
         username: "",
+        userid:0,
+        agentid:"",
+        otros,
     },
 });
 export const calendarBookingSelOne = ({ corpid, orgid, calendareventid, id }: Dictionary) => ({

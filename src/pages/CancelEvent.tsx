@@ -112,6 +112,7 @@ export const CancelEvent: FC = () => {
         if(waitFind){
             if(!mainResult.loading){
                 if(!mainResult.error){
+                    debugger
                     if(mainResult.data.length>0){
                         setData({
                             hourend: mainResult?.data?.[0]?.hourend||"",
@@ -168,6 +169,19 @@ export const CancelEvent: FC = () => {
                 calendareventid: calendareventid,
                 id: data?.calendarbookingid,
                 cancelcomment: cancelcomment||"",
+
+                /*calendareventid: event.calendareventid,
+                id: booking?.calendarbookingid,
+                cancelcomment: data.comment || "",
+                phone: booking?.personcontact||"",
+                name: booking?.personname,
+                email: booking?.personmail||"",
+                canceltype: event?.canceltype,
+                corpid: event?.corpid,
+                orgid: event?.orgid,
+                username: user?.usr,
+                userid: user?.userid,
+                otros: Object.keys(event).reduce((acc:any,x:any)=>[...acc,{name:x, text: String(event[x])}],[])*/
             }
             dispatch(getCancelEventBooking(calendarBookingCancel2(datat)));
             setWaitSave(true);
