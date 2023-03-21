@@ -208,9 +208,9 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
         register('location', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('status', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('notificationtype');
-        register('hsmtemplateid', { validate: (value) => getValues("notificationtype").includes("EMAIL") ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
-        register('emailtemplateid', { validate: (value) => !getValues("notificationtype").includes("HSMEMAIL") ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
-        register('communicationchannelid', { validate: (value) => getValues("notificationtype").includes("HSM") ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
+        register('hsmtemplateid', { validate: (value) => getValues("notificationtype").includes("HSM") ? (Boolean(value && value > 0) || String(t(langKeys.field_required))): true });
+        register('emailtemplateid', { validate: (value) => getValues("notificationtype").includes("HSMEMAIL") ? (Boolean(value && value > 0) || String(t(langKeys.field_required))): true });
+        register('communicationchannelid', { validate: (value) => getValues("notificationtype").includes("HSM") ? (Boolean(value && value > 0) || String(t(langKeys.field_required))): true });
         register('durationtype', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('duration', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.field_required)) });
         register('maximumcapacity', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.greaterthanzero)) });
