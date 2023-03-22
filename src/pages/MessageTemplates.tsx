@@ -1077,7 +1077,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     register("footer", { validate: (value) => value || true });
                     register("header", { validate: (value) => value || true });
                 } else {
-                    register("body", { validate: (value) => value || true });
+                    register("body", {
+                        validate: (value) => (value && value.length) || t(langKeys.field_required),
+                    });
                     register("footer", { validate: (value) => value || true });
                     register("header", {
                         validate: (value) => (value && value.length) || t(langKeys.field_required),
@@ -1155,7 +1157,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 setValue("body", "");
                 setValue("namespace", "");
 
-                register("body", { validate: (value) => value || true });
+                register("body", {
+                    validate: (value) => (value && value.length) || t(langKeys.field_required),
+                });
                 register("footer", { validate: (value) => value || true });
                 register("header", {
                     validate: (value) => (value && value.length) || t(langKeys.field_required),
