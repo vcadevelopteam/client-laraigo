@@ -159,15 +159,32 @@ export const CancelEvent: FC = () => {
             }
         }
     }, [mainResult, waitSave])
-
+    
     const onSubmit = async () => {
-        debugger
         if(new Date(data?.monthdate + " " + data?.hourstart).getTime() >= new Date().getTime()){
+            let extradata= mainResult.data[0]
             const datat = {
                 corpid, orgid,
                 calendareventid: calendareventid,
                 id: data?.calendarbookingid,
                 cancelcomment: cancelcomment||"",
+                phone: data?.personcontact||"",
+                name: data?.personname,
+                email: extradata?.personmail||"",
+                canceltype: extradata?.canceltype,
+                otros: [
+                    { name: "eventname", "text": extradata.name },
+                    { name: "eventlocation", "text": extradata.location },
+                    { name: "eventlink", "text": extradata.eventlink },
+                    { name: "eventcode", "text": extradata.code },
+                    { name: "monthdate", "text": extradata.monthdate},
+                    { name: "hourstart", "text": extradata.hourstart},
+                    { name: "hourend", "text": extradata.hourend},
+                    { name: "personname", "text": extradata.personname},
+                    { name: "personcontact", "text": extradata.personcontact},
+                    { name: "personmail", "text": extradata.personmail }
+                ]
+                // otros: Object.keys(extradata).reduce((acc:any,x:any)=>[...acc,{name:x, text: String(extradata[x])}],[])
             }
             dispatch(getCancelEventBooking(calendarBookingCancel2(datat)));
             setWaitSave(true);
@@ -239,6 +256,7 @@ export const CancelEvent: FC = () => {
                                     variant="contained"
                                     color="primary"
                                     onClick={onSubmit}
+                                    disabled={waitSave}
                                 >
                                     {t(langKeys.cancelevent)}
                                 </Button>

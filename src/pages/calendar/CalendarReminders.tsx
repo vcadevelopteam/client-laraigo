@@ -558,7 +558,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                         data={[
                                             { desc: "HSM", val: "HSM" },
                                             { desc: t(langKeys.email), val: "EMAIL" },
-                                            { desc: `HSM + ${t(langKeys.email)}`, val: "EMAIL/HSM" },
+                                            { desc: `HSM + ${t(langKeys.email)}`, val: "HSMEMAIL" },
                                         ]}
                                         optionDesc="desc"
                                         optionValue="val"
@@ -749,7 +749,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                 data={[
                                     { desc: "HSM", val: "HSM" },
                                     { desc: t(langKeys.email), val: "EMAIL" },
-                                    { desc: `HSM + ${t(langKeys.email)}`, val: "EMAIL/HSM" },
+                                    { desc: `HSM + ${t(langKeys.email)}`, val: "HSMEMAIL" },
                                 ]}
                                 optionDesc="desc"
                                 optionValue="val"
@@ -905,7 +905,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                 data={[
                                     { desc: "HSM", val: "HSM" },
                                     { desc: t(langKeys.email), val: "EMAIL" },
-                                    { desc: `HSM + ${t(langKeys.email)}`, val: "EMAIL/HSM" },
+                                    { desc: `HSM + ${t(langKeys.email)}`, val: "HSMEMAIL" },
                                 ]}
                                 optionDesc="desc"
                                 optionValue="val"
