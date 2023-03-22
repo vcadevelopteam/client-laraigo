@@ -123,7 +123,7 @@ const DraggablesCategories : FC<{column:any, index:number, handleDelete:(lead: I
                             key={item.leadid}
                             draggableId={item.leadid.toString()}
                             index={index}
-                            isDragDisabled={role==="VISOR SD"}
+                            isDragDisabled={true}
                           >
                             {(provided, snapshot) => {
                               return(

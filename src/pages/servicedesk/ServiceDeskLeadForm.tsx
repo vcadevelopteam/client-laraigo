@@ -12,7 +12,7 @@ import PhoneIcon from '@material-ui/icons/Phone';
 import { getDomainsByTypename } from 'store/person/actions';
 import {
     adviserSel, getPaginatedPersonLead as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSDSel, leadHistorySel,
-    leadHistoryIns, getLeadsSDSel, insSDLead, getSLASel, insArchiveServiceDesk, convertLocalDate
+    leadHistoryIns, getLeadsSDSel, insSDLead, getSLASel, convertLocalDate
 } from 'common/helpers';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
@@ -420,6 +420,11 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
     const [openModal, setOpenModal] = useState(false);
 
     const [typeTemplate, setTypeTemplate] = useState<"HSM" | "SMS" | "MAIL">('MAIL');
+    const [phaseChange, setPhaseChange] = useState<any>({
+        columnid: null,
+        different:false,
+        registeredNote:false,
+    });
     const [extraTriggers, setExtraTriggers] = useState({
         phone: lead.value?.phone || '',
         email: lead.value?.email || '',
@@ -507,12 +512,15 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
 
     const onSubmit = async () => {
         const allOk = await trigger();
-        console.log(errors)
         if (allOk) {
             const data = getValues();
             if (!data.priority){
                 dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.needslaconfig) }))
-            } else{
+            } 
+            else if(phaseChange.different && !phaseChange.registeredNote){
+                dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.warningnotestatechange) }))
+            }
+            else{
 
                 const callback = () => {
                     const lostPhase = phases.data.find(x => x.description.toLowerCase() === 'lost');
@@ -696,6 +704,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
 
                 feedback: '',
             });
+            setPhaseChange({...phaseChange, columnid: Number(lead?.value?.columnid)})
             registerFormFieldOptions();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -714,7 +723,6 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
     }, [advisers, t, dispatch]);
 
     useEffect(() => {
-        console.log(values)
         setExtraTriggers({
             email:values?.email || "",
             phone: values?.phone || ""
@@ -850,17 +858,6 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         }
     }, [updateLeadTagProcess, match.params.id, edit, t, dispatch]);
 
-    const handleCloseLead = useCallback(() => {
-        if (!lead.value) return;
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_close),
-            callback: () => dispatch(archiveLead(insArchiveServiceDesk(lead.value!))),
-        }))
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [lead, dispatch]);
-
     const handleUpdateLeadTags = useCallback((value: any, action: "NEWTAG" | "REMOVETAG") => {
         if (edit === false || !lead.value) return;
 
@@ -978,7 +975,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                             href={history.location.pathname}
                             onClick={(e) => e.preventDefault()}
                         >
-                            <Trans i18nKey={langKeys.opportunity} />
+                            <Trans i18nKey={langKeys.request} /> SD
                         </Link>
                     </Breadcrumbs>
                     <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
@@ -996,7 +993,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                         )}
                                     </div>
                                 ) :
-                                <Trans i18nKey={langKeys.newLead} />
+                                <><Trans i18nKey={langKeys.newrequest} /> SD</>
                             }
                         />
                         <div style={{ flexGrow: 1 }} />
@@ -1098,14 +1095,13 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     </label>
                                 </div>
                                 <FieldEdit
-                                    label={t(langKeys.reportdate)}
+                                    label={t(langKeys.userwhoreported)}
                                     className={classes.field}
-                                    type="datetime-local"
-                                    onChange={(value) => {
-                                        setValue('createdate', value);
+                                    valueDefault={values?.displayname}
+                                    disabled
+                                    InputProps={{
+                                        readOnly: true,
                                     }}
-                                    valueDefault={(getValues('createdate') as string)?.replace(' ', 'T')?.substring(0, 16)}
-                                    disabled={true}
                                 />
                                 <FieldEdit
                                     label={t(langKeys.business)}
@@ -1135,7 +1131,6 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                                             dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) })) 
                                                         }else {
                                                             dispatch(setModalCall(true))
-                                                            console.log(getValues("phone"))
                                                             dispatch(setPhoneNumber(getValues("phone")))
                                                         }}}>
                                                         <PhoneIcon />
@@ -1159,21 +1154,13 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     optionValue="domainvalue"
                                 />
                                 <FieldEdit
-                                    label={t(langKeys.date) + " SLA"}
+                                    label={t(langKeys.firstContactDate)}
                                     className={classes.field}
                                     onChange={(value) => {
-                                        setValue('sla_date', value);
+                                        // datetime formaT: yyyy-MM-ddTHH:mm
+                                        setValue('first_contact_date', value);
                                     }}
-                                    valueDefault={(convertLocalDate(lead.value?.sla_date||"").toLocaleString())}
-                                    disabled={true}
-                                />
-                                <FieldEdit
-                                    label={t(langKeys.dateofresolutiondeadline)}
-                                    className={classes.field}
-                                    onChange={(value) => {
-                                        setValue('resolution_deadline', value);
-                                    }}
-                                    valueDefault={(convertLocalDate(lead.value?.resolution_deadline||"").toLocaleString())}
+                                    valueDefault={(convertLocalDate(lead.value?.first_contact_date||"").toLocaleString())}
                                     disabled={true}
                                 />
                                 <FieldEdit
@@ -1207,6 +1194,8 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     data={phasemenu}
                                     // data={phases.data}
                                     onChange={(e) => {
+                                        setPhaseChange({phaseChange, different: Number(e?.columnid || "0") !== phaseChange.columnid})
+                                        //phaseChange
                                         setValue('column_uuid', e?.column_uuid || "");
                                         setValue('columnid', Number(e?.columnid || "0"));
                                         setValues(prev => ({ ...prev })); // refrescar
@@ -1240,22 +1229,25 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     optionValue="domainvalue"
                                     onChange={(value) => setValue('type', value ? value.domainvalue : '')}
                                 />
-                                <div className={classes.field}>
-                                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">
-                                        {t(langKeys.userwhoreported)}
-                                    </Box>
-                                    <label>
-                                        {values?.displayname}
-                                    </label>
-                                </div>
+                                <FieldEdit
+                                    label={t(langKeys.reportdate)}
+                                    className={classes.field}
+                                    type="datetime-local"
+                                    onChange={(value) => {
+                                        setValue('createdate', value);
+                                    }}
+                                    valueDefault={(getValues('createdate') as string)?.replace(' ', 'T')?.substring(0, 16)}
+                                    disabled={true}
+                                />
                                 <FieldEdit
                                     label={t(langKeys.email)}
                                     className={classes.field}
                                     onChange={(value) => {setValue('email', value);setExtraTriggers({...extraTriggers, email: value || ''})}}
                                     valueDefault={getValues('email')}
                                     error={errors?.email?.message}
+                                    disabled
                                     InputProps={{
-                                        readOnly: isStatusClosed() || iSProcessLoading(),
+                                        readOnly: true,
                                     }}
                                 />
                                 <FieldSelect
@@ -1291,13 +1283,12 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     disabled={true}
                                 />
                                 <FieldEdit
-                                    label={t(langKeys.firstContactDate)}
+                                    label={t(langKeys.dateofresolutiondeadline)}
                                     className={classes.field}
                                     onChange={(value) => {
-                                        // datetime formaT: yyyy-MM-ddTHH:mm
-                                        setValue('first_contact_date', value);
+                                        setValue('resolution_deadline', value);
                                     }}
-                                    valueDefault={(convertLocalDate(lead.value?.first_contact_date||"").toLocaleString())}
+                                    valueDefault={(convertLocalDate(lead.value?.resolution_deadline||"").toLocaleString())}
                                     disabled={true}
                                 />
                                 <FieldMultiSelectFreeSolo
@@ -1379,6 +1370,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                         notes={edit ? leadNotes.data : getValues('notes')}
                         leadId={edit ? Number(match.params.id) : 0}
                         onSubmit={(newNote) => {
+                            setPhaseChange({...phaseChange, registeredNote: true})
                             if (edit) {
                                 const body = leadLogNotesIns(newNote);
                                 dispatch(saveLeadLogNote(body));
