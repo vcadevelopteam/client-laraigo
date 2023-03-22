@@ -219,7 +219,7 @@ const DialogCancelBooking: React.FC<{
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
     const classes = useStyles();
-    const saveRes = useSelector(state =>  state.main.mainEventBooking);
+    const saveRes = useSelector(state => state.main.mainEventBooking);
     const user = useSelector(state => state.login.validateToken.user);
     const { register, setValue, getValues, reset, trigger } = useForm();
 
@@ -258,26 +258,37 @@ const DialogCancelBooking: React.FC<{
                     calendareventid: event.calendareventid,
                     id: booking?.calendarbookingid,
                     cancelcomment: data.comment || "",
-                    phone: booking?.personcontact||"",
+                    phone: booking?.personcontact || "",
                     name: booking?.personname,
-                    email: booking?.personmail||"",
+                    email: booking?.personmail || "",
                     canceltype: event?.canceltype,
                     corpid: event?.corpid,
                     orgid: event?.orgid,
                     username: user?.usr,
                     userid: user?.userid,
-                    otros: Object.keys(event).reduce((acc:any,x:any)=>[...acc,{name:x, text: String(event[x])}],[])
+                    otros: [
+                        { name: "eventname", "text": event.name },
+                        { name: "eventlocation", "text": event.location },
+                        { name: "eventlink", "text": event.eventlink },
+                        { name: "eventcode", "text": event.code },
+                        { name: "monthdate", "text": booking?.monthdate},
+                        { name: "hourstart", "text": booking?.hourstart},
+                        { name: "hourend", "text": booking?.hourend},
+                        { name: "personname", "text": booking?.personname},
+                        { name: "personcontact", "text": booking?.personcontact},
+                        { name: "personmail", "text": booking?.personmail }
+                    ]
                 }
                 console.log(booking)
                 console.log(data)
                 console.log(event)
                 dispatch(getCancelEventBooking(calendarBookingCancel(datat)));
-                setValue("comment", "") 
+                setValue("comment", "")
                 setWaitSave(true);
                 dispatch(showBackdrop(true));
             }
         } else {
-            setValue("comment", "") 
+            setValue("comment", "")
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.cancelenventerror || "error_unexpected_error") }))
         }
     }
