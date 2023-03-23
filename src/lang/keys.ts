@@ -23,6 +23,7 @@ export const langKeys = {
   appointment_cancellation: "appointment_cancellation",
   downloadhtmlform: "downloadhtmlform",
   web_form: "web_form",
+  phasechange: "phasechange",
   ordernumber: "ordernumber",
   userwhoreported: "userwhoreported",
   reportdate: "reportdate",

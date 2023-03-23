@@ -44,7 +44,7 @@ import { sendHSM } from 'store/inbox/actions';
 import { setModalCall, setPhoneNumber } from 'store/voximplant/actions';
 import MailIcon from '@material-ui/icons/Mail';
 import DialogInteractions from 'components/inbox/DialogInteractions';
-import { archiveLead, getGroups, getImpact, getPriority, getSlaRules, getUrgency, resetGetGroups, resetGetImpact, resetGetPriority, resetGetSlaRules, resetGetUrgency } from 'store/servicedesk/actions';
+import { getCompany, getGroups, getImpact, getPriority, getSlaRules, getUrgency, resetGetCompany, resetGetGroups, resetGetImpact, resetGetPriority, resetGetSlaRules, resetGetUrgency } from 'store/servicedesk/actions';
 
 const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
 
@@ -409,6 +409,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
     const slarules = useSelector(state => state.servicedesk.slarules);
     const dataUrgency = useSelector(state => state.servicedesk.urgency);
     const dataImpact = useSelector(state => state.servicedesk.impact);
+    const dataCompany = useSelector(state => state.servicedesk.company);
     const dataPriority = useSelector(state => state.servicedesk.priority);
     const dataGroups = useSelector(state => state.servicedesk.groups);
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
@@ -418,13 +419,10 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
     const voxiConnection = useSelector(state => state.voximplant.connection);
     const userConnected = useSelector(state => state.inbox.userConnected);
     const [openModal, setOpenModal] = useState(false);
+    const [openModalChangePhase, setOpenModalChangePhase] = useState(false);
+    const [registeredChangedPhase, setregisteredChangedPhase] = useState(false);
 
     const [typeTemplate, setTypeTemplate] = useState<"HSM" | "SMS" | "MAIL">('MAIL');
-    const [phaseChange, setPhaseChange] = useState<any>({
-        columnid: null,
-        different:false,
-        registeredNote:false,
-    });
     const [extraTriggers, setExtraTriggers] = useState({
         phone: lead.value?.phone || '',
         email: lead.value?.email || '',
@@ -517,9 +515,6 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
             if (!data.priority){
                 dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.needslaconfig) }))
             } 
-            else if(phaseChange.different && !phaseChange.registeredNote){
-                dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.warningnotestatechange) }))
-            }
             else{
 
                 const callback = () => {
@@ -595,6 +590,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         dispatch(getUrgency(getValuesFromDomain('URGENCIA')));
         dispatch(getImpact(getValuesFromDomain('IMPACTO')));
         dispatch(getPriority(getValuesFromDomain('PRIORIDAD')));
+        dispatch(getCompany(getValuesFromDomain('EMPRESA')));
         
         return () => {
             dispatch(resetGetLead());
@@ -614,6 +610,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
             dispatch(resetGetUrgency());
             dispatch(resetGetImpact());
             dispatch(resetGetPriority());
+            dispatch(resetGetCompany());
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [edit, match.params.id, dispatch]);
@@ -704,7 +701,6 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
 
                 feedback: '',
             });
-            setPhaseChange({...phaseChange, columnid: Number(lead?.value?.columnid)})
             registerFormFieldOptions();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -822,6 +818,10 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                 show: true,
             }));
         } else if (saveNote.success) {
+            if(openModalChangePhase){
+                setOpenModalChangePhase(false);
+                setregisteredChangedPhase(true);
+            }
             dispatch(showSnackbar({
                 message: "Se registró la nota",
                 severity: "success",
@@ -1125,14 +1125,18 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                         <div style={{ display: (errors?.personcommunicationchannel?.message) ? 'inherit' : 'none', color: 'red', fontSize: '0.75rem' }}>{errors?.personcommunicationchannel?.message}</div>
                                     </div>)
                                 }
-                                <FieldEdit
+                                <FieldSelect
                                     label={t(langKeys.business)}
                                     className={classes.field}
+                                    valueDefault={getValues('company')}
                                     onChange={(value) => {
                                         setValue('company', value);
                                     }}
-                                    valueDefault={getValues('company')}
-                                    disabled={true}
+                                    error={errors?.impact?.message}
+                                    data={dataCompany.data}
+                                    disabled={edit}
+                                    optionDesc="domaindesc"
+                                    optionValue="domainvalue"
                                 />
                                 <PhoneFieldEdit
                                     value={"+" + getValues('phone')}
@@ -1216,8 +1220,8 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     data={phasemenu}
                                     // data={phases.data}
                                     onChange={(e) => {
-                                        setPhaseChange({phaseChange, different: Number(e?.columnid || "0") !== phaseChange.columnid})
                                         //phaseChange
+                                        setOpenModalChangePhase(edit && !registeredChangedPhase)
                                         setValue('column_uuid', e?.column_uuid || "");
                                         setValue('columnid', Number(e?.columnid || "0"));
                                         setValues(prev => ({ ...prev })); // refrescar
@@ -1258,7 +1262,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     onChange={(value) => {
                                         setValue('createdate', value);
                                     }}
-                                    valueDefault={(getValues('createdate') as string)?.replace(' ', 'T')?.substring(0, 16)}
+                                    valueDefault={(convertLocalDate(lead.value?.createdate||"").toLocaleString())}
                                     disabled={true}
                                 />
                                 <FieldEdit
@@ -1392,7 +1396,6 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                         notes={edit ? leadNotes.data : getValues('notes')}
                         leadId={edit ? Number(match.params.id) : 0}
                         onSubmit={(newNote) => {
-                            setPhaseChange({...phaseChange, registeredNote: true})
                             if (edit) {
                                 const body = leadLogNotesIns(newNote);
                                 dispatch(saveLeadLogNote(body));
@@ -1446,7 +1449,16 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                     openModal={openModal}
                     setOpenModal={setOpenModal}
                     ticket={rowSelected}
-                />    
+                />                  
+                <DialogChangePhase
+                    openModal={openModalChangePhase}
+                    leadId={edit ? Number(match.params.id) : 0}
+                    loading={saveNote.loading || leadNotes.loading}
+                    onSubmit={(newNote) => {
+                        const body = leadLogNotesIns(newNote);
+                        dispatch(saveLeadLogNote(body));
+                    }}
+                />
             </div>
         </MuiPickersUtilsProvider>
     );
@@ -1624,6 +1636,122 @@ interface TabPanelLogNoteProps {
     leadId: number;
     onSubmit?: (newNote: ICrmLeadNoteSave) => void;
     AdditionalButtons?: () => JSX.Element | null;
+}
+
+const DialogChangePhase: FC<{openModal:any, loading?:boolean, leadId: number, onSubmit?: (newNote: ICrmLeadNoteSave) => void}> =
+    ({openModal,loading, leadId, onSubmit})=>{
+    const { t } = useTranslation();
+    const classes = useTabPanelLogNoteStyles();
+    const [noteDescription, setNoteDescription] = useState("");
+    const [media, setMedia] = useState<File[] | null>(null);
+    const dispatch = useDispatch();
+
+    const deleteMediaFile = useCallback((fileToRemove: File) => {
+        setMedia(prev => prev?.filter(x => x !== fileToRemove) || null);
+    }, []);
+    
+    const onChangeMediaInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files) return;
+
+        const newFiles: File[] = [];
+        for (let i = 0; i < e.target.files.length; i++) {
+            newFiles.push(e.target.files[i]);
+        }
+
+        setMedia(prev => [...(prev || []), ...newFiles]);
+    }, []);
+    
+    const handleInputMedia = useCallback(() => {
+        const input = document.getElementById('noteMediaInput') as HTMLInputElement;
+        input.value = "";
+        input!.click();
+    }, []);
+
+    const handleSubmit = useCallback(() => {
+        const newNote: ICrmLeadNoteSave = {
+            leadid: leadId,
+            leadnotesid: 0,
+            description: noteDescription,
+            type: "NINGUNO",
+            status: "ACTIVO",
+            media,
+            username: null,
+            operation: "INSERT",
+        };
+        onSubmit?.(newNote);
+        handleCleanMediaInput();
+        setNoteDescription("");
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [noteDescription, media, dispatch]);
+    
+    const handleCleanMediaInput = () => {
+        if (media === null) return;
+        const input = document.getElementById('noteMediaInput') as HTMLInputElement;
+        input.value = "";
+        setMedia(null);
+    }
+
+    return <DialogZyx
+        open={openModal}
+        title={t(langKeys.phasechange)}
+        maxWidth="md"
+    >
+        <div className="row-zyx">
+            <div className={classes.row}>
+                <Avatar className={classes.avatar} />
+                <div style={{ width: '1em' }} />
+                <div className={classes.column}>
+                    <TextField
+                        placeholder={t(langKeys.logAnInternalNote)}
+                        minRows={4}
+                        fullWidth
+                        value={noteDescription}
+                        onChange={e => setNoteDescription(e.target.value)}
+                        disabled={loading}
+                    />
+                    <div style={{ height: 4 }} />
+                    {media && <FileCollectionPreview files={media} onCloseFile={deleteMediaFile} />}
+                    {media && <div style={{ height: 4 }} />}
+                    <input
+                        accept="file/*"
+                        style={{ display: 'none' }}
+                        id="noteMediaInput"
+                        type="file"
+                        onChange={onChangeMediaInput}
+                        multiple
+                    />
+                    <div className={classes.row}>
+                        <EmojiPickerZyx
+                            emojisIndexed={EMOJISINDEXED} 
+                            style={{ zIndex: 10 }}
+                            onSelect={e => setNoteDescription(prev => prev.concat(e.native))}
+                            icon={onClick => (
+                                <IconButton color="primary" onClick={onClick} disabled={loading}>
+                                    <Mood />
+                                </IconButton>
+                            )}
+                        />
+                        <div style={{ width: '0.5em' }} />
+                        <IconButton onClick={handleInputMedia} color="primary" disabled={loading}>
+                            <AttachFile />
+                        </IconButton>
+                    </div>
+                </div>
+            </div>
+            <div style={{ height: 12 }} />
+            <div>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSubmit}
+                    disabled={loading || (noteDescription.length === 0 && media === null)}
+                >
+                    {loading && <CircularProgress style={{ height: 28, width: 28, marginRight: '0.75em' }} />}
+                    Log
+                </Button>
+            </div>
+        </div>
+    </DialogZyx>
 }
 
 export const TabPanelLogNote: FC<TabPanelLogNoteProps> = ({ notes, loading, readOnly, leadId, onSubmit, AdditionalButtons }) => {

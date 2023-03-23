@@ -131,7 +131,7 @@ const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData,settype })
                     label={t(langKeys.business)} 
                     className="col-6"
                     onChange={(value) => setValue('company', value.map((o: Dictionary) => o.domainvalue).join())}
-                    valueDefault={row?.company || ""}
+                    valueDefault={getValues('company')}
                     error={errors?.company?.message}
                     data={dataSupplier}
                     optionDesc="domaindesc"

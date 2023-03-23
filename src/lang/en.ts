@@ -3246,6 +3246,7 @@ const translation: LangKeys = {
   app_intelligentmodels: "Intelligent models",
   app_sla: "Service Level Agreement",
   app_servicedesk: "Service Desk",
+  phasechange: "Phase change",
   keywordsandsinonyms: "Keywords and synonyms",
   brand: "Brand",
   pattern: "Pattern",

@@ -543,6 +543,7 @@ const translation: LangKeys = {
   quantitymeetsnot: "Cantidad no cumple",
   meetsnot: "No cumple",
   slaoptimum: "SLA Óptimo",
+  phasechange: "Cambio de fase",
   totalconversation: "Total conversaciones",
   conversationsanalyzed: "Conversaciones analizadas",
   informationTMO: "Información TMO",

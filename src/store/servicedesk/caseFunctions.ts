@@ -553,6 +553,36 @@ export const getPriorityReset = (state: IState): IState => ({
     priority: initialState.priority,
 });
 
+export const getCompany = (state: IState): IState => ({
+    ...state,
+    company: { ...state.company, loading: true, error: false },
+});
+
+export const getCompanySuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    company: {
+        data: action.payload.data || [],
+        loading: false,
+        error: false,
+    },
+});
+
+export const getCompanyFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    company: {
+        ...state.personTypeDomain,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'getCompanyFailure:error',
+        message: action.payload.message || 'Error al obtener el dominio EMPRESA',
+    },
+});
+
+export const getCompanyReset = (state: IState): IState => ({
+    ...state,
+    company: initialState.company,
+});
+
 
 export const getLeadTemplates = (state: IState): IState => ({
     ...state,
