@@ -21,6 +21,7 @@ export const langKeys = {
   orderlist: "orderlist",
   downloadhtmlform: "downloadhtmlform",
   web_form: "web_form",
+  phasechange: "phasechange",
   ordernumber: "ordernumber",
   userwhoreported: "userwhoreported",
   reportdate: "reportdate",
