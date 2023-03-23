@@ -123,7 +123,7 @@ const DraggablesCategories : FC<{column:any, index:number, handleDelete:(lead: I
                             key={item.leadid}
                             draggableId={item.leadid.toString()}
                             index={index}
-                            isDragDisabled={role==="VISOR SD"}
+                            isDragDisabled={true}
                           >
                             {(provided, snapshot) => {
                               return(
@@ -633,7 +633,8 @@ const ServiceDesk: FC = () => {
 
   const filtersElement = useMemo(() => (
     <>
-      <FieldSelect
+      {user?.roledesc !== "VISOR SD" &&
+        <FieldSelect
         variant="outlined"
         label={t(langKeys.business)}
         className={classes.filterComponent}//cambiar
@@ -643,7 +644,7 @@ const ServiceDesk: FC = () => {
         optionDesc="domaindesc"
         optionValue="domainvalue"
         loading={mainMulti.loading}
-      />
+      />}
       <FieldMultiSelect
         variant="outlined"
         label={t(langKeys.group)}
