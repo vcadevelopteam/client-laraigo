@@ -68,7 +68,7 @@ const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData,settype })
     const classes = useStyles();
     const { t } = useTranslation();
     const user = useSelector(state => state.login.validateToken.user);
-    const { setValue, getValues, formState: { errors }  } = form;
+    const { setValue, getValues, trigger, formState: { errors }  } = form;
     const [fieldFlags, setFieldFlags] = useState({
         showChannels: getValues('type')==="LARAIGO"
     });
@@ -111,6 +111,7 @@ const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData,settype })
                             setValue('usertmepercentmax', null)
                             setValue('productivitybyhour', null)
                         }
+                        trigger()
                     }}
                     error={errors?.type?.message}
                     data={dataTipoSLA}
@@ -126,11 +127,11 @@ const TabDetailSLA: React.FC<TabDetailProps> = ({ form,row, multiData,settype })
                     valueDefault={getValues('description')}
                     error={errors?.description?.message}
                 />
-                <FieldSelect
+                <FieldMultiSelect
                     label={t(langKeys.business)} 
                     className="col-6"
-                    valueDefault={getValues('company')}
-                    onChange={(value) => setValue('company', value? value.domainvalue: '')}
+                    onChange={(value) => setValue('company', value.map((o: Dictionary) => o.domainvalue).join())}
+                    valueDefault={row?.company || ""}
                     error={errors?.company?.message}
                     data={dataSupplier}
                     optionDesc="domaindesc"
@@ -759,7 +760,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row }, setViewSelected, m
         form.register('id');
         form.register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         form.register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        form.register('company');
+        form.register('company', { validate: (value) => form.getValues('type')==="SD"?(value && value.length) || t(langKeys.field_required):true });
         form.register('usergroup');
         form.register('criticality');
         form.register('service_times');
