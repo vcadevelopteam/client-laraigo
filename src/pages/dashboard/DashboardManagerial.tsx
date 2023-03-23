@@ -1127,7 +1127,7 @@ const DashboardManagerial: FC = () => {
             })
         }
         // eslint-disable-next-line
-    },[openDialogPerRequest,fieldToFilter])
+    },[fieldToFilter])
 
 
     useEffect(() => {
@@ -2241,7 +2241,7 @@ const DashboardManagerial: FC = () => {
                             <ResponsiveContainer width="100%" aspect={4.0 / 2.0} >
                                 <BarChart data={reschannels} margin={{ top: 20, right: 5, bottom: 5, left: 5 }}>
                                     <CartesianGrid stroke="#ccc" />
-                                    <XAxis domain={["",""]} angle={-60} interval={0} textAnchor="end" height={reschannels?.map((x:any)=> x.communicationchannel.length).length>0?Math.max(...reschannels?.map((x:any)=> x.communicationchannel.length))*8:10} type="category" dataKey="communicationchannel"><Label value={` ${t(langKeys.channel_plural)} `} offset={-5} position="insideBottom" /></XAxis>
+                                    <XAxis domain={["",""]} angle={-60} interval={0} textAnchor="end" height={reschannels?.map((x:any)=> ((x.communicationchannel||"").length)?.length||0)>0?Math.max(...reschannels?.map((x:any)=> x.communicationchannel.length))*8:10} type="category" dataKey="communicationchannel"><Label value={` ${t(langKeys.channel_plural)} `} offset={-5} position="insideBottom" /></XAxis>
                                     <YAxis ><Label value={` ${t(langKeys.conversationquantity)} `} angle={-90} offset={10} position="insideBottomLeft"/></YAxis>
                                     <RechartsTooltip />
                                     <Bar dataKey="tickets" fill="#8884d8" isAnimationActive={false}>
