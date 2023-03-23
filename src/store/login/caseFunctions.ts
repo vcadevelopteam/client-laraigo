@@ -121,6 +121,7 @@ export const changeOrganizationSuccess = (state: IState, action: IAction): IStat
         ...state,
         triggerChangeOrganization: {
             ...state.triggerChangeOrganization,
+            automaticConnection: action.payload.data.automaticConnection,
             loading: false,
             error: false,
         }
