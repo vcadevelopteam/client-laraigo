@@ -1096,16 +1096,12 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                 </div>
                                 {edit ?
                                     (
-                                        <div className={clsx(classes.fakeInputContainer, classes.field)}>
-                                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                                                <div style={{ flexGrow: 1 }}>
-                                                    <FieldView
-                                                        label={t(langKeys.userwhoreported)}
-                                                        value={values?.displayname}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <FieldEdit
+                                            label={t(langKeys.userwhoreported)}
+                                            className={classes.field}
+                                            valueDefault={values?.displayname}
+                                            disabled={true}
+                                        />
                                     ) :
                                     (<div style={{ display: 'flex', flexDirection: 'column' }} className={classes.field}>
                                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
