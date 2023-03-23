@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
+import { emitEvent } from "store/inbox/actions";
 
 const ManageOrganization: FC = () => {
     const dispatch = useDispatch();
@@ -20,6 +21,14 @@ const ManageOrganization: FC = () => {
 
     const handleChangeOrganization = (value: any) => {
         if (value) {
+            dispatch(emitEvent({
+                event: 'connectAgent',
+                data: {
+                    isconnected: false,
+                    userid: 0,
+                    orgid: 0
+                }
+            }));
             dispatch(changeOrganization(value.corpid, value.orgid, value.corpdesc, value.orgdesc));
             dispatch(showBackdrop(true));
             setTriggerSave(true)
