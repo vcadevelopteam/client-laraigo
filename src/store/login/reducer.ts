@@ -11,7 +11,7 @@ export interface IUserTmp extends ITemplate {
 
 export interface IState {
     login: IUserTmp;
-    triggerChangeOrganization: ITemplate;
+    triggerChangeOrganization: ITemplate & { automaticConnection?: boolean };
     validateToken: IUserTmp;
     logout: ITemplate;
     ignorePwdchangefirstloginValidation: boolean;

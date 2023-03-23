@@ -30,12 +30,8 @@ const ManageOrganization: FC = () => {
         if (triggerSave) {
             if (!resChangeOrganization.loading && !resChangeOrganization.error) {
                 dispatch(showBackdrop(false));
+                localStorage.setItem("firstLoad", "1")
                 window.location.reload()
-                // dispatch(wsConnect({ userid: user?.userid, orgid: user?.orgid, usertype: 'PLATFORM' }));
-                // // history.replace(`/`);
-                // setTimeout(() => {
-                //     history.push(redirect);
-                // });
             } else if (resChangeOrganization.error) {
                 const errormessage = t(resChangeOrganization.code || "error_unexpected_error")
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
