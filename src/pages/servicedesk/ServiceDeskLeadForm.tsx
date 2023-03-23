@@ -29,7 +29,7 @@ import { Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import TableZyx from 'components/fields/table-paginated';
-import { AttachFile, Clear, Close, GetApp, Create, Done, FileCopy, Info, Mood } from '@material-ui/icons';
+import { AttachFile, Clear, Close, GetApp, Create, Done, FileCopy, Info, Mood, Add } from '@material-ui/icons';
 import { getPersonListPaginated, resetGetPersonListPaginated } from 'store/person/actions';
 import clsx from 'clsx';
 import { AccessTime as AccessTimeIcon, Flag as FlagIcon, Cancel as CancelIcon, Note as NoteIcon, LocalOffer as LocalOfferIcon, LowPriority as LowPriorityIcon, Star as StarIcon, History as HistoryIcon, TrackChanges as TrackChangesIcon } from '@material-ui/icons';
@@ -432,7 +432,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
     
     const openDialogInteractions = useCallback((row: any) => {
         setOpenModal(true);
-        setRowSelected({ conversationid: getValues('conversationid'), displayname: getValues('displayname'), ticketnum: getValues('ticketnum') })
+        setRowSelected({ conversationid: getValues('conversationid'), displayname: values?.displayname, ticketnum: getValues('ticketnum') })
     }, []);
 
     useEffect(() => {
@@ -1094,15 +1094,41 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                         {getValues('ticketnum')}
                                     </label>
                                 </div>
-                                <FieldEdit
-                                    label={t(langKeys.userwhoreported)}
-                                    className={classes.field}
-                                    valueDefault={values?.displayname}
-                                    disabled
-                                    InputProps={{
-                                        readOnly: true,
-                                    }}
-                                />
+                                {edit ?
+                                    (
+                                        <div className={clsx(classes.fakeInputContainer, classes.field)}>
+                                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                                                <div style={{ flexGrow: 1 }}>
+                                                    <FieldView
+                                                        label={t(langKeys.userwhoreported)}
+                                                        value={values?.displayname}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) :
+                                    (<div style={{ display: 'flex', flexDirection: 'column' }} className={classes.field}>
+                                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                                            <div style={{ flexGrow: 1 }}>
+                                                <FieldView
+                                                    label={t(langKeys.userwhoreported)}
+                                                    value={values?.displayname}
+                                                />
+                                            </div>
+                                            <IconButton
+                                                color="primary"
+                                                onClick={() => setOpenPersonmodal(true)}
+                                                size="small"
+                                                disabled={isStatusClosed() || iSProcessLoading()}
+                                            >
+                                                <Add style={{ height: 22, width: 22 }} />
+                                            </IconButton>
+                                        </div>
+                                        <div style={{ flexGrow: 1, marginTop: (errors?.personcommunicationchannel?.message) ? '29px' : '3px' }} />
+                                        <div style={{ borderBottom: `solid ${(errors?.personcommunicationchannel?.message) ? '2px rgba(250,0,0,1)' : '1px rgba(0,0,0,0.42)'} `, marginBottom: '4px' }}></div>
+                                        <div style={{ display: (errors?.personcommunicationchannel?.message) ? 'inherit' : 'none', color: 'red', fontSize: '0.75rem' }}>{errors?.personcommunicationchannel?.message}</div>
+                                    </div>)
+                                }
                                 <FieldEdit
                                     label={t(langKeys.business)}
                                     className={classes.field}

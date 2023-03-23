@@ -633,7 +633,8 @@ const ServiceDesk: FC = () => {
 
   const filtersElement = useMemo(() => (
     <>
-      <FieldSelect
+      {user?.roledesc !== "VISOR SD" &&
+        <FieldSelect
         variant="outlined"
         label={t(langKeys.business)}
         className={classes.filterComponent}//cambiar
@@ -643,7 +644,7 @@ const ServiceDesk: FC = () => {
         optionDesc="domaindesc"
         optionValue="domainvalue"
         loading={mainMulti.loading}
-      />
+      />}
       <FieldMultiSelect
         variant="outlined"
         label={t(langKeys.group)}
