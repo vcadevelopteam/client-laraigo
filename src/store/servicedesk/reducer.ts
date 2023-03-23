@@ -38,6 +38,7 @@ export interface IState {
     impact: IListState<IDomain>;
     priority: IListState<IDomain>;
     groups: IListState<Dictionary>;
+    company: IListState<IDomain>;
 }
 
 export const initialState: IState = {
@@ -64,6 +65,7 @@ export const initialState: IState = {
     impact: initialListState,
     priority: initialListState,
     groups: initialListState,
+    company: initialListState,
 };
 
 export default createReducer<IState>(initialState, {
@@ -159,24 +161,29 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_IMPACT_SUCCESS]: caseFUnctions.getImpactSuccess,
     [actionTypes.GET_IMPACT_FAILURE]: caseFUnctions.getImpactFailure,
     [actionTypes.GET_IMPACT_RESET]: caseFUnctions.getImpactReset,
-
+    
     [actionTypes.GET_PRIORITY]: caseFUnctions.getPriority,
     [actionTypes.GET_PRIORITY_SUCCESS]: caseFUnctions.getPrioritySuccess,
     [actionTypes.GET_PRIORITY_FAILURE]: caseFUnctions.getPriorityFailure,
     [actionTypes.GET_PRIORITY_RESET]: caseFUnctions.getPriorityReset,
-
+    
     [actionTypes.GET_LEAD_TEMPLATES]: caseFUnctions.getLeadTemplates,
     [actionTypes.GET_LEAD_TEMPLATES_SUCCESS]: caseFUnctions.getLeadTemplatesSuccess,
     [actionTypes.GET_LEAD_TEMPLATES_FAILURE]: caseFUnctions.getLeadTemplatesFailure,
     [actionTypes.GET_LEAD_TEMPLATES_RESET]: caseFUnctions.getLeadTemplatesReset,
-
+    
     [actionTypes.GET_LEAD_CHANNELS]: caseFUnctions.getLeadChannels,
     [actionTypes.GET_LEAD_CHANNELS_SUCCESS]: caseFUnctions.getLeadChannelsSuccess,
     [actionTypes.GET_LEAD_CHANNELS_FAILURE]: caseFUnctions.getLeadChannelsFailure,
     [actionTypes.GET_LEAD_CHANNELS_RESET]: caseFUnctions.getLeadChannelsReset,
-
+    
     [actionTypes.GET_GROUPS]: caseFUnctions.getGroups,
     [actionTypes.GET_GROUPS_SUCCESS]: caseFUnctions.getGroupsSuccess,
     [actionTypes.GET_GROUPS_FAILURE]: caseFUnctions.getGroupsFailure,
     [actionTypes.GET_GROUPS_RESET]: caseFUnctions.getGroupsReset,
+    
+    [actionTypes.GET_COMPANY]: caseFUnctions.getCompany,
+    [actionTypes.GET_COMPANY_SUCCESS]: caseFUnctions.getCompanySuccess,
+    [actionTypes.GET_COMPANY_FAILURE]: caseFUnctions.getCompanyFailure,
+    [actionTypes.GET_COMPANY_RESET]: caseFUnctions.getCompanyReset,
 });

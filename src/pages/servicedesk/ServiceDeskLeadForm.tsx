@@ -44,7 +44,7 @@ import { sendHSM } from 'store/inbox/actions';
 import { setModalCall, setPhoneNumber } from 'store/voximplant/actions';
 import MailIcon from '@material-ui/icons/Mail';
 import DialogInteractions from 'components/inbox/DialogInteractions';
-import { archiveLead, getGroups, getImpact, getPriority, getSlaRules, getUrgency, resetGetGroups, resetGetImpact, resetGetPriority, resetGetSlaRules, resetGetUrgency } from 'store/servicedesk/actions';
+import { archiveLead, getCompany, getGroups, getImpact, getPriority, getSlaRules, getUrgency, resetGetCompany, resetGetGroups, resetGetImpact, resetGetPriority, resetGetSlaRules, resetGetUrgency } from 'store/servicedesk/actions';
 
 const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
 
@@ -409,6 +409,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
     const slarules = useSelector(state => state.servicedesk.slarules);
     const dataUrgency = useSelector(state => state.servicedesk.urgency);
     const dataImpact = useSelector(state => state.servicedesk.impact);
+    const dataCompany = useSelector(state => state.servicedesk.company);
     const dataPriority = useSelector(state => state.servicedesk.priority);
     const dataGroups = useSelector(state => state.servicedesk.groups);
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
@@ -595,6 +596,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         dispatch(getUrgency(getValuesFromDomain('URGENCIA')));
         dispatch(getImpact(getValuesFromDomain('IMPACTO')));
         dispatch(getPriority(getValuesFromDomain('PRIORIDAD')));
+        dispatch(getCompany(getValuesFromDomain('EMPRESA')));
         
         return () => {
             dispatch(resetGetLead());
@@ -614,6 +616,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
             dispatch(resetGetUrgency());
             dispatch(resetGetImpact());
             dispatch(resetGetPriority());
+            dispatch(resetGetCompany());
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [edit, match.params.id, dispatch]);
@@ -1125,14 +1128,18 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                         <div style={{ display: (errors?.personcommunicationchannel?.message) ? 'inherit' : 'none', color: 'red', fontSize: '0.75rem' }}>{errors?.personcommunicationchannel?.message}</div>
                                     </div>)
                                 }
-                                <FieldEdit
+                                <FieldSelect
                                     label={t(langKeys.business)}
                                     className={classes.field}
+                                    valueDefault={getValues('company')}
                                     onChange={(value) => {
                                         setValue('company', value);
                                     }}
-                                    valueDefault={getValues('company')}
-                                    disabled={true}
+                                    error={errors?.impact?.message}
+                                    data={dataCompany.data}
+                                    disabled={edit}
+                                    optionDesc="domaindesc"
+                                    optionValue="domainvalue"
                                 />
                                 <PhoneFieldEdit
                                     value={"+" + getValues('phone')}

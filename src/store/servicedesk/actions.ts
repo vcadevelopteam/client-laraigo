@@ -274,6 +274,18 @@ export const getPriority = (body: IRequestBody): IActionCall => ({
 
 export const resetGetPriority = (): IActionCall => ({ type: actionTypes.GET_PRIORITY_RESET });
 
+export const getCompany = (body: IRequestBody): IActionCall => ({
+    callAPI: () => CommonService.main(body),
+    types: {
+        loading: actionTypes.GET_COMPANY,
+        success: actionTypes.GET_COMPANY_SUCCESS,
+        failure: actionTypes.GET_COMPANY_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetCompany = (): IActionCall => ({ type: actionTypes.GET_COMPANY_RESET });
+
 export const getLeadTemplates = (): IActionCall => ({
     callAPI: () => CommonService.main(getMessageTemplateLst('')),
     types: {
