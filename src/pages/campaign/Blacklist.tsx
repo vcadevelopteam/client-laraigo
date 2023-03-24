@@ -270,7 +270,7 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
                     importCSV={handleUpload}
                     fetchData={fetchData}
                     exportPersonalized={triggerExportData}
-                    autotrigger={true}
+                    autotrigger={false}
                 />
             </div>
             {openModal && <ModalBlacklist
