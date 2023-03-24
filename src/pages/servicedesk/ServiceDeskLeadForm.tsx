@@ -428,10 +428,10 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         email: lead.value?.email || '',
     })
     
-    const openDialogInteractions = useCallback((row: any) => {
+    const openDialogInteractions = (row: any) => {
         setOpenModal(true);
         setRowSelected({ conversationid: getValues('conversationid'), displayname: values?.displayname, ticketnum: getValues('ticketnum') })
-    }, []);
+    };
 
     useEffect(() => {
         dispatch(getDomainsByTypename());
