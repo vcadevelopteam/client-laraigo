@@ -539,9 +539,9 @@ const DashboardKPI: FC = () => {
                         >
                             <ResponsiveContainer width="100%" aspect={4.0 / 2.0}>
                                 <LineChart data={dataSummary?.graphdata||[]} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                    <CartesianGrid stroke="#f5f5f5" />
                                     <XAxis dataKey="date" />
                                     <YAxis tickFormatter={v=>formattime(v)} width={100} domain={[0, (dataMax:any) => (Math.floor(dataMax * 1.1) + 5)]}/>
-                                    <CartesianGrid stroke="#f5f5f5" />
                                     <RechartsTooltip formatter={(value: any, name: any) => [formattime(value), t(name)]}/>
                                     <Legend verticalAlign="top" height={70}/>
                                     <Line type="monotone" name="TME" dataKey="tme" stroke="#c0504d" strokeWidth={2}>
@@ -554,25 +554,28 @@ const DashboardKPI: FC = () => {
                             </ResponsiveContainer>                        
                         </Box>
                     </div>
+                </div>
+                <div className="todown" style={{display:"flex", gap:8}}>
+
                     <div className={classes.replacerowzyx} style={{width:"100%"}} >
                         <Box
                             className={classes.itemCard}
                         >
                             <ResponsiveContainer width="100%" aspect={4.0 / 2.0}>
                                 <LineChart width={730} height={250} data={dataSummary?.graphdata||[]} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                                    <Legend verticalAlign="top"/>
                                     <CartesianGrid stroke="#f5f5f5" />
+                                    <Legend verticalAlign="top"/>
                                     <XAxis dataKey="date" />
                                     <YAxis tickFormatter={v=>(v)} width={50} domain={[0, (dataMax:any) => (Math.floor(dataMax * 1.1) + 5)]}/>
                                     <RechartsTooltip formatter={(value: any, name: any) => [(value), t(name)]} />
                                     <Line type="monotone" name={t(langKeys.ticketsattendedbyadvisor)} dataKey="tickets_agents" stroke="#c0504d" strokeWidth={2}>
-                                        <LabelList dataKey="tickets_agents" position="top"  fill="#c0504d"/>
+                                        <LabelList dataKey="tickets_agents" position="insideBottomLeft" angle={-90}  fill="#c0504d"/>
                                     </Line>
                                     <Line type="monotone" name={t(langKeys.agent_plural)} dataKey="agents" stroke="#4f81bd" strokeWidth={2}>
-                                        <LabelList dataKey="agents" position="top" fill="#4f81bd"/>
+                                        <LabelList dataKey="agents" position="insideBottomLeft" angle={-90} fill="#4f81bd"/>
                                     </Line>
                                     <Line type="monotone" name={t(langKeys.ticket_balancetimes)} dataKey="balancetimes_avg" stroke="#9bbb59" strokeWidth={2}>
-                                        <LabelList dataKey="balancetimes_avg" position="top" fill="#9bbb59"/>
+                                        <LabelList dataKey="balancetimes_avg" position="insideBottomLeft" angle={-90} fill="#9bbb59"/>
                                     </Line>
                                 </LineChart>
                             </ResponsiveContainer>                        
@@ -586,25 +589,27 @@ const DashboardKPI: FC = () => {
                         >
                             <ResponsiveContainer width="100%" aspect={4.0 / 2.0}>
                                 <LineChart width={730} height={250} data={dataSummary?.graphdata||[]} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                                    <CartesianGrid stroke="#f5f5f5" />
                                     <XAxis dataKey="date" />
                                     <YAxis yAxisId="right" orientation="right" tickFormatter={v=>v + " %"} domain={[0,150]}/>
                                     <YAxis yAxisId="left"width={100} domain={[0, (dataMax:any) => (Math.floor(dataMax * 1.1) + 5)]}/>
-                                    <CartesianGrid stroke="#f5f5f5" />
                                     <RechartsTooltip formatter={(value: any, name: any, props:any) => [props.dataKey==="participacion"?value+"%":value, t(name)]} />
                                     <Legend verticalAlign="top" height={50}/>
                                     <Line yAxisId="left" type="monotone" name={t(langKeys.report_kpioperativo_tickets)} dataKey="tickets_count" stroke="#c0504d" strokeWidth={2}>
-                                        <LabelList dataKey="tickets_count" position="top"  fill="#4f81bd"/>
+                                        <LabelList dataKey="tickets_count" position="insideBottomLeft" angle={-90}  fill="#c0504d"/>
                                     </Line>
                                     <Line yAxisId="left" type="monotone" name={t(langKeys.report_kpioperativo_abandoned_tickets)} dataKey="abandoned_tickets" stroke="#4f81bd" strokeWidth={2}>
-                                        <LabelList dataKey="abandoned_tickets" position="top" fill="#c0504d"/>
+                                        <LabelList dataKey="abandoned_tickets" position="insideBottomLeft" angle={-90} fill="#4f81bd"/>
                                     </Line>
                                     <Line yAxisId="right" type="monotone" name={t(langKeys.percparticipation)} dataKey="participacion" stroke="#9bbb59" strokeWidth={2}>
-                                        <LabelList dataKey="participacion" position="top"  fill="#9bbb59" formatter={(value: any, name: any) => [value + "%", t(name)]}/>
+                                        <LabelList dataKey="participacion" position="insideBottomLeft" angle={-90}  fill="#9bbb59" formatter={(value: any, name: any) => [value + "%", t(name)]}/>
                                     </Line>
                                 </LineChart>
                             </ResponsiveContainer>                        
                         </Box>
                     </div>
+                </div>
+                <div className="todown" style={{display:"flex", gap:8}}>
                     <div className={classes.replacerowzyx} style={{width:"100%"}} >
                         <Box
                             className={classes.itemCard}
@@ -613,17 +618,18 @@ const DashboardKPI: FC = () => {
                                 <LineChart width={730} height={250} data={dataSummary?.graphdata||[]} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                                     <CartesianGrid stroke="#f5f5f5" />
                                     <XAxis dataKey="date" />
-                                    <YAxis tickFormatter={v=>formattime(v)}  width={50} domain={[0, (dataMax:any) => (Math.floor(dataMax * 1.1) + 5)]}/>
+                                    <YAxis yAxisId="right" orientation="right" tickFormatter={v=>formattime(v)}  width={50} domain={[0, (dataMax:any) => (Math.floor(dataMax * 3) + 5)]}/>
+                                    <YAxis yAxisId="left" tickFormatter={v=>formattime(v)} width={50} domain={[0, (dataMax:any) => (Math.floor(dataMax * 1.05) + 5)]}/>
                                     <RechartsTooltip formatter={(value: any, name: any) => [formattime(value), t(name)]} />
                                     <Legend verticalAlign="top" height={50}/>
-                                    <Line type="monotone" name={t(langKeys.report_voicecall_holdingtime)} dataKey="holdingwaitingtime_avg" stroke="#c0504d" strokeWidth={2}>
-                                        <LabelList dataKey="holdingwaitingtime_avg" position="top"  fill="#c0504d" formatter={(v:any)=>formattime(v)}/>
+                                    <Line yAxisId="right" type="monotone" name={t(langKeys.report_voicecall_holdingtime)} dataKey="holdingwaitingtime_avg" stroke="#c0504d" strokeWidth={2}>
+                                        <LabelList dataKey="holdingwaitingtime_avg" position="insideBottomLeft" angle={-90}  fill="#c0504d" formatter={(v:any)=>formattime(v)}/>
                                     </Line>
-                                    <Line type="monotone" name={t(langKeys.firstassignmenttime)} dataKey="firstassignedtime_avg" stroke="#4f81bd" strokeWidth={2}>
-                                        <LabelList dataKey="firstassignedtime_avg" position="top" fill="#4f81bd" formatter={(v:any)=>formattime(v)}/>
+                                    <Line yAxisId="left" type="monotone" name={t(langKeys.firstassignmenttime)} dataKey="firstassignedtime_avg" stroke="#4f81bd" strokeWidth={2}>
+                                        <LabelList dataKey="firstassignedtime_avg" position="insideBottomLeft" angle={-90} fill="#4f81bd" formatter={(v:any)=>formattime(v)}/>
                                     </Line>
-                                    <Line type="monotone" name={t(langKeys.ticket_tiempoprimerarespuesta)} dataKey="firstreplytime_avg" stroke="#9bbb59" strokeWidth={2}>
-                                        <LabelList dataKey="firstreplytime_avg" position="top"  fill="#9bbb59" formatter={(v:any)=>formattime(v)}/>
+                                    <Line yAxisId="left" type="monotone" name={t(langKeys.ticket_tiempoprimerarespuesta)} dataKey="firstreplytime_avg" stroke="#9bbb59" strokeWidth={2}>
+                                        <LabelList dataKey="firstreplytime_avg" position="insideBottomLeft" angle={-90}  fill="#9bbb59" formatter={(v:any)=>formattime(v)}/>
                                     </Line>
 
                                 </LineChart>
