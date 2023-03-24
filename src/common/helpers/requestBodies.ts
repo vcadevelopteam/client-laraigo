@@ -2570,7 +2570,7 @@ export const getPaginatedSDLead = ({ skip, take, filters, sorts, startdate, endd
         fullname: contact,
         leadproduct,
         tags,
-        company,
+        company: company||"",
         groups,
         supervisorid,
         offset: (new Date().getTimezoneOffset() / 60) * -1,
