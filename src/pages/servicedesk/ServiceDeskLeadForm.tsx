@@ -737,7 +737,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         } else if (saveLead.success === true) {
             dispatch(showSnackbar({
                 severity: "success",
-                message: "Se guardo la oportunidad con éxito",
+                message: "Se guardo la solicitud SD con éxito",
                 show: true,
             }));
             history.push(paths.SERVICE_DESK);
