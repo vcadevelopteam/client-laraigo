@@ -50,6 +50,7 @@ export const langKeys = {
   containeridExplained: "containeridExplained",
   buttonTextColor: "buttonTextColor",
   labelcolor: "labelcolor",
+  atleasthafanhour: "atleasthafanhour",
   formbackgroundcolor: "formbackgroundcolor",
   buttonstyles: "buttonstyles",
   inputstyles: "inputstyles",

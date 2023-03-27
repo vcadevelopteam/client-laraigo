@@ -530,6 +530,7 @@ const translation: LangKeys = {
   type_org_43: 'Artistic, entertainment and recreation activities',
   type_org_44: 'Association activitie',
   dashboardkpi: "Dashboard KPI",
+  atleasthafanhour: "The duration must have a value greater than 0",
 
   attending: 'Attending',
   orders: "Orders",
