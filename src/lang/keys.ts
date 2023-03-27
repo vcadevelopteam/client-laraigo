@@ -20,6 +20,7 @@ export const langKeys = {
     orders: "orders",
     orderlist: "orderlist",
     ordernumber: "ordernumber",
+    atleasthafanhour: "atleasthafanhour",
     orderstatus: "orderstatus",
     ordersdetail: "ordersdetail",
     picture: "picture",
