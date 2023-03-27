@@ -394,7 +394,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                                     return (
                                                         <div key={`templateVariables-${i + 1}`} style={{ paddingTop: 10 }}>
                                                             <FieldSelect
-                                                                label={`Variable #${i + 1}`}
+                                                                label={`Email Variable #${i + 1}`}
                                                                 className="col-6"
                                                                 valueDefault={templateVariables[x]}
                                                                 onChange={(value) => { setTemplateVariables({ ...templateVariables, [x]: value?.domainvalue || "" }) }}
@@ -422,7 +422,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                                     return (
                                                         <div key={`templateVariablesEmail-${i + 1}`} style={{ paddingTop: 10 }}>
                                                             <FieldSelect
-                                                                label={`Variable #${i + 1}`}
+                                                                label={`Email Variable #${i + 1}`}
                                                                 className="col-6"
                                                                 valueDefault={templateVariablesEmail[x]}
                                                                 onChange={(value) => { setTemplateVariablesEmail({ ...templateVariablesEmail, [x]: value?.domainvalue || "" }) }}
@@ -471,7 +471,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                         return (
                                             <div key={`templateVariables-${i + 1}`} style={{ paddingTop: 10 }}>
                                                 <FieldSelect
-                                                    label={`Variable #${i + 1}`}
+                                                    label={`Email Variable #${i + 1}`}
                                                     className="col-6"
                                                     valueDefault={templateVariables[x]}
                                                     onChange={(value) => { setTemplateVariables({ ...templateVariables, [x]: value?.domainvalue || "" }) }}
