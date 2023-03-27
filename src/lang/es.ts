@@ -519,6 +519,7 @@ const translation: LangKeys = {
   conversationsanalyzed: "Conversaciones analizadas",
   informationTMO: "Información TMO",
   informationTME: "Información TME",
+  atleasthafanhour: "La duración debe tener un valor mayor a 0",
   informationNPS: "Información NPS",
   informationCSAT: "Información CSAT",
   informationFIX: "Información FIX",
