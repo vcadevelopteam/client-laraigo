@@ -168,7 +168,6 @@ const DraggablesCategories : FC<{column:any, index:number, handleDelete:(lead: I
 
 const ServiceDesk: FC = () => {
   const user = useSelector(state => state.login.validateToken.user);
-  console.log(user)
   const history = useHistory();
   const location = useLocation();
   const dispatch = useDispatch();

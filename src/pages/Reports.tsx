@@ -45,6 +45,8 @@ import UniqueContactsReport from './UniqueContactsReport';
 import { CampaignReport } from 'pages/campaign/CampaignReport';
 import ReportKpiOperativo from 'components/report/ReportKpiOperativo';
 import VoiceChannelReport from './VoiceChannelReport';
+import ReportComplianceSLA from 'components/report/ReportComplianceSLA';
+import ReportRequestSD from 'components/report/ReportRequestSD';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -1118,6 +1120,48 @@ const Reports: FC = () => {
                         </Card>
                     </Grid>
                 )
+            case 'COMPLIANCESLA':
+                return (
+                    <Grid item key={"reportcompliancesla"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
+                        <Card >
+                            <CardActionArea onClick={() => handleSelectedString("reportcompliancesla")}>
+                                <CardMedia
+                                    component="img"
+                                    height="140"
+                                    className={classes.media}
+                                    image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/PROCESOSYCONSULTORIA/8f5f232b-4fe6-414d-883b-e90f402becf5/campa%C3%B1as.png"
+                                    title={t(langKeys.report_reportcompliancesla)}
+                                />
+                                <CardContent>
+                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
+                                        {t(langKeys.report_reportcompliancesla)}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                )
+            case 'REQUESTSD':
+                return (
+                    <Grid item key={"reportrequestsd"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
+                        <Card >
+                            <CardActionArea onClick={() => handleSelectedString("reportrequestsd")}>
+                                <CardMedia
+                                    component="img"
+                                    height="140"
+                                    className={classes.media}
+                                    image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/PROCESOSYCONSULTORIA/8f5f232b-4fe6-414d-883b-e90f402becf5/campa%C3%B1as.png"
+                                    title={t(langKeys.report_reportrequestsd)}
+                                />
+                                <CardContent>
+                                    <Typography gutterBottom variant="h6" component="div" style={{ fontSize: "130%" }}>
+                                        {t(langKeys.report_reportrequestsd)}
+                                    </Typography>
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                )
             case 'UNIQUECONTACTS':
                 if (user?.roledesc === "SUPERADMIN") {
                     return (
@@ -1551,8 +1595,32 @@ const Reports: FC = () => {
                 </div>
             </>
         )
-    }
-    else {
+    }else if (viewSelected === "reportcompliancesla") {
+        return (
+            <>
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={getArrayBread(t('report_reportcompliancesla'), t(langKeys.report_plural))}
+                        handleClick={handleSelectedString}
+                    />
+                    <ReportComplianceSLA />
+                </div>
+            </>
+        )
+    }else if (viewSelected === "reportrequestsd") {
+        return (
+            <>
+                <div style={{ width: '100%', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={getArrayBread(t('report_reportrequestsd'), t(langKeys.report_plural))}
+                        handleClick={handleSelectedString}
+                    />
+                    <ReportRequestSD />
+                </div>
+            </>
+        )
+    }else {
+        debugger
         return (
             <ReportItem
                 setViewSelected={setViewSelected}
