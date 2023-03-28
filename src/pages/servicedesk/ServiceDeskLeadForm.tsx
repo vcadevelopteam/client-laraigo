@@ -1258,7 +1258,6 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                 <FieldEdit
                                     label={t(langKeys.reportdate)}
                                     className={classes.field}
-                                    type="datetime-local"
                                     onChange={(value) => {
                                         setValue('createdate', value);
                                     }}
