@@ -135,7 +135,7 @@ export const DraggableServiceDeskCardContent: FC<ServiceDeskCardContentProps> = 
     const id = open ? `lead-card-popover-${String(lead)}` : undefined;
     return (
         <Box {...boxProps} style={{ position: 'relative' }} pb={1}>
-            <div className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)} onClick={edit?handleClick:()=>{}}>
+            <div className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)} onClick={handleClick}>
                 <span className={classes.title}>{lead?.sd_request||""}</span>
                 <span className={classes.info}>{lead.type}</span>
                 <span className={classes.info}>{lead.description}</span>

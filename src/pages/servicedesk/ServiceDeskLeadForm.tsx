@@ -9,7 +9,6 @@ import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useRouteMatch } from 'react-router';
 import PhoneIcon from '@material-ui/icons/Phone';
-import { getDomainsByTypename } from 'store/person/actions';
 import {
     adviserSel, getPaginatedPersonLead as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSDSel, leadHistorySel,
     leadHistoryIns, getLeadsSDSel, insSDLead, getSLASel, convertLocalDate
@@ -419,6 +418,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
     const voxiConnection = useSelector(state => state.voximplant.connection);
     const userConnected = useSelector(state => state.inbox.userConnected);
     const [openModal, setOpenModal] = useState(false);
+    const [visorSD, setVisorSD] = useState(false);
     const [openModalChangePhase, setOpenModalChangePhase] = useState(false);
 
     const [typeTemplate, setTypeTemplate] = useState<"HSM" | "SMS" | "MAIL">('MAIL');
@@ -433,8 +433,8 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
     };
 
     useEffect(() => {
-        dispatch(getDomainsByTypename());
-    }, []);
+        setVisorSD(!!user?.roledesc.includes("VISOR"))
+    }, [user]);
 
     const { register, setValue, getValues, formState: { errors }, reset, trigger } = useForm<any>({
         defaultValues: {
@@ -1008,7 +1008,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                         >
                             <Trans i18nKey={langKeys.back} />
                         </Button>}
-                        {(edit && !!extraTriggers.phone) &&                      
+                        {(edit && !!extraTriggers.phone && !visorSD) &&                      
                             <Button
                                 variant="contained"
                                 color="primary"
@@ -1021,7 +1021,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                 <Trans i18nKey={langKeys.send_hsm} />
                             </Button>
                         }
-                        {(edit && !!extraTriggers.email && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(extraTriggers.email)) &&                    
+                        {(edit && !!extraTriggers.email && !visorSD && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(extraTriggers.email)) &&                    
                             <Button
                             variant="contained"
                             color="primary"
@@ -1034,7 +1034,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                 <Trans i18nKey={langKeys.send_mail} />
                             </Button>
                         }
-                        {(edit && !!extraTriggers.phone) &&                      
+                        {(edit && !!extraTriggers.phone && !visorSD) &&                      
                             <Button
                                 variant="contained"
                                 color="primary"
@@ -1047,7 +1047,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                 <Trans i18nKey={langKeys.send_sms} />
                             </Button>
                         }
-                        {(!lead.loading) &&
+                        {(!lead.loading && !visorSD) &&
                             <Button
                                 variant="contained"
                                 color="primary"
@@ -1058,7 +1058,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                 <Trans i18nKey={langKeys.phasechange} />
                             </Button>
                         }
-                        {(!isStatusClosed() && !lead.loading) && <Button
+                        {(!isStatusClosed() && !lead.loading && !visorSD) && <Button
                             className={classes.button}
                             variant="contained"
                             color="primary"
@@ -1146,6 +1146,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     className={classes.field}
                                     onChange={(v: any) => {setValue('phone', v); setExtraTriggers({...extraTriggers, phone: v || ''})}}
                                     error={errors?.phone?.message}
+                                    disabled={visorSD}
                                     InputProps={{
                                         readOnly: isStatusClosed() || iSProcessLoading(),
                                         endAdornment: (
@@ -1173,6 +1174,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                         setcriticallity(value?.domainvalue || '', getValues('urgency'))
                                         setValue('impact', value?.domainvalue || '')
                                     }}
+                                    disabled={visorSD}
                                     error={errors?.impact?.message}
                                     data={dataImpact.data}
                                     optionDesc="domaindesc"
@@ -1205,6 +1207,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     onChange={(value) => setValue('leadgroups', value?.domainvalue || '')}
                                     error={errors?.group?.message}
                                     data={dataGroups.data}
+                                    disabled={visorSD}
                                     optionDesc="domaindesc"
                                     optionValue="domainvalue"
                                 />
@@ -1216,6 +1219,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     data={advisers.data}
                                     optionDesc="fullname"
                                     optionValue="userid"
+                                    disabled={visorSD}
                                     onChange={(value) => setValue('userid', value ? value.userid : '')}
                                     error={errors?.userid?.message}
                                     readOnly={isStatusClosed() || iSProcessLoading()}
@@ -1230,6 +1234,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     onChange={(value) => setValue('description', value)}
                                     valueDefault={getValues('description')}
                                     error={errors?.description?.message}
+                                    disabled={visorSD}
                                     InputProps={{
                                         readOnly: isStatusClosed() || iSProcessLoading(),
                                     }}
@@ -1241,6 +1246,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     data={
                                         [{domainvalue: "SS"},{domainvalue: "INC"}]
                                     }
+                                    disabled={visorSD}
                                     optionDesc="domainvalue"
                                     optionValue="domainvalue"
                                     onChange={(value) => setValue('type', value ? value.domainvalue : '')}
@@ -1273,6 +1279,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                         setcriticallity(getValues('impact'),value?.domainvalue || '')
                                         setValue('urgency', value?.domainvalue || '')
                                     }}
+                                    disabled={visorSD}
                                     error={errors?.urgency?.message}
                                     data={dataUrgency.data}
                                     optionDesc="domaindesc"
@@ -1319,6 +1326,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                             value2.action === "remove-option" ? "REMOVETAG" : "NEWTAG",
                                         );
                                     }}
+                                    disabled={visorSD}
                                     error={errors?.tags?.message}
                                     loading={false}
                                     data={leadTagsDomain.data.concat(getValues('tags').split(',').filter((i: any) => i !== '' && (leadTagsDomain.data.findIndex(x => x.domaindesc === i)) < 0).map((domaindesc: any) => ({ domaindesc })))}
@@ -1368,7 +1376,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                 </Tabs>
                 <AntTabPanel index={0} currentIndex={tabIndex}>
                     <TabPanelLogNote
-                        readOnly={isStatusClosed()}
+                        readOnly={isStatusClosed() || visorSD}
                         loading={saveNote.loading || leadNotes.loading}
                         notes={edit ? leadNotes.data : getValues('notes')}
                         leadId={edit ? Number(match.params.id) : 0}
@@ -1387,7 +1395,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                 </AntTabPanel>
                 <AntTabPanel index={1} currentIndex={tabIndex}>
                     <TabPanelScheduleActivity
-                        readOnly={isStatusClosed()}
+                        readOnly={isStatusClosed() || visorSD}
                         leadId={edit ? Number(match.params.id) : 0}
                         loading={saveActivity.loading || leadActivities.loading}
                         activities={edit ? leadActivities.data : getValues('activities')}
