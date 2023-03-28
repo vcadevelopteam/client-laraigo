@@ -385,7 +385,7 @@ const ServiceDesk: FC = () => {
   const voxiConnection = useSelector(state => state.voximplant.connection);
   const callOnLine = useSelector(state => state.voximplant.callOnLine);
   const [allParameters, setAllParametersPrivate] = useState<{ company: string, groups: string, contact: string, leadproduct:string }>({
-    company: otherParams?.company||"",
+    company: user?.roledesc.includes("VISOR") ? (user?.companyuser||"") : (otherParams?.company||""),
     groups: otherParams?.groups||"",
     leadproduct: otherParams?.products||"",
     contact: otherParams.contact,
@@ -633,18 +633,19 @@ const ServiceDesk: FC = () => {
 
   const filtersElement = useMemo(() => (
     <>
-      {(!user?.roledesc.includes("VISOR")) &&
-        <FieldSelect
+      
+      <FieldSelect
         variant="outlined"
         label={t(langKeys.business)}
         className={classes.filterComponent}//cambiar
         valueDefault={allParameters.company}
-        onChange={(value) => {setAllParameters({...allParameters, company: value?.domainvalue})}}
+        onChange={(value) => {setAllParameters({...allParameters, company: value?.domainvalue||""})}}
         data={mainMulti.data[8]?.data || []}
         optionDesc="domaindesc"
         optionValue="domainvalue"
+        disabled={user?.roledesc.includes("VISOR")}
         loading={mainMulti.loading}
-      />}
+      />
       <FieldMultiSelect
         variant="outlined"
         label={t(langKeys.group)}

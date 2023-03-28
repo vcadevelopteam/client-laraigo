@@ -11,7 +11,7 @@ import { useHistory, useRouteMatch } from 'react-router';
 import PhoneIcon from '@material-ui/icons/Phone';
 import {
     adviserSel, getPaginatedPersonLead as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSDSel, leadHistorySel,
-    leadHistoryIns, getLeadsSDSel, insSDLead, getSLASel, convertLocalDate
+    leadHistoryIns, getLeadsSDSel, insSDLead, getSLASel
 } from 'common/helpers';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
@@ -129,7 +129,12 @@ const useLeadFormStyles = makeStyles(theme => ({
         cursor: 'pointer'
     },
 }));
-
+const convertLocalDate = (date: string | null | undefined, validateWithToday: boolean = false, subtractHours: boolean = true): String => {
+    if (!date) return ""
+    const dateCleaned = new Date(date)
+    // const dateCleaned = new Date(nn.getTime() + (subtractHours ? (nn.getTimezoneOffset() * 60 * 1000 * -1) : 0));
+    return validateWithToday ? (dateCleaned > new Date() ? new Date() : dateCleaned).toLocaleString() : dateCleaned.toLocaleString();
+}
 interface DialogSendTemplateProps {
     setOpenModal: (param: any) => void;
     openModal: boolean;
@@ -519,7 +524,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                 const callback = () => {
                     const lostPhase = phases.data.find(x => x.description.toLowerCase() === 'lost');
                     if (lostPhase?.columnid === data.columnid) {
-                        data.status = "CERRADO";
+                        data.status = "RESUELTO";
                     }
                     if (edit) {
                         dispatch(saveLeadAction([
@@ -614,12 +619,29 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [edit, match.params.id, dispatch]);
 
-    function setcriticallity(impact:string, urgency:string){
+    function setcriticallity(impact:string, urgency:string, company: string){
         if(!!impact && !!urgency && !!slarules){
-            let filtereddata= slarules.data.filter(x=>x.type === "SD")
+            let filtereddata= slarules.data.filter(x=>x.type === "SD" && x.company === company)
             if(filtereddata.length>0){
                 let calcCriticallity=filtereddata?.[0].criticality.filter((x:any)=>x.impact===impact && x.urgency===urgency)
-                setValue('priority', calcCriticallity[0]?.priority||'')
+                let priority = calcCriticallity[0]?.priority
+                setValue('priority', priority||'')
+                if(priority){
+                    let createdate = getValues("createdate")
+                    let servicetimes = filtereddata[0].service_times.filter((x:any)=>x.priority === priority)
+                    if(!!createdate && servicetimes.length>0){
+                        let first_contact_deadline = new Date(createdate)
+                        let resolution_deadline = new Date(createdate)
+                        let umfirstreply = servicetimes[0].umfirstreply==="MINUTES"?60000:3600000
+                        let umsolutiontime = servicetimes[0].umsolutiontime==="MINUTES"?60000:3600000
+                        first_contact_deadline.setTime(first_contact_deadline.getTime() +Number(servicetimes[0].firstreply)*umfirstreply)
+                        resolution_deadline.setTime(resolution_deadline.getTime() +Number(servicetimes[0].solutiontime)*umsolutiontime)
+                        setValue('first_contact_deadline',first_contact_deadline.toISOString().replace("T"," "))
+                        setValue('resolution_deadline',resolution_deadline.toISOString().replace("T"," "))
+                        trigger('first_contact_deadline')
+                        trigger('resolution_deadline')
+                    }
+                }
             }else{
                 setValue('priority', '')
             }
@@ -817,18 +839,13 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                 show: true,
             }));
         } else if (saveNote.success) {
-            if(openModalChangePhase){
-                setOpenModalChangePhase(false);
-                onSubmit()
-            }else{
-                dispatch(showSnackbar({
-                    message: "Se registró la nota",
-                    severity: "success",
-                    show: true,
-                }));
-                dispatch(getLeadLogNotes(leadLogNotesSel(match.params.id)));
-                dispatch(getLeadHistory(leadHistorySel(match.params.id)));
-            }
+            dispatch(showSnackbar({
+                message: "Se registró la nota",
+                severity: "success",
+                show: true,
+            }));
+            dispatch(getLeadLogNotes(leadLogNotesSel(match.params.id)));
+            dispatch(getLeadHistory(leadHistorySel(match.params.id)));
         }
     }, [saveNote, match.params.id, t, dispatch]);
 
@@ -917,7 +934,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
     }, [setValue]);
 
     const isStatusClosed = useCallback(() => {
-        return lead.value?.status === "CERRADO";
+        return lead.value?.status === "RESUELTO";
     }, [lead]);
 
     function getOrderindex(type: string) {
@@ -1129,11 +1146,12 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     className={classes.field}
                                     valueDefault={getValues('company')}
                                     onChange={(value) => {
-                                        setValue('company', value||"");
+                                        setValue('company', value.domainvalue||"");
+                                        setcriticallity(getValues("impact"), getValues('urgency'), value.domainvalue||"")
                                     }}
                                     error={errors?.impact?.message}
                                     data={dataCompany.data}
-                                    disabled={edit}
+                                    disabled={(edit && !!lead?.value?.company)|| visorSD}
                                     optionDesc="domaindesc"
                                     optionValue="domainvalue"
                                 />
@@ -1171,7 +1189,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     className={classes.field}
                                     valueDefault={getValues('impact')}
                                     onChange={(value) => {
-                                        setcriticallity(value?.domainvalue || '', getValues('urgency'))
+                                        setcriticallity(value?.domainvalue || '', getValues('urgency'), getValues('company'))
                                         setValue('impact', value?.domainvalue || '')
                                     }}
                                     disabled={visorSD}
@@ -1276,7 +1294,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     className={classes.field}
                                     valueDefault={getValues('urgency')}
                                     onChange={(value) => {
-                                        setcriticallity(getValues('impact'),value?.domainvalue || '')
+                                        setcriticallity(getValues('impact'), value?.domainvalue || '', getValues('company'))
                                         setValue('urgency', value?.domainvalue || '')
                                     }}
                                     disabled={visorSD}
@@ -1301,7 +1319,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     onChange={(value) => {
                                         setValue('first_contact_deadline', value);
                                     }}
-                                    valueDefault={(convertLocalDate(lead.value?.first_contact_deadline||"").toLocaleString())}
+                                    valueDefault={(convertLocalDate(getValues("first_contact_deadline")||"").toLocaleString())}
                                     disabled={true}
                                 />
                                 <FieldEdit
@@ -1310,7 +1328,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     onChange={(value) => {
                                         setValue('resolution_deadline', value);
                                     }}
-                                    valueDefault={(convertLocalDate(lead.value?.resolution_deadline||"").toLocaleString())}
+                                    valueDefault={(convertLocalDate(getValues("resolution_deadline")||"").toLocaleString())}
                                     disabled={true}
                                 />
                                 <FieldMultiSelectFreeSolo
@@ -1443,13 +1461,12 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                     setOpenModal={setOpenModalChangePhase}
                     leadId={edit ? Number(match.params.id) : 0}
                     loading={saveNote.loading || leadNotes.loading}
-                    onSubmit={(newNote, columndata) => {
-                        
+                    onSubmit={(columndata) => {
                         setValue('column_uuid', columndata?.column_uuid || "");
                         setValue('columnid', Number(columndata?.columnid || "0"));
-                        const body = leadLogNotesIns(newNote);
-                        dispatch(saveLeadLogNote(body));
                         setValues(prev => ({ ...prev })); // refrescar
+                        setOpenModalChangePhase(false);
+                        onSubmit()
                     }}
                 />
             </div>
@@ -1631,13 +1648,14 @@ interface TabPanelLogNoteProps {
     AdditionalButtons?: () => JSX.Element | null;
 }
 
-const DialogChangePhase: FC<{openModal:any, setOpenModal:(a:any)=>void, loading?:boolean, leadId: number,data:any, columnid: any,column_uuid:string, onSubmit?: (newNote: ICrmLeadNoteSave, columndata:any) => void}> =
+const DialogChangePhase: FC<{openModal:any, setOpenModal:(a:any)=>void, loading?:boolean, leadId: number,data:any, columnid: any,column_uuid:string, onSubmit?: (columndata:any) => void}> =
     ({openModal,loading, leadId, onSubmit, setOpenModal, data, columnid,column_uuid})=>{
     const { t } = useTranslation();
     const classes = useTabPanelLogNoteStyles();
     const classes2 = useLeadFormStyles();
     const [noteDescription, setNoteDescription] = useState("");
     const [media, setMedia] = useState<File[] | null>(null);
+    const saveNote = useSelector(state => state.servicedesk.saveLeadNote);
     const [datamanager, setDatamanager] = useState({
         columnid: 0,
         column_uuid: ''
@@ -1649,10 +1667,28 @@ const DialogChangePhase: FC<{openModal:any, setOpenModal:(a:any)=>void, loading?
             column_uuid: column_uuid
         })
     }, [columnid]);
-    useEffect(() => {
-        console.log(datamanager)
-    }, [setDatamanager]);
+
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        if (saveNote.loading) return;
+        if (saveNote.error) {
+            const errormessage = t(saveNote.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
+            dispatch(showSnackbar({
+                message: errormessage,
+                severity: "error",
+                show: true,
+            }));
+        } else if (saveNote.success) {
+            setOpenModal(false);
+            dispatch(showSnackbar({
+                message: "Se registró la nota",
+                severity: "success",
+                show: true,
+            }));
+            onSubmit?.(datamanager);
+        }
+    }, [saveNote, dispatch]);
 
     const deleteMediaFile = useCallback((fileToRemove: File) => {
         setMedia(prev => prev?.filter(x => x !== fileToRemove) || null);
@@ -1676,6 +1712,7 @@ const DialogChangePhase: FC<{openModal:any, setOpenModal:(a:any)=>void, loading?
     }, []);
 
     const handleSubmit = useCallback(() => {
+        debugger
         if(!(datamanager.column_uuid !== "")){
             dispatch(showSnackbar({
                 message: t(langKeys.mustselectphase),
@@ -1710,7 +1747,9 @@ const DialogChangePhase: FC<{openModal:any, setOpenModal:(a:any)=>void, loading?
             username: null,
             operation: "INSERT",
         };
-        onSubmit?.(newNote,datamanager);
+        const body = leadLogNotesIns(newNote);
+        dispatch(saveLeadLogNote(body));
+
         handleCleanMediaInput();
         setNoteDescription("");
         // eslint-disable-next-line react-hooks/exhaustive-deps
