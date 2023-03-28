@@ -143,7 +143,7 @@ const DraggablesCategories : FC<{column:any, index:number, handleDelete:(lead: I
                                         snapshot={snapshot}
                                         onDelete={handleDelete}
                                         onCloseLead={handleCloseLead}
-                                        edit={role!=="VISOR SD"}
+                                        edit={!role.includes("VISOR")}
                                       />
                                     </div>
                                   )}
@@ -168,6 +168,7 @@ const DraggablesCategories : FC<{column:any, index:number, handleDelete:(lead: I
 
 const ServiceDesk: FC = () => {
   const user = useSelector(state => state.login.validateToken.user);
+  console.log(user)
   const history = useHistory();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -479,7 +480,7 @@ const ServiceDesk: FC = () => {
   }
 
   const onClickRow = (row: any) => {
-    if (row.leadid && user?.roledesc !== "VISOR SD") {
+    if (row.leadid && !user?.roledesc.includes("VISOR")) {
       history.push({pathname: paths.SERVICE_DESK_EDIT_LEAD.resolve(row.leadid),});
     }
   }
@@ -633,7 +634,7 @@ const ServiceDesk: FC = () => {
 
   const filtersElement = useMemo(() => (
     <>
-      {user?.roledesc !== "VISOR SD" &&
+      {(!user?.roledesc.includes("VISOR")) &&
         <FieldSelect
         variant="outlined"
         label={t(langKeys.business)}
@@ -793,6 +794,7 @@ const ServiceDesk: FC = () => {
               onChange={(v: string) => setBoardFilter(prev => ({ ...prev, customer: v }))}
             />
             <div style={{ flexGrow: 1 }} />
+            {(!user?.roledesc.includes("VISOR")) &&
             <Button
                 variant="contained"
                 color="primary"
@@ -802,7 +804,7 @@ const ServiceDesk: FC = () => {
                 style={{ backgroundColor: "#55BD84" }}
               >
                 <Trans i18nKey={langKeys.register} />
-            </Button>
+            </Button>}
             <Button
                 variant="contained"
                 color="primary"
@@ -856,6 +858,7 @@ const ServiceDesk: FC = () => {
             <div style={{ display: 'flex', gap: 8 }}>
               
             </div>
+            {(!user?.roledesc.includes("VISOR")) &&
             <div style={{ display: 'flex', gap: 8 }}>
               <Button
                   variant="contained"
@@ -884,7 +887,7 @@ const ServiceDesk: FC = () => {
               >
                   <Trans i18nKey={langKeys.send_sms} />
               </Button>
-            </div>
+            </div>}
           </div>
             <TablePaginated
               columns={columns}
