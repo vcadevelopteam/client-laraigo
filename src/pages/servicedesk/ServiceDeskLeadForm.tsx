@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, IconButton, Checkbox, Tabs, Avatar, Paper, InputAdornment } from '@material-ui/core';
-import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, RadioGroudFieldEdit, TitleDetail, AntTabPanel, FieldEditArray, DialogZyx, FieldEditMulti } from 'components';
+import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, TitleDetail, AntTabPanel, FieldEditArray, DialogZyx, FieldEditMulti } from 'components';
 import { RichText } from 'components/fields/RichText';
 import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
@@ -420,7 +420,6 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
     const userConnected = useSelector(state => state.inbox.userConnected);
     const [openModal, setOpenModal] = useState(false);
     const [openModalChangePhase, setOpenModalChangePhase] = useState(false);
-    const [registeredChangedPhase, setregisteredChangedPhase] = useState(false);
 
     const [typeTemplate, setTypeTemplate] = useState<"HSM" | "SMS" | "MAIL">('MAIL');
     const [extraTriggers, setExtraTriggers] = useState({
@@ -820,15 +819,16 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         } else if (saveNote.success) {
             if(openModalChangePhase){
                 setOpenModalChangePhase(false);
-                setregisteredChangedPhase(true);
+                onSubmit()
+            }else{
+                dispatch(showSnackbar({
+                    message: "Se registró la nota",
+                    severity: "success",
+                    show: true,
+                }));
+                dispatch(getLeadLogNotes(leadLogNotesSel(match.params.id)));
+                dispatch(getLeadHistory(leadHistorySel(match.params.id)));
             }
-            dispatch(showSnackbar({
-                message: "Se registró la nota",
-                severity: "success",
-                show: true,
-            }));
-            dispatch(getLeadLogNotes(leadLogNotesSel(match.params.id)));
-            dispatch(getLeadHistory(leadHistorySel(match.params.id)));
         }
     }, [saveNote, match.params.id, t, dispatch]);
 
@@ -1047,18 +1047,17 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                 <Trans i18nKey={langKeys.send_sms} />
                             </Button>
                         }
-                        {/*((edit && lead.value && !isStatusClosed())) && (
+                        {(!lead.loading) &&
                             <Button
                                 variant="contained"
-                                type="button"
-                                color="secondary"
-                                startIcon={<ArchiveIcon />}
-                                onClick={handleCloseLead}
-                                disabled={!canBeSentToHistory || iSProcessLoading()}
+                                color="primary"
+                                onClick={() => {
+                                    setOpenModalChangePhase(true);
+                                }}
                             >
-                                <Trans i18nKey={langKeys.sendToHistory} />
+                                <Trans i18nKey={langKeys.phasechange} />
                             </Button>
-                        )*/}
+                        }
                         {(!isStatusClosed() && !lead.loading) && <Button
                             className={classes.button}
                             variant="contained"
@@ -1209,25 +1208,16 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     optionDesc="domaindesc"
                                     optionValue="domainvalue"
                                 />
-                                <RadioGroudFieldEdit
-                                    aria-label="columnid"
-                                    value={Number(getValues('columnid'))}
-                                    name="radio-buttons-group-columnid"
+                                <FieldSelect
+                                    label={t(langKeys.assigneduser)}
                                     className={classes.field}
-                                    row
-                                    optionDesc="description"
-                                    optionValue="columnid"
-                                    data={phasemenu}
-                                    // data={phases.data}
-                                    onChange={(e) => {
-                                        //phaseChange
-                                        setOpenModalChangePhase(edit && !registeredChangedPhase)
-                                        setValue('column_uuid', e?.column_uuid || "");
-                                        setValue('columnid', Number(e?.columnid || "0"));
-                                        setValues(prev => ({ ...prev })); // refrescar
-                                    }}
-                                    label={<Trans i18nKey={langKeys.phase} />}
-                                    error={errors?.columnid?.message}
+                                    valueDefault={getValues('userid')}
+                                    loading={advisers.loading}
+                                    data={advisers.data}
+                                    optionDesc="fullname"
+                                    optionValue="userid"
+                                    onChange={(value) => setValue('userid', value ? value.userid : '')}
+                                    error={errors?.userid?.message}
                                     readOnly={isStatusClosed() || iSProcessLoading()}
                                 />
                             </Grid>
@@ -1336,18 +1326,6 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     optionValue="domaindesc"
                                     readOnly={isStatusClosed() || iSProcessLoading()}
                                 />
-                                <FieldSelect
-                                    label={t(langKeys.assigneduser)}
-                                    className={classes.field}
-                                    valueDefault={getValues('userid')}
-                                    loading={advisers.loading}
-                                    data={advisers.data}
-                                    optionDesc="fullname"
-                                    optionValue="userid"
-                                    onChange={(value) => setValue('userid', value ? value.userid : '')}
-                                    error={errors?.userid?.message}
-                                    readOnly={isStatusClosed() || iSProcessLoading()}
-                                />
                             </Grid>
                         </Grid>
                     </Grid>
@@ -1451,11 +1429,19 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                 />                  
                 <DialogChangePhase
                     openModal={openModalChangePhase}
+                    data={phasemenu}
+                    columnid={Number(getValues('columnid'))}
+                    column_uuid={getValues('column_uuid')}
+                    setOpenModal={setOpenModalChangePhase}
                     leadId={edit ? Number(match.params.id) : 0}
                     loading={saveNote.loading || leadNotes.loading}
-                    onSubmit={(newNote) => {
+                    onSubmit={(newNote, columndata) => {
+                        
+                        setValue('column_uuid', columndata?.column_uuid || "");
+                        setValue('columnid', Number(columndata?.columnid || "0"));
                         const body = leadLogNotesIns(newNote);
                         dispatch(saveLeadLogNote(body));
+                        setValues(prev => ({ ...prev })); // refrescar
                     }}
                 />
             </div>
@@ -1637,12 +1623,27 @@ interface TabPanelLogNoteProps {
     AdditionalButtons?: () => JSX.Element | null;
 }
 
-const DialogChangePhase: FC<{openModal:any, loading?:boolean, leadId: number, onSubmit?: (newNote: ICrmLeadNoteSave) => void}> =
-    ({openModal,loading, leadId, onSubmit})=>{
+const DialogChangePhase: FC<{openModal:any, setOpenModal:(a:any)=>void, loading?:boolean, leadId: number,data:any, columnid: any,column_uuid:string, onSubmit?: (newNote: ICrmLeadNoteSave, columndata:any) => void}> =
+    ({openModal,loading, leadId, onSubmit, setOpenModal, data, columnid,column_uuid})=>{
     const { t } = useTranslation();
     const classes = useTabPanelLogNoteStyles();
+    const classes2 = useLeadFormStyles();
     const [noteDescription, setNoteDescription] = useState("");
     const [media, setMedia] = useState<File[] | null>(null);
+    const [datamanager, setDatamanager] = useState({
+        columnid: 0,
+        column_uuid: ''
+    });
+    
+    useEffect(() => {
+        setDatamanager({
+            columnid: columnid,
+            column_uuid: column_uuid
+        })
+    }, [columnid]);
+    useEffect(() => {
+        console.log(datamanager)
+    }, [setDatamanager]);
     const dispatch = useDispatch();
 
     const deleteMediaFile = useCallback((fileToRemove: File) => {
@@ -1661,12 +1662,36 @@ const DialogChangePhase: FC<{openModal:any, loading?:boolean, leadId: number, on
     }, []);
     
     const handleInputMedia = useCallback(() => {
-        const input = document.getElementById('noteMediaInput') as HTMLInputElement;
+        const input = document.getElementById('noteMediaInput2') as HTMLInputElement;
         input.value = "";
         input!.click();
     }, []);
 
     const handleSubmit = useCallback(() => {
+        if(!(datamanager.column_uuid !== "")){
+            dispatch(showSnackbar({
+                message: t(langKeys.mustselectphase),
+                severity: "warning",
+                show: true,
+            }));
+            return null;
+        }
+        if(!(datamanager.column_uuid !== column_uuid)){
+            dispatch(showSnackbar({
+                message: t(langKeys.haventchangedphase),
+                severity: "warning",
+                show: true,
+            }));
+            return null;
+        }
+        if(!noteDescription){
+            dispatch(showSnackbar({
+                message: t(langKeys.youmustfilldesc),
+                severity: "warning",
+                show: true,
+            }));
+            return null;
+        }
         const newNote: ICrmLeadNoteSave = {
             leadid: leadId,
             leadnotesid: 0,
@@ -1677,15 +1702,15 @@ const DialogChangePhase: FC<{openModal:any, loading?:boolean, leadId: number, on
             username: null,
             operation: "INSERT",
         };
-        onSubmit?.(newNote);
+        onSubmit?.(newNote,datamanager);
         handleCleanMediaInput();
         setNoteDescription("");
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [noteDescription, media, dispatch]);
+    }, [noteDescription, media, dispatch, datamanager]);
     
     const handleCleanMediaInput = () => {
         if (media === null) return;
-        const input = document.getElementById('noteMediaInput') as HTMLInputElement;
+        const input = document.getElementById('noteMediaInput2') as HTMLInputElement;
         input.value = "";
         setMedia(null);
     }
@@ -1693,9 +1718,26 @@ const DialogChangePhase: FC<{openModal:any, loading?:boolean, leadId: number, on
     return <DialogZyx
         open={openModal}
         title={t(langKeys.phasechange)}
+        buttonText1={t(langKeys.cancel)}
+        buttonText2={t(langKeys.save)}
+        handleClickButton1={() => setOpenModal(false)}
+        handleClickButton2={handleSubmit}
         maxWidth="md"
     >
         <div className="row-zyx">
+            <div className={classes.row} style={{paddingBottom: 10}}>
+                <FieldSelect
+                    label={t(langKeys.phase)}
+                    className={classes2.field}
+                    valueDefault={datamanager.column_uuid}
+                    onChange={(e) => {
+                        setDatamanager({columnid: Number(e?.columnid || "0"), column_uuid: e?.column_uuid || ""});
+                    }}
+                    data={data}
+                    optionDesc="description"
+                    optionValue="column_uuid"
+                />
+            </div>
             <div className={classes.row}>
                 <Avatar className={classes.avatar} />
                 <div style={{ width: '1em' }} />
@@ -1714,7 +1756,7 @@ const DialogChangePhase: FC<{openModal:any, loading?:boolean, leadId: number, on
                     <input
                         accept="file/*"
                         style={{ display: 'none' }}
-                        id="noteMediaInput"
+                        id="noteMediaInput2"
                         type="file"
                         onChange={onChangeMediaInput}
                         multiple
@@ -1736,18 +1778,6 @@ const DialogChangePhase: FC<{openModal:any, loading?:boolean, leadId: number, on
                         </IconButton>
                     </div>
                 </div>
-            </div>
-            <div style={{ height: 12 }} />
-            <div>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleSubmit}
-                    disabled={loading || (noteDescription.length === 0 && media === null)}
-                >
-                    {loading && <CircularProgress style={{ height: 28, width: 28, marginRight: '0.75em' }} />}
-                    Log
-                </Button>
             </div>
         </div>
     </DialogZyx>
