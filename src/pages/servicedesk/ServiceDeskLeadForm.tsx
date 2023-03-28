@@ -668,7 +668,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                 type: lead.value?.type,
                 ticketnum: lead.value?.ticketnum,
                 createdate: lead.value?.createdate,
-                company: lead.value?.company,
+                company: lead.value?.company||"",
                 phone: lead.value?.phone,
                 impact: lead.value?.impact,
                 priority: lead.value?.priority,
@@ -1129,7 +1129,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     className={classes.field}
                                     valueDefault={getValues('company')}
                                     onChange={(value) => {
-                                        setValue('company', value);
+                                        setValue('company', value||"");
                                     }}
                                     error={errors?.impact?.message}
                                     data={dataCompany.data}
