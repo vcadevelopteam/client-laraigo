@@ -272,6 +272,7 @@ const TabCriticalityMatrix: React.FC<TabDetailProps> = ({ form,row, multiData })
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const startAddRow = { impact: "", urgency: "", priority: ""}
     const [dataAddRow, setDataAddRow] = useState(startAddRow);
+    const [dataRow, setDataRow] = useState<any>(null);
     const [errorAddRow, seterrorAddRow] = useState(startAddRow);
     const [openModal, setOpenModal] = useState(false);
     const dispatch = useDispatch();
@@ -323,15 +324,25 @@ const TabCriticalityMatrix: React.FC<TabDetailProps> = ({ form,row, multiData })
         })
         if(!Object.values(dataAddRow).includes('')){
             let crit = getValues('criticality')
-            if(!crit.filter((x:any)=>(x.impact===dataAddRow.impact && x.urgency===dataAddRow.urgency)).length){
-                setValue('criticality',[...crit, {...dataAddRow, index: currentIndex}])
-                setCurrentIndex(currentIndex+1);
+            if (dataRow){
+                crit.filter((x:any)=>x.index===dataRow.index)[0].priority=dataAddRow.priority
+                setValue('criticality',crit)
                 setOpenModal(false)
                 seterrorAddRow(startAddRow)
                 setDataAddRow(startAddRow)
+                setDataRow(null)
             }else{
-                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.combination_already_exists) }))
-            }            
+                if(!crit.filter((x:any)=>(x.impact===dataAddRow.impact && x.urgency===dataAddRow.urgency)).length){
+                    setValue('criticality',[...crit, {...dataAddRow, index: currentIndex}])
+                    setCurrentIndex(currentIndex+1);
+                    setOpenModal(false)
+                    seterrorAddRow(startAddRow)
+                    setDataAddRow(startAddRow)
+                    setDataRow(null)
+                }else{
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.combination_already_exists) }))
+                }            
+            }
         }
     }
     
@@ -339,6 +350,7 @@ const TabCriticalityMatrix: React.FC<TabDetailProps> = ({ form,row, multiData })
         setOpenModal(false)
         seterrorAddRow(startAddRow)
         setDataAddRow(startAddRow)
+        setDataRow(null)
     }
     
     return <div className={classes.containerDetail}>
@@ -392,6 +404,11 @@ const TabCriticalityMatrix: React.FC<TabDetailProps> = ({ form,row, multiData })
                 useSelection={true}
                 selectionKey={selectionKey}
                 setSelectedRows={setSelectedRows}
+                onClickRow={(e)=>{
+                    setDataAddRow({ impact: e.impact, urgency: e.urgency, priority: e.priority})
+                    setDataRow(e)
+                    setOpenModal(true)
+                }}
                 ButtonsElement={() => (
                     <div style={{display: "flex", justifyContent: "end", width: "100%"}}>
                         <Button
@@ -401,7 +418,7 @@ const TabCriticalityMatrix: React.FC<TabDetailProps> = ({ form,row, multiData })
                             color="primary"
                             startIcon={<AddIcon color="secondary" />}
                             style={{ backgroundColor: "#55bd84", marginRight: 8 }}
-                            onClick={() => {setOpenModal(true) }}
+                            onClick={() => {setOpenModal(true);setDataRow(null) }}
                         >{t(langKeys.register)}</Button>
                         <Button
                             disabled={Object.keys(selectedRows).length===0}
@@ -438,6 +455,7 @@ const TabCriticalityMatrix: React.FC<TabDetailProps> = ({ form,row, multiData })
                     onChange={(value) => setDataAddRow({...dataAddRow, impact: value?.domainvalue|| ''})}
                     error={errorAddRow.impact}
                     uset={true}
+                    disabled={!!dataRow}
                     data={dataImpact}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
@@ -451,6 +469,7 @@ const TabCriticalityMatrix: React.FC<TabDetailProps> = ({ form,row, multiData })
                     onChange={(value) => setDataAddRow({...dataAddRow, urgency: value?.domainvalue|| ''})}
                     error={errorAddRow.urgency}
                     uset={true}
+                    disabled={!!dataRow}
                     data={dataUrgency}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
