@@ -3591,6 +3591,32 @@ export const getreportrequestSD = ({ skip, take, filters, sorts, startdate, endd
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
+export const getRequestSDExport = ({ filters, sorts, startdate, enddate, company }: Dictionary): IRequestBody => ({
+    method: "UFN_REPORT_REQUESTSD_EXPORT",
+    key: "UFN_REPORT_REQUESTSD_EXPORT",
+    parameters: {
+        origin: "reportrequestsd",
+        filters,
+        startdate,
+        enddate,
+        company,
+        sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+});
+export const getComplianceSLAExport = ({ filters, sorts, startdate, enddate, company }: Dictionary): IRequestBody => ({
+    method: "UFN_REPORT_COMPLIANCESLA_EXPORT",
+    key: "UFN_REPORT_COMPLIANCESLA_EXPORT",
+    parameters: {
+        origin: "reportcompliancesla",
+        filters,
+        startdate,
+        enddate,
+        company,
+        sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+});
 export const getcomplianceSLA = ({ skip, take, filters, sorts, startdate, enddate, company }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_REPORT_COMPLIANCESLA_SEL",
     methodCount: "UFN_REPORT_COMPLIANCESLA_TOTALRECORDS",

@@ -2,7 +2,7 @@
 import React, { FC, useEffect, useMemo, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { getcomplianceSLA, getTicketvsAdviserExport } from 'common/helpers';
+import { getcomplianceSLA, getComplianceSLAExport } from 'common/helpers';
 import { IFetchData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -174,12 +174,13 @@ const ReportComplianceSLA: FC = () => {
             key: x.accessor,
             alias: x.Header,
         }));
-        dispatch(exportData(getTicketvsAdviserExport(
+        dispatch(exportData(getComplianceSLAExport(
             {
                 startdate: daterange.startDate!,
                 enddate: daterange.endDate!,
                 sorts,
                 filters: filters,
+                company:company,
             }), "", "excel", false, columnsExport));
         dispatch(showBackdrop(true));
         setWaitExport(true);
