@@ -1,30 +1,32 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, useEffect, useMemo, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { getasesorvsticketsSel, getTicketvsAdviserExport } from 'common/helpers';
+import { getcomplianceSLA, getTicketvsAdviserExport } from 'common/helpers';
 import { IFetchData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { cleanViewChange, exportData, getCollectionPaginated, resetMultiMain, setViewChange } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
+import { FieldSelect } from 'components/fields/templates';
 
 
 const ReportComplianceSLA: FC = () => {
     // const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const multiData = useSelector(state => state.main.multiData);
+    const multiData = useSelector(state => state.main.multiDataAux);
     const mainPaginated = useSelector(state => state.main.mainPaginated);
     const resExportData = useSelector(state => state.main.exportData);
     const [pageCount, setPageCount] = useState(0);
     const [totalrow, settotalrow] = useState(0);
+    const [company, setCompany] = useState("");
     const [waitSave, setWaitSave] = useState(false);
     const [waitExport, setWaitExport] = useState(false);
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
     useEffect(() => {
-        dispatch(setViewChange("report_ticketvsasesor"))
+        dispatch(setViewChange("reportcompliancesla"))
         return () => {
             dispatch(cleanViewChange());
         }
@@ -34,72 +36,85 @@ const ReportComplianceSLA: FC = () => {
     const columns = React.useMemo(
         () => [
             {
-                Header: "#",
-                accessor: 'numeroticket',
-            },
-            {
                 Header: t(langKeys.sdrequestcode),
-                accessor: 'fechainicio',
+                accessor: 'sd_request',
             },
             {
                 Header: t(langKeys.type),
-                accessor: 'horainicio',
-            },
-            {
-                Header: t(langKeys.billingsetup_service),
-                accessor: 'asesor',
+                accessor: 'type',
             },
             {
                 Header: t(langKeys.applicant),
-                accessor: 'canal',
+                accessor: 'display_name',
             },
             {
                 Header: t(langKeys.business),
-                accessor: 'tipo',
+                accessor: 'company',
             },
             {
                 Header: t(langKeys.resume),
-                accessor: 'submotivo',
+                accessor: 'description',
             },
             {
                 Header: t(langKeys.urgency),
-                accessor: 'valoracion',
+                accessor: 'urgency',
             },
             {
                 Header: t(langKeys.impact),
-                accessor: 'cerradopor',
+                accessor: 'impact',
             },
             {
                 Header: t(langKeys.priority),
-                accessor: 'tipocierre',
+                accessor: 'priority',
             },
             {
                 Header: t(langKeys.registrationdate),
-                accessor: 'fechaprimerarespuesta',
+                accessor: 'report_date',
+                Cell: (props: any) => {
+                    const { report_date } = props.cell.row.original;
+                    return new Date(report_date).toLocaleString()
+                }
             },
             {
                 Header: t(langKeys.firstContactDate),
-                accessor: 'horaprimerarespuesta',
+                accessor: 'first_contact_date',
+                Cell: (props: any) => {
+                    const { first_contact_date } = props.cell.row.original;
+                    return first_contact_date? new Date(first_contact_date).toLocaleString() : ""
+                }
             },
             {
                 Header: t(langKeys.firstcontactcompliance),
-                accessor: 'fechaultimarespuesta',
+                accessor: 'compliance_first_contact',
+
             },
             {
                 Header: t(langKeys.firstContactDatedeadline),
-                accessor: 'horaultimarespuesta',
+                accessor: 'first_contact_deadline',
+                Cell: (props: any) => {
+                    const { first_contact_deadline } = props.cell.row.original;
+                    return new Date(first_contact_deadline).toLocaleString()
+                }
             },
             {
                 Header: t(langKeys.dateofresolution),
-                accessor: 'fechacierre',
+                accessor: 'resolution_date',
+                Cell: (props: any) => {
+                    const { resolution_date } = props.cell.row.original;
+                    return resolution_date? new Date(resolution_date).toLocaleString() : ""
+                }
             },
             {
                 Header: t(langKeys.dateofresolutiondeadline),
-                accessor: 'horacierre',
+                accessor: 'resolution_deadline',
+                Cell: (props: any) => {
+                    const { resolution_deadline } = props.cell.row.original;
+                    return new Date(resolution_deadline).toLocaleString()
+                }
             },
             {
                 Header: t(langKeys.complianceresolution),
-                accessor: 'tipo_operacion',
+                accessor: 'compliance_resolution',
             },
         ],
         [t]
@@ -118,12 +133,13 @@ const ReportComplianceSLA: FC = () => {
 
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
         setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
-        dispatch(getCollectionPaginated(getasesorvsticketsSel({
+        dispatch(getCollectionPaginated(getcomplianceSLA({
             startdate: daterange.startDate!,
             enddate: daterange.endDate!,
             take: pageSize,
             skip: pageIndex * pageSize,
             sorts: sorts,
+            company: company,
             filters: {
                 ...filters,
             },
@@ -196,6 +212,23 @@ const ReportComplianceSLA: FC = () => {
                 pageCount={pageCount}
                 filterrange={true}
                 download={true}
+                autotrigger
+                FiltersElement={useMemo(() => (
+                    <div style={{width:200}}>
+                        <FieldSelect
+                            label={t(langKeys.business)}
+                            valueDefault={company}
+                            variant="outlined"
+                            onChange={(value) => {
+                                setCompany(value.domainvalue||"");
+                            }}
+                            data={multiData.data[2].data}
+                            loading={multiData.loading}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
+                    </div>
+                ), [company, multiData, t])}
                 fetchData={fetchData}
                 filterGeneral={false}
                 exportPersonalized={triggerExportData}

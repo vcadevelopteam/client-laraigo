@@ -1,30 +1,32 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, useEffect, useMemo, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { getasesorvsticketsSel, getTicketvsAdviserExport } from 'common/helpers';
+import { getreportrequestSD, getTicketvsAdviserExport } from 'common/helpers';
 import { IFetchData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { cleanViewChange, exportData, getCollectionPaginated, resetMultiMain, setViewChange } from 'store/main/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
+import { FieldSelect } from 'components/fields/templates';
 
 
 const ReportRequestSD: FC = () => {
     // const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const multiData = useSelector(state => state.main.multiData);
+    const multiData = useSelector(state => state.main.multiDataAux);
     const mainPaginated = useSelector(state => state.main.mainPaginated);
     const resExportData = useSelector(state => state.main.exportData);
     const [pageCount, setPageCount] = useState(0);
+    const [company, setCompany] = useState("");
     const [totalrow, settotalrow] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
     const [waitExport, setWaitExport] = useState(false);
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
     useEffect(() => {
-        dispatch(setViewChange("report_ticketvsasesor"))
+        dispatch(setViewChange("reportrequestsd"))
         return () => {
             dispatch(cleanViewChange());
         }
@@ -34,56 +36,57 @@ const ReportRequestSD: FC = () => {
     const columns = React.useMemo(
         () => [
             {
-                Header: "#",
-                accessor: 'numeroticket',
-            },
-            {
                 Header: t(langKeys.sdrequestcode),
-                accessor: 'fechainicio',
+                accessor: 'sd_request',
             },
             {
                 Header: t(langKeys.type),
-                accessor: 'horainicio',
-            },
-            {
-                Header: t(langKeys.billingsetup_service),
-                accessor: 'asesor',
+                accessor: 'type',
             },
             {
                 Header: t(langKeys.channel),
-                accessor: 'canal',
+                accessor: 'channel',
             },
             {
                 Header: t(langKeys.applicant),
-                accessor: 'tipo',
+                accessor: 'display_name',
             },
             {
                 Header: t(langKeys.business),
-                accessor: 'submotivo',
+                accessor: 'company',
             },
             {
                 Header: t(langKeys.resume),
-                accessor: 'valoracion',
+                accessor: 'description',
             },
             {
                 Header: t(langKeys.priority),
-                accessor: 'cerradopor',
+                accessor: 'priority',
             },
             {
                 Header: t(langKeys.status),
-                accessor: 'tipocierre',
+                accessor: 'phase',
             },
             {
                 Header: t(langKeys.resolution),
-                accessor: 'fechaprimerarespuesta',
+                NoFilter: true,        
+                accessor: 'resolution',
             },
             {
                 Header: t(langKeys.reportdate),
-                accessor: 'horaprimerarespuesta',
+                accessor: 'report_date',
+                Cell: (props: any) => {
+                    const { report_date } = props.cell.row.original;
+                    return new Date(report_date).toLocaleString()
+                }
             },
             {
                 Header: t(langKeys.dateofresolution),
-                accessor: 'fechaultimarespuesta',
+                accessor: 'resolution_date',
+                Cell: (props: any) => {
+                    const { resolution_date } = props.cell.row.original;
+                    return new Date(resolution_date).toLocaleString()
+                }
             },            
         ],
         [t]
@@ -98,16 +101,18 @@ const ReportRequestSD: FC = () => {
         if (!multiData.loading){
             dispatch(showBackdrop(false));
         }
+        console.log(multiData)
     }, [multiData])
 
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
         setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
-        dispatch(getCollectionPaginated(getasesorvsticketsSel({
+        dispatch(getCollectionPaginated(getreportrequestSD({
             startdate: daterange.startDate!,
             enddate: daterange.endDate!,
             take: pageSize,
             skip: pageIndex * pageSize,
             sorts: sorts,
+            company: company,
             filters: {
                 ...filters,
             },
@@ -180,6 +185,23 @@ const ReportRequestSD: FC = () => {
                 pageCount={pageCount}
                 filterrange={true}
                 download={true}
+                autotrigger
+                FiltersElement={useMemo(() => (
+                    <div style={{width:200}}>
+                        <FieldSelect
+                            label={t(langKeys.business)}
+                            valueDefault={company}
+                            variant="outlined"
+                            onChange={(value) => {
+                                setCompany(value.domainvalue||"");
+                            }}
+                            data={multiData.data[2].data}
+                            loading={multiData.loading}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
+                    </div>
+                ), [company, multiData, t])}
                 fetchData={fetchData}
                 filterGeneral={false}
                 exportPersonalized={triggerExportData}

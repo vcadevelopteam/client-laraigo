@@ -2489,6 +2489,11 @@ export const adviserSel = (): IRequestBody => ({
     key: "UFN_ADVISERS_SEL",
     parameters: {},
 });
+export const userSDSel = (): IRequestBody => ({
+    method: 'UFN_USER_SD_SEL',
+    key: "UFN_USER_SD_SEL",
+    parameters: {},
+});
 
 //tabla paginada
 export const paginatedPersonWithoutDateSel = ({ skip, take, filters, sorts }: Dictionary): IRequestBodyPaginated => ({
@@ -3571,7 +3576,36 @@ export const getasesorvsticketsSel = ({ skip, take, filters, sorts, startdate, e
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
-
+export const getreportrequestSD = ({ skip, take, filters, sorts, startdate, enddate, company }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_REPORT_REQUESTSD_SEL",
+    methodCount: "UFN_REPORT_REQUESTSD_TOTALRECORDS",
+    parameters: {
+        startdate,
+        enddate,
+        skip,
+        take,
+        filters,
+        sorts,
+        company,
+        origin: "reportrequestsd",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+export const getcomplianceSLA = ({ skip, take, filters, sorts, startdate, enddate, company }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_REPORT_COMPLIANCESLA_SEL",
+    methodCount: "UFN_REPORT_COMPLIANCESLA_TOTALRECORDS",
+    parameters: {
+        startdate,
+        enddate,
+        skip,
+        take,
+        filters,
+        sorts,
+        company,
+        origin: "reportcompliancesla",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
 export const getTicketvsAdviserExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
     method: "UFN_REPORT_ASESOR_VS_TICKET_EXPORT",
     key: "UFN_REPORT_ASESOR_VS_TICKET_EXPORT",

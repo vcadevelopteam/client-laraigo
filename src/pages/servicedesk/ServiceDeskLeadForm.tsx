@@ -10,7 +10,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useRouteMatch } from 'react-router';
 import PhoneIcon from '@material-ui/icons/Phone';
 import {
-    adviserSel, getPaginatedPersonLead as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSDSel, leadHistorySel,
+    userSDSel, getPaginatedPersonLead as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSDSel, leadHistorySel,
     leadHistoryIns, getLeadsSDSel, insSDLead, getSLASel
 } from 'common/helpers';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -488,7 +488,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         register('sd_request');
         register('type');
         register('createdate');
-        register('company');
+        register('company', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('phone');
         register('impact', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('urgency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -584,7 +584,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
             dispatch(getLeadHistory(leadHistorySel(leadId)));
         }
 
-        dispatch(getAdvisers(adviserSel()));
+        dispatch(getAdvisers(userSDSel()));
         dispatch(getSlaRules(getSLASel(0)));
         dispatch(getLeadPhases(getColumnsSDSel(0, true)));
         dispatch(getLeadTagsDomain(getValuesFromDomain('OPORTUNIDADETIQUETAS')));

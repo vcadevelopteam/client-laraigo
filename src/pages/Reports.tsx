@@ -874,6 +874,7 @@ const Reports: FC = () => {
         dispatch(getMultiCollectionAux([
             getValuesFromDomain("ESTADOGENERICO"),
             getTableOrigin(),
+            getValuesFromDomain('EMPRESA'),
         ]));
 
         return () => {
