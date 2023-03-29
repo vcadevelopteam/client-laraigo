@@ -342,6 +342,19 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                         {getValues("notificationtype") === "HSMEMAIL" && <div style={{width:"100%"}}>
                             <div className='row-zyx'>
                                 <div className='col-6'>
+                                    <Typography style={{fontWeight: 'bold', flexBasis: '100%', marginBottom:8}}>{t(langKeys.email)}</Typography>
+                                    <FieldSelect
+                                        label={t(langKeys.notificationtemplate)}
+                                        className="col-12"
+                                        valueDefault={getValues('emailtemplateid')}
+                                        error={errors?.emailtemplateid?.message}
+                                        onChange={onSelectTemplateEmail}
+                                        data={dataTemplates.filter(x => x.type === "MAIL")}
+                                        optionDesc="name"
+                                        optionValue="id"
+                                    />
+                                </div>
+                                <div className='col-6'>
                                     <Typography style={{fontWeight: 'bold', flexBasis: '100%', marginBottom:8}}>HSM</Typography>
                                     <FieldSelect
                                         label={t(langKeys.notificationtemplate)}
@@ -366,48 +379,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                         style={{marginBottom:8}}
                                     />
                                 </div>
-                                <div className='col-6'>
-                                    <Typography style={{fontWeight: 'bold', flexBasis: '100%', marginBottom:8}}>{t(langKeys.email)}</Typography>
-                                    <FieldSelect
-                                        label={t(langKeys.notificationtemplate)}
-                                        className="col-12"
-                                        valueDefault={getValues('emailtemplateid')}
-                                        error={errors?.emailtemplateid?.message}
-                                        onChange={onSelectTemplateEmail}
-                                        data={dataTemplates.filter(x => x.type === "MAIL")}
-                                        optionDesc="name"
-                                        optionValue="id"
-                                    />
-                                </div>
                                 <div  className='row-zyx'>
-                                    <div className='col-6'>
-                                        <React.Fragment>
-                                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                                                {t(langKeys.message)}
-                                                <Tooltip title={`${t(langKeys.calendar_messate_tooltip)}`} placement="top-start">
-                                                    <InfoIcon style={{ padding: "5px 0 0 5px" }} />
-                                                </Tooltip>
-                                            </Box>
-                                            <div dangerouslySetInnerHTML={{ __html: bodyMessage }} />
-                                            <div className="col-12" >
-                                                {Object.keys(templateVariables).map((x, i) => {
-                                                    return (
-                                                        <div key={`templateVariables-${i + 1}`} style={{ paddingTop: 10 }}>
-                                                            <FieldSelect
-                                                                label={`Email Variable #${i + 1}`}
-                                                                className="col-6"
-                                                                valueDefault={templateVariables[x]}
-                                                                onChange={(value) => { setTemplateVariables({ ...templateVariables, [x]: value?.domainvalue || "" }) }}
-                                                                data={dataVariables}
-                                                                uset={true}
-                                                                optionDesc="domaindesc"
-                                                                optionValue="domainvalue"
-                                                            />
-                                                        </div>)
-                                                })}
-                                            </div>
-                                        </React.Fragment>
-                                    </div>
                                     <div className='col-6'>
                                         <React.Fragment>
                                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
@@ -426,6 +398,34 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                                                 className="col-6"
                                                                 valueDefault={templateVariablesEmail[x]}
                                                                 onChange={(value) => { setTemplateVariablesEmail({ ...templateVariablesEmail, [x]: value?.domainvalue || "" }) }}
+                                                                data={dataVariables}
+                                                                uset={true}
+                                                                optionDesc="domaindesc"
+                                                                optionValue="domainvalue"
+                                                            />
+                                                        </div>)
+                                                })}
+                                            </div>
+                                        </React.Fragment>
+                                    </div>
+                                    <div className='col-6'>
+                                        <React.Fragment>
+                                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                                {t(langKeys.message)}
+                                                <Tooltip title={`${t(langKeys.calendar_messate_tooltip)}`} placement="top-start">
+                                                    <InfoIcon style={{ padding: "5px 0 0 5px" }} />
+                                                </Tooltip>
+                                            </Box>
+                                            <div dangerouslySetInnerHTML={{ __html: bodyMessage }} />
+                                            <div className="col-12" >
+                                                {Object.keys(templateVariables).map((x, i) => {
+                                                    return (
+                                                        <div key={`templateVariables-${i + 1}`} style={{ paddingTop: 10 }}>
+                                                            <FieldSelect
+                                                                label={`Email Variable #${i + 1}`}
+                                                                className="col-6"
+                                                                valueDefault={templateVariables[x]}
+                                                                onChange={(value) => { setTemplateVariables({ ...templateVariables, [x]: value?.domainvalue || "" }) }}
                                                                 data={dataVariables}
                                                                 uset={true}
                                                                 optionDesc="domaindesc"
