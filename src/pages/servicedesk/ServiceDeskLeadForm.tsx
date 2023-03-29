@@ -522,9 +522,9 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
             else{
 
                 const callback = () => {
-                    const lostPhase = phases.data.find(x => x.description.toLowerCase() === 'lost');
-                    if (lostPhase?.columnid === data.columnid) {
-                        data.status = "RESUELTO";
+                    const cancelPhase = phases.data.find((x:any) => x.description.toLowerCase() === 'cancelado');
+                    if (cancelPhase?.columnid === data.columnid) {
+                        data.status = "CERRADO";
                     }
                     if (edit) {
                         dispatch(saveLeadAction([
@@ -1149,7 +1149,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                         setValue('company', value.domainvalue||"");
                                         setcriticallity(getValues("impact"), getValues('urgency'), value.domainvalue||"")
                                     }}
-                                    error={errors?.impact?.message}
+                                    error={errors?.company?.message}
                                     data={dataCompany.data}
                                     disabled={(edit && !!lead?.value?.company)|| visorSD}
                                     optionDesc="domaindesc"
@@ -1712,7 +1712,6 @@ const DialogChangePhase: FC<{openModal:any, setOpenModal:(a:any)=>void, loading?
     }, []);
 
     const handleSubmit = useCallback(() => {
-        debugger
         if(!(datamanager.column_uuid !== "")){
             dispatch(showSnackbar({
                 message: t(langKeys.mustselectphase),
