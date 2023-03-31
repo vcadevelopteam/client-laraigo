@@ -1,59 +1,47 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useCallback, Fragment, useEffect, useState, useMemo } from 'react'; // we need this to make JSX compile
-import { useSelector } from 'hooks';
-import { useDispatch } from 'react-redux';
-import Button from '@material-ui/core/Button';
-import { cleanMemoryTable, getCollectionAux, getCollectionAux2, setMemoryTable, uploadFile } from 'store/main/actions';
-import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray, TemplateIcons, IOSSwitch, FieldEditMulti } from 'components';
-import { selInvoice, deleteInvoice, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, billingReportConversationWhatsApp, billingReportHsmHistory, invoiceRefresh, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent, getBalanceSelSent, getCorpSelVariant, listPaymentCard, paymentCardInsert, uploadExcel, insInvoice, templateMaker, exportExcel, selInvoiceComment, insInvoiceComment, convertLocalDate, billingArtificialIntelligenceSel, billingPeriodArtificialIntelligenceSel, billingPeriodArtificialIntelligenceInsArray } from 'common/helpers';
-import { Dictionary, MultiData } from "@types";
-import TableZyx from '../components/fields/table-simple';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import SaveIcon from '@material-ui/icons/Save';
-import { useTranslation } from 'react-i18next';
-import { langKeys } from 'lang/keys';
-import { useForm, useFieldArray } from 'react-hook-form';
-import ClearIcon from '@material-ui/icons/Clear';
-import { getCollection, getMultiCollection, execute, exportData, getMultiCollectionAux } from 'store/main/actions';
-import { createInvoice, regularizeInvoice, createCreditNote, getExchangeRate, emitInvoice, cardDelete, cardCreate, reportPdf } from 'store/culqi/actions';
-import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { CircularProgress, IconButton, Tabs, TextField, Box, FormControlLabel, Divider, Grid, ListItem } from '@material-ui/core';
+import { cleanMemoryTable, getCollectionAux, getCollectionAux2, setMemoryTable, uploadFile, getCollection, getMultiCollection, execute, exportData, getMultiCollectionAux } from 'store/main/actions';
+import { Close, FileCopy, Search as SearchIcon, Refresh as RefreshIcon, Add as AddIcon, GetApp } from '@material-ui/icons';
+import { createInvoice, regularizeInvoice, createCreditNote, getExchangeRate, emitInvoice, cardDelete, cardCreate, reportPdf, charge, resetCharge, balance, resetBalance } from 'store/culqi/actions';
+import { Dictionary, MultiData } from "@types";
 import { DownloadIcon } from 'icons';
-import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
-import { dataYears, dataMonths } from 'common/helpers';
-import {
-    Close,
-    FileCopy,
-    Search as SearchIcon,
-    Refresh as RefreshIcon,
-    Add as AddIcon,
-    GetApp
-} from '@material-ui/icons';
-import PaymentIcon from '@material-ui/icons/Payment';
-import CulqiModal from 'components/fields/CulqiModal';
 import { getCountryList } from 'store/signup/actions';
-import TableContainer from '@material-ui/core/TableContainer';
+import { langKeys } from 'lang/keys';
+import { makeStyles, withStyles, styled } from '@material-ui/core/styles';
+import { selInvoice, deleteInvoice, selInvoiceClient, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, billingReportConversationWhatsApp, billingReportHsmHistory, invoiceRefresh, getAppsettingInvoiceSel, getOrgSel, getMeasureUnit, getValuesFromDomain, getInvoiceDetail, selBalanceData, getBillingMessagingCurrent, getBalanceSelSent, getCorpSelVariant, listPaymentCard, paymentCardInsert, uploadExcel, insInvoice, templateMaker, exportExcel, selInvoiceComment, insInvoiceComment, convertLocalDate, billingArtificialIntelligenceSel, billingPeriodArtificialIntelligenceSel, billingPeriodArtificialIntelligenceInsArray, dataYears, dataMonths, formatNumber, formatNumberFourDecimals, formatNumberNoDecimals } from 'common/helpers';
+import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
+import { Skeleton } from '@material-ui/lab';
+import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx, FieldEditArray, TemplateIcons, IOSSwitch, FieldEditMulti } from 'components';
+import { useDispatch } from 'react-redux';
+import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import { useSelector } from 'hooks';
+import { useTranslation } from 'react-i18next';
+
+import Accordion from '@material-ui/core/Accordion';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AttachFileIcon from '@material-ui/icons/AttachFile';
+import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
+import Button from '@material-ui/core/Button';
+import ClearIcon from '@material-ui/icons/Clear';
+import clsx from 'clsx';
+import CulqiModal from 'components/fields/CulqiModal';
+import DeleteIcon from '@material-ui/icons/Delete';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import MuiPhoneNumber from 'material-ui-phone-number';
 import Paper from '@material-ui/core/Paper';
+import PaymentIcon from '@material-ui/icons/Payment';
+import React, { FC, useCallback, Fragment, useEffect, useState, useMemo } from 'react';
+import SaveIcon from '@material-ui/icons/Save';
 import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import TableCell from '@material-ui/core/TableCell';
-import TableBody from '@material-ui/core/TableBody';
-import clsx from 'clsx';
-import DeleteIcon from '@material-ui/icons/Delete';
-import AttachFileIcon from '@material-ui/icons/AttachFile';
-import { charge, resetCharge, balance, resetBalance } from 'store/culqi/actions';
-import { formatNumber, formatNumberFourDecimals, formatNumberNoDecimals } from 'common/helpers';
-import { Skeleton } from '@material-ui/lab';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import TableZyx from '../components/fields/table-simple';
 import Typography from '@material-ui/core/Typography';
-import MuiPhoneNumber from 'material-ui-phone-number';
-import { styled } from '@material-ui/core/styles';
-import { Controller } from "react-hook-form";
 
 interface RowSelected {
     row: Dictionary | null,
@@ -560,8 +548,8 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
     useEffect(() => {
         if (!auxRes.loading && !auxRes.error) {
             setDataArtificialIntelligence(auxRes.data);
-            var array: any = [];
-            var index = 0;
+            let array: any = [];
+            let index = 0;
             auxRes.data?.forEach(() => {
                 array = [...array, { index: index, allOk: true }];
                 index++;
@@ -2104,7 +2092,7 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
 
     const handleReportPdf = () => {
         if (datareport) {
-            var intelligenceDetail: {}[] = [];
+            let intelligenceDetail: {}[] = [];
 
             if (datareport.artificialintelligencedata) {
                 datareport.artificialintelligencedata.forEach((element: any) => {
@@ -2122,7 +2110,7 @@ const PeriodReport: React.FC<{ dataCorp: any, dataOrg: any, customSearch: any }>
                 });
             }
 
-            var reportbody = {
+            let reportbody = {
                 method: "",
                 parameters: {
                     generalinformationclient: (requestType === 2 ? datareport.orgdesc : datareport.corpdesc),
@@ -3023,8 +3011,8 @@ const Payments: React.FC<{ dataCorp: any, dataOrg: any, setCustomSearch(value: R
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
 
-                    var showPayButton = false;
-                    var showUpdateButton = false;
+                    let showPayButton = false;
+                    let showUpdateButton = false;
 
                     if (!(((row.invoicestatus === "ERROR" || row.invoicestatus === "PENDING" || row.invoicestatus === "CANCELED") || row.paymentstatus !== "PENDING") || row.totalamount <= 0)) {
                         showPayButton = true;
@@ -3368,7 +3356,7 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
         if (cardList) {
             if (cardList.data) {
                 if (cardList.data.length > 0) {
-                    var favoriteCard = cardList.data.find((o: { favorite: boolean; }) => o.favorite === true);
+                    let favoriteCard = cardList.data.find((o: { favorite: boolean; }) => o.favorite === true);
 
                     if (favoriteCard) {
                         setFavoriteCardId(favoriteCard.paymentcardid);
@@ -3421,13 +3409,13 @@ const PaymentsDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =
 
                 if (mainResult.mainData.data) {
                     if (mainResult.mainData.data[0]) {
-                        var appsetting = mainResult.mainData.data[0];
-                        var country = (data?.orgcountry || data?.corpcountry);
-                        var doctype = (data?.orgdoctype || data?.corpdoctype);
+                        let appsetting = mainResult.mainData.data[0];
+                        let country = (data?.orgcountry || data?.corpcountry);
+                        let doctype = (data?.orgdoctype || data?.corpdoctype);
 
                         if (country && doctype) {
                             if (country === 'PE' && doctype === '6') {
-                                var compareamount = (data?.totalamount || 0);
+                                let compareamount = (data?.totalamount || 0);
 
                                 if (data?.currency === 'USD') {
                                     compareamount = compareamount * (exchangeRequest?.exchangerate || 0);
@@ -4035,7 +4023,7 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
             const receiverdoctypeList = [{ value: 0, description: "NO DOMICILIADO" }, { value: 1, description: "DNI" }, { value: 4, description: "CARNE EXT." }, { value: 6, description: "RUC" }, { value: 7, description: "PASAPORTE" }]
             const invoicetypeList = [{ value: "01", description: "FACTURA" }, { value: "03", description: "BOLETA" }]
 
-            let data: any = (await uploadExcel(file, undefined) as any[]);
+            let data: any = (await uploadExcel(file) as any[]);
             data = data.filter((d: any) => !['', null, undefined].includes(d.description)
                 && !['', null, undefined].includes(d.receiverdocnum)
                 && !['', null, undefined].includes(d.receiverbusinessname)
@@ -4418,7 +4406,7 @@ const InvoiceCommentModal: FC<{ data: any, openModal: boolean, setOpenModal: (pa
     const handleCommentDelete = (data: any) => {
         if (fields && data) {
             const callback = () => {
-                var fieldTemporal = fields;
+                let fieldTemporal = fields;
 
                 fieldTemporal.corpid = data?.corpid;
                 fieldTemporal.orgid = data?.orgid;
@@ -4549,7 +4537,7 @@ const BillingOperation: FC<DetailProps> = ({ data, creditNote, regularize, opera
 
         if (productList) {
             if (productList.data) {
-                var productInformationList: Partial<unknown>[] = [];
+                let productInformationList: Partial<unknown>[] = [];
 
                 productList.data.forEach((element: { description: any; productcode: any; measureunit: any; quantity: any; productnetprice: any; }) => {
                     productInformationList.push({
@@ -5465,18 +5453,20 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     useEffect(() => {
         if (waitLoad) {
             if (data?.row) {
-                if (data?.row.invoicestatus !== "INVOICED" && data?.row.paymentstatus !== "PAID" && invoicehasreport && user?.roledesc === "SUPERADMIN") {
+                if (data.row.invoicestatus !== "INVOICED" && data.row.paymentstatus !== "PAID" && invoicehasreport && user?.roledesc === "SUPERADMIN") {
                     setShowUpdateButton(true);
                 }
 
-                dispatch(getMultiCollectionAux([getInvoiceDetail(data?.row.corpid, data?.row.orgid, data?.row.invoiceid)]));
+                dispatch(getMultiCollectionAux([getInvoiceDetail(data.row.corpid, data.row.orgid, data.row.invoiceid)]));
 
-                setValue('invoicecurrency', data?.row.currency);
-                setValue('invoicepurchaseorder', data?.row.purchaseorder);
-                setValue('invoicecomments', data?.row.comments);
+                setValue('invoicecurrency', data.row.currency);
+                setValue('invoicepurchaseorder', data.row.purchaseorder);
+                setValue('invoicecomments', data.row.comments);
 
-                if (data?.row.orgid) {
-                    var corporationdata = corpList.data.find((x: { corpid: any; }) => x.corpid === data?.row.corpid);
+                let corporationdata;
+
+                if (data.row.orgid) {
+                    corporationdata = corpList.data.find((x: { corpid: any; }) => x.corpid === data.row.corpid);
 
                     dispatch(getMultiCollectionAux([getOrgSel(0, corporationdata.corpid)]));
                     setValue('billbyorg', corporationdata?.billbyorg);
@@ -5486,7 +5476,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                 else {
                     if (corpList) {
                         if (corpList.data) {
-                            corporationdata = corpList.data.find((x: { corpid: any; }) => x.corpid === data?.row.corpid);
+                            corporationdata = corpList.data.find((x: { corpid: any; }) => x.corpid === data.row.corpid);
 
                             setSubmitData(corporationdata);
                             setValue('billbyorg', corporationdata?.billbyorg);
@@ -5503,7 +5493,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
             setWaitOrg(false);
 
             if (data?.row) {
-                var organizationdata = orgList.data.find((x: { orgid: any; }) => x.orgid === data?.row.orgid);
+                let organizationdata = orgList.data.find((x: { orgid: any; }) => x.orgid === data.row.orgid);
 
                 if (organizationdata) {
                     setSubmitData(organizationdata);
@@ -5521,7 +5511,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         if (data?.row) {
             if (productList) {
                 if (productList.data) {
-                    var productInformationList: Partial<unknown>[] = [];
+                    let productInformationList: Partial<unknown>[] = [];
 
                     productList.data.forEach((element: { description: any; productcode: any; measureunit: any; quantity: any; netamount: any; }) => {
                         productInformationList.push({
@@ -5602,9 +5592,9 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
             productdetail: [],
             billbyorg: false,
             onlyinsert: false,
-            invoiceid: data?.row ? data?.row.invoiceid : 0,
-            year: data?.row ? data?.row.year : 0,
-            month: data?.row ? data?.row.month : 0,
+            invoiceid: data?.row ? data.row.invoiceid : 0,
+            year: data?.row ? data.row.year : 0,
+            month: data?.row ? data.row.month : 0,
         }
     });
 
@@ -5647,7 +5637,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         setValue('autosendinvoice', data?.autosendinvoice);
 
         if (data?.credittype) {
-            var dueDate = new Date(getValues('invoicecreatedate'));
+            let dueDate = new Date(getValues('invoicecreatedate'));
 
             switch (data.credittype) {
                 case 'typecredit_15':
@@ -5675,7 +5665,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
 
         if (data?.doctype) {
             if (appsettingData?.data) {
-                var invoiceamount = getValues('invoicetotalamount');
+                let invoiceamount = getValues('invoicetotalamount');
 
                 if (data?.doctype === '0') {
                     setAmountTax(0);
@@ -5746,7 +5736,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
 
     const onCreditTypeChange = (data: any) => {
         if (data) {
-            var dueDate = new Date(getValues('invoicecreatedate'));
+            let dueDate = new Date(getValues('invoicecreatedate'));
 
             switch (data) {
                 case 'typecredit_15':
@@ -5780,7 +5770,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
 
         if (data) {
             dispatch(getMultiCollectionAux([getOrgSel(0, data.corpid)]));
-            setValue('billbyorg', data?.billbyorg);
+            setValue('billbyorg', data.billbyorg);
             setSavedCorp(data);
         }
         else {
@@ -5800,8 +5790,8 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
     }
 
     const onProductChange = () => {
-        var productDetail = getValues('productdetail');
-        var totalAmount = 0.0;
+        let productDetail = getValues('productdetail');
+        let totalAmount = 0.0;
 
         if (productDetail) {
             productDetail.forEach((element: any) => {
@@ -6044,24 +6034,24 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                             />
                             <FieldView
                                 label={t(langKeys.invoicestatus)}
-                                value={t((data?.invoicestatus || 'DRAFT'))}
+                                value={t((data?.row?.invoicestatus || 'DRAFT'))}
                                 className="col-3"
                             />
                         </div>
                         <div className="row-zyx">
                             <FieldView
                                 label={t(langKeys.invoiceid)}
-                                value={data?.invoiceid || t(langKeys.pendingsave)}
+                                value={data?.row?.invoiceid || t(langKeys.pendingsave)}
                                 className="col-3"
                             />
                             <FieldView
                                 label={t(langKeys.documenttype)}
-                                value={t(getInvoiceType(data?.invoicetype))}
+                                value={t(getInvoiceType(data?.row?.invoicetype))}
                                 className="col-3"
                             />
                             <FieldView
                                 label={t(langKeys.billingvoucher)}
-                                value={(data?.serie ? data.serie : 'X000') + '-' + (data?.correlative ? data?.correlative.toString().padStart(8, '0') : '00000000')}
+                                value={(data?.row?.serie ? data.row.serie : 'X000') + '-' + (data?.row?.correlative ? data.row.correlative.toString().padStart(8, '0') : '00000000')}
                                 className="col-3"
                             />
                             <FieldView
@@ -6076,7 +6066,7 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
                                 label={t(langKeys.credittype)}
                                 loading={creditTypeList.loading}
                                 onChange={(value) => { setValue('clientcredittype', value?.domainvalue); onCreditTypeChange(value?.domainvalue); }}
-                                valueDefault={data?.row?.credittype ? data?.row?.credittype : getValues('clientcredittype')}
+                                valueDefault={data?.row?.credittype ? data.row.credittype : getValues('clientcredittype')}
                                 data={creditTypeList.data}
                                 optionDesc="domainvalue"
                                 optionValue="domainvalue"
@@ -6705,7 +6695,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
         if (cardList) {
             if (cardList.data) {
                 if (cardList.data.length > 0) {
-                    var favoriteCard = cardList.data.find((o: { favorite: boolean; }) => o.favorite === true);
+                    let favoriteCard = cardList.data.find((o: { favorite: boolean; }) => o.favorite === true);
 
                     if (favoriteCard) {
                         setFavoriteCardId(favoriteCard.paymentcardid);
@@ -6783,7 +6773,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
 
                 if (mainResult.mainData.data) {
                     if (mainResult.mainData.data[0]) {
-                        var appsetting = mainResult.mainData.data[0];
+                        let appsetting = mainResult.mainData.data[0];
 
                         setPublicKey(appsetting.publickey);
                     }
@@ -6797,7 +6787,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
             if (currentCountry === 'PE') {
                 setTotalAmount(Math.round((((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0))) + Number.EPSILON) * 100) / 100);
                 if (currentDoctype === '6') {
-                    var compareamount = (buyAmount || 0) * (exchangeRequest?.exchangerate || 0);
+                    let compareamount = (buyAmount || 0) * (exchangeRequest?.exchangerate || 0);
 
                     if (compareamount > mainResult.mainData.data[0].detractionminimum) {
                         setTotalPay(Math.round(((((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0))) - (((buyAmount || 0) * (1 + (mainResult.mainData.data[0].igv || 0))) * (mainResult.mainData.data[0].detraction || 0))) + Number.EPSILON) * 100) / 100);
@@ -6837,7 +6827,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
         dispatch(getMultiCollectionAux([getOrgSel(0, value)]));
 
         if (value) {
-            var corporationdata = corpList.data.find((x: { corpid: any; }) => x.corpid === value);
+            let corporationdata = corpList.data.find((x: { corpid: any; }) => x.corpid === value);
             if (corporationdata) {
                 setCurrentBillbyorg(corporationdata?.billbyorg);
                 if (corporationdata.billbyorg === false) {
@@ -6853,7 +6843,7 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
 
     const handleOrg = (value: any) => {
         if (value) {
-            var organizationdata = orgList.data.find((x: { orgid: any; }) => x.orgid === value);
+            let organizationdata = orgList.data.find((x: { orgid: any; }) => x.orgid === value);
             if (organizationdata) {
                 setBeforeAmount((organizationdata?.balance || 0));
                 setAfterAmount((organizationdata?.balance || 0) + totalAmount);
@@ -7658,9 +7648,9 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
 
     const emailRequired = (value: string) => {
         if (value.length === 0) {
-            return t(langKeys.field_required) as string;
+            return t(langKeys.field_required);
         } else if (!/\S+@\S+\.\S+/.test(value)) {
-            return t(langKeys.emailverification) as string;
+            return t(langKeys.emailverification);
         }
     }
 
@@ -7684,23 +7674,18 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
             if (row?.cardnumber) {
                 if (row.cardnumber.slice(0, 1) === "4") {
                     setIcon(<img alt="aux" src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{ padding: 5 }}></img>)
-                    // setLimitNumbers(19);
                     setValue('cardlimit', 19);
                 } else if (row.cardnumber.slice(0, 2) === "51" || row.cardnumber.slice(0, 2) === "55") {
                     setIcon(<img alt="aux" src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{ padding: 5 }}></img>)
-                    // setLimitNumbers(19);
                     setValue('cardlimit', 19);
                 } else if (row.cardnumber.slice(0, 2) === "37" || row.cardnumber.slice(0, 2) === "34") {
                     setIcon(<img alt="aux" src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{ padding: 5 }}></img>)
-                    // setLimitNumbers(18);
                     setValue('cardlimit', 18);
                 } else if (row.cardnumber.slice(0, 2) === "36" || row.cardnumber.slice(0, 2) === "38" || row.cardnumber.slice(0, 3) === "300" || row.cardnumber.slice(0, 3) === "305") {
                     setIcon(<img alt="aux" src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{ padding: 5 }}></img>)
-                    // setLimitNumbers(17);
                     setValue('cardlimit', 17);
                 } else {
                     setIcon(<></>)
-                    // setLimitNumbers(10);
                     setValue('cardlimit', 10);
                 }
             }
@@ -7883,23 +7868,23 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
                                     onInput={(e: any) => {
                                         if (e.target.value.slice(0, 1) === "4") {
                                             setIcon(<img alt="aux" src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{ padding: 5 }}></img>)
-                                            // setLimitNumbers(19);
+
                                             setValue('cardlimit', 19);
                                         } else if (e.target.value.slice(0, 2) === "51" || e.target.value.slice(0, 2) === "55") {
                                             setIcon(<img alt="aux" src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{ padding: 5 }}></img>)
-                                            // setLimitNumbers(19);
+
                                             setValue('cardlimit', 19);
                                         } else if (e.target.value.slice(0, 2) === "37" || e.target.value.slice(0, 2) === "34") {
                                             setIcon(<img alt="aux" src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{ padding: 5 }}></img>)
-                                            // setLimitNumbers(18);
+
                                             setValue('cardlimit', 18);
                                         } else if (e.target.value.slice(0, 2) === "36" || e.target.value.slice(0, 2) === "38" || e.target.value.slice(0, 3) === "300" || e.target.value.slice(0, 3) === "305") {
                                             setIcon(<img alt="aux" src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{ padding: 5 }}></img>)
-                                            // setLimitNumbers(17);
+
                                             setValue('cardlimit', 17);
                                         } else {
                                             setIcon(<></>)
-                                            // setLimitNumbers(10);
+
                                             setValue('cardlimit', 10);
                                         }
                                     }}
