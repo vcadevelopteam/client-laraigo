@@ -68,8 +68,7 @@ const ReportRequestSD: FC = () => {
                 accessor: 'phase',
             },
             {
-                Header: t(langKeys.resolution),
-                NoFilter: true,        
+                Header: t(langKeys.resolution),      
                 accessor: 'resolution',
             },
             {
