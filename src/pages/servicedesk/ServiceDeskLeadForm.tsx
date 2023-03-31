@@ -493,7 +493,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         register('impact', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('urgency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('personid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('leadgroups', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('leadgroups', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('priority');
         register('email', {
             validate: {
