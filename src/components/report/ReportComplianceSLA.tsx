@@ -89,12 +89,8 @@ const ReportComplianceSLA: FC = () => {
 
             },
             {
-                Header: t(langKeys.firstContactDatedeadline),
-                accessor: 'first_contact_deadline',
-                Cell: (props: any) => {
-                    const { first_contact_deadline } = props.cell.row.original;
-                    return new Date(first_contact_deadline).toLocaleString()
-                }
+                Header: t(langKeys.complianceresolution),
+                accessor: 'compliance_resolution',
             },
             {
                 Header: t(langKeys.dateofresolution),
@@ -113,8 +109,12 @@ const ReportComplianceSLA: FC = () => {
                 }
             },
             {
-                Header: t(langKeys.complianceresolution),
-                accessor: 'compliance_resolution',
+                Header: t(langKeys.firstContactDatedeadline),
+                accessor: 'first_contact_deadline',
+                Cell: (props: any) => {
+                    const { first_contact_deadline } = props.cell.row.original;
+                    return new Date(first_contact_deadline).toLocaleString()
+                }
             },
         ],
         [t]

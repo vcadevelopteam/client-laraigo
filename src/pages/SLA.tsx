@@ -498,6 +498,7 @@ const TabServiceTimes: React.FC<TabDetailProps> = ({ form,row, multiData }) => {
     const { setValue, getValues, formState: { errors }  } = form;
     const selectionKey= "priority"
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
+    const [dataRow, setDataRow] = useState<any>(null);
     const startAddRow = { 
         priority: '',
         firstreply: '',
@@ -569,14 +570,24 @@ const TabServiceTimes: React.FC<TabDetailProps> = ({ form,row, multiData }) => {
         })
         if(!Object.values(dataAddRow).includes('')){
             let attention = getValues('service_times')
-            if(!attention.filter((x:any)=>(x.priority===dataAddRow.priority)).length){
-                setValue('service_times',[...attention, dataAddRow])
+            debugger
+            if (dataRow){
+                attention.filter((x:any)=>x.index===dataRow.index)[0].priority=dataAddRow.priority
+                setValue('service_times',attention)
                 setOpenModal(false)
                 seterrorAddRow(startAddRow)
                 setDataAddRow(startAddRow)
+                setDataRow(null)
             }else{
-                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.combination_already_exists) }))
-            }            
+                if(!attention.filter((x:any)=>(x.priority===dataAddRow.priority)).length){
+                    setValue('service_times',[...attention, dataAddRow])
+                    setOpenModal(false)
+                    seterrorAddRow(startAddRow)
+                    setDataAddRow(startAddRow)
+                }else{
+                    dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.combination_already_exists) }))
+                }            
+            }
         }
     }
     
@@ -584,6 +595,7 @@ const TabServiceTimes: React.FC<TabDetailProps> = ({ form,row, multiData }) => {
         setOpenModal(false)
         seterrorAddRow(startAddRow)
         setDataAddRow(startAddRow)
+        setDataRow(null)
     }
     
     return <div className={classes.containerDetail}>
@@ -637,6 +649,11 @@ const TabServiceTimes: React.FC<TabDetailProps> = ({ form,row, multiData }) => {
                 useSelection={true}
                 selectionKey={selectionKey}
                 setSelectedRows={setSelectedRows}
+                onClickRow={(e)=>{
+                    setDataAddRow(e)
+                    setDataRow(e)
+                    setOpenModal(true)
+                }}
                 ButtonsElement={() => (
                     <div style={{display: "flex", justifyContent: "end", width: "100%"}}>
                         <Button
@@ -779,7 +796,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row }, setViewSelected, m
         form.register('id');
         form.register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         form.register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        form.register('company', { validate: (value) => form.getValues('type')==="SD"?(value && value.length) || t(langKeys.field_required):true });
+        form.register('company', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         form.register('usergroup');
         form.register('criticality');
         form.register('service_times');
