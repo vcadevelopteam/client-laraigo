@@ -194,7 +194,7 @@ const ReportRequestSD: FC = () => {
                             valueDefault={company}
                             variant="outlined"
                             onChange={(value) => {
-                                setCompany(value.domainvalue||"");
+                                setCompany(value?.domainvalue||"");
                             }}
                             data={multiData.data[2].data}
                             loading={multiData.loading}
