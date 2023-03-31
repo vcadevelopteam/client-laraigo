@@ -234,8 +234,8 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
     const onSelectTemplate = (value: Dictionary) => {
         if (value) {
             setBodyMessage(value.body);
-            setValue('hsmtemplateid', value ? value.id : 0);
-            setValue('hsmtemplatename', value ? value.name : '');
+            setValue('hsmtemplateid', value?.id || 0);
+            setValue('hsmtemplatename', value?.name || '');
             const variablesList = value.body.match(/({{)(.*?)(}})/g) || [];
             const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
             setValue('variables', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
@@ -486,13 +486,14 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
     const registerFormFieldOptions = useCallback(() => {
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('sd_request');
-        register('type');
+        register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('createdate');
         register('company', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('phone');
         register('impact', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('urgency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('leadgroups');
+        register('personid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('leadgroups', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
         register('priority');
         register('email', {
             validate: {
@@ -931,6 +932,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
             email: value?.email || '',
         })
         setValues(prev => ({ ...prev, displayname: value.name }))
+        trigger('personid')
     }, [setValue]);
 
     const isStatusClosed = useCallback(() => {
@@ -1136,9 +1138,9 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                                 <Add style={{ height: 22, width: 22 }} />
                                             </IconButton>
                                         </div>
-                                        <div style={{ flexGrow: 1, marginTop: (errors?.personcommunicationchannel?.message) ? '29px' : '3px' }} />
-                                        <div style={{ borderBottom: `solid ${(errors?.personcommunicationchannel?.message) ? '2px rgba(250,0,0,1)' : '1px rgba(0,0,0,0.42)'} `, marginBottom: '4px' }}></div>
-                                        <div style={{ display: (errors?.personcommunicationchannel?.message) ? 'inherit' : 'none', color: 'red', fontSize: '0.75rem' }}>{errors?.personcommunicationchannel?.message}</div>
+                                        <div style={{ flexGrow: 1, marginTop: (errors?.personid?.message) ? '29px' : '3px' }} />
+                                        <div style={{ borderBottom: `solid ${(errors?.personid?.message) ? '2px rgba(250,0,0,1)' : '1px rgba(0,0,0,0.42)'} `, marginBottom: '4px' }}></div>
+                                        <div style={{ display: (errors?.personid?.message) ? 'inherit' : 'none', color: 'red', fontSize: '0.75rem' }}>{errors?.personid?.message}</div>
                                     </div>)
                                 }
                                 <FieldSelect
@@ -1223,7 +1225,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     className={classes.field}
                                     valueDefault={getValues('leadgroups')}
                                     onChange={(value) => setValue('leadgroups', value?.domainvalue || '')}
-                                    error={errors?.group?.message}
+                                    error={errors?.leadgroups?.message}
                                     data={dataGroups.data}
                                     disabled={visorSD}
                                     optionDesc="domaindesc"
@@ -1238,7 +1240,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     optionDesc="fullname"
                                     optionValue="userid"
                                     disabled={visorSD}
-                                    onChange={(value) => setValue('userid', value ? value.userid : '')}
+                                    onChange={(value) => setValue('userid', value?.userid || '')}
                                     error={errors?.userid?.message}
                                     readOnly={isStatusClosed() || iSProcessLoading()}
                                 />
@@ -1265,9 +1267,10 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                         [{domainvalue: "SS"},{domainvalue: "INC"}]
                                     }
                                     disabled={visorSD}
+                                    error={errors?.type?.message}
                                     optionDesc="domainvalue"
                                     optionValue="domainvalue"
-                                    onChange={(value) => setValue('type', value ? value.domainvalue : '')}
+                                    onChange={(value) => setValue('type', value?.domainvalue || '')}
                                 />
                                 <FieldEdit
                                     label={t(langKeys.reportdate)}
