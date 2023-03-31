@@ -494,6 +494,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         register('urgency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('personid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
         register('leadgroups', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('ticketnum', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('priority');
         register('email', {
             validate: {
@@ -1070,8 +1071,11 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                             <Button
                                 variant="contained"
                                 color="primary"
-                                onClick={() => {
-                                    setOpenModalChangePhase(true);
+                                onClick={async() => {
+                                    const allOk = await trigger();
+                                    if(allOk){
+                                        setOpenModalChangePhase(true);
+                                    }
                                 }}
                             >
                                 <Trans i18nKey={langKeys.phasechange} />
@@ -1101,17 +1105,27 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                     valueDefault={getValues('sd_request')}
                                     disabled={true}
                                 />
-                                <div className={classes.field}>
-                                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">
-                                        {t(langKeys.ticket)}
-                                    </Box>
-                                    <label
-                                        className={classes.labellink}
-                                        onClick={() => openDialogInteractions(lead)}
-                                    >
-                                        {getValues('ticketnum')}
-                                    </label>
-                                </div>
+                                {!(lead?.value?.ticketnum)?
+                                        <FieldEdit
+                                            label={t(langKeys.ticket)}
+                                            className={classes.field}
+                                            onChange={(value) => setValue('ticketnum', value)}
+                                            valueDefault={getValues('ticketnum')}
+                                            error={errors?.ticketnum?.message}
+                                        />
+                                    :
+                                    <div className={classes.field}>
+                                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">
+                                            {t(langKeys.ticket)}
+                                        </Box>
+                                        <label
+                                            className={classes.labellink}
+                                            onClick={() => openDialogInteractions(lead)}
+                                        >
+                                            {getValues('ticketnum')}
+                                        </label>
+                                    </div>
+                                }
                                 {edit ?
                                     (
                                         <FieldEdit
