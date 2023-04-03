@@ -566,7 +566,6 @@ const translation: LangKeys = {
   downloadhtmlform: "Download HTML form.",
   type_domain_mastercatalog_destinations: "Destinations",
   type_domain_mastercatalog_flights: "Flights",
-  atleasthafanhour: "The duration must have a value greater than 0",
   type_domain_mastercatalog_home_listings: "Home Listings",
   type_domain_mastercatalog_hotels: "Hotels",
   type_domain_mastercatalog_jobs: "Jobs",
