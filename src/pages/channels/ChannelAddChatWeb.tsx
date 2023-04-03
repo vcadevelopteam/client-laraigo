@@ -521,7 +521,6 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
     const classes = useTemplateStyles();
     const { t } = useTranslation();
     const [required, setRequired] = useState(data.required);
-
     const handleRequired = (checked: boolean) => {
         setRequired(checked);
         data.required = checked;
@@ -635,55 +634,57 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                         </Grid>
                     </Grid>
                 </Grid>
-                <Divider style={{ margin: '22px 0' }} />
-                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                    <Box m={1}>
-                        <Grid container direction="row">
-                            <Grid item xs={12} sm={3} md={3} lg={3} xl={2}>
-                                <label className={classes.text}>
-                                    <Trans i18nKey={langKeys.inputValidation} />
-                                </label>
+                {data.field !== 'DOCUMENT_TYPE' && <>
+                    <Divider style={{ margin: '22px 0' }} />
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <Box m={1}>
+                            <Grid container direction="row">
+                                <Grid item xs={12} sm={3} md={3} lg={3} xl={2}>
+                                    <label className={classes.text}>
+                                        <Trans i18nKey={langKeys.inputValidation} />
+                                    </label>
+                                </Grid>
+                                <Grid item xs={12} sm={9} md={9} lg={9} xl={10}>
+                                    <TextField
+                                        placeholder={t(langKeys.inputValidation)}
+                                        variant="outlined"
+                                        size="small"
+                                        fullWidth
+                                        onChange={e => {
+                                            form.setValue(`form.${index}.inputvalidation`, e.target.value)
+                                            data.inputvalidation = e.target.value
+                                        }}
+                                        defaultValue={data.inputvalidation}
+                                    />
+                                </Grid>
                             </Grid>
-                            <Grid item xs={12} sm={9} md={9} lg={9} xl={10}>
-                                <TextField
-                                    placeholder={t(langKeys.inputValidation)}
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                    onChange={e => {
-                                        form.setValue(`form.${index}.inputvalidation`, e.target.value)
-                                        data.inputvalidation = e.target.value
-                                    }}
-                                    defaultValue={data.inputvalidation}
-                                />
+                        </Box>
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <Box m={1}>
+                            <Grid container direction="row">
+                                <Grid item xs={12} sm={3} md={3} lg={3} xl={2}>
+                                    <label className={classes.text}>
+                                        <Trans i18nKey={langKeys.validationOnKeychange} />
+                                    </label>
+                                </Grid>
+                                <Grid item xs={12} sm={9} md={9} lg={9} xl={10}>
+                                    <TextField
+                                        placeholder={t(langKeys.validationOnKeychange)}
+                                        variant="outlined"
+                                        size="small"
+                                        fullWidth
+                                        onChange={e => {
+                                            form.setValue(`form.${index}.keyvalidation`, e.target.value)
+                                            data.keyvalidation = e.target.value
+                                        }}
+                                        defaultValue={data.keyvalidation}
+                                    />
+                                </Grid>
                             </Grid>
-                        </Grid>
-                    </Box>
-                </Grid>
-                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                    <Box m={1}>
-                        <Grid container direction="row">
-                            <Grid item xs={12} sm={3} md={3} lg={3} xl={2}>
-                                <label className={classes.text}>
-                                    <Trans i18nKey={langKeys.validationOnKeychange} />
-                                </label>
-                            </Grid>
-                            <Grid item xs={12} sm={9} md={9} lg={9} xl={10}>
-                                <TextField
-                                    placeholder={t(langKeys.validationOnKeychange)}
-                                    variant="outlined"
-                                    size="small"
-                                    fullWidth
-                                    onChange={e => {
-                                        form.setValue(`form.${index}.keyvalidation`, e.target.value)
-                                        data.keyvalidation = e.target.value
-                                    }}
-                                    defaultValue={data.keyvalidation}
-                                />
-                            </Grid>
-                        </Grid>
-                    </Box>
-                </Grid>
+                        </Box>
+                    </Grid>
+                </>}
             </Grid>
         </div>
     );
@@ -702,6 +703,7 @@ const LASTNAME_FIELD = "LASTNAME_FIELD";
 const PHONE_FIELD = "PHONE_FIELD";
 const EMAIL_FIELD = "EMAIL_FIELD";
 const DOCUMENT_FIELD = "DOCUMENT_FIELD";
+const DOCUMENT_TYPE_FIELD = "DOCUMENT_TYPE_FIELD";
 const SUPPLYNUMBER_FIELD = "SUPPLYNUMBER_FIELD";
 const CONTACT = "CONTACT_FIELD";
 
@@ -831,6 +833,31 @@ const templates: { [x: string]: FieldTemplate } = {
             keyvalidation: "",
         },
     },
+    [DOCUMENT_TYPE_FIELD]: {
+        text: <Trans i18nKey={langKeys.docType} />,
+        node: (onClose, data, form, index) => {
+            return (
+                <NameTemplate
+                    form={form}
+                    index={index}
+                    data={data}
+                    onClose={() => onClose(DOCUMENT_TYPE_FIELD)}
+                    key={DOCUMENT_TYPE_FIELD}
+                    title={<Trans i18nKey={langKeys.docType} />}
+                />
+            );
+        },
+        data: {
+            field: "DOCUMENT_TYPE",
+            type: "text",
+            required: true,
+            label: "",
+            placeholder: "",
+            validationtext: "",
+            inputvalidation: "",
+            keyvalidation: "",
+        },
+    },
     [SUPPLYNUMBER_FIELD]: {
         text: <Trans i18nKey={langKeys.supplynumber} />,
         node: (onClose, data, form, index) => {
@@ -894,10 +921,16 @@ const TabPanelForm: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
 
     const [enable, setEnable] = useState(false);
     const [fieldTemplate, setFieldTemplate] = useState<string>("");
+    const [fieldList, setFieldList] = useState<any>([]);
     const [fields, setFields] = useState<FieldTemplate[]>(defFields.current);
 
     useEffect(() => {
         form.setValue('form', fields.map(x => x.data));
+        if(fields.length){
+            setEnable(true)
+            getMenuTemplates();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fields, form]);
 
     const handleCloseTemplate = (key: string) => {
@@ -914,11 +947,12 @@ const TabPanelForm: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
 
     const getMenuTemplates = () => {
         const temp: React.ReactNode[] = [];
+        let fieldlist = fields.reduce((acc:any,x:any)=>([...acc, x.data.field]),[]);
         for (const key in templates) {
-            if (fields.includes(templates[key])) continue;
+            if (fieldlist.includes(templates[key].data.field)) continue;
             temp.push(<MenuItem key={key} value={key}>{templates[key].text}</MenuItem>);
         }
-        return temp;
+        setFieldList(temp);
     }
 
     return (
@@ -955,7 +989,7 @@ const TabPanelForm: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                                     <MenuItem value={""}>
                                         <em><Trans i18nKey={langKeys.select} /> -</em>
                                     </MenuItem>
-                                    {getMenuTemplates()}
+                                    {fieldList}
                                 </Select>
                             </FormControl>
                             <Button
