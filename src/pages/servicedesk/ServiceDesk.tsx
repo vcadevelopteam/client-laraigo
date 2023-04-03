@@ -741,6 +741,7 @@ const ServiceDesk: FC = () => {
               optionDesc="domaindesc"
               optionValue="domainvalue"
               loading={mainMulti.loading}
+              disabled={user?.roledesc.includes("VISOR")}
             />
             <FieldMultiSelect
               variant="outlined"
