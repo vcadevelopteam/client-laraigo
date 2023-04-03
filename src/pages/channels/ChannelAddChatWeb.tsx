@@ -928,8 +928,8 @@ const TabPanelForm: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
         form.setValue('form', fields.map(x => x.data));
         if(fields.length){
             setEnable(true)
-            getMenuTemplates();
         }
+        getMenuTemplates();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fields, form]);
 
