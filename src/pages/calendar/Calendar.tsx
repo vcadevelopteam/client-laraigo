@@ -189,8 +189,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
         register('notificationtype');
         register('hsmtemplateid', { validate: (value) => getValues("notificationtype") !== "EMAIL" ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
         register('communicationchannelid', { validate: (value) => getValues("notificationtype") !== "HSM" ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
-        register('duration', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.field_required)) });
-        register('maximumcapacity', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.atleasthafanhour)) });
+        register('duration', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.atleasthafanhour)) });
+        register('maximumcapacity', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.field_required)) });
         register('timebeforeeventunit', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('timebeforeeventduration', { validate: (value) => Boolean(value >= 0) || String(t(langKeys.field_required)) });
         register('timeaftereventunit', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });

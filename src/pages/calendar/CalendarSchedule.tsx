@@ -333,8 +333,8 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                                 className="col-6"
                                 valueDefault={String(generalstate.hours)}
                                 onChange={(e) => {
-                                    setgeneralstate({ ...generalstate, hours: Number(e.val) });
-                                    setValue('duration', Number(e.val) * 60 + generalstate.minutes)
+                                    setgeneralstate({ ...generalstate, hours: Number(e?.val||"0") });
+                                    setValue('duration', Number(e?.val||"0") * 60 + generalstate.minutes)
                                 }}
                                 error={errors?.duration?.message}
                                 data={[
@@ -348,10 +348,10 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                                 className="col-6"
                                 valueDefault={String(generalstate.minutes)}
                                 onChange={(e) => {
-                                    setgeneralstate({ ...generalstate, minutes: Number(e.val) });
-                                    setValue('duration', Number(e.val) + generalstate.hours * 60)
+                                    setgeneralstate({ ...generalstate, minutes: Number(e?.val||"0") });
+                                    setValue('duration', Number(e?.val||"0") + generalstate.hours * 60)
                                 }}
-                                error={errors?.durationtype?.message}
+                                error={errors?.duration?.message}
                                 data={[ {val: "0"}, {val: "30"} ]}
                                 optionDesc="val"
                                 optionValue="val"
