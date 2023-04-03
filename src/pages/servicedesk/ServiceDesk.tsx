@@ -194,7 +194,7 @@ const ServiceDesk: FC = () => {
   }), [query]);
   const [display, setDisplay] = useState(query.get('display') || 'BOARD');
   const [boardFilter, setBoardFilterPrivate] = useState<IBoardFilter>({
-    company: otherParams?.company||"",
+    company: user?.roledesc.includes("VISOR") ? (user?.companyuser||"") : (otherParams?.company||""),
     groups: otherParams?.groups||"",
     customer: otherParams.contact,
     products: otherParams.products,
