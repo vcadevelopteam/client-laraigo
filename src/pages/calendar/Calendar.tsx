@@ -117,8 +117,9 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
     }
 
     const [generalstate, setgeneralstate] = useState({
+        hours: row?.timeunit==="HOURS"? row?.timeduration:Math.floor((row?.timeduration||0)/60),
+        minutes: row?.timeunit==="HOURS"? 0 : (row?.timeduration||0)%60,
         eventcode: row?.code || '',
-        duration: row?.timeduration || 0,
         maximumcapacity: row?.maximumcapacity || 1,
         timebeforeeventduration: row?.timebeforeeventduration || 0,
         timeaftereventduration: row?.timeaftereventduration || 0,
@@ -161,9 +162,9 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
             hsmtemplateid: row?.messagetemplateid || 0,
             hsmtemplatename: row?.hsmtemplatename || "",
             intervals: row?.availability || [],
-            durationtype: row?.timeunit || "MINUTE",
+            durationtype: "MINUTE",
             maximumcapacity: row?.maximumcapacity || 1,
-            duration: row?.timeduration || 0,
+            duration: row?.timeunit==="HOURS"? row?.timeduration*60: row?.timeduration || 0,
             timebeforeeventunit: row?.timebeforeeventunit || "MINUTE",
             timebeforeeventduration: row?.timebeforeeventduration || 0,
             timeaftereventunit: row?.timeaftereventunit || "MINUTE",
@@ -188,9 +189,8 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
         register('notificationtype');
         register('hsmtemplateid', { validate: (value) => getValues("notificationtype") !== "EMAIL" ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
         register('communicationchannelid', { validate: (value) => getValues("notificationtype") !== "HSM" ? true : (Boolean(value && value > 0) || String(t(langKeys.field_required))) });
-        register('durationtype', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('duration', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.field_required)) });
-        register('maximumcapacity', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.greaterthanzero)) });
+        register('maximumcapacity', { validate: (value) => Boolean(value && value > 0) || String(t(langKeys.atleasthafanhour)) });
         register('timebeforeeventunit', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('timebeforeeventduration', { validate: (value) => Boolean(value >= 0) || String(t(langKeys.field_required)) });
         register('timeaftereventunit', { validate: (value) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
@@ -293,7 +293,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                     availability: data.intervals,
                     timeduration: data.duration,
                     maximumcapacity: data.maximumcapacity,
-                    timeunit: data.durationtype,
+                    timeunit: "MINUTE",
                     reminderenable: data.statusreminder === "ACTIVO",
                     notificationmessage: replaceVariables(templateVariables, bodyMessage),
                     remindermailmessage: replaceVariables(emailVariables, bodyMessageReminderEmail),
