@@ -1216,6 +1216,8 @@ const translation: LangKeys = {
   event_schedule_notification: 'Notificación de programacion de eventos',
   next_event_notification: 'Notificación de próximo evento',
   reminder: 'Recordatorio{{n}}',
+  reschedule_appointment:"Reprogramación de cita",
+  appointment_cancellation:"Cancelación de citas",
   notificationtype: 'Tipo de notificación',
   reminderperiod: 'Frecuencia de recordatorio',
   calendar_messate_tooltip: 'Variables disponibles: timeevent, timestart, timeend, eventname, eventlocation, eventlink, personname, personcontact, personmail',

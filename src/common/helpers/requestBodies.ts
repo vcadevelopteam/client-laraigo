@@ -3147,24 +3147,42 @@ export const selBookingCalendar = (startdate: string, enddate: string, calendare
     },
 });
 
-export const calendarBookingCancel = ({ calendareventid, id, cancelcomment }: Dictionary) => ({
+export const calendarBookingCancel = ({ calendareventid, id, phone, name, username, email, canceltype, cancelcomment, corpid, orgid, userid, otros }: Dictionary) => ({
     method: "UFN_CALENDARBOOKING_CANCEL",
     key: "UFN_CALENDARBOOKING_CANCEL",
+    phone,
+    name,
+    email,
     parameters: {
+        canceltype,
         calendareventid,
         id,
         cancelcomment,
+        corpid,
+        orgid,
+        username,
+        userid,
+        agentid:"",
+        otros,
     },
 });
-export const calendarBookingCancel2 = ({ corpid, orgid, calendareventid, id, cancelcomment }: Dictionary) => ({
+export const calendarBookingCancel2 = ({ calendareventid, id, phone, name, email, canceltype, cancelcomment, corpid, orgid, otros }: Dictionary) => ({
     method: "UFN_CALENDARBOOKING_CANCEL",
     key: "UFN_CALENDARBOOKING_CANCEL",
+    phone,
+    name,
+    email,
     parameters: {
-        corpid, orgid,
+        canceltype,
         calendareventid,
         id,
         cancelcomment,
+        corpid,
+        orgid,
         username: "",
+        userid:0,
+        agentid:"",
+        otros,
     },
 });
 export const calendarBookingSelOne = ({ corpid, orgid, calendareventid, id }: Dictionary) => ({
@@ -3190,8 +3208,10 @@ export const insCalendar = ({
     availability,
     timebeforeeventduration, timebeforeeventunit, timeaftereventduration, timeaftereventunit,
     increments,
-    operation, reminderperiod, reminderfrecuency, reminderhsmmessage,
-    communicationchannelid, notificationmessage, reminderenable, remindertype, reminderhsmtemplateid, remindermailmessage, remindermailtemplateid, reminderhsmcommunicationchannelid
+    operation, reminderperiod, reminderfrecuency, reminderhsmmessage,notificationmessageemail,messagetemplateidemail,
+    communicationchannelid, notificationmessage, reminderenable, remindertype, reminderhsmtemplateid, remindermailmessage, remindermailtemplateid, reminderhsmcommunicationchannelid,
+    rescheduletype, rescheduletemplateidemail, reschedulenotificationemail, rescheduletemplateidhsm, reschedulenotificationhsm, reschedulecommunicationchannelid,
+    canceltype, canceltemplateidemail, cancelnotificationemail, canceltemplateidhsm, cancelnotificationhsm, cancelcommunicationchannelid
 }: Dictionary): IRequestBody => ({
     method: "UFN_CALENDAREVENT_INS",
     key: "UFN_CALENDAREVENT_INS",
@@ -3207,7 +3227,11 @@ export const insCalendar = ({
         reminderhsmtemplateid: reminderhsmtemplateid || 0, reminderhsmcommunicationchannelid,
         remindermailtemplateid: remindermailtemplateid || 0, reminderhsmmessage,
         operation, notificationmessage, reminderenable, remindertype, remindermailmessage,
-        communicationchannelid: communicationchannelid || 0
+        communicationchannelid: communicationchannelid || 0,
+        notificationmessageemail: notificationmessageemail, 
+        messagetemplateidemail,
+        rescheduletype, rescheduletemplateidemail, reschedulenotificationemail, rescheduletemplateidhsm, reschedulenotificationhsm, reschedulecommunicationchannelid,
+        canceltype, canceltemplateidemail, cancelnotificationemail, canceltemplateidhsm, cancelnotificationhsm, cancelcommunicationchannelid
     }
 });
 

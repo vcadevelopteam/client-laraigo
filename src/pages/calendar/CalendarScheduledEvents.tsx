@@ -10,7 +10,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { execute, getCollectionAux, resetMainAux } from 'store/main/actions';
+import { execute, getCancelEventBooking, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import { Box, IconButton, ListItemIcon, Menu, MenuItem } from '@material-ui/core';
 import { Range } from 'react-date-range';
@@ -219,7 +219,8 @@ const DialogCancelBooking: React.FC<{
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
     const classes = useStyles();
-    const saveRes = useSelector(state => state.main.execute);
+    const saveRes = useSelector(state => state.main.mainEventBooking);
+    const user = useSelector(state => state.login.validateToken.user);
     const { register, setValue, getValues, reset, trigger } = useForm();
 
     useEffect(() => {
@@ -257,14 +258,37 @@ const DialogCancelBooking: React.FC<{
                     calendareventid: event.calendareventid,
                     id: booking?.calendarbookingid,
                     cancelcomment: data.comment || "",
+                    phone: booking?.personcontact || "",
+                    name: booking?.personname,
+                    email: booking?.personmail || "",
+                    canceltype: event?.canceltype,
+                    corpid: event?.corpid,
+                    orgid: event?.orgid,
+                    username: user?.usr,
+                    userid: user?.userid,
+                    otros: [
+                        { name: "eventname", "text": event.name },
+                        { name: "eventlocation", "text": event.location },
+                        { name: "eventlink", "text": event.eventlink },
+                        { name: "eventcode", "text": event.code },
+                        { name: "monthdate", "text": booking?.monthdate},
+                        { name: "hourstart", "text": booking?.hourstart},
+                        { name: "hourend", "text": booking?.hourend},
+                        { name: "personname", "text": booking?.personname},
+                        { name: "personcontact", "text": booking?.personcontact},
+                        { name: "personmail", "text": booking?.personmail }
+                    ]
                 }
-                dispatch(execute(calendarBookingCancel(datat)));
-                setValue("comment", "") 
+                console.log(booking)
+                console.log(data)
+                console.log(event)
+                dispatch(getCancelEventBooking(calendarBookingCancel(datat)));
+                setValue("comment", "")
                 setWaitSave(true);
                 dispatch(showBackdrop(true));
             }
         } else {
-            setValue("comment", "") 
+            setValue("comment", "")
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.cancelenventerror || "error_unexpected_error") }))
         }
     }

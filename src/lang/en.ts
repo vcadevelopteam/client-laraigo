@@ -100,6 +100,8 @@ const translation: LangKeys = {
   industry_institution: "State and Institutions",
   industry_entertainment: "Games and Entertainment",
   industry_telecommunications: "Telecommunications",
+  reschedule_appointment:"Reschedule appointment",
+  appointment_cancellation:"Appointment cancellation",
   industry_hydrocarbons: "Hydrocarbons",
   brandname: "Brand name",
   brandaddress: "Brand address",

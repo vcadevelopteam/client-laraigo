@@ -284,3 +284,12 @@ export const getCollEventBooking = (requestBody: IRequestBody): IActionCall => (
     },
     type: null,
 });
+export const getCancelEventBooking = (requestBody: IRequestBody): IActionCall => ({
+    callAPI: () => CommonService.mainEventCancelBooking(requestBody),
+    types: {
+        loading: actionTypes.MAIN_EVENT_BOOKING,
+        success: actionTypes.MAIN_EVENT_BOOKING_SUCCESS,
+        failure: actionTypes.MAIN_EVENT_BOOKING_FAILURE,
+    },
+    type: null,
+});
