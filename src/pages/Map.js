@@ -97,7 +97,7 @@ export default function Map() {
   
   const {token} = useParams();
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: "AIzaSyCDfPhg86YSt25QynLajl7GA5Ux6YEphoA" /*"AIzaSyCBij6DbsB8SQC_RRKm3-X07RLmvQEnP9w"*/,
+    googleMapsApiKey: apiUrls.APIKEY_GMAPS,
     libraries,
   });
   const [directionData, setDirectionData] = React.useState({

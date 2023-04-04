@@ -304,7 +304,7 @@ const RouterApp: FC = () => {
 					</Route>
 					<Popus />
 				</Switch >
-			</React.Suspense >
+			</React.Suspense>
 		</Router >
 	);
 };

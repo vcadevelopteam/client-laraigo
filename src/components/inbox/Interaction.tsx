@@ -21,6 +21,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import Avatar from '@material-ui/core/Avatar';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
+import { apiUrls } from 'common/constants';
 
 const useStylesInteraction = makeStyles((theme) => ({
     containerCarousel: {
@@ -439,7 +440,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     const { t } = useTranslation();
     const [showfulltext, setshowfulltext] = useState(interactiontext.length <= 450)
     const { isLoaded } = useJsApiLoader({
-        googleMapsApiKey: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4" /*"AIzaSyCBij6DbsB8SQC_RRKm3-X07RLmvQEnP9w"*/,
+        googleMapsApiKey: apiUrls.APIKEY_GMAPS,
     });
 
     const [height, setHeight] = React.useState("0px");

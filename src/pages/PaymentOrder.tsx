@@ -92,7 +92,6 @@ export const PaymentOrder: FC = () => {
     const [publicKey, setPublicKey] = useState('');
     const [waitData, setWaitData] = useState(false);
     const [waitPay, setWaitPay] = useState(false);
-    // const windowWidth = useRef(window.innerWidth);
 
     const fetchData = () => {
         dispatch(getCollectionPaymentOrder(paymentOrderSel({ corpid: corpid, orgid: orgid, conversationid: 0, personid: 0, paymentorderid: 0, ordercode: ordercode })));

@@ -604,7 +604,7 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                         </Grid>
                     </Grid>
                 </Grid>
-                {data.field !== 'DOCUMENT_TYPE' && <>
+                {data.field !== 'DOCUMENTTYPE' && <>
                     <Divider style={{ margin: '22px 0' }} />
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Box m={1}>
@@ -673,7 +673,7 @@ const LASTNAME_FIELD = "LASTNAME_FIELD";
 const PHONE_FIELD = "PHONE_FIELD";
 const EMAIL_FIELD = "EMAIL_FIELD";
 const DOCUMENT_FIELD = "DOCUMENT_FIELD";
-const DOCUMENT_TYPE_FIELD = "DOCUMENT_TYPE_FIELD";
+const DOCUMENTTYPE_FIELD = "DOCUMENTTYPE_FIELD";
 const SUPPLYNUMBER_FIELD = "SUPPLYNUMBER_FIELD";
 const CONTACT = "CONTACT_FIELD";
 
@@ -803,7 +803,7 @@ const templates: { [x: string]: FieldTemplate } = {
             keyvalidation: "",
         },
     },
-    [DOCUMENT_TYPE_FIELD]: {
+    [DOCUMENTTYPE_FIELD]: {
         text: <Trans i18nKey={langKeys.docType} />,
         node: (onClose, data, form, index) => {
             return (
@@ -811,14 +811,14 @@ const templates: { [x: string]: FieldTemplate } = {
                     form={form}
                     index={index}
                     data={data}
-                    onClose={() => onClose(DOCUMENT_TYPE_FIELD)}
-                    key={DOCUMENT_TYPE_FIELD}
+                    onClose={() => onClose(DOCUMENTTYPE_FIELD)}
+                    key={DOCUMENTTYPE_FIELD}
                     title={<Trans i18nKey={langKeys.docType} />}
                 />
             );
         },
         data: {
-            field: "DOCUMENT_TYPE",
+            field: "DOCUMENTTYPE",
             type: "text",
             required: true,
             label: "",
