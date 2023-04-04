@@ -18,7 +18,7 @@ const options = {
 export default function Map({directionData,setDirectionData}) {
   
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4" /*"AIzaSyCBij6DbsB8SQC_RRKm3-X07RLmvQEnP9w"*/,
+    googleMapsApiKey: apiUrls.APIKEY_GMAPS,
     libraries,
   });
   const [center, setcenter] = React.useState({
