@@ -18,6 +18,7 @@ const eventsListeners = [
     { event: 'newNotification', type: typesLogin.NEW_NOTIFICATION },
     { event: 'callWasAnswred', type: typesInbox.ANSWERED_CALL, extra: {} },
     { event: 'updateExternalIDs', type: typesInbox.UPDATE_EXTERNAL_IDS, extra: {} },
+    { event: 'updateQuickreply',  type: typesInbox.UPD_QUICKREPLIES, extra: {} }
 ]
 
 const socket = io(apiUrls.WS_URL, {
