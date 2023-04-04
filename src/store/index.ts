@@ -15,6 +15,7 @@ import personReducer, { IState as IPerson } from './person/reducer';
 import settingReducer, { IState as ISetting } from './setting/reducer';
 import activationUserReducer, { IState as IActivationUser } from './activationuser/reducer';
 import leadReducer, { IState as ILead } from './lead/reducer';
+import servicedeskReducer, { IState as IServiceDesk } from './servicedesk/reducer';
 import culqiReducer, { IState as ICulqi } from './culqi/reducer';
 import dashboardReducer, { IState as IDashboard } from './dashboard/reducer';
 import getlocationsReducer, { IState as IGetLocations } from './getlocations/reducer';
@@ -55,6 +56,7 @@ export interface IRootState {
     postHistory: IPostHistory;
     catalog: ICatalog;
     payment: IPayment;
+    servicedesk: IServiceDesk;
 }
 
 declare global {
@@ -89,6 +91,7 @@ const rootReducer = combineReducers<IRootState>({
     calendar: calendarReducer,
     catalog: catalogReducer,
     payment: paymentReducer,
+    servicedesk: servicedeskReducer,
 });
 
 export default function configureStore(preloadedState?: IRootState) {

@@ -695,6 +695,25 @@ const TableZyx = React.memo(({
                             </Button>
                         </div>
                     )}
+                    {(!filterrange && !!FiltersElement) && (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                            {FiltersElement}
+                            <Button
+                                disabled={loading}
+                                variant="contained"
+                                color="primary"
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                style={{ backgroundColor: '#55BD84', width: 120 }}
+                                onClick={() => {
+                                    if (triggerSearch)
+                                        triggertmp(true)
+                                    setTriggerSearch(true)
+                                }}
+                            >
+                                <Trans i18nKey={langKeys.search} />
+                            </Button>
+                        </div>
+                    )}
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                         {ButtonsElement && <ButtonsElement />}
                         {importCSV && (

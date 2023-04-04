@@ -72,6 +72,7 @@ export interface IUser {
     currencysymbol: string;
     pwdchangefirstlogin: boolean;
     voximplantcallsupervision: boolean;
+    companyuser?: string;
     // notifications: Notification[];
 }
 
