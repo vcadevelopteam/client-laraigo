@@ -178,7 +178,7 @@ export const getCatalogMasterList = () => ({
     key: "UFN_METACATALOG_SEL",
     parameters: {
         metabusinessid: 0,
-        id:0,
+        id: 0,
     }
 });
 export const getReportschedulerreportsSel = () => ({
@@ -342,9 +342,9 @@ export const getCorpSel = (id: number): IRequestBody => ({
 export const getOrderSel = (): IRequestBody => ({
     method: "UFN_ORDER_SEL",
     key: "UFN_ORDER_SEL",
-    parameters: { }
+    parameters: {}
 });
-export const getOrderLineSel = ( orderid: number): IRequestBody => ({
+export const getOrderLineSel = (orderid: number): IRequestBody => ({
     method: "UFN_ORDERLINE_SEL",
     key: "UFN_ORDERLINE_SEL",
     parameters: { orderid }
@@ -1238,7 +1238,7 @@ export const getEditChannel = (id: number, payload: IChannel, name: string, auto
         voximplantwelcometone: welcometoneurl || "",
         voximplantholdtone: holdingtoneurl || "",
         voximplantcallsupervision: voximplantcallsupervision || false,
-        voximplantrecording: voximplantrecording || '{"recording":false,"recordingstorage":"month3","recordingquality":"hd"}',
+        voximplantrecording: voximplantrecording || '',
     },
 });
 
@@ -3275,7 +3275,7 @@ export const insCalendar = ({
     id = 0, description, descriptionobject, status, type,
     code, name, locationtype, location, eventlink, color, notificationtype, messagetemplateid,
     daterange, daysduration, startdate, enddate,
-    timeduration, timeunit,maximumcapacity,
+    timeduration, timeunit, maximumcapacity,
     availability,
     timebeforeeventduration, timebeforeeventunit, timeaftereventduration, timeaftereventunit,
     increments,
@@ -3291,7 +3291,7 @@ export const insCalendar = ({
         descriptionobject: JSON.stringify(descriptionobject), status, type,
         code, name, locationtype, location, eventlink, color, notificationtype, messagetemplateid,
         daterange, daysduration, daystype: "CALENDAR", startdate, enddate,
-        timeduration,timeunit,maximumcapacity,
+        timeduration, timeunit, maximumcapacity,
         availability: JSON.stringify(availability),
         timebeforeeventduration, timebeforeeventunit, timeaftereventduration, timeaftereventunit,
         increments, reminderperiod, reminderfrecuency,
@@ -3911,7 +3911,14 @@ export const billingPeriodArtificialIntelligenceInsArray = (corpid: number, orgi
         orgid: orgid,
         table: JSON.stringify(table),
     },
-});
+})
+
+export const exportintent = ({ name_json }: Dictionary): IRequestBody => ({
+    method: "UFN_WITAI_INTENT_EXPORT",
+    key: "UFN_WITAI_INTENT_EXPORT",
+    parameters: { name_json }
+})
+
 export const productCatalogInsArray = (metacatalogid: bigint, table: Dictionary[], username: string): IRequestBody => ({
     method: "UFN_PRODUCTCATALOG_INS_ARRAY",
     parameters: { metacatalogid: metacatalogid, table: JSON.stringify(table), username: username }
@@ -3951,8 +3958,3 @@ export const metaBusinessSel = ({ corpid, orgid, id }: Dictionary) => ({
     key: "UFN_METABUSINESS_SEL",
     parameters: { corpid, orgid, id },
 });
-export const exportintent = ({name_json}:Dictionary): IRequestBody => ({
-    method: "UFN_WITAI_INTENT_EXPORT",
-    key: "UFN_WITAI_INTENT_EXPORT",
-    parameters: {name_json}
-})
