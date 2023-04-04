@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button, createStyles, makeStyles, Tabs, TextField, Theme } from '@material-ui/core';
+import { Button, createStyles, IconButton, makeStyles, Tabs, TextField, Theme, Tooltip } from '@material-ui/core';
 import { AntTab, DialogZyx, TemplateSwitchYesNo } from 'components';
 import { langKeys } from 'lang/keys';
 import React, { FC, Fragment, useEffect, useState ,useCallback} from 'react';
@@ -12,6 +12,8 @@ import { cleanViewChange, getCollectionAux, getMultiCollection, getMultiCollecti
 import { useSelector } from 'hooks';
 import { Dictionary } from '@types';
 import TableZyx from 'components/fields/table-simple';
+import { CallRecordIcon } from 'icons';
+import { VoximplantService } from 'network';
 import DialogInteractions from 'components/inbox/DialogInteractions';
 
 const hours=["00:00 a 01:00","01:00 a 02:00","02:00 a 03:00","03:00 a 04:00","04:00 a 05:00","05:00 a 06:00","06:00 a 07:00","07:00 a 08:00","08:00 a 09:00","09:00 a 10:00","10:00 a 11:00","11:00 a 12:00",
@@ -92,6 +94,7 @@ const ModalHeatMap: React.FC<ModalProps> = ({ openModal, setOpenModal, title = '
     )
 }
 
+
 const MainHeatMap: React.FC<{dataChannels: any}> = ({dataChannels}) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -137,6 +140,26 @@ const MainHeatMap: React.FC<{dataChannels: any}> = ({dataChannels}) => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+    
+    const downloadCallRecord = async (ticket: Dictionary) => {
+        try {
+            const axios_result = await VoximplantService.getCallRecord({call_session_history_id: ticket.postexternalid});
+            if (axios_result.status === 200) {
+                let buff = Buffer.from(axios_result.data, 'base64');
+                const blob = new Blob([buff], {type: axios_result.headers['content-type'].split(';').find((x: string) => x.includes('audio'))});
+                const objectUrl = window.URL.createObjectURL(blob);
+                let a = document.createElement('a');
+                a.href = objectUrl;
+                a.download = ticket.ticketnum;
+                a.click();
+            }
+        }
+        catch (error: any) {
+            const errormessage = t(error?.response?.data?.code || "error_unexpected_error")
+            dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+        }
+    }
+
     const fetchDetail = (grid: string, column: Dictionary, row: Dictionary, mes: number, year: number) => {
         if (row.hournum!=="TOTAL" && row.hournum!=="PRM" && ((typeof(row[column.id]) === 'number' && row[column.id] > 0)
         || (typeof(row[column.id]) === 'string' && row[column.id] !== '00:00:00')) ) {
@@ -149,6 +172,28 @@ const MainHeatMap: React.FC<{dataChannels: any}> = ({dataChannels}) => {
                 case '1.1':
                     setModalTitle(`Tickets ${t(langKeys.day)} ${day} ${hournum}`)
                     setModalColumns([
+                        {
+                            accessor: 'voxiid',
+                            isComponent: true,
+                            minWidth: 60,
+                            width: '1%',
+                            Cell: (props: any) => {
+                                const row = props.cell.row.original;
+                                debugger
+                                return (
+                                    row.communicationchanneltype === 'VOXI'
+                                    && row.postexternalid
+                                    && row.callanswereddate ?
+                                    <Tooltip title={t(langKeys.download_record) || ""}>
+                                        <IconButton size="small" onClick={() => downloadCallRecord(row)}
+                                        >
+                                            <CallRecordIcon style={{ fill: '#7721AD' }} />
+                                        </IconButton>
+                                    </Tooltip>
+                                    : null
+                                )
+                            }
+                        },
                         { Header: t(langKeys.ticket), accessor: 'ticketnum',
                             Cell: (props: any) => {
                                 const row = props.cell.row.original;
@@ -168,6 +213,28 @@ const MainHeatMap: React.FC<{dataChannels: any}> = ({dataChannels}) => {
                 case '1.2':
                     setModalTitle(`Tickets ${t(langKeys.day)} ${day} ${hournum}`)
                     setModalColumns([
+                        {
+                            accessor: 'voxiid',
+                            isComponent: true,
+                            minWidth: 60,
+                            width: '1%',
+                            Cell: (props: any) => {
+                                const row = props.cell.row.original;
+                                debugger
+                                return (
+                                    row.communicationchanneltype === 'VOXI'
+                                    && row.postexternalid
+                                    && row.callanswereddate ?
+                                    <Tooltip title={t(langKeys.download_record) || ""}>
+                                        <IconButton size="small" onClick={() => downloadCallRecord(row)}
+                                        >
+                                            <CallRecordIcon style={{ fill: '#7721AD' }} />
+                                        </IconButton>
+                                    </Tooltip>
+                                    : null
+                                )
+                            }
+                        },
                         { Header: t(langKeys.ticket), accessor: 'ticketnum',
                             Cell: (props: any) => {
                                 const row = props.cell.row.original;
@@ -188,6 +255,28 @@ const MainHeatMap: React.FC<{dataChannels: any}> = ({dataChannels}) => {
                     option = 'TME';
                     setModalTitle(`Tickets ${t(langKeys.day)} ${day} ${hournum}`)
                     setModalColumns([
+                        {
+                            accessor: 'voxiid',
+                            isComponent: true,
+                            minWidth: 60,
+                            width: '1%',
+                            Cell: (props: any) => {
+                                const row = props.cell.row.original;
+                                debugger
+                                return (
+                                    row.communicationchanneltype === 'VOXI'
+                                    && row.postexternalid
+                                    && row.callanswereddate ?
+                                    <Tooltip title={t(langKeys.download_record) || ""}>
+                                        <IconButton size="small" onClick={() => downloadCallRecord(row)}
+                                        >
+                                            <CallRecordIcon style={{ fill: '#7721AD' }} />
+                                        </IconButton>
+                                    </Tooltip>
+                                    : null
+                                )
+                            }
+                        },
                         { Header: t(langKeys.ticket), accessor: 'ticketnum',
                             Cell: (props: any) => {
                                 const row = props.cell.row.original;
@@ -208,6 +297,28 @@ const MainHeatMap: React.FC<{dataChannels: any}> = ({dataChannels}) => {
                     option = 'TMR';
                     setModalTitle(`Tickets ${t(langKeys.day)} ${day} ${hournum}`)
                     setModalColumns([
+                        {
+                            accessor: 'voxiid',
+                            isComponent: true,
+                            minWidth: 60,
+                            width: '1%',
+                            Cell: (props: any) => {
+                                const row = props.cell.row.original;
+                                debugger
+                                return (
+                                    row.communicationchanneltype === 'VOXI'
+                                    && row.postexternalid
+                                    && row.callanswereddate ?
+                                    <Tooltip title={t(langKeys.download_record) || ""}>
+                                        <IconButton size="small" onClick={() => downloadCallRecord(row)}
+                                        >
+                                            <CallRecordIcon style={{ fill: '#7721AD' }} />
+                                        </IconButton>
+                                    </Tooltip>
+                                    : null
+                                )
+                            }
+                        },
                         { Header: t(langKeys.ticket), accessor: 'ticketnum',
                             Cell: (props: any) => {
                                 const row = props.cell.row.original;
@@ -228,6 +339,28 @@ const MainHeatMap: React.FC<{dataChannels: any}> = ({dataChannels}) => {
                     option = 'TMRCLIENT';
                     setModalTitle(`Tickets ${t(langKeys.day)} ${day} ${hournum}`)
                     setModalColumns([
+                        {
+                            accessor: 'voxiid',
+                            isComponent: true,
+                            minWidth: 60,
+                            width: '1%',
+                            Cell: (props: any) => {
+                                const row = props.cell.row.original;
+                                debugger
+                                return (
+                                    row.communicationchanneltype === 'VOXI'
+                                    && row.postexternalid
+                                    && row.callanswereddate ?
+                                    <Tooltip title={t(langKeys.download_record) || ""}>
+                                        <IconButton size="small" onClick={() => downloadCallRecord(row)}
+                                        >
+                                            <CallRecordIcon style={{ fill: '#7721AD' }} />
+                                        </IconButton>
+                                    </Tooltip>
+                                    : null
+                                )
+                            }
+                        },
                         { Header: t(langKeys.ticket), accessor: 'ticketnum',
                             Cell: (props: any) => {
                                 const row = props.cell.row.original;
@@ -1213,6 +1346,24 @@ const HeatMapAsesor: React.FC<{dataChannels:any, companydomain: any,groupsdomain
         setOpenModalTicket(true);
         setRowSelected({ ...row, displayname: row.asesor, ticketnum: row.ticketnum })
     }, [mainResult]);
+    const downloadCallRecord = async (ticket: Dictionary) => {
+        try {
+            const axios_result = await VoximplantService.getCallRecord({call_session_history_id: ticket.postexternalid});
+            if (axios_result.status === 200) {
+                let buff = Buffer.from(axios_result.data, 'base64');
+                const blob = new Blob([buff], {type: axios_result.headers['content-type'].split(';').find((x: string) => x.includes('audio'))});
+                const objectUrl = window.URL.createObjectURL(blob);
+                let a = document.createElement('a');
+                a.href = objectUrl;
+                a.download = ticket.ticketnum;
+                a.click();
+            }
+        }
+        catch (error: any) {
+            const errormessage = t(error?.response?.data?.code || "error_unexpected_error")
+            dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+        }
+    }
     const fetchDetail = (grid: string, column: Dictionary, row: Dictionary,page2:boolean, mes: number, year: number) => {
         if (row.hournum!=="TOTAL" && ((typeof(row[column.id]) === 'number' && row[column.id] > 0)
         || (typeof(row[column.id]) === 'string' && row[column.id] !== '00:00:00'))) {
@@ -1224,6 +1375,28 @@ const HeatMapAsesor: React.FC<{dataChannels:any, companydomain: any,groupsdomain
                 case 'COMPLETED':
                     setModalTitle(`Tickets ${capitalize(user || '')} ${t(langKeys.day)} ${day}`)
                     setModalColumns([
+                        {
+                            accessor: 'voxiid',
+                            isComponent: true,
+                            minWidth: 60,
+                            width: '1%',
+                            Cell: (props: any) => {
+                                const row = props.cell.row.original;
+                                debugger
+                                return (
+                                    row.communicationchanneltype === 'VOXI'
+                                    && row.postexternalid
+                                    && row.callanswereddate ?
+                                    <Tooltip title={t(langKeys.download_record) || ""}>
+                                        <IconButton size="small" onClick={() => downloadCallRecord(row)}
+                                        >
+                                            <CallRecordIcon style={{ fill: '#7721AD' }} />
+                                        </IconButton>
+                                    </Tooltip>
+                                    : null
+                                )
+                            }
+                        },
                         { Header: t(langKeys.ticket), accessor: 'ticketnum',
                             Cell: (props: any) => {
                                 const row = props.cell.row.original;
@@ -1242,6 +1415,28 @@ const HeatMapAsesor: React.FC<{dataChannels:any, companydomain: any,groupsdomain
                 case 'ABANDONED':
                     setModalTitle(`Tickets ${capitalize(user || '')} ${t(langKeys.day)} ${day}`)
                     setModalColumns([
+                        {
+                            accessor: 'voxiid',
+                            isComponent: true,
+                            minWidth: 60,
+                            width: '1%',
+                            Cell: (props: any) => {
+                                const row = props.cell.row.original;
+                                debugger
+                                return (
+                                    row.communicationchanneltype === 'VOXI'
+                                    && row.postexternalid
+                                    && row.callanswereddate ?
+                                    <Tooltip title={t(langKeys.download_record) || ""}>
+                                        <IconButton size="small" onClick={() => downloadCallRecord(row)}
+                                        >
+                                            <CallRecordIcon style={{ fill: '#7721AD' }} />
+                                        </IconButton>
+                                    </Tooltip>
+                                    : null
+                                )
+                            }
+                        },
                         { Header: t(langKeys.ticket), accessor: 'ticketnum',
                             Cell: (props: any) => {
                                 const row = props.cell.row.original;
@@ -1259,6 +1454,28 @@ const HeatMapAsesor: React.FC<{dataChannels:any, companydomain: any,groupsdomain
                 case 'OPPORTUNITY':
                     setModalTitle(`${t(langKeys.opportunity_plural)} ${capitalize(user || '')} ${t(langKeys.day)} ${day}`)
                     setModalColumns([
+                        {
+                            accessor: 'voxiid',
+                            isComponent: true,
+                            minWidth: 60,
+                            width: '1%',
+                            Cell: (props: any) => {
+                                const row = props.cell.row.original;
+                                debugger
+                                return (
+                                    row.communicationchanneltype === 'VOXI'
+                                    && row.postexternalid
+                                    && row.callanswereddate ?
+                                    <Tooltip title={t(langKeys.download_record) || ""}>
+                                        <IconButton size="small" onClick={() => downloadCallRecord(row)}
+                                        >
+                                            <CallRecordIcon style={{ fill: '#7721AD' }} />
+                                        </IconButton>
+                                    </Tooltip>
+                                    : null
+                                )
+                            }
+                        },
                         { Header: t(langKeys.ticket), accessor: 'ticketnum',
                             Cell: (props: any) => {
                                 const row = props.cell.row.original;
@@ -1277,6 +1494,28 @@ const HeatMapAsesor: React.FC<{dataChannels:any, companydomain: any,groupsdomain
                 case 'OPPORTUNITYWON':
                     setModalTitle(`${t(langKeys.opportunity_plural)} ${capitalize(user || '')} ${t(langKeys.day)} ${day}`)
                     setModalColumns([
+                        {
+                            accessor: 'voxiid',
+                            isComponent: true,
+                            minWidth: 60,
+                            width: '1%',
+                            Cell: (props: any) => {
+                                const row = props.cell.row.original;
+                                debugger
+                                return (
+                                    row.communicationchanneltype === 'VOXI'
+                                    && row.postexternalid
+                                    && row.callanswereddate ?
+                                    <Tooltip title={t(langKeys.download_record) || ""}>
+                                        <IconButton size="small" onClick={() => downloadCallRecord(row)}
+                                        >
+                                            <CallRecordIcon style={{ fill: '#7721AD' }} />
+                                        </IconButton>
+                                    </Tooltip>
+                                    : null
+                                )
+                            }
+                        },
                         { Header: t(langKeys.ticket), accessor: 'ticketnum',
                             Cell: (props: any) => {
                                 const row = props.cell.row.original;
