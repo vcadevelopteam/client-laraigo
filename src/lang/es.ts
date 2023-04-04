@@ -2008,6 +2008,8 @@ const translation: LangKeys = {
 - Login: Sesión iniciada.
 - Expiracion: Sesión expirada.`,
   report_loginhistory_type: "Tipo",
+  report_loginhistory_motivedescription: 'Motivo',
+  report_loginhistory_motivedescription_help: 'Motivo de desconexión.',
 
   report_inputretry: "Reintentos",
   report_inputretry_ticketnum: "Ticket",

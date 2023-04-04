@@ -2088,6 +2088,8 @@ const translation: LangKeys = {
 - Login: Session initiated.
 - Expiration: Session expired.`,
   report_loginhistory_type: "Type",
+  report_loginhistory_motivedescription: 'Motive',
+  report_loginhistory_motivedescription_help: 'Reason for disconnection.',
 
   report_inputretry: "Retries",
   report_inputretry_ticketnum: "Ticket",
