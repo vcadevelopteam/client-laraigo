@@ -882,13 +882,13 @@ export const getParentSel = (): IRequestBody => ({
     }
 });
 
-export const getMessageTemplateSel = (id: number): IRequestBody => ({
-    method: "UFN_MESSAGETEMPLATE_SEL",
+export const getPaginatedMessageTemplate = ({ communicationchannelid, enddate, filters, skip, sorts, startdate, take }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_MESSAGETEMPLATE_SEL",
+    methodCount: "UFN_MESSAGETEMPLATE_TOTALRECORDS",
     parameters: {
-        id: id,
-        all: id === 0,
+        communicationchannelid, enddate, filters, offset: (new Date().getTimezoneOffset() / 60) * -1, origin: "messagetemplate", skip, sorts, startdate, take,
     }
-});
+})
 
 export const getMessageTemplateLst = (type: string): IRequestBody => ({
     method: "UFN_MESSAGETEMPLATE_LST",
