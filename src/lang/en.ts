@@ -100,6 +100,8 @@ const translation: LangKeys = {
   industry_institution: "State and Institutions",
   industry_entertainment: "Games and Entertainment",
   industry_telecommunications: "Telecommunications",
+  reschedule_appointment:"Reschedule appointment",
+  appointment_cancellation:"Appointment cancellation",
   industry_hydrocarbons: "Hydrocarbons",
   brandname: "Brand name",
   brandaddress: "Brand address",
@@ -325,8 +327,8 @@ const translation: LangKeys = {
   apikey: 'API Key',
   provider: 'Supplier',
   sla: 'Service level agreement',
-  communicationchanneldesc: 'Channel name',
-  communicationchannel: 'Communication channel',
+  communicationchanneldesc: 'Channel Name',
+  communicationchannel: 'Communication Channel',
   tme: 'TME',
   tme_help: 'Average first advisor reply',
   tmr: 'TMR',
@@ -510,6 +512,7 @@ const translation: LangKeys = {
   type_org_43: 'Artistic, entertainment and recreation activities',
   type_org_44: 'Association activitie',
   dashboardkpi: "Dashboard KPI",
+  atleasthafanhour: "The duration must have a value greater than 0",
 
   attending: 'Attending',
   orders: "Orders",
@@ -2088,6 +2091,8 @@ const translation: LangKeys = {
 - Login: Session initiated.
 - Expiration: Session expired.`,
   report_loginhistory_type: "Type",
+  report_loginhistory_motivedescription: 'Motive',
+  report_loginhistory_motivedescription_help: 'Reason for disconnection.',
 
   report_inputretry: "Retries",
   report_inputretry_ticketnum: "Ticket",
@@ -4390,6 +4395,7 @@ const translation: LangKeys = {
   messagetemplate_synchronize: "Synchronize",
   messagetemplate_synchronize_alert01: "After this operation, the templates related to the channel ",
   messagetemplate_synchronize_alert02: " will be registered or updated. Keep in mind that some of the new templates might need additional information, like namespace or header, in order to work correctly.",
+  messagetemplate_synchronize_alert03: "The selected templates will be updated according to the their latest status in the Meta platform.",
 
   TEMPLATE_ACCOUNT_UPDATE: "ACCOUNT UPDATE",
   TEMPLATE_PAYMENT_UPDATE: "PAYMENT UPDATE",
