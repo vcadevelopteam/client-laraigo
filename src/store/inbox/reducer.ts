@@ -1,5 +1,5 @@
-import { IListStatePaginated, ITicket, IGroupInteraction, IPerson, IAgent, Dictionary, IObjectState, IInteraction } from "@types";
-import { createReducer, initialListPaginatedState, initialObjectState } from "common/helpers";
+import { IListStatePaginated, ITicket, IGroupInteraction, IPerson, IAgent, Dictionary, IObjectState, IInteraction, IListState } from "@types";
+import { createReducer, initialListPaginatedState, initialListState, initialObjectState } from "common/helpers";
 import * as caseFunctions from './caseFunctions';
 import actionTypes from "./actionTypes";
 
@@ -66,6 +66,7 @@ export interface IState {
     alertTMO: {
         [key: string]: number
     }
+    quickreplies: IListState<Dictionary>;
 }
 
 export const initialState: IState = {
@@ -110,7 +111,8 @@ export const initialState: IState = {
     holdingBySupervisor: "CANAL",
     role: "",
     userGroup: "",
-    alertTMO: {}
+    alertTMO: {},
+    quickreplies: initialListState,
 };
 
 export default createReducer<IState>(initialState, {
@@ -214,6 +216,13 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_DATA_FOR_OUTBOUND_FAILURE]: caseFunctions.getDataForOutboundFailure,
     [actionTypes.GET_DATA_FOR_OUTBOUND_RESET]: caseFunctions.getDataForOutboundReset,
 
+
+    [actionTypes.UPD_QUICKREPLIES]: caseFunctions.updQuickreplies,
+
+    [actionTypes.GET_QUICKREPLIES]: caseFunctions.getDataQuickreplies,
+    [actionTypes.GET_QUICKREPLIES_SUCCESS]: caseFunctions.getDataQuickrepliesSuccess,
+    [actionTypes.GET_QUICKREPLIES_FAILURE]: caseFunctions.getDataQuickrepliesFailure,
+    [actionTypes.GET_QUICKREPLIES_RESET]: caseFunctions.getDataQuickrepliesReset,
 
     [actionTypes.REASSIGN_TICKET]: caseFunctions.reassignTicket,
     [actionTypes.REASSIGN_TICKET_SUCCESS]: caseFunctions.reassignTicketSuccess,

@@ -32,6 +32,7 @@ import {
     MoreVert as MoreVertIcon,
 } from '@material-ui/icons';
 import { emojis } from "common/constants/emojis";
+import { emitEvent } from 'store/inbox/actions';
 
 const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
 
@@ -312,6 +313,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
     const [anchorEl, setAnchorEl] = useState(null);
     const [onclickdelete, setonclickdelete] = useState<any>(null);
     const [variableHandler, setVariableHandler] = useState<VariableHandler>(new VariableHandler());
+    const [dataUPD, setDataUPD] = useState<any>(null)
     const open = Boolean(anchorEl);
     const handleCloseMenu = () => {
         setAnchorEl(null);
@@ -372,7 +374,14 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                     dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))                    
                     dispatch(showBackdrop(false));
                 }else{
-
+                    debugger
+                    dispatch(emitEvent({
+                        event: 'updateQuickreply',
+                        data: {
+                            ...dataUPD,
+                            id: dataUPD.id||executeRes.data[0].ufn_quickreply_ins
+                        }
+                    }));
                     dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                     fetchData && fetchData();
                     dispatch(showBackdrop(false));
@@ -392,6 +401,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
         //data.communicationchannelid = selected.key
         const callback = () => {
             dispatch(execute(insQuickreplies(data))); //executeRes
+            setDataUPD(data)
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -704,6 +714,7 @@ const Quickreplies: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const [dataUPD, setDataUPD] = useState<any>(null)
     const [insertexcel, setinsertexcel] = useState(false);
     const arrayBread = [
         { id: "view-0", name: t(langKeys.configuration_plural) },
@@ -793,6 +804,15 @@ const Quickreplies: FC = () => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(insertexcel?langKeys.successful_edit: langKeys.successful_delete) }))
+                if(!insertexcel){       
+                    debugger      
+                    dispatch(emitEvent({
+                        event: 'updateQuickreply',
+                        data: {
+                            ...dataUPD
+                        }
+                    }));
+                }
                 setAnchorEl(null);
                 fetchMultiData();
                 fetchData();
@@ -825,6 +845,7 @@ const Quickreplies: FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
+            setDataUPD({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.quickreplyid })
             dispatch(execute(insQuickreplies({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.quickreplyid })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
