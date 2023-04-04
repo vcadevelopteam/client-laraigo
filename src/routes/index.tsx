@@ -91,6 +91,8 @@ const ActivateUser = lazy(() => import('pages/ActivateUser'));
 const RecoverPassword = lazy(() => import('pages/RecoverPassword'));
 const CRM = lazy(() => import('pages/crm/CRM'));
 const LeadForm = lazy(() => import('pages/crm/LeadForm'));
+const ServiceDesk = lazy(() => import('pages/servicedesk/ServiceDesk'));
+const ServiceDeskLeadForm = lazy(() => import('pages/servicedesk/ServiceDeskLeadForm'));
 const ChangePwdFirstLogin = lazy(() => import('pages/ChangePwdFirstLogin'));
 const CalendarEvent = lazy(() => import('pages/CalendarEvent'));
 const PaymentOrder = lazy(() => import('pages/PaymentOrder'));
@@ -172,7 +174,7 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 		return <Redirect to={{ pathname: paths.SIGNIN }} />;
 	} else if (!ignorePwdchangefirstloginValidation && resValidateToken.user!.pwdchangefirstlogin === true) {
 		return <Redirect to={{ pathname: paths.CHNAGE_PWD_FIRST_LOGIN }} />;
-	} else if (location.pathname !== "/" && !applications?.[location.pathname]?.[0] && !location.pathname.includes('channels') && !location.pathname.includes('person') && !location.pathname.includes('crm') && !location.pathname.includes('dashboard')) {
+	} else if (location.pathname !== "/" && !applications?.[location.pathname]?.[0] && !location.pathname.includes('channels') && !location.pathname.includes('person') && !location.pathname.includes('crm') && !location.pathname.includes('dashboard') && !location.pathname.includes('servicedesk')) {
 		return <Redirect to={{ pathname: "/403" }} />;
 	} else if (location.pathname === "/") {
 		return <Redirect to={{ pathname: resValidateToken.user?.redirect }} />
@@ -277,9 +279,11 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.CONFIGURATION} component={() => <Layout mainClasses={classes.main}><Settings /></Layout>} />
 					<ProtectRoute exact path={paths.AUTOMATIZATIONRULES} component={() => <Layout mainClasses={classes.main}><AutomatizationRules /></Layout>} />
 					<ProtectRoute exact path={paths.CRM} component={() => <Layout mainClasses={classes.main}><CRM /></Layout>} />
-					<ProtectRoute exact path={paths.AUTOMATIZATIONRULES} component={() => <Layout mainClasses={classes.main}><AutomatizationRules /></Layout>} />
+					<ProtectRoute exact path={paths.SERVICE_DESK} component={() => <Layout mainClasses={classes.main}><ServiceDesk /></Layout>} />
 					<ProtectRoute exact path={paths.CRM_ADD_LEAD} component={() => <Layout mainClasses={classes.main}><LeadForm /></Layout>} />
 					<ProtectRoute exact path={paths.CRM_EDIT_LEAD.path} component={() => <Layout mainClasses={classes.main}><LeadForm edit /></Layout>} />
+					<ProtectRoute exact path={paths.SERVICE_DESK_ADD_LEAD} component={() => <Layout mainClasses={classes.main}><ServiceDeskLeadForm /></Layout>} />
+					<ProtectRoute exact path={paths.SERVICE_DESK_EDIT_LEAD.path} component={() => <Layout mainClasses={classes.main}><ServiceDeskLeadForm edit /></Layout>} />
 					<ProtectRoute exact path={paths.KPIMANAGER} component={() => <Layout mainClasses={classes.main}><KPIManager /></Layout>} />
 					<ProtectRoute exact path={paths.CALENDAR} component={() => <Layout mainClasses={classes.main}><Calendar /></Layout>} />
 					<ProtectRoute exact path={paths.ASSISTANT} component={() => <Layout mainClasses={classes.main}><Assistant /></Layout>} />
