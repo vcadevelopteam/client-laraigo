@@ -92,14 +92,14 @@ export const langKeys = {
   unattendedticketsavg: "unattendedticketsavg",
   nprombalanceos: "nprombalanceos",
   vsprevmonth: "vsprevmonth",
-  ticketsattendedbyadvisor:"ticketsattendedbyadvisor",
+  ticketsattendedbyadvisor: "ticketsattendedbyadvisor",
   firstassignmenttime: "firstassignmenttime",
   percparticipation: "percparticipation",
-  starttimecall:"starttimecall",
-  finishtimecall:"finishtimecall",
-  webformstep:"webformstep",
-  transfertimecall:"transfertimecall",
-  transfertimecall_tooltip:"transfertimecall_tooltip",
+  starttimecall: "starttimecall",
+  finishtimecall: "finishtimecall",
+  webformstep: "webformstep",
+  transfertimecall: "transfertimecall",
+  transfertimecall_tooltip: "transfertimecall_tooltip",
   lastadvisername: "lastadvisername",
   tipification_tooltip: "tipification_tooltip",
   advisorattentiontime: "advisorattentiontime",
@@ -4351,6 +4351,7 @@ export const langKeys = {
   messagetemplate_synchronize: "messagetemplate_synchronize",
   messagetemplate_synchronize_alert01: "messagetemplate_synchronize_alert01",
   messagetemplate_synchronize_alert02: "messagetemplate_synchronize_alert02",
+  messagetemplate_synchronize_alert03: "messagetemplate_synchronize_alert03",
 
   TEMPLATE_ACCOUNT_UPDATE: "TEMPLATE_ACCOUNT_UPDATE",
   TEMPLATE_PAYMENT_UPDATE: "TEMPLATE_PAYMENT_UPDATE",
@@ -5000,8 +5001,8 @@ export const langKeys = {
   datetimestart_campaign: 'datetimestart_campaign',
   executiontype_campaign: 'executiontype_campaign',
   executiontype_MANUAL: 'executiontype_MANUAL',
-  executiontype_SCHEDULED:'executiontype_SCHEDULED',
-  greaterthanzero:"greaterthanzero"
+  executiontype_SCHEDULED: 'executiontype_SCHEDULED',
+  greaterthanzero: "greaterthanzero"
 };
 
 export type LangKeys = typeof langKeys;
