@@ -40,6 +40,7 @@ const ManageOrganization: FC = () => {
             if (!resChangeOrganization.loading && !resChangeOrganization.error) {
                 dispatch(showBackdrop(false));
                 localStorage.setItem("firstLoad", "1")
+                localStorage.setItem("changeorganization", "1")
                 window.location.reload()
             } else if (resChangeOrganization.error) {
                 const errormessage = t(resChangeOrganization.code || "error_unexpected_error")
