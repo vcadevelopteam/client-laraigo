@@ -137,8 +137,12 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 		if (!resValidateToken.error && !resValidateToken.loading) {
 			// const automaticConnection = resLogin.user?.automaticConnection || false;
 			const automaticConnection = localStorage.getItem("firstLoad") === "1";
+			const fromChangeOrganization = localStorage.getItem("changeorganization") === "1";
 			if (automaticConnection) {
 				localStorage.removeItem("firstLoad")
+			}
+			if (fromChangeOrganization) {
+				localStorage.removeItem("changeorganization")
 			}
 			dispatch(setDataUser({
 				holdingBySupervisor: resValidateToken.user?.properties.holding_by_supervisor || "CANAL",
@@ -147,7 +151,7 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 			}))
 
 			const { userid, orgid, roledesc, ownervoxi, sitevoxi } = resValidateToken.user!!
-			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM', automaticConnection, fromLogin: automaticConnection, roledesc }));
+			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM', automaticConnection, fromLogin: (!fromChangeOrganization && automaticConnection), roledesc }));
 			if (sitevoxi && ownervoxi) {
 				dispatch(voximplantConnect({
 					automaticConnection: automaticConnection || !!localStorage.getItem("agentConnected") || false,
