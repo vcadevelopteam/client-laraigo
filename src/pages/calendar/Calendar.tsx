@@ -469,6 +469,7 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                     getValues={getValues}
                     trigger={trigger}
                     errors={errors}
+                    multiData={multiData}
                     generalstate={generalstate}
                     setgeneralstate={setgeneralstate}
                     dateinterval = {dateinterval}
@@ -767,6 +768,7 @@ const Calendar: FC = () => {
             getMessageTemplateLst(''),
             getCommChannelLst(),
             getValuesFromDomain("REPORTEAUTOMATICORANGO"),
+            getValuesFromDomain("DURACION_EVENTO_CALENDARIO"),
         ]));
         return () => {
             dispatch(resetAllMain());
