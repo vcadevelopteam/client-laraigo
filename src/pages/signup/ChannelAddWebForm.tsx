@@ -56,7 +56,6 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) =
     const { t } = useTranslation();
     const [recaptcha, setrecaptcha] = useState(getValues('extra.recaptcha'));
 
-
     return (
         <Grid container direction="column">
             <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>

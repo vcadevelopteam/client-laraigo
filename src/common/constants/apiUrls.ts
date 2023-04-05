@@ -7,6 +7,7 @@ const APIS_URL = {
         WS: 'https://socket.laraigo.com',
         CHATFLOW: 'https://zyxmelinux2.zyxmeapp.com/zyxme/chatflow',
         FACEBOOKAPP: '235008923608113',
+        APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
         INSTAGRAMAPP: '467230660781510',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -23,6 +24,7 @@ const APIS_URL = {
         WS: 'https://testsocket.laraigo.com',
         CHATFLOW: 'https://zyxmelinux2.zyxmeapp.com/zyxmetest/chatflow',
         FACEBOOKAPP: '1094526090706564',
+        APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
         INSTAGRAMAPP: '1872023336244866',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -39,6 +41,7 @@ const APIS_URL = {
         WS: 'https://broker.laraigo.com',
         CHATFLOW: 'https://chatflow.s3-web.us-east.cloud-object-storage.appdomain.cloud',
         FACEBOOKAPP: '1980305408682607',
+        APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -55,6 +58,7 @@ const APIS_URL = {
         WS: 'https://clarobroker.laraigo.com',
         CHATFLOW: 'https://chatflow-claro.s3-web.us-east.cloud-object-storage.appdomain.cloud',
         FACEBOOKAPP: '1980305408682607',
+        APIKEY_GMAPS: "AIzaSyCDfPhg86YSt25QynLajl7GA5Ux6YEphoA",
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -71,6 +75,7 @@ const APIS_URL = {
         WS: 'https://clarobroker.laraigo.com',
         CHATFLOW: 'https://chatflow-claro.s3-web.us-east.cloud-object-storage.appdomain.cloud',
         FACEBOOKAPP: '1980305408682607',
+        APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -85,6 +90,7 @@ const APIS_URL = {
         WS: 'https://cloudbroker.laraigo.com',
         CHATFLOW: 'https://zyxmelinux2.zyxmeapp.com/zyxmedemo/chatflowcloud',
         FACEBOOKAPP: '235008923608113',
+        APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
         INSTAGRAMAPP: '467230660781510',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -101,6 +107,7 @@ const APIS_URL = {
         WS: 'https://demosocket.laraigo.com',
         CHATFLOW: 'https://zyxmelinux2.zyxmeapp.com/zyxmedemo/chatflow',
         FACEBOOKAPP: '235008923608113',
+        APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
         INSTAGRAMAPP: '467230660781510',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -119,6 +126,7 @@ const APIS_URL = {
         WS: 'https://socket.laraigo.com',
         CHATFLOW: 'https://zyxmelinux2.zyxmeapp.com/zyxme/chatflow',
         FACEBOOKAPP: '235008923608113',
+        APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
         INSTAGRAMAPP: '467230660781510',
         CATALOGAPP: '2131127810437236',
         CULQIKEY: 'pk_test_041501e753dcb2f9',
@@ -146,6 +154,7 @@ const DIALOG360PARTNERID = APIS_URL[ENV].DIALOG360PARTNERID
 const GOOGLECLIENTID_CALENDAR = APIS_URL[ENV].GOOGLECLIENTID_CALENDAR
 const NIUBIZSCRIPT = APIS_URL[ENV].NIUBIZSCRIPT
 const WEBFORMCHANNEL_FORM = APIS_URL[ENV].WEBFORMCHANNEL_FORM
+const APIKEY_GMAPS = APIS_URL[ENV].APIKEY_GMAPS
 
 export const apiUrls = {
     WS_URL,
@@ -160,6 +169,7 @@ export const apiUrls = {
     GOOGLECLIENTID_CALENDAR,
     NIUBIZSCRIPT,
     WEBFORMCHANNEL_FORM,
+    APIKEY_GMAPS,
     LOGIN_URL: `${BASE_URL}/auth`,
     CONNECT_INBOX: `${BASE_URL}/auth/connect`,
     CHANGE_ORGANIZATION: `${BASE_URL}/auth/changeorganization`,
