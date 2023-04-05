@@ -176,6 +176,7 @@ export const apiUrls = {
     LOGOUT_URL: `${BASE_URL}/auth/logout`,
     MAIN_URL: `${BASE_URL}/main`,
     MAIN_EVENT_BOOKING_URL: `${BASE_URL}/event-booking/collection`,
+    MAIN_EVENT_CANCELBOOKING_URL: `${BASE_URL}/event-booking/canceleventlaraigo`,
     MAIN_URL_PUBLIC: `${BASE_URL}/main/public/domainvalues`,
     MAIN_URL_PAYMENTORDER: `${BASE_URL}/main/public/paymentorder`,
     MAIN_URL_PAYMENTORDERNIUBIZ: `${BASE_URL}/main/public/paymentorderniubiz`,

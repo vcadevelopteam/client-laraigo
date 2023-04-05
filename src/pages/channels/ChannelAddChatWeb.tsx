@@ -16,11 +16,7 @@ import { showSnackbar } from 'store/popus/actions';
 import { getEditChatWebChannel, getInsertChatwebChannel } from 'common/helpers';
 import paths from 'common/constants/paths';
 import { ZyxmeMessengerIcon } from 'icons';
-
-interface TabPanelProps {
-    value: string;
-    index: string;
-}
+import { TabPanel } from 'pages/crm/components';
 
 interface FieldTemplate {
     text: React.ReactNode;
@@ -46,32 +42,6 @@ const getImgUrl = (file: File | string | null): string | null => {
 
 const isEmpty = (str?: string) => {
     return !str || str.length === 0;
-}
-
-const useTabPanelStyles = makeStyles(theme => ({
-    root: {
-        border: '#A59F9F 1px solid',
-        borderRadius: 6,
-    },
-}));
-
-const TabPanel: FC<TabPanelProps> = ({ children, value, index }) => {
-    const classes = useTabPanelStyles();
-
-    return (
-        <div
-            role="tabpanel"
-            hidden={value !== index}
-            className={classes.root}
-            id={`wrapped-tabpanel-${index}`}
-            aria-labelledby={`wrapped-tab-${index}`}
-            style={{ display: value === index ? 'block' : 'none' }}
-        >
-            <Box p={3}>
-                {children}
-            </Box>
-        </div>
-    );
 }
 
 const useTabInterfacetyles = makeStyles(theme => ({
@@ -634,7 +604,7 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                         </Grid>
                     </Grid>
                 </Grid>
-                {data.field !== 'DOCUMENT_TYPE' && <>
+                {data.field !== 'DOCUMENTTYPE' && <>
                     <Divider style={{ margin: '22px 0' }} />
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Box m={1}>
@@ -703,7 +673,7 @@ const LASTNAME_FIELD = "LASTNAME_FIELD";
 const PHONE_FIELD = "PHONE_FIELD";
 const EMAIL_FIELD = "EMAIL_FIELD";
 const DOCUMENT_FIELD = "DOCUMENT_FIELD";
-const DOCUMENT_TYPE_FIELD = "DOCUMENT_TYPE_FIELD";
+const DOCUMENTTYPE_FIELD = "DOCUMENTTYPE_FIELD";
 const SUPPLYNUMBER_FIELD = "SUPPLYNUMBER_FIELD";
 const CONTACT = "CONTACT_FIELD";
 
@@ -833,7 +803,7 @@ const templates: { [x: string]: FieldTemplate } = {
             keyvalidation: "",
         },
     },
-    [DOCUMENT_TYPE_FIELD]: {
+    [DOCUMENTTYPE_FIELD]: {
         text: <Trans i18nKey={langKeys.docType} />,
         node: (onClose, data, form, index) => {
             return (
@@ -841,14 +811,14 @@ const templates: { [x: string]: FieldTemplate } = {
                     form={form}
                     index={index}
                     data={data}
-                    onClose={() => onClose(DOCUMENT_TYPE_FIELD)}
-                    key={DOCUMENT_TYPE_FIELD}
+                    onClose={() => onClose(DOCUMENTTYPE_FIELD)}
+                    key={DOCUMENTTYPE_FIELD}
                     title={<Trans i18nKey={langKeys.docType} />}
                 />
             );
         },
         data: {
-            field: "DOCUMENT_TYPE",
+            field: "DOCUMENTTYPE",
             type: "text",
             required: true,
             label: "",
@@ -928,8 +898,8 @@ const TabPanelForm: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
         form.setValue('form', fields.map(x => x.data));
         if(fields.length){
             setEnable(true)
-            getMenuTemplates();
         }
+        getMenuTemplates();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fields, form]);
 

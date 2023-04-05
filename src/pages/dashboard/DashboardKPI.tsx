@@ -353,7 +353,7 @@ const DashboardKPI: FC = () => {
             tme: timetoseconds(foundDay?.tme_avg || "00:00:00"),
             tmr: timetoseconds(foundDay?.tmr_avg || "00:00:00"),
             tickets_agents: foundDay?.tickets_agents||0,
-            agents: foundDay?.agents||0,
+            agents: foundDay?.agents||1,
             balancetimes_avg: foundDay?.balancetimes_avg||0,
             tickets_count: (foundDay?.tickets_count + foundDay?.abandoned_tickets)||0,
             abandoned_tickets: foundDay?.abandoned_tickets||0,
@@ -371,9 +371,9 @@ const DashboardKPI: FC = () => {
             firstreplytime_avg: divisionTimeNumber(dataDays.reduce((acc,x)=>(addTimes(acc,x.firstreplytime_avg)),"00:00:00"),cantdays),
             tmr_avg: divisionTimeNumber(dataDays.reduce((acc,x)=>(addTimes(acc,x.tmr_avg)),"00:00:00"),cantdays),
             tme_avg: divisionTimeNumber(dataDays.reduce((acc,x)=>(addTimes(acc,x.tme_avg)),"00:00:00"),cantdays),
-            agents: (dataDays.reduce((acc,x)=>(acc + x.agents),0)/cantdays).toFixed(2),
-            tickets_count: (dataDays.reduce((acc,x)=>(acc + x.tickets_count + x.abandoned_tickets),0)/cantdays).toFixed(2),
-            abandoned_tickets: (dataDays.reduce((acc,x)=>(acc + x.abandoned_tickets),0)/cantdays).toFixed(2),
+            agents: (dataDays.reduce((acc,x)=>(acc + x.agents),0)/cantdays).toFixed(0),
+            tickets_count: (dataDays.reduce((acc,x)=>(acc + x.tickets_count + x.abandoned_tickets),0)/cantdays).toFixed(0),
+            abandoned_tickets: (dataDays.reduce((acc,x)=>(acc + x.abandoned_tickets),0)/cantdays).toFixed(0),
             balancetimes_avg: (dataDays.reduce((acc,x)=>(acc + x.balancetimes_avg),0)/cantdays).toFixed(2),
             varperfata: varpercTime(actmonth.firstassignedtime_avg, prevmonth.firstassignedtime_avg,0),
             varperhwta: varpercTime(actmonth.holdingwaitingtime_avg, prevmonth.holdingwaitingtime_avg,0),
@@ -463,7 +463,7 @@ const DashboardKPI: FC = () => {
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.firstavgassignment)}
                         <div className={classes.datafieldquarter}>{dataSummary?.firstassignedtime_avg || "00:00:00"}</div>
-                        <div className={clsx(classes.subtitle, {[classes.less]: dataSummary.varperfata<0, [classes.more]: dataSummary.varperfata>0})}>{dataSummary.varperfata>0?"+":""}{dataSummary.varperfata}% {t(langKeys.vsprevmonth)}</div>
+                        <div className={clsx(classes.subtitle, {[classes.more]: dataSummary.varperfata<0, [classes.less]: dataSummary.varperfata>0})}>{dataSummary.varperfata>0?"+":""}{dataSummary.varperfata}% {t(langKeys.vsprevmonth)}</div>
                         </div>
                     </Box>
                     <Box
@@ -471,7 +471,7 @@ const DashboardKPI: FC = () => {
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.averageholdingtime)}
                         <div className={classes.datafieldquarter}>{dataSummary?.holdingwaitingtime_avg || "00:00:00"}</div>
-                        <div className={clsx(classes.subtitle, {[classes.less]: dataSummary.varperhwta<0, [classes.more]: dataSummary.varperhwta>0})}>{dataSummary.varperhwta>0?"+":""}{dataSummary.varperhwta}% {t(langKeys.vsprevmonth)}</div>
+                        <div className={clsx(classes.subtitle, {[classes.more]: dataSummary.varperhwta<0, [classes.less]: dataSummary.varperhwta>0})}>{dataSummary.varperhwta>0?"+":""}{dataSummary.varperhwta}% {t(langKeys.vsprevmonth)}</div>
                         </div>
                     </Box>
                     <Box
@@ -479,7 +479,7 @@ const DashboardKPI: FC = () => {
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.avg1stresponsetime)}
                         <div className={classes.datafieldquarter}>{dataSummary?.firstreplytime_avg || "00:00:00"}</div>
-                        <div className={clsx(classes.subtitle, {[classes.less]: dataSummary.varperfrta<0, [classes.more]: dataSummary.varperfrta>0})}>{dataSummary.varperfrta>0?"+":""}{dataSummary.varperfrta}% {t(langKeys.vsprevmonth)}</div>
+                        <div className={clsx(classes.subtitle, {[classes.more]: dataSummary.varperfrta<0, [classes.less]: dataSummary.varperfrta>0})}>{dataSummary.varperfrta>0?"+":""}{dataSummary.varperfrta}% {t(langKeys.vsprevmonth)}</div>
                         </div>
                     </Box>
                     <Box
@@ -519,7 +519,7 @@ const DashboardKPI: FC = () => {
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.unattendedticketsavg)}
                         <div className={classes.datafieldquarter}>{dataSummary?.abandoned_tickets || "0"}</div>
-                        <div className={clsx(classes.subtitle, {[classes.less]: dataSummary.varperat<0, [classes.more]: dataSummary.varperat>0})}>{dataSummary.varperat>0?"+":""}{dataSummary.varperat}% {t(langKeys.vsprevmonth)}</div>
+                        <div className={clsx(classes.subtitle, {[classes.more]: dataSummary.varperat<0, [classes.less]: dataSummary.varperat>0})}>{dataSummary.varperat>0?"+":""}{dataSummary.varperat}% {t(langKeys.vsprevmonth)}</div>
                         </div>
                     </Box>
                     <Box
@@ -527,7 +527,7 @@ const DashboardKPI: FC = () => {
                     >
                         <div className={classes.boxtitlequarter}>{t(langKeys.nprombalanceos)}
                         <div className={classes.datafieldquarter}>{dataSummary?.balancetimes_avg || "0"}</div>
-                        <div className={clsx(classes.subtitle, {[classes.less]: dataSummary.varperbta<0, [classes.more]: dataSummary.varperbta>0})}>{dataSummary.varperbta>0?"+":""}{dataSummary.varperbta}% {t(langKeys.vsprevmonth)}</div>
+                        <div className={clsx(classes.subtitle, {[classes.more]: dataSummary.varperbta<0, [classes.less]: dataSummary.varperbta>0})}>{dataSummary.varperbta>0?"+":""}{dataSummary.varperbta}% {t(langKeys.vsprevmonth)}</div>
                         </div>
                     </Box>
                 </div>
@@ -539,11 +539,11 @@ const DashboardKPI: FC = () => {
                         >
                             <ResponsiveContainer width="100%" aspect={4.0 / 2.0}>
                                 <LineChart data={dataSummary?.graphdata||[]} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                                    <Legend verticalAlign="top"/>
                                     <CartesianGrid stroke="#f5f5f5" />
                                     <XAxis dataKey="date" />
                                     <YAxis tickFormatter={v=>formattime(v)} width={100} domain={[0, (dataMax:any) => (Math.floor(dataMax * 1.1) + 5)]}/>
-                                    <RechartsTooltip formatter={(value: any, name: any) => [formattime(value), t(name)]} />
+                                    <RechartsTooltip formatter={(value: any, name: any) => [formattime(value), t(name)]}/>
+                                    <Legend verticalAlign="top" height={70}/>
                                     <Line type="monotone" name="TME" dataKey="tme" stroke="#c0504d" strokeWidth={2}>
                                         <LabelList dataKey="tme" position="top" fill="#c0504d" formatter={(v:any)=>formattime(v)}/>
                                     </Line>
@@ -554,14 +554,17 @@ const DashboardKPI: FC = () => {
                             </ResponsiveContainer>                        
                         </Box>
                     </div>
+                </div>
+                <div className="todown" style={{display:"flex", gap:8}}>
+
                     <div className={classes.replacerowzyx} style={{width:"100%"}} >
                         <Box
                             className={classes.itemCard}
                         >
                             <ResponsiveContainer width="100%" aspect={4.0 / 2.0}>
                                 <LineChart width={730} height={250} data={dataSummary?.graphdata||[]} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                                    <Legend verticalAlign="top"/>
                                     <CartesianGrid stroke="#f5f5f5" />
+                                    <Legend verticalAlign="top"/>
                                     <XAxis dataKey="date" />
                                     <YAxis tickFormatter={v=>(v)} width={50} domain={[0, (dataMax:any) => (Math.floor(dataMax * 1.1) + 5)]}/>
                                     <RechartsTooltip formatter={(value: any, name: any) => [(value), t(name)]} />
@@ -586,17 +589,17 @@ const DashboardKPI: FC = () => {
                         >
                             <ResponsiveContainer width="100%" aspect={4.0 / 2.0}>
                                 <LineChart width={730} height={250} data={dataSummary?.graphdata||[]} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                                    <Legend verticalAlign="top"/>
                                     <CartesianGrid stroke="#f5f5f5" />
                                     <XAxis dataKey="date" />
-                                    <YAxis yAxisId="right" orientation="right" tickFormatter={v=>v + " %"} domain={[0,100]}/>
+                                    <YAxis yAxisId="right" orientation="right" tickFormatter={v=>v + " %"} domain={[0,200]}/>
                                     <YAxis yAxisId="left"width={100} domain={[0, (dataMax:any) => (Math.floor(dataMax * 1.1) + 5)]}/>
                                     <RechartsTooltip formatter={(value: any, name: any, props:any) => [props.dataKey==="participacion"?value+"%":value, t(name)]} />
+                                    <Legend verticalAlign="top" height={50}/>
                                     <Line yAxisId="left" type="monotone" name={t(langKeys.report_kpioperativo_tickets)} dataKey="tickets_count" stroke="#c0504d" strokeWidth={2}>
-                                        <LabelList dataKey="tickets_count" position="top"  fill="#4f81bd"/>
+                                        <LabelList dataKey="tickets_count" position="top"  fill="#c0504d"/>
                                     </Line>
                                     <Line yAxisId="left" type="monotone" name={t(langKeys.report_kpioperativo_abandoned_tickets)} dataKey="abandoned_tickets" stroke="#4f81bd" strokeWidth={2}>
-                                        <LabelList dataKey="abandoned_tickets" position="top" fill="#c0504d"/>
+                                        <LabelList dataKey="abandoned_tickets" position="top" fill="#4f81bd"/>
                                     </Line>
                                     <Line yAxisId="right" type="monotone" name={t(langKeys.percparticipation)} dataKey="participacion" stroke="#9bbb59" strokeWidth={2}>
                                         <LabelList dataKey="participacion" position="top"  fill="#9bbb59" formatter={(value: any, name: any) => [value + "%", t(name)]}/>
@@ -605,24 +608,27 @@ const DashboardKPI: FC = () => {
                             </ResponsiveContainer>                        
                         </Box>
                     </div>
+                </div>
+                <div className="todown" style={{display:"flex", gap:8}}>
                     <div className={classes.replacerowzyx} style={{width:"100%"}} >
                         <Box
                             className={classes.itemCard}
                         >
                             <ResponsiveContainer width="100%" aspect={4.0 / 2.0}>
                                 <LineChart width={730} height={250} data={dataSummary?.graphdata||[]} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                                    <Legend verticalAlign="top"/>
                                     <CartesianGrid stroke="#f5f5f5" />
                                     <XAxis dataKey="date" />
-                                    <YAxis tickFormatter={v=>formattime(v)}  width={50} domain={[0, (dataMax:any) => (Math.floor(dataMax * 1.1) + 5)]}/>
+                                    <YAxis yAxisId="right" orientation="right" tickFormatter={v=>formattime(v)}  width={50} domain={[0, (dataMax:any) => (Math.floor(dataMax * 3) + 5)]}/>
+                                    <YAxis yAxisId="left" tickFormatter={v=>formattime(v)} width={50} domain={[0, (dataMax:any) => (Math.floor(dataMax * 1.05) + 5)]}/>
                                     <RechartsTooltip formatter={(value: any, name: any) => [formattime(value), t(name)]} />
-                                    <Line type="monotone" name={t(langKeys.report_voicecall_holdingtime)} dataKey="holdingwaitingtime_avg" stroke="#c0504d" strokeWidth={2}>
+                                    <Legend verticalAlign="top" height={50}/>
+                                    <Line yAxisId="right" type="monotone" name={t(langKeys.report_voicecall_holdingtime)} dataKey="holdingwaitingtime_avg" stroke="#c0504d" strokeWidth={2}>
                                         <LabelList dataKey="holdingwaitingtime_avg" position="top"  fill="#c0504d" formatter={(v:any)=>formattime(v)}/>
                                     </Line>
-                                    <Line type="monotone" name={t(langKeys.firstassignmenttime)} dataKey="firstassignedtime_avg" stroke="#4f81bd" strokeWidth={2}>
+                                    <Line yAxisId="left" type="monotone" name={t(langKeys.firstassignmenttime)} dataKey="firstassignedtime_avg" stroke="#4f81bd" strokeWidth={2}>
                                         <LabelList dataKey="firstassignedtime_avg" position="top" fill="#4f81bd" formatter={(v:any)=>formattime(v)}/>
                                     </Line>
-                                    <Line type="monotone" name={t(langKeys.ticket_tiempoprimerarespuesta)} dataKey="firstreplytime_avg" stroke="#9bbb59" strokeWidth={2}>
+                                    <Line yAxisId="left" type="monotone" name={t(langKeys.ticket_tiempoprimerarespuesta)} dataKey="firstreplytime_avg" stroke="#9bbb59" strokeWidth={2}>
                                         <LabelList dataKey="firstreplytime_avg" position="top"  fill="#9bbb59" formatter={(v:any)=>formattime(v)}/>
                                     </Line>
 

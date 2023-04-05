@@ -73,6 +73,9 @@ export function mainDynamicExport(requestBody: IRequestBodyDynamic) {
 export function mainEventBooking(requestBody: IRequestBody) {
     return APIManager.post(apiUrls.MAIN_EVENT_BOOKING_URL, { data: requestBody }, false);
 }
+export function mainEventCancelBooking(requestBody: IRequestBody) {
+    return APIManager.post(apiUrls.MAIN_EVENT_CANCELBOOKING_URL, { data: requestBody }, false);
+}
 
 export function request_send(request: any) {
     const { method, url, authorization, headers, bodytype, body, parameters } = request;

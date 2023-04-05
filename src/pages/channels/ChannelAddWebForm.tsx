@@ -16,11 +16,7 @@ import { showSnackbar } from 'store/popus/actions';
 import { getEditChatWebChannel, getInsertChatwebChannel } from 'common/helpers';
 import paths from 'common/constants/paths';
 import { apiUrls } from 'common/constants';
-
-interface TabPanelProps {
-    value: string;
-    index: string;
-}
+import { TabPanel } from "pages/crm/components";
 
 interface FieldTemplate {
     text: React.ReactNode;
@@ -30,32 +26,6 @@ interface FieldTemplate {
 
 const isEmpty = (str?: string) => {
     return !str || str.length === 0;
-}
-
-const useTabPanelStyles = makeStyles(theme => ({
-    root: {
-        border: '#A59F9F 1px solid',
-        borderRadius: 6,
-    },
-}));
-
-const TabPanel: FC<TabPanelProps> = ({ children, value, index }) => {
-    const classes = useTabPanelStyles();
-
-    return (
-        <div
-            role="tabpanel"
-            hidden={value !== index}
-            className={classes.root}
-            id={`wrapped-tabpanel-${index}`}
-            aria-labelledby={`wrapped-tab-${index}`}
-            style={{ display: value === index ? 'block' : 'none' }}
-        >
-            <Box p={3}>
-                {children}
-            </Box>
-        </div>
-    );
 }
 
 const useTabInterfacetyles = makeStyles(theme => ({

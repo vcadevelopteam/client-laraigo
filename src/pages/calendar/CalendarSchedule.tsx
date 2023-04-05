@@ -328,33 +328,32 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                     <div className="col-12" style={{ padding: 5 }}>
                         <Box fontWeight={500} lineHeight="18px" fontSize={16} mb={1} color="textPrimary">{t(langKeys.duration)}</Box>
                         <div className="row-zyx" >
-                            <div className="col-6">
-                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">{t(langKeys.quantity)}</Box>
-                                <TextField
-                                    color="primary"
-                                    type="number"
-                                    fullWidth
-                                    value={generalstate.duration}
-                                    error={!!errors?.duration?.message}
-                                    helperText={errors?.duration?.message || null}
-                                    onInput={(e: any) => {
-                                        let val = Number(e.target.value.replace(/[^0-9 ]/g, ""))
-                                        e.target.value = String(val)
-                                    }}
-                                    onChange={(e) => {
-                                        setgeneralstate({ ...generalstate, duration: Number(e.target.value) });
-                                        setValue('duration', Number(e.target.value))
-                                    }}
-                                />
-                            </div>
                             <FieldSelect
-                                label={t(langKeys.unitofmeasure)}
+                                label={t(langKeys.hour_plural)}
                                 className="col-6"
-                                valueDefault={getValues("durationtype")}
-                                onChange={(value) => setValue('durationtype', (value?.val || ""))}
-                                error={errors?.durationtype?.message}
-                                data={[{ desc: t(langKeys.minute_plural), val: "MINUTE" }, { desc: t(langKeys.hour_plural), val: "HOUR" }]}
-                                optionDesc="desc"
+                                valueDefault={String(generalstate.hours)}
+                                onChange={(e) => {
+                                    setgeneralstate({ ...generalstate, hours: Number(e?.val||"0") });
+                                    setValue('duration', Number(e?.val||"0") * 60 + generalstate.minutes)
+                                }}
+                                error={errors?.duration?.message}
+                                data={[
+                                    {val:"0"},  {val:"1"}, {val:"2"}, {val:"3"}, {val:"4"}, {val:"5"}, {val:"6"}, {val:"7"}, {val:"8"}, {val:"9"}, {val:"10"}, {val:"11"}, {val:"12"}
+                                ]}
+                                optionDesc="val"
+                                optionValue="val"
+                            />
+                            <FieldSelect
+                                label={t(langKeys.minute_plural)}
+                                className="col-6"
+                                valueDefault={String(generalstate.minutes)}
+                                onChange={(e) => {
+                                    setgeneralstate({ ...generalstate, minutes: Number(e?.val||"0") });
+                                    setValue('duration', Number(e?.val||"0") + generalstate.hours * 60)
+                                }}
+                                error={errors?.duration?.message}
+                                data={[ {val: "0"}, {val: "30"} ]}
+                                optionDesc="val"
                                 optionValue="val"
                             />
                         </div>

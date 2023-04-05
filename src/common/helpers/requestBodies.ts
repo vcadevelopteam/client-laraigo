@@ -1,4 +1,4 @@
-import { DashboardTemplateSave, Dictionary, IChannel, IChatWebAdd, ICrmLead, ICrmLeadActivitySave, ICrmLeadHistoryIns, ICrmLeadNoteSave, ICrmLeadSel, ICrmLeadTagsSave, ILead, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
+import { DashboardTemplateSave, Dictionary, IChannel, IChatWebAdd, ICrmLead, ICrmLeadActivitySave, ICrmLeadHistoryIns, ICrmLeadNoteSave, ICrmLeadSel, ICrmLeadTagsSave, ILead, IPerson, IRequestBody, IRequestBodyPaginated, ISDLeadSel, IServiceDeskLead, IServiceDeskLead2 } from '@types';
 import { uuidv4 } from '.';
 
 type ID = string | number;
@@ -178,7 +178,7 @@ export const getCatalogMasterList = () => ({
     key: "UFN_METACATALOG_SEL",
     parameters: {
         metabusinessid: 0,
-        id:0,
+        id: 0,
     }
 });
 export const getReportschedulerreportsSel = () => ({
@@ -342,9 +342,9 @@ export const getCorpSel = (id: number): IRequestBody => ({
 export const getOrderSel = (): IRequestBody => ({
     method: "UFN_ORDER_SEL",
     key: "UFN_ORDER_SEL",
-    parameters: { }
+    parameters: {}
 });
-export const getOrderLineSel = ( orderid: number): IRequestBody => ({
+export const getOrderLineSel = (orderid: number): IRequestBody => ({
     method: "UFN_ORDERLINE_SEL",
     key: "UFN_ORDERLINE_SEL",
     parameters: { orderid }
@@ -367,7 +367,7 @@ export const getOrgSelList = (id: number): IRequestBody => ({
 });
 
 export const insSLA = ({ id, description, type, company, communicationchannelid, usergroup, status, totaltmo, totaltmomin, totaltmopercentmax, usertmo, usertmomin, usertmopercentmax,
-    usertme, usertmepercentmax, productivitybyhour, operation }: Dictionary): IRequestBody => ({
+    usertme, usertmepercentmax, productivitybyhour, operation, criticality, service_times }: Dictionary): IRequestBody => ({
         method: "UFN_SLA_INS",
         parameters: {
             id,
@@ -394,7 +394,9 @@ export const insSLA = ({ id, description, type, company, communicationchannelid,
             usertmepercentmax: parseFloat(usertmepercentmax),
             usertmepercentmin: 0.01,
             productivitybyhour: parseFloat(productivitybyhour),
-            operation
+            operation, 
+            criticality: JSON.stringify(criticality),
+            service_times: JSON.stringify(service_times)
         }
     });
 
@@ -1236,7 +1238,7 @@ export const getEditChannel = (id: number, payload: IChannel, name: string, auto
         voximplantwelcometone: welcometoneurl || "",
         voximplantholdtone: holdingtoneurl || "",
         voximplantcallsupervision: voximplantcallsupervision || false,
-        voximplantrecording: voximplantrecording || '{"recording":false,"recordingstorage":"month3","recordingquality":"hd"}',
+        voximplantrecording: voximplantrecording || '',
     },
 });
 
@@ -2329,10 +2331,28 @@ export const getColumnsSel = (id: number, lost: boolean = false): IRequestBody =
         lost
     }
 })
+export const getColumnsSDSel = (id: number, lost: boolean = false): IRequestBody => ({
+    method: "UFN_COLUMN_SD_SEL",
+    key: "UFN_COLUMN_SD_SEL",
+    parameters: {
+        id: id,
+        all: true,
+        lost
+    }
+})
 
 export const getLeadsSel = (params: ICrmLeadSel): IRequestBody => ({
     method: "UFN_LEAD_SEL",
     key: "UFN_LEAD_SEL",
+    parameters: {
+        ...params,
+        all: params.id === 0,
+    }
+})
+
+export const getLeadsSDSel = (params: ISDLeadSel): IRequestBody => ({
+    method: "UFN_LEAD_SD_SEL",
+    key: "UFN_LEAD_SD_SEL",
     parameters: {
         ...params,
         all: params.id === 0,
@@ -2427,6 +2447,17 @@ export const insLead = ({ leadid, description, status, type, expected_revenue, d
     }
 });
 
+export const insSDLead = (lead: IServiceDeskLead2|IServiceDeskLead, operation: "UPDATE" | "INSERT" | "DELETE" = "INSERT"): IRequestBody => ({
+    method: 'UFN_LEAD_SD_INS',
+    key: "UFN_LEAD_SD_INS",
+    parameters: {
+        ...lead,
+        id: lead.leadid,
+        username: null,
+        operation, 
+    }
+});
+
 export const insLead2 = (lead: ICrmLead, operation: "UPDATE" | "INSERT" | "DELETE" = "INSERT"): IRequestBody => ({
     method: 'UFN_LEAD_INS',
     key: "UFN_LEAD_INS",
@@ -2456,6 +2487,11 @@ export const getOneLeadSel = (id: string | number): IRequestBody => ({
 export const adviserSel = (): IRequestBody => ({
     method: 'UFN_ADVISERS_SEL',
     key: "UFN_ADVISERS_SEL",
+    parameters: {},
+});
+export const userSDSel = (): IRequestBody => ({
+    method: 'UFN_USER_SD_SEL',
+    key: "UFN_USER_SD_SEL",
     parameters: {},
 });
 
@@ -2524,6 +2560,29 @@ export const getPaginatedLead = ({ skip, take, filters, sorts, startdate, enddat
     }
 })
 
+export const getPaginatedSDLead = ({ skip, take, filters, sorts, startdate, enddate, contact, leadproduct,tags,company,
+    groups, supervisorid, ...allParameters }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_LEADGRID_SD_SEL",
+    methodCount: "UFN_LEADGRID_SD_TOTALRECORDS",
+    parameters: {
+        origin: "lead",
+        startdate,
+        enddate,
+        skip,
+        take,
+        filters,
+        sorts,
+        fullname: contact,
+        leadproduct,
+        tags,
+        company: company||"",
+        groups,
+        supervisorid,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+        ...allParameters
+    }
+})
+
 export const getLeadExport = ({ filters, sorts, startdate, enddate, ...allParameters }: Dictionary): IRequestBody => ({
     method: "UFN_LEADGRID_EXPORT",
     key: "UFN_LEADGRID_EXPORT",
@@ -2538,6 +2597,18 @@ export const getLeadExport = ({ filters, sorts, startdate, enddate, ...allParame
         contact: allParameters['contact'] ? allParameters['contact'] : "",
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
+});
+
+export const insArchiveServiceDesk = (lead: IServiceDeskLead2|IServiceDeskLead): IRequestBody => ({
+    method: 'UFN_LEAD_SD_INS',
+    key: "UFN_LEAD_SD_INS",
+    parameters: {
+        ...lead,
+        id: lead.leadid,
+        username: null,
+        status: "CERRADO",
+        operation: "UPDATE",
+    },
 });
 
 export const insArchiveLead = (lead: ICrmLead): IRequestBody => ({
@@ -3147,24 +3218,42 @@ export const selBookingCalendar = (startdate: string, enddate: string, calendare
     },
 });
 
-export const calendarBookingCancel = ({ calendareventid, id, cancelcomment }: Dictionary) => ({
+export const calendarBookingCancel = ({ calendareventid, id, phone, name, username, email, canceltype, cancelcomment, corpid, orgid, userid, otros }: Dictionary) => ({
     method: "UFN_CALENDARBOOKING_CANCEL",
     key: "UFN_CALENDARBOOKING_CANCEL",
+    phone,
+    name,
+    email,
     parameters: {
+        canceltype,
         calendareventid,
         id,
         cancelcomment,
+        corpid,
+        orgid,
+        username,
+        userid,
+        agentid:"",
+        otros,
     },
 });
-export const calendarBookingCancel2 = ({ corpid, orgid, calendareventid, id, cancelcomment }: Dictionary) => ({
+export const calendarBookingCancel2 = ({ calendareventid, id, phone, name, email, canceltype, cancelcomment, corpid, orgid, otros }: Dictionary) => ({
     method: "UFN_CALENDARBOOKING_CANCEL",
     key: "UFN_CALENDARBOOKING_CANCEL",
+    phone,
+    name,
+    email,
     parameters: {
-        corpid, orgid,
+        canceltype,
         calendareventid,
         id,
         cancelcomment,
+        corpid,
+        orgid,
         username: "",
+        userid:0,
+        agentid:"",
+        otros,
     },
 });
 export const calendarBookingSelOne = ({ corpid, orgid, calendareventid, id }: Dictionary) => ({
@@ -3186,12 +3275,14 @@ export const insCalendar = ({
     id = 0, description, descriptionobject, status, type,
     code, name, locationtype, location, eventlink, color, notificationtype, messagetemplateid,
     daterange, daysduration, startdate, enddate,
-    timeduration, timeunit,maximumcapacity,
+    timeduration, timeunit, maximumcapacity,
     availability,
     timebeforeeventduration, timebeforeeventunit, timeaftereventduration, timeaftereventunit,
     increments,
-    operation, reminderperiod, reminderfrecuency, reminderhsmmessage,
-    communicationchannelid, notificationmessage, reminderenable, remindertype, reminderhsmtemplateid, remindermailmessage, remindermailtemplateid, reminderhsmcommunicationchannelid
+    operation, reminderperiod, reminderfrecuency, reminderhsmmessage,notificationmessageemail,messagetemplateidemail,
+    communicationchannelid, notificationmessage, reminderenable, remindertype, reminderhsmtemplateid, remindermailmessage, remindermailtemplateid, reminderhsmcommunicationchannelid,
+    rescheduletype, rescheduletemplateidemail, reschedulenotificationemail, rescheduletemplateidhsm, reschedulenotificationhsm, reschedulecommunicationchannelid,
+    canceltype, canceltemplateidemail, cancelnotificationemail, canceltemplateidhsm, cancelnotificationhsm, cancelcommunicationchannelid
 }: Dictionary): IRequestBody => ({
     method: "UFN_CALENDAREVENT_INS",
     key: "UFN_CALENDAREVENT_INS",
@@ -3200,14 +3291,18 @@ export const insCalendar = ({
         descriptionobject: JSON.stringify(descriptionobject), status, type,
         code, name, locationtype, location, eventlink, color, notificationtype, messagetemplateid,
         daterange, daysduration, daystype: "CALENDAR", startdate, enddate,
-        timeduration,timeunit,maximumcapacity,
+        timeduration, timeunit, maximumcapacity,
         availability: JSON.stringify(availability),
         timebeforeeventduration, timebeforeeventunit, timeaftereventduration, timeaftereventunit,
         increments, reminderperiod, reminderfrecuency,
         reminderhsmtemplateid: reminderhsmtemplateid || 0, reminderhsmcommunicationchannelid,
         remindermailtemplateid: remindermailtemplateid || 0, reminderhsmmessage,
         operation, notificationmessage, reminderenable, remindertype, remindermailmessage,
-        communicationchannelid: communicationchannelid || 0
+        communicationchannelid: communicationchannelid || 0,
+        notificationmessageemail: notificationmessageemail, 
+        messagetemplateidemail,
+        rescheduletype, rescheduletemplateidemail, reschedulenotificationemail, rescheduletemplateidhsm, reschedulenotificationhsm, reschedulecommunicationchannelid,
+        canceltype, canceltemplateidemail, cancelnotificationemail, canceltemplateidhsm, cancelnotificationhsm, cancelcommunicationchannelid
     }
 });
 
@@ -3513,7 +3608,62 @@ export const getasesorvsticketsSel = ({ skip, take, filters, sorts, startdate, e
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
-
+export const getreportrequestSD = ({ skip, take, filters, sorts, startdate, enddate, company }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_REPORT_REQUESTSD_SEL",
+    methodCount: "UFN_REPORT_REQUESTSD_TOTALRECORDS",
+    parameters: {
+        startdate,
+        enddate,
+        skip,
+        take,
+        filters,
+        sorts,
+        company,
+        origin: "reportrequestsd",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+export const getRequestSDExport = ({ filters, sorts, startdate, enddate, company }: Dictionary): IRequestBody => ({
+    method: "UFN_REPORT_REQUESTSD_EXPORT",
+    key: "UFN_REPORT_REQUESTSD_EXPORT",
+    parameters: {
+        origin: "reportrequestsd",
+        filters,
+        startdate,
+        enddate,
+        company,
+        sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+});
+export const getComplianceSLAExport = ({ filters, sorts, startdate, enddate, company }: Dictionary): IRequestBody => ({
+    method: "UFN_REPORT_COMPLIANCESLA_EXPORT",
+    key: "UFN_REPORT_COMPLIANCESLA_EXPORT",
+    parameters: {
+        origin: "reportcompliancesla",
+        filters,
+        startdate,
+        enddate,
+        company,
+        sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+});
+export const getcomplianceSLA = ({ skip, take, filters, sorts, startdate, enddate, company }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_REPORT_COMPLIANCESLA_SEL",
+    methodCount: "UFN_REPORT_COMPLIANCESLA_TOTALRECORDS",
+    parameters: {
+        startdate,
+        enddate,
+        skip,
+        take,
+        filters,
+        sorts,
+        company,
+        origin: "reportcompliancesla",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
 export const getTicketvsAdviserExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
     method: "UFN_REPORT_ASESOR_VS_TICKET_EXPORT",
     key: "UFN_REPORT_ASESOR_VS_TICKET_EXPORT",
@@ -3761,7 +3911,14 @@ export const billingPeriodArtificialIntelligenceInsArray = (corpid: number, orgi
         orgid: orgid,
         table: JSON.stringify(table),
     },
-});
+})
+
+export const exportintent = ({ name_json }: Dictionary): IRequestBody => ({
+    method: "UFN_WITAI_INTENT_EXPORT",
+    key: "UFN_WITAI_INTENT_EXPORT",
+    parameters: { name_json }
+})
+
 export const productCatalogInsArray = (metacatalogid: bigint, table: Dictionary[], username: string): IRequestBody => ({
     method: "UFN_PRODUCTCATALOG_INS_ARRAY",
     parameters: { metacatalogid: metacatalogid, table: JSON.stringify(table), username: username }
@@ -3801,8 +3958,3 @@ export const metaBusinessSel = ({ corpid, orgid, id }: Dictionary) => ({
     key: "UFN_METABUSINESS_SEL",
     parameters: { corpid, orgid, id },
 });
-export const exportintent = ({name_json}:Dictionary): IRequestBody => ({
-    method: "UFN_WITAI_INTENT_EXPORT",
-    key: "UFN_WITAI_INTENT_EXPORT",
-    parameters: {name_json}
-})
