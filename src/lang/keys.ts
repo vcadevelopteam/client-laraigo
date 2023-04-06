@@ -5002,7 +5002,8 @@ export const langKeys = {
   executiontype_campaign: 'executiontype_campaign',
   executiontype_MANUAL: 'executiontype_MANUAL',
   executiontype_SCHEDULED: 'executiontype_SCHEDULED',
-  greaterthanzero: "greaterthanzero"
+  greaterthanzero: "greaterthanzero",
+  invoice_importvalidation: "invoice_importvalidation",
 };
 
 export type LangKeys = typeof langKeys;
