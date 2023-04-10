@@ -2147,6 +2147,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
 
   report_userproductivityhours: 'Productividad de asesores hora',
   report_userproductivityhours_datehour: 'Fecha',
+  report_userproductivityhours_idletimewithoutattention: 'Tiempo desocupado sin atención',
   report_userproductivityhours_agent: 'Asesor',
   report_userproductivityhours_hoursrange: 'Rango de horas',
   report_userproductivityhours_worktime: 'Tiempo trabajado',
