@@ -2249,7 +2249,8 @@ const translation: LangKeys = {
   report_tipification_closetype: 'Close type',
 
   report_userproductivityhours: 'Hourly agent productivity',
-  report_userproductivityhours_datehour: 'Date',
+  report_userproductivityhours_datehour: 'Idle time without attention',
+  report_userproductivityhours_idletimewithoutattention: 'Date',
   report_userproductivityhours_agent: 'Agent',
   report_userproductivityhours_hoursrange: 'Range of hour',
   report_userproductivityhours_worktime: 'Time worked',
