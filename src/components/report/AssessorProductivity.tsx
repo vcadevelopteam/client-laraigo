@@ -215,6 +215,16 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                 accessor: 'maxtotalduration',
             },
             {
+                Header: t(langKeys.report_userproductivity_tmravg),
+                accessor: 'tmravg',
+                helpText: t(langKeys.report_userproductivity_tmravg_help),
+            },
+            {
+                Header: t(langKeys.report_userproductivity_tmradviseravg),
+                accessor: 'tmradviseravg',
+                helpText: t(langKeys.report_userproductivity_tmradviseravg_help),
+            },
+            {
                 Header: t(langKeys.report_userproductivity_mintotalduration),
                 accessor: 'mintotalduration',
             },
