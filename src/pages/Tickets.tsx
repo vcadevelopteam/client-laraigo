@@ -871,6 +871,7 @@ const Tickets = () => {
                     return (
                         row.communicationchanneltype === 'VOXI'
                         && row.postexternalid
+                        && row.callrecording
                         && row.callanswereddate ?
                         <Tooltip title={t(langKeys.download_record) || ""}>
                             <IconButton size="small" onClick={() => downloadCallRecord(row)}

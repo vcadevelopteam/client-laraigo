@@ -187,6 +187,7 @@ function createTicket2(callback) {
         "commentexternalid": accessURL,
         "newConversation": true,
         "status": "ASIGNADO",
+        "callrecording": red.recording,
         "origin": "OUTBOUND"
     }
     //externalid es el pccowner
@@ -255,6 +256,7 @@ function closeTicket(motive, obs = "") {
         retryClose = retryClose + 1;
     }
 }
+
 function reasignAgent(agentid) {
     const body = {
         agentid,
