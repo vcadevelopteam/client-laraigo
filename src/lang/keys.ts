@@ -2529,6 +2529,11 @@ export const langKeys = {
   report_userproductivity_filter_includebot: 'report_userproductivity_filter_includebot',
   report_userproductivity_desconectedtimejson: 'report_userproductivity_desconectedtimejson',
 
+  report_userproductivity_tmravg: "report_userproductivity_tmravg",
+  report_userproductivity_tmradviseravg: "report_userproductivity_tmradviseravg",
+  report_userproductivity_tmravg_help: "report_userproductivity_tmravg_help",
+  report_userproductivity_tmradviseravg_help: "report_userproductivity_tmradviseravg_help",
+
   type_shippingtype_hsm: 'type_shippingtype_hsm',
   type_shippingtype_mail: 'type_shippingtype_mail',
   type_shippingtype_sms: 'type_shippingtype_sms',
