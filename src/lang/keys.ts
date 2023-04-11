@@ -5002,7 +5002,11 @@ export const langKeys = {
   executiontype_campaign: 'executiontype_campaign',
   executiontype_MANUAL: 'executiontype_MANUAL',
   executiontype_SCHEDULED: 'executiontype_SCHEDULED',
-  greaterthanzero: "greaterthanzero"
+  greaterthanzero: "greaterthanzero",
+  registermeta: "registermeta",
+  whatsapptitlemeta: "whatsapptitlemeta",
+  metaaccesstoken: "metaaccesstoken",
+  metaphonenumber: "metaphonenumber",
 };
 
 export type LangKeys = typeof langKeys;

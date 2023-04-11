@@ -224,7 +224,7 @@ interface TemplateDialogProps {
     height?: string;
 }
 
-export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText0, buttonText1, buttonText2, buttonText3, handleClickButton0, handleClickButton1, handleClickButton2, handleClickButton3, title, maxWidth = "sm", button1Type = "button", button2Type = "button", zIndex = 1300, showClose = false, height="auto" }) => (
+export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText0, buttonText1, buttonText2, buttonText3, handleClickButton0, handleClickButton1, handleClickButton2, handleClickButton3, title, maxWidth = "sm", button1Type = "button", button2Type = "button", zIndex = 1300, showClose = false, height = "auto" }) => (
     <Dialog
         open={open}
         fullWidth
@@ -557,6 +557,7 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     if (channelType === "WHAT") return <WhatsappIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "WHAD") return <WhatsappIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "WHAG") return <WhatsappIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "WHAM") return <WhatsappIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "WHAP") return <WhatsappIcon color={color} width={width} fill={color} stroke={color} height={height} />
     if (channelType === "WHAC") return <WhatsappIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "FBMS") return <FacebookMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
@@ -589,6 +590,7 @@ export const GetIconColor: React.FC<IconProps> = ({ channelType }) => {
     if (channelType === "WHAT") return <WhatsappColor />
     if (channelType === "WHAD") return <WhatsappColor />
     if (channelType === "WHAG") return <WhatsappColor />
+    if (channelType === "WHAM") return <WhatsappColor />
     if (channelType === "WHAP") return <WhatsappColor />
     if (channelType === "WHAC") return <WhatsappColor />
     if (channelType === "FBMS") return <FacebookMessengerColor />

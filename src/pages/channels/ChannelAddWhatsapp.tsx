@@ -82,6 +82,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
     const [setRegisterSmooch, setSetRegisterSmooch] = useState(false);
     const [setRegister360, setSetRegister360] = useState(false);
     const [setRegisterGupshup, setSetRegisterGupshup] = useState(false);
+    const [setRegisterMeta, setSetRegisterMeta] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
     const [setParameters, setSetParameters] = useState(true);
 
@@ -177,6 +178,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
             setSetRegister360(true);
             setSetRegisterSmooch(false);
             setSetRegisterGupshup(false);
+            setSetRegisterMeta(false);
 
             let partialField = fields;
             partialField.type = "DIALOG";
@@ -188,6 +190,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
             setSetRegister360(false);
             setSetRegisterSmooch(true);
             setSetRegisterGupshup(false);
+            setSetRegisterMeta(false);
 
             let partialField = fields;
             partialField.type = "WHATSAPPSMOOCHINSERT";
@@ -199,9 +202,22 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
             setSetRegister360(false);
             setSetRegisterSmooch(false);
             setSetRegisterGupshup(true);
+            setSetRegisterMeta(false);
 
             let partialField = fields;
             partialField.type = "WHATSAPPGUPSHUP";
+
+            setFields(partialField);
+        }
+
+        if (roledesc !== "SUPERADMIN" && !edit && whatsAppData?.typeWhatsApp === "META") {
+            setSetRegister360(false);
+            setSetRegisterSmooch(false);
+            setSetRegisterGupshup(false);
+            setSetRegisterMeta(true);
+
+            let partialField = fields;
+            partialField.type = "WHATSAPPMETA";
 
             setFields(partialField);
         }
@@ -296,7 +312,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
         setFields(partialf);
     }
 
-    function setService(value: string, field: string) {
+    function setService(value: string) {
         setNextbutton(value === "");
         let partialf = fields;
         partialf.service.accesstoken = value;
@@ -304,7 +320,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
         setFields(partialf);
     }
 
-    function setApiKeyId(value: string, field: string) {
+    function setApiKeyId(value: string) {
         setNextbutton(value === "");
         let partialf = fields;
         partialf.service.apikeyid = value;
@@ -312,7 +328,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
         setFields(partialf);
     }
 
-    function setApiKeySecret(value: string, field: string) {
+    function setApiKeySecret(value: string) {
         setNextbutton(value === "");
         let partialf = fields;
         partialf.service.apikeysecret = value;
@@ -320,7 +336,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
         setFields(partialf);
     }
 
-    function setAppId(value: string, field: string) {
+    function setAppId(value: string) {
         setNextbutton(value === "")
         let partialf = fields;
         partialf.service.appid = value;
@@ -328,7 +344,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
         setFields(partialf);
     }
 
-    function setAppName(value: string, field: string) {
+    function setAppName(value: string) {
         setNextbutton(value === "")
         let partialf = fields;
         partialf.service.appname = value;
@@ -336,7 +352,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
         setFields(partialf);
     }
 
-    function setApiKey(value: string, field: string) {
+    function setApiKey(value: string) {
         setNextbutton(value === "")
         let partialf = fields;
         partialf.service.apikey = value;
@@ -344,10 +360,26 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
         setFields(partialf);
     }
 
-    function setAppNumber(value: string, field: string) {
+    function setAppNumber(value: string) {
         setNextbutton(value === "")
         let partialf = fields;
         partialf.service.appnumber = value;
+        partialf.parameters.communicationchannelowner = "";
+        setFields(partialf);
+    }
+
+    function setAccessToken(value: string) {
+        setNextbutton(value === "")
+        let partialf = fields;
+        partialf.service.accesstoken = value;
+        partialf.parameters.communicationchannelowner = "";
+        setFields(partialf);
+    }
+
+    function setPhoneNumber(value: string) {
+        setNextbutton(value === "")
+        let partialf = fields;
+        partialf.service.phone = value;
         partialf.parameters.communicationchannelowner = "";
         setFields(partialf);
     }
@@ -374,7 +406,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
             return (
                 <div style={{ width: '100%' }}>
                     <Breadcrumbs aria-label="breadcrumb">
-                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setSetRegister360(false); setSetRegisterSmooch(false); setSetRegisterGupshup(false); }}>
+                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setSetRegister360(false); setSetRegisterSmooch(false); setSetRegisterGupshup(false); setSetRegisterMeta(false); }}>
                             {t(langKeys.previoustext)}
                         </Link>
                     </Breadcrumbs>
@@ -403,7 +435,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                         <div className="row-zyx">
                             <div className="col-3"></div>
                             <FieldEdit
-                                onChange={(value) => setService(value, "accesstoken")}
+                                onChange={(value) => setService(value)}
                                 label={t(langKeys.enterapikey)}
                                 className="col-6"
                             />
@@ -416,7 +448,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
             return (
                 <div style={{ width: '100%' }}>
                     <Breadcrumbs aria-label="breadcrumb">
-                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setSetRegister360(false); setSetRegisterSmooch(false); setSetRegisterGupshup(false); }}>
+                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setSetRegister360(false); setSetRegisterSmooch(false); setSetRegisterGupshup(false); setSetRegisterMeta(false); }}>
                             {t(langKeys.previoustext)}
                         </Link>
                     </Breadcrumbs>
@@ -447,7 +479,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 <TextField
                                     style={{ width: "100%" }}
                                     onChange={(e) => {
-                                        setApiKeyId(e.target.value, "apikeyid");
+                                        setApiKeyId(e.target.value);
                                         setdisablebutton2(!e.target.value || !fields.service.apikeysecret || !fields.service.appid)
                                     }}
                                     variant="outlined"
@@ -458,7 +490,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 <TextField
                                     style={{ width: "100%" }}
                                     onChange={(e) => {
-                                        setApiKeySecret(e.target.value, "apikeysecret");
+                                        setApiKeySecret(e.target.value);
                                         setdisablebutton2(!e.target.value || !fields.service.apikeyid || !fields.service.appid)
                                     }}
                                     variant="outlined"
@@ -469,7 +501,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 <TextField
                                     style={{ width: "100%" }}
                                     onChange={(e) => {
-                                        setAppId(e.target.value, "appid");
+                                        setAppId(e.target.value);
                                         setdisablebutton2(!e.target.value || !fields.service.apikeyid || !fields.service.apikeysecret)
                                     }}
                                     variant="outlined"
@@ -485,7 +517,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
             return (
                 <div style={{ width: '100%' }}>
                     <Breadcrumbs aria-label="breadcrumb">
-                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setSetRegister360(false); setSetRegisterSmooch(false); setSetRegisterGupshup(false); }}>
+                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setSetRegister360(false); setSetRegisterSmooch(false); setSetRegisterGupshup(false); setSetRegisterMeta(false); }}>
                             {t(langKeys.previoustext)}
                         </Link>
                     </Breadcrumbs>
@@ -516,7 +548,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 <TextField
                                     style={{ width: "100%" }}
                                     onChange={(e) => {
-                                        setAppId(e.target.value, "appid");
+                                        setAppId(e.target.value);
                                         setdisablebutton3(!e.target.value || !fields.service.appname || !fields.service.apikey || !fields.service.appnumber)
                                     }}
                                     variant="outlined"
@@ -527,7 +559,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 <TextField
                                     style={{ width: "100%" }}
                                     onChange={(e) => {
-                                        setAppName(e.target.value, "appname");
+                                        setAppName(e.target.value);
                                         setdisablebutton3(!fields.service.appid || !e.target.value || !fields.service.apikey || !fields.service.appnumber)
                                     }}
                                     variant="outlined"
@@ -538,7 +570,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 <TextField
                                     style={{ width: "100%" }}
                                     onChange={(e) => {
-                                        setApiKey(e.target.value, "apikey");
+                                        setApiKey(e.target.value);
                                         setdisablebutton3(!fields.service.appid || !fields.service.appname || !e.target.value || !fields.service.appnumber)
                                     }}
                                     variant="outlined"
@@ -549,11 +581,70 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 <TextField
                                     style={{ width: "100%" }}
                                     onChange={(e) => {
-                                        setAppNumber(e.target.value, "appnumber");
+                                        setAppNumber(e.target.value);
                                         setdisablebutton3(!fields.service.appid || !fields.service.appname || !fields.service.apikey || !e.target.value)
                                     }}
                                     variant="outlined"
                                     label={t(langKeys.gupshuppappnumber)}
+                                    type={"number"}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+        else if (setRegisterMeta) {
+            return (
+                <div style={{ width: '100%' }}>
+                    <Breadcrumbs aria-label="breadcrumb">
+                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setSetRegister360(false); setSetRegisterSmooch(false); setSetRegisterGupshup(false); setSetRegisterMeta(false); }}>
+                            {t(langKeys.previoustext)}
+                        </Link>
+                    </Breadcrumbs>
+                    <div>
+                        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.whatsapptitlemeta)}</div>
+                        {
+                            edit ?
+                                <Button
+                                    className={classes.centerbutton}
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={false}
+                                    onClick={() => { history.push(paths.CHANNELS_ADD, whatsAppData) }}
+                                >{t(langKeys.close)}
+                                </Button>
+                                :
+                                <Button
+                                    className={classes.centerbutton}
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={disablebutton3}
+                                    onClick={() => { setViewSelected("viewfinishreg") }}
+                                >{t(langKeys.registerwhats)}
+                                </Button>
+                        }
+                        <div className="row-zyx">
+                            <div style={{ width: "100%", padding: "10px 25%" }}>
+                                <TextField
+                                    style={{ width: "100%" }}
+                                    onChange={(e) => {
+                                        setAccessToken(e.target.value);
+                                        setdisablebutton3(!e.target.value || !fields.service.phone)
+                                    }}
+                                    variant="outlined"
+                                    label={t(langKeys.metaaccesstoken)}
+                                />
+                            </div>
+                            <div style={{ width: "100%", padding: "10px 25%" }}>
+                                <TextField
+                                    style={{ width: "100%" }}
+                                    onChange={(e) => {
+                                        setPhoneNumber(e.target.value);
+                                        setdisablebutton3(!fields.service.accesstoken || !e.target.value)
+                                    }}
+                                    variant="outlined"
+                                    label={t(langKeys.metaphonenumber)}
                                     type={"number"}
                                 />
                             </div>
@@ -579,6 +670,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                     setSetRegister360(true);
                                     setSetRegisterSmooch(false);
                                     setSetRegisterGupshup(false);
+                                    setSetRegisterMeta(false);
 
                                     let partialField = fields;
                                     partialField.type = "WHATSAPP";
@@ -598,6 +690,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                     setSetRegister360(false);
                                     setSetRegisterSmooch(true);
                                     setSetRegisterGupshup(false);
+                                    setSetRegisterMeta(false);
 
                                     let partialField = fields;
                                     partialField.type = "WHATSAPPSMOOCHINSERT";
@@ -617,6 +710,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                     setSetRegister360(false);
                                     setSetRegisterSmooch(false);
                                     setSetRegisterGupshup(true);
+                                    setSetRegisterMeta(false);
 
                                     let partialField = fields;
                                     partialField.type = "WHATSAPPGUPSHUP";
@@ -628,6 +722,26 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 variant="contained"
                                 color="primary"
                             >{t(langKeys.registergupshup)}
+                            </Button>
+                        </div>
+                        <div style={{ flex: "1", margin: "0px 15px" }}>
+                            <Button
+                                onClick={() => {
+                                    setSetRegister360(false);
+                                    setSetRegisterSmooch(false);
+                                    setSetRegisterGupshup(false);
+                                    setSetRegisterMeta(true);
+
+                                    let partialField = fields;
+                                    partialField.type = "WHATSAPPMETA";
+
+                                    setFields(partialField);
+                                }}
+                                className={classes.button2}
+                                disabled={false}
+                                variant="contained"
+                                color="primary"
+                            >{t(langKeys.registermeta)}
                             </Button>
                         </div>
                     </div>
@@ -655,7 +769,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                         <div className="row-zyx">
                             <div className="col-3"></div>
                             <FieldEdit
-                                onChange={(value) => setService(value, "accesstoken")}
+                                onChange={(value) => setService(value)}
                                 label={t(langKeys.enterapikey)}
                                 className="col-6"
                             />
@@ -679,7 +793,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 <TextField
                                     style={{ width: "100%" }}
                                     onChange={(e) => {
-                                        setApiKeyId(e.target.value, "apikeyid");
+                                        setApiKeyId(e.target.value);
                                         setdisablebutton2(!e.target.value || !fields.service.apikeysecret || !fields.service.appid)
                                     }}
                                     variant="outlined"
@@ -690,7 +804,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 <TextField
                                     style={{ width: "100%" }}
                                     onChange={(e) => {
-                                        setApiKeySecret(e.target.value, "apikeysecret");
+                                        setApiKeySecret(e.target.value);
                                         setdisablebutton2(!e.target.value || !fields.service.apikeyid || !fields.service.appid)
                                     }}
                                     variant="outlined"
@@ -701,7 +815,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 <TextField
                                     style={{ width: "100%" }}
                                     onChange={(e) => {
-                                        setAppId(e.target.value, "appid");
+                                        setAppId(e.target.value);
                                         setdisablebutton2(!e.target.value || !fields.service.apikeyid || !fields.service.apikeysecret)
                                     }}
                                     variant="outlined"
@@ -757,7 +871,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                             <div className="row-zyx">
                                 <div className="col-3"></div>
                                 <FieldEdit
-                                    onChange={(value) => setService(value, "accesstoken")}
+                                    onChange={(value) => setService(value)}
                                     label={t(langKeys.enterapikey)}
                                     className="col-6"
                                 />
