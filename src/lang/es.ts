@@ -5017,6 +5017,10 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   executiontype_SCHEDULED: "PROGRAMADO",
   greaterthanzero: "El valor de capacidad máxima del evento debe tener un numero mayor a 0",
   invoice_importvalidation: 'Error de validación para la columna "{{column}}" en la fila {{row}}. Verificar que la data sea válida',
+  registermeta: "Registrar como Meta",
+  whatsapptitlemeta: "Para conectar una cuenta de WhatsApp Meta, ingresa la información del App que deseas conectar en el siguiente formulario",
+  metaaccesstoken: "Token de Acceso",
+  metaphonenumber: "Número Telefónico",
 };
 
 const esResource: ResourceLanguage = {

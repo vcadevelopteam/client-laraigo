@@ -5005,6 +5005,10 @@ export const langKeys = {
   executiontype_SCHEDULED: 'executiontype_SCHEDULED',
   greaterthanzero: "greaterthanzero",
   invoice_importvalidation: "invoice_importvalidation",
+  registermeta: "registermeta",
+  whatsapptitlemeta: "whatsapptitlemeta",
+  metaaccesstoken: "metaaccesstoken",
+  metaphonenumber: "metaphonenumber",
 };
 
 export type LangKeys = typeof langKeys;
