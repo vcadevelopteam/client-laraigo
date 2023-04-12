@@ -5096,7 +5096,7 @@ const translation: LangKeys = {
   registermeta: "Register as Meta",
   whatsapptitlemeta: "To connect a WhatsApp Meta account please enter the information of the app you want to connect in the following form",
   metaaccesstoken: "Access Token",
-  metaphonenumber: "Phone Number",
+  metaphonenumber: "Phone Number ID",
 };
 
 const enResource: ResourceLanguage = {
