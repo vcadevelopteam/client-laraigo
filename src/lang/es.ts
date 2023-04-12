@@ -5018,7 +5018,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   registermeta: "Registrar como Meta",
   whatsapptitlemeta: "Para conectar una cuenta de WhatsApp Meta, ingresa la información del App que deseas conectar en el siguiente formulario",
   metaaccesstoken: "Token de Acceso",
-  metaphonenumber: "Número Telefónico",
+  metaphonenumber: "ID Número Telefónico",
 };
 
 const esResource: ResourceLanguage = {
