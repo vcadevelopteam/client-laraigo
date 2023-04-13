@@ -2256,7 +2256,7 @@ const translation: LangKeys = {
   report_userproductivityhours_worktime: 'Time worked',
   report_userproductivityhours_worktime_help: 'Time the person has to work',
   report_userproductivityhours_busytimewithinwork: 'Time occupied within working hours',
-  report_userproductivityhours_busytimewithinwork_help: 'Time in which the advisor is answering tickets during working hours with the switch in available.',
+  report_userproductivityhours_busytimewithinwork_help: 'Time in which the advisor is answering tickets during working hours with the switch in available and not available.',
   report_userproductivityhours_freetimewithinwork: 'Free time within working hours',
   report_userproductivityhours_busytimeoutsidework: 'Busy time outside of work hours',
   report_userproductivityhours_busytimeoutsidework_help: 'Time in which the advisor is answering tickets outside of his working hours.',
