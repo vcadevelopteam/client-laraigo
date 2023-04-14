@@ -1157,9 +1157,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 setValue("body", "");
                 setValue("namespace", "");
 
-                register("body", {
-                    validate: (value) => (value && value.length) || t(langKeys.field_required),
-                });
+                register("body", { validate: (value) => value || true });
                 register("footer", { validate: (value) => value || true });
                 register("header", {
                     validate: (value) => (value && value.length) || t(langKeys.field_required),
