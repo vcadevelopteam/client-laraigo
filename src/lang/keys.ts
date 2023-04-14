@@ -5014,6 +5014,17 @@ export const langKeys = {
   whatsapptitlemeta: "whatsapptitlemeta",
   metaaccesstoken: "metaaccesstoken",
   metaphonenumber: "metaphonenumber",
+  registerimap: "registerimap",
+  imaptitle: "imaptitle",
+  imaptitle2: "imaptitle2",
+  imapaccesstoken: "imapaccesstoken",
+  imapusername: "imapusername",
+  imappassword: "imappassword",
+  imapincomingendpoint: "imapincomingendpoint",
+  imaphost: "imaphost",
+  imapincomingport: "imapincomingport",
+  imapport: "imapport",
+  imapssl: "imapssl",
 };
 
 export type LangKeys = typeof langKeys;

@@ -90,11 +90,20 @@ export const ChannelAddEmail: FC = () => {
             "scope": "",
             "tokentype": "",
             "idtoken": "",
+            "imapaccesstoken": "",
+            "imapusername": "",
+            "imappassword": "",
+            "imapincomingendpoint": "",
+            "imaphost": "",
+            "imapincomingport": "",
+            "imapport": "",
+            "imapssl": "",
         }
     })
     const [nextbutton, setNextbutton] = useState(true);
     const [registerInfobip, setRegisterInfobip] = useState(false);
     const [registerGmail, setRegisterGmail] = useState(false);
+    const [registerImap, setRegisterImap] = useState(false);
     const [setins, setsetins] = useState(false);
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitExchange, setWaitExchange] = useState(false);
@@ -173,7 +182,7 @@ export const ChannelAddEmail: FC = () => {
             return (
                 <div style={{ width: '100%' }}>
                     <Breadcrumbs aria-label="breadcrumb">
-                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setRegisterInfobip(false); setRegisterGmail(false); }}>
+                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setRegisterInfobip(false); setRegisterGmail(false); setRegisterImap(false); }}>
                             {t(langKeys.previoustext)}
                         </Link>
                     </Breadcrumbs>
@@ -243,7 +252,7 @@ export const ChannelAddEmail: FC = () => {
                     <script src="https://apis.google.com/js/platform.js" async defer></script>
                     <div style={{ width: '100%' }}>
                         <Breadcrumbs aria-label="breadcrumb">
-                            <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setRegisterInfobip(false); setRegisterGmail(false); }}>
+                            <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setRegisterInfobip(false); setRegisterGmail(false); setRegisterImap(false); }}>
                                 {t(langKeys.previoustext)}
                             </Link>
                         </Breadcrumbs>
@@ -263,6 +272,143 @@ export const ChannelAddEmail: FC = () => {
                         </div>
                     </div>
                 </>
+            )
+        }
+        else if (registerImap) {
+            return (
+                <div style={{ width: '100%' }}>
+                    <Breadcrumbs aria-label="breadcrumb">
+                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setRegisterInfobip(false); setRegisterGmail(false); setRegisterImap(false); }}>
+                            {t(langKeys.previoustext)}
+                        </Link>
+                    </Breadcrumbs>
+                    <div>
+                        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.imaptitle)}</div>
+                        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>{t(langKeys.imaptitle2)}</div>
+                        <div className="row-zyx">
+                            <div className="col-3"></div>
+                            <FieldEdit
+                                onChange={(value) => {
+                                    setNextbutton(value === "" || fields.service.imappassword === "" || fields.service.imapincomingendpoint === "" || fields.service.imaphost === "" || fields.service.imapincomingport === "" || fields.service.imapport === "" || fields.service.imapssl === "")
+                                    let partialf = fields;
+                                    partialf.service.imapusername = value
+                                    setFields(partialf)
+                                }}
+                                valueDefault={fields.service.imapusername}
+                                label={t(langKeys.imapusername)}
+                                className="col-6"
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <div className="col-3"></div>
+                            <FieldEdit
+                                onChange={(value) => {
+                                    setNextbutton(fields.service.imapusername === "" || value === "" || fields.service.imapincomingendpoint === "" || fields.service.imaphost === "" || fields.service.imapincomingport === "" || fields.service.imapport === "" || fields.service.imapssl === "")
+                                    let partialf = fields;
+                                    partialf.service.imappassword = value
+                                    setFields(partialf)
+                                }}
+                                valueDefault={fields.service.imappassword}
+                                label={t(langKeys.imappassword)}
+                                className="col-6"
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <div className="col-3"></div>
+                            <FieldEdit
+                                onChange={(value) => {
+                                    setNextbutton(fields.service.imapusername === "" || fields.service.imappassword === "" || fields.service.imapincomingendpoint === "" || fields.service.imaphost === "" || fields.service.imapincomingport === "" || fields.service.imapport === "" || fields.service.imapssl === "")
+                                    let partialf = fields;
+                                    partialf.service.imapaccesstoken = value
+                                    setFields(partialf)
+                                }}
+                                valueDefault={fields.service.imapaccesstoken}
+                                label={t(langKeys.imapaccesstoken)}
+                                className="col-6"
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <div className="col-3"></div>
+                            <FieldEdit
+                                onChange={(value) => {
+                                    setNextbutton(fields.service.imapusername === "" || fields.service.imappassword === "" || value === "" || fields.service.imaphost === "" || fields.service.imapincomingport === "" || fields.service.imapport === "" || fields.service.imapssl === "")
+                                    let partialf = fields;
+                                    partialf.service.imapincomingendpoint = value
+                                    setFields(partialf)
+                                }}
+                                valueDefault={fields.service.imapincomingendpoint}
+                                label={t(langKeys.imapincomingendpoint)}
+                                className="col-6"
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <div className="col-3"></div>
+                            <FieldEdit
+                                onChange={(value) => {
+                                    setNextbutton(fields.service.imapusername === "" || fields.service.imappassword === "" || fields.service.imapincomingendpoint === "" || fields.service.imaphost === "" || value === "" || fields.service.imapport === "" || fields.service.imapssl === "")
+                                    let partialf = fields;
+                                    partialf.service.imapincomingport = value
+                                    setFields(partialf)
+                                }}
+                                valueDefault={fields.service.imapincomingport}
+                                label={t(langKeys.imapincomingport)}
+                                className="col-6"
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <div className="col-3"></div>
+                            <FieldEdit
+                                onChange={(value) => {
+                                    setNextbutton(fields.service.imapusername === "" || fields.service.imappassword === "" || fields.service.imapincomingendpoint === "" || value === "" || fields.service.imapincomingport === "" || fields.service.imapport === "" || fields.service.imapssl === "")
+                                    let partialf = fields;
+                                    partialf.service.imaphost = value
+                                    setFields(partialf)
+                                }}
+                                valueDefault={fields.service.imaphost}
+                                label={t(langKeys.imaphost)}
+                                className="col-6"
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <div className="col-3"></div>
+                            <FieldEdit
+                                onChange={(value) => {
+                                    setNextbutton(fields.service.imapusername === "" || fields.service.imappassword === "" || fields.service.imapincomingendpoint === "" || fields.service.imaphost === "" || fields.service.imapincomingport === "" || value === "" || fields.service.imapssl === "")
+                                    let partialf = fields;
+                                    partialf.service.imapport = value
+                                    setFields(partialf)
+                                }}
+                                valueDefault={fields.service.imapport}
+                                label={t(langKeys.imapport)}
+                                className="col-6"
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <div className="col-3"></div>
+                            <FieldEdit
+                                onChange={(value) => {
+                                    setNextbutton(fields.service.imapusername === "" || fields.service.imappassword === "" || fields.service.imapincomingendpoint === "" || fields.service.imaphost === "" || fields.service.imapincomingport === "" || fields.service.imapport === "" || value === "")
+                                    let partialf = fields;
+                                    partialf.service.imapssl = value
+                                    setFields(partialf)
+                                }}
+                                valueDefault={fields.service.imapssl}
+                                label={t(langKeys.imapssl)}
+                                className="col-6"
+                            />
+                        </div>
+                        <div style={{ paddingLeft: "80%" }}>
+                            <Button
+                                disabled={nextbutton}
+                                onClick={() => { setViewSelected("view2") }}
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                            >{t(langKeys.next)}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
             )
         }
         else {
@@ -304,6 +450,21 @@ export const ChannelAddEmail: FC = () => {
                                 variant="contained"
                                 color="primary"
                             >{t(langKeys.registergmail)}
+                            </Button>
+                        </div>
+                        <div style={{ flex: "1", margin: "0px 15px" }}>
+                            <Button
+                                onClick={() => {
+                                    setRegisterImap(true);
+                                    let partialField = fields;
+                                    partialField.type = "IMAP";
+                                    setFields(partialField);
+                                }}
+                                className={classes.button2}
+                                disabled={false}
+                                variant="contained"
+                                color="primary"
+                            >{t(langKeys.registerimap)}
                             </Button>
                         </div>
                     </div>

@@ -5025,6 +5025,17 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   whatsapptitlemeta: "Para conectar una cuenta de WhatsApp Meta, ingresa la información del App que deseas conectar en el siguiente formulario",
   metaaccesstoken: "Token de Acceso",
   metaphonenumber: "ID Número Telefónico",
+  registerimap: "Registrar como IMAP",
+  imaptitle: "Conecta tu correo electrónico IMAP",
+  imaptitle2: "Para conectar tu correo electrónico, necesitamos que nos proveas de la siguiente información. Puedas encontrarla consultando a tu proveedor actual de correo.",
+  imapaccesstoken: "Token de Acceso",
+  imapusername: "Correo",
+  imappassword: "Contraseña",
+  imapincomingendpoint: "Servidor IMAP",
+  imaphost: "Servidor SMTP",
+  imapincomingport: "Puerto IMAP",
+  imapport: "Puerto SMTP",
+  imapssl: "Tipo SSL",
 };
 
 const esResource: ResourceLanguage = {

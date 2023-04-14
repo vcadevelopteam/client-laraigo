@@ -5097,6 +5097,17 @@ const translation: LangKeys = {
   whatsapptitlemeta: "To connect a WhatsApp Meta account please enter the information of the app you want to connect in the following form",
   metaaccesstoken: "Access Token",
   metaphonenumber: "Phone Number ID",
+  registerimap: "Register as IMAP",
+  imaptitle: "Connect your IMAP email",
+  imaptitle2: "To connect your email, we need you to provide us with the following information. You can find it by asking your current mail provider.",
+  imapaccesstoken: "Access Token",
+  imapusername: "Mail",
+  imappassword: "Password",
+  imapincomingendpoint: "IMAP Server",
+  imaphost: "SMTP Server",
+  imapincomingport: "IMAP Port",
+  imapport: "SMTP Port",
+  imapssl: "SSL Type",
 };
 
 const enResource: ResourceLanguage = {
