@@ -218,6 +218,14 @@ export interface EmailChannel {
     scope: string;
     tokentype: string;
     idtoken: string;
+    imapaccesstoken: string;
+    imapusername: string;
+    imappassword: string;
+    imapincomingendpoint: string;
+    imaphost: string;
+    imapincomingport: string;
+    imapport: string;
+    imapssl: string;
     type: string;
     build: (v: Omit<EmailChannel, 'build'>) => IRequestBody;
 }

@@ -5002,7 +5002,18 @@ export const langKeys = {
   executiontype_campaign: 'executiontype_campaign',
   executiontype_MANUAL: 'executiontype_MANUAL',
   executiontype_SCHEDULED: 'executiontype_SCHEDULED',
-  greaterthanzero: "greaterthanzero"
+  greaterthanzero: "greaterthanzero",
+  registerimap: "registerimap",
+  imaptitle: "imaptitle",
+  imaptitle2: "imaptitle2",
+  imapaccesstoken: "imapaccesstoken",
+  imapusername: "imapusername",
+  imappassword: "imappassword",
+  imapincomingendpoint: "imapincomingendpoint",
+  imaphost: "imaphost",
+  imapincomingport: "imapincomingport",
+  imapport: "imapport",
+  imapssl: "imapssl",
 };
 
 export type LangKeys = typeof langKeys;
