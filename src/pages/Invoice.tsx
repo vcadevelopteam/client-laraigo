@@ -3708,7 +3708,7 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
 
     function isValidDate(dateString: string) {
         let regEx = /^\d{4}-\d{2}-\d{2}$/;
-        return dateString.match(regEx) != null;
+        return `${dateString}`.match(regEx) != null;
     }
 
     const fetchData = () => dispatch(getCollection(selInvoice(dataMain)));
