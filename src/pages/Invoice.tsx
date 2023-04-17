@@ -3706,6 +3706,11 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
     const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
     const dataPayment = [{ value: "PENDING", description: t(langKeys.PENDING) }, { value: "PAID", description: t(langKeys.PAID) }, { value: "NONE", description: t(langKeys.NONE) }]
 
+    function isValidDate(dateString: string) {
+        let regEx = /^\d{4}-\d{2}-\d{2}$/;
+        return dateString.match(regEx) != null;
+    }
+
     const fetchData = () => dispatch(getCollection(selInvoice(dataMain)));
 
     const getDocumentType = (documenttype: string) => {
@@ -4107,6 +4112,34 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
                 if (!dataCurrency.find(data => data.value === dataobject.currency)) {
                     errorcolumn = t(langKeys.currency);
                     errorrow = errorcount;
+                }
+
+                if (dataobject.receivercountry) {
+                    if (`${dataobject.receivercountry}`.length > 3) {
+                        errorcolumn = t(langKeys.receivercountry);
+                        errorrow = errorcount;
+                    }
+                }
+
+                if (dataobject.invoicedate) {
+                    if (!isValidDate(dataobject.invoicedate)) {
+                        errorcolumn = t(langKeys.invoicedate);
+                        errorrow = errorcount;
+                    }
+                }
+
+                if (dataobject.expirationdate) {
+                    if (!isValidDate(dataobject.expirationdate)) {
+                        errorcolumn = t(langKeys.expirationdate);
+                        errorrow = errorcount;
+                    }
+                }
+
+                if (dataobject.paymentdate) {
+                    if (!isValidDate(dataobject.paymentdate)) {
+                        errorcolumn = t(langKeys.paymentdate);
+                        errorrow = errorcount;
+                    }
                 }
 
                 errorcount++;
