@@ -173,7 +173,9 @@ export const routes: RouteConfig[] = [
         key: paths.CONFIGURATION,
         description: <Trans i18nKey={langKeys.configuration} />,
         tooltip: <Trans i18nKey={langKeys.configuration} />,
+        subroute: true,
         path: paths.CONFIGURATION,
+        initialSubroute: paths.CONFIGURATION,
         icon: (className) => <ConfigurationIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     // {
