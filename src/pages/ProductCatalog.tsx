@@ -503,6 +503,10 @@ const ProductCatalog: FC = () => {
                 Header: t(langKeys.size),
             },
             {
+                accessor: 'standardfeatures0',
+                Header: `${t(langKeys.standardfeature)} 0`,
+            },
+            {
                 accessor: 'customlabel0',
                 Header: `${t(langKeys.customlabel)}${user?.properties?.environment === "CLARO" ? ' 0' : ''}`,
             },
@@ -1009,6 +1013,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
             customnumber2: row?.customnumber2 || '',
             customnumber3: row?.customnumber3 || '',
             customnumber4: row?.customnumber4 || '',
+            standardfeatures0: row?.standardfeatures0 || '',
             reviewstatus: row?.reviewstatus || '',
             reviewdescription: row?.reviewdescription || '',
             status: row?.status || '',
@@ -1334,6 +1339,16 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         />
                     </div>
                     <div className="row-zyx">
+                        <FieldEdit
+                            className="col-12"
+                            disabled={!edit}
+                            error={errors?.standardfeatures0?.message}
+                            label={`${t(langKeys.standardfeature)} 0`}
+                            onChange={(value) => setValue('standardfeatures0', value)}
+                            valueDefault={row?.standardfeatures0 || ''}
+                        />
+                    </div>
+                    <div className="row-zyx">
                         <FieldMultiSelectFreeSolo
                             className="col-6"
                             data={labels.map((x: any) => ({ value: x }))}
@@ -1403,7 +1418,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             type="number"
                             valueDefault={row?.customnumber0 || ''}
                         />
-                         <FieldEdit
+                        <FieldEdit
                             className="col-6"
                             disabled={!edit}
                             error={errors?.customnumber1?.message}
@@ -1423,7 +1438,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             type="number"
                             valueDefault={row?.customnumber2 || ''}
                         />
-                         <FieldEdit
+                        <FieldEdit
                             className="col-6"
                             disabled={!edit}
                             error={errors?.customnumber3?.message}
