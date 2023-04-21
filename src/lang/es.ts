@@ -5036,6 +5036,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   imapincomingport: "Puerto IMAP",
   imapport: "Puerto SMTP",
   imapssl: "Tipo SSL",
+  standardfeature: "Standard Feature",
 };
 
 const esResource: ResourceLanguage = {

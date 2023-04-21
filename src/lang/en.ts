@@ -5108,6 +5108,7 @@ const translation: LangKeys = {
   imapincomingport: "IMAP Port",
   imapport: "SMTP Port",
   imapssl: "SSL Type",
+  standardfeature: "Standard Feature",
 };
 
 const enResource: ResourceLanguage = {

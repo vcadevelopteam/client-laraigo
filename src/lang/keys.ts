@@ -5025,6 +5025,7 @@ export const langKeys = {
   imapincomingport: "imapincomingport",
   imapport: "imapport",
   imapssl: "imapssl",
+  standardfeature: "standardfeature",
 };
 
 export type LangKeys = typeof langKeys;
