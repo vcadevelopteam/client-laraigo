@@ -1059,6 +1059,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
         register('customnumber2');
         register('customnumber3');
         register('customnumber4');
+        register('standardfeatures0');
         register('reviewstatus');
         register('reviewdescription');
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -1342,7 +1343,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                         <FieldEdit
                             className="col-12"
                             disabled={!edit}
-                            error={errors?.standardfeatures0?.message}
+                            /*error={errors?.standardfeatures0?.message}*/
                             label={`${t(langKeys.standardfeature)} 0`}
                             onChange={(value) => setValue('standardfeatures0', value)}
                             valueDefault={row?.standardfeatures0 || ''}
