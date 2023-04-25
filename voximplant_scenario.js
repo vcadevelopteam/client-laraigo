@@ -46,7 +46,9 @@ var request,
     userQueueLimit = 10,
     userQueueLength,
     userQueueData = [],
-    retryClose = 0;
+    retryClose = 0,
+    afterHour = false,
+    messageAfterHour = ""
 
 VoxEngine.addEventListener(AppEvents.Started, (ev) => {
     accountID = ev.accountId;
@@ -154,9 +156,11 @@ function createTicket(content, callback) {
         welcomeTone = result.Properties?.WelcomeTone || welcomeTone;
         holdTone = result.Properties?.HoldTone || holdTone;
         callMethod = result.Properties?.CallMethod || callMethod;
+        afterHour = result.Properties?.AfterHours || afterHour;
+        messageAfterHour = result.Properties?.MessageAfterHours || messageAfterHour;
 
         Logger.write("voximplant: createticket: " + res.text);
-        callback(result.NewConversation)
+        callback(result.NewConversation, afterHour, messageAfterHour)
     }, {
         method: "POST",
         postData: JSON.stringify(bodyZyx),
@@ -318,25 +322,28 @@ function handleInboundCall(e) {
         e.call.addEventListener(CallEvents.Failed, (e) => cleanup(`LLAMADA FALLIDA`, `code: ${e.code} - reason ${e.reason} - name: ${e.name}`));
         e.call.addEventListener(CallEvents.Disconnected, () => cleanup("DESCONECTADO POR CLIENTE"));
         // Answer call
-        createTicket("LLAMADA ENTRANTE", (newConversation) => {
+        createTicket("LLAMADA ENTRANTE", (newConversation, afterHour, messageAfterHour) => {
             if (!newConversation) {
                 //Existe una llamada en curso
                 originalCall.hangup()
                 return;
             }
             e.call.answer();
-            if (red.recording) {
-                e.call.record({
-                    transcribe: false,
-                    language: ASRLanguage.SPANISH_ES,
-                    name: identifier + ".mp3",
-                    contentDispositionFilename: identifier + ".mp3",
-                    recordNamePrefix: "" + site,
-                    hd_audio: ((red.recordingquality || "default") === "default" ? undefined : red.recordingquality === "hd"),
-                    lossless: ((red.recordingquality || "default") === "default" ? undefined : red.recordingquality === "lossless"),
-                    expire: cleanExpiration(red.recordingstorage),
 
-                })
+            if (!afterHour) {
+                if (red.recording) {
+                    e.call.record({
+                        transcribe: false,
+                        language: ASRLanguage.SPANISH_ES,
+                        name: identifier + ".mp3",
+                        contentDispositionFilename: identifier + ".mp3",
+                        recordNamePrefix: "" + site,
+                        hd_audio: ((red.recordingquality || "default") === "default" ? undefined : red.recordingquality === "hd"),
+                        lossless: ((red.recordingquality || "default") === "default" ? undefined : red.recordingquality === "lossless"),
+                        expire: cleanExpiration(red.recordingstorage),
+    
+                    })
+                }
             }
         })
     }
@@ -596,7 +603,15 @@ function handleACDQueue() {
 
 // Call connected
 function handleCallConnected(e) {
-    if (callMethod === "SIMULTANEO") {
+    if (afterHour) {
+         Logger.write("voximplant: afterhour!!");
+
+        originalCall.say(messageAfterHour, VoiceList.Amazon.es_MX_Mia);
+        originalCall.addEventListener(CallEvents.PlaybackFinished, function (e) {
+            closeTicket("FUERA DE HORARIO")
+            VoxEngine.terminate();
+        });
+    } else if (callMethod === "SIMULTANEO") {
         handleSimultaneousCall()
     } else {
         handleACDQueue()
