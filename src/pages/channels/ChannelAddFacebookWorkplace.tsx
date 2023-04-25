@@ -12,7 +12,6 @@ import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { insertChannel } from "store/channel/actions";
 import { FacebookWallIcon } from "icons";
-import { apiUrls } from "common/constants";
 
 interface whatsAppData {
     typeWhatsApp?: string;
@@ -64,8 +63,9 @@ export const ChannelAddFacebookWorkplace: FC = () => {
         "type": "FACEBOOKWORPLACE",
         "service": {
             "accesstoken": "",
+            "appsecret": "",
             "siteid": "",
-            "appid": apiUrls.FACEBOOKAPP
+            "appid": ""
         }
     })
     const [nextbutton, setNextbutton] = useState(true);
@@ -130,13 +130,41 @@ export const ChannelAddFacebookWorkplace: FC = () => {
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={(value) => {
-                                setNextbutton(value === "")
                                 let partialf = fields;
+                                setNextbutton(value === "" || !partialf.service.appid || !partialf.service.appsecret)
                                 partialf.service.accesstoken = value
                                 setFields(partialf)
                             }}
                             valueDefault={fields.service.accesstoken}
                             label={t(langKeys.authenticationtoken)}
+                            className="col-6"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <div className="col-3"></div>
+                        <FieldEdit
+                            onChange={(value) => {
+                                let partialf = fields;
+                                setNextbutton(value === "" || !partialf.service.accesstoken || !partialf.service.appsecret)
+                                partialf.service.appid = value
+                                setFields(partialf)
+                            }}
+                            valueDefault={fields.service.appid}
+                            label="App ID"
+                            className="col-6"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <div className="col-3"></div>
+                        <FieldEdit
+                            onChange={(value) => {
+                                let partialf = fields;
+                                setNextbutton(value === "" || !partialf.service.accesstoken || !partialf.service.appid)
+                                partialf.service.appsecret = value
+                                setFields(partialf)
+                            }}
+                            valueDefault={fields.service.appsecret}
+                            label="App Secret"
                             className="col-6"
                         />
                     </div>
