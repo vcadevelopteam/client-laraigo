@@ -166,6 +166,7 @@ export { ReactComponent as ZipIcon } from './zipicon.svg';
 export { ReactComponent as AndroidColor } from './android-color.svg';
 export { ReactComponent as EmailColor } from './email-color.svg';
 export { ReactComponent as FacebookColor } from './facebook-color.svg';
+export { ReactComponent as FacebookWorkplace } from './facebook_workplace.svg';
 export { ReactComponent as FacebookColor2 } from './facebook-color2.svg';
 export { ReactComponent as FacebookMessengerColor } from './facebook-messenger-color.svg';
 export { ReactComponent as FacebookMessengerColor2 } from './facebook-messenger-color2.svg';

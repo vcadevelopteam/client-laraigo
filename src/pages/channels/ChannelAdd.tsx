@@ -7,7 +7,7 @@ import paths from "common/constants/paths";
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import {
     VoiceColor,
-    AndroidColor, EmailColor, FacebookColor, FacebookMessengerColor, InstagramColor, IosColor, SmsColor, TelegramColor, TwitterColor, WebMessengerColor, WhatsappColor, /*TikTokColor,*/ YouTubeColor, LinkedInColor, TeamsColor, BloggerColor
+    AndroidColor, EmailColor, FacebookColor, FacebookWorkplace, FacebookMessengerColor, InstagramColor, IosColor, SmsColor, TelegramColor, TwitterColor, WebMessengerColor, WhatsappColor, /*TikTokColor,*/ YouTubeColor, LinkedInColor, TeamsColor, BloggerColor
 } from "icons";
 import { TemplateBreadcrumbs } from "components";
 
@@ -228,7 +228,7 @@ export const ChannelAdd: FC = () => {
             onClick: () => history.push(paths.CHANNELS_ADD_BLOGGER.path, whatsAppData),
         },
         {
-            icon: c => <FacebookColor className={c} />,
+            icon: c => <FacebookWorkplace className={c} />,
             label: "Workplace Facebook",
             onClick: () => { history.push(paths.CHANNELS_ADD_FACEBOOKWORKPLACE.path, whatsAppData) },
         },

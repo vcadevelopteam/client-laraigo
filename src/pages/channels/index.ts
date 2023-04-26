@@ -3,6 +3,7 @@ export { ChannelAdd } from './ChannelAdd';
 export { ChannelAddChatWeb } from './ChannelAddChatWeb';
 export { ChannelAddWebForm } from './ChannelAddWebForm';
 export { ChannelAddFacebook } from './ChannelAddFacebook';
+export { ChannelAddFacebookWorkplace } from './ChannelAddFacebookWorkplace';
 export { ChannelAddMessenger } from './ChannelAddMessenger';
 export { ChannelAddInstagram } from './ChannelAddInstagram';
 export { ChannelAddInstagramDM } from './ChannelAddInstagramDM';
