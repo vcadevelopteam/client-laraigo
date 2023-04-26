@@ -92,6 +92,7 @@ export { ReactComponent as ZyxmeMessengerIcon } from './zyxme-messenger.svg';
 export { ReactComponent as AndroidIcon } from './android.svg';
 export { ReactComponent as AppleIcon } from './apple.svg';
 export { ReactComponent as FacebookMessengerIcon } from './facebook-messenger.svg';
+export { ReactComponent as WorkplaceMessengerIcon } from './workplace-2.svg';
 export { ReactComponent as FacebookWallIcon } from './facebook-wall.svg';
 export { ReactComponent as InstagramIcon } from './instagram.svg';
 export { ReactComponent as LineIcon } from './line.svg';

@@ -227,6 +227,11 @@ export const ChannelAdd: FC = () => {
             label: t(langKeys.channel_blogger),
             onClick: () => history.push(paths.CHANNELS_ADD_BLOGGER.path, whatsAppData),
         },
+        {
+            icon: c => <FacebookColor className={c} />,
+            label: "Workplace Facebook",
+            onClick: () => { history.push(paths.CHANNELS_ADD_FACEBOOKWORKPLACE.path, whatsAppData) },
+        },
     ];
 
     const Option: FC<{ option: ChannelOption }> = ({ option }) => {
