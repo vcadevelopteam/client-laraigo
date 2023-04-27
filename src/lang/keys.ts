@@ -5003,7 +5003,11 @@ export const langKeys = {
   executiontype_campaign: 'executiontype_campaign',
   executiontype_MANUAL: 'executiontype_MANUAL',
   executiontype_SCHEDULED: 'executiontype_SCHEDULED',
-  greaterthanzero: "greaterthanzero"
+  greaterthanzero: "greaterthanzero",
+  channel_business: "channel_business",
+  channel_businesstitle: 'channel_businesstitle',
+  channel_businessalert1: 'channel_businessalert1',
+  channel_businessalert2: 'channel_businessalert2',
 };
 
 export type LangKeys = typeof langKeys;
