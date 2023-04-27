@@ -129,6 +129,10 @@ const paths = {
         path: '/configuration/channels/:id/add/ChannelAddYouTube',
         resolve: (channelId: string | number) => `/configuration/channels/${channelId}/add/ChannelAddYouTube`,
     },
+    CHANNELS_ADD_BUSINESS: {
+        path: '/channels/:id/add/ChannelAddBusiness',
+        resolve: (channelId: string | number) => `/channels/${channelId}/add/ChannelAddBusiness`,
+    },
     CHANNELS_ADD_LINKEDIN: {
         path: '/configuration/channels/:id/add/ChannelAddLinkedIn',
         resolve: (channelId: string | number) => `/configuration/channels/${channelId}/add/ChannelAddLinkedIn`,

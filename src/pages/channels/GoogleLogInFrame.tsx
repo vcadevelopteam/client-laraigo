@@ -25,7 +25,7 @@ export const GoogleLogInFrame: FC<GoogleLogInFrameProps> = ({ setWaitExchange })
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const classes = useStyles();
-    
+
     const login = useGoogleLogin({
         onSuccess: tokenResponse => onGoogleLoginSucess(tokenResponse),
         onError: error => onGoogleLoginFailure(error),
@@ -39,7 +39,8 @@ export const GoogleLogInFrame: FC<GoogleLogInFrameProps> = ({ setWaitExchange })
         https://www.googleapis.com/auth/gmail.readonly \
         https://www.googleapis.com/auth/blogger \
         https://www.googleapis.com/auth/blogger.readonly \
-        https://www.googleapis.com/auth/drive.readonly',
+        https://www.googleapis.com/auth/drive.readonly \
+        https://www.googleapis.com/auth/business.manage',
     });
 
     const onGoogleLoginSucess = (event: any) => {

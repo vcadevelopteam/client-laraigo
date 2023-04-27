@@ -26,6 +26,7 @@ import {
     LinkedInColor,
     TeamsColor,
     BloggerColor,
+    WebMessengerColorAlt01,
 } from "icons";
 import { ListChannels, SubscriptionContext, usePlanData } from "./context";
 
@@ -202,6 +203,15 @@ const ThirdStep: FC = () => {
                 toggleChannel('youtube');
             },
             selected: listchannels.youtube,
+        },
+        {
+            icon: <WebMessengerColorAlt01 className={classes.icon} />,
+            label: t(langKeys.channel_business),
+            key: 'business',
+            onClick: () => {
+                toggleChannel('business');
+            },
+            selected: listchannels.business,
         },
         {
             icon: <LinkedInColor className={classes.icon} />,

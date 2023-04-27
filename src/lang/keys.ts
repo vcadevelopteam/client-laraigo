@@ -5026,6 +5026,10 @@ export const langKeys = {
   imapport: "imapport",
   imapssl: "imapssl",
   standardfeature: "standardfeature",
+  channel_business: "channel_business",
+  channel_businesstitle: 'channel_businesstitle',
+  channel_businessalert1: 'channel_businessalert1',
+  channel_businessalert2: 'channel_businessalert2',
 };
 
 export type LangKeys = typeof langKeys;
