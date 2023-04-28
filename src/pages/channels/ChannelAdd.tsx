@@ -229,7 +229,12 @@ export const ChannelAdd: FC = () => {
         },
         {
             icon: c => <FacebookWorkplace className={c} />,
-            label: "Workplace Facebook",
+            label: "DM",
+            onClick: () => { history.push(paths.CHANNELS_ADD_FACEBOOKDM.path, whatsAppData) },
+        },
+        {
+            icon: c => <FacebookWorkplace className={c} />,
+            label: "Workplace",
             onClick: () => { history.push(paths.CHANNELS_ADD_FACEBOOKWORKPLACE.path, whatsAppData) },
         },
     ];

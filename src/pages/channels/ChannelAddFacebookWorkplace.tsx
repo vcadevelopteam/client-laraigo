@@ -60,7 +60,7 @@ export const ChannelAddFacebookWorkplace: FC = () => {
             "coloricon": "#2d88ff",
             "voximplantcallsupervision": false
         },
-        "type": "FACEBOOKWORPLACE",
+        "type": "FBWM",
         "service": {
             "accesstoken": "",
             "appsecret": "",
