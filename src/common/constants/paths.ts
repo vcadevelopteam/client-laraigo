@@ -133,6 +133,10 @@ const paths = {
         path: '/channels/:id/add/ChannelAddBusiness',
         resolve: (channelId: string | number) => `/channels/${channelId}/add/ChannelAddBusiness`,
     },
+    CHANNELS_ADD_PLAYSTORE: {
+        path: '/channels/:id/add/ChannelAddPlayStore',
+        resolve: (channelId: string | number) => `/channels/${channelId}/add/ChannelAddPlayStore`,
+    },
     CHANNELS_ADD_LINKEDIN: {
         path: '/configuration/channels/:id/add/ChannelAddLinkedIn',
         resolve: (channelId: string | number) => `/configuration/channels/${channelId}/add/ChannelAddLinkedIn`,

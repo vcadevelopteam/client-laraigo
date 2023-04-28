@@ -86,6 +86,7 @@ export interface ListChannels {
     tiktok: boolean;
     youtube: boolean;
     business: boolean;
+    playstore: boolean;
     linkedin: boolean;
     teams: boolean;
     blogger: boolean;
@@ -197,8 +198,11 @@ export interface BusinessChannel {
 
 export interface LinkedInChannel {
     description: string;
-    account: string;
-    url: string;
+    clientid: string;
+    clientsecret: string;
+    accesstoken: string;
+    refreshtoken: string;
+    organizationid: string;
     build: (v: Omit<LinkedInChannel, 'build'>) => IRequestBody;
 }
 
@@ -250,6 +254,13 @@ export interface SmsChannel {
     build: (v: Omit<SmsChannel, 'build'>) => IRequestBody;
 }
 
+export interface PlayStoreChannel {
+    description: string;
+    appcode: string;
+    mail: string;
+    build: (v: Omit<PlayStoreChannel, 'build'>) => IRequestBody;
+}
+
 export interface Channels {
     facebook: FacebookChannel;
     instagram: FacebookChannel;
@@ -264,6 +275,7 @@ export interface Channels {
     sms: SmsChannel;
     tiktok: TikTokChannel,
     youtube: YouTubeChannel,
+    playstore: PlayStoreChannel,
     linkedin: LinkedInChannel,
     teams: TeamsChannel,
     blogger: BloggerChannel,
@@ -332,6 +344,7 @@ const defaultListChannels: ListChannels = {
     tiktok: false,
     youtube: false,
     business: false,
+    playstore: false,
     linkedin: false,
     teams: false,
     blogger: false,

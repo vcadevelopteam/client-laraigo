@@ -578,6 +578,7 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     if (channelType === "MAII") return <EmailIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "YOUT") return <YoutubeIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "GOBU") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "PLAY") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "LINE") return <LineIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "SMS") return <SmsIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "SMSI") return <SmsIcon width={width} fill={color} stroke={color} height={height} color={color} />
@@ -613,6 +614,7 @@ export const GetIconColor: React.FC<IconProps> = ({ channelType }) => {
     if (channelType === "MAII") return <EmailColor />
     if (channelType === "YOUT") return <YouTubeColor />
     if (channelType === "GOBU") return <ZyxmeMessengerIcon />
+    if (channelType === "PLAY") return <ZyxmeMessengerIcon />
     if (channelType === "LINE") return <LineIcon />
     if (channelType === "SMS") return <SmsColor />
     if (channelType === "SMSI") return <SmsColor />

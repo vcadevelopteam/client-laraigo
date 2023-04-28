@@ -10,10 +10,10 @@ import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
+import { ZyxmeMessengerIcon } from 'icons';
 
 import Link from '@material-ui/core/Link';
 import paths from "common/constants/paths";
-import LinkedInIcon from '@material-ui/icons/LinkedIn';
 
 interface whatsAppData {
     typeWhatsApp?: string;
@@ -30,13 +30,13 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ChannelAddLinkedIn: FC = () => {
+export const ChannelAddPlayStore: FC = () => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
     const [channelreg, setChannelreg] = useState(true);
-    const [coloricon, setcoloricon] = useState("#0A66C2");
+    const [coloricon, setcoloricon] = useState("#FABA30");
     const [nextbutton, setNextbutton] = useState(true);
     const [setins, setsetins] = useState(false);
     const [viewSelected, setViewSelected] = useState("view1");
@@ -48,7 +48,7 @@ export const ChannelAddLinkedIn: FC = () => {
             "apikey": "",
             "chatflowenabled": true,
             "color": "",
-            "coloricon": "#0A66C2",
+            "coloricon": "#FABA30",
             "communicationchannelowner": "",
             "communicationchannelsite": "",
             "description": "",
@@ -61,13 +61,10 @@ export const ChannelAddLinkedIn: FC = () => {
             "voximplantcallsupervision": false,
         },
         "service": {
-            "clientid": "",
-            "clientsecret": "",
-            "accesstoken": "",
-            "refreshtoken": "",
-            "organizationid": "",
+            "appcode": "",
+            "mail": "",
         },
-        "type": "LINKEDIN",
+        "type": "PLAYSTORE",
     })
 
     const classes = useChannelAddStyles();
@@ -87,14 +84,14 @@ export const ChannelAddLinkedIn: FC = () => {
     useEffect(() => {
         if (!mainResult.loading && setins) {
             if (executeResult) {
-                setsetins(false);
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }));
+                setsetins(false)
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_register) }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
                 history.push(paths.CHANNELS);
             } else if (!executeResult) {
-                const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() });
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
+                const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
@@ -124,19 +121,19 @@ export const ChannelAddLinkedIn: FC = () => {
                     </Link>
                 </Breadcrumbs>
                 <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.channel_linkedintitle)}</div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>{t(langKeys.channel_linkedintitle1)}</div>
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.channel_playstoretitle1)}</div>
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>{t(langKeys.channel_playstoretitle2)}</div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={(value) => {
-                                setNextbutton(value === "" || fields.service.clientsecret === "" || fields.service.accesstoken === "" || fields.service.refreshtoken === "" || fields.service.organizationid === "")
+                                setNextbutton(value === "" || fields.service.appcode === "" || !/\S+@\S+\.\S+/.test(value));
                                 let partialf = fields;
-                                partialf.service.clientid = value;
+                                partialf.service.mail = value;
                                 setFields(partialf);
                             }}
-                            valueDefault={fields.service.clientid}
-                            label={t(langKeys.linkedin_clientid)}
+                            valueDefault={fields.service.mail}
+                            label={t(langKeys.playstore_account)}
                             className="col-6"
                         />
                     </div>
@@ -144,55 +141,13 @@ export const ChannelAddLinkedIn: FC = () => {
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={(value) => {
-                                setNextbutton(fields.service.clientid === "" || value === "" || fields.service.accesstoken === "" || fields.service.refreshtoken === "" || fields.service.organizationid === "")
+                                setNextbutton(value === "" || fields.service.mail === "" || !/\S+@\S+\.\S+/.test(fields.service.mail));
                                 let partialf = fields;
-                                partialf.service.clientsecret = value;
+                                partialf.service.appcode = value;
                                 setFields(partialf);
                             }}
-                            valueDefault={fields.service.clientsecret}
-                            label={t(langKeys.linkedin_clientsecret)}
-                            className="col-6"
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldEdit
-                            onChange={(value) => {
-                                setNextbutton(fields.service.clientid === "" || fields.service.clientsecret === "" || value === "" || fields.service.refreshtoken === "" || fields.service.organizationid === "")
-                                let partialf = fields;
-                                partialf.service.accesstoken = value;
-                                setFields(partialf);
-                            }}
-                            valueDefault={fields.service.accesstoken}
-                            label={t(langKeys.linkedin_accesstoken)}
-                            className="col-6"
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldEdit
-                            onChange={(value) => {
-                                setNextbutton(fields.service.clientid === "" || fields.service.clientsecret === "" || fields.service.accesstoken === "" || value === "" || fields.service.organizationid === "")
-                                let partialf = fields;
-                                partialf.service.refreshtoken = value;
-                                setFields(partialf);
-                            }}
-                            valueDefault={fields.service.refreshtoken}
-                            label={t(langKeys.linkedin_refreshtoken)}
-                            className="col-6"
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldEdit
-                            onChange={(value) => {
-                                setNextbutton(fields.service.clientid === "" || fields.service.clientsecret === "" || fields.service.accesstoken === "" || fields.service.refreshtoken === "" || value === "")
-                                let partialf = fields;
-                                partialf.service.organizationid = value;
-                                setFields(partialf);
-                            }}
-                            valueDefault={fields.service.organizationid}
-                            label={t(langKeys.linkedin_organizationid)}
+                            valueDefault={fields.service.appcode}
+                            label={t(langKeys.playstore_appcode)}
                             className="col-6"
                         />
                     </div>
@@ -234,7 +189,7 @@ export const ChannelAddLinkedIn: FC = () => {
                                 {t(langKeys.givechannelcolor)}
                             </Box>
                             <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                                <LinkedInIcon style={{ fill: `${coloricon}`, width: "100px", height: "100px" }} />
+                                <ZyxmeMessengerIcon style={{ fill: `${coloricon}`, width: "100px", height: "100px" }} />
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
                                     onChange={e => {
@@ -264,4 +219,4 @@ export const ChannelAddLinkedIn: FC = () => {
     }
 }
 
-export default ChannelAddLinkedIn;
+export default ChannelAddPlayStore
