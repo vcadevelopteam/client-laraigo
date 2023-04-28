@@ -1,17 +1,18 @@
 /* eslint-disable no-useless-escape */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useContext, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Link, IconButton, Typography, InputAdornment } from '@material-ui/core';
 import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon, LinkOff as LinkOffIcon } from '@material-ui/icons';
-import { showBackdrop } from 'store/popus/actions';
-import { langKeys } from "lang/keys";
-import { Trans, useTranslation } from "react-i18next";
+import { FC, useContext, useEffect, useState } from "react";
 import { FieldEdit } from "components";
-import { useSelector } from "hooks";
-import { useDispatch } from "react-redux";
+import { langKeys } from "lang/keys";
 import { LinkedInColor } from "icons";
 import { MainData, SubscriptionContext } from "./context";
+import { makeStyles, Breadcrumbs, Button, Link, IconButton, Typography, InputAdornment } from '@material-ui/core';
+import { showBackdrop } from 'store/popus/actions';
+import { Trans, useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
 import { useFormContext } from "react-hook-form";
+import { useSelector } from "hooks";
+
 import clsx from 'clsx';
 
 const useChannelAddStyles = makeStyles(theme => ({
@@ -25,30 +26,30 @@ const useChannelAddStyles = makeStyles(theme => ({
 }));
 
 export const ChannelAddLinkedIn: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
-    const {
-        commonClasses,
-        foreground,
-        submitObservable,
-        setForeground,
-        deleteChannel,
-    } = useContext(SubscriptionContext);
-    const { getValues, setValue, register, unregister, formState: { errors }, trigger } = useFormContext<MainData>();
-    const [hasFinished, setHasFinished] = useState(false);
-    const [viewSelected, setViewSelected] = useState("view1");
-    const [waitSave, setWaitSave] = useState(false);
-    const [submitError, setSubmitError] = useState(false);
-    const mainResult = useSelector(state => state.channel.channelList)
     const dispatch = useDispatch();
+
+    const { commonClasses, foreground, submitObservable, setForeground, deleteChannel } = useContext(SubscriptionContext);
+    const { getValues, setValue, register, unregister, formState: { errors }, trigger } = useFormContext<MainData>();
     const { t } = useTranslation();
-    const classes = useChannelAddStyles();
+
+    const [hasFinished, setHasFinished] = useState(false);
     const [nextbutton, setNextbutton] = useState(true);
     const [nextbutton2, setNextbutton2] = useState(true);
+    const [submitError, setSubmitError] = useState(false);
+    const [viewSelected, setViewSelected] = useState("view1");
+    const [waitSave, setWaitSave] = useState(false);
+
+    const classes = useChannelAddStyles();
+    const mainResult = useSelector(state => state.channel.channelList)
 
     useEffect(() => {
         const cb = async () => {
-            const v1 = await trigger('channels.linkedin.account');
-            const v2 = await trigger('channels.linkedin.url');
-            setSubmitError(!v1 || !v2);
+            const v1 = await trigger('channels.linkedin.clientid');
+            const v2 = await trigger('channels.linkedin.clientsecret');
+            const v3 = await trigger('channels.linkedin.accesstoken');
+            const v4 = await trigger('channels.linkedin.refreshtoken');
+            const v5 = await trigger('channels.linkedin.organizationid');
+            setSubmitError(!v1 || !v2 || !v3 || !v4 || !v5);
         }
 
         submitObservable.addListener(cb);
@@ -65,32 +66,38 @@ export const ChannelAddLinkedIn: FC<{ setOpenWarning: (param: any) => void }> = 
         }
 
         register('channels.linkedin.description', { validate: strRequired, value: '' });
-        register('channels.linkedin.account', { validate: strRequired, value: '' });
-        register('channels.linkedin.url', { validate: strRequired, value: '' });
+        register('channels.linkedin.clientid', { validate: strRequired, value: '' });
+        register('channels.linkedin.clientsecret', { validate: strRequired, value: '' });
+        register('channels.linkedin.accesstoken', { validate: strRequired, value: '' });
+        register('channels.linkedin.refreshtoken', { validate: strRequired, value: '' });
+        register('channels.linkedin.organizationid', { validate: strRequired, value: '' });
         register('channels.linkedin.build', {
             value: values => ({
                 "method": "UFN_COMMUNICATIONCHANNEL_INS",
                 "parameters": {
-                    "id": 0,
-                    "description": values.description,
-                    "type": "",
-                    "communicationchannelsite": "",
-                    "communicationchannelowner": values.description,
-                    "chatflowenabled": true,
-                    "integrationid": "",
-                    "color": "",
-                    "icons": "",
-                    "other": "",
-                    "form": "",
                     "apikey": "",
+                    "chatflowenabled": true,
+                    "color": "",
                     "coloricon": "#0A66C2",
-                    "voximplantcallsupervision": false
+                    "communicationchannelowner": values.description,
+                    "communicationchannelsite": "",
+                    "description": values.description,
+                    "form": "",
+                    "icons": "",
+                    "id": 0,
+                    "integrationid": "",
+                    "other": "",
+                    "type": "",
+                    "voximplantcallsupervision": false,
+                },
+                "service": {
+                    "clientid": values.clientid,
+                    "clientsecret": values.clientsecret,
+                    "accesstoken": values.accesstoken,
+                    "refreshtoken": values.refreshtoken,
+                    "organizationid": values.organizationid,
                 },
                 "type": "LINKEDIN",
-                "service": {
-                    "account": values.account,
-                    "url": values.url,
-                }
             })
         });
 
@@ -144,35 +151,76 @@ export const ChannelAddLinkedIn: FC<{ setOpenWarning: (param: any) => void }> = 
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={v => {
-                                setNextbutton(v === "" || getValues('channels.linkedin.url') === "" || !/\S+@\S+\.\S+/.test(v) || !/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/.test(getValues('channels.linkedin.url')));
-                                setValue('channels.linkedin.account', v);
+                                setNextbutton(v === "" || getValues('channels.linkedin.clientsecret') === "" || getValues('channels.linkedin.accesstoken') === "" || getValues('channels.linkedin.refreshtoken') === "" || getValues('channels.linkedin.organizationid') === "");
+                                setValue('channels.linkedin.clientid', v);
                             }}
-                            valueDefault={getValues('channels.linkedin.account')}
-                            label={t(langKeys.account)}
+                            valueDefault={getValues('channels.linkedin.clientid')}
+                            label={t(langKeys.linkedin_clientid)}
                             className="col-6"
-                            error={errors.channels?.linkedin?.account?.message}
+                            error={errors.channels?.linkedin?.clientid?.message}
                         />
                     </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={v => {
-                                setNextbutton(v === "" || getValues('channels.linkedin.account') === "" || !/\S+@\S+\.\S+/.test(getValues('channels.linkedin.account')) || !/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/.test(v))
-                                setValue('channels.linkedin.url', v);
+                                setNextbutton(getValues('channels.linkedin.clientid') === "" || v === "" || getValues('channels.linkedin.accesstoken') === "" || getValues('channels.linkedin.refreshtoken') === "" || getValues('channels.linkedin.organizationid') === "");
+                                setValue('channels.linkedin.clientsecret', v);
                             }}
-                            valueDefault={getValues('channels.linkedin.url')}
-                            label={t(langKeys.url)}
+                            valueDefault={getValues('channels.linkedin.clientsecret')}
+                            label={t(langKeys.linkedin_clientsecret)}
                             className="col-6"
-                            error={errors.channels?.linkedin?.url?.message}
+                            error={errors.channels?.linkedin?.clientsecret?.message}
                         />
                     </div>
-
+                    <div className="row-zyx">
+                        <div className="col-3"></div>
+                        <FieldEdit
+                            onChange={v => {
+                                setNextbutton(getValues('channels.linkedin.clientid') === "" || getValues('channels.linkedin.clientsecret') === "" || v === "" || getValues('channels.linkedin.refreshtoken') === "" || getValues('channels.linkedin.organizationid') === "");
+                                setValue('channels.linkedin.accesstoken', v);
+                            }}
+                            valueDefault={getValues('channels.linkedin.accesstoken')}
+                            label={t(langKeys.linkedin_accesstoken)}
+                            className="col-6"
+                            error={errors.channels?.linkedin?.accesstoken?.message}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <div className="col-3"></div>
+                        <FieldEdit
+                            onChange={v => {
+                                setNextbutton(getValues('channels.linkedin.clientid') === "" || getValues('channels.linkedin.clientsecret') === "" || getValues('channels.linkedin.accesstoken') === "" || v === "" || getValues('channels.linkedin.organizationid') === "");
+                                setValue('channels.linkedin.refreshtoken', v);
+                            }}
+                            valueDefault={getValues('channels.linkedin.refreshtoken')}
+                            label={t(langKeys.linkedin_refreshtoken)}
+                            className="col-6"
+                            error={errors.channels?.linkedin?.refreshtoken?.message}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <div className="col-3"></div>
+                        <FieldEdit
+                            onChange={v => {
+                                setNextbutton(getValues('channels.linkedin.clientid') === "" || getValues('channels.linkedin.clientsecret') === "" || getValues('channels.linkedin.accesstoken') === "" || getValues('channels.linkedin.refreshtoken') === "" || v === "");
+                                setValue('channels.linkedin.organizationid', v);
+                            }}
+                            valueDefault={getValues('channels.linkedin.organizationid')}
+                            label={t(langKeys.linkedin_organizationid)}
+                            className="col-6"
+                            error={errors.channels?.linkedin?.organizationid?.message}
+                        />
+                    </div>
                     <div style={{ paddingLeft: "80%" }}>
                         <Button
                             onClick={async () => {
-                                const v1 = await trigger('channels.linkedin.account');
-                                const v2 = await trigger('channels.linkedin.url');
-                                if (v1 && v2) {
+                                const v1 = await trigger('channels.linkedin.clientid');
+                                const v2 = await trigger('channels.linkedin.clientsecret');
+                                const v3 = await trigger('channels.linkedin.accesstoken');
+                                const v4 = await trigger('channels.linkedin.refreshtoken');
+                                const v5 = await trigger('channels.linkedin.organizationid');
+                                if (v1 && v2 && v3 && v4 && v5) {
                                     setView("view1");
                                     setHasFinished(true);
                                 }
@@ -184,9 +232,7 @@ export const ChannelAddLinkedIn: FC<{ setOpenWarning: (param: any) => void }> = 
                         >
                             <Trans i18nKey={langKeys.next} />
                         </Button>
-
                     </div>
-
                 </div>
             </div>
         )
@@ -200,7 +246,6 @@ export const ChannelAddLinkedIn: FC<{ setOpenWarning: (param: any) => void }> = 
                 className={commonClasses.trailingIcon}
                 onClick={() => {
                     deleteChannel('linkedin');
-                    // setrequestchannels(prev => prev.filter(x => x.type !== "LINKEDIN"));
                 }}
             >
                 <DeleteOutlineIcon />

@@ -186,8 +186,11 @@ export interface YouTubeChannel {
 
 export interface LinkedInChannel {
     description: string;
-    account: string;
-    url: string;
+    clientid: string;
+    clientsecret: string;
+    accesstoken: string;
+    refreshtoken: string;
+    organizationid: string;
     build: (v: Omit<LinkedInChannel, 'build'>) => IRequestBody;
 }
 

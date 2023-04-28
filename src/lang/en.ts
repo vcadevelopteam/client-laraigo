@@ -5093,6 +5093,12 @@ const translation: LangKeys = {
   channel_playstoretitle2: 'To connect your Play Store, we need you to provide us with the following information. You can find it in the Google Play Console dashboard.',
   playstore_appcode: 'App Code',
   playstore_account: 'Developer Account',
+  channel_linkedintitle1: 'To connect your LinkedIn, we need you to provide us with the following information. You can find it in the LinkedIn developer dashboard.',
+  linkedin_clientid: 'Client ID',
+  linkedin_clientsecret: 'Client Secret',
+  linkedin_accesstoken: 'Access Token',
+  linkedin_refreshtoken: 'Refresh Token',
+  linkedin_organizationid: 'Organization ID',
 };
 
 const enResource: ResourceLanguage = {
