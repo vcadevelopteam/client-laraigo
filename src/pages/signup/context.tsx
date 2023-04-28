@@ -85,6 +85,7 @@ export interface ListChannels {
     voximplantphone: boolean;
     tiktok: boolean;
     youtube: boolean;
+    playstore: boolean;
     linkedin: boolean;
     teams: boolean;
     blogger: boolean;
@@ -230,6 +231,13 @@ export interface SmsChannel {
     build: (v: Omit<SmsChannel, 'build'>) => IRequestBody;
 }
 
+export interface PlayStoreChannel {
+    description: string;
+    appcode: string;
+    mail: string;
+    build: (v: Omit<PlayStoreChannel, 'build'>) => IRequestBody;
+}
+
 export interface Channels {
     facebook: FacebookChannel;
     instagram: FacebookChannel;
@@ -244,6 +252,7 @@ export interface Channels {
     sms: SmsChannel;
     tiktok: TikTokChannel,
     youtube: YouTubeChannel,
+    playstore: PlayStoreChannel,
     linkedin: LinkedInChannel,
     teams: TeamsChannel,
     blogger: BloggerChannel,
@@ -310,6 +319,7 @@ const defaultListChannels: ListChannels = {
     voximplantphone: false,
     tiktok: false,
     youtube: false,
+    playstore: false,
     linkedin: false,
     teams: false,
     blogger: false,

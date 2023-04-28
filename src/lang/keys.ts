@@ -5003,7 +5003,12 @@ export const langKeys = {
   executiontype_campaign: 'executiontype_campaign',
   executiontype_MANUAL: 'executiontype_MANUAL',
   executiontype_SCHEDULED: 'executiontype_SCHEDULED',
-  greaterthanzero: "greaterthanzero"
+  greaterthanzero: "greaterthanzero",
+  channel_playstore: 'channel_playstore',
+  channel_playstoretitle1: 'channel_playstoretitle1',
+  channel_playstoretitle2: 'channel_playstoretitle2',
+  playstore_appcode: 'playstore_appcode',
+  playstore_account: 'playstore_account',
 };
 
 export type LangKeys = typeof langKeys;

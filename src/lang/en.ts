@@ -118,8 +118,8 @@ const translation: LangKeys = {
   industry_institution: "State and Institutions",
   industry_entertainment: "Games and Entertainment",
   industry_telecommunications: "Telecommunications",
-  reschedule_appointment:"Reschedule appointment",
-  appointment_cancellation:"Appointment cancellation",
+  reschedule_appointment: "Reschedule appointment",
+  appointment_cancellation: "Appointment cancellation",
   industry_hydrocarbons: "Hydrocarbons",
   brandname: "Brand name",
   brandaddress: "Brand address",
@@ -318,7 +318,7 @@ const translation: LangKeys = {
   productivitycard1: "Productivity x login time",
   firstavgassignment: "First Avg Assignment",
   averageholdingtime: "Average holding time",
-  ticketsattendedbyadvisor:"Tickets attended by advisor",
+  ticketsattendedbyadvisor: "Tickets attended by advisor",
   firstassignmenttime: "First assignment time",
   percparticipation: "% Participation",
   avg1stresponsetime: "Avg 1st Response Time",
@@ -562,7 +562,7 @@ const translation: LangKeys = {
   timedesconnected: "Time desconnected",
   type_domain_mastercatalog_commerce: "Online Commerce",
   emptyformerror: "The form must contain at least one field",
-  webformstep:"Copy and paste the following generated html code for your form into the section where you want to use it on your web page",
+  webformstep: "Copy and paste the following generated html code for your form into the section where you want to use it on your web page",
   downloadhtmlform: "Download HTML form.",
   type_domain_mastercatalog_destinations: "Destinations",
   type_domain_mastercatalog_flights: "Flights",
@@ -1518,9 +1518,9 @@ const translation: LangKeys = {
   emittername: "Sender name",
   emailtitle: "Connect your Infobip email",
   smstitle2:
-    "To connect your SMS, we need you to provide us with the following information. You can find it from the Infobip dashboard.",
+    "To connect your SMS, we need you to provide us with the following information. You can find it in the Infobip dashboard.",
   emailtitle2:
-    "To connect your email, we need you to provide us with the following information. You can find it from the Infobip dashboard.",
+    "To connect your email, we need you to provide us with the following information. You can find it in the Infobip dashboard.",
   twittertitle: "Connect your Twitter page",
   twittertitle2:
     "In order to connect your Twitter page we need some authorization data from the app you wish to link. This information can be found in the Twitter developer portal",
@@ -5086,8 +5086,13 @@ const translation: LangKeys = {
   datetimestart_campaign: "Date and time of execution",
   executiontype_campaign: "Execution type",
   executiontype_MANUAL: "MANUAL",
-  executiontype_SCHEDULED:"SCHEDULED",
-  greaterthanzero:"The maximum capacity value of the event must have a number greater than 0"
+  executiontype_SCHEDULED: "SCHEDULED",
+  greaterthanzero: "The maximum capacity value of the event must have a number greater than 0",
+  channel_playstore: 'Play Store',
+  channel_playstoretitle1: 'Connect your Play Store',
+  channel_playstoretitle2: 'To connect your Play Store, we need you to provide us with the following information. You can find it in the Google Play Console dashboard.',
+  playstore_appcode: 'App Code',
+  playstore_account: 'Developer Account',
 };
 
 const enResource: ResourceLanguage = {

@@ -224,7 +224,7 @@ interface TemplateDialogProps {
     height?: string;
 }
 
-export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText0, buttonText1, buttonText2, buttonText3, handleClickButton0, handleClickButton1, handleClickButton2, handleClickButton3, title, maxWidth = "sm", button1Type = "button", button2Type = "button", zIndex = 1300, showClose = false, height="auto" }) => (
+export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText0, buttonText1, buttonText2, buttonText3, handleClickButton0, handleClickButton1, handleClickButton2, handleClickButton3, title, maxWidth = "sm", button1Type = "button", button2Type = "button", zIndex = 1300, showClose = false, height = "auto" }) => (
     <Dialog
         open={open}
         fullWidth
@@ -574,6 +574,7 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     if (channelType === "MAIL") return <EmailIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "MAII") return <EmailIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "YOUT") return <YoutubeIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "PLAY") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "LINE") return <LineIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "SMS") return <SmsIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "SMSI") return <SmsIcon width={width} fill={color} stroke={color} height={height} color={color} />
@@ -601,12 +602,13 @@ export const GetIconColor: React.FC<IconProps> = ({ channelType }) => {
     if (channelType === "INDM") return <InstagramColor />
     if (channelType === "ANDR") return <AndroidColor />
     if (channelType === "APPL") return <IosColor />
-    if (channelType === "CHATZ") return <ZyxmeMessengerIcon color='7721AD' />
-    if (channelType === "CHAZ") return <ZyxmeMessengerIcon color='7721AD' />
+    if (channelType === "CHATZ") return <ZyxmeMessengerIcon />
+    if (channelType === "CHAZ") return <ZyxmeMessengerIcon />
     if (channelType === "MAIL") return <EmailColor />
     if (channelType === "MAII") return <EmailColor />
     if (channelType === "YOUT") return <YouTubeColor />
-    if (channelType === "LINE") return <LineIcon color='7721AD' />
+    if (channelType === "PLAY") return <ZyxmeMessengerIcon />
+    if (channelType === "LINE") return <LineIcon />
     if (channelType === "SMS") return <SmsColor />
     if (channelType === "SMSI") return <SmsColor />
     if (channelType === "TWIT") return <TwitterColor />
