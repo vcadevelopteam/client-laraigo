@@ -1,8 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react-hooks/exhaustive-deps */
-import clsx from 'clsx';
-import GoogleLogInFrame from 'pages/channels/GoogleLogInFrame';
-
 import { apiUrls } from 'common/constants';
 import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon, LinkOff as LinkOffIcon } from '@material-ui/icons';
 import { FC, useContext, useEffect, useState } from "react";
@@ -10,13 +7,16 @@ import { FieldEdit } from "components";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { langKeys } from "lang/keys";
 import { MainData, SubscriptionContext } from "./context";
-import { makeStyles, Breadcrumbs, Button, Link, IconButton, Typography, InputAdornment } from '@material-ui/core';
+import { Breadcrumbs, Button, Link, IconButton, Typography, InputAdornment } from '@material-ui/core';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { Trans, useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useFormContext } from "react-hook-form";
 import { useSelector } from "hooks";
 import { ZyxmeMessengerIcon } from 'icons';
+
+import clsx from 'clsx';
+import GoogleLogInFrame from 'pages/channels/GoogleLogInFrame';
 
 export const ChannelAddBusiness: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const dispatch = useDispatch();
@@ -196,7 +196,6 @@ export const ChannelAddBusiness: FC<{ setOpenWarning: (param: any) => void }> = 
                 className={commonClasses.trailingIcon}
                 onClick={() => {
                     deleteChannel('business');
-                    // setrequestchannels(prev => prev.filter(x => x.type !== "Business"));
                 }}
             >
                 <DeleteOutlineIcon />
