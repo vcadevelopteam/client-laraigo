@@ -603,7 +603,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         onClick={() => { setCustomizeType('Workplace') }}
                                         startIcon={<HomeWork color="secondary" />}
                                         disabled={customizeType === 'Workplace'}
-                                    >Workplace
+                                    >{t(langKeys.postcreator_publish_workplace)}
                                     </Button>}
                                     {showInstagram && <Button
                                         className={classes.buttonSocial}
