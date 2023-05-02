@@ -3,7 +3,7 @@ import React, { useState } from 'react'; // we need this to make JSX compile
 import Button from '@material-ui/core/Button';
 import { FieldSelect, DateRangePicker } from 'components';
 import { getDateCleaned, hours } from 'common/helpers';
-import { Dictionary } from "@types";
+import { Dictionary, MultiData } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { langKeys } from 'lang/keys';
 import { Control, FieldErrors, UseFormGetValues, UseFormRegister, UseFormSetValue, UseFormTrigger } from 'react-hook-form';
@@ -257,6 +257,7 @@ interface CalendarScheduleProps {
     setdateinterval: (value: any) => void;
     dateRangeCreateDate: any;
     setDateRangeCreateDate: (value: any) => void;
+    multiData: MultiData[];
 }
 
 const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
@@ -275,6 +276,7 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
     setdateinterval,
     dateRangeCreateDate,
     setDateRangeCreateDate,
+    multiData,
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
@@ -291,6 +293,9 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
         sat: false,
     });
 
+    const dataHours = multiData[4] && multiData[4].success ? (multiData[4].data.filter(x=>x.domainvalue === '0').length >0?multiData[4].data:
+        [{domainvalue: '0', domaindesc: '0'},...multiData[4].data]
+    ) : [{domainvalue: '0', domaindesc: '0'}];
     const { sun, mon, tue, wed, thu, fri, sat } = state;
 
     const handleChange = (event: any) => {
@@ -333,15 +338,13 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                                 className="col-6"
                                 valueDefault={String(generalstate.hours)}
                                 onChange={(e) => {
-                                    setgeneralstate({ ...generalstate, hours: Number(e?.val||"0") });
-                                    setValue('duration', Number(e?.val||"0") * 60 + generalstate.minutes)
+                                    setgeneralstate({ ...generalstate, hours: Number(e?.domainvalue||"0") });
+                                    setValue('duration', Number(e?.domainvalue||"0") * 60 + generalstate.minutes)
                                 }}
                                 error={errors?.duration?.message}
-                                data={[
-                                    {val:"0"},  {val:"1"}, {val:"2"}, {val:"3"}, {val:"4"}, {val:"5"}, {val:"6"}, {val:"7"}, {val:"8"}, {val:"9"}, {val:"10"}, {val:"11"}, {val:"12"}
-                                ]}
-                                optionDesc="val"
-                                optionValue="val"
+                                data={dataHours}
+                                optionDesc="domainvalue"
+                                optionValue="domainvalue"
                             />
                             <FieldSelect
                                 label={t(langKeys.minute_plural)}

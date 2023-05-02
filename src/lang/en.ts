@@ -2249,7 +2249,8 @@ const translation: LangKeys = {
   report_tipification_closetype: 'Close type',
 
   report_userproductivityhours: 'Hourly agent productivity',
-  report_userproductivityhours_datehour: 'Date',
+  report_userproductivityhours_datehour: 'Idle time without attention',
+  report_userproductivityhours_idletimewithoutattention: 'Date',
   report_userproductivityhours_agent: 'Agent',
   report_userproductivityhours_hoursrange: 'Range of hour',
   report_userproductivityhours_worktime: 'Time worked',
@@ -2647,6 +2648,8 @@ const translation: LangKeys = {
   "personalizedreport_person.changeby": "person change by",
   "personalizedreport_person.name": "person name",
   "personalizedreport_person.realname": "person real name",
+  "personalizedreport_person.firstrealname": "person real firstname",
+  "personalizedreport_person.lastrealname": "person real lastname",
   "personalizedreport_person.referringperson": "person referring person",
   "personalizedreport_person.referringpersonid": "person referring personid",
   "personalizedreport_person.persontype": "person person type",
