@@ -70,6 +70,10 @@ const paths = {
         path: '/channels/:id/add/facebookworkplace',
         resolve: (channelId: string | number) => `/channels/${channelId}/add/facebookworkplace`,
     },
+    CHANNELS_ADD_FACEBOOKDM: {
+        path: '/channels/:id/add/facebookdm',
+        resolve: (channelId: string | number) => `/channels/${channelId}/add/facebookdm`,
+    },
     CHANNELS_ADD_MESSENGER: {
         path: '/configuration/channels/:id/add/messenger',
         resolve: (channelId: string | number) => `/configuration/channels/${channelId}/add/messenger`,

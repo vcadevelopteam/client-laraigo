@@ -5,12 +5,12 @@ import Link from "@material-ui/core/Link";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { ColorInput, FieldEdit, FieldSelect } from "components";
+import { ColorInput, FieldEdit } from "components";
 import { useHistory, useLocation } from "react-router";
 import paths from "common/constants/paths";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { getGroupList, insertChannel } from "store/channel/actions";
+import { insertChannel } from "store/channel/actions";
 import { FacebookWallIcon } from "icons";
 
 interface whatsAppData {
@@ -28,7 +28,7 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ChannelAddFacebookWorkplace: FC = () => {
+export const ChannelAddFacebookDM: FC = () => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -38,12 +38,9 @@ export const ChannelAddFacebookWorkplace: FC = () => {
     const history = useHistory();
     const location = useLocation<whatsAppData>();
     const mainResult = useSelector(state => state.channel.channelList);
-    const grouplist = useSelector(state => state.channel.requestGetGroupList);
     const whatsAppData = location.state as whatsAppData | null;
 
     const [channelreg, setChannelreg] = useState(true);
-    const [channelList, setChannelList] = useState<any>([]);
-    const [waitGetGroups, setWaitGetGroups] = useState(false);
     const [coloricon, setcoloricon] = useState("#2d88ff");
     const [fields, setFields] = useState({
         "method": "UFN_COMMUNICATIONCHANNEL_INS",
@@ -63,11 +60,12 @@ export const ChannelAddFacebookWorkplace: FC = () => {
             "coloricon": "#2d88ff",
             "voximplantcallsupervision": false
         },
-        "type": "FBWM",
+        "type": "FACEBOOKWORPLACE",
         "service": {
             "accesstoken": "",
+            "appsecret": "",
             "siteid": "",
-            "groupid": "",
+            "appid": ""
         }
     })
     const [nextbutton, setNextbutton] = useState(true);
@@ -104,39 +102,11 @@ export const ChannelAddFacebookWorkplace: FC = () => {
     }, [mainResult])
 
     useEffect(() => {
-        if (!grouplist.loading && waitGetGroups) {
-            if(grouplist.error){                
-                const errormessage = t(langKeys.apikeydoesntexist).toLocaleLowerCase()
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
-                dispatch(showBackdrop(false));
-                setViewSelected("view1");
-                setWaitGetGroups(false);
-                setChannelList([])
-            }else{
-                setChannelList(grouplist?.data||[])
-                dispatch(showBackdrop(false));
-                setViewSelected("view2");
-                setWaitGetGroups(false);
-                setNextbutton(true)
-            }
-        }
-    }, [grouplist])
-
-    useEffect(() => {
         if (waitSave) {
             dispatch(showBackdrop(false));
             setWaitSave(false);
         }
     }, [mainResult])
-
-    function getgrouplistlocal(){
-        dispatch(
-            getGroupList({
-                accesstoken: fields.service.accesstoken,
-            }))
-        dispatch(showBackdrop(true));
-        setWaitGetGroups(true);
-    }
 
     function setnameField(value: any) {
         setChannelreg(value === "")
@@ -154,14 +124,14 @@ export const ChannelAddFacebookWorkplace: FC = () => {
                     </Link>
                 </Breadcrumbs>
                 <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.connectface) } Workplace</div>
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.connectface) } DM</div>
                     
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={(value) => {
                                 let partialf = fields;
-                                setNextbutton(value === "")
+                                setNextbutton(value === "" || !partialf.service.appid || !partialf.service.appsecret)
                                 partialf.service.accesstoken = value
                                 setFields(partialf)
                             }}
@@ -170,49 +140,31 @@ export const ChannelAddFacebookWorkplace: FC = () => {
                             className="col-6"
                         />
                     </div>
-                    <div style={{ textAlign: "center", paddingTop: "20px", color: "#969ea5", fontStyle: "italic" }}>{t(langKeys.connectface4)}</div>
-                    {/* eslint-disable-next-line jsx-a11y/anchor-is-valid*/}
-                    <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5" }}><a style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "pointer" }} onClick={openprivacypolicies} rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
-                    
-                    <div style={{ paddingLeft: "80%" }}>
-                        <Button
-                            disabled={nextbutton}
-                            onClick={() => {getgrouplistlocal() }}
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                        >{t(langKeys.next)}
-                        </Button>
-                    </div>
-                </div>
-            </div>
-        )
-    }
-    if (viewSelected === "view2") {
-        return (
-            <div style={{ width: "100%" }}>
-                <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("view1") }}>
-                        {t(langKeys.previoustext)}
-                    </Link>
-                </Breadcrumbs>
-                <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.connectface) } Workplace</div>
-                    
                     <div className="row-zyx">
                         <div className="col-3"></div>
-                        <FieldSelect
-                            data={channelList}
-                            optionValue="id"
-                            optionDesc="name"
+                        <FieldEdit
                             onChange={(value) => {
                                 let partialf = fields;
-                                setNextbutton(!value?.id)
-                                partialf.service.groupid = value.id
+                                setNextbutton(value === "" || !partialf.service.accesstoken || !partialf.service.appsecret)
+                                partialf.service.appid = value
                                 setFields(partialf)
                             }}
-                            valueDefault={fields.service.groupid}
-                            label={t(langKeys.group)}
+                            valueDefault={fields.service.appid}
+                            label="App ID"
+                            className="col-6"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <div className="col-3"></div>
+                        <FieldEdit
+                            onChange={(value) => {
+                                let partialf = fields;
+                                setNextbutton(value === "" || !partialf.service.accesstoken || !partialf.service.appid)
+                                partialf.service.appsecret = value
+                                setFields(partialf)
+                            }}
+                            valueDefault={fields.service.appsecret}
+                            label="App Secret"
                             className="col-6"
                         />
                     </div>
@@ -223,7 +175,7 @@ export const ChannelAddFacebookWorkplace: FC = () => {
                     <div style={{ paddingLeft: "80%" }}>
                         <Button
                             disabled={nextbutton}
-                            onClick={() => {setViewSelected("view3") }}
+                            onClick={() => { setViewSelected("view2") }}
                             className={classes.button}
                             variant="contained"
                             color="primary"
@@ -289,4 +241,4 @@ export const ChannelAddFacebookWorkplace: FC = () => {
     }
 }
 
-export default ChannelAddFacebookWorkplace;
+export default ChannelAddFacebookDM;

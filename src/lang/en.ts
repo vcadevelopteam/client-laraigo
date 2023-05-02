@@ -576,6 +576,7 @@ const translation: LangKeys = {
   type_domain_mastercatalog_ticketed_experiences: "Ticketed Experiences",
   type_domain_mastercatalog_transactable_items: "Transactable Items",
   type_domain_mastercatalog_vehicles: "Vehicles",
+  apikeydoesntexist: "This apiKey is invalid or doesn't exist",
 
   type_gender_femenino: 'Female',
   laraigoia: "Laraigo AI",

@@ -427,6 +427,43 @@ export const deleteTemplateReset = (state: IState): IState => ({
     requestDeleteTemplate: initialState.requestDeleteTemplate,
 })
 
+export const getGroupList = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestGetGroupList: {
+        ...state.requestGetGroupList,
+        error: false,
+        loading: true,
+    }
+})
+
+export const getGroupListFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestGetGroupList: {
+        ...state.requestGetGroupList,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message || 'error_unexpected_error',
+    }
+})
+
+export const getGroupListSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestGetGroupList: {
+        ...state.requestGetGroupList,
+        data: action?.payload?.data?.data,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message,
+    }
+})
+
+export const getGroupListReset = (state: IState): IState => ({
+    ...state,
+    requestGetGroupList: initialState.requestGetGroupList,
+})
+
 export const getNumberList = (state: IState, action: IAction): IState => ({
     ...state,
     requestGetNumberList: {
