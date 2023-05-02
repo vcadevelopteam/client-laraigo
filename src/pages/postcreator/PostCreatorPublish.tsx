@@ -4,13 +4,13 @@ import DateFnsUtils from '@date-io/date-fns';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import React, { FC, Fragment, useEffect, useState, useCallback } from "react";
 
-import { CameraAltOutlined, ChatBubbleOutline, Delete, Facebook, Instagram, LinkedIn, PlayCircleOutlineSharp, ReplayOutlined, ReplyOutlined, Save, Send, SendOutlined, ThumbUpOutlined, Timelapse, Twitter, YouTube, Schedule } from '@material-ui/icons';
+import { CameraAltOutlined, ChatBubbleOutline, Delete, Facebook, Instagram, LinkedIn, PlayCircleOutlineSharp, ReplayOutlined, ReplyOutlined, Save, Send, SendOutlined, ThumbUpOutlined, Timelapse, Twitter, YouTube, Schedule, HomeWork } from '@material-ui/icons';
 import { AntTab, DialogZyx, FieldEdit, FieldEditAdvanced, FieldSelect, FieldView } from 'components';
 import { Button, Tabs } from "@material-ui/core";
 import { dataActivities } from 'common/helpers';
 import { dataFeelings } from 'common/helpers/dataFeeling';
 import { Dictionary } from '@types';
-import { FacebookColor, InstagramColor, LinkedInColor, TikTokColor, TwitterColor, YouTubeColor } from "icons";
+import { FacebookColor, InstagramColor, LinkedInColor, TikTokColor, TwitterColor, WorkplaceMessengerIcon, YouTubeColor } from "icons";
 import { getCollection, resetAllMain, uploadFileMetadata } from 'store/main/actions';
 import { getCommChannelLst } from 'common/helpers';
 import { KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -200,6 +200,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
     const [openModal, setOpenModal] = useState(false);
     const [previewType, setPreviewType] = useState('FACEBOOKPREVIEW');
     const [showFacebook, setShowFacebook] = useState(true);
+    const [showWorkplace, setshowWorkplace] = useState(false);
     const [showInstagram, setShowInstagram] = useState(false);
     const [showLinkedIn, setShowLinkedIn] = useState(false);
     const [showTikTok, setShowTikTok] = useState(false);
@@ -217,6 +218,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
             sentiment: dataRow?.sentiment || '',
             textbody: dataRow?.textbody || '',
             textcustomfacebook: dataRow?.textcustomfacebook || '',
+            textcustomworkplace: dataRow?.textcustomworkplace || '',
             textcustominstagram: dataRow?.textcustominstagram || '',
             textcustomlinkedin: dataRow?.textcustomlinkedin || '',
             textcustomtiktok: dataRow?.textcustomtiktok || '',
@@ -236,6 +238,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
         register('sentiment', { validate: (value) => ((value && value.length) || !getValues('activity')) || t(langKeys.field_required) });
         register('textbody', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('textcustomfacebook');
+        register('textcustomworkplace');
         register('textcustominstagram');
         register('textcustomlinkedin');
         register('textcustomtiktok');
@@ -324,9 +327,10 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
 
         if (pageMode === "TEXT") {
             if (dataChannel.length > 0) {
-                let filterData = dataChannel.filter(channel => channel.type === 'FBWA' || channel.type === 'TWIT' || channel.type === 'LNKD')?.sort((a, b) => a.type - b.type);
+                let filterData = dataChannel.filter(channel => channel.type === 'FBWA'|| channel.type === 'FBWM' || channel.type === 'TWIT' || channel.type === 'LNKD')?.sort((a, b) => a.type - b.type);
                 setAllowedChannel(filterData.map(channel => ({ ...channel, checked: false })));
                 setShowFacebook(true);
+                setshowWorkplace(true);
                 setShowInstagram(false);
                 setShowLinkedIn(true);
                 setShowTikTok(false);
@@ -339,6 +343,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                 let filterData = dataChannel.filter(channel => channel.type === 'FBWA' || channel.type === 'TWIT' || channel.type === 'LNKD' || channel.type === 'INST')?.sort((a, b) => a.type - b.type);
                 setAllowedChannel(filterData.map(channel => ({ ...channel, checked: false })));
                 setShowFacebook(true);
+                setshowWorkplace(false);
                 setShowInstagram(true);
                 setShowLinkedIn(true);
                 setShowTikTok(false);
@@ -351,6 +356,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                 let filterData = dataChannel.filter(channel => channel.type === 'FBWA' || channel.type === 'TWIT' || channel.type === 'LNKD' || channel.type === 'INST' || channel.type === 'TKTK' || channel.type === 'YOUT')?.sort((a, b) => a.type - b.type);
                 setAllowedChannel(filterData.map(channel => ({ ...channel, checked: false })));
                 setShowFacebook(true);
+                setshowWorkplace(false);
                 setShowInstagram(true);
                 setShowLinkedIn(true);
                 setShowTikTok(true);
@@ -416,6 +422,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                                     label={
                                                         <div style={{ display: 'inline-flex', alignItems: 'center' }}>
                                                             {channel.type === 'FBWA' && <FacebookColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
+                                                            {channel.type === 'FBWM' && <WorkplaceMessengerIcon style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
                                                             {channel.type === 'INST' && <InstagramColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
                                                             {channel.type === 'LNKD' && <LinkedInColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
                                                             {channel.type === 'TKTK' && <TikTokColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
@@ -466,6 +473,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         onChange={(value) => {
                                             setValue('textbody', value);
                                             setValue('textcustomfacebook', value);
+                                            setValue('textcustomworkplace', value);
                                             setValue('textcustominstagram', value);
                                             setValue('textcustomlinkedin', value);
                                             setValue('textcustomtiktok', value);
@@ -473,6 +481,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                             setValue('textcustomyoutube', value);
 
                                             trigger('textcustomfacebook');
+                                            trigger('textcustomworkplace');
                                             trigger('textcustominstagram');
                                             trigger('textcustomlinkedin');
                                             trigger('textcustomtiktok');
@@ -587,6 +596,15 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         disabled={customizeType === 'Facebook'}
                                     >{t(langKeys.postcreator_publish_facebook)}
                                     </Button>}
+                                    {showWorkplace && <Button
+                                        className={classes.buttonSocial}
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={() => { setCustomizeType('Workplace') }}
+                                        startIcon={<HomeWork color="secondary" />}
+                                        disabled={customizeType === 'Workplace'}
+                                    >Workplace
+                                    </Button>}
                                     {showInstagram && <Button
                                         className={classes.buttonSocial}
                                         variant="contained"
@@ -662,6 +680,19 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         rows={18}
                                         style={{ border: '1px solid #959595', borderRadius: '4px', marginLeft: '6px', padding: '8px' }}
                                         valueDefault={getValues('textcustomfacebook')}
+                                    />}
+                                    {customizeType === "Workplace" && <FieldEditAdvanced
+                                        className="col-12"
+                                        disabled={false}
+                                        emoji={true}
+                                        error={errors?.textcustomworkplace?.message}
+                                        hashtag={true}
+                                        label={''}
+                                        maxLength={2200}
+                                        onChange={(value) => { setValue('textcustomworkplace', value); trigger('textcustomworkplace'); }}
+                                        rows={18}
+                                        style={{ border: '1px solid #959595', borderRadius: '4px', marginLeft: '6px', padding: '8px' }}
+                                        valueDefault={getValues('textcustomworkplace')}
                                     />}
                                     {customizeType === "Instagram" && <FieldEditAdvanced
                                         className="col-12"
@@ -784,6 +815,10 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                                 value: "FACEBOOKPREVIEW",
                                             },
                                             {
+                                                description: 'Muro Workplace',
+                                                value: "WORKPLACEPREVIEW",
+                                            },
+                                            {
                                                 description: t(langKeys.postcreator_publish_mockupinstagram),
                                                 value: "INSTAGRAMPREVIEW",
                                             },
@@ -827,6 +862,37 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '10px', paddingLeft: '10px', paddingRight: '20px', paddingTop: '10px' }}>
                                             <div style={{ height: '100%', paddingLeft: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', whiteSpace: 'pre-line' }}>
                                                 <div style={{ display: 'flex', width: '100%', paddingRight: 'auto', textAlign: 'justify', textJustify: 'inter-word' }}>{getValues('textcustomfacebook')}</div>
+                                            </div>
+                                        </div>
+                                        {((pageMode === 'IMAGE' || pageMode === 'VIDEO') && (getValues('mediadata') || []).length > 0) && <div style={{ maxWidth: '100%' }}>
+                                            <img loading='eager' alt="" style={{ maxWidth: '100%', width: '100%', maxHeight: '300px', paddingLeft: 'auto', paddingRight: 'auto', objectFit: 'cover' }} src={getValues('mediadata')[0].thumbnail}></img>
+                                        </div>}
+                                        <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginLeft: 'auto', marginRight: 'auto', marginBottom: '10px', marginTop: '6px' }}>
+                                            <div style={{ width: '33%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ThumbUpOutlined style={{ marginRight: '6px' }} /><b>{t(langKeys.postcreator_publish_facebookmockup_like)}</b></div>
+                                            <div style={{ width: '34%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ChatBubbleOutline style={{ marginRight: '6px' }} /><b>{t(langKeys.postcreator_publish_facebookmockup_comment)}</b></div>
+                                            <div style={{ width: '33%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ReplyOutlined style={{ marginRight: '6px' }} /><b>{t(langKeys.postcreator_publish_facebookmockup_share)}</b></div>
+                                        </div>
+                                    </div>
+                                </div>}
+                                {previewType === 'WORKPLACEPREVIEW' && <div className="row-zyx">
+                                    <div style={{ width: '90%', marginLeft: 'auto', marginRight: 'auto', marginBottom: '18px', backgroundColor: 'white', borderRadius: '6px', border: '1px solid #959595' }}>
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '10px', paddingLeft: '18px', paddingTop: '18px' }}>
+                                            <div style={{ display: 'inline-flex', verticalAlign: 'center' }}>
+                                                <div style={{ height: '100%', display: 'flex', alignItems: 'center' }}>
+                                                    <img loading='eager' alt="" style={{ height: '40px', width: '40px', borderRadius: '50%' }} src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/79df4f1c-c776-4c99-b8f8-47460a24d89e/Laraigo%2003.png"></img>
+                                                </div>
+                                                <div style={{ height: '100%', paddingLeft: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', whiteSpace: 'pre-line' }}>
+                                                    <div style={{ display: 'flex', width: '100%', paddingRight: 'auto' }}><b>{t(langKeys.postcreator_publish_officialpage)}</b></div>
+                                                    <div style={{ display: 'flex', width: '100%', paddingRight: 'auto' }}>{t(langKeys.postcreator_publish_facebookmockup_time)}<button
+                                                        style={{ border: 'none', marginLeft: '4px', width: '20px', height: '20px', backgroundImage: 'url(https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20PERU/e08a19e1-7653-4cb2-9523-68fed2d48217/FacebookWorld.png)', backgroundSize: '20px 20px' }}
+                                                    >
+                                                    </button></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', marginBottom: '10px', paddingLeft: '10px', paddingRight: '20px', paddingTop: '10px' }}>
+                                            <div style={{ height: '100%', paddingLeft: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', whiteSpace: 'pre-line' }}>
+                                                <div style={{ display: 'flex', width: '100%', paddingRight: 'auto', textAlign: 'justify', textJustify: 'inter-word' }}>{getValues('textcustomworkplace')}</div>
                                             </div>
                                         </div>
                                         {((pageMode === 'IMAGE' || pageMode === 'VIDEO') && (getValues('mediadata') || []).length > 0) && <div style={{ maxWidth: '100%' }}>
@@ -1089,6 +1155,7 @@ const SavePostModalGeneric: FC<{ modalData: any, modalType: string, openModal: b
                         return <div style={{ width: '100%', flex: '50%' }}>
                             <div style={{ display: 'inline-flex', alignItems: 'center' }}>
                                 {channel.type === 'FBWA' && <FacebookColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
+                                {channel.type === 'FBWM' && <WorkplaceMessengerIcon style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
                                 {channel.type === 'INST' && <InstagramColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
                                 {channel.type === 'LNKD' && <LinkedInColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
                                 {channel.type === 'TKTK' && <TikTokColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
