@@ -760,6 +760,7 @@ const translation: LangKeys = {
   opendrilldown: "Abrir árbol",
   corporation: 'Corporación',
   corporation_plural: 'Corporaciones',
+  apikeydoesntexist: "La APIKEY es invalida o no existe",
   logo: 'Logo',
   logotype: 'Logotipo',
   insults: "Lisuras",

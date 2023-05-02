@@ -29,6 +29,7 @@ export const langKeys = {
   firstcontactcompliance: "firstcontactcompliance",
   registrationdate: "registrationdate",
   complianceresolution: "complianceresolution",
+  apikeydoesntexist: "apikeydoesntexist",
   applicant: "applicant",
   ordernumber: "ordernumber",
   userwhoreported: "userwhoreported",

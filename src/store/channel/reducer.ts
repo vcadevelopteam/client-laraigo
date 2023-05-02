@@ -19,6 +19,7 @@ export interface IState {
     requestSynchronizeTemplate: IRequest;
     requestAddTemplate: IRequest;
     requestDeleteTemplate: IRequest;
+    requestGetGroupList: IRequest;
     requestGetNumberList: IRequest;
 
     channelList: IListStatePaginated<Dictionary>;
@@ -39,6 +40,7 @@ export const initialState: IState = {
     requestSynchronizeTemplate: { ...initialCommon, data: null, loading: false, error: false },
     requestAddTemplate: { ...initialCommon, data: null, loading: false, error: false },
     requestDeleteTemplate: { ...initialCommon, data: null, loading: false, error: false },
+    requestGetGroupList: { ...initialCommon, data: null, loading: false, error: false },
     requestGetNumberList: { ...initialCommon, data: null, loading: false, error: false },
 
     channelList: initialListPaginatedState,
@@ -117,6 +119,11 @@ export default createReducer<IState>(initialState, {
     [actionTypes.DELETE_TEMPLATE_FAILURE]: caseFUnctions.deleteTemplateFailure,
     [actionTypes.DELETE_TEMPLATE_SUCCESS]: caseFUnctions.deleteTemplateSuccess,
     [actionTypes.DELETE_TEMPLATE_RESET]: caseFUnctions.deleteTemplateReset,
+
+    [actionTypes.GET_GROUP_LIST]: caseFUnctions.getGroupList,
+    [actionTypes.GET_GROUP_LIST_FAILURE]: caseFUnctions.getGroupListFailure,
+    [actionTypes.GET_GROUP_LIST_SUCCESS]: caseFUnctions.getGroupListSuccess,
+    [actionTypes.GET_GROUP_LIST_RESET]: caseFUnctions.getGroupListReset,
 
     [actionTypes.PHONE_LIST]: caseFUnctions.getNumberList,
     [actionTypes.PHONE_LIST_FAILURE]: caseFUnctions.getNumberListFailure,

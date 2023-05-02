@@ -67,12 +67,12 @@ const paths = {
         resolve: (channelId: string | number) => `/channels/${channelId}/add/facebook`,
     },
     CHANNELS_ADD_FACEBOOKWORKPLACE: {
-        path: '/channels/:id/add/facebookdm',
-        resolve: (channelId: string | number) => `/channels/${channelId}/add/facebookdm`,
-    },
-    CHANNELS_ADD_FACEBOOKDM: {
         path: '/channels/:id/add/facebookworkplace',
         resolve: (channelId: string | number) => `/channels/${channelId}/add/facebookworkplace`,
+    },
+    CHANNELS_ADD_FACEBOOKDM: {
+        path: '/channels/:id/add/facebookdm',
+        resolve: (channelId: string | number) => `/channels/${channelId}/add/facebookdm`,
     },
     CHANNELS_ADD_MESSENGER: {
         path: '/channels/:id/add/messenger',
