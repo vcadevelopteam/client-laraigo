@@ -563,6 +563,7 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     if (channelType === "FBMS") return <FacebookMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "FBDM") return <FacebookMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "FBWP") return <FacebookWorkplace width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "FACEBOOKWORPLACE") return <FacebookWorkplace width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "FBWA") return <FacebookWallIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "WEBM") return <WebMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "TELE") return <TelegramIcon width={width} fill={color} stroke={color} height={height} color={color} />
@@ -596,6 +597,7 @@ export const GetIconColor: React.FC<IconProps> = ({ channelType }) => {
     if (channelType === "FBMS") return <FacebookMessengerColor />
     if (channelType === "FBDM") return <FacebookMessengerColor />
     if (channelType === "FBWP") return <FacebookWorkplace />
+    if (channelType === "FACEBOOKWORPLACE") return <FacebookWorkplace />
     if (channelType === "FBWA") return <FacebookColor />
     if (channelType === "WEBM") return <WebMessengerColor />
     if (channelType === "TELE") return <TelegramColor />
