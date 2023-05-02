@@ -2648,6 +2648,8 @@ const translation: LangKeys = {
   "personalizedreport_person.changeby": "person change by",
   "personalizedreport_person.name": "person name",
   "personalizedreport_person.realname": "person real name",
+  "personalizedreport_person.firstrealname": "person real firstname",
+  "personalizedreport_person.lastrealname": "person real lastname",
   "personalizedreport_person.referringperson": "person referring person",
   "personalizedreport_person.referringpersonid": "person referring personid",
   "personalizedreport_person.persontype": "person person type",
