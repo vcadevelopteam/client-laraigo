@@ -297,6 +297,8 @@ function sendInteraction(type, text) {
         "typeinteraction": "NINGUNO",
         "typemessage": type,
         "lastmessage": text,
+        "callrecording": red.recording,
+
     }
     Logger.write("insert/withdata-body: " + JSON.stringify(body));
     Net.httpRequest(`${URL_SERVICES}voximplant/call/answered`, (res) => {
