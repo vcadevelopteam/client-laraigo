@@ -597,6 +597,7 @@ export const GetIconColor: React.FC<IconProps> = ({ channelType }) => {
     if (channelType === "FBMS") return <FacebookMessengerColor />
     if (channelType === "FBDM") return <FacebookMessengerColor />
     if (channelType === "FBWP") return <FacebookWorkplace />
+    if (channelType === "FBWM") return <FacebookWorkplace />
     if (channelType === "FACEBOOKWORPLACE") return <FacebookWorkplace />
     if (channelType === "FBWA") return <FacebookColor />
     if (channelType === "WEBM") return <WebMessengerColor />
