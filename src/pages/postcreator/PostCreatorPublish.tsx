@@ -4,13 +4,13 @@ import DateFnsUtils from '@date-io/date-fns';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import React, { FC, Fragment, useEffect, useState, useCallback } from "react";
 
-import { CameraAltOutlined, ChatBubbleOutline, Delete, Facebook, Instagram, LinkedIn, PlayCircleOutlineSharp, ReplayOutlined, ReplyOutlined, Save, Send, SendOutlined, ThumbUpOutlined, Timelapse, Twitter, YouTube, Schedule, HomeWork } from '@material-ui/icons';
+import { CameraAltOutlined, ChatBubbleOutline, Delete, Facebook, Instagram, LinkedIn, PlayCircleOutlineSharp, ReplayOutlined, ReplyOutlined, Save, Send, SendOutlined, ThumbUpOutlined, Timelapse, Twitter, YouTube, Schedule } from '@material-ui/icons';
 import { AntTab, DialogZyx, FieldEdit, FieldEditAdvanced, FieldSelect, FieldView } from 'components';
 import { Button, Tabs } from "@material-ui/core";
 import { dataActivities } from 'common/helpers';
 import { dataFeelings } from 'common/helpers/dataFeeling';
 import { Dictionary } from '@types';
-import { FacebookColor, InstagramColor, LinkedInColor, TikTokColor, TwitterColor, WorkplaceMessengerIcon, YouTubeColor } from "icons";
+import { FacebookColor, FacebookWorkplace, InstagramColor, LinkedInColor, TikTokColor, TwitterColor, WorkplaceMessengerIcon, YouTubeColor } from "icons";
 import { getCollection, resetAllMain, uploadFileMetadata } from 'store/main/actions';
 import { getCommChannelLst } from 'common/helpers';
 import { KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -601,7 +601,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                         variant="contained"
                                         color="primary"
                                         onClick={() => { setCustomizeType('Workplace') }}
-                                        startIcon={<HomeWork color="secondary" />}
+                                        startIcon={<FacebookWorkplace fill="white" />}
                                         disabled={customizeType === 'Workplace'}
                                     >{t(langKeys.postcreator_publish_workplace)}
                                     </Button>}
