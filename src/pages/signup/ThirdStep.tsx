@@ -12,6 +12,7 @@ import {
     SmsColor,
     EmailColor,
     WebMessengerColor,
+    WebMessengerColorAlt03,
     FacebookMessengerColor2 as FacebookMessengerColor,
     FacebookColor2 as FacebookColor,
     InstagramColor2 as InstagramColor,
@@ -202,6 +203,15 @@ const ThirdStep: FC = () => {
                 toggleChannel('youtube');
             },
             selected: listchannels.youtube,
+        },
+        {
+            icon: <WebMessengerColorAlt03 className={classes.icon} />,
+            label: t(langKeys.channel_appstore),
+            key: 'appstore',
+            onClick: () => {
+                toggleChannel('appstore');
+            },
+            selected: listchannels.appstore,
         },
         {
             icon: <LinkedInColor className={classes.icon} />,
