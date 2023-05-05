@@ -5057,6 +5057,13 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   linkedin_accesstoken: 'Token de Acceso',
   linkedin_refreshtoken: 'Token de Renovación',
   linkedin_organizationid: 'ID de Organización',
+  channel_appstore: 'App Store',
+  channel_appstoretitle: 'Conectar App Store',
+  channel_appstorealert1: 'Instala el chatbot en tu cuenta de App Store y empieza a conseguir clientes potenciales.',
+  channel_appstorealert2: 'Las aplicaciones enlazadas a tu cuenta de App Store seran usadas para este proceso',
+  channel_appstore_keyid: 'ID Llave',
+  channel_appstore_issuerid: 'ID Editor',
+  channel_appstore_secretkey: 'Llave Secreta',
 };
 
 const esResource: ResourceLanguage = {

@@ -7,7 +7,7 @@ import paths from "common/constants/paths";
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import {
     VoiceColor,
-    AndroidColor, EmailColor, FacebookColor, WebMessengerColorAlt01, WebMessengerColorAlt02, FacebookWorkplace, FacebookMessengerColor, InstagramColor, IosColor, SmsColor, TelegramColor, TwitterColor, WebMessengerColor, WhatsappColor, /*TikTokColor,*/ YouTubeColor, LinkedInColor, TeamsColor, BloggerColor
+    AndroidColor, EmailColor, FacebookColor, WebMessengerColorAlt01, WebMessengerColorAlt02, WebMessengerColorAlt03, FacebookWorkplace, FacebookMessengerColor, InstagramColor, IosColor, SmsColor, TelegramColor, TwitterColor, WebMessengerColor, WhatsappColor, /*TikTokColor,*/ YouTubeColor, LinkedInColor, TeamsColor, BloggerColor
 } from "icons";
 import { TemplateBreadcrumbs } from "components";
 
@@ -183,6 +183,11 @@ export const ChannelAdd: FC = () => {
             icon: c => <WebMessengerColorAlt02 className={c} />,
             label: t(langKeys.channel_playstore),
             onClick: () => { history.push(paths.CHANNELS_ADD_PLAYSTORE.path, whatsAppData) },
+        },
+        {
+            icon: c => <WebMessengerColorAlt03 className={c} />,
+            label: t(langKeys.channel_appstore),
+            onClick: () => history.push(paths.CHANNELS_ADD_APPSTORE.path, whatsAppData),
         },
         {
             icon: c => <LinkedInColor className={c} />,

@@ -87,6 +87,7 @@ export interface ListChannels {
     youtube: boolean;
     business: boolean;
     playstore: boolean;
+    appstore: boolean;
     linkedin: boolean;
     teams: boolean;
     blogger: boolean;
@@ -213,6 +214,14 @@ export interface TeamsChannel {
     build: (v: Omit<TeamsChannel, 'build'>) => IRequestBody;
 }
 
+export interface AppStoreChannel {
+    description: string;
+    keyid: string;
+    issuerid: string;
+    secretkey: string;
+    build: (v: Omit<AppStoreChannel, 'build'>) => IRequestBody;
+}
+
 export interface BloggerChannel {
     description: string;
     accesstoken: string;
@@ -276,6 +285,7 @@ export interface Channels {
     tiktok: TikTokChannel,
     youtube: YouTubeChannel,
     playstore: PlayStoreChannel,
+    appstore: AppStoreChannel,
     linkedin: LinkedInChannel,
     teams: TeamsChannel,
     blogger: BloggerChannel,
@@ -345,6 +355,7 @@ const defaultListChannels: ListChannels = {
     youtube: false,
     business: false,
     playstore: false,
+    appstore: false,
     linkedin: false,
     teams: false,
     blogger: false,
