@@ -19,6 +19,7 @@ import {
     uploadFile,
     getCollectionPaginated,
     resetCollectionPaginated,
+    exportData,
 } from "store/main/actions";
 
 import {
@@ -33,6 +34,7 @@ import {
 
 import {
     dateToLocalDate,
+    getMessageTemplateExport,
     getPaginatedMessageTemplate,
     getValuesFromDomain,
     insMessageTemplate,
@@ -133,7 +135,9 @@ const MessageTemplates: FC = () => {
     const mainSynchronize = useSelector((state) => state.channel.requestSynchronizeTemplate);
     const query = useMemo(() => new URLSearchParams(location.search), [location]);
     const params = useQueryParams(query, { ignore: ["channelTypes"] });
+    const [waitSaveExport, setWaitSaveExport] = useState(false);
     const selectionKey = "id";
+    const resExportData = useSelector(state => state.main.exportData);
 
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({
         daterange: null,
@@ -299,6 +303,21 @@ const MessageTemplates: FC = () => {
             setTotalRow(mainPaginated.count);
         }
     }, [mainPaginated]);
+
+    useEffect(() => {
+        if (waitSaveExport) {
+            if (!resExportData.loading && !resExportData.error) {
+                dispatch(showBackdrop(false));
+                resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
+                setWaitSaveExport(false);
+            } else if (resExportData.error) {
+                const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitSaveExport(false);
+            }
+        }
+    }, [resExportData, waitSaveExport])
 
     useEffect(() => {
         if (!(Object.keys(selectedRows).length === 0 && rowWithDataSelected.length === 0)) {
@@ -469,6 +488,22 @@ const MessageTemplates: FC = () => {
         );
     };
 
+    const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
+        const columnsExport = columns.filter(x => !x.isComponent).map(x => ({
+            key: x.accessor,
+            alias: x.Header
+        }))
+        dispatch(exportData(getMessageTemplateExport({
+            communicationchannelid: communicationChannel?.communicationchannelid || 0,
+            filters: {
+                ...filters,
+            },
+            sorts,
+        }), "", "excel", false, columnsExport));
+        dispatch(showBackdrop(true));
+        setWaitSaveExport(true);
+    };
+
     if (viewSelected === "view-1") {
         if (mainPaginated.error) {
             return <h1>ERROR</h1>;
@@ -535,6 +570,7 @@ const MessageTemplates: FC = () => {
                 download={true}
                 fetchData={fetchData}
                 filterGeneral={true}
+                exportPersonalized={triggerExportData}
                 handleRegister={handleRegister}
                 initialFilters={params.filters}
                 initialPageIndex={params.page}

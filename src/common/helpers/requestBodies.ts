@@ -3774,6 +3774,18 @@ export const getLocationExport = ({ filters, sorts }: Dictionary): IRequestBody 
     }
 });
 
+export const getMessageTemplateExport = ({ filters, sorts, communicationchannelid }: Dictionary): IRequestBody => ({
+    method: "UFN_MESSAGETEMPLATE_EXPORT",
+    key: "UFN_MESSAGETEMPLATE_EXPORT",
+    parameters: {
+        origin: "messagetemplate",
+        communicationchannelid,
+        filters,
+        sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+
 export const locationIns = ({ id, operation, name, address, district, city, country, schedule, phone, alternativephone, email, alternativeemail, latitude, longitude, googleurl, description, status, type, username }: Dictionary): IRequestBody => ({
     method: "UFN_LOCATION_INS",
     key: "UFN_LOCATION_INS",
