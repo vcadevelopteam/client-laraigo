@@ -183,19 +183,6 @@ export const ChannelAddAppStore: FC = () => {
                     </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
-                        <FieldEdit
-                            onChange={(value) => {
-                                setNextbutton(
-                                    value === "" || fields.service.issuerid === "" || fields.service.keyid === ""
-                                );
-                                let partialf = fields;
-                                partialf.service.secretkey = value;
-                                setFields(partialf);
-                            }}
-                            valueDefault={fields.service.secretkey}
-                            label={t(langKeys.channel_appstore_secretkey)}
-                            className="col-6"
-                        />
                         <FieldEditMulti
                             onChange={(value) => {
                                 setNextbutton(
