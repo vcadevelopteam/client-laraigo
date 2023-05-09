@@ -1,4 +1,4 @@
-const ENV = "DEVELOP";
+const ENV = "PRODUCTION";
 
 const APIS_URL = {
     DEVELOP: {
@@ -275,7 +275,7 @@ export const apiUrls = {
     DELETE_TEMPLATE: `${BASE_URL}/channel/deletetemplate`,
 
     BILLING_REPORTPDF: `${BASE_URL}/drawpdf`,
-    
+
     PRODUCT_IMPORT: `${BASE_URL}/product/import`,
     POSTHISTORY_SCHEDULE: `${BASE_URL}/posthistory/schedulepost`,
     EVENTBOOKING_GOOGLE_LOGIN: `${BASE_URL}/event-booking/googlelogin`,
