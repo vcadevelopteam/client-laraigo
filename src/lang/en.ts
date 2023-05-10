@@ -5112,7 +5112,7 @@ const translation: LangKeys = {
   privacypolicy77: "8. Children's Privacy",
   privacypolicy78: "Our application is not directed to children under the age of 13. We do not knowingly collect personal information from children under the age of 13.",
   privacypolicy79: "9. Changes to This Policy",
-  privacypolicy80: "We reserve the right to update or change our Privacy Policy as any time and you should check this Privacy Policy periodically. This Privacy Policy is effective as of 2022-09-05 and will remain in effect except with respect to any changes in its provisions in the future, which will be in effect immediately after being posted on this page.",
+  privacypolicy80: "We reserve the right to update or change our Privacy Policy as any time and you should check this Privacy Policy periodically. This Privacy Policy is effective as of 2023-05-09 and will remain in effect except with respect to any changes in its provisions in the future, which will be in effect immediately after being posted on this page.",
   privacypolicy81: "If we make any changes to this Privacy Policy, we will notify either through the e-mail address you have provided us, or by placing a prominent notice in our website.",
   privacypolicy82: "10. Contact Us",
   privacypolicy83: "If you have any questions or concerns about this Policy or our application, please contact us at laraigo@vcaperu.com.",
