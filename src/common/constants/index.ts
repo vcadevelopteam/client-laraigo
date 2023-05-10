@@ -8,5 +8,5 @@ export * from './variablesTemplate';
 export * from './googleCategory';
 
 export const version = {
-    build: "1.19.0"
+    build: "1.20.0"
 }

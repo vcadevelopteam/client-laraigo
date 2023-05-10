@@ -55,6 +55,7 @@ const paths = {
         path: "/getLocations/:token",
         resolve: (token: string) => `/getLocations/${token}`,
     },
+    TERMSOFSERVICE: "/termsofservice",
     PRIVACY: "/privacy",
     AUTOMATIZATIONRULES: "/automatizationrules",
     ACTIVATE_USER: {
