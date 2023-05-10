@@ -92,6 +92,7 @@ const DashboardAdd = lazy(() => import('pages/dashboard/DashboardAdd'))
 const DashboardLayout = lazy(() => import('pages/dashboard/DashboardLayout'))
 const Settings = lazy(() => import('pages/Settings'));
 const Privacy = lazy(() => import('pages/Privacy'));
+const TermsOfService = lazy(() => import('pages/TermsOfService'));
 const ActivateUser = lazy(() => import('pages/ActivateUser'));
 const RecoverPassword = lazy(() => import('pages/RecoverPassword'));
 const CRM = lazy(() => import('pages/crm/CRM'));
@@ -218,6 +219,7 @@ const RouterApp: FC = () => {
 					<Route exact path={paths.NIUBIZ_PAYMENTORDER.path} render={() => <PaymentOrderNiubiz />} />
 					<Route exact path={paths.NIUBIZ_PAYMENTORDERSTATUS.path} render={() => <PaymentOrderNiubizStatus />} />
 					<Route exact path={paths.PRIVACY} render={() => <Privacy />} />
+					<Route exact path={paths.TERMSOFSERVICE} render={() => <TermsOfService />} />
 					<Route exact path={paths.ACTIVATE_USER.path} render={() => <ActivateUser />} />
 					<Route exact path={paths.RECOVER_PASSWORD.path} render={() => <RecoverPassword />} />
 					<ProtectRoute exact path={paths.PRODUCTCATALOG} component={() => (<Layout mainClasses={classes.main}><ProductCatalog /></Layout>)} />
