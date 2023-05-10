@@ -104,6 +104,7 @@ export default function Map() {
     department: "",
     province: "",
     district: "",
+    postalcode: "",
     zone: "",
     zipcode: "",
     reference: "",
@@ -176,11 +177,13 @@ export default function Map() {
     const administrative_area_level_2 = r.find(x => x.types.includes("administrative_area_level_2"));
     const locality = r.find(x => x.types.includes("locality"));
     const sublocality_level_1 = r.find(x => x.types.includes("sublocality_level_1"));
+    const postalcode = r.find(x => x.types.includes("postal_code"));
 
     setDirectionData((prev)=>({...prev, 
       department: administrative_area_level_1 ? administrative_area_level_1.long_name : "", 
       province: administrative_area_level_2 ? administrative_area_level_2.long_name : "", 
       district: locality ? locality.long_name : "", 
+      postalcode: postalcode ? postalcode.long_name : "",
       zone: sublocality_level_1 ? sublocality_level_1.long_name : "", 
       zipcode: postal_code ? postal_code.long_name : "",
       street: route ? route.long_name : "", 
