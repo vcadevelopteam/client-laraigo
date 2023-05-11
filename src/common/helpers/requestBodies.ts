@@ -982,12 +982,14 @@ export const insIntegrationManager = ({
     headers,
     bodytype,
     body,
+    url_params,
     parameters,
     variables,
     level,
     fields,
     apikey,
     operation,
+    results,
     orgid
 }: Dictionary): IRequestBody => ({
     method: "UFN_INTEGRATIONMANAGER_INS",
@@ -999,6 +1001,7 @@ export const insIntegrationManager = ({
         name,
         method,
         url,
+        url_params: JSON.stringify(url_params),
         authorization: JSON.stringify(authorization),
         headers: JSON.stringify(headers),
         bodytype,
@@ -1009,7 +1012,8 @@ export const insIntegrationManager = ({
         fields: JSON.stringify(fields),
         apikey,
         operation,
-        orgid
+        orgid,
+        results: JSON.stringify(results),
     }
 });
 
