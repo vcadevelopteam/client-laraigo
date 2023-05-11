@@ -2293,6 +2293,7 @@ const ModalIntegrationManager: React.FC<ModalProps> = ({
    //    }
    // };
    const getHtml: any = (data: any, param: string, path: string) => {
+      // console.log(data);
       if (Array.isArray(data)) {
          return (
             <div
@@ -2326,7 +2327,7 @@ const ModalIntegrationManager: React.FC<ModalProps> = ({
                <div>{"]"}</div>
             </div>
          );
-      } else if (typeof data === "object") {
+      } else if (data !== null && typeof data === "object") {
          return (
             <div
                style={{
@@ -2362,7 +2363,7 @@ const ModalIntegrationManager: React.FC<ModalProps> = ({
                   }
                />
                <div>
-                  "{param}": {data || "undefined"}
+                  "{param}": {String(data)}
                </div>
             </div>
          );
@@ -2382,8 +2383,9 @@ const ModalIntegrationManager: React.FC<ModalProps> = ({
          button2Type="button"
       >
          <div className="row-zyx">
-            {Object.keys(data || {}).map((param) => {
-               return <>{getHtml(data[param], param, param)}</>;
+            {console.log(data.data)}
+            {Object.keys(data.data || {}).map((param) => {
+               return <>{getHtml(data.data[param], param, param)}</>;
             })}
          </div>
       </DialogZyx>
@@ -2550,7 +2552,7 @@ const ModalTestIntegrationManager: React.FC<
             headers,
          });
 
-         console.log(data);
+         // console.log(data);
          setResponseData(data);
       }
       setOpenModal(false);
@@ -2570,7 +2572,9 @@ const ModalTestIntegrationManager: React.FC<
          handleClickButton2={() => {
             setOpenModal(false);
          }}
-         buttonText1="Continuar"
+         buttonText1={
+            paramsCompleted ? t(langKeys.getData) : t(langKeys.continue)
+         }
          button2Type="button"
       >
          {paramsCompleted ? (
