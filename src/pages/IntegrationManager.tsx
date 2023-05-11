@@ -433,7 +433,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
    fetchData,
    arrayBread,
 }) => {
-   console.log(row);
+   // console.log(row);
    const classes = useStyles();
    const [waitSave, setWaitSave] = useState(false);
    const executeRes = useSelector((state) => state.main.execute);
@@ -716,21 +716,58 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
       await trigger("bodytype");
    };
 
-   const onChangeUrlParams = async (data: Dictionary) => {
-      setValue("url_params", data?.key || "");
+   const onChangeUrlParams = async (
+      index: number,
+      param: string,
+      value: string
+   ) => {
+      console.log("Cambiando Un Param", param, value);
+      // const updatedParams = [...urlParams];
+      // updatedParams[index] = { ...updatedParams[index], [param]: value };
+      // const urlParamsString = updatedParams
+      //    .map((param) => `${param.key}=${param.value}`)
+      //    .join("&");
+      // const url = urlParamsString ? "?" + urlParamsString : "";
+      // setValue("url", url);
+      updateUrl();
+      // setValue("url_params", { ...urlParams[index], [param]: value });
       await trigger("url_params");
+   };
+   const onBlurUrlParam = (index: any, param: string, value: any) => {
+      urlParamsUpdate(index, { ...urlParams[index], [param]: value });
    };
 
    const onClickAddUrlParam = async () => {
+      console.log("Añadiending Un Param");
+
       urlParamsAppend({ key: "", value: "" });
+      updateUrl();
    };
+
+   const updateUrl = () => {
+      let baseUrl = getValues("url").split("?")[0];
+      let queryParams = getValues("url_params")
+         .map((p: any) => `${p.key}=${p.value}`)
+         .join("&");
+
+      setValue("url", queryParams ? `${baseUrl}?${queryParams}` : baseUrl);
+   };
+   // updateUrl(card: any) {
+   //    let baseUrl = card.config.url.split('?')[0];
+   //    let queryParams = card.config.url_params
+   //      .map(
+   //        (p: any) =>
+   //          `${p.key.includes('{') ? p.key : encodeURIComponent(p.key)}=${
+   //            p.value.includes('{') ? p.value : encodeURIComponent(p.value)
+   //          }`
+   //      )
+   //      .join('&');
+   //    card.config.url = queryParams ? `${baseUrl}?${queryParams}` : baseUrl;
+   //  }
 
    const onClickDeleteUrlParam = async (index: number) => {
       urlParamsRemove(index);
-   };
-
-   const onBlurUrlParam = (index: any, param: string, value: any) => {
-      urlParamsUpdate(index, { ...urlParams[index], [param]: value });
+      updateUrl();
    };
 
    const onChangeResult = async (data: Dictionary) => {
@@ -1131,9 +1168,27 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
       }
    }, [mainAuxRes, waitView]);
 
+   const onChangeURL = (value: string) => {
+      console.log(value);
+      const params = new URLSearchParams(value.split("?")[1]);
+      const urlParams: { key: string; value: string }[] = [];
+
+      const iterator = params.entries();
+      let result = iterator.next();
+
+      while (!result.done) {
+         const [key, value] = result.value;
+         urlParams.push({ key, value });
+         result = iterator.next();
+      }
+      console.log("Mi urlParams", urlParams);
+      setValue("url_params", urlParams);
+      setValue("url", value);
+   };
+
    return (
       <div style={{ width: "100%" }}>
-         <pre>{JSON.stringify(watch(), null, 2)}</pre>
+         {/* <pre>{JSON.stringify(watch(), null, 2)}</pre> */}
          <form onSubmit={onSubmit}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
                <div>
@@ -1327,7 +1382,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                                  label={t(langKeys.url)}
                                  className={classes.selectInput2}
                                  valueDefault={getValues("url")}
-                                 onChange={(value) => setValue("url", value)}
+                                 onChange={(value) => onChangeURL(value)}
                                  error={errors?.url?.message}
                               />
                            </React.Fragment>
@@ -1531,63 +1586,111 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                              );
                           })}
 
-                     {getValues("method") !== "GET" && (
-                        <div
-                           className="row-zyx"
-                           style={{ alignItems: "flex-end" }}
-                        >
-                           <React.Fragment>
-                              <FieldView
-                                 label={t(langKeys.parameters)}
-                                 className={classes.labelButton1}
-                              />
-                              {edit ? (
-                                 <Button
-                                    variant="outlined"
-                                    type="button"
-                                    color="primary"
-                                    className={classes.labelButton2}
-                                    startIcon={<AddIcon color="primary" />}
-                                    onClick={() => onClickAddUrlParam()}
-                                 >
-                                    {t(langKeys.addUrlParam)}
-                                 </Button>
-                              ) : null}
-                           </React.Fragment>
-                        </div>
-                     )}
+                     <div
+                        className="row-zyx"
+                        style={{ alignItems: "flex-end" }}
+                     >
+                        <React.Fragment>
+                           <FieldView
+                              label={t(langKeys.parameters)}
+                              className={classes.labelButton1}
+                           />
+                           {edit ? (
+                              <Button
+                                 variant="outlined"
+                                 type="button"
+                                 color="primary"
+                                 className={classes.labelButton2}
+                                 startIcon={<AddIcon color="primary" />}
+                                 onClick={() => onClickAddUrlParam()}
+                              >
+                                 {t(langKeys.addUrlParam)}
+                              </Button>
+                           ) : null}
+                        </React.Fragment>
+                     </div>
+                     {/* {getValues("method") !== "GET" && (
+                     )} */}
                      {edit
-                        ? urlParams?.map((field: any, i: number) => {
+                        ? urlParams?.map((field, i) => {
                              return (
                                 <div className="row-zyx" key={field.id}>
                                    <FieldEdit
+                                      fregister={{
+                                         ...register(
+                                            `url_params.${i}.key` as const,
+                                            {
+                                               validate: (value: string) =>
+                                                  value !== "" ||
+                                                  (t(
+                                                     langKeys.field_required
+                                                  ) as string),
+                                            }
+                                         ),
+                                      }}
                                       label={t(langKeys.key)}
                                       className={classes.fieldRow}
                                       valueDefault={field?.key || ""}
-                                      onBlur={(value) =>
-                                         onBlurUrlParam(i, "key", value)
-                                      }
+                                      //   onBlur={(value) =>
+                                      //      onBlurUrlParam(i, "key", value)
+                                      //   }
+                                      onChange={(value) => {
+                                         //   onChangeUrlParams(i, "key", value)
+                                         setValue(`url_params.${i}.key`, value);
+                                         updateUrl();
+                                      }}
                                       error={
                                          errors?.url_params?.[i]?.key?.message
                                       }
                                    />
                                    <FieldEdit
+                                      fregister={{
+                                         ...register(
+                                            `url_params.${i}.value` as const,
+                                            {
+                                               validate: (value: string) =>
+                                                  value !== "" ||
+                                                  (t(
+                                                     langKeys.field_required
+                                                  ) as string),
+                                            }
+                                         ),
+                                      }}
                                       label={t(langKeys.value)}
                                       className={classes.fieldRow}
                                       valueDefault={field?.value || ""}
-                                      onBlur={(value) =>
-                                         onBlurUrlParam(i, "value", value)
-                                      }
+                                      //   onBlur={(value) =>
+                                      //      onBlurUrlParam(i, "value", value)
+                                      //   }
+                                      onChange={(value) => {
+                                         //   onChangeUrlParams(i, "key", value)
+                                         setValue(
+                                            `url_params.${i}.value`,
+                                            value
+                                         );
+                                         updateUrl();
+                                      }}
                                       error={
                                          errors?.url_params?.[i]?.value?.message
                                       }
                                    />
                                    <FieldEdit
                                       label={t(langKeys.description)}
+                                      fregister={{
+                                         ...register(
+                                            `url_params.${i}.description` as const
+                                         ),
+                                      }}
                                       className={classes.fieldRow}
                                       valueDefault={field?.description || ""}
-                                      onBlur={(value) =>
-                                         onBlurHeader(i, "description", value)
+                                      onChange={
+                                         (value) => {
+                                            setValue(
+                                               `url_params.${i}.description`,
+                                               value
+                                            );
+                                         }
+                                         //   onBlurUrlParam(i, "description", value)
                                       }
                                       error={
                                          errors?.url_params?.[i]?.description
@@ -2458,7 +2561,16 @@ const ModalTestIntegrationManager: React.FC<
          open={openModal}
          title={t(langKeys.preview)}
          buttonText2={t(langKeys.back)}
-         handleClickButton2={() => {}}
+         handleClickButton1={() => {
+            if (paramsCompleted) {
+               testAPI(formData);
+            }
+            handleUpdateMissingParams();
+         }}
+         handleClickButton2={() => {
+            setOpenModal(false);
+         }}
+         buttonText1="Continuar"
          button2Type="button"
       >
          {paramsCompleted ? (
@@ -2486,7 +2598,7 @@ const ModalTestIntegrationManager: React.FC<
                      />
                   </React.Fragment>
                </div>
-               <div>
+               {/* <div>
                   <div className="row-zyx">
                      <Button
                         variant="outlined"
@@ -2507,7 +2619,7 @@ const ModalTestIntegrationManager: React.FC<
                         {t(langKeys.cancel)}
                      </Button>
                   </div>
-               </div>
+               </div> */}
             </>
          ) : (
             <>
@@ -2532,7 +2644,7 @@ const ModalTestIntegrationManager: React.FC<
                      </div>
                   ))}
                </div>
-               <div>
+               {/* <div>
                   <Button
                      variant="outlined"
                      type="button"
@@ -2550,7 +2662,7 @@ const ModalTestIntegrationManager: React.FC<
                   >
                      {t(langKeys.cancel)}
                   </Button>
-               </div>
+               </div> */}
             </>
          )}
       </DialogZyx>
