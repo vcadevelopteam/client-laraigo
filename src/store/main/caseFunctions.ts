@@ -467,7 +467,7 @@ export const testRequestFailure = (state: IState, action: IAction): IState => {
         ...state.execute,
         data: action.payload || [],
         loading: false,
-        error: (action.payload.data) ? false : true,
+        error: (action.payload.data !== undefined) ? false : true,
         code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
         message: action.payload.message || 'error_unexpected_error',
     }

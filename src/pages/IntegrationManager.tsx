@@ -2479,9 +2479,9 @@ const ModalTestIntegrationManager: React.FC<
       //
       console.log(urlParams);
       console.log(params);
-      // debugger
+      debugger
       const urlParamsCleaned = urlParams?.reduce(
-         (acc: any, x: any) => [...acc, x.key],
+         (acc: any, x: any) => [...acc, "...-1-1-11"],
          []
       );
       const missingParams = params.filter(
