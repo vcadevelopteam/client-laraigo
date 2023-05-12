@@ -2511,6 +2511,7 @@ const ModalTestIntegrationManager: React.FC<
 
    useEffect(() => {
       if (!resultRequest.loading && !resultRequest.error && reqTrigger) {
+         dispatch(showBackdrop(false));
          setResponseData({ data: resultRequest.data });
          setOpenModal(false);
          setOpenResponseModal(true);
@@ -2627,6 +2628,7 @@ const ModalTestIntegrationManager: React.FC<
          buttonText2={t(langKeys.back)}
          handleClickButton1={() => {
             if (paramsCompleted) {
+               dispatch(showBackdrop(true));
                testAPI(formData);
             }
             handleUpdateMissingParams();
