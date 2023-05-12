@@ -1,5 +1,5 @@
 import { Box, Button, createStyles, makeStyles, Theme } from "@material-ui/core";
-import { timetoseconds, formattime, getUserGroupsSel, dashboardKPISummaryGraphSel, dashboardKPISummarySel, addTimes, varpercTime, varpercnumber, divisionTimeNumber, getDateCleaned} from "common/helpers";
+import { timetoseconds, formattime, getUserGroupsSel, dashboardKPISummaryGraphSel, dashboardKPISummarySel, addTimes, varpercTime, varpercnumber, divisionTimeNumber, getDateCleaned, getUserAsesorByOrgID} from "common/helpers";
 import { DateRangePicker, DialogZyx, FieldMultiSelect } from "components";
 import { useSelector } from "hooks";
 import { DownloadIcon } from "icons";
@@ -187,6 +187,7 @@ const DashboardKPI: FC = () => {
     const { t } = useTranslation();
     const [openDialog, setOpenDialog] = useState(false);
     const [dataGroup, setDataGroup] = useState<any>([]);
+    const [dataAdvisor, setDataAdvisor] = useState<any>([]);
     const [auxdata, setauxdata] = useState({
         mes: "",
         year: ""
@@ -200,6 +201,7 @@ const DashboardKPI: FC = () => {
     const [searchfields, setsearchfields] = useState({
         groups: "",
         origin: "",
+        asesor: "",
     });
     const user = useSelector(state => state.login.validateToken.user);
     
@@ -214,6 +216,7 @@ const DashboardKPI: FC = () => {
             origin: searchfields.origin,
             usergroup: searchfields.groups,
             supervisorid: user?.userid||0,
+            userid: searchfields.asesor
         }
         let days=[]
         for (let i = dateRangeCreateDate?.startDate?.getDate()||1; i <= (dateRangeCreateDate?.endDate?.getDate()||1); i++) {
@@ -247,12 +250,14 @@ const DashboardKPI: FC = () => {
         if (mainResult.multiData.data.length !== 0) {
             let multiData = mainResult.multiData.data;
             setDataGroup(multiData[0] && multiData[0].success ? multiData[0].data : []);
+            setDataAdvisor(multiData[1] && multiData[1].success ? multiData[1].data : []);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mainResult])
     useEffect(() => {
         dispatch(getMultiCollection([
             getUserGroupsSel(),
+            getUserAsesorByOrgID(),
         ]));
         funcsearch()
         return () => {
@@ -429,7 +434,7 @@ const DashboardKPI: FC = () => {
                         className={classes.fieldsfilter}
                         variant="outlined"
                         valueDefault={searchfields.origin}
-                        onChange={(value) => setsearchfields(p => ({ ...p, origin: value.map((o: any) => o.value).join() }))}
+                        onChange={(value) => setsearchfields(p => ({ ...p, origin: value.map((o: any) => o.value).join(), asesor: "" }))}
                         data={[
                             {value:"INBOUND"},
                             {value:"OUTBOUND"},
@@ -437,6 +442,16 @@ const DashboardKPI: FC = () => {
                         ]}
                         optionValue="value"
                         optionDesc="value"
+                    />
+                    <FieldMultiSelect
+                        label={t(langKeys.advisor)}
+                        className={classes.fieldsfilter}
+                        variant="outlined"
+                        valueDefault={searchfields.asesor}
+                        onChange={(value) => setsearchfields(p => ({ ...p, asesor: value.map((o: any) => o.userid).join() }))}
+                        data={!!searchfields.groups?dataAdvisor.filter((x:any)=>x.groups.split(',').reduce((acc:any,y:any)=>acc + searchfields.groups.split(',').includes(y),0)):dataAdvisor}
+                        optionDesc="userdesc"
+                        optionValue="userid"
                     />
                 </div>
             </DialogZyx>
