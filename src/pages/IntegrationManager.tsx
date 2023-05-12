@@ -902,11 +902,10 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
       dispatch(request_send(getValues()));
    };
 
-   const onClickTestButton =  async () => {
-      await trigger();
-      console.log(trigger());
-      if (!isValid) {
-         return;
+   const onClickTestButton = async () => {
+      const allOk = await trigger();
+      if(!allOk)  {
+         return
       }
       setOpenTestModal(true);
    };
@@ -2565,9 +2564,9 @@ const ModalTestIntegrationManager: React.FC<
       //
       console.log(urlParams);
       console.log(params);
-      // debugger
+      debugger
       const urlParamsCleaned = urlParams?.reduce(
-         (acc: any, x: any) => [...acc, x.key],
+         (acc: any, x: any) => [...acc, "...-1-1-11"],
          []
       );
       const missingParams = params.filter(
