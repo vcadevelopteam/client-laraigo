@@ -902,10 +902,11 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
       dispatch(request_send(getValues()));
    };
 
-   const onClickTestButton = () => {
-      trigger();
-      if (!isValid){
-         return
+   const onClickTestButton =  async () => {
+      await trigger();
+      console.log(trigger());
+      if (!isValid) {
+         return;
       }
       setOpenTestModal(true);
    };
@@ -1193,7 +1194,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
 
    return (
       <div style={{ width: "100%" }}>
-         {/* <pre>{JSON.stringify(watch(), null, 2)}</pre> */}
+         <pre>{JSON.stringify(watch(), null, 2)}</pre>
          <form onSubmit={onSubmit}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
                <div>
@@ -1529,6 +1530,18 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                              return (
                                 <div className="row-zyx" key={field.id}>
                                    <FieldEdit
+                                      fregister={{
+                                         ...register(
+                                            `headers.${i}.key` as const,
+                                            {
+                                               validate: (value: string) =>
+                                                  value !== "" ||
+                                                  (t(
+                                                     langKeys.field_required
+                                                  ) as string),
+                                            }
+                                         ),
+                                      }}
                                       label={t(langKeys.key)}
                                       className={classes.fieldRow}
                                       valueDefault={field?.key || ""}
@@ -1538,6 +1551,18 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                                       error={errors?.headers?.[i]?.key?.message}
                                    />
                                    <FieldEdit
+                                      fregister={{
+                                         ...register(
+                                            `headers.${i}.value` as const,
+                                            {
+                                               validate: (value: string) =>
+                                                  value !== "" ||
+                                                  (t(
+                                                     langKeys.field_required
+                                                  ) as string),
+                                            }
+                                         ),
+                                      }}
                                       label={t(langKeys.value)}
                                       className={classes.fieldRow}
                                       valueDefault={field?.value || ""}
@@ -1597,7 +1622,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                      >
                         <React.Fragment>
                            <FieldView
-                              label={t(langKeys.parameters)}
+                              label={t(langKeys.urlParams)}
                               className={classes.labelButton1}
                            />
                            {edit ? (
@@ -1843,6 +1868,20 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                                    return (
                                       <div className="row-zyx" key={field.id}>
                                          <FieldEdit
+                                            fregister={{
+                                               ...register(
+                                                  `parameters.${i}.key` as const,
+                                                  {
+                                                     validate: (
+                                                        value: string
+                                                     ) =>
+                                                        value !== "" ||
+                                                        (t(
+                                                           langKeys.field_required
+                                                        ) as string),
+                                                  }
+                                               ),
+                                            }}
                                             label={t(langKeys.key)}
                                             className={classes.fieldRow}
                                             valueDefault={field?.key || ""}
@@ -1855,6 +1894,20 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                                             }
                                          />
                                          <FieldEdit
+                                            fregister={{
+                                               ...register(
+                                                  `parameters.${i}.value` as const,
+                                                  {
+                                                     validate: (
+                                                        value: string
+                                                     ) =>
+                                                        value !== "" ||
+                                                        (t(
+                                                           langKeys.field_required
+                                                        ) as string),
+                                                  }
+                                               ),
+                                            }}
                                             label={t(langKeys.value)}
                                             className={classes.fieldRow}
                                             valueDefault={field?.value || ""}
@@ -1932,6 +1985,18 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                              return (
                                 <div className="row-zyx" key={field.id}>
                                    <FieldEdit
+                                      fregister={{
+                                         ...register(
+                                            `results.${i}.variable` as const,
+                                            {
+                                               validate: (value: string) =>
+                                                  value !== "" ||
+                                                  (t(
+                                                     langKeys.field_required
+                                                  ) as string),
+                                            }
+                                         ),
+                                      }}
                                       label={t(langKeys.variable)}
                                       className={classes.fieldRow}
                                       valueDefault={field?.variable || ""}
@@ -1943,6 +2008,19 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                                       }
                                    />
                                    <FieldEdit
+                                      fregister={{
+                                       ...register(
+                                          `results.${i}.path` as const,
+                                          {
+                                             validate: (value: string) =>{
+                                                console.log(value !== "");
+                                                return value !== "" ||
+                                                (t(
+                                                   langKeys.field_required
+                                                ) as string)}
+                                          }
+                                       ),
+                                    }}
                                       label={t(langKeys.path)}
                                       className={classes.fieldRow}
                                       valueDefault={field?.path || ""}
@@ -1950,7 +2028,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                                          onBlurResult(i, "path", value)
                                       }
                                       error={
-                                         errors?.headers?.[i]?.path?.message
+                                         errors?.results?.[i]?.path?.message
                                       }
                                    />
                                    <FieldEdit
@@ -2343,21 +2421,29 @@ const ModalIntegrationManager: React.FC<ModalProps> = ({
       <DialogZyx
          open={openModal}
          title={t(langKeys.result)}
-         handleClickButton1={() => setValue("results", selectedKeys)}
+         handleClickButton1={() => {
+            setValue("results", selectedKeys)
+            setOpenModal(false);
+         }}
          handleClickButton2={() => {
             // cleanModalData();
             setOpenModal(false);
          }}
          buttonText1={t(langKeys.getVariables)}
          buttonText2={t(langKeys.cancel)}
-         buttonStyle1={{
-            backgroundColor: '#7721ad',
-            color: '#fff'
-         }}
+         // buttonStyle1={{
+         //    backgroundColor: "#7721ad",
+         //    color: "#fff",
+         // }}
          buttonStyle2={{
-            color: 'black'
+            color: "black",
          }}
          button2Type="button"
+         button1Props={{
+            variant: "contained",
+            color: "primary",
+            disabled: selectedKeys.length === 0,
+         }}
       >
          <div className="row-zyx">
             {console.log(data.data)}
@@ -2392,7 +2478,7 @@ const ModalTestIntegrationManager: React.FC<
    const [missingParams, setMissingParams] = useState<any[]>([]);
    const [paramsCompleted, setParamsCompleted] = useState<boolean>(false);
    const [replacedURL, setReplacedURL] = useState("");
-   const resultRequest = useSelector(state => state.main.testRequest);
+   const resultRequest = useSelector((state) => state.main.testRequest);
    const [reqTrigger, setReqTrigger] = useState(false);
 
    useEffect(() => {
@@ -2425,12 +2511,12 @@ const ModalTestIntegrationManager: React.FC<
    }, [openModal, formData.url, formData.url_params]);
 
    useEffect(() => {
-      if(!resultRequest.loading && !resultRequest.error && reqTrigger){
-         setResponseData({data: resultRequest.data});
+      if (!resultRequest.loading && !resultRequest.error && reqTrigger) {
+         setResponseData({ data: resultRequest.data });
          setOpenModal(false);
          setOpenResponseModal(true);
       }
-   }, [resultRequest, reqTrigger])
+   }, [resultRequest, reqTrigger]);
 
    useEffect(() => {
       if (formData.url && formData.url_params) {
@@ -2513,19 +2599,27 @@ const ModalTestIntegrationManager: React.FC<
          console.log(missingParams);
       }
 
-      dispatch(triggerRequest({
-         url: replacedURL,
-         method: form.method,
-         authorization: [{
-            ...form.authorization,
-            type: (form.authorization.type === 'BEARER') ? 'bearertoken' : 'basicauth'
-         }],
-         headers: form.headers,
-         postformat: form.bodytype,
-         body: (form.body === '' && form.bodytype === 'JSON') ? '{}' : form.body,
-         parameters: form.parameters
-      }))
-      setReqTrigger(true)
+      dispatch(
+         triggerRequest({
+            url: replacedURL,
+            method: form.method,
+            authorization: [
+               {
+                  ...form.authorization,
+                  type:
+                     form.authorization.type === "BEARER"
+                        ? "bearertoken"
+                        : "basicauth",
+               },
+            ],
+            headers: form.headers,
+            postformat: form.bodytype,
+            body:
+               form.body === "" && form.bodytype === "JSON" ? "{}" : form.body,
+            parameters: form.parameters,
+         })
+      );
+      setReqTrigger(true);
    };
    return (
       <DialogZyx
@@ -2545,8 +2639,6 @@ const ModalTestIntegrationManager: React.FC<
             paramsCompleted ? t(langKeys.getData) : t(langKeys.continue)
          }
          button2Type="button"
-         
-         
       >
          {paramsCompleted ? (
             <>

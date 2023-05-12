@@ -1682,6 +1682,7 @@ export const langKeys = {
   getData: 'getData',
   api_template: 'api_template',
   addUrlParam: 'addUrlParam',
+  urlParams: 'urlParams',
   standard: 'standard',
   custom: 'custom',
   data_table:'data_table',

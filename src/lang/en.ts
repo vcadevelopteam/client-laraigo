@@ -941,6 +941,7 @@ const translation: LangKeys = {
   getData: 'Get Data',
   api_template: 'API Templates',
   addUrlParam: 'Add Param',
+  urlParams: 'URL Params',
   addResponse: 'Add Response',
   getVariables: 'Get Variables',
   standard: 'Standard',
