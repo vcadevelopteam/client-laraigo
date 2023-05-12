@@ -902,9 +902,9 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
       dispatch(request_send(getValues()));
    };
 
-   const onClickTestButton = () => {
-      trigger();
-      if (!isValid){
+   const onClickTestButton = async () => {
+      const allOk = await trigger();
+      if(!allOk)  {
          return
       }
       setOpenTestModal(true);
