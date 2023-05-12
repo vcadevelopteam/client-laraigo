@@ -45,6 +45,7 @@ import {
    execute,
    getCollectionAux,
    resetMainAux,
+   triggerRequest,
 } from "store/main/actions";
 import {
    showSnackbar,
@@ -2381,12 +2382,14 @@ const ModalTestIntegrationManager: React.FC<
    setOpenResponseModal,
    setResponseData,
 }) => {
+   const { t } = useTranslation();
+   const classes = useStyles();
+   const dispatch = useDispatch();
    const [missingParams, setMissingParams] = useState<any[]>([]);
    const [paramsCompleted, setParamsCompleted] = useState<boolean>(false);
    const [replacedURL, setReplacedURL] = useState("");
-
-   const { t } = useTranslation();
-   const classes = useStyles();
+   const resultRequest = useSelector(state => state.main.testRequest);
+   const [reqTrigger, setReqTrigger] = useState(false);
 
    useEffect(() => {
       if (openModal) {
@@ -2416,6 +2419,14 @@ const ModalTestIntegrationManager: React.FC<
          // setResponseData({});
       };
    }, [openModal, formData.url, formData.url_params]);
+
+   useEffect(() => {
+      if(!resultRequest.loading && !resultRequest.error && reqTrigger){
+         setResponseData({data: resultRequest.data});
+         setOpenModal(false);
+         setOpenResponseModal(true);
+      }
+   }, [resultRequest, reqTrigger])
 
    useEffect(() => {
       if (formData.url && formData.url_params) {
@@ -2498,37 +2509,19 @@ const ModalTestIntegrationManager: React.FC<
          console.log(missingParams);
       }
 
-      // const replacedURL = replaceParams(form.url_params, form.url);
-
-      const params = form.url_params.reduce((acc, cur) => {
-         acc[cur.key] = cur.value;
-         return acc;
-      }, {});
-      const headers = form.headers.reduce((acc, cur) => {
-         acc[cur.key] = cur.value;
-         return acc;
-      }, {});
-
-      if (form.method === "GET") {
-         const data = await axios.get(form.url, {
-            headers: form.headers.reduce((acc, cur) => {
-               acc[cur.key] = cur.value;
-               return acc;
-            }, {}),
-         });
-         console.log(data);
-         setResponseData(data);
-      } else if (form.method === "POST") {
-         const data = await axios.post(replacedURL, JSON.parse(form.body), {
-            params,
-            headers,
-         });
-
-         // console.log(data);
-         setResponseData(data);
-      }
-      setOpenModal(false);
-      setOpenResponseModal(true);
+      dispatch(triggerRequest({
+         url: replacedURL,
+         method: form.method,
+         authorization: [{
+            ...form.authorization,
+            type: (form.authorization.type === 'BEARER') ? 'bearertoken' : 'basicauth'
+         }],
+         headers: form.headers,
+         postformat: form.bodytype,
+         body: (form.body === '' && form.bodytype === 'JSON') ? '{}' : form.body,
+         parameters: form.parameters
+      }))
+      setReqTrigger(true)
    };
    return (
       <DialogZyx
