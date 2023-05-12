@@ -474,7 +474,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
       setValue,
       getValues,
       trigger,
-      formState: { errors },
+      formState: { errors, isValid },
    } = useForm<FormFields>({
       defaultValues: {
          isnew: row ? false : true,
@@ -903,6 +903,10 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
    };
 
    const onClickTestButton = () => {
+      trigger();
+      if (!isValid){
+         return
+      }
       setOpenTestModal(true);
    };
    const [openDialogDomain, setOpenDialogDomain] = useState(false);
