@@ -1193,7 +1193,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
 
    return (
       <div style={{ width: "100%" }}>
-         <pre>{JSON.stringify(watch(), null, 2)}</pre>
+         {/* <pre>{JSON.stringify(watch(), null, 2)}</pre> */}
          <form onSubmit={onSubmit}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
                <div>
