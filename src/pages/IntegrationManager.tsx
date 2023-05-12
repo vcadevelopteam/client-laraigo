@@ -45,6 +45,7 @@ import {
    execute,
    getCollectionAux,
    resetMainAux,
+   triggerRequest,
 } from "store/main/actions";
 import {
    showSnackbar,
@@ -473,7 +474,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
       setValue,
       getValues,
       trigger,
-      formState: { errors },
+      formState: { errors, isValid },
    } = useForm<FormFields>({
       defaultValues: {
          isnew: row ? false : true,
@@ -901,7 +902,11 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
       dispatch(request_send(getValues()));
    };
 
-   const onClickTestButton = () => {
+   const onClickTestButton = async () => {
+      const allOk = await trigger();
+      if(!allOk)  {
+         return
+      }
       setOpenTestModal(true);
    };
    const [openDialogDomain, setOpenDialogDomain] = useState(false);
@@ -2255,43 +2260,7 @@ const ModalIntegrationManager: React.FC<ModalProps> = ({
          setSelectedKeys((prev) => prev.filter((k) => k.path !== key));
       }
    };
-   // const getHtml: any = (data: any, param: string, path: string) => {
-   //    if (Array.isArray(data)) {
-   //       return (
-   //          <div style={{ display: "flex" }}>
-   //             <input type="checkbox" name="" id="" />"{path}": [
-   //             <div>
-   //                {data.map((item: any, index: any) => {
-   //                   // debugger;
-   //                   getHtml(item, param, path + `[${index}]`);
-   //                })}
-   //             </div>
-   //             ]
-   //          </div>
-   //       );
-   //    } else if (typeof data === "object") {
-   //       return (
-   //          <div style={{ display: "flex" }}>
-   //             <input type="checkbox" name="" id="" />"{param}":
-   //             <div>
-   //                {Object.keys(data).map((key) => {
-   //                   return getHtml(data[key], key, path + "." + key);
-   //                })}
-   //             </div>
-   //          </div>
-   //       );
-   //    } else {
-   //       return (
-   //          <div style={{ display: "flex" }}>
-   //             <input type="checkbox" name="" id="" />
-   //             <div>
-   //                "{param}": {data}
-   //                {/* {JSON.stringify(data)} */}
-   //             </div>
-   //          </div>
-   //       );
-   //    }
-   // };
+
    const getHtml: any = (data: any, param: string, path: string) => {
       // console.log(data);
       if (Array.isArray(data)) {
@@ -2374,11 +2343,19 @@ const ModalIntegrationManager: React.FC<ModalProps> = ({
       <DialogZyx
          open={openModal}
          title={t(langKeys.result)}
-         buttonText2={t(langKeys.back)}
+         handleClickButton1={() => setValue("results", selectedKeys)}
          handleClickButton2={() => {
             // cleanModalData();
-            setValue("results", selectedKeys);
             setOpenModal(false);
+         }}
+         buttonText1={t(langKeys.getVariables)}
+         buttonText2={t(langKeys.cancel)}
+         buttonStyle1={{
+            backgroundColor: '#7721ad',
+            color: '#fff'
+         }}
+         buttonStyle2={{
+            color: 'black'
          }}
          button2Type="button"
       >
@@ -2409,12 +2386,14 @@ const ModalTestIntegrationManager: React.FC<
    setOpenResponseModal,
    setResponseData,
 }) => {
+   const { t } = useTranslation();
+   const classes = useStyles();
+   const dispatch = useDispatch();
    const [missingParams, setMissingParams] = useState<any[]>([]);
    const [paramsCompleted, setParamsCompleted] = useState<boolean>(false);
    const [replacedURL, setReplacedURL] = useState("");
-
-   const { t } = useTranslation();
-   const classes = useStyles();
+   const resultRequest = useSelector(state => state.main.testRequest);
+   const [reqTrigger, setReqTrigger] = useState(false);
 
    useEffect(() => {
       if (openModal) {
@@ -2444,6 +2423,14 @@ const ModalTestIntegrationManager: React.FC<
          // setResponseData({});
       };
    }, [openModal, formData.url, formData.url_params]);
+
+   useEffect(() => {
+      if(!resultRequest.loading && !resultRequest.error && reqTrigger){
+         setResponseData({data: resultRequest.data});
+         setOpenModal(false);
+         setOpenResponseModal(true);
+      }
+   }, [resultRequest, reqTrigger])
 
    useEffect(() => {
       if (formData.url && formData.url_params) {
@@ -2526,37 +2513,19 @@ const ModalTestIntegrationManager: React.FC<
          console.log(missingParams);
       }
 
-      // const replacedURL = replaceParams(form.url_params, form.url);
-
-      const params = form.url_params.reduce((acc, cur) => {
-         acc[cur.key] = cur.value;
-         return acc;
-      }, {});
-      const headers = form.headers.reduce((acc, cur) => {
-         acc[cur.key] = cur.value;
-         return acc;
-      }, {});
-
-      if (form.method === "GET") {
-         const data = await axios.get(form.url, {
-            headers: form.headers.reduce((acc, cur) => {
-               acc[cur.key] = cur.value;
-               return acc;
-            }, {}),
-         });
-         console.log(data);
-         setResponseData(data);
-      } else if (form.method === "POST") {
-         const data = await axios.post(replacedURL, JSON.parse(form.body), {
-            params,
-            headers,
-         });
-
-         // console.log(data);
-         setResponseData(data);
-      }
-      setOpenModal(false);
-      setOpenResponseModal(true);
+      dispatch(triggerRequest({
+         url: replacedURL,
+         method: form.method,
+         authorization: [{
+            ...form.authorization,
+            type: (form.authorization.type === 'BEARER') ? 'bearertoken' : 'basicauth'
+         }],
+         headers: form.headers,
+         postformat: form.bodytype,
+         body: (form.body === '' && form.bodytype === 'JSON') ? '{}' : form.body,
+         parameters: form.parameters
+      }))
+      setReqTrigger(true)
    };
    return (
       <DialogZyx
@@ -2576,6 +2545,8 @@ const ModalTestIntegrationManager: React.FC<
             paramsCompleted ? t(langKeys.getData) : t(langKeys.continue)
          }
          button2Type="button"
+         
+         
       >
          {paramsCompleted ? (
             <>

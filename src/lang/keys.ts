@@ -1686,6 +1686,7 @@ export const langKeys = {
   standard: 'standard',
   custom: 'custom',
   data_table:'data_table',
+  getVariables: 'getVariables',
   requesttype: 'requesttype',
   url: 'url',
   authorization: 'authorization',

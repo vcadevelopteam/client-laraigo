@@ -224,9 +224,12 @@ interface TemplateDialogProps {
     button3Type?: "button" | "submit" | "reset";
     maxWidth?: false | "sm" | "xs" | "md" | "lg" | "xl" | undefined;
     height?: string;
+    buttonStyle1?: CSSProperties;
+    buttonStyle2?: CSSProperties;
+    buttonStyle3?: CSSProperties;
 }
 
-export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText0, buttonText1, buttonText2, buttonText3, handleClickButton0, handleClickButton1, handleClickButton2, handleClickButton3, title, maxWidth = "sm", button1Type = "button", button2Type = "button", zIndex = 1300, showClose = false, height = "auto" }) => (
+export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText0, buttonText1, buttonText2, buttonText3, handleClickButton0, handleClickButton1, handleClickButton2, handleClickButton3, title, maxWidth = "sm", button1Type = "button", button2Type = "button", zIndex = 1300, showClose = false, height="auto", buttonStyle1, buttonStyle2, buttonStyle3 }) => (
     <Dialog
         open={open}
         fullWidth
@@ -255,12 +258,13 @@ export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, butto
                         {buttonText0}
                     </Button>}
                 {!!buttonText1 &&
-                    <Button type={button1Type} onClick={(button1Type !== "submit" ? handleClickButton1 : undefined)}
+                    <Button type={button1Type} onClick={(button1Type !== "submit" ? handleClickButton1 : undefined) }
+                        style={buttonStyle1 || {}}
                     >
                         {buttonText1}
                     </Button>}
                 {!!buttonText2 &&
-                    <Button type={button2Type} onClick={(button2Type !== "submit" ? handleClickButton2 : undefined)} color="primary">
+                    <Button style={buttonStyle2 || {}} type={button2Type} onClick={(button2Type !== "submit" ? handleClickButton2 : undefined)} color="primary">
                         {buttonText2}
                     </Button>}
                 {!!buttonText3 &&
