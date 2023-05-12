@@ -46,6 +46,7 @@ import {
     AppleIcon,
     FacebookMessengerIcon,
     FacebookWorkplace,
+    FacebookWorkplaceWall,
     FacebookWallIcon,
     InstagramIcon,
     LineIcon,
@@ -565,6 +566,7 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     if (channelType === "FBDM") return <FacebookMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "FBWP") return <FacebookWorkplace width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "FACEBOOKWORPLACE") return <FacebookWorkplace width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "FBWM") return <FacebookWorkplaceWall width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "FBWA") return <FacebookWallIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "WEBM") return <WebMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "TELE") return <TelegramIcon width={width} fill={color} stroke={color} height={height} color={color} />
