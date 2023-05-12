@@ -58,6 +58,10 @@ export function mainPaginated(requestBody: IRequestBodyPaginated) {
     return APIManager.post(apiUrls.MAIN_PAGINATED, { data: requestBody }, true);
 }
 
+export function testRequest(data: Dictionary) {
+    return APIManager.post(apiUrls.TEST_REQUEST, { data: data }, true);
+}
+
 export function mainGraphic(requestBody: IRequestBody) {
     return APIManager.post(apiUrls.MAIN_GRAPHIC, { data: requestBody }, true);
 }
