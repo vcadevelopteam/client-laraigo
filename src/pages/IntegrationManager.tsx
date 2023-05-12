@@ -2255,43 +2255,7 @@ const ModalIntegrationManager: React.FC<ModalProps> = ({
          setSelectedKeys((prev) => prev.filter((k) => k.path !== key));
       }
    };
-   // const getHtml: any = (data: any, param: string, path: string) => {
-   //    if (Array.isArray(data)) {
-   //       return (
-   //          <div style={{ display: "flex" }}>
-   //             <input type="checkbox" name="" id="" />"{path}": [
-   //             <div>
-   //                {data.map((item: any, index: any) => {
-   //                   // debugger;
-   //                   getHtml(item, param, path + `[${index}]`);
-   //                })}
-   //             </div>
-   //             ]
-   //          </div>
-   //       );
-   //    } else if (typeof data === "object") {
-   //       return (
-   //          <div style={{ display: "flex" }}>
-   //             <input type="checkbox" name="" id="" />"{param}":
-   //             <div>
-   //                {Object.keys(data).map((key) => {
-   //                   return getHtml(data[key], key, path + "." + key);
-   //                })}
-   //             </div>
-   //          </div>
-   //       );
-   //    } else {
-   //       return (
-   //          <div style={{ display: "flex" }}>
-   //             <input type="checkbox" name="" id="" />
-   //             <div>
-   //                "{param}": {data}
-   //                {/* {JSON.stringify(data)} */}
-   //             </div>
-   //          </div>
-   //       );
-   //    }
-   // };
+
    const getHtml: any = (data: any, param: string, path: string) => {
       // console.log(data);
       if (Array.isArray(data)) {
@@ -2374,11 +2338,19 @@ const ModalIntegrationManager: React.FC<ModalProps> = ({
       <DialogZyx
          open={openModal}
          title={t(langKeys.result)}
-         buttonText2={t(langKeys.back)}
+         handleClickButton1={() => setValue("results", selectedKeys)}
          handleClickButton2={() => {
             // cleanModalData();
-            setValue("results", selectedKeys);
             setOpenModal(false);
+         }}
+         buttonText1={t(langKeys.getVariables)}
+         buttonText2={t(langKeys.cancel)}
+         buttonStyle1={{
+            backgroundColor: '#7721ad',
+            color: '#fff'
+         }}
+         buttonStyle2={{
+            color: 'black'
          }}
          button2Type="button"
       >
@@ -2576,6 +2548,8 @@ const ModalTestIntegrationManager: React.FC<
             paramsCompleted ? t(langKeys.getData) : t(langKeys.continue)
          }
          button2Type="button"
+         
+         
       >
          {paramsCompleted ? (
             <>

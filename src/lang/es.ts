@@ -1311,6 +1311,7 @@ const translation: LangKeys = {
   api_template: 'Plantillas API',
   addUrlParam: 'Agregar parámetro',
   addResponse: 'Añadir respuesta',
+  getVariables: 'Obtener Variables',
   standard: 'Estándar',
   custom: 'Personalizado',
   data_table: 'Tabla de Datos',
