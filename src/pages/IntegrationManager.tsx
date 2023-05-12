@@ -1193,7 +1193,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
 
    return (
       <div style={{ width: "100%" }}>
-         <pre>{JSON.stringify(watch(), null, 2)}</pre>
+         {/* <pre>{JSON.stringify(watch(), null, 2)}</pre> */}
          <form onSubmit={onSubmit}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
                <div>
@@ -2511,6 +2511,7 @@ const ModalTestIntegrationManager: React.FC<
 
    useEffect(() => {
       if (!resultRequest.loading && !resultRequest.error && reqTrigger) {
+         dispatch(showBackdrop(false));
          setResponseData({ data: resultRequest.data });
          setOpenModal(false);
          setOpenResponseModal(true);
@@ -2627,6 +2628,7 @@ const ModalTestIntegrationManager: React.FC<
          buttonText2={t(langKeys.back)}
          handleClickButton1={() => {
             if (paramsCompleted) {
+               dispatch(showBackdrop(true));
                testAPI(formData);
             }
             handleUpdateMissingParams();
