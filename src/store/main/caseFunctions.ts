@@ -438,6 +438,46 @@ export const executeReset = (state: IState): IState => ({
     execute: initialState.execute,
 });
 
+
+
+
+
+export const testRequest = (state: IState): IState => ({
+    ...state,
+    testRequest: { ...state.testRequest, loading: true, error: false }
+});
+
+export const testRequestSuccess = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        testRequest: {
+            data: action.payload.data || [],
+            loading: false,
+            error: false,
+            code: "",
+            message: "",
+        }
+    }
+};
+
+export const testRequestFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    testRequest: {
+        ...state.execute,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    }
+});
+
+export const testRequestReset = (state: IState): IState => ({
+    ...state,
+    testRequest: initialState.testRequest,
+});
+
+
+
 export const mainPaginated = (state: IState): IState => ({
     ...state,
     mainPaginated: { ...state.mainPaginated, loading: true, error: false }
