@@ -118,8 +118,8 @@ const translation: LangKeys = {
   industry_institution: "State and Institutions",
   industry_entertainment: "Games and Entertainment",
   industry_telecommunications: "Telecommunications",
-  reschedule_appointment:"Reschedule appointment",
-  appointment_cancellation:"Appointment cancellation",
+  reschedule_appointment: "Reschedule appointment",
+  appointment_cancellation: "Appointment cancellation",
   industry_hydrocarbons: "Hydrocarbons",
   brandname: "Brand name",
   brandaddress: "Brand address",
@@ -318,7 +318,7 @@ const translation: LangKeys = {
   productivitycard1: "Productivity x login time",
   firstavgassignment: "First Avg Assignment",
   averageholdingtime: "Average holding time",
-  ticketsattendedbyadvisor:"Tickets attended by advisor",
+  ticketsattendedbyadvisor: "Tickets attended by advisor",
   firstassignmenttime: "First assignment time",
   percparticipation: "% Participation",
   avg1stresponsetime: "Avg 1st Response Time",
@@ -562,7 +562,7 @@ const translation: LangKeys = {
   timedesconnected: "Time desconnected",
   type_domain_mastercatalog_commerce: "Online Commerce",
   emptyformerror: "The form must contain at least one field",
-  webformstep:"Copy and paste the following generated html code for your form into the section where you want to use it on your web page",
+  webformstep: "Copy and paste the following generated html code for your form into the section where you want to use it on your web page",
   downloadhtmlform: "Download HTML form.",
   type_domain_mastercatalog_destinations: "Destinations",
   type_domain_mastercatalog_flights: "Flights",
@@ -5086,8 +5086,10 @@ const translation: LangKeys = {
   datetimestart_campaign: "Date and time of execution",
   executiontype_campaign: "Execution type",
   executiontype_MANUAL: "MANUAL",
-  executiontype_SCHEDULED:"SCHEDULED",
-  greaterthanzero:"The maximum capacity value of the event must have a number greater than 0"
+  executiontype_SCHEDULED: "SCHEDULED",
+  greaterthanzero: "The maximum capacity value of the event must have a number greater than 0",
+  channel_tiktokalert01: 'To connect a TikTok Business account, enter the Ayrshare account information where you have done the link in the following form',
+  channel_tiktokaccesstoken: 'Access Token',
 };
 
 const enResource: ResourceLanguage = {

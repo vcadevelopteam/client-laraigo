@@ -5003,7 +5003,9 @@ export const langKeys = {
   executiontype_campaign: 'executiontype_campaign',
   executiontype_MANUAL: 'executiontype_MANUAL',
   executiontype_SCHEDULED: 'executiontype_SCHEDULED',
-  greaterthanzero: "greaterthanzero"
+  greaterthanzero: "greaterthanzero",
+  channel_tiktokalert01: 'channel_tiktokalert01',
+  channel_tiktokaccesstoken: 'channel_tiktokaccesstoken',
 };
 
 export type LangKeys = typeof langKeys;

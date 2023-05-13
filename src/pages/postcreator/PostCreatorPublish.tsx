@@ -348,7 +348,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
         }
         if (pageMode === "VIDEO") {
             if (dataChannel.length > 0) {
-                let filterData = dataChannel.filter(channel => channel.type === 'FBWA' || channel.type === 'TWIT' || channel.type === 'LNKD' || channel.type === 'INST' || channel.type === 'TKTK' || channel.type === 'YOUT')?.sort((a, b) => a.type - b.type);
+                let filterData = dataChannel.filter(channel => channel.type === 'FBWA' || channel.type === 'TWIT' || channel.type === 'LNKD' || channel.type === 'INST' || channel.type === 'TKTK' || channel.type === 'TKTA' || channel.type === 'YOUT')?.sort((a, b) => a.type - b.type);
                 setAllowedChannel(filterData.map(channel => ({ ...channel, checked: false })));
                 setShowFacebook(true);
                 setShowInstagram(true);
@@ -419,6 +419,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                                             {channel.type === 'INST' && <InstagramColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
                                                             {channel.type === 'LNKD' && <LinkedInColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
                                                             {channel.type === 'TKTK' && <TikTokColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
+                                                            {channel.type === 'TKTA' && <TikTokColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
                                                             {channel.type === 'TWIT' && <TwitterColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
                                                             {channel.type === 'YOUT' && <YouTubeColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
                                                             <span>{channel.communicationchanneldesc}</span>
@@ -799,10 +800,10 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
                                                 description: t(langKeys.postcreator_publish_mockupyoutube),
                                                 value: "YOUTUBEPREVIEW",
                                             },
-                                            /*{
+                                            {
                                                 description: t(langKeys.postcreator_publish_mockuptiktok),
                                                 value: "TIKTOKPREVIEW",
-                                            },*/
+                                            },
                                         ]}
                                         optionDesc="description"
                                         optionValue="value"
@@ -1092,6 +1093,7 @@ const SavePostModalGeneric: FC<{ modalData: any, modalType: string, openModal: b
                                 {channel.type === 'INST' && <InstagramColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
                                 {channel.type === 'LNKD' && <LinkedInColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
                                 {channel.type === 'TKTK' && <TikTokColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
+                                {channel.type === 'TKTA' && <TikTokColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
                                 {channel.type === 'TWIT' && <TwitterColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
                                 {channel.type === 'YOUT' && <YouTubeColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
                                 <span>{channel.communicationchanneldesc}</span>
