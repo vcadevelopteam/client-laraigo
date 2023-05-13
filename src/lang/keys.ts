@@ -1686,7 +1686,7 @@ export const langKeys = {
   urlParams: 'urlParams',
   standard: 'standard',
   custom: 'custom',
-  data_table:'data_table',
+  data_table: 'data_table',
   getVariables: 'getVariables',
   requesttype: 'requesttype',
   url: 'url',
@@ -5117,6 +5117,8 @@ export const langKeys = {
   termsandconditions28: "termsandconditions28",
   termsandconditions29: "termsandconditions29",
   termsandconditions30: "termsandconditions30",
+  channel_tiktokalert01: 'channel_tiktokalert01',
+  channel_tiktokaccesstoken: 'channel_tiktokaccesstoken',
 };
 
 export type LangKeys = typeof langKeys;

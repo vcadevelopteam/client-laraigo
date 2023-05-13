@@ -170,8 +170,7 @@ export interface VoxImplantPhoneChannel {
 
 export interface TikTokChannel {
     description: string;
-    account: string;
-    url: string;
+    accesstoken: string;
     build: (v: Omit<TikTokChannel, 'build'>) => IRequestBody;
 }
 

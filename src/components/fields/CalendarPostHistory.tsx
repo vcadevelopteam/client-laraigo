@@ -185,6 +185,7 @@ const PostHistoryTime: FC<{ item: Dictionary; hourData: HourDayProp, handleClick
                     {item.communicationchanneltype === 'INST' && <InstagramColor style={{ width: '20px', height: '20px', marginRight: '10px' }} />}
                     {item.communicationchanneltype === 'LNKD' && <LinkedInColor style={{ width: '20px', height: '20px', marginRight: '10px' }} />}
                     {item.communicationchanneltype === 'TKTK' && <TikTokColor style={{ width: '20px', height: '20px', marginRight: '10px' }} />}
+                    {item.communicationchanneltype === 'TKTA' && <TikTokColor style={{ width: '20px', height: '20px', marginRight: '10px' }} />}
                     {item.communicationchanneltype === 'TWIT' && <TwitterColor style={{ width: '20px', height: '20px', marginRight: '10px' }} />}
                     {item.communicationchanneltype === 'YOUT' && <YouTubeColor style={{ width: '20px', height: '20px', marginRight: '10px' }} />}
                 </div>
@@ -377,6 +378,7 @@ const CalendarPostHistory: FC<{ data: Dictionary[], date: Date; setDateRange: (p
                                         {postdata.communicationchanneltype === 'INST' && <InstagramColor style={{ width: '22px', height: '22px' }} />}
                                         {postdata.communicationchanneltype === 'LNKD' && <LinkedInColor style={{ width: '22px', height: '22px' }} />}
                                         {postdata.communicationchanneltype === 'TKTK' && <TikTokColor style={{ width: '22px', height: '22px' }} />}
+                                        {postdata.communicationchanneltype === 'TKTA' && <TikTokColor style={{ width: '22px', height: '22px' }} />}
                                         {postdata.communicationchanneltype === 'TWIT' && <TwitterColor style={{ width: '22px', height: '22px' }} />}
                                         {postdata.communicationchanneltype === 'YOUT' && <YouTubeColor style={{ width: '22px', height: '22px' }} />}
                                     </div>
