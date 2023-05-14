@@ -205,7 +205,7 @@ const PublishPostGeneric: React.FC<{ dataChannel: Dictionary[], dataRow: any, pa
     const [showTikTok, setShowTikTok] = useState(false);
     const [showTwitter, setShowTwitter] = useState(false);
     const [showYouTube, setShowYouTube] = useState(false);
-    const [tikTokEnabled] = useState(false);
+    const [tikTokEnabled] = useState(true);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
 
     const { register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm({
