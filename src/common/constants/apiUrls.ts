@@ -18,6 +18,7 @@ const APIS_URL = {
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
         NIUBIZSCRIPT: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true',
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/test-FormWebClient.min.js',
+        USELARAIGO: false,
     },
     TESTING: {
         API: 'https://testapix.laraigo.com/api',
@@ -35,6 +36,7 @@ const APIS_URL = {
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
         NIUBIZSCRIPT: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true',
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/testing-form.min.js',
+        USELARAIGO: false,
     },
     PRODUCTION: {
         API: 'https://apiprd.laraigo.com/api',
@@ -52,6 +54,7 @@ const APIS_URL = {
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
         NIUBIZSCRIPT: 'https://static-content.vnforapps.com/v2/js/checkout.js',
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
+        USELARAIGO: true,
     },
     CLARO: {
         API: 'https://claroapi.laraigo.com/api',
@@ -69,6 +72,7 @@ const APIS_URL = {
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
         NIUBIZSCRIPT: 'https://static-content.vnforapps.com/v2/js/checkout.js',
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
+        USELARAIGO: true,
     },
     CLAROHISTORICAL: {
         API: 'http://10.240.65.10:6066/api',
@@ -84,6 +88,7 @@ const APIS_URL = {
         FACEBOOKVERSION: 'v15.0',
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
+        USELARAIGO: false,
     },
     CLOUD: {
         API: 'https://cloudapi.laraigo.com/api',
@@ -101,6 +106,7 @@ const APIS_URL = {
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
         NIUBIZSCRIPT: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true',
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
+        USELARAIGO: false,
     },
     DEMO: {
         API: 'https://demoapix.laraigo.com/api',
@@ -118,6 +124,7 @@ const APIS_URL = {
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
         NIUBIZSCRIPT: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true',
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
+        USELARAIGO: false,
     },
     LOCAL: {
         API: 'http://localhost:6065/api',
@@ -137,6 +144,7 @@ const APIS_URL = {
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
         NIUBIZSCRIPT: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true',
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/test-FormWebClient.min.js',
+        USELARAIGO: false,
     }
 }
 
@@ -155,6 +163,7 @@ const GOOGLECLIENTID_CALENDAR = APIS_URL[ENV].GOOGLECLIENTID_CALENDAR
 const NIUBIZSCRIPT = APIS_URL[ENV].NIUBIZSCRIPT
 const WEBFORMCHANNEL_FORM = APIS_URL[ENV].WEBFORMCHANNEL_FORM
 const APIKEY_GMAPS = APIS_URL[ENV].APIKEY_GMAPS
+const USELARAIGO = APIS_URL[ENV].USELARAIGO
 
 export const apiUrls = {
     WS_URL,
@@ -170,6 +179,8 @@ export const apiUrls = {
     NIUBIZSCRIPT,
     WEBFORMCHANNEL_FORM,
     APIKEY_GMAPS,
+    USELARAIGO,
+
     LOGIN_URL: `${BASE_URL}/auth`,
     CONNECT_INBOX: `${BASE_URL}/auth/connect`,
     CHANGE_ORGANIZATION: `${BASE_URL}/auth/changeorganization`,
@@ -215,7 +226,6 @@ export const apiUrls = {
     GETLOCATION: `${BASE_URL}/flow/location`,
     GETVERSION: `${BASE_URL}/check/version`,
     TRIGGERBLOCK: `${BASE_URL}/flow/triggerblock`,
-
 
     INTEGRATION_URL: `${BASE_URL}/load`,
     CHANNELS: `${BASE_URL}/channel`,
