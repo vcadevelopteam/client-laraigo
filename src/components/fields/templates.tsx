@@ -18,7 +18,7 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import IOSSwitch from './IOSSwitch';
-import Button from '@material-ui/core/Button';
+import Button, { ButtonProps } from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -222,9 +222,13 @@ interface TemplateDialogProps {
     button3Type?: "button" | "submit" | "reset";
     maxWidth?: false | "sm" | "xs" | "md" | "lg" | "xl" | undefined;
     height?: string;
+    buttonStyle1?: CSSProperties;
+    buttonStyle2?: CSSProperties;
+    buttonStyle3?: CSSProperties;
+    button1Props?: ButtonProps;
 }
 
-export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText0, buttonText1, buttonText2, buttonText3, handleClickButton0, handleClickButton1, handleClickButton2, handleClickButton3, title, maxWidth = "sm", button1Type = "button", button2Type = "button", zIndex = 1300, showClose = false, height="auto" }) => (
+export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText0, buttonText1, buttonText2, buttonText3, handleClickButton0, handleClickButton1, handleClickButton2, handleClickButton3, title, maxWidth = "sm", button1Type = "button", button2Type = "button", zIndex = 1300, showClose = false, height="auto", buttonStyle1, buttonStyle2, buttonStyle3, button1Props }) => (
     <Dialog
         open={open}
         fullWidth
@@ -248,17 +252,19 @@ export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, butto
             </DialogContent>
             <DialogActions>
                 {!!buttonText0 &&
-                    <Button onClick={(handleClickButton0)}
+                    <Button onClick={(handleClickButton0) } 
                     >
                         {buttonText0}
                     </Button>}
                 {!!buttonText1 &&
-                    <Button type={button1Type} onClick={(button1Type !== "submit" ? handleClickButton1 : undefined)}
+                    <Button type={button1Type} onClick={(button1Type !== "submit" ? handleClickButton1 : undefined) }
+                        style={buttonStyle1 || {}}
+                        {...button1Props}
                     >
                         {buttonText1}
                     </Button>}
                 {!!buttonText2 &&
-                    <Button type={button2Type} onClick={(button2Type !== "submit" ? handleClickButton2 : undefined)} color="primary">
+                    <Button style={buttonStyle2 || {}} type={button2Type} onClick={(button2Type !== "submit" ? handleClickButton2 : undefined)} color="primary">
                         {buttonText2}
                     </Button>}
                 {!!buttonText3 &&

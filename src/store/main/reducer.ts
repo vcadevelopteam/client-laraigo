@@ -1,5 +1,4 @@
-import { IListStatePaginated, MultiData } from "@types";
-import { Dictionary, ITemplate } from "@types";
+import { IListStatePaginated, MultiData, Dictionary, ITemplate } from "@types";
 import { createReducer, initialListPaginatedState, initialCommon } from "common/helpers";
 import * as caseFunctions from './caseFunctions';
 import actionTypes from "./actionTypes";
@@ -30,6 +29,7 @@ export interface IUpload extends ITemplate {
     thumbnail?: string;
 }
 
+
 export interface IState {
     mainData: IListStatePaginated<Dictionary> & { key?: string };
     mainEventBooking: IListStatePaginated<Dictionary> & { key?: string };
@@ -45,6 +45,7 @@ export interface IState {
     mainGraphic: IListStatePaginated<Dictionary> & { key?: string };
     uploadFile: IUpload;
     exportData: IUpload;
+    testRequest: ITemplate & { data?: Dictionary };
     exportDynamicData: IUpload;
     memoryTable: IMemoryTable;
     viewChange: string;
@@ -63,6 +64,7 @@ export const initialState: IState = {
     mainPaginated: initialListPaginatedState,
     mainPaginatedAux: initialListPaginatedState,
     mainGraphic: initialListPaginatedState,
+    testRequest: initialCommon,
     uploadFile: { ...initialCommon },
     exportData: { ...initialCommon },
     exportDynamicData: { ...initialCommon },
@@ -90,6 +92,11 @@ export default createReducer<IState>(initialState, {
     [actionTypes.EXECUTE_MAIN_SUCCESS]: caseFunctions.executeSuccess,
     [actionTypes.EXECUTE_MAIN_FAILURE]: caseFunctions.executeFailure,
     [actionTypes.EXECUTE_MAIN_RESET]: caseFunctions.executeReset,
+    
+    [actionTypes.TEST_REQUEST]: caseFunctions.testRequest,
+    [actionTypes.TEST_REQUEST_SUCCESS]: caseFunctions.testRequestSuccess,
+    [actionTypes.TEST_REQUEST_FAILURE]: caseFunctions.testRequestFailure,
+    [actionTypes.TEST_REQUEST_RESET]: caseFunctions.testRequestReset,
 
     [actionTypes.AUX_MAIN]: caseFunctions.mainAux,
     [actionTypes.AUX_MAIN_SUCCESS]: caseFunctions.mainAuxSuccess,

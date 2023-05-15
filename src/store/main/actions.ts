@@ -42,6 +42,18 @@ export const getMultiCollectionPublic = (requestBodies: string[]): IActionCall =
 
 export const resetMain = (): IActionCall => ({ type: actionTypes.MAIN_RESET });
 
+export const triggerRequest = (dictionary: Dictionary): IActionCall => ({
+    callAPI: () => CommonService.testRequest(dictionary),
+    types: {
+        loading: actionTypes.TEST_REQUEST,
+        success: actionTypes.TEST_REQUEST_SUCCESS,
+        failure: actionTypes.TEST_REQUEST_FAILURE,
+    },
+    type: null,
+});
+
+export const resettriggerRequest = (): IActionCall => ({ type: actionTypes.TEST_REQUEST_RESET });
+
 export const getCollectionDynamic = (requestBody: IRequestBodyDynamic): IActionCall => ({
     callAPI: () => CommonService.mainDynamic(requestBody),
     types: {
