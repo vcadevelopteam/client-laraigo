@@ -1306,10 +1306,12 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                         valueDefault={getValues("name")}
                         onChange={(value) => setValue("name", value)}
                         error={errors?.name?.message}
+                        helperText={t(langKeys.tooltipintegrationname)}
                      />
                   ) : (
                      <FieldView
                         label={t(langKeys.name)}
+                        tooltip={t(langKeys.tooltipintegrationname)}
                         value={row?.name || ""}
                         className="col-12"
                      />
@@ -2117,6 +2119,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                                  valueDefault={getValues("url")}
                                  disabled={true}
                                  error={errors?.url?.message}
+                                 helperText={t(langKeys.tooltipintegrationurl)}
                               />
                            </React.Fragment>
                         ) : (
@@ -2124,6 +2127,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                               label={t(langKeys.url)}
                               value={row?.url || ""}
                               className="col-12"
+                              tooltip={t(langKeys.tooltipintegrationurl)}
                            />
                         )}
                      </div>
@@ -2182,16 +2186,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                                  label={t(langKeys.tablelayout)}
                                  className={classes.labelButton1}
                               />
-                              <Button
-                                 variant="outlined"
-                                 type="button"
-                                 color="primary"
-                                 className={classes.labelButton2}
-                                 startIcon={<AddIcon color="primary" />}
-                                 onClick={() => onClickAddField()}
-                              >
-                                 {t(langKeys.addfield)}
-                              </Button>
                            </React.Fragment>
                         ) : (
                            <FieldView
@@ -2203,7 +2197,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                      {edit
                         ? fields?.map((field: any, i: number) => {
                              return (
-                                <div className="row-zyx" key={field.id}>
+                                <div className="row-zyx" key={field.id} style={{gap: 32}}>
                                    <FieldEdit
                                       fregister={{
                                          ...register(`fields.${i}.name`, {
@@ -2245,7 +2239,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                                    />
                                    {getValues("isnew") ? (
                                       <FieldCheckbox
-                                         label={t(langKeys.key)}
+                                         label={i===0?t(langKeys.key): ""}
                                          className={`${classes.checkboxRow}`}
                                          valueDefault={field?.key}
                                          disabled={disableKeys(field, i)}
@@ -2262,6 +2256,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                                          size="small"
                                          className={classes.fieldButton}
                                          onClick={() => onClickDeleteField(i)}
+                                         style={{width: "30px"}}
                                       >
                                          <DeleteIcon
                                             style={{
@@ -2269,7 +2264,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                                             }}
                                          />
                                       </IconButton>
-                                   ) : null}
+                                   ) : <div style={{width: "30px"}}></div>}
                                 </div>
                              );
                           })
@@ -2289,6 +2284,56 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                                 </div>
                              );
                           })}
+                          <div
+                             className="row-zyx"
+                             style={{ alignItems: "flex-end" }}
+                          >
+                              <React.Fragment>
+                                 <Button
+                                    variant="outlined"
+                                    type="button"
+                                    color="primary"
+                                    className={classes.labelButton2}
+                                    startIcon={<AddIcon color="primary" />}
+                                    onClick={() => onClickAddField()}
+                                 >
+                                    {t(langKeys.addfield)}
+                                 </Button>
+                              </React.Fragment>
+                          </div>
+                          
+                          <div
+                             className="row-zyx"
+                             style={{ alignItems: "flex-end" }}
+                          >
+                        {!getValues("isnew") &&
+                           <React.Fragment>
+                              <div style={{gap: 8}}>
+                                 <Button
+                                    variant="outlined"
+                                    type="button"
+                                    color="primary"
+                                    style={{width: 155, marginRight: 8}}
+                                    className={classes.labelButton2}
+                                    startIcon={<GetAppIcon color="primary" />}
+                                    onClick={() => onClickInfo()}
+                                 >
+                                    JSON
+                                 </Button>
+                                 <Button
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    startIcon={<ListAltIcon color="secondary" />}
+                                    style={{ width: 155,backgroundColor: "#7721AD" }}
+                                    onClick={handleViewTable}
+                                 >
+                                    {t(langKeys.view_table)}
+                                 </Button>
+                              </div>
+                           </React.Fragment>
+                        }
+                     </div>
                   </React.Fragment>
                ) : null}
             
