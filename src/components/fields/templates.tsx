@@ -379,7 +379,7 @@ export const FieldEdit: React.FC<InputProps> = ({ width = "100%", label, size, c
     return (
         <div className={className}>
             {(variant === "standard" && !!label) &&
-                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">
+                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary" style={{display: "flex"}}>
                     {label}
                     {!!helperText &&
                         <div style={{ display: 'flex', alignItems: 'center' }}>
