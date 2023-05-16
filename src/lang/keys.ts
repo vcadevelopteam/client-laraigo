@@ -22,6 +22,8 @@ export const langKeys = {
   reschedule_appointment: "reschedule_appointment",
   appointment_cancellation: "appointment_cancellation",
   downloadhtmlform: "downloadhtmlform",
+  tooltipintegrationname: "tooltipintegrationname",
+  tooltipintegrationurl: "tooltipintegrationurl",
   web_form: "web_form",
   phasechange: "phasechange",
   sdrequestcode: "sdrequestcode",
