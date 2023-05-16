@@ -58,7 +58,7 @@ import { request_send, resetRequest } from "store/integrationmanager/actions";
 import { dictToArrayKV, extractVariables, isJson } from "common/helpers";
 import BackupIcon from "@material-ui/icons/Backup";
 import ListAltIcon from "@material-ui/icons/ListAlt";
-import InfoIcon from "@material-ui/icons/Info";
+import GetAppIcon from '@material-ui/icons/GetApp';
 import { useHistory } from "react-router-dom";
 import paths from "common/constants/paths";
 import { RadioGroupProps, TextField } from "@material-ui/core";
@@ -1244,16 +1244,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                               variant="contained"
                               type="button"
                               color="primary"
-                              startIcon={<ListAltIcon color="secondary" />}
-                              style={{ backgroundColor: "#7721AD" }}
-                              onClick={handleViewTable}
-                           >
-                              {t(langKeys.view_table)}
-                           </Button>
-                           <Button
-                              variant="contained"
-                              type="button"
-                              color="primary"
                               startIcon={<DeleteIcon color="secondary" />}
                               style={{ backgroundColor: "#FB5F5F" }}
                               onClick={onDeleteData}
@@ -1283,18 +1273,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                            </label>
                         </React.Fragment>
                      )}
-                  {getValues("type") === "DATA_TABLE" && (
-                     <Button
-                        variant="contained"
-                        type="button"
-                        color="primary"
-                        startIcon={<InfoIcon color="secondary" />}
-                        style={{ backgroundColor: "#7721AD" }}
-                        onClick={() => onClickInfo()}
-                     >
-                        {t(langKeys.info)}
-                     </Button>
-                  )}
                   <Button
                      variant="contained"
                      type="button"
@@ -2128,169 +2106,194 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                </React.Fragment>
             ) : null}
 
-            {getValues("type") === "DATA_TABLE" ? (
-               <React.Fragment>
-                  <div className="row-zyx">
-                     {edit && getValues("isnew") ? (
-                        <FieldEdit
-                           label={t(langKeys.apikey)}
-                           className="col-12"
-                           valueDefault={getValues("apikey")}
-                           disabled={true}
-                           error={errors?.apikey?.message}
-                        />
-                     ) : (
-                        <FieldView
-                           label={t(langKeys.apikey)}
-                           value={row?.apikey || ""}
-                           className="col-12"
-                        />
-                     )}
-                  </div>
-                  <div className="row-zyx">
-                     {edit && getValues("isnew") ? (
-                        <FieldSelect
-                           uset={true}
-                           fregister={{
-                              ...register(`level`, {
-                                 validate: (value: any) =>
-                                    (value && value.length) ||
-                                    t(langKeys.field_required),
-                              }),
-                           }}
-                           label={t(langKeys.level)}
-                           className="col-12"
-                           valueDefault={getValues("level")}
-                           onChange={onChangeLevel}
-                           error={errors?.level?.message}
-                           data={dictToArrayKV(dataLevel)}
-                           optionDesc="value"
-                           optionValue="key"
-                        />
-                     ) : (
-                        <FieldView
-                           label={t(langKeys.level)}
-                           value={t(dataLevel[row?.level]) || ""}
-                           className="col-12"
-                        />
-                     )}
-                  </div>
-                  <div className={classes.containerDetail}>
-                     
-                  
-                  <div className="row-zyx" style={{ alignItems: "flex-end" }}>
-                     {edit ? (
-                        <React.Fragment>
+               {getValues("type") === "DATA_TABLE" ? (
+                  <React.Fragment>
+                     <div className="row-zyx">
+                        {edit && getValues("isnew") ? (
+                           <React.Fragment>
+                              <FieldEdit
+                                 label={t(langKeys.url)}
+                                 className="col-12"
+                                 valueDefault={getValues("url")}
+                                 disabled={true}
+                                 error={errors?.url?.message}
+                              />
+                           </React.Fragment>
+                        ) : (
+                           <FieldView
+                              label={t(langKeys.url)}
+                              value={row?.url || ""}
+                              className="col-12"
+                           />
+                        )}
+                     </div>
+                     <div className="row-zyx">
+                        {edit && getValues("isnew") ? (
+                           <FieldEdit
+                              label={t(langKeys.apikey)}
+                              className="col-12"
+                              valueDefault={getValues("apikey")}
+                              disabled={true}
+                              error={errors?.apikey?.message}
+                           />
+                        ) : (
+                           <FieldView
+                              label={t(langKeys.apikey)}
+                              value={row?.apikey || ""}
+                              className="col-12"
+                           />
+                        )}
+                     </div>
+                     <div className="row-zyx">
+                        {edit && getValues("isnew") ? (
+                           <FieldSelect
+                              uset={true}
+                              fregister={{
+                                 ...register(`level`, {
+                                    validate: (value: any) =>
+                                       (value && value.length) ||
+                                       t(langKeys.field_required),
+                                 }),
+                              }}
+                              label={t(langKeys.level)}
+                              className="col-12"
+                              valueDefault={getValues("level")}
+                              onChange={onChangeLevel}
+                              error={errors?.level?.message}
+                              data={dictToArrayKV(dataLevel)}
+                              optionDesc="value"
+                              optionValue="key"
+                           />
+                        ) : (
+                           <FieldView
+                              label={t(langKeys.level)}
+                              value={t(dataLevel[row?.level]) || ""}
+                              className="col-12"
+                           />
+                        )}
+                     </div>
+                     <div
+                        className="row-zyx"
+                        style={{ alignItems: "flex-end" }}
+                     >
+                        {edit ? (
+                           <React.Fragment>
+                              <FieldView
+                                 label={t(langKeys.tablelayout)}
+                                 className={classes.labelButton1}
+                              />
+                              <Button
+                                 variant="outlined"
+                                 type="button"
+                                 color="primary"
+                                 className={classes.labelButton2}
+                                 startIcon={<AddIcon color="primary" />}
+                                 onClick={() => onClickAddField()}
+                              >
+                                 {t(langKeys.addfield)}
+                              </Button>
+                           </React.Fragment>
+                        ) : (
                            <FieldView
                               label={t(langKeys.tablelayout)}
-                              className={classes.labelButton1}
+                              className="col-12"
                            />
-                           <Button
-                              variant="outlined"
-                              type="button"
-                              color="primary"
-                              className={classes.labelButton2}
-                              startIcon={<AddIcon color="primary" />}
-                              onClick={() => onClickAddField()}
-                           >
-                              {t(langKeys.addfield)}
-                           </Button>
-                        </React.Fragment>
-                     ) : (
-                        <FieldView
-                           label={t(langKeys.tablelayout)}
-                           className="col-12"
-                        />
-                     )}
-                  </div>
-                  {edit
-                     ? fields?.map((field: any, i: number) => {
-                          return (
-                             <div className="row-zyx" key={field.id}>
-                                <FieldEdit
-                                   fregister={{
-                                      ...register(`fields.${i}.name`, {
-                                         validate: {
-                                            value: (value: any) =>
-                                               (value && value.length) ||
-                                               t(langKeys.field_required),
-                                            duplicate: (value: any) =>
-                                               validateDuplicateFieldName(
-                                                  field,
-                                                  value
-                                               ) || t(langKeys.field_duplicate),
-                                            startwithchar: (value: any) =>
-                                               validateStartwithcharFieldName(
-                                                  value
-                                               ) ||
-                                               t(langKeys.field_startwithchar),
-                                            basiclatin: (value: any) =>
-                                               validateBasicLatinFieldName(
-                                                  value
-                                               ) ||
-                                               t(
-                                                  langKeys.field_basiclatinlowercase
-                                               ),
-                                         },
-                                      }),
-                                   }}
-                                   label={t(langKeys.name)}
-                                   className={classes.fieldRow}
-                                   valueDefault={field?.name || ""}
-                                   disabled={disableKeys(field, i)}
-                                   onBlur={(value) =>
-                                      onBlurField(i, "name", value)
-                                   }
-                                   error={errors?.fields?.[i]?.name?.message}
-                                />
-                                {getValues("isnew") ? (
-                                   <FieldCheckbox
-                                      label={t(langKeys.key)}
-                                      className={`${classes.checkboxRow}`}
-                                      valueDefault={field?.key}
+                        )}
+                     </div>
+                     {edit
+                        ? fields?.map((field: any, i: number) => {
+                             return (
+                                <div className="row-zyx" key={field.id}>
+                                   <FieldEdit
+                                      fregister={{
+                                         ...register(`fields.${i}.name`, {
+                                            validate: {
+                                               value: (value: any) =>
+                                                  (value && value.length) ||
+                                                  t(langKeys.field_required),
+                                               duplicate: (value: any) =>
+                                                  validateDuplicateFieldName(
+                                                     field,
+                                                     value
+                                                  ) ||
+                                                  t(langKeys.field_duplicate),
+                                               startwithchar: (value: any) =>
+                                                  validateStartwithcharFieldName(
+                                                     value
+                                                  ) ||
+                                                  t(
+                                                     langKeys.field_startwithchar
+                                                  ),
+                                               basiclatin: (value: any) =>
+                                                  validateBasicLatinFieldName(
+                                                     value
+                                                  ) ||
+                                                  t(
+                                                     langKeys.field_basiclatinlowercase
+                                                  ),
+                                            },
+                                         }),
+                                      }}
+                                      label={t(langKeys.name)}
+                                      className={classes.fieldRow}
+                                      valueDefault={field?.name || ""}
                                       disabled={disableKeys(field, i)}
-                                      onChange={(value) =>
-                                         onBlurField(i, "key", value)
+                                      onBlur={(value) =>
+                                         onBlurField(i, "name", value)
                                       }
-                                      error={errors?.fields?.[i]?.key?.message}
+                                      error={errors?.fields?.[i]?.name?.message}
                                    />
-                                ) : null}
-                                {!disableKeys(field, i) ? (
-                                   <IconButton
-                                      size="small"
-                                      className={classes.fieldButton}
-                                      onClick={() => onClickDeleteField(i)}
-                                   >
-                                      <DeleteIcon
-                                         style={{
-                                            color: "#000000",
-                                         }}
+                                   {getValues("isnew") ? (
+                                      <FieldCheckbox
+                                         label={t(langKeys.key)}
+                                         className={`${classes.checkboxRow}`}
+                                         valueDefault={field?.key}
+                                         disabled={disableKeys(field, i)}
+                                         onChange={(value) =>
+                                            onBlurField(i, "key", value)
+                                         }
+                                         error={
+                                            errors?.fields?.[i]?.key?.message
+                                         }
                                       />
-                                   </IconButton>
-                                ) : null}
-                             </div>
-                          );
-                       })
-                     : fields?.map((fields: any, i: number) => {
-                          return (
-                             <div className="row-zyx" key={fields.id}>
-                                <FieldView
-                                   label={t(langKeys.name)}
-                                   value={fields?.name || ""}
-                                   className="col-12"
-                                />
-                                <FieldView
-                                   label={t(langKeys.order)}
-                                   value={fields?.order || ""}
-                                   className="col-12"
-                                />
-                             </div>
-                          );
-                       })}
-                       </div>
-               </React.Fragment>
-            ) : null}
+                                   ) : null}
+                                   {!disableKeys(field, i) ? (
+                                      <IconButton
+                                         size="small"
+                                         className={classes.fieldButton}
+                                         onClick={() => onClickDeleteField(i)}
+                                      >
+                                         <DeleteIcon
+                                            style={{
+                                               color: "#000000",
+                                            }}
+                                         />
+                                      </IconButton>
+                                   ) : null}
+                                </div>
+                             );
+                          })
+                        : fields?.map((fields: any, i: number) => {
+                             return (
+                                <div className="row-zyx" key={fields.id}>
+                                   <FieldView
+                                      label={t(langKeys.name)}
+                                      value={fields?.name || ""}
+                                      className="col-12"
+                                   />
+                                   <FieldView
+                                      label={t(langKeys.order)}
+                                      value={fields?.order || ""}
+                                      className="col-12"
+                                   />
+                                </div>
+                             );
+                          })}
+                  </React.Fragment>
+               ) : null}
+            
          </form>
+
          {openResponseModal && (
             <ModalIntegrationManager
                data={responseData}
