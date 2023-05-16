@@ -5016,8 +5016,12 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   executiontype_MANUAL: "MANUAL",
   executiontype_SCHEDULED: "PROGRAMADO",
   greaterthanzero: "El valor de capacidad máxima del evento debe tener un numero mayor a 0",
-  channel_tiktokalert01: 'Para conectar una cuenta de TikTok Business, ingresa la información de la cuenta Ayrshare donde has realizado el enlace en el siguiente formulario',
+  channel_tiktokalert01: 'Para conectar una cuenta de TikTok Business, ingresa la información de la cuenta Ayrshare/TikAPI donde has realizado el enlace en el siguiente formulario',
   channel_tiktokaccesstoken: 'Token de Acceso',
+  channel_tiktokapikey: 'Llave API',
+  channel_tiktokaccountkey: 'Llave de Cuenta',
+  channel_tiktokregisterayrshare: 'Registrar como Ayrshare',
+  channel_tiktokregistertikapi: 'Registrar como TikAPI',
 };
 
 const esResource: ResourceLanguage = {

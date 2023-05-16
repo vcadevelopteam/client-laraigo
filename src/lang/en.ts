@@ -5088,8 +5088,12 @@ const translation: LangKeys = {
   executiontype_MANUAL: "MANUAL",
   executiontype_SCHEDULED: "SCHEDULED",
   greaterthanzero: "The maximum capacity value of the event must have a number greater than 0",
-  channel_tiktokalert01: 'To connect a TikTok Business account, enter the Ayrshare account information where you have done the link in the following form',
+  channel_tiktokalert01: 'To connect a TikTok Business account, enter the Ayrshare/TikAPI account information where you have done the link in the following form',
   channel_tiktokaccesstoken: 'Access Token',
+  channel_tiktokapikey: 'API Key',
+  channel_tiktokaccountkey: 'Account Key',
+  channel_tiktokregisterayrshare: 'Register as Ayrshare',
+  channel_tiktokregistertikapi: 'Register as TikAPI',
 };
 
 const enResource: ResourceLanguage = {

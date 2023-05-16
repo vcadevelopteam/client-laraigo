@@ -583,6 +583,7 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     if (channelType === "VOXI") return <PhoneIcon width={10} fill={color} stroke={color} height={height} style={{ color, width: 16, height: 16 }} />
     if (channelType === "TKTK") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "TKTA") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "TKTT") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
 
     return <TelegramIcon style={{ color, width, height }} />
 }
@@ -618,6 +619,7 @@ export const GetIconColor: React.FC<IconProps> = ({ channelType }) => {
     if (channelType === "LNKD") return <LinkedInColor />
     if (channelType === "TKTK") return <TikTokColor />
     if (channelType === "TKTA") return <TikTokColor />
+    if (channelType === "TKTT") return <TikTokColor />
 
     return <TelegramColor />
 }

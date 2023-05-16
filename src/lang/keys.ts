@@ -5006,6 +5006,10 @@ export const langKeys = {
   greaterthanzero: "greaterthanzero",
   channel_tiktokalert01: 'channel_tiktokalert01',
   channel_tiktokaccesstoken: 'channel_tiktokaccesstoken',
+  channel_tiktokapikey: 'channel_tiktokapikey',
+  channel_tiktokaccountkey: 'channel_tiktokaccountkey',
+  channel_tiktokregisterayrshare: 'channel_tiktokregisterayrshare',
+  channel_tiktokregistertikapi: 'channel_tiktokregistertikapi',
 };
 
 export type LangKeys = typeof langKeys;

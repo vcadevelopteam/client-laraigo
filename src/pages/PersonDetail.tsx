@@ -877,6 +877,7 @@ const nameschannel: { [x: string]: string } = {
     "FORM": "FORMULARIO WEB",
     "TKTK": "TIKTOK",
     "TKTA": "TIKTOK",
+    "TKTT": "TIKTOK",
 };
 
 const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
