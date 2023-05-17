@@ -26,6 +26,13 @@ const useChannelAddStyles = makeStyles((theme) => ({
         textTransform: "initial",
         width: "180px",
     },
+    button2: {
+        fontSize: "14px",
+        fontWeight: 500,
+        padding: 12,
+        textTransform: "initial",
+        width: "100%",
+    },
 }));
 
 export const ChannelAddTikTok: FC = () => {
@@ -34,6 +41,7 @@ export const ChannelAddTikTok: FC = () => {
     const { t } = useTranslation();
 
     const [channelreg, setChannelreg] = useState(true);
+    const [checkedAyrshare, setCheckedAyrshare] = useState(true);
     const [coloricon, setcoloricon] = useState("#000000");
     const [nextbutton, setNextbutton] = useState(true);
     const [setins, setsetins] = useState(false);
@@ -60,6 +68,8 @@ export const ChannelAddTikTok: FC = () => {
         },
         service: {
             accesstoken: "",
+            apikey: "",
+            accountkey: "",
         },
         type: "AYRSHARE-TIKTOK",
     });
@@ -143,19 +153,97 @@ export const ChannelAddTikTok: FC = () => {
                         {t(langKeys.channel_tiktokalert01)}
                     </div>
                     <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldEdit
-                            onChange={(value) => {
-                                setNextbutton(value === "");
-                                let partialf = fields;
-                                partialf.service.accesstoken = value;
-                                setFields(partialf);
-                            }}
-                            valueDefault={fields.service.accesstoken}
-                            label={t(langKeys.channel_tiktokaccesstoken)}
-                            className="col-6"
-                        />
+                        <div style={{ width: "100%", marginTop: "20px", alignItems: "center", display: "flex" }}>
+                            <div style={{ flex: "1", margin: "0px 15px" }}>
+                                <Button
+                                    onClick={() => {
+                                        setCheckedAyrshare(true);
+                                        let partialField = fields;
+                                        partialField.type = "AYRSHARE-TIKTOK";
+                                        partialField.service.accesstoken = "";
+                                        partialField.service.apikey = "";
+                                        partialField.service.accountkey = "";
+                                        setFields(partialField);
+                                        setNextbutton(true);
+                                    }}
+                                    className={classes.button2}
+                                    disabled={checkedAyrshare}
+                                    variant="contained"
+                                    color="primary"
+                                >
+                                    {t(langKeys.channel_tiktokregisterayrshare)}
+                                </Button>
+                            </div>
+                            <div style={{ flex: "1", margin: "0px 15px" }}>
+                                <Button
+                                    onClick={() => {
+                                        setCheckedAyrshare(false);
+                                        let partialField = fields;
+                                        partialField.type = "TIKAPI-TIKTOK";
+                                        partialField.service.accesstoken = "";
+                                        partialField.service.apikey = "";
+                                        partialField.service.accountkey = "";
+                                        setFields(partialField);
+                                        setNextbutton(true);
+                                    }}
+                                    className={classes.button2}
+                                    disabled={!checkedAyrshare}
+                                    variant="contained"
+                                    color="primary"
+                                >
+                                    {t(langKeys.channel_tiktokregistertikapi)}
+                                </Button>
+                            </div>
+                        </div>
                     </div>
+                    {checkedAyrshare && (
+                        <div className="row-zyx">
+                            <div className="col-3"></div>
+                            <FieldEdit
+                                onChange={(value) => {
+                                    setNextbutton(value === "");
+                                    let partialf = fields;
+                                    partialf.service.accesstoken = value;
+                                    setFields(partialf);
+                                }}
+                                valueDefault={fields.service.accesstoken}
+                                label={t(langKeys.channel_tiktokaccesstoken)}
+                                className="col-6"
+                            />
+                        </div>
+                    )}
+                    {!checkedAyrshare && (
+                        <div className="row-zyx">
+                            <div className="col-3"></div>
+                            <FieldEdit
+                                onChange={(value) => {
+                                    setNextbutton(value === "" || fields.service.accountkey === "");
+                                    let partialf = fields;
+                                    partialf.service.apikey = value;
+                                    setFields(partialf);
+                                }}
+                                valueDefault={fields.service.apikey}
+                                label={t(langKeys.channel_tiktokapikey)}
+                                className="col-6"
+                            />
+                        </div>
+                    )}
+                    {!checkedAyrshare && (
+                        <div className="row-zyx">
+                            <div className="col-3"></div>
+                            <FieldEdit
+                                onChange={(value) => {
+                                    setNextbutton(value === "" || fields.service.apikey === "");
+                                    let partialf = fields;
+                                    partialf.service.accountkey = value;
+                                    setFields(partialf);
+                                }}
+                                valueDefault={fields.service.accountkey}
+                                label={t(langKeys.channel_tiktokaccountkey)}
+                                className="col-6"
+                            />
+                        </div>
+                    )}
                     <div style={{ paddingLeft: "80%" }}>
                         <Button
                             disabled={nextbutton}

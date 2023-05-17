@@ -5128,8 +5128,12 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   termsandconditions28: "8. Contáctanos",
   termsandconditions29: "Si tiene alguna pregunta o inquietud sobre este Acuerdo o nuestra aplicación, contáctenos en laraigo@vcaperu.com.",
   termsandconditions30: "Al usar nuestra aplicación, acepta estar sujeto a este Acuerdo y cumplir con los términos de servicio y el acuerdo de desarrollador de Meta, Google y TikTok.",
-  channel_tiktokalert01: 'Para conectar una cuenta de TikTok Business, ingresa la información de la cuenta Ayrshare donde has realizado el enlace en el siguiente formulario',
+  channel_tiktokalert01: 'Para conectar una cuenta de TikTok Business, ingresa la información de la cuenta Ayrshare/TikAPI donde has realizado el enlace en el siguiente formulario',
   channel_tiktokaccesstoken: 'Token de Acceso',
+  channel_tiktokapikey: 'Llave API',
+  channel_tiktokaccountkey: 'Llave de Cuenta',
+  channel_tiktokregisterayrshare: 'Registrar como Ayrshare',
+  channel_tiktokregistertikapi: 'Registrar como TikAPI',
 };
 
 const esResource: ResourceLanguage = {

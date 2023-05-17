@@ -5200,8 +5200,12 @@ const translation: LangKeys = {
   termsandconditions28: "8. Contact Us",
   termsandconditions29: "If you have any questions or concerns about this Agreement or our application, please contact us at laraigo@vcaperu.com.",
   termsandconditions30: "By using our application, you agree to be bound by this Agreement and to comply with Meta's, Google's and TikTok's terms of service and developer agreement.",
-  channel_tiktokalert01: 'To connect a TikTok Business account, enter the Ayrshare account information where you have done the link in the following form',
+  channel_tiktokalert01: 'To connect a TikTok Business account, enter the Ayrshare/TikAPI account information where you have done the link in the following form',
   channel_tiktokaccesstoken: 'Access Token',
+  channel_tiktokapikey: 'API Key',
+  channel_tiktokaccountkey: 'Account Key',
+  channel_tiktokregisterayrshare: 'Register as Ayrshare',
+  channel_tiktokregistertikapi: 'Register as TikAPI',
 };
 
 const enResource: ResourceLanguage = {
