@@ -11,7 +11,7 @@ import paths from "common/constants/paths";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { getGroupList, insertChannel } from "store/channel/actions";
-import { FacebookWorkplace } from "icons";
+import { FacebookWorkplaceWall } from "icons";
 
 interface whatsAppData {
     typeWhatsApp?: string;
@@ -259,7 +259,7 @@ export const ChannelAddFacebookWorkplace: FC = () => {
                                 {t(langKeys.givechannelcolor)}
                             </Box>
                             <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                                <FacebookWorkplace style={{ fill: `${coloricon}`, width: "100px" }} />
+                                <FacebookWorkplaceWall style={{ fill: `${coloricon}`, width: "100px" }} />
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
                                     onChange={e => {
