@@ -31,16 +31,12 @@ export const GoogleLogInFrame: FC<GoogleLogInFrameProps> = ({ setWaitExchange })
         onError: error => onGoogleLoginFailure(error),
         flow: 'auth-code',
         // eslint-disable-next-line no-multi-str
-        scope: 'https://www.googleapis.com/auth/gmail.compose \
-        https://www.googleapis.com/auth/youtube.readonly \
-        https://www.googleapis.com/auth/youtube.upload \
-        https://www.googleapis.com/auth/youtube.force-ssl \
-        https://www.googleapis.com/auth/drive.file \
-        https://www.googleapis.com/auth/gmail.readonly \
-        https://www.googleapis.com/auth/blogger \
-        https://www.googleapis.com/auth/blogger.readonly \
-        https://www.googleapis.com/auth/drive.readonly \
-        https://www.googleapis.com/auth/business.manage',
+        scope: 'https://www.googleapis.com/auth/blogger \
+            https://www.googleapis.com/auth/business.manage \
+            https://www.googleapis.com/auth/gmail.send \
+            https://www.googleapis.com/auth/gmail.readonly \
+            https://www.googleapis.com/auth/youtube.force-ssl \
+            https://www.googleapis.com/auth/youtube.readonly',
     });
 
     const onGoogleLoginSucess = (event: any) => {
