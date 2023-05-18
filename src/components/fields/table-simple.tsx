@@ -31,6 +31,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
 import BackupIcon from '@material-ui/icons/Backup';
+import DeleteIcon from "@material-ui/icons/Delete";
 import { Dictionary, TableConfig } from '@types'
 import { SearchField } from 'components';
 import { DownloadIcon } from 'icons';
@@ -311,7 +312,11 @@ const TableZyx = React.memo(({
     columns,
     data,
     fetchData,
-    download = true,
+    download = false,
+    importData = false,
+    importDataFunction,
+    deleteData = false,
+    deleteDataFunction,
     register,
     handleRegister,
     calculate = false,
@@ -852,6 +857,43 @@ const TableZyx = React.memo(({
                             startIcon={<DownloadIcon />}
                         ><Trans i18nKey={langKeys.download} />
                         </Button>
+                    )}
+                    {deleteData && (
+                        <Button
+                            className={classes.button}
+                            variant="outlined"
+                            color="primary"
+                            disabled={loading}
+                            onClick={deleteDataFunction}
+                            startIcon={<DeleteIcon color='secondary' />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                        ><Trans i18nKey={langKeys.deletedata} />
+                        </Button>
+                    )}
+                    {importData && (
+                        <>
+                            <input
+                            accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
+                            id="uploadfile"
+                            type="file"
+                            style={{ display: "none" }}
+                            onChange={(e) => deleteDataFunction && deleteDataFunction(e.target.files)}
+                            />
+                            <label htmlFor="uploadfile">
+                                <Button
+                                className={classes.button}
+                                variant="contained"
+                                component="span"
+                                color="primary"
+                                startIcon={<BackupIcon color="secondary" />}
+                                style={{
+                                    backgroundColor: "#55BD84",
+                                }}
+                                >
+                                    <Trans i18nKey={langKeys.import} />
+                                </Button>
+                            </label>
+                        </>
                     )}
                 </span>
             </Box>

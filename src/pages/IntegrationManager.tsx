@@ -1240,7 +1240,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                   {!getValues("isnew") &&
                      getValues("type") === "DATA_TABLE" && (
                         <React.Fragment>
-                           <Button
+                           {/* <Button
                               variant="contained"
                               type="button"
                               color="primary"
@@ -1270,7 +1270,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                               >
                                  {t(langKeys.import)}
                               </Button>
-                           </label>
+                           </label> */}
                         </React.Fragment>
                      )}
                   <Button
@@ -2349,6 +2349,9 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
             setOpenModal={setOpenViewTableModal}
             columns={columnData}
             data={tableData}
+            importData={handleUpload}
+            deleteData={onDeleteData}
+            
          />
       </div>
    );
@@ -2797,6 +2800,8 @@ interface ViewTableModalProps {
    setOpenModal: (value: boolean) => any;
    columns: Dictionary[];
    data: Dictionary[];
+   importData: (files: any) => Promise<void>
+   deleteData: ()=> void;
 }
 
 const ModalViewTable: React.FC<ViewTableModalProps> = ({
@@ -2804,6 +2809,8 @@ const ModalViewTable: React.FC<ViewTableModalProps> = ({
    setOpenModal,
    columns = [],
    data = [],
+   importData,
+   deleteData
 }) => {
    const { t } = useTranslation();
    const dispatch = useDispatch();
@@ -2833,6 +2840,10 @@ const ModalViewTable: React.FC<ViewTableModalProps> = ({
             download={true}
             pageSizeDefault={20}
             filterGeneral={false}
+            importData={true}
+            importDataFunction={deleteData}
+            deleteData={true}
+            deleteDataFunction={importData}
          />
       </DialogZyx>
    );
