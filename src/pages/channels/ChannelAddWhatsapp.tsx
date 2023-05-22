@@ -1,20 +1,20 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { FC, Fragment, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box, TextField } from '@material-ui/core';
-import Link from '@material-ui/core/Link';
-import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { langKeys } from "lang/keys";
-import { useTranslation } from "react-i18next";
-import { FieldEdit, ColorInput } from "components";
-import { styled } from '@material-ui/core/styles';
-import MuiPhoneNumber from 'material-ui-phone-number';
-import { useHistory, useLocation } from "react-router";
-import paths from "common/constants/paths";
-import { useSelector } from "hooks";
-import { useDispatch } from "react-redux";
-import { insertChannel, activateChannel } from "store/channel/actions";
-import { WhatsappIcon } from "icons";
+import { ChannelWhatsApp01 } from "icons";
 import { Dictionary } from "@types";
+import { FC, Fragment, useEffect, useState } from "react";
+import { FieldEdit, ColorInput } from "components";
+import { insertChannel, activateChannel } from "store/channel/actions";
+import { langKeys } from "lang/keys";
+import { makeStyles, Breadcrumbs, Button, Box, TextField } from '@material-ui/core';
+import { showBackdrop, showSnackbar } from 'store/popus/actions';
+import { styled } from '@material-ui/core/styles';
+import { useDispatch } from "react-redux";
+import { useHistory, useLocation } from "react-router";
+import { useSelector } from "hooks";
+import { useTranslation } from "react-i18next";
+
+import Link from '@material-ui/core/Link';
+import MuiPhoneNumber from 'material-ui-phone-number';
+import paths from "common/constants/paths";
 
 const useChannelAddStyles = makeStyles(theme => ({
     centerbutton: {
@@ -1151,7 +1151,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 {t(langKeys.givechannelcolor)}
                             </Box>
                             <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                                <WhatsappIcon style={{ fill: `${coloricon}`, width: "100px" }} />
+                                <ChannelWhatsApp01 style={{ fill: `${coloricon}`, width: "100px" }} />
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
                                     onChange={e => {

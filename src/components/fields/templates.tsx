@@ -1,67 +1,48 @@
-import React, { CSSProperties, FC, useEffect, useState } from 'react';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import IconButton from '@material-ui/core/IconButton';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Link from '@material-ui/core/Link';
 import 'emoji-mart/css/emoji-mart.css'
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import { Trans, useTranslation } from 'react-i18next';
-import { langKeys } from 'lang/keys';
-import CircularProgress from '@material-ui/core/CircularProgress';
+
+import { AndroidColor, ChannelBlogger, EmailColor, EmojiICon, FacebookColor, FacebookMessengerColor, FacebookWorkplace, GifIcon, InstagramColor, IosColor, LineIcon, LinkedInColor, SmsColor, TeamsColor, TelegramColor, TikTokColor, TwitterColor, VoiceColor, WebMessengerColor, WhatsappColor, YouTubeColor, ZyxmeMessengerIcon } from 'icons';
+import { ChannelAndroid, ChannelAppStore, ChannelChat01, ChannelChat02, ChannelFacebook, ChannelForm, ChannelGeneric, ChannelInstagram01, ChannelInstagram02, ChannelIos, ChannelLine, ChannelLinkedIn, ChannelMail, ChannelMessenger, ChannelMyBusiness, ChannelPhone, ChannelPlayStore, ChannelSms, ChannelTeams, ChannelTelegram, ChannelTikTok, ChannelTwitter01, ChannelTwitter02, ChannelWhatsApp01, ChannelWhatsApp02, ChannelWhatsApp03, ChannelWhatsApp04, ChannelWorkplace, ChannelYouTube } from 'icons';
 import { Dictionary } from '@types';
-import Checkbox from '@material-ui/core/Checkbox';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
-import TextField from '@material-ui/core/TextField';
+import { FormControlLabel, FormHelperText, OutlinedInputProps, Radio, RadioGroup, RadioGroupProps, useTheme, TypographyVariant, Divider, Grid, ListItem, ListItemText, styled, ListItemIcon } from '@material-ui/core';
+import { langKeys } from 'lang/keys';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { Picker } from 'emoji-mart';
+import { SearchField } from 'components';
+import { Skeleton } from '@material-ui/lab';
+import { Trans, useTranslation } from 'react-i18next';
+import { VariableSizeList, FixedSizeList, ListChildComponentProps } from 'react-window';
+
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import IOSSwitch from './IOSSwitch';
+import Box from '@material-ui/core/Box';
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button, { ButtonProps } from '@material-ui/core/Button';
+import CameraAltIcon from '@material-ui/icons/CameraAlt';
+import Checkbox from '@material-ui/core/Checkbox';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import DeleteIcon from '@material-ui/icons/Delete';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Tab, { TabProps } from '@material-ui/core/Tab';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { FormControlLabel, FormHelperText, OutlinedInputProps, Radio, RadioGroup, RadioGroupProps, useTheme, TypographyVariant } from '@material-ui/core';
-import { Divider, Grid, ListItem, ListItemText, styled } from '@material-ui/core';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import { Skeleton } from '@material-ui/lab';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import { AndroidColor, EmailColor, EmojiICon, FacebookColor, FacebookMessengerColor, GifIcon, InstagramColor, IosColor, LinkedInColor, SmsColor, TeamsColor, TelegramColor, TwitterColor, VoiceColor, WebMessengerColor, WhatsappColor, YouTubeColor, TikTokColor } from 'icons';
-import { Picker } from 'emoji-mart'
-import { SearchField } from 'components';
-import CameraAltIcon from '@material-ui/icons/CameraAlt';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Tooltip from '@material-ui/core/Tooltip';
-import { ListItemIcon } from '@material-ui/core';
-import PhoneIcon from '@material-ui/icons/Phone';
-import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
-import {
-    WebMessengerIcon,
-    ZyxmeMessengerIcon,
-    AndroidIcon,
-    AppleIcon,
-    FacebookMessengerIcon,
-    FacebookWorkplace,
-    FacebookWorkplaceWall,
-    FacebookWallIcon,
-    InstagramIcon,
-    LineIcon,
-    SmsIcon,
-    TwitterIcon,
-    YoutubeIcon,
-    WhatsappIcon,
-    EmailIcon,
-    TelegramIcon,
-    TeamsIcon,
-} from 'icons';
-import { VariableSizeList, FixedSizeList, ListChildComponentProps } from 'react-window';
-import MuiPhoneNumber, { MaterialUiPhoneNumberProps } from 'material-ui-phone-number';
+import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/Info';
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
+import IOSSwitch from './IOSSwitch';
+import Link from '@material-ui/core/Link';
+import ListSubheader from '@material-ui/core/ListSubheader';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import MuiPhoneNumber, { MaterialUiPhoneNumberProps } from 'material-ui-phone-number';
 import QuickReactions from "react-quick-reactions";
+import React, { CSSProperties, FC, useEffect, useState } from 'react';
+import Tab, { TabProps } from '@material-ui/core/Tab';
+import TextField from '@material-ui/core/TextField';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
 
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
@@ -561,50 +542,51 @@ interface IconProps extends React.SVGProps<SVGSVGElement> {
 }
 
 export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height = 15, color = "#7721AD" }) => {
+    if (channelType === "ANDR") return <ChannelAndroid width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "APPL") return <ChannelIos width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "APPS") return <ChannelAppStore width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "BLOG") return <ChannelBlogger width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "CHATZ") return <ChannelChat01 width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "CHAZ") return <ChannelChat01 width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "FACEBOOKWORPLACE") return <ChannelWorkplace width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "FBDM") return <ChannelMessenger width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "FBMS") return <ChannelMessenger width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "FBWA") return <ChannelFacebook width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "FBWM") return <ChannelWorkplace width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "FBWP") return <ChannelWorkplace width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "FORM") return <ChannelForm width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "GOBU") return <ChannelMyBusiness width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "INDM") return <ChannelInstagram01 width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "INMS") return <ChannelInstagram01 width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "INST") return <ChannelInstagram02 width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "LINE") return <ChannelLine width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "LNKD") return <ChannelLinkedIn width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "MAII") return <ChannelMail width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "MAIL") return <ChannelMail width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "PLAY") return <ChannelPlayStore width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "SMS") return <ChannelSms width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "SMSI") return <ChannelSms width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "TEAM") return <ChannelTeams width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "TELE") return <ChannelTelegram width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "TKTA") return <ChannelTikTok width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "TKTK") return <ChannelTikTok width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "TKTT") return <ChannelTikTok width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "TWIT") return <ChannelTwitter01 width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "TWMS") return <ChannelTwitter02 width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "VOXI") return <ChannelPhone width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "WEBM") return <ChannelChat02 width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "WHAC") return <ChannelWhatsApp01 width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "WHAD") return <ChannelWhatsApp01 width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "WHAG") return <ChannelWhatsApp02 width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "WHAM") return <ChannelWhatsApp02 width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "WHAP") return <ChannelWhatsApp03 color={color} width={width} fill={color} stroke={color} height={height} />
+    if (channelType === "WHAT") return <ChannelWhatsApp04 width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "YOUA") return <ChannelYouTube width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "YOUT") return <ChannelYouTube width={width} fill={color} stroke={color} height={height} color={color} />
 
-    if (channelType === "WHAT") return <WhatsappIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "WHAD") return <WhatsappIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "WHAG") return <WhatsappIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "WHAM") return <WhatsappIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "WHAP") return <WhatsappIcon color={color} width={width} fill={color} stroke={color} height={height} />
-    if (channelType === "WHAC") return <WhatsappIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "FBMS") return <FacebookMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "FBDM") return <FacebookMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "FBWP") return <FacebookWorkplace width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "FACEBOOKWORPLACE") return <FacebookWorkplace width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "FBWM") return <FacebookWorkplaceWall width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "FBWA") return <FacebookWallIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "WEBM") return <WebMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "TELE") return <TelegramIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "INST") return <InstagramIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "INMS") return <InstagramIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "INDM") return <InstagramIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "ANDR") return <AndroidIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "APPL") return <AppleIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "CHATZ") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "CHAZ") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "MAIL") return <EmailIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "MAII") return <EmailIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "YOUT") return <YoutubeIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "GOBU") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "PLAY") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "APPS") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "LINE") return <LineIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "SMS") return <SmsIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "SMSI") return <SmsIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "TWIT") return <TwitterIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "TWMS") return <TwitterIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "TEAM") return <TeamsIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "VOXI") return <PhoneIcon width={10} fill={color} stroke={color} height={height} style={{ color, width: 16, height: 16 }} />
-    if (channelType === "LNKD") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "TKTK") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "TKTA") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "TKTT") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
-
-    return <TelegramIcon style={{ color, width, height }} />
+    return <ChannelGeneric style={{ color, width, height }} />
 }
 export const GetIconColor: React.FC<IconProps> = ({ channelType }) => {
-
     if (channelType === "WHAT") return <WhatsappColor />
     if (channelType === "WHAD") return <WhatsappColor />
     if (channelType === "WHAG") return <WhatsappColor />

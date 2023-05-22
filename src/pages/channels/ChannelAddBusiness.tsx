@@ -1,12 +1,6 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-/* eslint-disable no-useless-escape */
-/* eslint-disable react-hooks/exhaustive-deps */
-import GoogleLogInFrame from './GoogleLogInFrame';
-import Link from '@material-ui/core/Link';
-import paths from "common/constants/paths";
-
 import { apiUrls } from 'common/constants';
 import { Breadcrumbs, Box, Button, makeStyles } from '@material-ui/core';
+import { ChannelMyBusiness } from 'icons';
 import { ColorInput, FieldEdit } from "components";
 import { FC, useEffect, useState } from "react";
 import { GoogleOAuthProvider } from '@react-oauth/google';
@@ -17,7 +11,10 @@ import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
-import { ZyxmeMessengerIcon } from 'icons';
+
+import GoogleLogInFrame from './GoogleLogInFrame';
+import Link from '@material-ui/core/Link';
+import paths from "common/constants/paths";
 
 interface whatsAppData {
     typeWhatsApp?: string;
@@ -209,7 +206,7 @@ export const ChannelAddBusiness: FC = () => {
                                 {t(langKeys.givechannelcolor)}
                             </Box>
                             <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                                <ZyxmeMessengerIcon style={{ fill: `${coloricon}`, width: "100px", height: "100px" }} />
+                                <ChannelMyBusiness style={{ fill: `${coloricon}`, width: "100px", height: "100px" }} />
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
                                     onChange={e => {

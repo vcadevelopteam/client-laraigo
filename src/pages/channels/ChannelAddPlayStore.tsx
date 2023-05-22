@@ -1,5 +1,4 @@
-/* eslint-disable no-useless-escape */
-/* eslint-disable react-hooks/exhaustive-deps */
+import { ChannelPlayStore } from 'icons';
 import { FC, useEffect, useState } from "react";
 import { FieldEdit, ColorInput } from "components";
 import { insertChannel } from "store/channel/actions";
@@ -10,7 +9,6 @@ import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
-import { ZyxmeMessengerIcon } from 'icons';
 
 import Link from '@material-ui/core/Link';
 import paths from "common/constants/paths";
@@ -189,7 +187,7 @@ export const ChannelAddPlayStore: FC = () => {
                                 {t(langKeys.givechannelcolor)}
                             </Box>
                             <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                                <ZyxmeMessengerIcon style={{ fill: `${coloricon}`, width: "100px", height: "100px" }} />
+                                <ChannelPlayStore style={{ fill: `${coloricon}`, width: "100px", height: "100px" }} />
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
                                     onChange={e => {

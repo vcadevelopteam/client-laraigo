@@ -1,3 +1,4 @@
+import { ChannelTikTok } from "icons";
 import { FC, useEffect, useState } from "react";
 import { FieldEdit, ColorInput } from "components";
 import { insertChannel } from "store/channel/actions";
@@ -10,7 +11,6 @@ import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
 
 import Link from "@material-ui/core/Link";
-import MusicNoteIcon from "@material-ui/icons/MusicNote";
 import paths from "common/constants/paths";
 
 interface whatsAppData {
@@ -306,7 +306,7 @@ export const ChannelAddTikTok: FC = () => {
                                 {t(langKeys.givechannelcolor)}
                             </Box>
                             <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                                <MusicNoteIcon style={{ fill: `${coloricon}`, width: "100px", height: "100px" }} />
+                                <ChannelTikTok style={{ fill: `${coloricon}`, width: "100px", height: "100px" }} />
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
                                     onChange={(e) => {

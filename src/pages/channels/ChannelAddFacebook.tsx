@@ -1,20 +1,20 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box } from "@material-ui/core";
-import Link from "@material-ui/core/Link";
-import { showBackdrop, showSnackbar } from "store/popus/actions";
-import { Facebook as FacebookIcon } from "@material-ui/icons";
-import { langKeys } from "lang/keys";
-import { useTranslation } from "react-i18next";
-import { ColorInput, FieldEdit, FieldSelect } from "components";
-import { useHistory, useLocation } from "react-router";
-import paths from "common/constants/paths";
-import FacebookLogin from "react-facebook-login";
-import { useSelector } from "hooks";
-import { useDispatch } from "react-redux";
-import { getChannelsList, insertChannel } from "store/channel/actions";
-import { FacebookWallIcon } from "icons";
 import { apiUrls } from "common/constants";
+import { ChannelFacebook } from "icons";
+import { ColorInput, FieldEdit, FieldSelect } from "components";
+import { Facebook as FacebookIcon } from "@material-ui/icons";
+import { FC, useEffect, useState } from "react";
+import { getChannelsList, insertChannel } from "store/channel/actions";
+import { langKeys } from "lang/keys";
+import { makeStyles, Breadcrumbs, Button, Box } from "@material-ui/core";
+import { showBackdrop, showSnackbar } from "store/popus/actions";
+import { useDispatch } from "react-redux";
+import { useHistory, useLocation } from "react-router";
+import { useSelector } from "hooks";
+import { useTranslation } from "react-i18next";
+
+import FacebookLogin from "react-facebook-login";
+import Link from "@material-ui/core/Link";
+import paths from "common/constants/paths";
 
 interface whatsAppData {
     typeWhatsApp?: string;
@@ -235,7 +235,7 @@ export const ChannelAddFacebook: FC = () => {
                                 {t(langKeys.givechannelcolor)}
                             </Box>
                             <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                                <FacebookWallIcon style={{ fill: `${coloricon}`, width: "100px" }} />
+                                <ChannelFacebook style={{ fill: `${coloricon}`, width: "100px" }} />
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
                                     onChange={e => {

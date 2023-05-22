@@ -1,14 +1,9 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-/* eslint-disable no-useless-escape */
-/* eslint-disable react-hooks/exhaustive-deps */
-import Link from '@material-ui/core/Link';
-import paths from "common/constants/paths";
-import EmailIcon from '@material-ui/icons/Email';
-
 import { apiUrls } from 'common/constants';
 import { Breadcrumbs, Box, Button, makeStyles } from '@material-ui/core';
+import { ChannelMail } from 'icons';
 import { ColorInput, FieldEdit } from "components";
 import { FC, useEffect, useState } from "react";
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { insertChannel } from "store/channel/actions";
 import { langKeys } from "lang/keys";
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
@@ -16,8 +11,10 @@ import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
-import { GoogleOAuthProvider } from '@react-oauth/google';
+
 import GoogleLogInFrame from './GoogleLogInFrame';
+import Link from '@material-ui/core/Link';
+import paths from "common/constants/paths";
 
 interface whatsAppData {
     typeWhatsApp?: string;
@@ -496,7 +493,7 @@ export const ChannelAddEmail: FC = () => {
                                 {t(langKeys.givechannelcolor)}
                             </Box>
                             <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                                <EmailIcon style={{ fill: `${coloricon}`, width: "100px", height: "100px" }} />
+                                <ChannelMail style={{ fill: `${coloricon}`, width: "100px", height: "100px" }} />
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
                                     onChange={e => {

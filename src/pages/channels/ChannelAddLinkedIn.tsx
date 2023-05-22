@@ -1,5 +1,4 @@
-/* eslint-disable no-useless-escape */
-/* eslint-disable react-hooks/exhaustive-deps */
+import { ChannelLinkedIn } from "icons";
 import { FC, useEffect, useState } from "react";
 import { FieldEdit, ColorInput } from "components";
 import { insertChannel } from "store/channel/actions";
@@ -13,7 +12,6 @@ import { useTranslation } from "react-i18next";
 
 import Link from '@material-ui/core/Link';
 import paths from "common/constants/paths";
-import LinkedInIcon from '@material-ui/icons/LinkedIn';
 
 interface whatsAppData {
     typeWhatsApp?: string;
@@ -234,7 +232,7 @@ export const ChannelAddLinkedIn: FC = () => {
                                 {t(langKeys.givechannelcolor)}
                             </Box>
                             <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                                <LinkedInIcon style={{ fill: `${coloricon}`, width: "100px", height: "100px" }} />
+                                <ChannelLinkedIn style={{ fill: `${coloricon}`, width: "100px", height: "100px" }} />
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
                                     onChange={e => {

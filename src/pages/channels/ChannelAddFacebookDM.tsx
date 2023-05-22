@@ -1,17 +1,17 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box } from "@material-ui/core";
-import Link from "@material-ui/core/Link";
-import { showBackdrop, showSnackbar } from "store/popus/actions";
-import { langKeys } from "lang/keys";
-import { useTranslation } from "react-i18next";
+import { ChannelWorkplace } from "icons";
 import { ColorInput, FieldEdit } from "components";
-import { useHistory, useLocation } from "react-router";
-import paths from "common/constants/paths";
-import { useSelector } from "hooks";
-import { useDispatch } from "react-redux";
+import { FC, useEffect, useState } from "react";
 import { insertChannel } from "store/channel/actions";
-import { FacebookWorkplace } from "icons";
+import { langKeys } from "lang/keys";
+import { makeStyles, Breadcrumbs, Button, Box } from "@material-ui/core";
+import { showBackdrop, showSnackbar } from "store/popus/actions";
+import { useDispatch } from "react-redux";
+import { useHistory, useLocation } from "react-router";
+import { useSelector } from "hooks";
+import { useTranslation } from "react-i18next";
+
+import Link from "@material-ui/core/Link";
+import paths from "common/constants/paths";
 
 interface whatsAppData {
     typeWhatsApp?: string;
@@ -211,7 +211,7 @@ export const ChannelAddFacebookDM: FC = () => {
                                 {t(langKeys.givechannelcolor)}
                             </Box>
                             <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                                <FacebookWorkplace style={{ fill: `${coloricon}`, width: "100px" }} />
+                                <ChannelWorkplace style={{ fill: `${coloricon}`, width: "100px" }} />
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
                                     onChange={e => {

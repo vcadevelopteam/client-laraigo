@@ -2,6 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import { Box, Breadcrumbs, Button, makeStyles, FormControlLabel } from "@material-ui/core";
+import { ChannelPhone } from "icons";
 import { ColorInput, FieldEdit, FieldSelect, FieldView, IOSSwitchPurple } from "components";
 import { FC, useEffect, useState } from "react";
 import { formatNumber, getPhoneTax } from "common/helpers";
@@ -19,7 +20,6 @@ import { useTranslation } from "react-i18next";
 import InfoIcon from "@material-ui/icons/Info";
 import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
-import PhoneIcon from "@material-ui/icons/Call";
 import Tooltip from "@material-ui/core/Tooltip";
 
 interface whatsAppData {
@@ -733,7 +733,7 @@ export const ChannelAddPhone: FC = () => {
                                     {t(langKeys.givechannelcolor)}
                                 </Box>
                                 <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                                    <PhoneIcon style={{ fill: `${coloricon}`, width: "100px", height: "100px" }} />
+                                    <ChannelPhone style={{ fill: `${coloricon}`, width: "100px", height: "100px" }} />
                                     <ColorInput
                                         hex={fields.parameters.coloricon}
                                         onChange={e => {
@@ -782,7 +782,7 @@ export const ChannelAddPhone: FC = () => {
                                     {t(langKeys.givechannelcolor)}
                                 </Box>
                                 <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                                    <PhoneIcon style={{ fill: `${coloricon}`, width: "100px", height: "100px" }} />
+                                    <ChannelPhone style={{ fill: `${coloricon}`, width: "100px", height: "100px" }} />
                                     <ColorInput
                                         hex={fields.parameters.coloricon}
                                         onChange={e => {

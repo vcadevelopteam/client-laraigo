@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { apiUrls } from "common/constants";
 import { ColorInput, FieldEdit, FieldSelect } from "components";
 import { ConnectButton } from "360dialog-connect-button";
@@ -11,7 +10,7 @@ import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
-import { WhatsappIcon } from "icons";
+import { ChannelWhatsApp02 } from "icons";
 
 import Link from '@material-ui/core/Link';
 import paths from "common/constants/paths";
@@ -257,7 +256,7 @@ export const ChannelAddWhatsAppOnboarding: FC = () => {
                                 {t(langKeys.givechannelcolor)}
                             </Box>
                             <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                                <WhatsappIcon style={{ fill: `${colorIcon}`, width: "100px" }} />
+                                <ChannelWhatsApp02 style={{ fill: `${colorIcon}`, width: "100px" }} />
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
                                     onChange={e => {

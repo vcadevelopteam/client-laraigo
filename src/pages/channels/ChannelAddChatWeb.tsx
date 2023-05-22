@@ -1,22 +1,23 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
 import { AppBar, Box, Button, makeStyles, Link, Tab, Tabs, Typography, TextField, Grid, Select, IconButton, FormControl, MenuItem, Divider, Breadcrumbs, FormHelperText } from '@material-ui/core';
-import { ColorInput, FieldEdit, IOSSwitch } from 'components';
-import { Trans, useTranslation } from 'react-i18next';
-import clsx from 'clsx';
-import { langKeys } from 'lang/keys';
-import { ColorChangeHandler } from 'react-color';
+import { ChannelChat01 } from 'icons';
 import { Close, CloudUpload } from '@material-ui/icons';
-import { useHistory, useLocation } from 'react-router';
-import { useForm, UseFormReturn } from 'react-hook-form';
-import { IChannel, IChatWebAdd, IChatWebAddFormField } from '@types';
-import { useDispatch } from 'react-redux';
+import { ColorChangeHandler } from 'react-color';
+import { ColorInput, FieldEdit, IOSSwitch } from 'components';
 import { editChannel as getEditChannel, insertChannel2, resetInsertChannel, resetEditChannel } from 'store/channel/actions';
-import { useSelector } from 'hooks';
-import { showSnackbar } from 'store/popus/actions';
 import { getEditChatWebChannel, getInsertChatwebChannel } from 'common/helpers';
-import paths from 'common/constants/paths';
-import { ZyxmeMessengerIcon } from 'icons';
+import { IChannel, IChatWebAdd, IChatWebAddFormField } from '@types';
+import { langKeys } from 'lang/keys';
+import { showSnackbar } from 'store/popus/actions';
 import { TabPanel } from 'pages/crm/components';
+import { Trans, useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+import { useForm, UseFormReturn } from 'react-hook-form';
+import { useHistory, useLocation } from 'react-router';
+import { useSelector } from 'hooks';
+
+import clsx from 'clsx';
+import paths from 'common/constants/paths';
+import React, { FC, useEffect, useRef, useState } from 'react';
 
 interface FieldTemplate {
     text: React.ReactNode;
@@ -1943,7 +1944,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                             {t(langKeys.givechannelcolor)}
                         </Box>
                         <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                            <ZyxmeMessengerIcon style={{ fill: `${coloricon}`, width: "100px" }} />
+                            <ChannelChat01 style={{ fill: `${coloricon}`, width: "100px" }} />
                             <ColorInput hex={hexIconColor} onChange={e => { setHexIconColor(e.hex); setcoloricon(e.hex) }} />
                         </div>
                     </div>

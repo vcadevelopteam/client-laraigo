@@ -1,37 +1,38 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useRef, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box, AppBar, Tabs, Tab, Grid, IconButton, FormHelperText, Tooltip, TextField, withStyles, Typography, FormControl, Select, MenuItem, InputAdornment } from '@material-ui/core';
-import Avatar from '@material-ui/core/Avatar';
-import Link from '@material-ui/core/Link';
-import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { langKeys } from "lang/keys";
-import { Trans, useTranslation } from "react-i18next";
-import { ColorInput, FieldEdit, FieldSelect, IOSSwitch } from "components";
-import { useHistory, useLocation } from "react-router";
-import paths from "common/constants/paths";
-import { useForm, UseFormReturn } from 'react-hook-form';
-import { useSelector } from "hooks";
-import { useDispatch } from "react-redux";
-import { insertChannel2 } from "store/channel/actions";
-import { AndroidIcon } from "icons";
-import clsx from 'clsx';
+import { ChannelAndroid } from "icons";
 import { Close, CloudUpload } from "@material-ui/icons";
-import InfoIcon from '@material-ui/icons/Info';
-import { IChatWebAdd, IChannel, IChatWebAddFormField } from "@types";
 import { ColorChangeHandler } from "react-color";
-import AddCircleIcon from '@material-ui/icons/AddCircle';
+import { ColorInput, FieldEdit, FieldSelect, IOSSwitch } from "components";
 import { getEditChatWebChannel, getInputValidationSel, getInsertChatwebChannel } from "common/helpers";
-import { editChannel as getEditChannel} from 'store/channel/actions';
 import { getMultiCollection } from "store/main/actions";
+import { IChatWebAdd, IChannel, IChatWebAddFormField } from "@types";
+import { insertChannel2, editChannel as getEditChannel } from "store/channel/actions";
+import { langKeys } from "lang/keys";
+import { makeStyles, Breadcrumbs, Button, Box, AppBar, Tabs, Tab, Grid, IconButton, FormHelperText, Tooltip, TextField, withStyles, Typography, FormControl, Select, MenuItem, InputAdornment } from '@material-ui/core';
+import { showBackdrop, showSnackbar } from 'store/popus/actions';
+import { TabPanel } from "pages/crm/components";
+import { Trans, useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
+import { useForm, UseFormReturn } from 'react-hook-form';
+import { useHistory, useLocation } from "react-router";
+import { useSelector } from "hooks";
+
+import AddCircleIcon from '@material-ui/icons/AddCircle';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+import Avatar from '@material-ui/core/Avatar';
+import clsx from 'clsx';
+import InfoIcon from '@material-ui/icons/Info';
+import Link from '@material-ui/core/Link';
+import paths from "common/constants/paths";
+import React, { FC, useEffect, useRef, useState } from "react";
 import SendIcon from '@material-ui/icons/Send';
-import { TabPanel } from "pages/crm/components";
+
 interface FieldTemplate {
     text: React.ReactNode;
     node: (onClose: (key: string) => void, data: IChatWebAddFormField, form: UseFormReturn<IChatWebAdd>, index: number,fields:any, setFields: (key: any) => void) => React.ReactNode;
     data: IChatWebAddFormField;
 }
+
 const HtmlTooltip = withStyles((theme) => ({
     tooltip: {
       backgroundColor: '#f5f5f9',
@@ -1906,7 +1907,7 @@ const ChannelAndroidAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loadi
                             {t(langKeys.givechannelcolor)}
                         </Box>
                         <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                            <AndroidIcon style={{ fill: `${coloricon}`, width: "100px" }} />
+                            <ChannelAndroid style={{ fill: `${coloricon}`, width: "100px" }} />
                             <ColorInput hex={hexIconColor} onChange={e => { setHexIconColor(e.hex); setcoloricon(e.hex) }}
                             />
                         </div>
