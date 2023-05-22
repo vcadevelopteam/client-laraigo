@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { extractVariables, getCampaignMemberSel, getCampaignSel, getCommChannelLst, getMessageTemplateLst, getUserGroupsSel, getValuesFromDomain, insCampaign, insCampaignMember } from 'common/helpers';
+import { extractVariables, getCampaignMemberSel, getCampaignSel, getCommChannelLst, getMessageTemplateLst, getPropertySelByName, getUserGroupsSel, getValuesFromDomain, insCampaign, insCampaignMember } from 'common/helpers';
 import { Dictionary, ICampaign, SelectedColumns } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { execute, getMultiCollection, resetMainAux } from 'store/main/actions';
@@ -108,7 +108,8 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 getUserGroupsSel(),
                 getMessageTemplateLst(''),
                 getCampaignSel(row?.id),
-                getCampaignMemberSel(row?.id)
+                getCampaignMemberSel(row?.id),
+                getPropertySelByName("VALIDACIONCAMPAÑASGRUPO", "VALIDACIONCAMPAÑASGRUPO")
             ]));
             dispatch(showBackdrop(true));
             setWaitView(true);
@@ -122,6 +123,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 getCommChannelLst(),
                 getUserGroupsSel(),
                 getMessageTemplateLst(''),
+                getPropertySelByName("VALIDACIONCAMPAÑASGRUPO", "VALIDACIONCAMPAÑASGRUPO")
             ]));
             setPageSelected(0);
         }
