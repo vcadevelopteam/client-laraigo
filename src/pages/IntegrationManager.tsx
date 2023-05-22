@@ -169,7 +169,6 @@ const IntegrationManager: FC = () => {
    const dispatch = useDispatch();
    const { t } = useTranslation();
    const mainResult = useSelector((state) => state.main);
-   // console.log(mainResult);
    const executeResult = useSelector((state) => state.main.execute);
 
    const [viewSelected, setViewSelected] = useState("view-1");
@@ -434,7 +433,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
    fetchData,
    arrayBread,
 }) => {
-   // console.log(row);
    const classes = useStyles();
    const [waitSave, setWaitSave] = useState(false);
    const executeRes = useSelector((state) => state.main.execute);
@@ -456,9 +454,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
    const [openResponseModal, setOpenResponseModal] = useState(false);
    const [responseData, setResponseData] = useState<any>();
 
-   // const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-
-   // console.log(edit);
    const dataKeys = new Set([
       ...dataLevelKeys,
       ...(row?.fields
@@ -722,25 +717,14 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
       param: string,
       value: string
    ) => {
-      console.log("Cambiando Un Param", param, value);
-      // const updatedParams = [...urlParams];
-      // updatedParams[index] = { ...updatedParams[index], [param]: value };
-      // const urlParamsString = updatedParams
-      //    .map((param) => `${param.key}=${param.value}`)
-      //    .join("&");
-      // const url = urlParamsString ? "?" + urlParamsString : "";
-      // setValue("url", url);
       updateUrl();
-      // setValue("url_params", { ...urlParams[index], [param]: value });
       await trigger("url_params");
    };
    const onBlurUrlParam = (index: any, param: string, value: any) => {
       urlParamsUpdate(index, { ...urlParams[index], [param]: value });
    };
 
-   const onClickAddUrlParam = async () => {
-      console.log("Añadiending Un Param");
-
+   const onClickAddUrlParam = () => {
       urlParamsAppend({ key: "", value: "" });
       updateUrl();
    };
@@ -1174,7 +1158,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
    }, [mainAuxRes, waitView]);
 
    const onChangeURL = (value: string) => {
-      console.log(value);
       const params = new URLSearchParams(value.split("?")[1]);
       const urlParams: { key: string; value: string }[] = [];
 
@@ -1186,7 +1169,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
          urlParams.push({ key, value });
          result = iterator.next();
       }
-      console.log("Mi urlParams", urlParams);
       setValue("url_params", urlParams);
       setValue("url", value);
    };
@@ -2012,7 +1994,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                                           `results.${i}.path` as const,
                                           {
                                              validate: (value: string) =>{
-                                                console.log(value !== "");
                                                 return value !== "" ||
                                                 (t(
                                                    langKeys.field_required
@@ -2318,10 +2299,8 @@ const ModalIntegrationManager: React.FC<ModalProps> = ({
    const [selectedKeys, setSelectedKeys] = useState<
       { variable: string; path: string }[]
    >([]);
-   // console.log(data);
    useEffect(() => {
       return () => {
-         console.log("cleaning component");
          setResponseData({});
          setSelectedKeys([]);
       };
@@ -2339,7 +2318,6 @@ const ModalIntegrationManager: React.FC<ModalProps> = ({
    };
 
    const getHtml: any = (data: any, param: string, path: string) => {
-      // console.log(data);
       if (Array.isArray(data)) {
          return (
             <div
@@ -2445,7 +2423,6 @@ const ModalIntegrationManager: React.FC<ModalProps> = ({
          }}
       >
          <div className="row-zyx">
-            {console.log(data.data)}
             {Object.keys(data.data || {}).map((param) => {
                return <>{getHtml(data.data[param], param, param)}</>;
             })}
@@ -2494,7 +2471,6 @@ const ModalTestIntegrationManager: React.FC<
             },
             []
          );
-         console.log(missinParamsObject);
          if (hasMissingParams) {
             setParamsCompleted(false);
             setMissingParams(missinParamsObject);
@@ -2562,9 +2538,6 @@ const ModalTestIntegrationManager: React.FC<
       return paramsCleaned;
    };
    const compareParams = (urlParams: Dictionary[], params: string[]) => {
-      //
-      console.log(urlParams);
-      console.log(params);
       debugger
       const urlParamsCleaned = urlParams?.reduce(
          (acc: any, x: any) => [...acc, "...-1-1-11"],
@@ -2595,9 +2568,6 @@ const ModalTestIntegrationManager: React.FC<
          formData?.url_params,
          cleanedParams
       );
-      if (hasMissingParams) {
-         console.log(missingParams);
-      }
 
       dispatch(
          triggerRequest({
