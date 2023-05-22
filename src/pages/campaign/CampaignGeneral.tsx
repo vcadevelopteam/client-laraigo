@@ -169,8 +169,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         register('source', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('type', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
 
-        register('usergroup', { validate: (value: any) => ((
-            user?.properties?.environment==="CLARO" && ['Gestor de Campañas'].includes(user?.roledesc || ""))? (value && value.length):groupObligatory?(value && value.length):true) || t(langKeys.field_required) });
+        register('usergroup', { validate: (value: any) => groupObligatory ? (value && value.length):true || t(langKeys.field_required) });
     }, [edit, register, multiData]);
 
     useEffect(() => {
