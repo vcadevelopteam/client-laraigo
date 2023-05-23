@@ -866,33 +866,50 @@ const TableZyx = React.memo(({
                             disabled={loading}
                             onClick={deleteDataFunction}
                             startIcon={<DeleteIcon color='secondary' />}
-                            style={{ backgroundColor: "#FB5F5F" }}
+                            style={{ backgroundColor: "#FB5F5F", color: "white", }}
                         ><Trans i18nKey={langKeys.deletedata} />
                         </Button>
                     )}
                     {importData && (
                         <>
                             <input
-                            accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
-                            id="uploadfile"
-                            type="file"
-                            style={{ display: "none" }}
-                            onChange={(e) => deleteDataFunction && deleteDataFunction(e.target.files)}
-                            />
-                            <label htmlFor="uploadfile">
-                                <Button
-                                className={classes.button}
-                                variant="contained"
-                                component="span"
-                                color="primary"
-                                startIcon={<BackupIcon color="secondary" />}
-                                style={{
-                                    backgroundColor: "#55BD84",
+                              accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
+                              id="uploadfile"
+                              type="file"
+                              style={{ display: "none" }}
+                              onChange={(e) => {
+                                if(importDataFunction) {
+                                    console.log(e.target.value);
+                                    console.log(e.target.files);
+                                    importDataFunction(e.target.files)
+                                }
+                                else {
+                                    console.log(e.target.value);
+                                    console.log(e.target.files);
+                                    
+                                }
                                 }}
-                                >
-                                    <Trans i18nKey={langKeys.import} />
-                                </Button>
-                            </label>
+                                onClick={(event) => {
+                                    // @ts-ignore
+                                    event.target.value = null;}
+                                }
+                           />
+                           <label htmlFor="uploadfile">
+                              <Button
+                                 className={classes.button}
+                                 variant="contained"
+                                 component="span"
+                                 color="secondary"
+                                 startIcon={<BackupIcon color="secondary" />}
+                                 style={{
+                                    backgroundColor: "#55BD84",
+                                    color: "white",
+                                    
+                                 }}
+                              >
+                                <Trans i18nKey={langKeys.import} />
+                              </Button>
+                           </label>
                         </>
                     )}
                 </span>

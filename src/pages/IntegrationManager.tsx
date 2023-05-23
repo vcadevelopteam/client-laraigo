@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, SyntheticEvent, useEffect, useState } from "react"; // we need this to make JSX compile
+import React, { FC, SyntheticEvent, useEffect, useMemo, useState } from "react"; // we need this to make JSX compile
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import IconButton from "@material-ui/core/IconButton";
@@ -64,6 +64,7 @@ import paths from "common/constants/paths";
 import { RadioGroupProps, TextField } from "@material-ui/core";
 import axios from "axios";
 import { set } from "date-fns";
+import { main } from "network/service/common";
 
 interface RowSelected {
    row: Dictionary | null;
@@ -1041,6 +1042,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
    };
 
    const handleUpload = async (files: any) => {
+      
       const file = files?.item(0);
       if (file) {
          const data: any = await uploadExcel(file, undefined);
@@ -1056,6 +1058,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
 
    useEffect(() => {
       if (waitImport) {
+         console.log('Esperando la importación')
          if (!executeRes.loading && !executeRes.error) {
             dispatch(
                showSnackbar({
@@ -1065,6 +1068,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                })
             );
             dispatch(showBackdrop(false));
+            console.log('Importación terminada')
             setWaitImport(false);
          } else if (executeRes.error) {
             const errormessage = t(langKeys.invalid_data);
@@ -1076,6 +1080,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                })
             );
             dispatch(showBackdrop(false));
+            console.log('Importación terminada con error')
             setWaitImport(false);
          }
       }
@@ -1130,6 +1135,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
    }, [executeRes, waitDelete]);
 
    const handleViewTable = () => {
+      // console.log('LLegando a este handleViewTable')
       dispatch(showBackdrop(true));
       dispatch(getCollectionAux(getdataIntegrationManager(getValues("id"))));
       setWaitView(true);
@@ -1137,6 +1143,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
 
    useEffect(() => {
       if (waitView) {
+         // console.log('LLegando a este useEffect')
          if (!mainAuxRes.loading && !mainAuxRes.error) {
             dispatch(showBackdrop(false));
             setWaitView(false);
@@ -1150,7 +1157,8 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                      Header: c,
                      accessor: c,
                   }))
-               );
+                  );
+               console.log('LLegando a este if')
             }
             setOpenViewTableModal(true);
          } else if (mainAuxRes.error) {
@@ -1193,7 +1201,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
 
    return (
       <div style={{ width: "100%" }}>
-         {/* <pre>{JSON.stringify(watch(), null, 2)}</pre> */}
+         <pre>{JSON.stringify(watch(), null, 2)}</pre>
          <form onSubmit={onSubmit}>
             <div
                style={{
@@ -1240,7 +1248,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                   {!getValues("isnew") &&
                      getValues("type") === "DATA_TABLE" && (
                         <React.Fragment>
-                           {/* <Button
+                            {/* <Button
                               variant="contained"
                               type="button"
                               color="primary"
@@ -1249,7 +1257,9 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                               onClick={onDeleteData}
                            >
                               {t(langKeys.deletedata)}
-                           </Button>
+                           </Button> */}
+                           
+                           {/*
                            <input
                               accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
                               id="uploadfile"
@@ -2343,16 +2353,18 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                setResponseData={setResponseData}
             />
          )}
-
-         <ModalViewTable
-            openModal={openViewTableModal}
-            setOpenModal={setOpenViewTableModal}
-            columns={columnData}
-            data={tableData}
-            importData={handleUpload}
-            deleteData={onDeleteData}
-            
-         />
+         {openViewTableModal && (
+            <ModalViewTable
+               openModal={openViewTableModal}
+               setOpenModal={setOpenViewTableModal}
+               columns={columnData}
+               data={tableData}
+               formId={getValues("id")}
+               importDataFunction={handleUpload}
+               deleteDataFunction={onDeleteData} 
+               waitImport={waitImport}
+            />
+         )}
       </div>
    );
 };
@@ -2800,8 +2812,10 @@ interface ViewTableModalProps {
    setOpenModal: (value: boolean) => any;
    columns: Dictionary[];
    data: Dictionary[];
-   importData: (files: any) => Promise<void>
-   deleteData: ()=> void;
+   formId: number;
+   importDataFunction: (files: any) => Promise<void>
+   deleteDataFunction: ()=> void;
+   waitImport: boolean;
 }
 
 const ModalViewTable: React.FC<ViewTableModalProps> = ({
@@ -2809,21 +2823,73 @@ const ModalViewTable: React.FC<ViewTableModalProps> = ({
    setOpenModal,
    columns = [],
    data = [],
-   importData,
-   deleteData
+   formId,
+   importDataFunction,
+   deleteDataFunction,
+   waitImport
 }) => {
    const { t } = useTranslation();
    const dispatch = useDispatch();
-
    const handleCancelModal = () => {
       setOpenModal(false);
    };
+   const mainAuxRes = useSelector((state) => state.main.mainAux);
+   const executeRes = useSelector((state) => state.main.execute);
+   
+   console.log(mainAuxRes.data)
 
    useEffect(() => {
+      console.log("Se montó el modal");
+      if(data.length < 0){
+         console.log("Se montó el modal");
+         
+      }
       return () => {
          dispatch(resetMainAux());
       };
    }, []);
+
+   useEffect(() => {
+      console.log("Waitimport Value: ", waitImport)
+      if(waitImport){
+         dispatch(getCollectionAux(getdataIntegrationManager(formId)));
+      }
+      // if (data.length > 0) {
+      //    console.log("Hay data");
+      //    console.log(data);
+      //    console.log(columns)
+      // }
+      return () => {
+         dispatch(resetMainAux());
+      }
+   }, [waitImport, executeRes]);
+
+   const tableData = useMemo(() => {
+      if (mainAuxRes.data.length === 0 || mainAuxRes.data[0]?.data === null) {
+      //   console.log('Array vacío');
+        return [];
+      }
+      // console.log('Actualizando los rows');
+      return mainAuxRes.data[0]?.data ?? [];
+    }, [mainAuxRes.data]);
+    
+    const columnsData = useMemo(() => {
+      if (mainAuxRes.data.length === 0 || mainAuxRes.data[0]?.data === null || mainAuxRes.data[0]?.data.length === 0) {
+      //   console.log('Array vacío');
+        return [];
+      }
+      // console.log('Actualizando las columnas');
+      return Object.keys(mainAuxRes.data[0]?.data[0]).map((c) => ({
+        Header: c,
+        accessor: c,
+      }));
+    }, [mainAuxRes.data]);
+    
+
+  
+   // console.log(tableData)
+   // console.log(columnsData)
+ 
 
    return (
       <DialogZyx
@@ -2834,17 +2900,20 @@ const ModalViewTable: React.FC<ViewTableModalProps> = ({
          buttonText1={t(langKeys.close)}
          handleClickButton1={handleCancelModal}
       >
-         <TableZyx
-            columns={columns}
-            data={data}
-            download={true}
-            pageSizeDefault={20}
-            filterGeneral={false}
-            importData={true}
-            importDataFunction={deleteData}
-            deleteData={true}
-            deleteDataFunction={importData}
-         />
+         {
+           
+               <TableZyx
+                  columns={columnsData}
+                  data={tableData}
+                  download={true}
+                  pageSizeDefault={20}
+                  filterGeneral={false}
+                  importData={true}
+                  importDataFunction={importDataFunction}
+                  deleteData={true}
+                  deleteDataFunction={deleteDataFunction}
+               />
+         }
       </DialogZyx>
    );
 };

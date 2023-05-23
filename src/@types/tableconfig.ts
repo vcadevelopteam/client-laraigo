@@ -26,9 +26,9 @@ export interface TableConfig {
   handleTemplate?: (param?: any) => void;
   download?: boolean;
   deleteData?: boolean;
-  deleteDataFunction?:(files: any) => Promise<void>;
+  deleteDataFunction?:() => void;
   importData?: boolean;
-  importDataFunction?(): void;
+  importDataFunction?:(files: any) => Promise<void>;
   register?: boolean;
   handleRegister?(param: any): void;
   calculate?: boolean;
