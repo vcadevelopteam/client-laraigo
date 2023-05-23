@@ -560,7 +560,7 @@ const translation: LangKeys = {
   signup_with_facebook: "Registrate con Facebook",
   next: "Siguiente",
   managerial: "Gerencial",
-  web_form: "Formulario web",
+  web_form: "Formulario Web",
   emailverification: 'El correo ingresado no tiene los valores de un correo: @ y .',
   tagranking: "Ranking de tags",
   completedesc: 'Descripción completa',
@@ -5160,6 +5160,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   T_WORKPLACE_MESSENGER: 'WORKPLACE MESSENGER',
   T_WORKPLACE_WALL: 'WORKPLACE MURO',
   T_YOUTUBE: 'YOUTUBE',
+  channel_workplace: 'Workplace',
+  channel_workplacedm: 'Workplace DM',
 };
 
 const esResource: ResourceLanguage = {

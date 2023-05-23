@@ -876,6 +876,7 @@ const nameschannel: { [x: string]: string } = {
     "TKTA": "T_TIKTOK",
     "TKTK": "T_TIKTOK",
     "TKTT": "T_TIKTOK",
+    "TWDM": "T_TWITTER_MESSENGER",
     "TWIT": "T_TWITTER_WALL",
     "TWMS": "T_TWITTER_MESSENGER",
     "VOXI": "T_VOICE",

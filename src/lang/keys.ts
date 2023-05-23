@@ -5149,6 +5149,8 @@ export const langKeys = {
   T_WORKPLACE_MESSENGER: 'T_WORKPLACE_MESSENGER',
   T_WORKPLACE_WALL: 'T_WORKPLACE_WALL',
   T_YOUTUBE: 'T_YOUTUBE',
+  channel_workplace: 'Workplace',
+  channel_workplacedm: 'Workplace DM',
 };
 
 export type LangKeys = typeof langKeys;

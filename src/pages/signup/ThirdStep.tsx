@@ -2,35 +2,35 @@
 import { FC, useContext } from "react";
 import { makeStyles, Typography, Paper } from '@material-ui/core';
 import { langKeys } from "lang/keys";
-import { Trans } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import clsx from "clsx";
-import { useTranslation } from "react-i18next";
 import { ControlPoint as ControlPointIcon } from "@material-ui/icons";
-import ListAltIcon from '@material-ui/icons/ListAlt';
+import { ListChannels, SubscriptionContext, usePlanData } from "./context";
+
 import {
-    LaraigoLogo,
-    SmsColor,
-    EmailColor,
-    WebMessengerColor,
-    WebMessengerColorAlt02,
-    WebMessengerColorAlt03,
-    FacebookMessengerColor2 as FacebookMessengerColor,
-    FacebookColor2 as FacebookColor,
-    InstagramColor2 as InstagramColor,
-    TelegramColor2 as TelegramColor,
     AndroidColor,
+    AppStoreColor,
+    BloggerColor,
+    ChatWebColor,
+    FacebookColor,
+    FacebookMessengerColor,
+    FormColor,
+    InstagramColor,
     IosColor,
-    WhatsappColor,
+    LaraigoLogo,
+    LinkedInColor,
+    MailColor,
+    MyBusinessColor,
+    PlayStoreColor,
+    SmsColor,
+    TeamsColor,
+    TelegramColor,
+    TikTokColor,
     TwitterColor,
     VoiceColor,
-    TikTokColor,
+    WhatsAppColor,
     YouTubeColor,
-    LinkedInColor,
-    TeamsColor,
-    BloggerColor,
-    WebMessengerColorAlt01,
 } from "icons";
-import { ListChannels, SubscriptionContext, usePlanData } from "./context";
 
 interface ChannelOption {
     icon: React.ReactNode;
@@ -153,7 +153,7 @@ const ThirdStep: FC = () => {
             selected: listchannels.instagramDM,
         },
         {
-            icon: <WhatsappColor className={classes.icon} />,
+            icon: <WhatsAppColor className={classes.icon} />,
             label: t(langKeys.channel_whatsapp),
             key: 'whatsapp',
             onClick: () => {
@@ -207,7 +207,7 @@ const ThirdStep: FC = () => {
             selected: listchannels.youtube,
         },
         {
-            icon: <WebMessengerColorAlt01 className={classes.icon} />,
+            icon: <MyBusinessColor className={classes.icon} />,
             label: t(langKeys.channel_business),
             key: 'business',
             onClick: () => {
@@ -216,7 +216,7 @@ const ThirdStep: FC = () => {
             selected: listchannels.business,
         },
         {
-            icon: <WebMessengerColorAlt02 className={classes.icon} />,
+            icon: <PlayStoreColor className={classes.icon} />,
             label: t(langKeys.channel_playstore),
             key: 'playstore',
             onClick: () => {
@@ -225,7 +225,7 @@ const ThirdStep: FC = () => {
             selected: listchannels.playstore,
         },
         {
-            icon: <WebMessengerColorAlt03 className={classes.icon} />,
+            icon: <AppStoreColor className={classes.icon} />,
             label: t(langKeys.channel_appstore),
             key: 'appstore',
             onClick: () => {
@@ -245,21 +245,21 @@ const ThirdStep: FC = () => {
     ];
     const businessChannelOptions: ChannelOption[] = [
         {
-            icon: <WebMessengerColor className={classes.icon} />,
+            icon: <ChatWebColor className={classes.icon} />,
             label: t(langKeys.channel_chatweb),
             key: 'chatWeb',
             onClick: () => toggleChannel('chatWeb'),
             selected: listchannels.chatWeb,
         },
         {
-            icon: <ListAltIcon className={classes.icon} />,
+            icon: <FormColor className={classes.icon} />,
             label: t(langKeys.web_form),
             key: 'webForm',
             onClick: () => toggleChannel('webForm'),
             selected: listchannels.webForm,
         },
         {
-            icon: <EmailColor className={classes.icon} />,
+            icon: <MailColor className={classes.icon} />,
             label: t(langKeys.channel_email),
             key: 'email',
             onClick: () => toggleChannel('email'),

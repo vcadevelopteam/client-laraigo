@@ -4186,7 +4186,7 @@ const translation: LangKeys = {
   bot_training_scheduled: "The bot already has a scheduled training",
   bot_training_ongoing: "Bot training is in process",
   type_close_irrelevante: 'Irrelevant closure',
-  web_form: "Web form",
+  web_form: "Web Form",
   type_close_llamada_desconectada: 'call disconnected',
   type_close_no_hay_asesores: 'No advisers to refer',
   type_close_nocompletado: 'Failed to complete care',
@@ -5232,6 +5232,8 @@ const translation: LangKeys = {
   T_WORKPLACE_MESSENGER: 'WORKPLACE MESSENGER',
   T_WORKPLACE_WALL: 'WORKPLACE WALL',
   T_YOUTUBE: 'YOUTUBE',
+  channel_workplace: 'channel_workplace',
+  channel_workplacedm: 'channel_workplacedm',
 };
 
 const enResource: ResourceLanguage = {

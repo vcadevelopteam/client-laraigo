@@ -1,6 +1,6 @@
 import 'emoji-mart/css/emoji-mart.css'
 
-import { AndroidColor, ChannelBlogger, EmailColor, EmojiICon, FacebookColor, FacebookMessengerColor, FacebookWorkplace, GifIcon, InstagramColor, IosColor, LineIcon, LinkedInColor, SmsColor, TeamsColor, TelegramColor, TikTokColor, TwitterColor, VoiceColor, WebMessengerColor, WhatsappColor, YouTubeColor, ZyxmeMessengerIcon } from 'icons';
+import { AndroidColor, AppStoreColor, BloggerColor, ChannelBlogger, ChatWebColor, EmojiICon, FacebookColor, FormColor, GifIcon, InstagramColor, IosColor, LineColor, LinkedInColor, MailColor, MessengerColor, MyBusinessColor, PlayStoreColor, SmsColor, TeamsColor, TelegramColor, TikTokColor, TwitterColor, VoiceColor, WhatsAppColor, WorkplaceColor, YouTubeColor } from 'icons';
 import { ChannelAndroid, ChannelAppStore, ChannelChat01, ChannelChat02, ChannelFacebook, ChannelForm, ChannelGeneric, ChannelInstagram01, ChannelInstagram02, ChannelIos, ChannelLine, ChannelLinkedIn, ChannelMail, ChannelMessenger, ChannelMyBusiness, ChannelPhone, ChannelPlayStore, ChannelSms, ChannelTeams, ChannelTelegram, ChannelTikTok, ChannelTwitter01, ChannelTwitter02, ChannelWhatsApp01, ChannelWhatsApp02, ChannelWhatsApp03, ChannelWhatsApp04, ChannelWorkplace, ChannelYouTube } from 'icons';
 import { Dictionary } from '@types';
 import { FormControlLabel, FormHelperText, OutlinedInputProps, Radio, RadioGroup, RadioGroupProps, useTheme, TypographyVariant, Divider, Grid, ListItem, ListItemText, styled, ListItemIcon } from '@material-ui/core';
@@ -571,6 +571,7 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     if (channelType === "TKTA") return <ChannelTikTok width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "TKTK") return <ChannelTikTok width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "TKTT") return <ChannelTikTok width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "TWDM") return <ChannelTwitter01 width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "TWIT") return <ChannelTwitter01 width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "TWMS") return <ChannelTwitter02 width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "VOXI") return <ChannelPhone width={width} fill={color} stroke={color} height={height} color={color} />
@@ -587,44 +588,48 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     return <ChannelGeneric style={{ color, width, height }} />
 }
 export const GetIconColor: React.FC<IconProps> = ({ channelType }) => {
-    if (channelType === "WHAT") return <WhatsappColor />
-    if (channelType === "WHAD") return <WhatsappColor />
-    if (channelType === "WHAG") return <WhatsappColor />
-    if (channelType === "WHAM") return <WhatsappColor />
-    if (channelType === "WHAP") return <WhatsappColor />
-    if (channelType === "WHAC") return <WhatsappColor />
-    if (channelType === "FBMS") return <FacebookMessengerColor />
-    if (channelType === "FBDM") return <FacebookMessengerColor />
-    if (channelType === "FBWP") return <FacebookWorkplace />
-    if (channelType === "FBWM") return <FacebookWorkplace />
-    if (channelType === "FACEBOOKWORPLACE") return <FacebookWorkplace />
-    if (channelType === "FBWA") return <FacebookColor />
-    if (channelType === "WEBM") return <WebMessengerColor />
-    if (channelType === "TELE") return <TelegramColor />
-    if (channelType === "INST") return <InstagramColor />
-    if (channelType === "INMS") return <InstagramColor />
-    if (channelType === "INDM") return <InstagramColor />
-    if (channelType === "ANDR") return <AndroidColor />
-    if (channelType === "APPL") return <IosColor />
-    if (channelType === "CHATZ") return <ZyxmeMessengerIcon />
-    if (channelType === "CHAZ") return <ZyxmeMessengerIcon />
-    if (channelType === "MAIL") return <EmailColor />
-    if (channelType === "MAII") return <EmailColor />
-    if (channelType === "YOUT") return <YouTubeColor />
-    if (channelType === "GOBU") return <ZyxmeMessengerIcon />
-    if (channelType === "PLAY") return <ZyxmeMessengerIcon />
-    if (channelType === "APPS") return <ZyxmeMessengerIcon />
-    if (channelType === "LINE") return <LineIcon />
-    if (channelType === "SMS") return <SmsColor />
-    if (channelType === "SMSI") return <SmsColor />
-    if (channelType === "TWIT") return <TwitterColor />
-    if (channelType === "TWMS") return <TwitterColor />
-    if (channelType === "TEAM") return <TeamsColor />
-    if (channelType === "VOXI") return <VoiceColor />
-    if (channelType === "LNKD") return <LinkedInColor />
-    if (channelType === "TKTK") return <TikTokColor />
-    if (channelType === "TKTA") return <TikTokColor />
-    if (channelType === "TKTT") return <TikTokColor />
+    if (channelType === 'ANDR') return <AndroidColor />
+    if (channelType === 'APPL') return <IosColor />
+    if (channelType === 'APPS') return <AppStoreColor />
+    if (channelType === 'BLOG') return <BloggerColor />
+    if (channelType === 'CHATZ') return <ChatWebColor />
+    if (channelType === 'CHAZ') return <ChatWebColor />
+    if (channelType === 'FACEBOOKWORPLACE') return <WorkplaceColor />
+    if (channelType === 'FBDM') return <MessengerColor />
+    if (channelType === 'FBMS') return <MessengerColor />
+    if (channelType === 'FBWA') return <FacebookColor />
+    if (channelType === 'FBWM') return <WorkplaceColor />
+    if (channelType === 'FBWP') return <WorkplaceColor />
+    if (channelType === 'FORM') return <FormColor />
+    if (channelType === 'GOBU') return <MyBusinessColor />
+    if (channelType === 'INDM') return <InstagramColor />
+    if (channelType === 'INMS') return <InstagramColor />
+    if (channelType === 'INST') return <InstagramColor />
+    if (channelType === 'LINE') return <LineColor />
+    if (channelType === 'LNKD') return <LinkedInColor />
+    if (channelType === 'MAII') return <MailColor />
+    if (channelType === 'MAIL') return <MailColor />
+    if (channelType === 'PLAY') return <PlayStoreColor />
+    if (channelType === 'SMS') return <SmsColor />
+    if (channelType === 'SMSI') return <SmsColor />
+    if (channelType === 'TEAM') return <TeamsColor />
+    if (channelType === 'TELE') return <TelegramColor />
+    if (channelType === 'TKTA') return <TikTokColor />
+    if (channelType === 'TKTK') return <TikTokColor />
+    if (channelType === 'TKTT') return <TikTokColor />
+    if (channelType === 'TWDM') return <TwitterColor />
+    if (channelType === 'TWIT') return <TwitterColor />
+    if (channelType === 'TWMS') return <TwitterColor />
+    if (channelType === 'VOXI') return <VoiceColor />
+    if (channelType === 'WEBM') return <ChatWebColor />
+    if (channelType === 'WHAC') return <WhatsAppColor />
+    if (channelType === 'WHAD') return <WhatsAppColor />
+    if (channelType === 'WHAG') return <WhatsAppColor />
+    if (channelType === 'WHAM') return <WhatsAppColor />
+    if (channelType === 'WHAP') return <WhatsAppColor />
+    if (channelType === 'WHAT') return <WhatsAppColor />
+    if (channelType === 'YOUA') return <YouTubeColor />
+    if (channelType === 'YOUT') return <YouTubeColor />
 
     return <TelegramColor />
 }
