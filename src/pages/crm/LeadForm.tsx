@@ -2500,7 +2500,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                             handleSave("PROGRAMADO");
                         }}
                     >
-                        <Trans i18nKey={!activity ? langKeys.schedule : langKeys.save} />
+                        <Trans i18nKey={!activity ? langKeys.schedule2 : langKeys.save} />
                     </Button>
                     <Button
                         variant="contained"

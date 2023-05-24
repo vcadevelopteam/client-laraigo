@@ -3421,6 +3421,7 @@ const translation: LangKeys = {
   dueDate: 'Due date',
   assignedTo: 'Assigned to',
   schedule: 'Schedule',
+  schedule2: 'Schedule',
   markAsDone: 'Mark as done',
   doneAndScheduleNext: 'Done and schedule next',
   discard: 'Discard',
