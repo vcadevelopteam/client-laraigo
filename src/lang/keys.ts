@@ -3377,6 +3377,7 @@ export const langKeys = {
   dueDate: 'dueDate',
   assignedTo: 'assignedTo',
   schedule: 'schedule',
+  schedule2: 'schedule2',
   markAsDone: 'markAsDone',
   doneAndScheduleNext: 'doneAndScheduleNext',
   discard: 'discard',
