@@ -1046,6 +1046,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
       const file = files?.item(0);
       if (file) {
          const data: any = await uploadExcel(file, undefined);
+         console.log(data);
          if (data.length > 0) {
             dispatch(showBackdrop(true));
             dispatch(
@@ -1068,6 +1069,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                })
             );
             dispatch(showBackdrop(false));
+            console.log(mainAuxRes.data)
             console.log('Importación terminada')
             setWaitImport(false);
          } else if (executeRes.error) {
@@ -2221,7 +2223,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                                              },
                                           }),
                                        }}
-                                       label={t(langKeys.name)}
+                                       label={t(langKeys.columntitle)}
                                        className={classes.fieldRow}
                                        valueDefault={field?.name || ""}
                                        disabled={disableKeys(field, i)}
@@ -2836,7 +2838,7 @@ const ModalViewTable: React.FC<ViewTableModalProps> = ({
    const mainAuxRes = useSelector((state) => state.main.mainAux);
    const executeRes = useSelector((state) => state.main.execute);
    
-   console.log(mainAuxRes.data)
+   // console.log(mainAuxRes.data)
 
    useEffect(() => {
       console.log("Se montó el modal");
@@ -2852,7 +2854,10 @@ const ModalViewTable: React.FC<ViewTableModalProps> = ({
    useEffect(() => {
       console.log("Waitimport Value: ", waitImport)
       if(waitImport){
-         dispatch(getCollectionAux(getdataIntegrationManager(formId)));
+         if (!executeRes.loading && !executeRes.error) {
+            console.log('Llamando al getCollectionAux')
+            dispatch(getCollectionAux(getdataIntegrationManager(formId)));
+         }
       }
       // if (data.length > 0) {
       //    console.log("Hay data");

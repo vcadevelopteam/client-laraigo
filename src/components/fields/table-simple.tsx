@@ -878,21 +878,13 @@ const TableZyx = React.memo(({
                               type="file"
                               style={{ display: "none" }}
                               onChange={(e) => {
-                                if(importDataFunction) {
-                                    console.log(e.target.value);
-                                    console.log(e.target.files);
-                                    importDataFunction(e.target.files)
-                                }
-                                else {
-                                    console.log(e.target.value);
-                                    console.log(e.target.files);
-                                    
-                                }
-                                }}
+                                importDataFunction && importDataFunction(e.target.files)
+                              }}
                                 onClick={(event) => {
                                     // @ts-ignore
-                                    event.target.value = null;}
+                                    event.target.value = null;
                                 }
+                            }
                            />
                            <label htmlFor="uploadfile">
                               <Button
