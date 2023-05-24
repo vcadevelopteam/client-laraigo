@@ -1261,6 +1261,8 @@ const translation: LangKeys = {
   calendar_connections_subtitle: 'Conecta tu calendario para que Laraigo sepa cuándo estás disponible y se actualiza a medida que se programan los eventos.',
 
   id: 'ID',
+  tooltipintegrationname: "El nombre de la tabla aparecerá en el URL, por lo tanto, no se podrá añadir caracteres especiales, mayúscula y espacio.",
+  tooltipintegrationurl: "La URL se mostrará luego de guardar la tabla.",
   newmessagetemplate: 'Nueva plantilla de comunicación',
   messagetemplate: 'Plantilla de comunicación',
   messagetemplate_plural: 'Plantillas de Comunicación',
@@ -1311,6 +1313,7 @@ const translation: LangKeys = {
   newintegrationmanager: 'Nueva integración',
   api_template: 'Plantillas API',
   addUrlParam: 'Agregar parámetro',
+  levelName: 'Nombre de nivel',
   urlParams: 'Parámetros de URL',
   addResponse: 'Añadir respuesta',
   getVariables: 'Obtener Variables',

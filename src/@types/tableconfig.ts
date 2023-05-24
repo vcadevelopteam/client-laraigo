@@ -25,6 +25,10 @@ export interface TableConfig {
   importCSV?: (param?: any) => void;
   handleTemplate?: (param?: any) => void;
   download?: boolean;
+  deleteData?: boolean;
+  deleteDataFunction?:() => void;
+  importData?: boolean;
+  importDataFunction?:(files: any) => Promise<void>;
   register?: boolean;
   handleRegister?(param: any): void;
   calculate?: boolean;

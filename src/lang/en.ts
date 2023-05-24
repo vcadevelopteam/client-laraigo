@@ -943,6 +943,7 @@ const translation: LangKeys = {
   api_template: 'API Templates',
   addUrlParam: 'Add Param',
   urlParams: 'URL Params',
+  levelName: 'Level Name',
   addResponse: 'Add Response',
   getVariables: 'Get Variables',
   standard: 'Standard',
@@ -3622,6 +3623,8 @@ const translation: LangKeys = {
   function_mode: 'Mode',
   successful_import: 'Successful import',
   detractionminimum: 'Detraction Limit Amount (Peruvian Soles)',
+  tooltipintegrationname: "The name of the table will appear in the URL, therefore special characters, capital letters and spaces cannot be added.",
+  tooltipintegrationurl: "The URL will be displayed after saving the table.",
 
   propertyambiente: 'Allows for environment customization',
   propertygrupofacturacion: 'Enables billing group',
