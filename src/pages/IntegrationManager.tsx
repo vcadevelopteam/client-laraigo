@@ -37,7 +37,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import SaveIcon from "@material-ui/icons/Save";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
-import { UseFormSetValue, useFieldArray, useForm } from "react-hook-form";
+import { FieldArrayWithId, UseFormSetValue, useFieldArray, useForm } from "react-hook-form";
 import {
    getCollection,
    resetAllMain,
@@ -164,6 +164,13 @@ const dataLevel: Dictionary = {
 };
 
 const dataLevelKeys = ["corpid", "orgid"];
+
+const levelFields: Record<string,string> = {
+   ORGANIZATION: 'orgid',
+   CORPORATION: 'corpid',
+}
+// let headFields: any[] = []
+// let tailFields: any[] = [];
 
 const IntegrationManager: FC = () => {
    const history = useHistory();
@@ -836,25 +843,32 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
    const onChangeLevel = async (data: Dictionary) => {
       setValue("level", data?.key || "");
       await trigger("level");
+      
+      let newFields = getValues("fields").filter((f) => !dataLevelKeys.includes(f.name));
+      
       if (data?.key === "CORPORATION") {
-         setValue("fields", [
-            { name: "corpid", key: true },
-            ...getValues("fields").filter(
-               (f) => !dataLevelKeys.includes(f.name)
-            ),
-         ]);
+        newFields = [
+          { name: "corpid", key: true, id: 'newCorpid' }, // Ensure you're creating a new field here
+          ...newFields,
+        ];
       }
+      
       if (data?.key === "ORGANIZATION") {
-         setValue("fields", [
-            { name: "corpid", key: true },
-            { name: "orgid", key: true },
-            ...getValues("fields").filter(
-               (f) => !dataLevelKeys.includes(f.name)
-            ),
-         ]);
+        newFields = [
+          { name: "corpid", key: true }, 
+          { name: "orgid", key: true }, 
+          ...newFields,
+        ];
       }
-   };
+    
+      // Use Set to remove duplicates based on field name.
+      const fieldsWithoutDuplicates = Array.from(new Set(newFields.map(field => field.name)))
+    .map(name => {
+      return newFields.find(field => field.name === name) || {name: '', key:false}
+    });
 
+      setValue("fields", fieldsWithoutDuplicates);
+    };
    const onClickAddField = async () => {
       fieldsAppend({ name: "", key: false });
    };
@@ -1201,9 +1215,34 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
       setValue("url", value);
    };
 
+   const [headFields, tailFields] = useMemo(() => {
+      // console.log('Actualizando los headFields y tailFields');
+      if(!fields) return [[],[]];
+      const headLenght = levelFields[getValues("level")] === 'corpid' ? 1 : 2;
+      // console.log(fields);
+      const head = fields.slice(0, headLenght) as FieldArrayWithId<FormFields, "fields", "id">[];
+      const tail = fields.slice(headLenght) as FieldArrayWithId<FormFields, "fields", "id">[];
+      // console.log('headFields', headFields)
+      // console.log('tailFields', tailFields)
+      // console.log('head', head)
+      // console.log('tail', tail)
+      return [head, tail];
+   }, [fields]);
+
+   // if(fields){
+   //    console.log(getValues("level"));
+   //    console.log(levelFields[getValues("level")]);
+   //    const headLenght = levelFields[getValues("level")] === 'corpid' ? 1 : 2;
+   //    console.log(headLenght);
+   //    headFields = fields.slice(0, headLenght) as FieldArrayWithId<FormFields, "fields", "id">[];
+   //    tailFields = fields.slice(headLenght) as FieldArrayWithId<FormFields, "fields", "id">[];
+   //    // console.log('headFields', headFields)
+   //    // console.log('tailFields', tailFields)
+   
+   // }
    return (
       <div style={{ width: "100%" }}>
-         <pre>{JSON.stringify(watch(), null, 2)}</pre>
+         {/* <pre>{JSON.stringify(watch(), null, 2)}</pre> */}
          <form onSubmit={onSubmit}>
             <div
                style={{
@@ -2140,9 +2179,11 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                                  className="col-12"
                               />
                            )}
+                           
                         </div>
                         <div className="row-zyx">
                            {edit && getValues("isnew") ? (
+                              <>
                               <FieldSelect
                                  uset={true}
                                  fregister={{
@@ -2153,7 +2194,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                                     }),
                                  }}
                                  label={t(langKeys.level)}
-                                 className="col-12"
+                                 className="col-4"
                                  valueDefault={getValues("level")}
                                  onChange={onChangeLevel}
                                  error={errors?.level?.message}
@@ -2161,12 +2202,114 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                                  optionDesc="value"
                                  optionValue="key"
                               />
+                              
+                                 
+                                    {/* Acá deberían ir los FieldEdit */}
+                                     {
+                                       headFields?.map((field, i: number) => {
+                                          return (
+                                             <div className="col-4">
+                                             <FieldEdit
+                                                fregister={{
+                                                   ...register(`fields.${i}.name`, {
+                                                      validate: {
+                                                         value: (value: any) =>
+                                                            (value && value.length) ||
+                                                            t(langKeys.field_required),
+                                                         duplicate: (value: any) =>
+                                                            validateDuplicateFieldName(
+                                                               field,
+                                                               value
+                                                            ) ||
+                                                            t(langKeys.field_duplicate),
+                                                         startwithchar: (value: any) =>
+                                                            validateStartwithcharFieldName(
+                                                               value
+                                                            ) ||
+                                                            t(
+                                                               langKeys.field_startwithchar
+                                                            ),
+                                                         basiclatin: (value: any) =>
+                                                            validateBasicLatinFieldName(
+                                                               value
+                                                            ) ||
+                                                            t(
+                                                               langKeys.field_basiclatinlowercase
+                                                            ),
+                                                      },
+                                                   }),
+                                                }}
+                                                label={t(langKeys.levelName)}
+                                                className={classes.fieldRow}
+                                                valueDefault={field?.name || ""}
+                                                disabled={disableKeys(field, i)}
+                                                onBlur={(value) =>
+                                                   onBlurField(i, "name", value)
+                                                }
+                                                error={errors?.fields?.[i]?.name?.message}
+                                             />
+                                             </div>
+                                          )
+                                       })
+                                     }
+                              
+                              </>
                            ) : (
-                              <FieldView
-                                 label={t(langKeys.level)}
-                                 value={t(dataLevel[row?.level]) || ""}
-                                 className="col-12"
-                              />
+                              <>
+                                 <FieldView
+                                    label={t(langKeys.level)}
+                                    value={t(dataLevel[row?.level]) || ""}
+                                    className="col-4"
+                                 />
+                                 {
+                                       headFields?.map((field, i: number) => {
+                                          return (
+                                             <div className="col-4">
+                                             <FieldEdit
+                                                fregister={{
+                                                   ...register(`fields.${i}.name`, {
+                                                      validate: {
+                                                         value: (value: any) =>
+                                                            (value && value.length) ||
+                                                            t(langKeys.field_required),
+                                                         duplicate: (value: any) =>
+                                                            validateDuplicateFieldName(
+                                                               field,
+                                                               value
+                                                            ) ||
+                                                            t(langKeys.field_duplicate),
+                                                         startwithchar: (value: any) =>
+                                                            validateStartwithcharFieldName(
+                                                               value
+                                                            ) ||
+                                                            t(
+                                                               langKeys.field_startwithchar
+                                                            ),
+                                                         basiclatin: (value: any) =>
+                                                            validateBasicLatinFieldName(
+                                                               value
+                                                            ) ||
+                                                            t(
+                                                               langKeys.field_basiclatinlowercase
+                                                            ),
+                                                      },
+                                                   }),
+                                                }}
+                                                label={t(langKeys.levelName)}
+                                                className={classes.fieldRow}
+                                                valueDefault={field?.name || ""}
+                                                disabled={disableKeys(field, i)}
+                                                onBlur={(value) =>
+                                                   onBlurField(i, "name", value)
+                                                }
+                                                error={errors?.fields?.[i]?.name?.message}
+                                             />
+                                             </div>
+                                          )
+                                       })
+                                     }
+      
+                              </>
                            )}
                         </div>
                      </div>
@@ -2190,12 +2333,13 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                            )}
                         </div>
                         {edit
-                           ? fields?.map((field: any, i: number) => {
+                           ? tailFields?.map((field, i: number) => {
+                              const index = i + (levelFields[getValues("level")] === 'corpid' ? 1 : 2);
                               return (
                                  <div className="row-zyx" key={field.id} style={{gap: 32}}>
                                     <FieldEdit
                                        fregister={{
-                                          ...register(`fields.${i}.name`, {
+                                          ...register(`fields.${index}.name`, {
                                              validate: {
                                                 value: (value: any) =>
                                                    (value && value.length) ||
@@ -2228,29 +2372,29 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                                        valueDefault={field?.name || ""}
                                        disabled={disableKeys(field, i)}
                                        onBlur={(value) =>
-                                          onBlurField(i, "name", value)
+                                          onBlurField(index, "name", value)
                                        }
-                                       error={errors?.fields?.[i]?.name?.message}
+                                       error={errors?.fields?.[index]?.name?.message}
                                     />
                                     {getValues("isnew") ? (
                                        <FieldCheckbox
-                                          label={i===0?t(langKeys.key): ""}
+                                          label={index===0?t(langKeys.key): ""}
                                           className={`${classes.checkboxRow}`}
                                           valueDefault={field?.key}
-                                          disabled={disableKeys(field, i)}
+                                          disabled={disableKeys(field, index)}
                                           onChange={(value) =>
-                                             onBlurField(i, "key", value)
+                                             onBlurField(index, "key", value)
                                           }
                                           error={
-                                             errors?.fields?.[i]?.key?.message
+                                             errors?.fields?.[index]?.key?.message
                                           }
                                        />
                                     ) : null}
-                                    {!disableKeys(field, i) ? (
+                                    {!disableKeys(field, index) ? (
                                        <IconButton
                                           size="small"
                                           className={classes.fieldButton}
-                                          onClick={() => onClickDeleteField(i)}
+                                          onClick={() => onClickDeleteField(index)}
                                           style={{width: "30px"}}
                                        >
                                           <DeleteIcon
@@ -2263,7 +2407,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                                  </div>
                               );
                            })
-                           : fields?.map((fields: any, i: number) => {
+                           : tailFields?.map((fields:any, i: number) => {
                               return (
                                  <div className="row-zyx" key={fields.id}>
                                     <FieldView

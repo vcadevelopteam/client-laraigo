@@ -1688,6 +1688,7 @@ export const langKeys = {
   standard: 'standard',
   custom: 'custom',
   data_table:'data_table',
+  levelName: 'levelName',
   getVariables: 'getVariables',
   requesttype: 'requesttype',
   url: 'url',

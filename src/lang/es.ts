@@ -1312,6 +1312,7 @@ const translation: LangKeys = {
   newintegrationmanager: 'Nueva integración',
   api_template: 'Plantillas API',
   addUrlParam: 'Agregar parámetro',
+  levelName: 'Nombre de nivel',
   urlParams: 'Parámetros de URL',
   addResponse: 'Añadir respuesta',
   getVariables: 'Obtener Variables',
