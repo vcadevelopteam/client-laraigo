@@ -79,7 +79,7 @@ const CloseTicketVoxi: React.FC = () => {
             register('classificationid3');
             register('path1');
             register('reschedulingdate');
-            register('observation');
+            register('obs');
             if (multiData?.data[2]?.data[0].propertyvalue === "1" && modalview === "view-1") {
                 register('classificationid1', { validate: (value: any) => (((value && value > 0) || t(langKeys.field_required))) });
 
@@ -147,7 +147,7 @@ const CloseTicketVoxi: React.FC = () => {
                     const dd: Dictionary = {
                         conversationid: ticketToClose?.conversationid!!,
                         motive: data.motive,
-                        obs: data.observation || "",
+                        obs: data.obs || "",
                         ticketnum: ticketToClose?.ticketnum!!,
                         personcommunicationchannel: ticketToClose?.personcommunicationchannel!!,
                         communicationchannelid: ticketToClose?.communicationchannelid!!,
@@ -176,7 +176,7 @@ const CloseTicketVoxi: React.FC = () => {
             const dd: Dictionary = {
                 conversationid: ticketToClose?.conversationid!!,
                 motive: data.motive,
-                obs: data.observation || "",
+                obs: data.obs || "",
                 ticketnum: ticketToClose?.ticketnum!!,
                 personcommunicationchannel: ticketToClose?.personcommunicationchannel!!,
                 communicationchannelid: ticketToClose?.communicationchannelid!!,
