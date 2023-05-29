@@ -1,18 +1,17 @@
-/* eslint-disable no-useless-escape */
-/* eslint-disable react-hooks/exhaustive-deps */
+import { ChannelSms } from "icons";
 import { FC, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box } from '@material-ui/core';
-import Link from '@material-ui/core/Link';
-import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { langKeys } from "lang/keys";
-import { useTranslation } from "react-i18next";
 import { FieldEdit, ColorInput } from "components";
-import { useHistory, useLocation } from "react-router";
-import paths from "common/constants/paths";
-import { useSelector } from "hooks";
-import { useDispatch } from "react-redux";
 import { insertChannel } from "store/channel/actions";
-import SmsIcon from '@material-ui/icons/Sms';
+import { langKeys } from "lang/keys";
+import { makeStyles, Breadcrumbs, Button, Box } from '@material-ui/core';
+import { showBackdrop, showSnackbar } from 'store/popus/actions';
+import { useDispatch } from "react-redux";
+import { useHistory, useLocation } from "react-router";
+import { useSelector } from "hooks";
+import { useTranslation } from "react-i18next";
+
+import Link from '@material-ui/core/Link';
+import paths from "common/constants/paths";
 
 interface whatsAppData {
     typeWhatsApp?: string;
@@ -108,7 +107,7 @@ export const ChannelAddSMS: FC = () => {
         partialf.parameters.description = value;
         setFields(partialf);
     }
-    
+
     if (viewSelected === "view1") {
         return (
             <div style={{ width: '100%' }}>
@@ -196,11 +195,11 @@ export const ChannelAddSMS: FC = () => {
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <div className="col-6">
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                            <Box color="textPrimary" fontSize={14} fontWeight={500} lineHeight="18px" mb={1}>
                                 {t(langKeys.givechannelcolor)}
                             </Box>
-                            <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                                <SmsIcon style={{ fill: `${coloricon}`, width: "100px", height: "100px" }} />
+                            <div style={{ alignItems: "center", display: "flex", justifyContent: "space-around", marginTop: '20px' }}>
+                                <ChannelSms style={{ fill: `${coloricon}`, height: "100px", width: "100px" }} />
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
                                     onChange={e => {

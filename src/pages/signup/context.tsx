@@ -86,8 +86,8 @@ export interface ListChannels {
     tiktok: boolean;
     youtube: boolean;
     business: boolean;
-    appstore: boolean;
     playstore: boolean;
+    appstore: boolean;
     linkedin: boolean;
     teams: boolean;
     blogger: boolean;
@@ -244,6 +244,14 @@ export interface EmailChannel {
     scope: string;
     tokentype: string;
     idtoken: string;
+    imapaccesstoken: string;
+    imapusername: string;
+    imappassword: string;
+    imapincomingendpoint: string;
+    imaphost: string;
+    imapincomingport: string;
+    imapport: string;
+    imapssl: string;
     type: string;
     build: (v: Omit<EmailChannel, 'build'>) => IRequestBody;
 }
@@ -277,8 +285,8 @@ export interface Channels {
     sms: SmsChannel;
     tiktok: TikTokChannel,
     youtube: YouTubeChannel,
-    appstore: AppStoreChannel,
     playstore: PlayStoreChannel,
+    appstore: AppStoreChannel,
     linkedin: LinkedInChannel,
     teams: TeamsChannel,
     blogger: BloggerChannel,
@@ -347,8 +355,8 @@ const defaultListChannels: ListChannels = {
     tiktok: false,
     youtube: false,
     business: false,
-    appstore: false,
     playstore: false,
+    appstore: false,
     linkedin: false,
     teams: false,
     blogger: false,

@@ -3706,6 +3706,11 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
     const dataCurrency = [{ value: "PEN", description: "PEN" }, { value: "USD", description: "USD" }]
     const dataPayment = [{ value: "PENDING", description: t(langKeys.PENDING) }, { value: "PAID", description: t(langKeys.PAID) }, { value: "NONE", description: t(langKeys.NONE) }]
 
+    function isValidDate(dateString: string) {
+        let regEx = /^\d{4}-\d{2}-\d{2}$/;
+        return `${dateString}`.match(regEx) != null;
+    }
+
     const fetchData = () => dispatch(getCollection(selInvoice(dataMain)));
 
     const getDocumentType = (documenttype: string) => {
@@ -4024,64 +4029,186 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
             const invoicetypeList = [{ value: "01", description: "FACTURA" }, { value: "03", description: "BOLETA" }]
 
             let data: any = (await uploadExcel(file) as any[]);
-            data = data.filter((d: any) => !['', null, undefined].includes(d.description)
-                && !['', null, undefined].includes(d.receiverdocnum)
-                && !['', null, undefined].includes(d.receiverbusinessname)
-                && !['', null, undefined].includes(d.receiverfiscaladdress)
-                && !['', null, undefined].includes(d.receivercountry)
-                && !['', null, undefined].includes(d.receivermail)
-                && !['', null, undefined].includes(d.invoicestatus)
-                && !['', null, undefined].includes(d.paymentstatus)
-                && !['', null, undefined].includes(d.totalamount)
-                && !['', null, undefined].includes(d.exchangerate)
-                && Object.keys(invoicetypeList.reduce((a, d) => ({ ...a, [d.value]: d.description }), {})).includes(d.invoicetype)
-                && Object.keys(receiverdoctypeList.reduce((a, d) => ({ ...a, [d.value]: d.description }), {})).includes('' + d.receiverdoctype)
-                && Object.keys(corplist.reduce((a, d) => ({ ...a, [d.corpid]: d.description }), {})).includes('' + d.corpid)
-                && Object.keys(dataYears.reduce((a, d) => ({ ...a, [d.value]: d.value }), {})).includes('' + d.year)
-                && Object.keys(dataMonths.reduce((a, d) => ({ ...a, [d.val]: d.val }), {})).includes(`${d.month}`.padStart(2, '0'))
-                && Object.keys(dataCurrency.reduce((a, d) => ({ ...a, [d.value]: d.description }), {})).includes('' + d.currency)
-            );
+            let errorcolumn = null;
+            let errorcount = 1;
+            let errorrow = 1;
 
-            if (data.length > 0) {
-                dispatch(showBackdrop(true));
-                dispatch(execute({
-                    header: null,
-                    detail: data.map((x: any) => insInvoice({
-                        ...x,
-                        corpid: Number(x.corpid) || 0,
-                        orgid: Number(x.orgid) || 0,
-                        year: Number(x.year),
-                        month: Number(x.month),
-                        receiverdoctype: String(x.receiverdoctype),
-                        receiverdocnum: String(x.receiverdocnum),
-                        receiverbusinessname: String(x.receiverbusinessname),
-                        receiverfiscaladdress: String(x.receiverfiscaladdress),
-                        receivercountry: String(x.receivercountry),
-                        receivermail: String(x.receivermail),
-                        invoicetype: String(x.invoicetype),
-                        serie: String(x.serie || ''),
-                        correlative: Number(x.correlative) || 0,
-                        invoicedate: new Date(x.invoicedate),
-                        expirationdate: new Date(x.expirationdate),
-                        invoicestatus: String(x.invoicestatus),
-                        paymentstatus: String(x.paymentstatus),
-                        paymentdate: new Date(x.paymentdate),
-                        paidby: String(x.paidby || ''),
-                        paymenttype: String(x.paymenttype || ''),
-                        totalamount: Number(x.totalamount),
-                        exchangerate: Number(x.exchangerate),
-                        currency: String(x.currency),
-                        urlcdr: String(x.urlcdr || ''),
-                        urlpdf: String(x.urlpdf || ''),
-                        urlxml: String(x.urlxml || ''),
-                        purchaseorder: String(x.purchaseorder || ''),
-                        comments: String(x.comments || ''),
-                        credittype: String(x.credittype),
-                        description: String(x.description),
-                        status: "ACTIVO",
-                    }))
-                }, true));
-                setwaitSaveImport(true)
+            for (const dataobject of data) {
+                if (['', null, undefined].includes(dataobject.description)) {
+                    errorcolumn = t(langKeys.description);
+                    errorrow = errorcount;
+                }
+
+                if (['', null, undefined].includes(dataobject.receiverdocnum)) {
+                    errorcolumn = t(langKeys.receiverdocnum);
+                    errorrow = errorcount;
+                }
+
+                if (['', null, undefined].includes(dataobject.receiverbusinessname)) {
+                    errorcolumn = t(langKeys.receiverbusinessname);
+                    errorrow = errorcount;
+                }
+
+                if (['', null, undefined].includes(dataobject.receiverfiscaladdress)) {
+                    errorcolumn = t(langKeys.receiverfiscaladdress);
+                    errorrow = errorcount;
+                }
+
+                if (['', null, undefined].includes(dataobject.receivercountry)) {
+                    errorcolumn = t(langKeys.receivercountry);
+                    errorrow = errorcount;
+                }
+
+                if (['', null, undefined].includes(dataobject.receivermail)) {
+                    errorcolumn = t(langKeys.receivermail);
+                    errorrow = errorcount;
+                }
+
+                if (['', null, undefined].includes(dataobject.invoicestatus)) {
+                    errorcolumn = t(langKeys.invoicestatus);
+                    errorrow = errorcount;
+                }
+
+                if (['', null, undefined].includes(dataobject.paymentstatus)) {
+                    errorcolumn = t(langKeys.paymentstatus);
+                    errorrow = errorcount;
+                }
+
+                if (['', null, undefined].includes(dataobject.totalamount)) {
+                    errorcolumn = t(langKeys.totalamount);
+                    errorrow = errorcount;
+                }
+
+                if (['', null, undefined].includes(dataobject.exchangerate)) {
+                    errorcolumn = t(langKeys.exchangerate);
+                    errorrow = errorcount;
+                }
+
+                if (!invoicetypeList.find(data => data.value === dataobject.invoicetype)) {
+                    errorcolumn = t(langKeys.invoicetype);
+                    errorrow = errorcount;
+                }
+
+                if (!receiverdoctypeList.find(data => data.value === dataobject.receiverdoctype)) {
+                    errorcolumn = t(langKeys.receiverdoctype);
+                    errorrow = errorcount;
+                }
+
+                if (!corplist.find(data => data.corpid === dataobject.corpid)) {
+                    errorcolumn = t(langKeys.corporation);
+                    errorrow = errorcount;
+                }
+
+                if (!dataYears.find(data => data.value === `${dataobject.year}`)) {
+                    errorcolumn = t(langKeys.year);
+                    errorrow = errorcount;
+                }
+
+                if (!dataMonths.find(data => data.val === `${dataobject.month}`.padStart(2, '0'))) {
+                    errorcolumn = t(langKeys.month);
+                    errorrow = errorcount;
+                }
+
+                if (!dataCurrency.find(data => data.value === dataobject.currency)) {
+                    errorcolumn = t(langKeys.currency);
+                    errorrow = errorcount;
+                }
+
+                if (dataobject.receivercountry) {
+                    if (`${dataobject.receivercountry}`.length > 3) {
+                        errorcolumn = t(langKeys.receivercountry);
+                        errorrow = errorcount;
+                    }
+                }
+
+                if (dataobject.invoicedate) {
+                    if (!isValidDate(dataobject.invoicedate)) {
+                        errorcolumn = t(langKeys.invoicedate);
+                        errorrow = errorcount;
+                    }
+                }
+
+                if (dataobject.expirationdate) {
+                    if (!isValidDate(dataobject.expirationdate)) {
+                        errorcolumn = t(langKeys.expirationdate);
+                        errorrow = errorcount;
+                    }
+                }
+
+                if (dataobject.paymentdate) {
+                    if (!isValidDate(dataobject.paymentdate)) {
+                        errorcolumn = t(langKeys.paymentdate);
+                        errorrow = errorcount;
+                    }
+                }
+
+                errorcount++;
+            }
+
+            if (!errorcolumn) {
+                data = data.filter((d: any) => !['', null, undefined].includes(d.description)
+                    && !['', null, undefined].includes(d.receiverdocnum)
+                    && !['', null, undefined].includes(d.receiverbusinessname)
+                    && !['', null, undefined].includes(d.receiverfiscaladdress)
+                    && !['', null, undefined].includes(d.receivercountry)
+                    && !['', null, undefined].includes(d.receivermail)
+                    && !['', null, undefined].includes(d.invoicestatus)
+                    && !['', null, undefined].includes(d.paymentstatus)
+                    && !['', null, undefined].includes(d.totalamount)
+                    && !['', null, undefined].includes(d.exchangerate)
+                    && invoicetypeList.find(data => data.value === d.invoicetype)
+                    && receiverdoctypeList.find(data => data.value === d.receiverdoctype)
+                    && corplist.find(data => data.corpid === d.corpid)
+                    && dataYears.find(data => data.value === `${d.year}`)
+                    && dataMonths.find(data => data.val === `${d.month}`.padStart(2, '0'))
+                    && dataCurrency.find(data => data.value === d.currency)
+                );
+
+                if (data.length > 0) {
+                    dispatch(showBackdrop(true));
+                    dispatch(execute({
+                        header: null,
+                        detail: data.map((x: any) => insInvoice({
+                            ...x,
+                            corpid: Number(x.corpid) || 0,
+                            orgid: Number(x.orgid) || 0,
+                            year: Number(x.year),
+                            month: Number(x.month),
+                            receiverdoctype: String(x.receiverdoctype),
+                            receiverdocnum: String(x.receiverdocnum),
+                            receiverbusinessname: String(x.receiverbusinessname),
+                            receiverfiscaladdress: String(x.receiverfiscaladdress),
+                            receivercountry: String(x.receivercountry),
+                            receivermail: String(x.receivermail),
+                            invoicetype: String(x.invoicetype),
+                            serie: String(x.serie || ''),
+                            correlative: Number(x.correlative) || 0,
+                            invoicedate: new Date(x.invoicedate),
+                            expirationdate: new Date(x.expirationdate),
+                            invoicestatus: String(x.invoicestatus),
+                            paymentstatus: String(x.paymentstatus),
+                            paymentdate: new Date(x.paymentdate),
+                            paidby: String(x.paidby || ''),
+                            paymenttype: String(x.paymenttype || ''),
+                            totalamount: Number(x.totalamount),
+                            exchangerate: Number(x.exchangerate),
+                            currency: String(x.currency),
+                            urlcdr: String(x.urlcdr || ''),
+                            urlpdf: String(x.urlpdf || ''),
+                            urlxml: String(x.urlxml || ''),
+                            purchaseorder: String(x.purchaseorder || ''),
+                            comments: String(x.comments || ''),
+                            credittype: String(x.credittype),
+                            description: String(x.description),
+                            status: "ACTIVO",
+                        }))
+                    }, true));
+                    setwaitSaveImport(true)
+                }
+            }
+            else {
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.invoice_importvalidation, { column: errorcolumn, row: errorrow }), }))
+                dispatch(showBackdrop(false));
             }
         }
     }

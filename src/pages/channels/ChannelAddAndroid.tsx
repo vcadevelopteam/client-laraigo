@@ -1,44 +1,45 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useRef, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box, AppBar, Tabs, Tab, Grid, IconButton, FormHelperText, Tooltip, TextField, withStyles, Typography, FormControl, Select, MenuItem, InputAdornment } from '@material-ui/core';
-import Avatar from '@material-ui/core/Avatar';
-import Link from '@material-ui/core/Link';
-import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { langKeys } from "lang/keys";
-import { Trans, useTranslation } from "react-i18next";
-import { ColorInput, FieldEdit, FieldSelect, IOSSwitch } from "components";
-import { useHistory, useLocation } from "react-router";
-import paths from "common/constants/paths";
-import { useForm, UseFormReturn } from 'react-hook-form';
-import { useSelector } from "hooks";
-import { useDispatch } from "react-redux";
-import { insertChannel2 } from "store/channel/actions";
-import { AndroidIcon } from "icons";
-import clsx from 'clsx';
+import { ChannelAndroid } from "icons";
 import { Close, CloudUpload } from "@material-ui/icons";
-import InfoIcon from '@material-ui/icons/Info';
-import { IChatWebAdd, IChannel, IChatWebAddFormField } from "@types";
 import { ColorChangeHandler } from "react-color";
-import AddCircleIcon from '@material-ui/icons/AddCircle';
+import { ColorInput, FieldEdit, FieldSelect, IOSSwitch } from "components";
 import { getEditChatWebChannel, getInputValidationSel, getInsertChatwebChannel } from "common/helpers";
-import { editChannel as getEditChannel} from 'store/channel/actions';
 import { getMultiCollection } from "store/main/actions";
+import { IChatWebAdd, IChannel, IChatWebAddFormField } from "@types";
+import { insertChannel2, editChannel as getEditChannel } from "store/channel/actions";
+import { langKeys } from "lang/keys";
+import { makeStyles, Breadcrumbs, Button, Box, AppBar, Tabs, Tab, Grid, IconButton, FormHelperText, Tooltip, TextField, withStyles, Typography, FormControl, Select, MenuItem, InputAdornment } from '@material-ui/core';
+import { showBackdrop, showSnackbar } from 'store/popus/actions';
+import { TabPanel } from "pages/crm/components";
+import { Trans, useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
+import { useForm, UseFormReturn } from 'react-hook-form';
+import { useHistory, useLocation } from "react-router";
+import { useSelector } from "hooks";
+
+import AddCircleIcon from '@material-ui/icons/AddCircle';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+import Avatar from '@material-ui/core/Avatar';
+import clsx from 'clsx';
+import InfoIcon from '@material-ui/icons/Info';
+import Link from '@material-ui/core/Link';
+import paths from "common/constants/paths";
+import React, { FC, useEffect, useRef, useState } from "react";
 import SendIcon from '@material-ui/icons/Send';
-import { TabPanel } from "pages/crm/components";
+
 interface FieldTemplate {
     text: React.ReactNode;
-    node: (onClose: (key: string) => void, data: IChatWebAddFormField, form: UseFormReturn<IChatWebAdd>, index: number,fields:any, setFields: (key: any) => void) => React.ReactNode;
+    node: (onClose: (key: string) => void, data: IChatWebAddFormField, form: UseFormReturn<IChatWebAdd>, index: number, fields: any, setFields: (key: any) => void) => React.ReactNode;
     data: IChatWebAddFormField;
 }
+
 const HtmlTooltip = withStyles((theme) => ({
     tooltip: {
-      backgroundColor: '#f5f5f9',
-      color: 'rgba(0, 0, 0, 0.87)',
-      maxWidth: 220,
-      fontSize: theme.typography.pxToRem(12),
-      border: '1px solid #dadde9',
+        backgroundColor: '#f5f5f9',
+        color: 'rgba(0, 0, 0, 0.87)',
+        maxWidth: 220,
+        fontSize: theme.typography.pxToRem(12),
+        border: '1px solid #dadde9',
     },
 }))(Tooltip);
 
@@ -90,7 +91,7 @@ interface NameTemplateProps {
     title: React.ReactNode;
     data: IChatWebAddFormField;
     index: number;
-    fields:any;
+    fields: any;
     setFields: (key: any) => void
 }
 
@@ -110,7 +111,7 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
             <div className={classes.headertitle}>
                 <label className={clsx(classes.title, classes.fieldContainer)}>
                     <IconButton
-                        style={{color: "#7721ad", width: 16, height: 16, padding: 0, position: "relative", right: 25, marginRight: -16, bottom: 30}}
+                        style={{ color: "#7721ad", width: 16, height: 16, padding: 0, position: "relative", right: 25, marginRight: -16, bottom: 30 }}
                         onClick={() => {
                             console.log(fields.length)
                             let tempfields = fields;
@@ -122,10 +123,10 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                         }}
                         disabled={index + 1 >= fields.length}
                     >
-                        <ArrowDownwardIcon/>
+                        <ArrowDownwardIcon />
                     </IconButton>
                     <IconButton
-                        style={{color: "#7721ad", width: 16, height: 16, padding: 0, right: 9, marginRight: -16, bottom: 30}}
+                        style={{ color: "#7721ad", width: 16, height: 16, padding: 0, right: 9, marginRight: -16, bottom: 30 }}
                         onClick={() => {
                             console.log(fields.length)
                             let tempfields = fields;
@@ -137,9 +138,9 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                         }}
                         disabled={index - 1 < 0}
                     >
-                        <ArrowUpwardIcon width={"5px"}/>
+                        <ArrowUpwardIcon width={"5px"} />
                     </IconButton>
-                    {index+1}) {title}
+                    {index + 1}) {title}
                 </label>
                 <IconButton color="primary" onClick={onClose} className={classes.closeBtn}>
                     <Close color="primary" className="fa fa-plus-circle" />
@@ -159,11 +160,11 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                                                     <Trans i18nKey={langKeys.required} />
                                                 </label>
                                                 <Tooltip title={`${t(langKeys.requiredTooltip)}`} placement="top-start">
-                                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                    <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                                 </Tooltip>
                                             </Grid>
                                             <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
-                                                <IOSSwitch checked={required} onChange={(_, v) => { handleRequired(v); form.setValue(`form.${index}.required`, v);form.trigger(`form.${index}.required`) }} />
+                                                <IOSSwitch checked={required} onChange={(_, v) => { handleRequired(v); form.setValue(`form.${index}.required`, v); form.trigger(`form.${index}.required`) }} />
                                             </Grid>
                                         </Grid>
                                     </Box>
@@ -176,7 +177,7 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                                                     <Trans i18nKey={langKeys.label} />
                                                 </label>
                                                 <Tooltip title={`${t(langKeys.labelTooltip)}`} placement="top-start">
-                                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                    <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                                 </Tooltip>
                                             </Grid>
                                             <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
@@ -203,7 +204,7 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                                         <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                                             <label className={classes.text}>Placeholder</label>
                                             <Tooltip title={`${t(langKeys.placeholderTooltip)}`} placement="top-start">
-                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                             </Tooltip>
                                         </Grid>
                                         <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
@@ -229,7 +230,7 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                                             <label className={classes.text}>
                                                 <Trans i18nKey={langKeys.inputValidation} />
                                                 <Tooltip title={`${t(langKeys.inputValidationTooltip)}`} placement="top-start">
-                                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                    <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                                 </Tooltip>
                                             </label>
                                         </Grid>
@@ -258,7 +259,7 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                                             <label className={classes.text}>
                                                 <Trans i18nKey={langKeys.validationOnKeychange} />
                                                 <Tooltip title={`${t(langKeys.validationOnKeychangeTooltip)}`} placement="top-start">
-                                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                    <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                                 </Tooltip>
                                             </label>
                                         </Grid>
@@ -287,7 +288,7 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                                             <label className={classes.text}>
                                                 <Trans i18nKey={langKeys.errorText} />
                                                 <Tooltip title={`${t(langKeys.errorTextTooltip)}`} placement="top-start">
-                                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                    <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                                 </Tooltip>
                                             </label>
                                         </Grid>
@@ -538,12 +539,12 @@ const useChannelAddStyles = makeStyles(theme => ({
         flexGrow: 1,
     },
     arrowRight: {
-        width: 0, 
-        height: 0, 
+        width: 0,
+        height: 0,
         borderTop: "20px solid transparent",
         borderBottom: "20px solid transparent",
     },
-    currentArrow:{
+    currentArrow: {
         borderLeft: "20px solid #7721ad"
     },
     nextArrow: {
@@ -561,7 +562,7 @@ const useChannelAddStyles = makeStyles(theme => ({
         verticalAlign: "middle",
         width: 100
     },
-    currentStep:{
+    currentStep: {
         backgroundColor: "#7721ad",
     },
     nextStep: {
@@ -628,7 +629,7 @@ const getImgUrl = (file: File | string | null): string | null => {
     }
 }
 
-export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn<IChatWebAdd>}> = ({form}) => {    
+export const AndroidExtra: FC<{ setTabIndex: (f: string) => void, form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
     const classes = useChannelAddStyles();
     const { setValue, getValues } = form;
     const { t } = useTranslation();
@@ -708,18 +709,18 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
     }
     return <>
         <div style={{ display: 'flex', width: "100%" }}>
-            <div style={{width: "50%", minWidth: 500, borderRight: "2px solid #76acdc", padding: 10}}>
+            <div style={{ width: "50%", minWidth: 500, borderRight: "2px solid #76acdc", padding: 10 }}>
                 <Grid container direction="column">
-                    <div style={{padding: "10px 0", paddingTop: 0}}><Typography variant="h6" >{t(langKeys.messagetemplate_attachment)}</Typography></div>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}  style={{padding: "0 0 20px 0", paddingTop: 0}}>                        
+                    <div style={{ padding: "10px 0", paddingTop: 0 }}><Typography variant="h6" >{t(langKeys.messagetemplate_attachment)}</Typography></div>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ padding: "0 0 20px 0", paddingTop: 0 }}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                                 <Grid container direction="row">
                                     <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                         <label className={classes.text}>
-                                            <Trans i18nKey={langKeys.documents}/>
+                                            <Trans i18nKey={langKeys.documents} />
                                             <Tooltip title={`${t(langKeys.documentsTooltip)}`} placement="top-start">
-                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                             </Tooltip>
                                         </label>
                                     </Grid>
@@ -732,9 +733,9 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                                 <Grid container direction="row">
                                     <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                         <label className={classes.text}>
-                                            <Trans i18nKey={langKeys.image_plural}/>
+                                            <Trans i18nKey={langKeys.image_plural} />
                                             <Tooltip title={`${t(langKeys.imageTooltip)}`} placement="top-start">
-                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                             </Tooltip>
                                         </label>
                                     </Grid>
@@ -745,7 +746,7 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{padding: "0 0 20px 0", paddingTop: 0}}>                       
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ padding: "0 0 20px 0", paddingTop: 0 }}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                                 <Grid container direction="row">
@@ -753,7 +754,7 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                                         <label className={classes.text}>
                                             Audios
                                             <Tooltip title={`${t(langKeys.audioTooltip)}`} placement="top-start">
-                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                             </Tooltip>
                                         </label>
                                     </Grid>
@@ -768,7 +769,7 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                                         <label className={classes.text}>
                                             Videos
                                             <Tooltip title={`${t(langKeys.videoTooltip)}`} placement="top-start">
-                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                             </Tooltip>
                                         </label>
                                     </Grid>
@@ -779,7 +780,7 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>                        
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                                 <Grid container direction="row">
@@ -787,7 +788,7 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                                         <label className={classes.text}>
                                             <Trans i18nKey={langKeys.sendLocation} />
                                             <Tooltip title={`${t(langKeys.locationTooltip)}`} placement="top-start">
-                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                             </Tooltip>
                                         </label>
                                     </Grid>
@@ -798,15 +799,15 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                             </Grid>
                         </Grid>
                     </Grid>
-                    <div style={{padding: "10px 0"}}><Typography variant="h6" >{t(langKeys.additionalsettings)}</Typography></div>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>   
+                    <div style={{ padding: "10px 0" }}><Typography variant="h6" >{t(langKeys.additionalsettings)}</Typography></div>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                                 <Grid container direction="row">
                                     <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                         <label className={classes.text}>Powered by
                                             <Tooltip title={`${t(langKeys.poweredbyTooltip)}`} placement="top-start">
-                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                             </Tooltip>
                                         </label>
                                     </Grid>
@@ -821,7 +822,7 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                                         <label className={classes.text}>
                                             <Trans i18nKey={langKeys.startnewconversation} />
                                             <Tooltip title={`${t(langKeys.startnewconversationTooltip)}`} placement="top-start">
-                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                             </Tooltip>
                                         </label>
                                     </Grid>
@@ -832,7 +833,7 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>   
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                                 <Grid container direction="row">
@@ -840,7 +841,7 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                                         <label className={classes.text}>
                                             <Trans i18nKey={langKeys.inputAlwaysEnabled} />
                                             <Tooltip title={`${t(langKeys.inputAlwaysEnabledTooltip)}`} placement="top-start">
-                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                             </Tooltip>
                                         </label>
                                     </Grid>
@@ -855,7 +856,7 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                                         <label className={classes.text}>
                                             <Trans i18nKey={langKeys.abandonmentEvent} />
                                             <Tooltip title={`${t(langKeys.abandonmentEventTooltip)}`} placement="top-start">
-                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                             </Tooltip>
                                         </label>
                                     </Grid>
@@ -866,7 +867,7 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>   
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                                 <Grid container direction="row">
@@ -874,7 +875,7 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                                         <label className={classes.text}>
                                             <Trans i18nKey={langKeys.newMessageRing} />
                                             <Tooltip title={`${t(langKeys.newMessageRingTooltip)}`} placement="top-start">
-                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                             </Tooltip>
                                         </label>
                                     </Grid>
@@ -889,7 +890,7 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                                         <label className={classes.text}>
                                             <Trans i18nKey={langKeys.formBaseHistory} />
                                             <Tooltip title={`${t(langKeys.formBaseHistoryTooltip)}`} placement="top-start">
-                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                             </Tooltip>
                                         </label>
                                     </Grid>
@@ -900,7 +901,7 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>   
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                                 <Grid container direction="row">
@@ -908,7 +909,7 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                                         <label className={classes.text}>
                                             <Trans i18nKey={langKeys.sendMetaData} />
                                             <Tooltip title={`${t(langKeys.sendMetaDataTooltip)}`} placement="top-start">
-                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                             </Tooltip>
                                         </label>
                                     </Grid>
@@ -919,12 +920,12 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                             </Grid>
                         </Grid>
                     </Grid>
-                    <div style={{padding: "10px 0"}}><Typography variant="h6" >{t(langKeys.layoutconfig)}</Typography></div>
+                    <div style={{ padding: "10px 0" }}><Typography variant="h6" >{t(langKeys.layoutconfig)}</Typography></div>
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">
                             CSS Header
                             <Tooltip title={`${t(langKeys.cssheaderTooltip)}`} placement="top-start">
-                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                             </Tooltip>
                         </Box>
                         <TextField
@@ -942,7 +943,7 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">
                             JS Script
                             <Tooltip title={`${t(langKeys.jsscriptTooltip)}`} placement="top-start">
-                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                             </Tooltip>
                         </Box>
                         <TextField
@@ -957,60 +958,62 @@ export const AndroidExtra: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                     </Grid>
                 </Grid>
             </div>
-            <div style={{width: "50%", minWidth: 250, padding: 10}}>
+            <div style={{ width: "50%", minWidth: 250, padding: 10 }}>
                 <div style={{ display: 'flex', width: "100%", flexDirection: 'column' }}>
-                    <div style={{padding:20, margin:"20px 20px 0 20px", display:"flex", width:"calc(100% - 40px)", height: 75, border: '1px solid', borderRadius: "6px 6px 0 0 ", backgroundColor: getValues('color.header'), borderColor: getValues('color.border')}}>
-                        <Avatar src={getImgUrl(getValues('interface.iconheader'))||""}  style={{width: 35, height: 35, border: '0.1px solid lightgray' }}/>
-                        <div style={{height: "100%", width: "100%",  paddingLeft: 25, fontSize: "1.1em", paddingTop: 5}}>{getValues('interface.chattitle')}</div>
+                    <div style={{ padding: 20, margin: "20px 20px 0 20px", display: "flex", width: "calc(100% - 40px)", height: 75, border: '1px solid', borderRadius: "6px 6px 0 0 ", backgroundColor: getValues('color.header'), borderColor: getValues('color.border') }}>
+                        <Avatar src={getImgUrl(getValues('interface.iconheader')) || ""} style={{ width: 35, height: 35, border: '0.1px solid lightgray' }} />
+                        <div style={{ height: "100%", width: "100%", paddingLeft: 25, fontSize: "1.1em", paddingTop: 5 }}>{getValues('interface.chattitle')}</div>
                     </div>
-                    <div style={{padding:5, margin:"0 20px", display:"flex", width:"calc(100% - 40px)", height: 45, border: '1px solid', backgroundColor: getValues('color.header'), borderColor: getValues('color.border')}}>  
-                        <div style={{height: "100%", width: "100%",  textAlign: 'center', fontSize: "1em", paddingTop: 5}}>{getValues('interface.chatsubtitle')}</div>
+                    <div style={{ padding: 5, margin: "0 20px", display: "flex", width: "calc(100% - 40px)", height: 45, border: '1px solid', backgroundColor: getValues('color.header'), borderColor: getValues('color.border') }}>
+                        <div style={{ height: "100%", width: "100%", textAlign: 'center', fontSize: "1em", paddingTop: 5 }}>{getValues('interface.chatsubtitle')}</div>
                     </div>
-                    <div style={{padding:5, margin:"0 20px", display:"flex", width:"calc(100% - 40px)", height: 200, border: '1px solid', flexDirection: 'column', backgroundColor: getValues('color.background'), borderColor: getValues('color.border')}}> 
+                    <div style={{ padding: 5, margin: "0 20px", display: "flex", width: "calc(100% - 40px)", height: 200, border: '1px solid', flexDirection: 'column', backgroundColor: getValues('color.background'), borderColor: getValues('color.border') }}>
                     </div>
-                    <div style={{padding:5, margin:"0 20px", width:"calc(100% - 40px)", height: 'calc(100% - 160px)', border: '1px solid', borderRadius: "0 0 6px 6px", backgroundColor: "#e7e7e7", borderColor: getValues('color.border')}}> 
-                        <div style={{width: "100%", display:'flex'}}>
-                            <div style={{paddingRight: 10}}>   
-                                <Box style={{backgroundColor: "white", zIndex: 99, width: 160, marginRight: -160, position: 'relative',
-                                bottom: (Number(uploadAudio) + Number(uploadFile) + Number(uploadImage) + Number(uploadLocation) + Number(uploadVideo))*37, marginBottom: -(Number(uploadAudio) + Number(uploadFile) + Number(uploadImage) + Number(uploadLocation) + Number(uploadVideo))*37 }}>
-                                    {uploadAudio && <MenuItem style={{border: '1px solid #ebeaed'}}>{t(langKeys.uploadAudio)}</MenuItem>}
-                                    {uploadFile && <MenuItem style={{border: '1px solid #ebeaed'}}>{t(langKeys.uploadFile)}</MenuItem>}
-                                    {uploadImage && <MenuItem style={{border: '1px solid #ebeaed'}}>{t(langKeys.uploadImage)}</MenuItem>}
-                                    {uploadLocation && <MenuItem style={{border: '1px solid #ebeaed'}}>{t(langKeys.sendLocation)}</MenuItem>}
-                                    {uploadVideo && <MenuItem style={{border: '1px solid #ebeaed'}}>{t(langKeys.uploadVideo)}</MenuItem>}
+                    <div style={{ padding: 5, margin: "0 20px", width: "calc(100% - 40px)", height: 'calc(100% - 160px)', border: '1px solid', borderRadius: "0 0 6px 6px", backgroundColor: "#e7e7e7", borderColor: getValues('color.border') }}>
+                        <div style={{ width: "100%", display: 'flex' }}>
+                            <div style={{ paddingRight: 10 }}>
+                                <Box style={{
+                                    backgroundColor: "white", zIndex: 99, width: 160, marginRight: -160, position: 'relative',
+                                    bottom: (Number(uploadAudio) + Number(uploadFile) + Number(uploadImage) + Number(uploadLocation) + Number(uploadVideo)) * 37, marginBottom: -(Number(uploadAudio) + Number(uploadFile) + Number(uploadImage) + Number(uploadLocation) + Number(uploadVideo)) * 37
+                                }}>
+                                    {uploadAudio && <MenuItem style={{ border: '1px solid #ebeaed' }}>{t(langKeys.uploadAudio)}</MenuItem>}
+                                    {uploadFile && <MenuItem style={{ border: '1px solid #ebeaed' }}>{t(langKeys.uploadFile)}</MenuItem>}
+                                    {uploadImage && <MenuItem style={{ border: '1px solid #ebeaed' }}>{t(langKeys.uploadImage)}</MenuItem>}
+                                    {uploadLocation && <MenuItem style={{ border: '1px solid #ebeaed' }}>{t(langKeys.sendLocation)}</MenuItem>}
+                                    {uploadVideo && <MenuItem style={{ border: '1px solid #ebeaed' }}>{t(langKeys.uploadVideo)}</MenuItem>}
                                 </Box>
                                 <IconButton
-                                    id= "circleopenmenu"
-                                    style={{padding:0}}
+                                    id="circleopenmenu"
+                                    style={{ padding: 0 }}
                                 >
-                                    <AddCircleIcon style={{width:35, height:35, color: getValues('color.iconscolor')}}/>
-                                </IconButton>  
+                                    <AddCircleIcon style={{ width: 35, height: 35, color: getValues('color.iconscolor') }} />
+                                </IconButton>
                             </div>
-                            <div style={{width: '90%'}}>                            
+                            <div style={{ width: '90%' }}>
                                 <TextField
                                     variant="outlined"
                                     fullWidth
                                     disabled={!persistentInput}
                                     size="small"
-                                    style={{backgroundColor: "white"}}
+                                    style={{ backgroundColor: "white" }}
                                     InputProps={{
-                                      endAdornment: (
-                                        <InputAdornment position="end">
-                                          <SendIcon  style={{color: getValues('color.iconscolor')}}/>
-                                        </InputAdornment>
-                                      ),
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <SendIcon style={{ color: getValues('color.iconscolor') }} />
+                                            </InputAdornment>
+                                        ),
                                     }}
                                 />
                             </div>
                         </div>
-                        {poweredBy && <div style={{width: "100%", textAlign:'center'}}>Powered by Laraigo</div>}
+                        {poweredBy && <div style={{ width: "100%", textAlign: 'center' }}>Powered by Laraigo</div>}
                     </div>
                 </div>
-            </div>               
+            </div>
         </div>
     </>
 }
-export const AndroidForm: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn<IChatWebAdd>}> = ({setTabIndex,form}) => {    
+export const AndroidForm: FC<{ setTabIndex: (f: string) => void, form: UseFormReturn<IChatWebAdd> }> = ({ setTabIndex, form }) => {
     const classes = useChannelAddStyles();
     const { getValues } = form;
     const { t } = useTranslation();
@@ -1056,7 +1059,7 @@ export const AndroidForm: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn
 
     return <>
         <div style={{ display: 'flex', width: "100%" }}>
-            <div style={{width: "50%", minWidth: 500, borderRight: "2px solid #76acdc", padding: 10}}>
+            <div style={{ width: "50%", minWidth: 500, borderRight: "2px solid #76acdc", padding: 10 }}>
                 <Grid container direction="column">
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Grid container direction="row">
@@ -1065,7 +1068,7 @@ export const AndroidForm: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn
                                     <label className={classes.text}>
                                         <Trans i18nKey={langKeys.wantAddFormToSiteQuestion} />
                                         <Tooltip title={`${t(langKeys.wantAddFormToSiteQuestionTooltip)}`} placement="top-start">
-                                            <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                         </Tooltip>
                                     </label>
                                 </Typography>
@@ -1101,22 +1104,22 @@ export const AndroidForm: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn
                         </Grid>
                     </Grid>
                 </Grid>
-                {fields.map((e, i) => e.node(handleCloseTemplate, e.data, form, i,fields, setFields))}
+                {fields.map((e, i) => e.node(handleCloseTemplate, e.data, form, i, fields, setFields))}
             </div>
-            <div style={{width: "50%", minWidth: 500, display:"flex", paddingLeft: 24, paddingBottom: 24, gap: 8}}>
-                
-                <div style={{width: "50%", minWidth: 250, padding: 10}}>
+            <div style={{ width: "50%", minWidth: 500, display: "flex", paddingLeft: 24, paddingBottom: 24, gap: 8 }}>
+
+                <div style={{ width: "50%", minWidth: 250, padding: 10 }}>
                     <div><Typography variant="subtitle1" >1) {t(langKeys.formbeforecompletetion)}</Typography></div>
                     <div style={{ display: 'flex', width: "100%", flexDirection: 'column' }}>
-                        <div style={{padding:20, margin:"20px 20px 0 20px", display:"flex", width:"calc(100% - 40px)", height: 75, border: '1px solid', borderRadius: "6px 6px 0 0 ", backgroundColor: getValues('color.header'), borderColor: getValues('color.border')}}>
-                            <Avatar src={getImgUrl(getValues('interface.iconheader'))||""}  style={{width: 35, height: 35, border: '0.1px solid lightgray' }}/>
-                            <div style={{height: "100%", width: "100%",  paddingLeft: 25, fontSize: "1.1em", paddingTop: 5}}>{getValues('interface.chattitle')}</div>
+                        <div style={{ padding: 20, margin: "20px 20px 0 20px", display: "flex", width: "calc(100% - 40px)", height: 75, border: '1px solid', borderRadius: "6px 6px 0 0 ", backgroundColor: getValues('color.header'), borderColor: getValues('color.border') }}>
+                            <Avatar src={getImgUrl(getValues('interface.iconheader')) || ""} style={{ width: 35, height: 35, border: '0.1px solid lightgray' }} />
+                            <div style={{ height: "100%", width: "100%", paddingLeft: 25, fontSize: "1.1em", paddingTop: 5 }}>{getValues('interface.chattitle')}</div>
                         </div>
-                        <div style={{padding:5, margin:"0 20px", display:"flex", width:"calc(100% - 40px)", height: 45, border: '1px solid', backgroundColor: getValues('color.header'), borderColor: getValues('color.border')}}>  
-                            <div style={{height: "100%", width: "100%",  textAlign: 'center', fontSize: "1em", paddingTop: 5}}>{getValues('interface.chatsubtitle')}</div>
+                        <div style={{ padding: 5, margin: "0 20px", display: "flex", width: "calc(100% - 40px)", height: 45, border: '1px solid', backgroundColor: getValues('color.header'), borderColor: getValues('color.border') }}>
+                            <div style={{ height: "100%", width: "100%", textAlign: 'center', fontSize: "1em", paddingTop: 5 }}>{getValues('interface.chatsubtitle')}</div>
                         </div>
-                        <div style={{padding:5, margin:"0 20px", display:"flex", width:"calc(100% - 40px)", height: 'calc(100% - 160px)', border: '1px solid', flexDirection: 'column', borderRadius: "0 0 6px 6px", backgroundColor: getValues('color.background'), borderColor: getValues('color.border')}}>  
-                            {fields.map((e,i) => (<div key={i} style={{padding: "8px 0"}}>
+                        <div style={{ padding: 5, margin: "0 20px", display: "flex", width: "calc(100% - 40px)", height: 'calc(100% - 160px)', border: '1px solid', flexDirection: 'column', borderRadius: "0 0 6px 6px", backgroundColor: getValues('color.background'), borderColor: getValues('color.border') }}>
+                            {fields.map((e, i) => (<div key={i} style={{ padding: "8px 0" }}>
                                 <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">
                                     {e.data.label}
                                 </Box>
@@ -1130,25 +1133,25 @@ export const AndroidForm: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn
                                 />
                             </div>)
                             )}
-                            <div style={{display: "flex", marginLeft:"calc(50% - 80px"}}>
-                                <div className={clsx(classes.step)} style={{backgroundColor:"white", color:"black", width: 140}}>{t(langKeys.sendData)}</div>
-                                <div className={clsx(classes.arrowRight)} style={{borderLeft: "20px solid white"}}></div>
+                            <div style={{ display: "flex", marginLeft: "calc(50% - 80px" }}>
+                                <div className={clsx(classes.step)} style={{ backgroundColor: "white", color: "black", width: 140 }}>{t(langKeys.sendData)}</div>
+                                <div className={clsx(classes.arrowRight)} style={{ borderLeft: "20px solid white" }}></div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div style={{width: "50%", minWidth: 250, padding: 10}}>
+                <div style={{ width: "50%", minWidth: 250, padding: 10 }}>
                     <div><Typography variant="subtitle1" >2) {t(langKeys.formaftercompletitionerror)}</Typography></div>
                     <div style={{ display: 'flex', width: "100%", flexDirection: 'column' }}>
-                        <div style={{padding:20, margin:"20px 20px 0 20px", display:"flex", width:"calc(100% - 40px)", height: 75, border: '1px solid', borderRadius: "6px 6px 0 0 ", backgroundColor: getValues('color.header'), borderColor: getValues('color.border')}}>
-                            <Avatar src={getImgUrl(getValues('interface.iconheader'))||""}  style={{width: 35, height: 35, border: '0.1px solid lightgray' }}/>
-                            <div style={{height: "100%", width: "100%",  paddingLeft: 25, fontSize: "1.1em", paddingTop: 5}}>{getValues('interface.chattitle')}</div>
+                        <div style={{ padding: 20, margin: "20px 20px 0 20px", display: "flex", width: "calc(100% - 40px)", height: 75, border: '1px solid', borderRadius: "6px 6px 0 0 ", backgroundColor: getValues('color.header'), borderColor: getValues('color.border') }}>
+                            <Avatar src={getImgUrl(getValues('interface.iconheader')) || ""} style={{ width: 35, height: 35, border: '0.1px solid lightgray' }} />
+                            <div style={{ height: "100%", width: "100%", paddingLeft: 25, fontSize: "1.1em", paddingTop: 5 }}>{getValues('interface.chattitle')}</div>
                         </div>
-                        <div style={{padding:5, margin:"0 20px", display:"flex", width:"calc(100% - 40px)", height: 45, border: '1px solid', backgroundColor: getValues('color.header'), borderColor: getValues('color.border')}}>  
-                            <div style={{height: "100%", width: "100%",  textAlign: 'center', fontSize: "1em", paddingTop: 5}}>{getValues('interface.chatsubtitle')}</div>
+                        <div style={{ padding: 5, margin: "0 20px", display: "flex", width: "calc(100% - 40px)", height: 45, border: '1px solid', backgroundColor: getValues('color.header'), borderColor: getValues('color.border') }}>
+                            <div style={{ height: "100%", width: "100%", textAlign: 'center', fontSize: "1em", paddingTop: 5 }}>{getValues('interface.chatsubtitle')}</div>
                         </div>
-                        <div style={{padding:5, margin:"0 20px", display:"flex", width:"calc(100% - 40px)", height: 'calc(100% - 160px)', border: '1px solid', flexDirection: 'column', borderRadius: "0 0 6px 6px", backgroundColor: getValues('color.background'), borderColor: getValues('color.border')}}>  
-                            {fields.map((e,i) => (<div key={i} style={{padding: "8px 0"}}>
+                        <div style={{ padding: 5, margin: "0 20px", display: "flex", width: "calc(100% - 40px)", height: 'calc(100% - 160px)', border: '1px solid', flexDirection: 'column', borderRadius: "0 0 6px 6px", backgroundColor: getValues('color.background'), borderColor: getValues('color.border') }}>
+                            {fields.map((e, i) => (<div key={i} style={{ padding: "8px 0" }}>
                                 <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">
                                     {e.data.label}
                                 </Box>
@@ -1160,13 +1163,13 @@ export const AndroidForm: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn
                                     variant="outlined"
                                     disabled
                                     error
-                                    helperText={e.data.validationtext||""}
+                                    helperText={e.data.validationtext || ""}
                                 />
                             </div>)
                             )}
-                            <div style={{display: "flex", marginLeft:"calc(50% - 80px"}}>
-                                <div className={clsx(classes.step)} style={{backgroundColor:"white", color:"black", width: 140}}>{t(langKeys.sendData)}</div>
-                                <div className={clsx(classes.arrowRight)} style={{borderLeft: "20px solid white"}}></div>
+                            <div style={{ display: "flex", marginLeft: "calc(50% - 80px" }}>
+                                <div className={clsx(classes.step)} style={{ backgroundColor: "white", color: "black", width: 140 }}>{t(langKeys.sendData)}</div>
+                                <div className={clsx(classes.arrowRight)} style={{ borderLeft: "20px solid white" }}></div>
                             </div>
                         </div>
                     </div>
@@ -1175,7 +1178,7 @@ export const AndroidForm: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn
         </div>
     </>
 }
-export const AndroidColor: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn<IChatWebAdd>}> = ({setTabIndex,form}) => {    
+export const AndroidColor: FC<{ setTabIndex: (f: string) => void, form: UseFormReturn<IChatWebAdd> }> = ({ setTabIndex, form }) => {
     const classes = useChannelAddStyles();
     const { setValue, getValues } = form;
     const { t } = useTranslation();
@@ -1217,18 +1220,18 @@ export const AndroidColor: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
 
     return <>
         <div style={{ display: 'flex', width: "100%" }}>
-            <div style={{width: "50%", minWidth: 500, borderRight: "2px solid #76acdc", padding: 10}}>
+            <div style={{ width: "50%", minWidth: 500, borderRight: "2px solid #76acdc", padding: 10 }}>
                 <Grid container direction="row">
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Grid container direction="column">
-                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{padding:10}}>
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ padding: 10 }}>
                                 <Grid container direction="row">
                                     <Grid item xs={1} sm={1} md={1} lg={1} xl={1}></Grid>
                                     <Grid item xs={8} sm={8} md={8} lg={8} xl={8}>
                                         <label className={classes.text}>
                                             <Trans i18nKey={langKeys.chatHeader} />
                                             <Tooltip title={`${t(langKeys.chatHeaderTooltip)}`} placement="top-start">
-                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                             </Tooltip>
                                         </label>
                                     </Grid>
@@ -1237,14 +1240,14 @@ export const AndroidColor: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                                     </Grid>
                                 </Grid>
                             </Grid>
-                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{padding:10}}>
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ padding: 10 }}>
                                 <Grid container direction="row">
                                     <Grid item xs={1} sm={1} md={1} lg={1} xl={1}></Grid>
                                     <Grid item xs={8} sm={8} md={8} lg={8} xl={8}>
                                         <label className={classes.text}>
                                             <Trans i18nKey={langKeys.chatBackground} />
                                             <Tooltip title={`${t(langKeys.chatBackgroundTooltip)}`} placement="top-start">
-                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                             </Tooltip>
                                         </label>
                                     </Grid>
@@ -1253,14 +1256,14 @@ export const AndroidColor: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                                     </Grid>
                                 </Grid>
                             </Grid>
-                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{padding:10}}>
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ padding: 10 }}>
                                 <Grid container direction="row">
                                     <Grid item xs={1} sm={1} md={1} lg={1} xl={1}></Grid>
                                     <Grid item xs={8} sm={8} md={8} lg={8} xl={8}>
                                         <label className={classes.text}>
                                             <Trans i18nKey={langKeys.chatBorder} />
                                             <Tooltip title={`${t(langKeys.chatBorderTooltip)}`} placement="top-start">
-                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                             </Tooltip>
                                         </label>
                                     </Grid>
@@ -1269,7 +1272,7 @@ export const AndroidColor: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                                     </Grid>
                                 </Grid>
                             </Grid>
-                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{padding:10}}>
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ padding: 10 }}>
                                 <Grid container direction="row">
                                     <Grid item xs={1} sm={1} md={1} lg={1} xl={1}></Grid>
                                     <Grid item xs={8} sm={8} md={8} lg={8} xl={8}>
@@ -1277,7 +1280,7 @@ export const AndroidColor: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                                             <Trans i18nKey={langKeys.clientMessage} count={2} />
                                         </label>
                                         <Tooltip title={`${t(langKeys.clientMessageColorTooltip)}`} placement="top-start">
-                                            <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                         </Tooltip>
                                     </Grid>
                                     <Grid item xs={3} sm={3} md={3} lg={3} xl={3}>
@@ -1285,14 +1288,14 @@ export const AndroidColor: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                                     </Grid>
                                 </Grid>
                             </Grid>
-                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{padding:10}}>
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ padding: 10 }}>
                                 <Grid container direction="row">
                                     <Grid item xs={1} sm={1} md={1} lg={1} xl={1}></Grid>
                                     <Grid item xs={8} sm={8} md={8} lg={8} xl={8}>
                                         <label className={classes.text}>
                                             <Trans i18nKey={langKeys.botMessage} count={2} />
                                             <Tooltip title={`${t(langKeys.botMessageTooltip)}`} placement="top-start">
-                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                             </Tooltip>
                                         </label>
                                     </Grid>
@@ -1301,14 +1304,14 @@ export const AndroidColor: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                                     </Grid>
                                 </Grid>
                             </Grid>
-                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{padding:10}}>
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ padding: 10 }}>
                                 <Grid container direction="row">
                                     <Grid item xs={1} sm={1} md={1} lg={1} xl={1}></Grid>
                                     <Grid item xs={8} sm={8} md={8} lg={8} xl={8}>
                                         <label className={classes.text}>
                                             <Trans i18nKey={langKeys.iconscolorMessage} count={2} />
                                             <Tooltip title={`${t(langKeys.iconscolorMessageTooltip)}`} placement="top-start">
-                                                <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                                <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                             </Tooltip>
                                         </label>
                                     </Grid>
@@ -1321,46 +1324,46 @@ export const AndroidColor: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
                     </Grid>
                 </Grid>
             </div>
-            <div style={{width: "50%", minWidth: 500, display:"flex", paddingLeft: 24, paddingBottom: 24, flexDirection: 'column', gap: 8}}>
+            <div style={{ width: "50%", minWidth: 500, display: "flex", paddingLeft: 24, paddingBottom: 24, flexDirection: 'column', gap: 8 }}>
                 <div style={{ display: 'flex', width: "100%", flexDirection: 'column' }} className={classes.tab}>
-                    <div style={{padding:20, margin:"20px 20px 0 20px", display:"flex", width:"calc(100% - 40px)", height: 75, border: '1px solid', borderRadius: "6px 6px 0 0 ", backgroundColor: headerColor, borderColor: borderColor}}>
-                        <Avatar src={getImgUrl(getValues('interface.iconheader'))||""}  style={{width: 35, height: 35, border: '0.1px solid lightgray' }}/>
-                        <div style={{height: "100%", width: "100%",  paddingLeft: 25, fontSize: "1.1em", paddingTop: 5}}>{getValues('interface.chattitle')}</div>
+                    <div style={{ padding: 20, margin: "20px 20px 0 20px", display: "flex", width: "calc(100% - 40px)", height: 75, border: '1px solid', borderRadius: "6px 6px 0 0 ", backgroundColor: headerColor, borderColor: borderColor }}>
+                        <Avatar src={getImgUrl(getValues('interface.iconheader')) || ""} style={{ width: 35, height: 35, border: '0.1px solid lightgray' }} />
+                        <div style={{ height: "100%", width: "100%", paddingLeft: 25, fontSize: "1.1em", paddingTop: 5 }}>{getValues('interface.chattitle')}</div>
                     </div>
-                    <div style={{padding:5, margin:"0 20px", display:"flex", width:"calc(100% - 40px)", height: 45, border: '1px solid', backgroundColor: headerColor, borderColor: borderColor}}>  
-                        <div style={{height: "100%", width: "100%",  textAlign: 'center', fontSize: "1em", paddingTop: 5}}>{getValues('interface.chatsubtitle')}</div>
+                    <div style={{ padding: 5, margin: "0 20px", display: "flex", width: "calc(100% - 40px)", height: 45, border: '1px solid', backgroundColor: headerColor, borderColor: borderColor }}>
+                        <div style={{ height: "100%", width: "100%", textAlign: 'center', fontSize: "1em", paddingTop: 5 }}>{getValues('interface.chatsubtitle')}</div>
                     </div>
-                    <div style={{padding:5, margin:"0 20px", display:"flex", width:"calc(100% - 40px)", height: 'calc(100% - 160px)', border: '1px solid', flexDirection: 'column', borderRadius: "0 0 6px 6px", backgroundColor: backgroundColor, borderColor: borderColor}}>  
-                        <div style={{fontSize: "0.8em", paddingTop: 5, width: 50, textAlign: 'center',whiteSpace: "initial", wordWrap: 'break-word'}}>{getValues('extra.botnametext')}</div>
-                        <div style={{display:"flex", height: "auto", paddingLeft: 10, }}>
-                            <Avatar src={getImgUrl(getValues('interface.iconbot'))||""}  style={{width: 30, height: 30, border: '0.1px solid', borderColor: borderColor }}/>
-                            <div style={{height: "auto", width: "80%", border:"1px solid", borderColor: borderColor, backgroundColor: botMessageColor, borderRadius: 8,  marginLeft: 10, padding:10, fontSize: "1.1em", paddingTop: 5}}>Te saluda {getValues('extra.botnametext')||"bot"}. en qúe puedo ayudarte</div>
+                    <div style={{ padding: 5, margin: "0 20px", display: "flex", width: "calc(100% - 40px)", height: 'calc(100% - 160px)', border: '1px solid', flexDirection: 'column', borderRadius: "0 0 6px 6px", backgroundColor: backgroundColor, borderColor: borderColor }}>
+                        <div style={{ fontSize: "0.8em", paddingTop: 5, width: 50, textAlign: 'center', whiteSpace: "initial", wordWrap: 'break-word' }}>{getValues('extra.botnametext')}</div>
+                        <div style={{ display: "flex", height: "auto", paddingLeft: 10, }}>
+                            <Avatar src={getImgUrl(getValues('interface.iconbot')) || ""} style={{ width: 30, height: 30, border: '0.1px solid', borderColor: borderColor }} />
+                            <div style={{ height: "auto", width: "80%", border: "1px solid", borderColor: borderColor, backgroundColor: botMessageColor, borderRadius: 8, marginLeft: 10, padding: 10, fontSize: "1.1em", paddingTop: 5 }}>Te saluda {getValues('extra.botnametext') || "bot"}. en qúe puedo ayudarte</div>
                         </div>
-                        <div style={{height: "auto", width: "80%", border:"1px solid", borderColor: borderColor, borderRadius: 8, backgroundColor: clientMessageColor,  marginLeft: "20%", marginTop: 10, padding:10, fontSize: "1.1em", paddingTop: 5}}>Hola</div>
+                        <div style={{ height: "auto", width: "80%", border: "1px solid", borderColor: borderColor, borderRadius: 8, backgroundColor: clientMessageColor, marginLeft: "20%", marginTop: 10, padding: 10, fontSize: "1.1em", paddingTop: 5 }}>Hola</div>
                     </div>
-                    <div style={{padding:5, margin:"0 20px", width:"calc(100% - 40px)", border: '1px solid', borderRadius: "0 0 6px 6px", backgroundColor: "#e7e7e7", borderColor: getValues('color.border')}}> 
-                        <div style={{width: "100%", display:'flex'}}>
-                            <div style={{paddingRight: 10}}>   
+                    <div style={{ padding: 5, margin: "0 20px", width: "calc(100% - 40px)", border: '1px solid', borderRadius: "0 0 6px 6px", backgroundColor: "#e7e7e7", borderColor: getValues('color.border') }}>
+                        <div style={{ width: "100%", display: 'flex' }}>
+                            <div style={{ paddingRight: 10 }}>
                                 <IconButton
-                                    id= "circleopenmenu"
-                                    style={{padding:0}}
+                                    id="circleopenmenu"
+                                    style={{ padding: 0 }}
                                 >
-                                    <AddCircleIcon style={{width:35, height:35, color: getValues('color.iconscolor')}}/>
-                                </IconButton>  
+                                    <AddCircleIcon style={{ width: 35, height: 35, color: getValues('color.iconscolor') }} />
+                                </IconButton>
                             </div>
-                            <div style={{width: '90%'}}>                            
+                            <div style={{ width: '90%' }}>
                                 <TextField
                                     variant="outlined"
                                     fullWidth
                                     disabled={true}
                                     size="small"
-                                    style={{backgroundColor: "white"}}
+                                    style={{ backgroundColor: "white" }}
                                     InputProps={{
-                                      endAdornment: (
-                                        <InputAdornment position="end">
-                                          <SendIcon  style={{color: getValues('color.iconscolor')}}/>
-                                        </InputAdornment>
-                                      ),
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <SendIcon style={{ color: getValues('color.iconscolor') }} />
+                                            </InputAdornment>
+                                        ),
                                     }}
                                 />
                             </div>
@@ -1371,7 +1374,7 @@ export const AndroidColor: FC<{setTabIndex: (f:string)=>void, form: UseFormRetur
         </div>
     </>
 }
-export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormReturn<IChatWebAdd>}> = ({setTabIndex,form}) => {    
+export const AndroidInterface: FC<{ setTabIndex: (f: string) => void, form: UseFormReturn<IChatWebAdd> }> = ({ setTabIndex, form }) => {
     const classes = useChannelAddStyles();
     const { setValue, getValues, formState: { errors } } = form;
     const { t } = useTranslation();
@@ -1381,8 +1384,8 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
     const [chatSubtittle, setchatSubtittle] = useState(getValues('interface.chatsubtitle'));
     const [botnametext, setbotnametext] = useState(getValues('extra.botnametext'));
     const [msgTooltipIMGPosition, setMsgTooltipIMGPosition] = useState({
-        right: document?.getElementById("msgtooltip")?.clientWidth||0,
-        bottom: document?.getElementById("msgtooltip")?.clientHeight||0
+        right: document?.getElementById("msgtooltip")?.clientWidth || 0,
+        bottom: document?.getElementById("msgtooltip")?.clientHeight || 0
     });
     const [chatBtn, setChatBtn] = useState<File | string | null>(getValues('interface.iconbutton'));
     const [waitingImg, setWaitingImg] = useState<File | string | null>(getValues('bubble.iconbubble'));
@@ -1396,8 +1399,8 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
 
     useEffect(() => {
         setMsgTooltipIMGPosition({
-            right: document?.getElementById("msgtooltip")?.clientWidth||0,
-            bottom: document?.getElementById("msgtooltip")?.clientHeight||0
+            right: document?.getElementById("msgtooltip")?.clientWidth || 0,
+            bottom: document?.getElementById("msgtooltip")?.clientHeight || 0
         })
     }, [msgTooltip])
 
@@ -1443,7 +1446,7 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
         setWaitingImg(null);
         setValue('bubble.iconbubble', null);
     }
-    
+
     const onChangeHeaderInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         if (!e.target.files) return;
         setHeaderBtn(e.target.files[0]);
@@ -1484,15 +1487,15 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
 
     return <>
         <div style={{ display: 'flex', width: "100%" }}>
-            <div style={{width: "50%", minWidth: 500, borderRight: "2px solid #76acdc", padding: 10}}>
-                
+            <div style={{ width: "50%", minWidth: 500, borderRight: "2px solid #76acdc", padding: 10 }}>
+
                 <Grid container direction="column">
-                    <Grid container direction="row" style={{display: "flex", width: "100%", margin: "5px 8px"}}>
+                    <Grid container direction="row" style={{ display: "flex", width: "100%", margin: "5px 8px" }}>
                         <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                             <label className={classes.text}>
                                 <Trans i18nKey={langKeys.chatButton} />
                                 <Tooltip title={`${t(langKeys.chatButtonTooltip)}`} placement="top-start">
-                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                    <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                 </Tooltip>
                             </label>
                         </Grid>
@@ -1529,7 +1532,7 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
                                     <label className={classes.text}>
                                         <Trans i18nKey={langKeys.bubble} />
                                         <Tooltip title={`${t(langKeys.bubbleTooltip)}`} placement="top-start">
-                                            <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                         </Tooltip>
                                     </label>
                                 </Grid>
@@ -1542,11 +1545,11 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Box m={1} style={{ display: enable ? 'block' : 'none' }}>
                             <Grid container direction="row">
-                                <Grid item xs={1} sm={2} md={2} lg={2} xl={2}/>
+                                <Grid item xs={1} sm={2} md={2} lg={2} xl={2} />
                                 <Grid item xs={11} sm={2} md={2} lg={2} xl={2}>
                                     <label className={classes.text}>{t(langKeys.text)}</label>
                                     <Tooltip title={`${t(langKeys.bubbleTooltipText)}`} placement="top-start">
-                                        <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                        <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                     </Tooltip>
                                 </Grid>
                                 <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
@@ -1557,19 +1560,19 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
                                         name="text"
                                         size="small"
                                         defaultValue={getValues('bubble.messagebubble')}
-                                        onChange={e => {setValue('bubble.messagebubble', e.target.value);setMsgTooltip(e.target.value);}}
+                                        onChange={e => { setValue('bubble.messagebubble', e.target.value); setMsgTooltip(e.target.value); }}
                                     />
                                 </Grid>
                             </Grid>
                         </Box>
                     </Grid>
-                    <Grid container direction="row" style={{ width: "100%", display: enable ? 'flex' : 'none'}} >
-                        <Grid item xs={1} sm={2} md={2} lg={2} xl={2}/>
+                    <Grid container direction="row" style={{ width: "100%", display: enable ? 'flex' : 'none' }} >
+                        <Grid item xs={1} sm={2} md={2} lg={2} xl={2} />
                         <Grid item xs={11} sm={2} md={2} lg={2} xl={2}>
-                            <label className={classes.text} style={{margin: "5px 8px"}}>
+                            <label className={classes.text} style={{ margin: "5px 8px" }}>
                                 <Trans i18nKey={langKeys.image} />
                                 <Tooltip title={`${t(langKeys.bubbleTooltipImage)}`} placement="top-start">
-                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                    <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                 </Tooltip>
                             </label>
                         </Grid>
@@ -1603,7 +1606,7 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
                                     <label className={classes.text}>
                                         <Trans i18nKey={langKeys.title} />
                                         <Tooltip title={`${t(langKeys.interfaceTitleTooltip)}`} placement="top-start">
-                                            <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                         </Tooltip>
                                     </label>
                                 </Grid>
@@ -1615,7 +1618,7 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
                                         size="small"
                                         placeholder={t(langKeys.chatHeaderTitle)} // "Título de la cabecera del chat"
                                         defaultValue={getValues('interface.chattitle')}
-                                        onChange={(e) => {setValue('interface.chattitle', e.target.value); setchatTittle(e.target.value)}}
+                                        onChange={(e) => { setValue('interface.chattitle', e.target.value); setchatTittle(e.target.value) }}
                                         error={!isEmpty(errors?.interface?.chattitle?.message)}
                                         helperText={errors?.interface?.chattitle?.message}
                                     />
@@ -1630,7 +1633,7 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
                                     <label className={classes.text}>
                                         <Trans i18nKey={langKeys.subtitle} />
                                         <Tooltip title={`${t(langKeys.interfaceSubtitleTooltip)}`} placement="top-start">
-                                            <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                         </Tooltip>
                                     </label>
                                 </Grid>
@@ -1642,7 +1645,7 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
                                         name="subtitulo"
                                         size="small"
                                         defaultValue={getValues('interface.chatsubtitle')}
-                                        onChange={(e) => {setValue('interface.chatsubtitle', e.target.value);setchatSubtittle(e.target.value)}}
+                                        onChange={(e) => { setValue('interface.chatsubtitle', e.target.value); setchatSubtittle(e.target.value) }}
                                         error={!isEmpty(errors?.interface?.chatsubtitle?.message)}
                                         helperText={errors?.interface?.chatsubtitle?.message}
                                     />
@@ -1650,12 +1653,12 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
                             </Grid>
                         </Box>
                     </Grid>
-                    <Grid container direction="row" style={{display: "flex", width: "100%", margin: "5px 8px"}}>
+                    <Grid container direction="row" style={{ display: "flex", width: "100%", margin: "5px 8px" }}>
                         <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                             <label className={classes.text}>
                                 <Trans i18nKey={langKeys.header} />
                                 <Tooltip title={`${t(langKeys.headerTooltip)}`} placement="top-start">
-                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                    <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                 </Tooltip>
                             </label>
                         </Grid>
@@ -1685,12 +1688,12 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
                             </FormHelperText>
                         </Grid>
                     </Grid>
-                    <Grid container direction="row" style={{display: "flex", width: "100%", margin: "5px 8px"}}>
+                    <Grid container direction="row" style={{ display: "flex", width: "100%", margin: "5px 8px" }}>
                         <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                             <label className={classes.text}>
                                 <Trans i18nKey={langKeys.botButton} />
                                 <Tooltip title={`${t(langKeys.botButtonTooltip)}`} placement="top-start">
-                                    <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                    <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                 </Tooltip>
                             </label>
                         </Grid>
@@ -1719,7 +1722,7 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
                                 {errors?.interface?.iconbot?.message}
                             </FormHelperText>
                         </Grid>
-                    </Grid>                    
+                    </Grid>
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Box m={1}>
                             <Grid container direction="row">
@@ -1727,7 +1730,7 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
                                     <label className={classes.text}>
                                         <Trans i18nKey={langKeys.botName} />
                                         <Tooltip title={`${t(langKeys.botNameTooltip)}`} placement="top-start">
-                                            <InfoIcon style={{padding: "5px 0 0 5px"}} />
+                                            <InfoIcon style={{ padding: "5px 0 0 5px" }} />
                                         </Tooltip>
                                     </label>
                                 </Grid>
@@ -1739,46 +1742,46 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
                                         size="small"
                                         placeholder={t(langKeys.botName)}
                                         defaultValue={getValues('extra.botnametext')}
-                                        onChange={e => {setValue('extra.botnametext', e.target.value); setbotnametext(e.target.value)}}
+                                        onChange={e => { setValue('extra.botnametext', e.target.value); setbotnametext(e.target.value) }}
                                     />
                                 </Grid>
                             </Grid>
                         </Box>
                     </Grid>
                 </Grid>
-            </div>            
-            <div style={{width: "50%", minWidth: 500, display:"flex", paddingLeft: 24, paddingBottom: 24, flexDirection: 'column', gap: 8}}>
+            </div>
+            <div style={{ width: "50%", minWidth: 500, display: "flex", paddingLeft: 24, paddingBottom: 24, flexDirection: 'column', gap: 8 }}>
                 <div><Typography variant="h6" >{t(langKeys.homepage)}</Typography></div>
-                <div style={{ display: 'flex', width: "100%"}} className={classes.tab}>   
-                    <HtmlTooltip  arrow 
+                <div style={{ display: 'flex', width: "100%" }} className={classes.tab}>
+                    <HtmlTooltip arrow
                         open={enable}
                         placement="top-end"
                         title={
                             <React.Fragment>
                                 {!!waitingImgUrl &&
-                                    <Avatar src={waitingImgUrl||""}  style={{width: 50, height: 50, border: '0.1px solid lightgray', position:'absolute', right: msgTooltipIMGPosition.right, bottom: msgTooltipIMGPosition.bottom }}/>
+                                    <Avatar src={waitingImgUrl || ""} style={{ width: 50, height: 50, border: '0.1px solid lightgray', position: 'absolute', right: msgTooltipIMGPosition.right, bottom: msgTooltipIMGPosition.bottom }} />
                                 }
                                 <Typography color="inherit" id="msgtooltip">{msgTooltip}</Typography>
                             </React.Fragment>
-                            }
-                    >  
-                        <Avatar src={chatImgUrl||""}  style={{width: 75, height: 75, border: '0.1px solid lightgray', top: "calc(50% - 38px)", left: "calc(50% - 38px)" }}/>
+                        }
+                    >
+                        <Avatar src={chatImgUrl || ""} style={{ width: 75, height: 75, border: '0.1px solid lightgray', top: "calc(50% - 38px)", left: "calc(50% - 38px)" }} />
                     </HtmlTooltip>
                 </div>
                 <div><Typography variant="h6" >Chat</Typography></div>
                 <div style={{ display: 'flex', width: "100%", flexDirection: 'column' }} className={classes.tab}>
-                    <div style={{padding:20, margin:"20px 20px 0 20px", display:"flex", width:"calc(100% - 40px)", height: 75, border: '#A59F9F 1px solid', borderRadius: "6px 6px 0 0 "}}>
-                         <Avatar src={headerImgUrl||""}  style={{width: 35, height: 35, border: '0.1px solid lightgray' }}/>
-                        <div style={{height: "100%", width: "100%",  paddingLeft: 25, fontSize: "1.1em", paddingTop: 5}}>{chatTittle}</div>
+                    <div style={{ padding: 20, margin: "20px 20px 0 20px", display: "flex", width: "calc(100% - 40px)", height: 75, border: '#A59F9F 1px solid', borderRadius: "6px 6px 0 0 " }}>
+                        <Avatar src={headerImgUrl || ""} style={{ width: 35, height: 35, border: '0.1px solid lightgray' }} />
+                        <div style={{ height: "100%", width: "100%", paddingLeft: 25, fontSize: "1.1em", paddingTop: 5 }}>{chatTittle}</div>
                     </div>
-                    <div style={{padding:5, margin:"0 20px", display:"flex", width:"calc(100% - 40px)", height: 45, border: '#A59F9F 1px solid'}}>  
-                        <div style={{height: "100%", width: "100%",  textAlign: 'center', fontSize: "1em", paddingTop: 5}}>{chatSubtittle}</div>
+                    <div style={{ padding: 5, margin: "0 20px", display: "flex", width: "calc(100% - 40px)", height: 45, border: '#A59F9F 1px solid' }}>
+                        <div style={{ height: "100%", width: "100%", textAlign: 'center', fontSize: "1em", paddingTop: 5 }}>{chatSubtittle}</div>
                     </div>
-                    <div style={{padding:5, margin:"0 20px", display:"flex", width:"calc(100% - 40px)", height: 'calc(100% - 160px)', border: '#A59F9F 1px solid', flexDirection: 'column', borderRadius: "0 0 6px 6px"}}>  
-                        <div style={{fontSize: "0.8em", paddingTop: 5, width: 50, textAlign: 'center',whiteSpace: "initial", wordWrap: 'break-word'}}>{botnametext}</div>
-                        <div style={{display:"flex", height: 30, paddingLeft: 10, }}>
-                            <Avatar src={botImgUrl||""}  style={{width: 30, height: 30, border: '0.1px solid lightgray' }}/>
-                            <div style={{height: "100%", width: "100%",  paddingLeft: 10, fontSize: "1.1em", paddingTop: 5}}>Te saluda {botnametext}. en qúe puedo ayudarte</div>
+                    <div style={{ padding: 5, margin: "0 20px", display: "flex", width: "calc(100% - 40px)", height: 'calc(100% - 160px)', border: '#A59F9F 1px solid', flexDirection: 'column', borderRadius: "0 0 6px 6px" }}>
+                        <div style={{ fontSize: "0.8em", paddingTop: 5, width: 50, textAlign: 'center', whiteSpace: "initial", wordWrap: 'break-word' }}>{botnametext}</div>
+                        <div style={{ display: "flex", height: 30, paddingLeft: 10, }}>
+                            <Avatar src={botImgUrl || ""} style={{ width: 30, height: 30, border: '0.1px solid lightgray' }} />
+                            <div style={{ height: "100%", width: "100%", paddingLeft: 10, fontSize: "1.1em", paddingTop: 5 }}>Te saluda {botnametext}. en qúe puedo ayudarte</div>
                         </div>
                     </div>
                 </div>
@@ -1786,7 +1789,7 @@ export const AndroidInterface: FC<{setTabIndex: (f:string)=>void, form: UseFormR
         </div>
     </>
 }
-export const ChannelAddAndroidDetail: FC<{form: UseFormReturn<IChatWebAdd>, setView: (val:string)=>void}> = ({form,setView}) => {    
+export const ChannelAddAndroidDetail: FC<{ form: UseFormReturn<IChatWebAdd>, setView: (val: string) => void }> = ({ form, setView }) => {
     const classes = useChannelAddStyles();
     const [tabIndex, setTabIndex] = useState('0');
     const { t } = useTranslation();
@@ -1795,23 +1798,23 @@ export const ChannelAddAndroidDetail: FC<{form: UseFormReturn<IChatWebAdd>, setV
     }
     return <>
         <div style={{ height: 20 }} />
-        <div style={{display: "flex", width: "100%", paddingLeft: "calc(27.5% - 240px)", minWidth: 500}} >
-            <div style={{display: "flex"}}>
+        <div style={{ display: "flex", width: "100%", paddingLeft: "calc(27.5% - 240px)", minWidth: 500 }} >
+            <div style={{ display: "flex" }}>
                 <div className={clsx(classes.step, tabIndex === "0" && classes.currentStep, tabIndex > "0" && classes.previousStep, tabIndex < "0" && classes.nextStep)}>{t(langKeys.step)} 1</div>
                 <div className={clsx(classes.arrowRight, tabIndex === "0" && classes.currentArrow, tabIndex > "0" && classes.previousArrow, tabIndex < "0" && classes.nextArrow)}></div>
             </div>
             <div className={classes.separator}> </div>
-            <div style={{display: "flex"}}>
+            <div style={{ display: "flex" }}>
                 <div className={clsx(classes.step, tabIndex === "1" && classes.currentStep, tabIndex > "1" && classes.previousStep, tabIndex < "1" && classes.nextStep)}>{t(langKeys.step)} 2</div>
                 <div className={clsx(classes.arrowRight, tabIndex === "1" && classes.currentArrow, tabIndex > "1" && classes.previousArrow, tabIndex < "1" && classes.nextArrow)}></div>
             </div>
             <div className={classes.separator}> </div>
-            <div style={{display: "flex"}}>
+            <div style={{ display: "flex" }}>
                 <div className={clsx(classes.step, tabIndex === "2" && classes.currentStep, tabIndex > "2" && classes.previousStep, tabIndex < "2" && classes.nextStep)}>{t(langKeys.step)} 3</div>
                 <div className={clsx(classes.arrowRight, tabIndex === "2" && classes.currentArrow, tabIndex > "2" && classes.previousArrow, tabIndex < "2" && classes.nextArrow)}></div>
             </div>
             <div className={classes.separator}> </div>
-            <div style={{display: "flex"}}>
+            <div style={{ display: "flex" }}>
                 <div className={clsx(classes.step, tabIndex === "3" && classes.currentStep, tabIndex > "3" && classes.previousStep, tabIndex < "3" && classes.nextStep)}>{t(langKeys.step)} 4</div>
                 <div className={clsx(classes.arrowRight, tabIndex === "3" && classes.currentArrow, tabIndex > "3" && classes.previousArrow, tabIndex < "3" && classes.nextArrow)}></div>
             </div>
@@ -1827,13 +1830,13 @@ export const ChannelAddAndroidDetail: FC<{form: UseFormReturn<IChatWebAdd>, setV
                 <Tab className={clsx(classes.tab, tabIndex === "0" && classes.activetab)} label={<Trans i18nKey={langKeys.chatinterface} />} value="0" />
                 <Tab className={clsx(classes.tab, tabIndex === "1" && classes.activetab)} label={<Trans i18nKey={langKeys.color} count={2} />} value="1" />
                 <Tab className={clsx(classes.tab, tabIndex === "2" && classes.activetab)} label={<Trans i18nKey={langKeys.form} />} value="2" />
-                <Tab className={clsx(classes.tab, tabIndex === "3" && classes.activetab)} label={<Trans i18nKey={langKeys.extra} count={2}/>} value="3" />
+                <Tab className={clsx(classes.tab, tabIndex === "3" && classes.activetab)} label={<Trans i18nKey={langKeys.extra} count={2} />} value="3" />
             </Tabs>
         </AppBar>
-        <TabPanel value="0" index={tabIndex}><AndroidInterface  form={form} setTabIndex={setTabIndex}/></TabPanel>
-        <TabPanel value="1" index={tabIndex}><AndroidColor form={form} setTabIndex={setTabIndex}/></TabPanel>
-        <TabPanel value="2" index={tabIndex}><AndroidForm form={form} setTabIndex={setTabIndex}/></TabPanel>
-        <TabPanel value="3" index={tabIndex}><AndroidExtra form={form} setTabIndex={setTabIndex}/></TabPanel>
+        <TabPanel value="0" index={tabIndex}><AndroidInterface form={form} setTabIndex={setTabIndex} /></TabPanel>
+        <TabPanel value="1" index={tabIndex}><AndroidColor form={form} setTabIndex={setTabIndex} /></TabPanel>
+        <TabPanel value="2" index={tabIndex}><AndroidForm form={form} setTabIndex={setTabIndex} /></TabPanel>
+        <TabPanel value="3" index={tabIndex}><AndroidExtra form={form} setTabIndex={setTabIndex} /></TabPanel>
         <div style={{ height: 20 }} />
         <Button variant="contained" color="primary" onClick={handleNext} fullWidth>
             <Trans i18nKey={langKeys.next} />
@@ -1902,11 +1905,11 @@ const ChannelAndroidAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loadi
                 <div className="row-zyx">
                     <div className="col-3"></div>
                     <div className="col-6">
-                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                        <Box color="textPrimary" fontSize={14} fontWeight={500} lineHeight="18px" mb={1}>
                             {t(langKeys.givechannelcolor)}
                         </Box>
-                        <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                            <AndroidIcon style={{ fill: `${coloricon}`, width: "100px" }} />
+                        <div style={{ alignItems: "center", display: "flex", justifyContent: "space-around", marginTop: '20px' }}>
+                            <ChannelAndroid style={{ fill: `${coloricon}`, height: "100px", width: "100px" }} />
                             <ColorInput hex={hexIconColor} onChange={e => { setHexIconColor(e.hex); setcoloricon(e.hex) }}
                             />
                         </div>
@@ -2038,11 +2041,11 @@ export const ChannelAddAndroid: FC = () => {
     const whatsAppData = location.state as whatsAppData | null;
 
     useEffect(() => {
-        if(insertChannel.value?.integrationId){            
+        if (insertChannel.value?.integrationId) {
             setIntegrationId(insertChannel?.value?.integrationId)
         }
     }, [insertChannel])
-    
+
     useEffect(() => {
         const mandatoryStrField = (value: string) => {
             return value.length === 0 ? t(langKeys.field_required) : undefined;
@@ -2076,47 +2079,43 @@ export const ChannelAddAndroid: FC = () => {
 
     return (
         <div style={{ width: '100%' }}>
-            <Breadcrumbs aria-label="breadcrumb" style={{display: (!showScript && view) === "view-1" ? "block":"none"}}>
+            <Breadcrumbs aria-label="breadcrumb" style={{ display: (!showScript && view) === "view-1" ? "block" : "none" }}>
                 <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD, whatsAppData) }}>
                     {t(langKeys.previoustext)}
                 </Link>
             </Breadcrumbs>
-            <Breadcrumbs aria-label="breadcrumb" style={{display: (!showScript && view) === "view-2" ? "block":"none"}}>
+            <Breadcrumbs aria-label="breadcrumb" style={{ display: (!showScript && view) === "view-2" ? "block" : "none" }}>
                 <Link color="textSecondary" key="mainview" href="/" onClick={(e) => { e.preventDefault(); setView("view-1") }}>
                     {t(langKeys.previoustext)}
                 </Link>
             </Breadcrumbs>
-            {view === "view-1" && <ChannelAddAndroidDetail form={form} setView={setView}/>}
+            {view === "view-1" && <ChannelAddAndroidDetail form={form} setView={setView} />}
             {view === "view-2" && <>
-            
-            {!showScript && <ChannelAndroidAddEnd
-                loading={insertChannel.loading || editChannel.loading}
-                integrationId={integrationId}
-                onSubmit={handleSubmit}
-                onClose={() => setView("view-1")}
-                channel={channel}
-            />}
-            <div style={{ display: showScript ? 'flex' : 'none', height: 10 }} />
-            <div style={{ display: showScript ? 'flex' : 'none', height: 10 }} />
-            <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}>
-                {t(langKeys.androidlibrary)}
-            </div>
-            <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word' }}><code>
-                {`<script src="https://zyxmelinux.zyxmeapp.com/zyxme/chat/src/chatwebclient.min.js" integrationid="${integrationId}"></script>`}
-            </code></pre><div style={{ height: 20 }} />
-                <Button variant="contained" color="primary" onClick={() => history.push(paths.CHANNELS)}>
-                    {t(langKeys.close)}
-                </Button>
-            </div>
-            <div style={{ display: showScript ? 'flex' : 'none', height: 20 }}> 
-            </div>
+
+                {!showScript && <ChannelAndroidAddEnd
+                    loading={insertChannel.loading || editChannel.loading}
+                    integrationId={integrationId}
+                    onSubmit={handleSubmit}
+                    onClose={() => setView("view-1")}
+                    channel={channel}
+                />}
+                <div style={{ display: showScript ? 'flex' : 'none', height: 10 }} />
+                <div style={{ display: showScript ? 'flex' : 'none', height: 10 }} />
+                <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}>
+                    {t(langKeys.androidlibrary)}
+                </div>
+                <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word' }}><code>
+                    {`<script src="https://zyxmelinux.zyxmeapp.com/zyxme/chat/src/chatwebclient.min.js" integrationid="${integrationId}"></script>`}
+                </code></pre><div style={{ height: 20 }} />
+                    <Button variant="contained" color="primary" onClick={() => history.push(paths.CHANNELS)}>
+                        {t(langKeys.close)}
+                    </Button>
+                </div>
+                <div style={{ display: showScript ? 'flex' : 'none', height: 20 }}>
+                </div>
             </>}
         </div>
     )
 }
 
 export default ChannelAddAndroid
-
-// function dispatch(arg0: IActionCall) {
-//     throw new Error("Function not implemented.");
-// }

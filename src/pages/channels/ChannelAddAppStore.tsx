@@ -1,5 +1,4 @@
-/* eslint-disable no-useless-escape */
-/* eslint-disable react-hooks/exhaustive-deps */
+import { ChannelAppStore } from "icons";
 import { FC, useEffect, useState } from "react";
 import { FieldEdit, FieldEditMulti, ColorInput } from "components";
 import { insertChannel } from "store/channel/actions";
@@ -10,7 +9,6 @@ import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
-import { ZyxmeMessengerIcon } from "icons";
 
 import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
@@ -255,11 +253,11 @@ export const ChannelAddAppStore: FC = () => {
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <div className="col-6">
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                            <Box color="textPrimary" fontSize={14} fontWeight={500} lineHeight="18px" mb={1}>
                                 {t(langKeys.givechannelcolor)}
                             </Box>
-                            <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                                <ZyxmeMessengerIcon style={{ fill: `${coloricon}`, width: "100px", height: "100px" }} />
+                            <div style={{ alignItems: "center", display: "flex", justifyContent: "space-around", marginTop: '20px' }}>
+                                <ChannelAppStore style={{ fill: `${coloricon}`, height: "100px", width: "100px" }} />
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
                                     onChange={(e) => {

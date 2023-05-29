@@ -71,14 +71,14 @@ const ChannelEdit: FC = () => {
             channel.coloricon && setHexIconColor(channel.coloricon);
             if (channel.servicecredentials) {
                 setServiceCredentials(JSON.parse(channel.servicecredentials));
-                setholdingtoneurl(channel?.voximplantholdtone||"")
-                setwelcometoneurl(channel?.voximplantwelcometone||"")
-                setCheckedCallSupervision(!!channel?.voximplantcallsupervision||false)
+                setholdingtoneurl(channel?.voximplantholdtone || "")
+                setwelcometoneurl(channel?.voximplantwelcometone || "")
+                setCheckedCallSupervision(!!channel?.voximplantcallsupervision || false)
                 let voximplantrecording = null;
-                if(channel?.voximplantrecording?.includes("recording")){
-                    voximplantrecording= JSON.parse(channel?.voximplantrecording)
-                }else{
-                    voximplantrecording = {recording: false, recordingstorage: 'month3', recordingquality: 'hd'}
+                if (channel?.voximplantrecording?.includes("recording")) {
+                    voximplantrecording = JSON.parse(channel?.voximplantrecording)
+                } else {
+                    voximplantrecording = { recording: false, recordingstorage: 'month3', recordingquality: 'hd' }
                 }
                 setCheckedRecording(voximplantrecording.recording)
             }
@@ -124,10 +124,10 @@ const ChannelEdit: FC = () => {
     const handleSubmit = useCallback(() => {
         if (!channel) return;
         const id = channel!.communicationchannelid;
-        let recordingtosend = JSON.stringify({recording: checkedRecording, recordingstorage: 'month3', recordingquality: 'hd'})
-        const body = getEditChannel(id, channel, name, auto, hexIconColor, welcometoneurl, holdingtoneurl,checkedCallSupervision, channel?.type === "VOXI"?recordingtosend:"");
+        let recordingtosend = JSON.stringify({ recording: checkedRecording, recordingstorage: 'month3', recordingquality: 'hd' })
+        const body = getEditChannel(id, channel, name, auto, hexIconColor, welcometoneurl, holdingtoneurl, checkedCallSupervision, channel?.type === "VOXI" ? recordingtosend : "");
         dispatch(editChannel(body));
-    }, [name, hexIconColor, auto, channel, welcometoneurl, holdingtoneurl,checkedCallSupervision,checkedRecording, dispatch]);
+    }, [name, hexIconColor, auto, channel, welcometoneurl, holdingtoneurl, checkedCallSupervision, checkedRecording, dispatch]);
 
     const handleGoBack = useCallback((e: React.MouseEvent) => {
         e.preventDefault();
@@ -313,7 +313,7 @@ const ChannelEdit: FC = () => {
                                     <InfoIcon style={{ color: "rgb(119, 33, 173)", paddingLeft: "4px" }} />
                                 </Tooltip>
                                 <FormControlLabel
-                                    control={<IOSSwitchPurple checked={checkedCallSupervision} onChange={(e) => { setCheckedCallSupervision(e.target.checked);}} />}
+                                    control={<IOSSwitchPurple checked={checkedCallSupervision} onChange={(e) => { setCheckedCallSupervision(e.target.checked); }} />}
                                     label={""}
                                     style={{ marginRight: "4px", marginLeft: 50 }}
                                 />
@@ -324,7 +324,7 @@ const ChannelEdit: FC = () => {
                                     <InfoIcon style={{ color: "rgb(119, 33, 173)", paddingLeft: "4px" }} />
                                 </Tooltip>
                                 <FormControlLabel
-                                    control={<IOSSwitchPurple checked={checkedRecording} onChange={(e) => { setCheckedRecording(e.target.checked)}} />}
+                                    control={<IOSSwitchPurple checked={checkedRecording} onChange={(e) => { setCheckedRecording(e.target.checked) }} />}
                                     label={""}
                                     style={{ marginRight: "4px", marginLeft: 50 }}
                                 />

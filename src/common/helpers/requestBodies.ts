@@ -394,7 +394,7 @@ export const insSLA = ({ id, description, type, company, communicationchannelid,
             usertmepercentmax: parseFloat(usertmepercentmax),
             usertmepercentmin: 0.01,
             productivitybyhour: parseFloat(productivitybyhour),
-            operation, 
+            operation,
             criticality: JSON.stringify(criticality),
             service_times: JSON.stringify(service_times)
         }
@@ -2451,14 +2451,14 @@ export const insLead = ({ leadid, description, status, type, expected_revenue, d
     }
 });
 
-export const insSDLead = (lead: IServiceDeskLead2|IServiceDeskLead, operation: "UPDATE" | "INSERT" | "DELETE" = "INSERT"): IRequestBody => ({
+export const insSDLead = (lead: IServiceDeskLead2 | IServiceDeskLead, operation: "UPDATE" | "INSERT" | "DELETE" = "INSERT"): IRequestBody => ({
     method: 'UFN_LEAD_SD_INS',
     key: "UFN_LEAD_SD_INS",
     parameters: {
         ...lead,
         id: lead.leadid,
         username: null,
-        operation, 
+        operation,
     }
 });
 
@@ -2564,28 +2564,28 @@ export const getPaginatedLead = ({ skip, take, filters, sorts, startdate, enddat
     }
 })
 
-export const getPaginatedSDLead = ({ skip, take, filters, sorts, startdate, enddate, contact, leadproduct,tags,company,
+export const getPaginatedSDLead = ({ skip, take, filters, sorts, startdate, enddate, contact, leadproduct, tags, company,
     groups, supervisorid, ...allParameters }: Dictionary): IRequestBodyPaginated => ({
-    methodCollection: "UFN_LEADGRID_SD_SEL",
-    methodCount: "UFN_LEADGRID_SD_TOTALRECORDS",
-    parameters: {
-        origin: "lead",
-        startdate,
-        enddate,
-        skip,
-        take,
-        filters,
-        sorts,
-        fullname: contact,
-        leadproduct,
-        tags,
-        company: company||"",
-        groups,
-        supervisorid,
-        offset: (new Date().getTimezoneOffset() / 60) * -1,
-        ...allParameters
-    }
-})
+        methodCollection: "UFN_LEADGRID_SD_SEL",
+        methodCount: "UFN_LEADGRID_SD_TOTALRECORDS",
+        parameters: {
+            origin: "lead",
+            startdate,
+            enddate,
+            skip,
+            take,
+            filters,
+            sorts,
+            fullname: contact,
+            leadproduct,
+            tags,
+            company: company || "",
+            groups,
+            supervisorid,
+            offset: (new Date().getTimezoneOffset() / 60) * -1,
+            ...allParameters
+        }
+    })
 
 export const getLeadExport = ({ filters, sorts, startdate, enddate, ...allParameters }: Dictionary): IRequestBody => ({
     method: "UFN_LEADGRID_EXPORT",
@@ -2603,7 +2603,7 @@ export const getLeadExport = ({ filters, sorts, startdate, enddate, ...allParame
     }
 });
 
-export const insArchiveServiceDesk = (lead: IServiceDeskLead2|IServiceDeskLead): IRequestBody => ({
+export const insArchiveServiceDesk = (lead: IServiceDeskLead2 | IServiceDeskLead): IRequestBody => ({
     method: 'UFN_LEAD_SD_INS',
     key: "UFN_LEAD_SD_INS",
     parameters: {
@@ -3237,7 +3237,7 @@ export const calendarBookingCancel = ({ calendareventid, id, phone, name, userna
         orgid,
         username,
         userid,
-        agentid:"",
+        agentid: "",
         otros,
     },
 });
@@ -3255,8 +3255,8 @@ export const calendarBookingCancel2 = ({ calendareventid, id, phone, name, email
         corpid,
         orgid,
         username: "",
-        userid:0,
-        agentid:"",
+        userid: 0,
+        agentid: "",
         otros,
     },
 });
@@ -3283,7 +3283,7 @@ export const insCalendar = ({
     availability,
     timebeforeeventduration, timebeforeeventunit, timeaftereventduration, timeaftereventunit,
     increments,
-    operation, reminderperiod, reminderfrecuency, reminderhsmmessage,notificationmessageemail,messagetemplateidemail,
+    operation, reminderperiod, reminderfrecuency, reminderhsmmessage, notificationmessageemail, messagetemplateidemail,
     communicationchannelid, notificationmessage, reminderenable, remindertype, reminderhsmtemplateid, remindermailmessage, remindermailtemplateid, reminderhsmcommunicationchannelid,
     rescheduletype, rescheduletemplateidemail, reschedulenotificationemail, rescheduletemplateidhsm, reschedulenotificationhsm, reschedulecommunicationchannelid,
     canceltype, canceltemplateidemail, cancelnotificationemail, canceltemplateidhsm, cancelnotificationhsm, cancelcommunicationchannelid
@@ -3303,7 +3303,7 @@ export const insCalendar = ({
         remindermailtemplateid: remindermailtemplateid || 0, reminderhsmmessage,
         operation, notificationmessage, reminderenable, remindertype, remindermailmessage,
         communicationchannelid: communicationchannelid || 0,
-        notificationmessageemail: notificationmessageemail, 
+        notificationmessageemail: notificationmessageemail,
         messagetemplateidemail,
         rescheduletype, rescheduletemplateidemail, reschedulenotificationemail, rescheduletemplateidhsm, reschedulenotificationhsm, reschedulecommunicationchannelid,
         canceltype, canceltemplateidemail, cancelnotificationemail, canceltemplateidhsm, cancelnotificationhsm, cancelcommunicationchannelid
@@ -3391,11 +3391,11 @@ export const postHistoryIns = ({ communicationchannelid, communicationchanneltyp
     }
 })
 
-export const productCatalogIns = ({ corpid, orgid, metacatalogid, id, productid, retailerid, title, description, descriptionshort, availability, category, condition, currency, price, saleprice, link, imagelink, additionalimagelink, brand, color, gender, material, pattern, size, datestart, datelaunch, dateexpiration, labels, customlabel0, customlabel1, customlabel2, customlabel3, customlabel4, customnumber0, customnumber1, customnumber2, customnumber3, customnumber4, reviewstatus, reviewdescription, status, type, username, operation }: Dictionary): IRequestBody => ({
+export const productCatalogIns = ({ corpid, orgid, metacatalogid, id, productid, retailerid, title, description, descriptionshort, availability, category, condition, currency, price, saleprice, link, imagelink, additionalimagelink, brand, color, gender, material, pattern, size, datestart, datelaunch, dateexpiration, labels, customlabel0, customlabel1, customlabel2, customlabel3, customlabel4, customnumber0, customnumber1, customnumber2, customnumber3, customnumber4, standardfeatures0, reviewstatus, reviewdescription, status, type, username, operation }: Dictionary): IRequestBody => ({
     method: "UFN_PRODUCTCATALOG_INS",
     key: "UFN_PRODUCTCATALOG_INS",
     parameters: {
-        corpid, orgid, metacatalogid, id, productid, retailerid, title, description, descriptionshort, availability, category, condition, currency, price, saleprice, link, imagelink, additionalimagelink, brand, color, gender, material, pattern, size, datestart, datelaunch, dateexpiration, labels, customlabel0, customlabel1, customlabel2, customlabel3, customlabel4, customnumber0, customnumber1, customnumber2, customnumber3, customnumber4, reviewstatus, reviewdescription, status, type, username, operation
+        corpid, orgid, metacatalogid, id, productid, retailerid, title, description, descriptionshort, availability, category, condition, currency, price, saleprice, link, imagelink, additionalimagelink, brand, color, gender, material, pattern, size, datestart, datelaunch, dateexpiration, labels, customlabel0, customlabel1, customlabel2, customlabel3, customlabel4, customnumber0, customnumber1, customnumber2, customnumber3, customnumber4, standardfeatures0, reviewstatus, reviewdescription, status, type, username, operation
     }
 })
 
@@ -3772,6 +3772,18 @@ export const getLocationExport = ({ filters, sorts }: Dictionary): IRequestBody 
     key: "UFN_LOCATION_EXPORT",
     parameters: {
         origin: "location",
+        filters,
+        sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+
+export const getMessageTemplateExport = ({ filters, sorts, communicationchannelid }: Dictionary): IRequestBody => ({
+    method: "UFN_MESSAGETEMPLATE_EXPORT",
+    key: "UFN_MESSAGETEMPLATE_EXPORT",
+    parameters: {
+        origin: "messagetemplate",
+        communicationchannelid,
         filters,
         sorts,
         offset: (new Date().getTimezoneOffset() / 60) * -1

@@ -86,7 +86,7 @@ export const useStyles = makeStyles((theme) => ({
     badge: {
         paddingRight: "0.6em",
         paddingLeft: "0.6em",
-        borderRadius: "10rem",        
+        borderRadius: "10rem",
         display: "inline-block",
         padding: "0.25em 0.4em",
         fontSize: "75%",
@@ -108,6 +108,10 @@ export const useStyles = makeStyles((theme) => ({
 
 }));
 
+const opentermsofservice = () => {
+    window.open("/termsofservice", '_blank');
+}
+
 const openprivacypolicies = () => {
     window.open("/privacy", '_blank');
 }
@@ -120,7 +124,22 @@ export function Copyright() {
                 {'Copyright © '} Laraigo {new Date().getFullYear()}
             </Typography>
             <Typography variant="body2" color="textPrimary" align="center">
-                <a rel="noopener noreferrer" style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={openprivacypolicies}>{t(langKeys.privacypoliciestitle)}</a>
+                <a
+                    rel="noopener noreferrer"
+                    style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "pointer" }}
+                    onClick={opentermsofservice}
+                >
+                    {t(langKeys.termsofservicetitle)}
+                </a>
+            </Typography>
+            <Typography variant="body2" color="textPrimary" align="center">
+                <a
+                    rel="noopener noreferrer"
+                    style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "pointer" }}
+                    onClick={openprivacypolicies}
+                >
+                    {t(langKeys.privacypoliciestitle)}
+                </a>
             </Typography>
         </Fragment>
     );
@@ -148,7 +167,12 @@ const SignIn = () => {
     const handleClickShowPassword = () => setShowPassword(!showPassword);
 
     const handleSignUp = () => {
-        window.open("https://laraigo.com/en/#pricetable", "_self");
+        if (apiUrls.USELARAIGO) {
+            window.open("https://laraigo.com/en/#pricetable", "_blank");
+        }
+        else {
+            window.open("sign-up/BASIC", "_blank");
+        }
     }
 
     const handleRecover = () => {
