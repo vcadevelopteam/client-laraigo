@@ -576,6 +576,7 @@ const translation: LangKeys = {
   type_domain_mastercatalog_ticketed_experiences: "Ticketed Experiences",
   type_domain_mastercatalog_transactable_items: "Transactable Items",
   type_domain_mastercatalog_vehicles: "Vehicles",
+  apikeydoesntexist: "This apiKey is invalid or doesn't exist",
 
   type_gender_femenino: 'Female',
   laraigoia: "Laraigo AI",
@@ -4615,6 +4616,7 @@ const translation: LangKeys = {
   postcreator_publish_addvideo: "Add Video",
   postcreator_publish_customizepost: "Customize your #CHANNELTYPE# post",
   postcreator_publish_facebook: "Facebook",
+  postcreator_publish_workplace: "Workplace",
   postcreator_publish_instagram: "Instagram",
   postcreator_publish_twitter: "Twitter",
   postcreator_publish_linkedin: "LinkedIn",
@@ -4630,6 +4632,7 @@ const translation: LangKeys = {
   postcreator_publish_date: "Publish date and time",
   postcreator_publish_customizemode: "Customize mode",
   postcreator_publish_mockupfacebook: "Facebook News Section",
+  postcreator_publish_mockupworkplace: "Workplace News Section",
   postcreator_publish_mockupinstagram: "Instagram Feed",
   postcreator_publish_mockuptwitter: "Twitter Feed",
   postcreator_publish_mockuplinkedin: "LinkedIn News Section",

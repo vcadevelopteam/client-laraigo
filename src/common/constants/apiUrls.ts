@@ -1,4 +1,4 @@
-const ENV = "DEVELOP";
+const ENV = "TESTING";
 
 const APIS_URL = {
     DEVELOP: {
@@ -274,6 +274,7 @@ export const apiUrls = {
     SYNCHRONIZE_TEMPLATE: `${BASE_URL}/channel/synchronizetemplate`,
     ADD_TEMPLATE: `${BASE_URL}/channel/addtemplate`,
     DELETE_TEMPLATE: `${BASE_URL}/channel/deletetemplate`,
+    GET_GROUP_LIST: `${BASE_URL}/channel/getgrouplist`,
 
     BILLING_REPORTPDF: `${BASE_URL}/drawpdf`,
     
