@@ -164,11 +164,11 @@ export const ChannelAdd: FC = () => {
             label: t(langKeys.channel_twitterdm),
             onClick: () => { history.push(paths.CHANNELS_ADD_TWITTERDM.path, whatsAppData) },
         },
-        /*{
+        {
             icon: c => <TikTokColor className={c} />,
             label: t(langKeys.channel_tiktok),
             onClick: () => { history.push(paths.CHANNELS_ADD_TIKTOK.path, whatsAppData) },
-        },*/
+        },
         {
             icon: c => <YouTubeColor className={c} />,
             label: t(langKeys.channel_youtube),

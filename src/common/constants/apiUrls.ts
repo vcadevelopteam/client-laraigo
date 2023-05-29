@@ -277,7 +277,7 @@ export const apiUrls = {
     GET_GROUP_LIST: `${BASE_URL}/channel/getgrouplist`,
 
     BILLING_REPORTPDF: `${BASE_URL}/drawpdf`,
-    
+
     PRODUCT_IMPORT: `${BASE_URL}/product/import`,
     POSTHISTORY_SCHEDULE: `${BASE_URL}/posthistory/schedulepost`,
     EVENTBOOKING_GOOGLE_LOGIN: `${BASE_URL}/event-booking/googlelogin`,

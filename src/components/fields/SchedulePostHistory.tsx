@@ -199,6 +199,7 @@ const BoxDay: FC<DayInputProps> = ({ day, notPreviousDays, handleClick }) => {
                             {item.communicationchanneltype === 'INST' && <InstagramColor style={{ width: '18px', height: '18px', marginRight: '3px' }} />}
                             {item.communicationchanneltype === 'LNKD' && <LinkedInColor style={{ width: '18px', height: '18px', marginRight: '3px' }} />}
                             {item.communicationchanneltype === 'TKTK' && <TikTokColor style={{ width: '18px', height: '18px', marginRight: '3px' }} />}
+                            {item.communicationchanneltype === 'TKTA' && <TikTokColor style={{ width: '18px', height: '18px', marginRight: '3px' }} />}
                             {item.communicationchanneltype === 'TWIT' && <TwitterColor style={{ width: '18px', height: '18px', marginRight: '3px' }} />}
                             {item.communicationchanneltype === 'YOUT' && <YouTubeColor style={{ width: '18px', height: '18px', marginRight: '3px' }} />}
                             {new Date(item.publishdate).toLocaleTimeString()?.slice(0, 5)}
@@ -331,6 +332,7 @@ const SchedulePostHistory: FC<ScheduleInputProps> = ({ notPreviousDays = true, d
                                         {postdata.communicationchanneltype === 'INST' && <InstagramColor style={{ width: '22px', height: '22px' }} />}
                                         {postdata.communicationchanneltype === 'LNKD' && <LinkedInColor style={{ width: '22px', height: '22px' }} />}
                                         {postdata.communicationchanneltype === 'TKTK' && <TikTokColor style={{ width: '22px', height: '22px' }} />}
+                                        {postdata.communicationchanneltype === 'TKTA' && <TikTokColor style={{ width: '22px', height: '22px' }} />}
                                         {postdata.communicationchanneltype === 'TWIT' && <TwitterColor style={{ width: '22px', height: '22px' }} />}
                                         {postdata.communicationchanneltype === 'YOUT' && <YouTubeColor style={{ width: '22px', height: '22px' }} />}
                                     </div>

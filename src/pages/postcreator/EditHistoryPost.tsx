@@ -166,6 +166,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                         break;
 
                     case "TKTK":
+                    case "TKTA":
                         setPreviewType('TIKTOKPREVIEW');
                         setCustomizeType('TikTok');
                         break;
@@ -222,7 +223,6 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
     useEffect(() => {
         if (waitOperation) {
             if (!executeRes.loading && !executeRes.error) {
-                
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
@@ -347,6 +347,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                             {getValues('communicationchanneltype') === 'INST' && <InstagramColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
                                             {getValues('communicationchanneltype') === 'LNKD' && <LinkedInColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
                                             {getValues('communicationchanneltype') === 'TKTK' && <TikTokColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
+                                            {getValues('communicationchanneltype') === 'TKTA' && <TikTokColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
                                             {getValues('communicationchanneltype') === 'TWIT' && <TwitterColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
                                             {getValues('communicationchanneltype') === 'YOUT' && <YouTubeColor style={{ width: '28px', height: '28px', marginRight: '6px' }} />}
                                             <span>{row?.communicationchanneldesc || ''}</span>
@@ -520,7 +521,7 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                         disabled={customizeType === 'LinkedIn'}
                                     >{t(langKeys.postcreator_publish_linkedin)}
                                     </Button>}
-                                    {getValues('communicationchanneltype') === "TKTK" && <Button
+                                    {(getValues('communicationchanneltype') === "TKTK" || getValues('communicationchanneltype') === "TKTA") && <Button
                                         className={classes.buttonSocial}
                                         variant="contained"
                                         color="primary"
@@ -694,10 +695,10 @@ const EditHistoryPost: React.FC<{ data: { row: Dictionary | null, edit: boolean 
                                                 description: t(langKeys.postcreator_publish_mockupyoutube),
                                                 value: "YOUTUBEPREVIEW",
                                             },
-                                            /*{
+                                            {
                                                 description: t(langKeys.postcreator_publish_mockuptiktok),
                                                 value: "TIKTOKPREVIEW",
-                                            },*/
+                                            },
                                         ]}
                                         optionDesc="description"
                                         optionValue="value"

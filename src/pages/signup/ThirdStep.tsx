@@ -21,7 +21,7 @@ import {
     WhatsappColor,
     TwitterColor,
     VoiceColor,
-    //TikTokColor,
+    TikTokColor,
     YouTubeColor,
     LinkedInColor,
     TeamsColor,
@@ -185,7 +185,7 @@ const ThirdStep: FC = () => {
             },
             selected: listchannels.twitterDM,
         },
-        /*{
+        {
             icon: <TikTokColor className={classes.icon} />,
             label: t(langKeys.channel_tiktok),
             key: 'tiktok',
@@ -193,7 +193,7 @@ const ThirdStep: FC = () => {
                 toggleChannel('tiktok');
             },
             selected: listchannels.tiktok,
-        },*/
+        },
         {
             icon: <YouTubeColor className={classes.icon} />,
             label: t(langKeys.channel_youtube),

@@ -30,7 +30,7 @@ import { Divider, Grid, ListItem, ListItemText, styled } from '@material-ui/core
 import ListSubheader from '@material-ui/core/ListSubheader';
 import { Skeleton } from '@material-ui/lab';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import { AndroidColor, EmailColor, EmojiICon, FacebookColor, FacebookMessengerColor, GifIcon, InstagramColor, IosColor, LinkedInColor, SmsColor, TeamsColor, TelegramColor, TwitterColor, VoiceColor, WebMessengerColor, WhatsappColor, YouTubeColor } from 'icons';
+import { AndroidColor, EmailColor, EmojiICon, FacebookColor, FacebookMessengerColor, GifIcon, InstagramColor, IosColor, LinkedInColor, SmsColor, TeamsColor, TelegramColor, TwitterColor, VoiceColor, WebMessengerColor, WhatsappColor, YouTubeColor, TikTokColor } from 'icons';
 import { Picker } from 'emoji-mart'
 import { SearchField } from 'components';
 import CameraAltIcon from '@material-ui/icons/CameraAlt';
@@ -230,7 +230,7 @@ interface TemplateDialogProps {
     button1Props?: ButtonProps;
 }
 
-export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText0, buttonText1, buttonText2, buttonText3, handleClickButton0, handleClickButton1, handleClickButton2, handleClickButton3, title, maxWidth = "sm", button1Type = "button", button2Type = "button", zIndex = 1300, showClose = false, height="auto", buttonStyle1, buttonStyle2, buttonStyle3, button1Props }) => (
+export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText0, buttonText1, buttonText2, buttonText3, handleClickButton0, handleClickButton1, handleClickButton2, handleClickButton3, title, maxWidth = "sm", button1Type = "button", button2Type = "button", zIndex = 1300, showClose = false, height = "auto" }) => (
     <Dialog
         open={open}
         fullWidth
@@ -592,6 +592,9 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     if (channelType === "TWMS") return <TwitterIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "TEAM") return <TeamsIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "VOXI") return <PhoneIcon width={10} fill={color} stroke={color} height={height} style={{ color, width: 16, height: 16 }} />
+    if (channelType === "TKTK") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "TKTA") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "TKTT") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
 
     return <TelegramIcon style={{ color, width, height }} />
 }
@@ -628,6 +631,9 @@ export const GetIconColor: React.FC<IconProps> = ({ channelType }) => {
     if (channelType === "TEAM") return <TeamsColor />
     if (channelType === "VOXI") return <VoiceColor />
     if (channelType === "LNKD") return <LinkedInColor />
+    if (channelType === "TKTK") return <TikTokColor />
+    if (channelType === "TKTA") return <TikTokColor />
+    if (channelType === "TKTT") return <TikTokColor />
 
     return <TelegramColor />
 }
