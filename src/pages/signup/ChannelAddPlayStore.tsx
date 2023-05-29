@@ -4,7 +4,6 @@ import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon, LinkOff as LinkOf
 import { FC, useContext, useEffect, useState } from "react";
 import { FieldEdit } from "components";
 import { langKeys } from "lang/keys";
-import { LinkedInColor } from "icons";
 import { MainData, SubscriptionContext } from "./context";
 import { makeStyles, Breadcrumbs, Button, Link, IconButton, Typography, InputAdornment } from '@material-ui/core';
 import { showBackdrop } from 'store/popus/actions';
@@ -12,6 +11,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { useFormContext } from "react-hook-form";
 import { useSelector } from "hooks";
+import { ZyxmeMessengerIcon } from 'icons';
 
 import clsx from 'clsx';
 
@@ -25,7 +25,7 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ChannelAddLinkedIn: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
+export const ChannelAddPlayStore: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
     const dispatch = useDispatch();
 
     const { commonClasses, foreground, submitObservable, setForeground, deleteChannel } = useContext(SubscriptionContext);
@@ -44,12 +44,9 @@ export const ChannelAddLinkedIn: FC<{ setOpenWarning: (param: any) => void }> = 
 
     useEffect(() => {
         const cb = async () => {
-            const v1 = await trigger('channels.linkedin.clientid');
-            const v2 = await trigger('channels.linkedin.clientsecret');
-            const v3 = await trigger('channels.linkedin.accesstoken');
-            const v4 = await trigger('channels.linkedin.refreshtoken');
-            const v5 = await trigger('channels.linkedin.organizationid');
-            setSubmitError(!v1 || !v2 || !v3 || !v4 || !v5);
+            const v1 = await trigger('channels.playstore.appcode');
+            const v2 = await trigger('channels.playstore.mail');
+            setSubmitError(!v1 || !v2);
         }
 
         submitObservable.addListener(cb);
@@ -65,20 +62,17 @@ export const ChannelAddLinkedIn: FC<{ setOpenWarning: (param: any) => void }> = 
             }
         }
 
-        register('channels.linkedin.description', { validate: strRequired, value: '' });
-        register('channels.linkedin.clientid', { validate: strRequired, value: '' });
-        register('channels.linkedin.clientsecret', { validate: strRequired, value: '' });
-        register('channels.linkedin.accesstoken', { validate: strRequired, value: '' });
-        register('channels.linkedin.refreshtoken', { validate: strRequired, value: '' });
-        register('channels.linkedin.organizationid', { validate: strRequired, value: '' });
-        register('channels.linkedin.build', {
+        register('channels.playstore.description', { validate: strRequired, value: '' });
+        register('channels.playstore.appcode', { validate: strRequired, value: '' });
+        register('channels.playstore.mail', { validate: strRequired, value: '' });
+        register('channels.playstore.build', {
             value: values => ({
                 "method": "UFN_COMMUNICATIONCHANNEL_INS",
                 "parameters": {
                     "apikey": "",
                     "chatflowenabled": true,
                     "color": "",
-                    "coloricon": "#0A66C2",
+                    "coloricon": "#FABA30",
                     "communicationchannelowner": values.description,
                     "communicationchannelsite": "",
                     "description": values.description,
@@ -91,23 +85,20 @@ export const ChannelAddLinkedIn: FC<{ setOpenWarning: (param: any) => void }> = 
                     "voximplantcallsupervision": false,
                 },
                 "service": {
-                    "clientid": values.clientid,
-                    "clientsecret": values.clientsecret,
-                    "accesstoken": values.accesstoken,
-                    "refreshtoken": values.refreshtoken,
-                    "organizationid": values.organizationid,
+                    "appcode": values.appcode,
+                    "mail": values.mail,
                 },
-                "type": "LINKEDIN",
+                "type": "PLAYSTORE",
             })
         });
 
         return () => {
-            unregister('channels.linkedin');
+            unregister('channels.playstore');
         }
     }, [register, unregister]);
 
     useEffect(() => {
-        if (foreground !== 'linkedin' && viewSelected !== "view1") {
+        if (foreground !== 'playstore' && viewSelected !== "view1") {
             setViewSelected("view1");
         }
     }, [foreground, viewSelected]);
@@ -125,7 +116,7 @@ export const ChannelAddLinkedIn: FC<{ setOpenWarning: (param: any) => void }> = 
             setForeground(undefined);
         } else {
             setViewSelected(option);
-            setForeground('linkedin');
+            setForeground('playstore');
         }
     }
 
@@ -145,82 +136,40 @@ export const ChannelAddLinkedIn: FC<{ setOpenWarning: (param: any) => void }> = 
                     </Link>
                 </Breadcrumbs>
                 <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.channel_linkedintitle)}</div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>{t(langKeys.channel_genericalert)}</div>
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.channel_playstoretitle1)}</div>
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>{t(langKeys.channel_playstoretitle2)}</div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={v => {
-                                setNextbutton(v === "" || getValues('channels.linkedin.clientsecret') === "" || getValues('channels.linkedin.accesstoken') === "" || getValues('channels.linkedin.refreshtoken') === "" || getValues('channels.linkedin.organizationid') === "");
-                                setValue('channels.linkedin.clientid', v);
+                                setNextbutton(v === "" || getValues('channels.playstore.appcode') === "" || !/\S+@\S+\.\S+/.test(v));
+                                setValue('channels.playstore.mail', v);
                             }}
-                            valueDefault={getValues('channels.linkedin.clientid')}
-                            label={t(langKeys.linkedin_clientid)}
+                            valueDefault={getValues('channels.playstore.mail')}
+                            label={t(langKeys.playstore_account)}
                             className="col-6"
-                            error={errors.channels?.linkedin?.clientid?.message}
+                            error={errors.channels?.playstore?.mail?.message}
                         />
                     </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={v => {
-                                setNextbutton(getValues('channels.linkedin.clientid') === "" || v === "" || getValues('channels.linkedin.accesstoken') === "" || getValues('channels.linkedin.refreshtoken') === "" || getValues('channels.linkedin.organizationid') === "");
-                                setValue('channels.linkedin.clientsecret', v);
+                                setNextbutton(v === "" || getValues('channels.playstore.mail') === "" || !/\S+@\S+\.\S+/.test(getValues('channels.playstore.mail')));
+                                setValue('channels.playstore.appcode', v);
                             }}
-                            valueDefault={getValues('channels.linkedin.clientsecret')}
-                            label={t(langKeys.linkedin_clientsecret)}
+                            valueDefault={getValues('channels.playstore.appcode')}
+                            label={t(langKeys.playstore_appcode)}
                             className="col-6"
-                            error={errors.channels?.linkedin?.clientsecret?.message}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldEdit
-                            onChange={v => {
-                                setNextbutton(getValues('channels.linkedin.clientid') === "" || getValues('channels.linkedin.clientsecret') === "" || v === "" || getValues('channels.linkedin.refreshtoken') === "" || getValues('channels.linkedin.organizationid') === "");
-                                setValue('channels.linkedin.accesstoken', v);
-                            }}
-                            valueDefault={getValues('channels.linkedin.accesstoken')}
-                            label={t(langKeys.linkedin_accesstoken)}
-                            className="col-6"
-                            error={errors.channels?.linkedin?.accesstoken?.message}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldEdit
-                            onChange={v => {
-                                setNextbutton(getValues('channels.linkedin.clientid') === "" || getValues('channels.linkedin.clientsecret') === "" || getValues('channels.linkedin.accesstoken') === "" || v === "" || getValues('channels.linkedin.organizationid') === "");
-                                setValue('channels.linkedin.refreshtoken', v);
-                            }}
-                            valueDefault={getValues('channels.linkedin.refreshtoken')}
-                            label={t(langKeys.linkedin_refreshtoken)}
-                            className="col-6"
-                            error={errors.channels?.linkedin?.refreshtoken?.message}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldEdit
-                            onChange={v => {
-                                setNextbutton(getValues('channels.linkedin.clientid') === "" || getValues('channels.linkedin.clientsecret') === "" || getValues('channels.linkedin.accesstoken') === "" || getValues('channels.linkedin.refreshtoken') === "" || v === "");
-                                setValue('channels.linkedin.organizationid', v);
-                            }}
-                            valueDefault={getValues('channels.linkedin.organizationid')}
-                            label={t(langKeys.linkedin_organizationid)}
-                            className="col-6"
-                            error={errors.channels?.linkedin?.organizationid?.message}
+                            error={errors.channels?.playstore?.appcode?.message}
                         />
                     </div>
                     <div style={{ paddingLeft: "80%" }}>
                         <Button
                             onClick={async () => {
-                                const v1 = await trigger('channels.linkedin.clientid');
-                                const v2 = await trigger('channels.linkedin.clientsecret');
-                                const v3 = await trigger('channels.linkedin.accesstoken');
-                                const v4 = await trigger('channels.linkedin.refreshtoken');
-                                const v5 = await trigger('channels.linkedin.organizationid');
-                                if (v1 && v2 && v3 && v4 && v5) {
+                                const v1 = await trigger('channels.playstore.appcode');
+                                const v2 = await trigger('channels.playstore.mail');
+                                if (v1 && v2) {
                                     setView("view1");
                                     setHasFinished(true);
                                 }
@@ -240,12 +189,12 @@ export const ChannelAddLinkedIn: FC<{ setOpenWarning: (param: any) => void }> = 
 
     return (
         <div className={clsx(commonClasses.root, submitError && commonClasses.rootError)}>
-            {!hasFinished && <LinkedInColor className={commonClasses.leadingIcon} />}
+            {!hasFinished && <ZyxmeMessengerIcon className={commonClasses.leadingIcon} />}
             {!hasFinished && <IconButton
                 color="primary"
                 className={commonClasses.trailingIcon}
                 onClick={() => {
-                    deleteChannel('linkedin');
+                    deleteChannel('playstore');
                 }}
             >
                 <DeleteOutlineIcon />
@@ -253,7 +202,7 @@ export const ChannelAddLinkedIn: FC<{ setOpenWarning: (param: any) => void }> = 
             {!hasFinished && <Typography>
                 <Trans i18nKey={langKeys.subscription_genericconnect} />
             </Typography>}
-            {hasFinished && <LinkedInColor
+            {hasFinished && <ZyxmeMessengerIcon
                 style={{ width: 100, height: 100, alignSelf: 'center' }} />
             }
             {hasFinished && (
@@ -266,17 +215,17 @@ export const ChannelAddLinkedIn: FC<{ setOpenWarning: (param: any) => void }> = 
                     <Typography
                         color="primary"
                         style={{ fontSize: '1.2vw', fontWeight: 500 }}>
-                        {t(langKeys.subscription_message1)} {t(langKeys.channel_linkedin)} {t(langKeys.subscription_message2)}
+                        {t(langKeys.subscription_message1)} {t(langKeys.channel_sms)} {t(langKeys.subscription_message2)}
                     </Typography>
                 </div>
             )}
             <FieldEdit
-                onChange={(value) => { setValue('channels.linkedin.description', value); setNextbutton2(!value); }}
-                valueDefault={getValues('channels.linkedin.description')}
+                onChange={(value) => { setValue('channels.playstore.description', value); setNextbutton2(!value); }}
+                valueDefault={getValues('channels.playstore.description')}
                 label={t(langKeys.givechannelname)}
                 variant="outlined"
                 size="small"
-                error={errors.channels?.linkedin?.description?.message}
+                error={errors.channels?.playstore?.description?.message}
                 InputProps={{
                     endAdornment: (
                         <InputAdornment position="end">

@@ -1526,9 +1526,9 @@ const translation: LangKeys = {
   emittername: "Sender name",
   emailtitle: "Connect your Infobip email",
   smstitle2:
-    "To connect your SMS, we need you to provide us with the following information. You can find it from the Infobip dashboard.",
+    "To connect your SMS, we need you to provide us with the following information. You can find it in the Infobip dashboard.",
   emailtitle2:
-    "To connect your email, we need you to provide us with the following information. You can find it from the Infobip dashboard.",
+    "To connect your email, we need you to provide us with the following information. You can find it in the Infobip dashboard.",
   twittertitle: "Connect your Twitter page",
   twittertitle2:
     "In order to connect your Twitter page we need some authorization data from the app you wish to link. This information can be found in the Twitter developer portal",
@@ -5116,6 +5116,17 @@ const translation: LangKeys = {
   channel_appstore_keyid: 'Key ID',
   channel_appstore_issuerid: 'Issuer ID',
   channel_appstore_secretkey: 'Secret Key',
+  channel_playstore: 'Play Store',
+  channel_playstoretitle1: 'Connect your Play Store',
+  channel_playstoretitle2: 'To connect your Play Store, we need you to provide us with the following information. You can find it in the Google Play Console dashboard.',
+  playstore_appcode: 'App Code',
+  playstore_account: 'Developer Account',
+  channel_linkedintitle1: 'To connect your LinkedIn, we need you to provide us with the following information. You can find it in the LinkedIn developer dashboard.',
+  linkedin_clientid: 'Client ID',
+  linkedin_clientsecret: 'Client Secret',
+  linkedin_accesstoken: 'Access Token',
+  linkedin_refreshtoken: 'Refresh Token',
+  linkedin_organizationid: 'Organization ID',
 };
 
 const enResource: ResourceLanguage = {

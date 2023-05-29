@@ -5044,6 +5044,17 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   channel_appstore_keyid: 'ID Llave',
   channel_appstore_issuerid: 'ID Editor',
   channel_appstore_secretkey: 'Llave Secreta',
+  channel_playstore: 'Play Store',
+  channel_playstoretitle1: 'Conecta tu Play Store',
+  channel_playstoretitle2: 'Para conectar tu Play Store, necesitamos que nos proveas de la siguiente información. Puedas encontrarla desde el dashboard de Google Play Console.',
+  playstore_appcode: 'Código de Aplicación',
+  playstore_account: 'Cuenta de Desarrollador',
+  channel_linkedintitle1: 'Para conectar tu LinkedIn, necesitamos que nos proveas de la siguiente información. Puedas encontrarla desde el dashboard de desarrolladores de LinkedIn.',
+  linkedin_clientid: 'ID de Cliente',
+  linkedin_clientsecret: 'Secreto de Cliente',
+  linkedin_accesstoken: 'Token de Acceso',
+  linkedin_refreshtoken: 'Token de Renovación',
+  linkedin_organizationid: 'ID de Organización',
 };
 
 const esResource: ResourceLanguage = {

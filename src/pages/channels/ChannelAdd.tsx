@@ -185,6 +185,11 @@ export const ChannelAdd: FC = () => {
             onClick: () => history.push(paths.CHANNELS_ADD_APPSTORE.path, whatsAppData),
         },
         {
+            icon: c => <WebMessengerColorAlt02 className={c} />,
+            label: t(langKeys.channel_playstore),
+            onClick: () => { history.push(paths.CHANNELS_ADD_PLAYSTORE.path, whatsAppData) },
+        },
+        {
             icon: c => <LinkedInColor className={c} />,
             label: t(langKeys.channel_linkedin),
             onClick: () => { history.push(paths.CHANNELS_ADD_LINKEDIN.path, whatsAppData) },

@@ -5032,6 +5032,17 @@ export const langKeys = {
   channel_appstore_keyid: 'channel_appstore_keyid',
   channel_appstore_issuerid: 'channel_appstore_issuerid',
   channel_appstore_secretkey: 'channel_appstore_secretkey',
+  channel_playstore: 'channel_playstore',
+  channel_playstoretitle1: 'channel_playstoretitle1',
+  channel_playstoretitle2: 'channel_playstoretitle2',
+  playstore_appcode: 'playstore_appcode',
+  playstore_account: 'playstore_account',
+  channel_linkedintitle1: 'channel_linkedintitle1',
+  linkedin_clientid: 'linkedin_clientid',
+  linkedin_clientsecret: 'linkedin_clientsecret',
+  linkedin_accesstoken: 'linkedin_accesstoken',
+  linkedin_refreshtoken: 'linkedin_refreshtoken',
+  linkedin_organizationid: 'linkedin_organizationid',
 };
 
 export type LangKeys = typeof langKeys;

@@ -79,6 +79,7 @@ const ChannelAddTikTok = lazy(() => import('pages/channels/ChannelAddTikTok'));
 const ChannelAddYouTube = lazy(() => import('pages/channels/ChannelAddYouTube'));
 const ChannelAddBusiness = lazy(() => import('pages/channels/ChannelAddBusiness'));
 const ChannelAddAppStore = lazy(() => import('pages/channels/ChannelAddAppStore'));
+const ChannelAddPlayStore = lazy(() => import('pages/channels/ChannelAddPlayStore'));
 const ChannelAddLinkedIn = lazy(() => import('pages/channels/ChannelAddLinkedIn'));
 const ChannelAddTeams = lazy(() => import('pages/channels/ChannelAddTeams'));
 const ChannelAddBlogger = lazy(() => import('pages/channels/ChannelAddBlogger'));
@@ -248,6 +249,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.CHANNELS_ADD_YOUTUBE.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddYouTube /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_BUSINESS.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddBusiness /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_APPSTORE.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddAppStore /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_PLAYSTORE.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddPlayStore /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_LINKEDIN.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddLinkedIn /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_TEAMS.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddTeams /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_BLOGGER.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddBlogger /></Layout>)} />

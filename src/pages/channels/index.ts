@@ -23,5 +23,6 @@ export { ChannelAddTikTok } from './ChannelAddTikTok';
 export { ChannelAddYouTube } from './ChannelAddYouTube';
 export { ChannelAddBusiness } from './ChannelAddBusiness';
 export { ChannelAddAppStore } from './ChannelAddAppStore';
+export { ChannelAddPlayStore } from './ChannelAddPlayStore';
 export { ChannelAddWhatsAppOnboarding } from './ChannelAddWhatsAppOnboarding';
 export { default as ChannelEdit } from './ChannelEdit';
