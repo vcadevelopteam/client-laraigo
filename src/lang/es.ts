@@ -5033,6 +5033,10 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   channel_tiktokaccountkey: 'Llave de Cuenta',
   channel_tiktokregisterayrshare: 'Registrar como Ayrshare',
   channel_tiktokregistertikapi: 'Registrar como TikAPI',
+  channel_business: "Business Profile",
+  channel_businesstitle: 'Conectar Business Profile',
+  channel_businessalert1: 'Instala el chatbot en tu Business Profile y empieza a conseguir clientes potenciales.',
+  channel_businessalert2: 'Los negocios enlazados a tu cuenta de seran usados para este proceso',
 };
 
 const esResource: ResourceLanguage = {

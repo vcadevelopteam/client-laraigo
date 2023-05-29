@@ -5021,6 +5021,10 @@ export const langKeys = {
   channel_tiktokaccountkey: 'channel_tiktokaccountkey',
   channel_tiktokregisterayrshare: 'channel_tiktokregisterayrshare',
   channel_tiktokregistertikapi: 'channel_tiktokregistertikapi',
+  channel_business: "channel_business",
+  channel_businesstitle: 'channel_businesstitle',
+  channel_businessalert1: 'channel_businessalert1',
+  channel_businessalert2: 'channel_businessalert2',
 };
 
 export type LangKeys = typeof langKeys;

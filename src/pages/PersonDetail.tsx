@@ -868,6 +868,7 @@ const nameschannel: { [x: string]: string } = {
     "MAIL": "EMAIL",
     "MAII": "EMAIL",
     "YOUT": "YOUTUBE",
+    "GOBU": "BUSINESS PROFILE",
     "LINE": "LINE",
     "SMS": "SMS",
     "SMSI": "SMS",

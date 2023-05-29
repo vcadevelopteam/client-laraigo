@@ -5105,6 +5105,10 @@ const translation: LangKeys = {
   channel_tiktokaccountkey: 'Account Key',
   channel_tiktokregisterayrshare: 'Register as Ayrshare',
   channel_tiktokregistertikapi: 'Register as TikAPI',
+  channel_business: "Business Profile",
+  channel_businesstitle: 'Connect Business Profile',
+  channel_businessalert1: 'Install the chatbot on your Business Profile and start getting leads.',
+  channel_businessalert2: 'The businesses linked to your account will be the ones used on this process.',
 };
 
 const enResource: ResourceLanguage = {

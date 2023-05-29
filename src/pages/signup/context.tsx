@@ -85,6 +85,7 @@ export interface ListChannels {
     voximplantphone: boolean;
     tiktok: boolean;
     youtube: boolean;
+    business: boolean;
     linkedin: boolean;
     teams: boolean;
     blogger: boolean;
@@ -184,6 +185,17 @@ export interface YouTubeChannel {
     build: (v: Omit<YouTubeChannel, 'build'>) => IRequestBody;
 }
 
+export interface BusinessChannel {
+    description: string;
+    accesstoken: string;
+    refreshtoken: string;
+    scope: string;
+    tokentype: string;
+    idtoken: string;
+    channel: string;
+    build: (v: Omit<BusinessChannel, 'build'>) => IRequestBody;
+}
+
 export interface LinkedInChannel {
     description: string;
     account: string;
@@ -248,6 +260,7 @@ export interface Channels {
     linkedin: LinkedInChannel,
     teams: TeamsChannel,
     blogger: BloggerChannel,
+    business: BusinessChannel,
     android: MobileChannel;
     apple: MobileChannel;
     voximplantphone: VoxImplantPhoneChannel;
@@ -311,6 +324,7 @@ const defaultListChannels: ListChannels = {
     voximplantphone: false,
     tiktok: false,
     youtube: false,
+    business: false,
     linkedin: false,
     teams: false,
     blogger: false,
