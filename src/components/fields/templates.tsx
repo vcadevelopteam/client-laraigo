@@ -585,7 +585,7 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     if (channelType === "YOUA") return <ChannelYouTube width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "YOUT") return <ChannelYouTube width={width} fill={color} stroke={color} height={height} color={color} />
 
-    return <ChannelGeneric style={{ color, width, height }} />
+    return <ChannelGeneric width={width} fill={color} stroke={color} height={height} color={color} />
 }
 export const GetIconColor: React.FC<IconProps> = ({ channelType }) => {
     if (channelType === 'ANDR') return <AndroidColor />

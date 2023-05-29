@@ -253,11 +253,11 @@ export const ChannelAddAppStore: FC = () => {
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <div className="col-6">
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                            <Box color="textPrimary" fontSize={14} fontWeight={500} lineHeight="18px" mb={1}>
                                 {t(langKeys.givechannelcolor)}
                             </Box>
-                            <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                                <ChannelAppStore style={{ fill: `${coloricon}`, width: "100px", height: "100px" }} />
+                            <div style={{ alignItems: "center", display: "flex", justifyContent: "space-around", marginTop: '20px' }}>
+                                <ChannelAppStore style={{ fill: `${coloricon}`, height: "100px", width: "100px" }} />
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
                                     onChange={(e) => {

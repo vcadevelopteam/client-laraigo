@@ -1,4 +1,4 @@
-import { ChannelTwitter02 } from "icons";
+import { ChannelTwitter01 } from "icons";
 import { FC, useEffect, useState } from "react";
 import { FieldEdit, ColorInput } from "components";
 import { insertChannel } from "store/channel/actions";
@@ -111,7 +111,7 @@ export const ChannelAddTwitterDM: FC = () => {
         partialf.parameters.description = value
         setFields(partialf)
     }
-    
+
     if (viewSelected === "view1") {
         return (
             <div style={{ width: '100%' }}>
@@ -252,11 +252,11 @@ export const ChannelAddTwitterDM: FC = () => {
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <div className="col-6">
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                            <Box color="textPrimary" fontSize={14} fontWeight={500} lineHeight="18px" mb={1}>
                                 {t(langKeys.givechannelcolor)}
                             </Box>
-                            <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                                <ChannelTwitter02 style={{ fill: `${coloricon}`, width: "100px" }} />
+                            <div style={{ alignItems: "center", display: "flex", justifyContent: "space-around", marginTop: '20px' }}>
+                                <ChannelTwitter01 style={{ fill: `${coloricon}`, height: "100px", width: "100px" }} />
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
                                     onChange={e => {

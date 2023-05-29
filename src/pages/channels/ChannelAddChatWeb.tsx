@@ -897,11 +897,11 @@ const TabPanelForm: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
 
     useEffect(() => {
         form.setValue('form', fields.map(x => x.data));
-        if(fields.length){
+        if (fields.length) {
             setEnable(true)
         }
         getMenuTemplates();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fields, form]);
 
     const handleCloseTemplate = (key: string) => {
@@ -918,7 +918,7 @@ const TabPanelForm: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
 
     const getMenuTemplates = () => {
         const temp: React.ReactNode[] = [];
-        let fieldlist = fields.reduce((acc:any,x:any)=>([...acc, x.data.field]),[]);
+        let fieldlist = fields.reduce((acc: any, x: any) => ([...acc, x.data.field]), []);
         for (const key in templates) {
             if (fieldlist.includes(templates[key].data.field)) continue;
             temp.push(<MenuItem key={key} value={key}>{templates[key].text}</MenuItem>);
@@ -1134,13 +1134,13 @@ const TabPanelExtras: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
     const [uploadLocation, setUploadLocation] = useState(getValues('extra.uploadlocation'));
     const [reloadChat, setReloadChat] = useState(getValues('extra.reloadchat'));
     const [poweredBy, setPoweredBy] = useState(getValues('extra.poweredby'));
-    
+
     const [persistentInput, setPersistentInput] = useState(getValues('extra.persistentinput'));
     const [abandonEvent, setAbandonEvent] = useState(getValues('extra.abandonevent'));
     const [alertSound, setAlertSound] = useState(getValues('extra.alertsound'));
     const [formHistory, setFormHistory] = useState(getValues('extra.formhistory'));
     const [enableMetadata, setEnableMetadata] = useState(getValues('extra.enablemetadata'));
-    
+
     const [enableBotName, setEnableBotName] = useState(getValues('extra.botnameenabled'));
     const [withBorder, setWithBorder] = useState(getValues('extra.withBorder'));
     const [withHour, setWithHour] = useState(getValues('extra.withHour'));
@@ -1148,7 +1148,7 @@ const TabPanelExtras: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
     const [iconColorActive, setIconColorActive] = useState(getValues('extra.iconColorActive'));
     const [iconColorDisabled, setIconColorDisabled] = useState(getValues('extra.iconColorDisabled'));
 
-    
+
     const handleIconColorActiveChange: ColorChangeHandler = (e) => {
         setIconColorActive(e.hex);
         setValue('extra.iconColorActive', e.hex);
@@ -1193,7 +1193,7 @@ const TabPanelExtras: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
         setPoweredBy(checked);
         setValue('extra.poweredby', checked);
     }
-    
+
     const handleWithBorderChange = (checked: boolean) => {
         setWithBorder(checked);
         setValue('extra.withBorder', checked);
@@ -1450,8 +1450,8 @@ const TabPanelExtras: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                 />
             </Grid>
             <Divider style={{ margin: '22px 0 38px 0' }} />
-            
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}  style={{padding: "0 8px"}}>
+
+            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ padding: "0 8px" }}>
                 <Grid container direction="row">
                     <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                         <Grid container direction="row">
@@ -1485,7 +1485,7 @@ const TabPanelExtras: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                                         <label className={classes.text}>Icono de color activo</label>
                                     </Grid>
                                     <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
-                                        <ColorInput hex={iconColorActive||"#fff"} onChange={handleIconColorActiveChange} />
+                                        <ColorInput hex={iconColorActive || "#fff"} onChange={handleIconColorActiveChange} />
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -1499,7 +1499,7 @@ const TabPanelExtras: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                                         <label className={classes.text}>Icono de color disabled</label>
                                     </Grid>
                                     <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
-                                        <ColorInput hex={iconColorDisabled||"#fff"} onChange={handleIconColorDisabledChange} />
+                                        <ColorInput hex={iconColorDisabled || "#fff"} onChange={handleIconColorDisabledChange} />
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -1508,7 +1508,7 @@ const TabPanelExtras: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                 </Grid>
             </Grid>
             <Grid container direction="row">
-                <Grid item xs={12} sm={12} md={6} lg={6} xl={6} style={{padding:8}}>
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6} style={{ padding: 8 }}>
                     <TextField
                         variant="outlined"
                         placeholder="Tamaño de las letras de cliente/bot"
@@ -1518,7 +1518,7 @@ const TabPanelExtras: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                         onChange={e => setValue('extra.inputTextSize', Number(e.target.value))}
                     />
                 </Grid>
-                <Grid item xs={12} sm={12} md={6} lg={6} xl={6} style={{padding:8}}>
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6} style={{ padding: 8 }}>
                     <TextField
                         variant="outlined"
                         placeholder="Estilo de las letras de cliente/bot"
@@ -1529,9 +1529,9 @@ const TabPanelExtras: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                     />
                 </Grid>
             </Grid>
-            
+
             <Grid container direction="row">
-                <Grid item xs={12} sm={12} md={6} lg={6} xl={6} style={{padding:8}}>
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6} style={{ padding: 8 }}>
                     <TextField
                         variant="outlined"
                         placeholder="Tamaño de las letras del input de texto"
@@ -1541,7 +1541,7 @@ const TabPanelExtras: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                         onChange={e => setValue('extra.chatTextSize', Number(e.target.value))}
                     />
                 </Grid>
-                <Grid item xs={12} sm={12} md={6} lg={6} xl={6} style={{padding:8}}>
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6} style={{ padding: 8 }}>
                     <TextField
                         variant="outlined"
                         placeholder="Estilo de las letras del input de texto"
@@ -1940,11 +1940,11 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                 <div className="row-zyx">
                     <div className="col-3"></div>
                     <div className="col-6">
-                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                        <Box color="textPrimary" fontSize={14} fontWeight={500} lineHeight="18px" mb={1}>
                             {t(langKeys.givechannelcolor)}
                         </Box>
-                        <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                            <ChannelChat01 style={{ fill: `${coloricon}`, width: "100px" }} />
+                        <div style={{ alignItems: "center", display: "flex", justifyContent: "space-around", marginTop: '20px' }}>
+                            <ChannelChat01 style={{ fill: `${coloricon}`, height: "100px", width: "100px" }} />
                             <ColorInput hex={hexIconColor} onChange={e => { setHexIconColor(e.hex); setcoloricon(e.hex) }} />
                         </div>
                     </div>

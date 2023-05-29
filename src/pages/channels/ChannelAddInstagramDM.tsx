@@ -1,5 +1,5 @@
 import { apiUrls } from 'common/constants';
-import { ChannelInstagram02 } from "icons";
+import { ChannelInstagram01 } from "icons";
 import { ColorInput, FieldEdit, FieldSelect } from "components";
 import { Facebook as FacebookIcon } from "@material-ui/icons";
 import { FC, useEffect, useState } from "react";
@@ -233,11 +233,11 @@ export const ChannelAddInstagramDM: FC = () => {
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <div className="col-6">
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                            <Box color="textPrimary" fontSize={14} fontWeight={500} lineHeight="18px" mb={1}>
                                 {t(langKeys.givechannelcolor)}
                             </Box>
-                            <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                                <ChannelInstagram02 style={{ fill: `${coloricon}`, width: "100px" }} />
+                            <div style={{ alignItems: "center", display: "flex", justifyContent: "space-around", marginTop: '20px' }}>
+                                <ChannelInstagram01 style={{ fill: `${coloricon}`, height: "100px", width: "100px" }} />
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
                                     onChange={e => {

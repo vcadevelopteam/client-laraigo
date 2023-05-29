@@ -200,6 +200,7 @@ export { ReactComponent as WebMessengerColorAlt01 } from './web-messenger-color-
 export { ReactComponent as WebMessengerColorAlt02 } from './web-messenger-color-alt-02.svg';
 export { ReactComponent as WebMessengerColorAlt03 } from './web-messenger-color-alt-03.svg';
 export { ReactComponent as WhatsAppColor } from './whatsapp-color.svg';
+export { ReactComponent as WhatsAppOnboardingColor } from './whatsapp-onboarding-color.svg';
 export { ReactComponent as WorkplaceColor } from './workplacedm.svg';
 export { ReactComponent as WorkplaceWallColor } from './worplacewall.svg';
 export { ReactComponent as YouTubeColor } from './youtubechannel.svg';

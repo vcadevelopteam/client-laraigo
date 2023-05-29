@@ -28,6 +28,7 @@ import {
     TikTokColor,
     TwitterColor,
     WhatsAppColor,
+    WhatsAppOnboardingColor,
     WorkplaceColor,
     WorkplaceWallColor,
     YouTubeColor,
@@ -167,7 +168,7 @@ export const ChannelAdd: FC = () => {
             onClick: () => { history.push(paths.CHANNELS_ADD_WHATSAPP.path, whatsAppData) },
         },
         {
-            icon: c => <WhatsAppColor className={c} />,
+            icon: c => <WhatsAppOnboardingColor className={c} />,
             label: t(langKeys.channel_whatsapponboarding),
             onClick: () => { history.push(paths.CHANNELS_ADD_WHATSAPPONBOARDING.path, whatsAppData) },
         },

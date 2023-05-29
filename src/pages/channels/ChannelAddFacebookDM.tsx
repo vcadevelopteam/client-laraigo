@@ -124,8 +124,8 @@ export const ChannelAddFacebookDM: FC = () => {
                     </Link>
                 </Breadcrumbs>
                 <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.connectface) } DM</div>
-                    
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.connectface)} DM</div>
+
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
@@ -171,7 +171,7 @@ export const ChannelAddFacebookDM: FC = () => {
                     <div style={{ textAlign: "center", paddingTop: "20px", color: "#969ea5", fontStyle: "italic" }}>{t(langKeys.connectface4)}</div>
                     {/* eslint-disable-next-line jsx-a11y/anchor-is-valid*/}
                     <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5" }}><a style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "pointer" }} onClick={openprivacypolicies} rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
-                    
+
                     <div style={{ paddingLeft: "80%" }}>
                         <Button
                             disabled={nextbutton}
@@ -207,11 +207,11 @@ export const ChannelAddFacebookDM: FC = () => {
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <div className="col-6">
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                            <Box color="textPrimary" fontSize={14} fontWeight={500} lineHeight="18px" mb={1}>
                                 {t(langKeys.givechannelcolor)}
                             </Box>
-                            <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                                <ChannelWorkplace style={{ fill: `${coloricon}`, width: "100px" }} />
+                            <div style={{ alignItems: "center", display: "flex", justifyContent: "space-around", marginTop: '20px' }}>
+                                <ChannelWorkplace style={{ fill: `${coloricon}`, height: "100px", width: "100px" }} />
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
                                     onChange={e => {
