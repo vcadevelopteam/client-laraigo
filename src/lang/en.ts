@@ -5109,6 +5109,13 @@ const translation: LangKeys = {
   channel_businesstitle: 'Connect Business Profile',
   channel_businessalert1: 'Install the chatbot on your Business Profile and start getting leads.',
   channel_businessalert2: 'The businesses linked to your account will be the ones used on this process.',
+  channel_appstore: 'App Store',
+  channel_appstoretitle: 'Connect App Store',
+  channel_appstorealert1: 'Install the chatbot on your App Store account and start getting leads.',
+  channel_appstorealert2: 'The apps linked to your App Store account will be the ones used on this process.',
+  channel_appstore_keyid: 'Key ID',
+  channel_appstore_issuerid: 'Issuer ID',
+  channel_appstore_secretkey: 'Secret Key',
 };
 
 const enResource: ResourceLanguage = {

@@ -183,6 +183,7 @@ export { ReactComponent as TelegramColor2 } from './telegram-color2.svg';
 export { ReactComponent as TwitterColor } from './twitter-color.svg';
 export { ReactComponent as WebMessengerColor } from './web-messenger-color.svg';
 export { ReactComponent as WebMessengerColorAlt01 } from './web-messenger-color-alt-01.svg';
+export { ReactComponent as WebMessengerColorAlt03 } from './web-messenger-color-alt-03.svg';
 export { ReactComponent as WhatsappColor } from './whatsapp-color.svg';
 export { ReactComponent as BloggerColor } from './blogger.svg';
 export { ReactComponent as VoiceColor } from './canal_de_voz.svg';

@@ -5037,6 +5037,13 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   channel_businesstitle: 'Conectar Business Profile',
   channel_businessalert1: 'Instala el chatbot en tu Business Profile y empieza a conseguir clientes potenciales.',
   channel_businessalert2: 'Los negocios enlazados a tu cuenta de seran usados para este proceso',
+  channel_appstore: 'App Store',
+  channel_appstoretitle: 'Conectar App Store',
+  channel_appstorealert1: 'Instala el chatbot en tu cuenta de App Store y empieza a conseguir clientes potenciales.',
+  channel_appstorealert2: 'Las aplicaciones enlazadas a tu cuenta de App Store seran usadas para este proceso',
+  channel_appstore_keyid: 'ID Llave',
+  channel_appstore_issuerid: 'ID Editor',
+  channel_appstore_secretkey: 'Llave Secreta',
 };
 
 const esResource: ResourceLanguage = {

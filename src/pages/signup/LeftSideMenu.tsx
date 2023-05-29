@@ -21,6 +21,7 @@ import { ChannelAddTeams } from './ChannelAddTeams'
 import { ChannelAddTikTok } from './ChannelAddTikTok'
 import { ChannelAddYouTube } from './ChannelAddYouTube'
 import { ChannelAddBusiness } from './ChannelAddBusiness'
+import { ChannelAddAppStore } from './ChannelAddAppStore'
 import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { ListChannels, SubscriptionContext, MainData } from "./context";
@@ -589,6 +590,13 @@ const GetComponent: FC<GetComponentProps> = ({ channel: key, display, setOpenWar
             return (
                 <div style={{ display: display ? 'block' : 'none' }}>
                     <ChannelAddBusiness setOpenWarning={setOpenWarning} />
+                    </div>
+            );
+            
+        case 'appstore':
+            return (
+                <div style={{ display: display ? 'block' : 'none' }}>
+                    <ChannelAddAppStore setOpenWarning={setOpenWarning} />
                 </div>
             );
 

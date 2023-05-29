@@ -5025,6 +5025,13 @@ export const langKeys = {
   channel_businesstitle: 'channel_businesstitle',
   channel_businessalert1: 'channel_businessalert1',
   channel_businessalert2: 'channel_businessalert2',
+  channel_appstore: 'channel_appstore',
+  channel_appstoretitle: 'channel_appstoretitle',
+  channel_appstorealert1: 'channel_appstorealert1',
+  channel_appstorealert2: 'channel_appstorealert2',
+  channel_appstore_keyid: 'channel_appstore_keyid',
+  channel_appstore_issuerid: 'channel_appstore_issuerid',
+  channel_appstore_secretkey: 'channel_appstore_secretkey',
 };
 
 export type LangKeys = typeof langKeys;
