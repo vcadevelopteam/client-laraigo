@@ -20,6 +20,9 @@ import { ChannelAddSMS } from './ChannelAddSMS'
 import { ChannelAddTeams } from './ChannelAddTeams'
 import { ChannelAddTikTok } from './ChannelAddTikTok'
 import { ChannelAddYouTube } from './ChannelAddYouTube'
+import { ChannelAddBusiness } from './ChannelAddBusiness'
+import { ChannelAddPlayStore } from './ChannelAddPlayStore'
+import { ChannelAddAppStore } from './ChannelAddAppStore'
 import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { ListChannels, SubscriptionContext, MainData } from "./context";
@@ -581,6 +584,27 @@ const GetComponent: FC<GetComponentProps> = ({ channel: key, display, setOpenWar
             return (
                 <div style={{ display: display ? 'block' : 'none' }}>
                     <ChannelAddYouTube setOpenWarning={setOpenWarning} />
+                </div>
+            );
+
+        case 'business':
+            return (
+                <div style={{ display: display ? 'block' : 'none' }}>
+                    <ChannelAddBusiness setOpenWarning={setOpenWarning} />
+                </div>
+            );
+
+        case 'playstore':
+            return (
+                <div style={{ display: display ? 'block' : 'none' }}>
+                    <ChannelAddPlayStore setOpenWarning={setOpenWarning} />
+                </div>
+            );
+
+        case 'appstore':
+            return (
+                <div style={{ display: display ? 'block' : 'none' }}>
+                    <ChannelAddAppStore setOpenWarning={setOpenWarning} />
                 </div>
             );
 

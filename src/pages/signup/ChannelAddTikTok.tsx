@@ -1,59 +1,55 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon, LinkOff as LinkOffIcon } from "@material-ui/icons";
 import { FC, useContext, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Link, IconButton, Typography, InputAdornment } from '@material-ui/core';
-import { DeleteOutline as DeleteOutlineIcon, Link as LinkIcon, LinkOff as LinkOffIcon } from '@material-ui/icons';
-import { showBackdrop } from 'store/popus/actions';
-import { langKeys } from "lang/keys";
-import { Trans, useTranslation } from "react-i18next";
 import { FieldEdit } from "components";
-import { useSelector } from "hooks";
-import { useDispatch } from "react-redux";
-import { TikTokColor } from "icons";
+import { langKeys } from "lang/keys";
 import { MainData, SubscriptionContext } from "./context";
+import { makeStyles, Breadcrumbs, Button, Link, IconButton, Typography, InputAdornment } from "@material-ui/core";
+import { showBackdrop } from "store/popus/actions";
+import { TikTokColor } from "icons";
+import { Trans, useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
 import { useFormContext } from "react-hook-form";
-import clsx from 'clsx';
+import { useSelector } from "hooks";
 
-const useChannelAddStyles = makeStyles(theme => ({
+import clsx from "clsx";
+
+const useChannelAddStyles = makeStyles((theme) => ({
     button: {
-        padding: 12,
+        fontSize: "14px",
         fontWeight: 500,
-        fontSize: '14px',
-        textTransform: 'initial',
-        width: "180px"
+        padding: 12,
+        textTransform: "initial",
+        width: "180px",
     },
 }));
 
 export const ChannelAddTikTok: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarning }) => {
-    const {
-        commonClasses,
-        foreground,
-        submitObservable,
-        setForeground,
-        deleteChannel,
-    } = useContext(SubscriptionContext);
-    const { getValues, setValue, register, unregister, formState: { errors }, trigger } = useFormContext<MainData>();
-    const [hasFinished, setHasFinished] = useState(false);
-    const [viewSelected, setViewSelected] = useState("view1");
-    const [waitSave, setWaitSave] = useState(false);
-    const [submitError, setSubmitError] = useState(false);
-    const mainResult = useSelector(state => state.channel.channelList)
     const dispatch = useDispatch();
+
+    const { commonClasses, foreground, submitObservable, setForeground, deleteChannel } = useContext(SubscriptionContext);
+    const { getValues, setValue, register, unregister, formState: { errors }, trigger } = useFormContext<MainData>();
     const { t } = useTranslation();
-    const classes = useChannelAddStyles();
+
+    const [hasFinished, setHasFinished] = useState(false);
     const [nextbutton, setNextbutton] = useState(true);
     const [nextbutton2, setNextbutton2] = useState(true);
+    const [submitError, setSubmitError] = useState(false);
+    const [viewSelected, setViewSelected] = useState("view1");
+    const [waitSave, setWaitSave] = useState(false);
+
+    const classes = useChannelAddStyles();
+    const mainResult = useSelector((state) => state.channel.channelList);
 
     useEffect(() => {
         const cb = async () => {
-            const v1 = await trigger('channels.tiktok.account');
-            const v2 = await trigger('channels.tiktok.url');
-            setSubmitError(!v1 || !v2);
-        }
+            const v1 = await trigger("channels.tiktok.accesstoken");
+            setSubmitError(!v1);
+        };
 
         submitObservable.addListener(cb);
         return () => {
             submitObservable.removeListener(cb);
-        }
+        };
     }, [submitObservable, trigger]);
 
     useEffect(() => {
@@ -61,45 +57,43 @@ export const ChannelAddTikTok: FC<{ setOpenWarning: (param: any) => void }> = ({
             if (!value) {
                 return t(langKeys.field_required);
             }
-        }
+        };
 
-        register('channels.tiktok.description', { validate: strRequired, value: '' });
-        register('channels.tiktok.account', { validate: strRequired, value: '' });
-        register('channels.tiktok.url', { validate: strRequired, value: '' });
-        register('channels.tiktok.build', {
-            value: values => ({
-                "method": "UFN_COMMUNICATIONCHANNEL_INS",
-                "parameters": {
-                    "id": 0,
-                    "description": values.description,
-                    "type": "",
-                    "communicationchannelsite": "",
-                    "communicationchannelowner": values.description,
-                    "chatflowenabled": true,
-                    "integrationid": "",
-                    "color": "",
-                    "icons": "",
-                    "other": "",
-                    "form": "",
-                    "apikey": "",
-                    "coloricon": "#000000",
-                    "voximplantcallsupervision": false
+        register("channels.tiktok.description", { validate: strRequired, value: "" });
+        register("channels.tiktok.accesstoken", { validate: strRequired, value: "" });
+        register("channels.tiktok.build", {
+            value: (values) => ({
+                method: "UFN_COMMUNICATIONCHANNEL_INS",
+                parameters: {
+                    apikey: "",
+                    chatflowenabled: true,
+                    color: "",
+                    coloricon: "#000000",
+                    communicationchannelowner: values.description,
+                    communicationchannelsite: "",
+                    description: values.description,
+                    form: "",
+                    icons: "",
+                    id: 0,
+                    integrationid: "",
+                    other: "",
+                    type: "",
+                    voximplantcallsupervision: false,
                 },
-                "type": "TIKTOK",
-                "service": {
-                    "account": values.account,
-                    "url": values.url,
-                }
-            })
+                service: {
+                    accesstoken: values.accesstoken,
+                },
+                type: "AYRSHARE-TIKTOK",
+            }),
         });
 
         return () => {
-            unregister('channels.tiktok');
-        }
+            unregister("channels.tiktok");
+        };
     }, [register, unregister]);
 
     useEffect(() => {
-        if (foreground !== 'tiktok' && viewSelected !== "view1") {
+        if (foreground !== "tiktok" && viewSelected !== "view1") {
             setViewSelected("view1");
         }
     }, [foreground, viewSelected]);
@@ -109,7 +103,7 @@ export const ChannelAddTikTok: FC<{ setOpenWarning: (param: any) => void }> = ({
             dispatch(showBackdrop(false));
             setWaitSave(false);
         }
-    }, [mainResult])
+    }, [mainResult]);
 
     const setView = (option: "view1" | "view2") => {
         if (option === "view1") {
@@ -117,9 +111,9 @@ export const ChannelAddTikTok: FC<{ setOpenWarning: (param: any) => void }> = ({
             setForeground(undefined);
         } else {
             setViewSelected(option);
-            setForeground('tiktok');
+            setForeground("tiktok");
         }
-    }
+    };
 
     if (viewSelected === "view2") {
         return (
@@ -133,47 +127,43 @@ export const ChannelAddTikTok: FC<{ setOpenWarning: (param: any) => void }> = ({
                             setView("view1");
                         }}
                     >
-                        {'<< '}<Trans i18nKey={langKeys.previoustext} />
+                        {"<< "}
+                        <Trans i18nKey={langKeys.previoustext} />
                     </Link>
                 </Breadcrumbs>
                 <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.channel_tiktoktitle)}</div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>{t(langKeys.channel_genericalert)}</div>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldEdit
-                            onChange={v => {
-                                // eslint-disable-next-line no-useless-escape
-                                setNextbutton(v === "" || getValues('channels.tiktok.url') === "" || !/\S+@\S+\.\S+/.test(v) || !/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/.test(getValues('channels.tiktok.url')));
-                                setValue('channels.tiktok.account', v);
-                            }}
-                            valueDefault={getValues('channels.tiktok.account')}
-                            label={t(langKeys.account)}
-                            className="col-6"
-                            error={errors.channels?.tiktok?.account?.message}
-                        />
+                    <div
+                        style={{
+                            textAlign: "center",
+                            fontWeight: "bold",
+                            fontSize: "2em",
+                            color: "#7721ad",
+                            padding: "20px",
+                        }}
+                    >
+                        {t(langKeys.channel_tiktoktitle)}
+                    </div>
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>
+                        {t(langKeys.channel_tiktokalert01)}
                     </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
-                            onChange={v => {
-                                // eslint-disable-next-line no-useless-escape
-                                setNextbutton(v === "" || getValues('channels.tiktok.account') === "" || !/\S+@\S+\.\S+/.test(getValues('channels.tiktok.account')) || !/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/.test(v))
-                                setValue('channels.tiktok.url', v);
+                            onChange={(v) => {
+                                setNextbutton(v === "");
+                                setValue("channels.tiktok.accesstoken", v);
                             }}
-                            valueDefault={getValues('channels.tiktok.url')}
-                            label={t(langKeys.url)}
+                            valueDefault={getValues("channels.tiktok.accesstoken")}
+                            label={t(langKeys.channel_tiktokaccesstoken)}
                             className="col-6"
-                            error={errors.channels?.tiktok?.url?.message}
+                            error={errors.channels?.tiktok?.accesstoken?.message}
                         />
                     </div>
-
                     <div style={{ paddingLeft: "80%" }}>
                         <Button
                             onClick={async () => {
-                                const v1 = await trigger('channels.tiktok.account');
-                                const v2 = await trigger('channels.tiktok.url');
-                                if (v1 && v2) {
+                                const v1 = await trigger("channels.tiktok.accesstoken");
+                                if (v1) {
                                     setView("view1");
                                     setHasFinished(true);
                                 }
@@ -185,50 +175,49 @@ export const ChannelAddTikTok: FC<{ setOpenWarning: (param: any) => void }> = ({
                         >
                             <Trans i18nKey={langKeys.next} />
                         </Button>
-
                     </div>
-
                 </div>
             </div>
-        )
+        );
     }
 
     return (
         <div className={clsx(commonClasses.root, submitError && commonClasses.rootError)}>
             {!hasFinished && <TikTokColor className={commonClasses.leadingIcon} />}
-            {!hasFinished && <IconButton
-                color="primary"
-                className={commonClasses.trailingIcon}
-                onClick={() => {
-                    deleteChannel('tiktok');
-                    // setrequestchannels(prev => prev.filter(x => x.type !== "TIKTOK"));
-                }}
-            >
-                <DeleteOutlineIcon />
-            </IconButton>}
-            {!hasFinished && <Typography>
-                <Trans i18nKey={langKeys.subscription_genericconnect} />
-            </Typography>}
-            {hasFinished && <TikTokColor
-                style={{ width: 100, height: 100, alignSelf: 'center' }} />
-            }
+            {!hasFinished && (
+                <IconButton
+                    color="primary"
+                    className={commonClasses.trailingIcon}
+                    onClick={() => {
+                        deleteChannel("tiktok");
+                    }}
+                >
+                    <DeleteOutlineIcon />
+                </IconButton>
+            )}
+            {!hasFinished && (
+                <Typography>
+                    <Trans i18nKey={langKeys.subscription_genericconnect} />
+                </Typography>
+            )}
+            {hasFinished && <TikTokColor style={{ width: 100, height: 100, alignSelf: "center" }} />}
             {hasFinished && (
-                <div style={{ alignSelf: 'center' }}>
-                    <Typography
-                        color="primary"
-                        style={{ fontSize: '1.5vw', fontWeight: 'bold', textAlign: 'center' }}>
+                <div style={{ alignSelf: "center" }}>
+                    <Typography color="primary" style={{ fontSize: "1.5vw", fontWeight: "bold", textAlign: "center" }}>
                         {t(langKeys.subscription_congratulations)}
                     </Typography>
-                    <Typography
-                        color="primary"
-                        style={{ fontSize: '1.2vw', fontWeight: 500 }}>
-                        {t(langKeys.subscription_message1)} {t(langKeys.channel_tiktok)} {t(langKeys.subscription_message2)}
+                    <Typography color="primary" style={{ fontSize: "1.2vw", fontWeight: 500 }}>
+                        {t(langKeys.subscription_message1)} {t(langKeys.channel_tiktok)}{" "}
+                        {t(langKeys.subscription_message2)}
                     </Typography>
                 </div>
             )}
             <FieldEdit
-                onChange={(value) => { setValue('channels.tiktok.description', value); setNextbutton2(!value); }}
-                valueDefault={getValues('channels.tiktok.description')}
+                onChange={(value) => {
+                    setValue("channels.tiktok.description", value);
+                    setNextbutton2(!value);
+                }}
+                valueDefault={getValues("channels.tiktok.description")}
                 label={t(langKeys.givechannelname)}
                 variant="outlined"
                 size="small"
@@ -238,7 +227,7 @@ export const ChannelAddTikTok: FC<{ setOpenWarning: (param: any) => void }> = ({
                         <InputAdornment position="end">
                             {hasFinished ? <LinkIcon color="primary" /> : <LinkOffIcon />}
                         </InputAdornment>
-                    )
+                    ),
                 }}
             />
             {!hasFinished && (
@@ -254,6 +243,6 @@ export const ChannelAddTikTok: FC<{ setOpenWarning: (param: any) => void }> = ({
             )}
         </div>
     );
-}
+};
 
-export default ChannelAddTikTok
+export default ChannelAddTikTok;

@@ -85,6 +85,9 @@ export interface ListChannels {
     voximplantphone: boolean;
     tiktok: boolean;
     youtube: boolean;
+    business: boolean;
+    playstore: boolean;
+    appstore: boolean;
     linkedin: boolean;
     teams: boolean;
     blogger: boolean;
@@ -167,8 +170,9 @@ export interface VoxImplantPhoneChannel {
 
 export interface TikTokChannel {
     description: string;
-    account: string;
-    url: string;
+    accesstoken: string;
+    apikey: string;
+    accountkey: string;
     build: (v: Omit<TikTokChannel, 'build'>) => IRequestBody;
 }
 
@@ -183,10 +187,24 @@ export interface YouTubeChannel {
     build: (v: Omit<YouTubeChannel, 'build'>) => IRequestBody;
 }
 
+export interface BusinessChannel {
+    description: string;
+    accesstoken: string;
+    refreshtoken: string;
+    scope: string;
+    tokentype: string;
+    idtoken: string;
+    channel: string;
+    build: (v: Omit<BusinessChannel, 'build'>) => IRequestBody;
+}
+
 export interface LinkedInChannel {
     description: string;
-    account: string;
-    url: string;
+    clientid: string;
+    clientsecret: string;
+    accesstoken: string;
+    refreshtoken: string;
+    organizationid: string;
     build: (v: Omit<LinkedInChannel, 'build'>) => IRequestBody;
 }
 
@@ -195,6 +213,14 @@ export interface TeamsChannel {
     account: string;
     url: string;
     build: (v: Omit<TeamsChannel, 'build'>) => IRequestBody;
+}
+
+export interface AppStoreChannel {
+    description: string;
+    keyid: string;
+    issuerid: string;
+    secretkey: string;
+    build: (v: Omit<AppStoreChannel, 'build'>) => IRequestBody;
 }
 
 export interface BloggerChannel {
@@ -218,6 +244,14 @@ export interface EmailChannel {
     scope: string;
     tokentype: string;
     idtoken: string;
+    imapaccesstoken: string;
+    imapusername: string;
+    imappassword: string;
+    imapincomingendpoint: string;
+    imaphost: string;
+    imapincomingport: string;
+    imapport: string;
+    imapssl: string;
     type: string;
     build: (v: Omit<EmailChannel, 'build'>) => IRequestBody;
 }
@@ -228,6 +262,13 @@ export interface SmsChannel {
     url: string;
     emittername: string;
     build: (v: Omit<SmsChannel, 'build'>) => IRequestBody;
+}
+
+export interface PlayStoreChannel {
+    description: string;
+    appcode: string;
+    mail: string;
+    build: (v: Omit<PlayStoreChannel, 'build'>) => IRequestBody;
 }
 
 export interface Channels {
@@ -244,9 +285,12 @@ export interface Channels {
     sms: SmsChannel;
     tiktok: TikTokChannel,
     youtube: YouTubeChannel,
+    playstore: PlayStoreChannel,
+    appstore: AppStoreChannel,
     linkedin: LinkedInChannel,
     teams: TeamsChannel,
     blogger: BloggerChannel,
+    business: BusinessChannel,
     android: MobileChannel;
     apple: MobileChannel;
     voximplantphone: VoxImplantPhoneChannel;
@@ -310,6 +354,9 @@ const defaultListChannels: ListChannels = {
     voximplantphone: false,
     tiktok: false,
     youtube: false,
+    business: false,
+    playstore: false,
+    appstore: false,
     linkedin: false,
     teams: false,
     blogger: false,

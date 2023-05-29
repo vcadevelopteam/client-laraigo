@@ -1,24 +1,21 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-/* eslint-disable no-useless-escape */
-/* eslint-disable react-hooks/exhaustive-deps */
-import Link from '@material-ui/core/Link';
-import paths from "common/constants/paths";
-import YouTubeIcon from '@material-ui/icons/YouTube';
-
 import { apiUrls } from 'common/constants';
 import { Breadcrumbs, Box, Button, makeStyles } from '@material-ui/core';
+import { ChannelYouTube } from 'icons';
 import { ColorInput, FieldEdit, FieldSelect } from "components";
-import { listYouTube } from "store/google/actions";
 import { FC, useEffect, useState } from "react";
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { insertChannel } from "store/channel/actions";
 import { langKeys } from "lang/keys";
+import { listYouTube } from "store/google/actions";
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router";
 import { useSelector } from "hooks";
 import { useTranslation } from "react-i18next";
-import { GoogleOAuthProvider } from '@react-oauth/google';
+
 import GoogleLogInFrame from './GoogleLogInFrame';
+import Link from '@material-ui/core/Link';
+import paths from "common/constants/paths";
 
 interface whatsAppData {
     typeWhatsApp?: string;
@@ -280,11 +277,11 @@ export const ChannelAddYouTube: FC = () => {
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <div className="col-6">
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                            <Box color="textPrimary" fontSize={14} fontWeight={500} lineHeight="18px" mb={1}>
                                 {t(langKeys.givechannelcolor)}
                             </Box>
-                            <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                                <YouTubeIcon style={{ fill: `${coloricon}`, width: "100px", height: "100px" }} />
+                            <div style={{ alignItems: "center", display: "flex", justifyContent: "space-around", marginTop: '20px' }}>
+                                <ChannelYouTube style={{ fill: `${coloricon}`, height: "100px", width: "100px" }} />
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
                                     onChange={e => {

@@ -167,7 +167,12 @@ const SignIn = () => {
     const handleClickShowPassword = () => setShowPassword(!showPassword);
 
     const handleSignUp = () => {
-        window.open("https://laraigo.com/en/#pricetable", "_self");
+        if (apiUrls.USELARAIGO) {
+            window.open("https://laraigo.com/en/#pricetable", "_blank");
+        }
+        else {
+            window.open("sign-up/BASIC", "_blank");
+        }
     }
 
     const handleRecover = () => {

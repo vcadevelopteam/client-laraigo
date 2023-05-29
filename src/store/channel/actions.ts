@@ -257,6 +257,18 @@ export const deleteTemplate = (request: any): IActionCall => ({
 
 export const resetDeleteTemplate = (): IActionCall => ({ type: actionTypes.DELETE_TEMPLATE_RESET });
 
+export const getGroupList = (request: any): IActionCall => ({
+    callAPI: () => ChannelsService.getGroupList(request),
+    types: {
+        failure: actionTypes.GET_GROUP_LIST_FAILURE,
+        loading: actionTypes.GET_GROUP_LIST,
+        success: actionTypes.GET_GROUP_LIST_SUCCESS,
+    },
+    type: null,
+});
+
+export const resetgetGroupList = (): IActionCall => ({ type: actionTypes.GET_GROUP_LIST_RESET });
+
 export const getPhoneList = (request: any): IActionCall => ({
     callAPI: () => ChannelsService.getPhoneList(request),
     types: {

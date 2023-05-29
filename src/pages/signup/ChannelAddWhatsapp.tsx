@@ -8,7 +8,7 @@ import { Trans, useTranslation } from "react-i18next";
 import { FieldEdit } from "components";
 import MuiPhoneNumber from 'material-ui-phone-number';
 import { styled } from '@material-ui/core/styles';
-import { WhatsappColor } from "icons";
+import { WhatsAppColor } from "icons";
 import { MainData, SubscriptionContext } from "./context";
 import { useFormContext } from "react-hook-form";
 import clsx from 'clsx';
@@ -342,7 +342,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
 
     return (
         <div className={clsx(commonClasses.root, submitError && commonClasses.rootError)}>
-            {!hasFinished && <WhatsappColor className={commonClasses.leadingIcon} />}
+            {!hasFinished && <WhatsAppColor className={commonClasses.leadingIcon} />}
             {!hasFinished && <IconButton
                 color="primary"
                 className={commonClasses.trailingIcon}
@@ -356,7 +356,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
             {!hasFinished && <Typography>
                 <Trans i18nKey={langKeys.subscription_genericconnect} />
             </Typography>}
-            {hasFinished && <WhatsappColor
+            {hasFinished && <WhatsAppColor
                 style={{ width: 100, height: 100, alignSelf: 'center' }} />
             }
             {hasFinished && (

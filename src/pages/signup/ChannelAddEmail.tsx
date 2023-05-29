@@ -53,6 +53,7 @@ export const ChannelAddEmail: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     const [nextbutton2, setNextbutton2] = useState(true);
     const [registerInfobip, setRegisterInfobip] = useState(false);
     const [registerGmail, setRegisterGmail] = useState(false);
+    const [registerImap, setRegisterImap] = useState(false);
     const [submitError, setSubmitError] = useState(false);
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitExchange, setWaitExchange] = useState(false);
@@ -87,6 +88,16 @@ export const ChannelAddEmail: FC<{ setOpenWarning: (param: any) => void }> = ({ 
             const v4 = await trigger('channels.email.tokentype');
             const v5 = await trigger('channels.email.idtoken');
             setSubmitError(!v1 || !v2 || !v3 || !v4 || !v5);
+        }
+        else if (registerImap) {
+            const v1 = await trigger('channels.email.imapusername');
+            const v2 = await trigger('channels.email.imappassword');
+            const v3 = await trigger('channels.email.imapincomingendpoint');
+            const v4 = await trigger('channels.email.imaphost');
+            const v5 = await trigger('channels.email.imapincomingport');
+            const v6 = await trigger('channels.email.imapport');
+            const v7 = await trigger('channels.email.imapssl');
+            setSubmitError(!v1 || !v2 || !v3 || !v4 || !v5 || !v6 || !v7);
         }
     }
 
@@ -209,6 +220,7 @@ export const ChannelAddEmail: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                                 e.preventDefault();
                                 setRegisterGmail(false);
                                 setRegisterInfobip(false);
+                                setRegisterImap(false);
                             }}
                         >
                             {'<< '}<Trans i18nKey={langKeys.previoustext} />
@@ -269,6 +281,14 @@ export const ChannelAddEmail: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                                         setValue('channels.email.scope', 'NOUSE');
                                         setValue('channels.email.tokentype', 'NOUSE');
 
+                                        setValue('channels.email.imapusername', 'NOUSE');
+                                        setValue('channels.email.imappassword', 'NOUSE');
+                                        setValue('channels.email.imapincomingendpoint', 'NOUSE');
+                                        setValue('channels.email.imaphost', 'NOUSE');
+                                        setValue('channels.email.imapincomingport', 'NOUSE');
+                                        setValue('channels.email.imapport', 'NOUSE');
+                                        setValue('channels.email.imapssl', 'NOUSE');
+
                                         setView("view1");
                                         setHasFinished(true);
                                     }
@@ -296,6 +316,7 @@ export const ChannelAddEmail: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                                 e.preventDefault();
                                 setRegisterGmail(false);
                                 setRegisterInfobip(false);
+                                setRegisterImap(false);
                             }}
                         >
                             {'<< '}<Trans i18nKey={langKeys.previoustext} />
@@ -314,6 +335,168 @@ export const ChannelAddEmail: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                         </div>
                         <div style={{ textAlign: "center", paddingTop: "20px", color: "#969ea5", fontStyle: "italic" }}>{t(langKeys.connectface4)}</div>
                         <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5" }}><a style={{ fontWeight: "bold", color: "#6F1FA1", cursor: "pointer" }} onClick={openprivacypolicies} rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
+                    </div>
+                </div>
+            )
+        }
+        else if (registerImap) {
+            return (
+                <div style={{ marginTop: "auto", marginBottom: "auto", maxHeight: "100%" }}>
+                    <Breadcrumbs aria-label="breadcrumb">
+                        <Link
+                            color="textSecondary"
+                            href="/"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setRegisterGmail(false);
+                                setRegisterInfobip(false);
+                                setRegisterImap(false);
+                            }}
+                        >
+                            {'<< '}<Trans i18nKey={langKeys.previoustext} />
+                        </Link>
+                    </Breadcrumbs>
+                    <div>
+                        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.imaptitle)}</div>
+                        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>{t(langKeys.imaptitle2)}</div>
+                        <div className="row-zyx">
+                            <div className="col-3"></div>
+                            <FieldEdit
+                                onChange={v => {
+                                    setNextbutton(v === "" || getValues('channels.email.imappassword') === "" || getValues('channels.email.imapincomingendpoint') === "" || getValues('channels.email.imaphost') === "" || getValues('channels.email.imapincomingport') === "" || getValues('channels.email.imapport') === "" || getValues('channels.email.imapssl') === "");
+                                    setValue('channels.email.imapusername', v);
+                                }}
+                                valueDefault={getValues('channels.email.imapusername')}
+                                label={t(langKeys.imapusername)}
+                                className="col-6"
+                                error={errors.channels?.email?.imapusername?.message}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <div className="col-3"></div>
+                            <FieldEdit
+                                onChange={v => {
+                                    setNextbutton(getValues('channels.email.imapusername') === "" || v === "" || getValues('channels.email.imapincomingendpoint') === "" || getValues('channels.email.imaphost') === "" || getValues('channels.email.imapincomingport') === "" || getValues('channels.email.imapport') === "" || getValues('channels.email.imapssl') === "");
+                                    setValue('channels.email.imappassword', v);
+                                }}
+                                valueDefault={getValues('channels.email.imappassword')}
+                                label={t(langKeys.imappassword)}
+                                className="col-6"
+                                error={errors.channels?.email?.imappassword?.message}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <div className="col-3"></div>
+                            <FieldEdit
+                                onChange={v => {
+                                    setNextbutton(getValues('channels.email.imapusername') === "" || getValues('channels.email.imappassword') === "" || getValues('channels.email.imapincomingendpoint') === "" || getValues('channels.email.imaphost') === "" || getValues('channels.email.imapincomingport') === "" || getValues('channels.email.imapport') === "" || getValues('channels.email.imapssl') === "");
+                                    setValue('channels.email.imapaccesstoken', v);
+                                }}
+                                valueDefault={getValues('channels.email.imapaccesstoken')}
+                                label={t(langKeys.imapaccesstoken)}
+                                className="col-6"
+                                error={errors.channels?.email?.imapaccesstoken?.message}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <div className="col-3"></div>
+                            <FieldEdit
+                                onChange={v => {
+                                    setNextbutton(getValues('channels.email.imapusername') === "" || getValues('channels.email.imappassword') === "" || v === "" || getValues('channels.email.imaphost') === "" || getValues('channels.email.imapincomingport') === "" || getValues('channels.email.imapport') === "" || getValues('channels.email.imapssl') === "");
+                                    setValue('channels.email.imapincomingendpoint', v);
+                                }}
+                                valueDefault={getValues('channels.email.imapincomingendpoint')}
+                                label={t(langKeys.imapincomingendpoint)}
+                                className="col-6"
+                                error={errors.channels?.email?.imapincomingendpoint?.message}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <div className="col-3"></div>
+                            <FieldEdit
+                                onChange={v => {
+                                    setNextbutton(getValues('channels.email.imapusername') === "" || getValues('channels.email.imappassword') === "" || getValues('channels.email.imapincomingendpoint') === "" || getValues('channels.email.imaphost') === "" || v === "" || getValues('channels.email.imapport') === "" || getValues('channels.email.imapssl') === "");
+                                    setValue('channels.email.imapincomingport', v);
+                                }}
+                                valueDefault={getValues('channels.email.imapincomingport')}
+                                label={t(langKeys.imapincomingport)}
+                                className="col-6"
+                                error={errors.channels?.email?.imapincomingport?.message}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <div className="col-3"></div>
+                            <FieldEdit
+                                onChange={v => {
+                                    setNextbutton(getValues('channels.email.imapusername') === "" || getValues('channels.email.imappassword') === "" || getValues('channels.email.imapincomingendpoint') === "" || v === "" || getValues('channels.email.imapincomingport') === "" || getValues('channels.email.imapport') === "" || getValues('channels.email.imapssl') === "");
+                                    setValue('channels.email.imaphost', v);
+                                }}
+                                valueDefault={getValues('channels.email.imaphost')}
+                                label={t(langKeys.imaphost)}
+                                className="col-6"
+                                error={errors.channels?.email?.imaphost?.message}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <div className="col-3"></div>
+                            <FieldEdit
+                                onChange={v => {
+                                    setNextbutton(getValues('channels.email.imapusername') === "" || getValues('channels.email.imappassword') === "" || getValues('channels.email.imapincomingendpoint') === "" || getValues('channels.email.imaphost') === "" || getValues('channels.email.imapincomingport') === "" || v === "" || getValues('channels.email.imapssl') === "");
+                                    setValue('channels.email.imapport', v);
+                                }}
+                                valueDefault={getValues('channels.email.imapport')}
+                                label={t(langKeys.imapport)}
+                                className="col-6"
+                                error={errors.channels?.email?.imapport?.message}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <div className="col-3"></div>
+                            <FieldEdit
+                                onChange={v => {
+                                    setNextbutton(getValues('channels.email.imapusername') === "" || getValues('channels.email.imappassword') === "" || getValues('channels.email.imapincomingendpoint') === "" || getValues('channels.email.imaphost') === "" || getValues('channels.email.imapincomingport') === "" || getValues('channels.email.imapport') === "" || v === "");
+                                    setValue('channels.email.imapssl', v);
+                                }}
+                                valueDefault={getValues('channels.email.imapssl')}
+                                label={t(langKeys.imapssl)}
+                                className="col-6"
+                                error={errors.channels?.email?.imapssl?.message}
+                            />
+                        </div>
+                        <div style={{ paddingLeft: "80%" }}>
+                            <Button
+                                onClick={async () => {
+                                    const v1 = await trigger('channels.email.imapusername');
+                                    const v2 = await trigger('channels.email.imappassword');
+                                    const v3 = await trigger('channels.email.imapincomingendpoint');
+                                    const v4 = await trigger('channels.email.imaphost');
+                                    const v5 = await trigger('channels.email.imapincomingport');
+                                    const v6 = await trigger('channels.email.imapport');
+                                    const v7 = await trigger('channels.email.imapssl');
+
+                                    if (v1 && v2 && v3 && v4 && v5 && v6 && v7) {
+                                        setValue('channels.email.accesstoken', 'NOUSE');
+                                        setValue('channels.email.idtoken', 'NOUSE');
+                                        setValue('channels.email.refreshtoken', 'NOUSE');
+                                        setValue('channels.email.scope', 'NOUSE');
+                                        setValue('channels.email.tokentype', 'NOUSE');
+
+                                        setValue('channels.email.url', 'NOUSE');
+                                        setValue('channels.email.apikey', 'NOUSE');
+                                        setValue('channels.email.emittername', 'NOUSE');
+
+                                        setView("view1");
+                                        setHasFinished(true);
+                                    }
+                                }}
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={nextbutton}
+                            >
+                                <Trans i18nKey={langKeys.next} />
+                            </Button>
+                        </div>
                     </div>
                 </div>
             )
@@ -358,6 +541,19 @@ export const ChannelAddEmail: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                                 variant="contained"
                                 color="primary"
                             >{t(langKeys.registergmail)}
+                            </Button>
+                        </div>
+                        <div style={{ flex: "1", margin: "0px 15px" }}>
+                            <Button
+                                onClick={() => {
+                                    setValue('channels.email.type', "IMAP");
+                                    setRegisterImap(true);
+                                }}
+                                className={classes.button2}
+                                disabled={false}
+                                variant="contained"
+                                color="primary"
+                            >{t(langKeys.registerimap)}
                             </Button>
                         </div>
                     </div>

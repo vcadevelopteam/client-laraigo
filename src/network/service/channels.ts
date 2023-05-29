@@ -74,3 +74,7 @@ export function addTemplate(request: any) {
 export function deleteTemplate(request: any) {
     return APIManager.post(apiUrls.DELETE_TEMPLATE, { data: request }, true);
 }
+
+export function getGroupList(request: any) {
+    return APIManager.post(apiUrls.GET_GROUP_LIST, { data: request }, true);
+}

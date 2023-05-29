@@ -193,20 +193,20 @@ const MessageTemplates: FC = () => {
             },
             ...(showId
                 ? [
-                      {
-                          accessor: "templateid",
-                          Header: t(langKeys.messagetemplateid),
-                          type: "number",
-                          Cell: (props: any) => {
-                              const row = props.cell.row.original;
-                              if (row.showid) {
-                                  return row.id;
-                              } else {
-                                  return null;
-                              }
-                          },
-                      },
-                  ]
+                    {
+                        accessor: "templateid",
+                        Header: t(langKeys.messagetemplateid),
+                        type: "number",
+                        Cell: (props: any) => {
+                            const row = props.cell.row.original;
+                            if (row.showid) {
+                                return row.id;
+                            } else {
+                                return null;
+                            }
+                        },
+                    },
+                ]
                 : []),
             {
                 accessor: "type",
@@ -430,8 +430,8 @@ const MessageTemplates: FC = () => {
                 callback,
                 question: channel
                     ? t(langKeys.messagetemplate_synchronize_alert01) +
-                      `${channel.communicationchanneldesc} (${channel.phone})` +
-                      t(langKeys.messagetemplate_synchronize_alert02)
+                    `${channel.communicationchanneldesc} (${channel.phone})` +
+                    t(langKeys.messagetemplate_synchronize_alert02)
                     : t(langKeys.messagetemplate_synchronize_alert03),
                 visible: true,
             })
@@ -609,7 +609,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const addRequest = useSelector((state) => state.channel.requestAddTemplate);
     const classes = useStyles();
     const dataCategory = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataChannel = multiData[2] && multiData[2].success ? multiData[2].data.filter((x) => x.type !== "WHAG") : [];
+    const dataChannel = multiData[2] && multiData[2].success ? multiData[2].data.filter((x) => x.type !== "WHAG" && x.type !== "WHAM") : [];
     const dataLanguage = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const executeRes = useSelector((state) => state.main.execute);
     const uploadResult = useSelector((state) => state.main.uploadFile);
@@ -1193,9 +1193,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 setValue("body", "");
                 setValue("namespace", "");
 
-                register("body", {
-                    validate: (value) => (value && value.length) || t(langKeys.field_required),
-                });
+                register("body", { validate: (value) => value || true });
                 register("footer", { validate: (value) => value || true });
                 register("header", {
                     validate: (value) => (value && value.length) || t(langKeys.field_required),
