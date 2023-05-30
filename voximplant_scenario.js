@@ -5,8 +5,8 @@ require(Modules.Player);
 require(Modules.ASR);
 require(Modules.Conference);
 
-const URL_SERVICES = "https://zyxmelinux2.zyxmeapp.com/zyxme/services/api/";
-const URL_APILARAIGO = "https://apix.laraigo.com/api/";
+const URL_SERVICES = "https://zyxmelinux2.zyxmeapp.com/zyxmetest/services/api/";
+const URL_APILARAIGO = "https://testapix.laraigo.com/api/";
 const URL_APIVOXIMPLANT = "https://api.voximplant.com/platform_api/";
 
 let conf;

@@ -1,20 +1,20 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box } from "@material-ui/core";
-import Link from "@material-ui/core/Link";
-import { showBackdrop, showSnackbar } from "store/popus/actions";
-import { Facebook as FacebookIcon } from "@material-ui/icons";
-import { langKeys } from "lang/keys";
-import { useTranslation } from "react-i18next";
-import { ColorInput, FieldEdit, FieldSelect } from "components";
-import { useHistory, useLocation } from "react-router";
-import paths from "common/constants/paths";
-import FacebookLogin from "react-facebook-login";
-import { useSelector } from "hooks";
-import { useDispatch } from "react-redux";
-import { getChannelsList, insertChannel } from "store/channel/actions";
-import { FacebookMessengerIcon } from "icons";
 import { apiUrls } from "common/constants";
+import { ChannelMessenger } from "icons";
+import { ColorInput, FieldEdit, FieldSelect } from "components";
+import { Facebook as FacebookIcon } from "@material-ui/icons";
+import { FC, useEffect, useState } from "react";
+import { getChannelsList, insertChannel } from "store/channel/actions";
+import { langKeys } from "lang/keys";
+import { makeStyles, Breadcrumbs, Button, Box } from "@material-ui/core";
+import { showBackdrop, showSnackbar } from "store/popus/actions";
+import { useDispatch } from "react-redux";
+import { useHistory, useLocation } from "react-router";
+import { useSelector } from "hooks";
+import { useTranslation } from "react-i18next";
+
+import FacebookLogin from "react-facebook-login";
+import Link from "@material-ui/core/Link";
+import paths from "common/constants/paths";
 
 interface whatsAppData {
     typeWhatsApp?: string;
@@ -231,11 +231,11 @@ export const ChannelAddMessenger: FC = () => {
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <div className="col-6">
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                            <Box color="textPrimary" fontSize={14} fontWeight={500} lineHeight="18px" mb={1}>
                                 {t(langKeys.givechannelcolor)}
                             </Box>
-                            <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                                <FacebookMessengerIcon style={{ fill: `${coloricon}`, width: "100px" }} />
+                            <div style={{ alignItems: "center", display: "flex", justifyContent: "space-around", marginTop: '20px' }}>
+                                <ChannelMessenger style={{ fill: `${coloricon}`, height: "100px", width: "100px" }} />
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
                                     onChange={e => {

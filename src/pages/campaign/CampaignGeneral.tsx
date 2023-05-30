@@ -112,6 +112,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const dataChannel = [...multiData[1] && multiData[1].success ? (multiData[1].data || []).filter(x => ((x.type || '').startsWith('WHA') || (x.type || '').startsWith('SMS') || (x.type || '').startsWith('MAI') || (x.type || '').startsWith('VOX'))) : []];
     const dataGroup = [...multiData[2] && multiData[2].success ? multiData[2].data : []];
     const dataMessageTemplate = [...multiData[3] && multiData[3].success ? multiData[3].data : []];
+    const groupObligatory = multiData.filter(x=>x.key==="UFN_PROPERTY_SELBYNAMEVALIDACIONCAMPAÑASGRUPO")?.[0]?.data?.[0]?.propertyvalue === "1"
     const user = useSelector(state => state.login.validateToken.user);
 
     const [openModal, setOpenModal] = useState(false);
@@ -167,8 +168,9 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         register('status', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('source', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('type', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-        register('usergroup', { validate: (value: any) => ((user?.properties?.environment==="CLARO" && ['Gestor de Campañas'].includes(user?.roledesc || ""))? (value && value.length):true) || t(langKeys.field_required) });
-    }, [edit, register]);
+
+        register('usergroup', { validate: (value: any) => groupObligatory ? (value && value.length):true || t(langKeys.field_required) });
+    }, [edit, register, multiData]);
 
     useEffect(() => {
         if (row !== null && Object.keys(detaildata).length === 0) {

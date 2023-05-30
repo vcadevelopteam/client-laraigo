@@ -1,15 +1,38 @@
-import React, { FC } from "react";
 import { Box, makeStyles, Typography, Paper } from '@material-ui/core';
 import { langKeys } from "lang/keys";
-import { useTranslation } from "react-i18next";
+import { TemplateBreadcrumbs } from "components";
 import { useHistory, useLocation } from "react-router";
+import { useTranslation } from "react-i18next";
+
+import React, { FC } from "react";
 import paths from "common/constants/paths";
-import ListAltIcon from '@material-ui/icons/ListAlt';
+
 import {
     VoiceColor,
-    AndroidColor, EmailColor, FacebookColor, FacebookMessengerColor, InstagramColor, IosColor, SmsColor, TelegramColor, TwitterColor, WebMessengerColor, WhatsappColor, /*TikTokColor,*/ YouTubeColor, LinkedInColor, TeamsColor, BloggerColor
+    AndroidColor,
+    AppStoreColor,
+    BloggerColor,
+    ChatWebColor,
+    FacebookColor,
+    FacebookMessengerColor,
+    FormColor,
+    InstagramColor,
+    IosColor,
+    LinkedInColor,
+    MailColor,
+    MyBusinessColor,
+    PlayStoreColor,
+    SmsColor,
+    TeamsColor,
+    TelegramColor,
+    TikTokColor,
+    TwitterColor,
+    WhatsAppColor,
+    WhatsAppOnboardingColor,
+    WorkplaceColor,
+    WorkplaceWallColor,
+    YouTubeColor,
 } from "icons";
-import { TemplateBreadcrumbs } from "components";
 
 interface ChannelOption {
     icon: (className: string) => React.ReactNode;
@@ -140,12 +163,12 @@ export const ChannelAdd: FC = () => {
             onClick: () => { history.push(paths.CHANNELS_ADD_INSTAGRAMDM.path, whatsAppData) },
         },
         {
-            icon: c => <WhatsappColor className={c} />,
+            icon: c => <WhatsAppColor className={c} />,
             label: t(langKeys.channel_whatsapp),
             onClick: () => { history.push(paths.CHANNELS_ADD_WHATSAPP.path, whatsAppData) },
         },
         {
-            icon: c => <WhatsappColor className={c} />,
+            icon: c => <WhatsAppOnboardingColor className={c} />,
             label: t(langKeys.channel_whatsapponboarding),
             onClick: () => { history.push(paths.CHANNELS_ADD_WHATSAPPONBOARDING.path, whatsAppData) },
         },
@@ -164,15 +187,30 @@ export const ChannelAdd: FC = () => {
             label: t(langKeys.channel_twitterdm),
             onClick: () => { history.push(paths.CHANNELS_ADD_TWITTERDM.path, whatsAppData) },
         },
-        /*{
+        {
             icon: c => <TikTokColor className={c} />,
             label: t(langKeys.channel_tiktok),
             onClick: () => { history.push(paths.CHANNELS_ADD_TIKTOK.path, whatsAppData) },
-        },*/
+        },
         {
             icon: c => <YouTubeColor className={c} />,
             label: t(langKeys.channel_youtube),
             onClick: () => { history.push(paths.CHANNELS_ADD_YOUTUBE.path, whatsAppData) },
+        },
+        {
+            icon: c => <MyBusinessColor className={c} />,
+            label: t(langKeys.channel_business),
+            onClick: () => { history.push(paths.CHANNELS_ADD_BUSINESS.path, whatsAppData) },
+        },
+        {
+            icon: c => <PlayStoreColor className={c} />,
+            label: t(langKeys.channel_playstore),
+            onClick: () => { history.push(paths.CHANNELS_ADD_PLAYSTORE.path, whatsAppData) },
+        },
+        {
+            icon: c => <AppStoreColor className={c} />,
+            label: t(langKeys.channel_appstore),
+            onClick: () => history.push(paths.CHANNELS_ADD_APPSTORE.path, whatsAppData),
         },
         {
             icon: c => <LinkedInColor className={c} />,
@@ -183,17 +221,17 @@ export const ChannelAdd: FC = () => {
 
     const businessChannelOptions: ChannelOption[] = [
         {
-            icon: c => <WebMessengerColor className={c} />,
+            icon: c => <ChatWebColor className={c} />,
             label: t(langKeys.channel_chatweb),
             onClick: () => history.push(paths.CHANNELS_ADD_CHATWEB),
         },
         {
-            icon: c => <ListAltIcon className={c} />,
+            icon: c => <FormColor className={c} />,
             label: t(langKeys.web_form),
             onClick: () => history.push(paths.CHANNELS_ADD_WEBFORM),
         },
         {
-            icon: c => <EmailColor className={c} />,
+            icon: c => <MailColor className={c} />,
             label: t(langKeys.channel_email),
             onClick: () => { history.push(paths.CHANNELS_ADD_EMAIL.path, whatsAppData) },
         },
@@ -226,6 +264,16 @@ export const ChannelAdd: FC = () => {
             icon: c => <BloggerColor className={c} />,
             label: t(langKeys.channel_blogger),
             onClick: () => history.push(paths.CHANNELS_ADD_BLOGGER.path, whatsAppData),
+        },
+        {
+            icon: c => <WorkplaceColor className={c} />,
+            label: t(langKeys.channel_workplacedm),
+            onClick: () => { history.push(paths.CHANNELS_ADD_FACEBOOKDM.path, whatsAppData) },
+        },
+        {
+            icon: c => <WorkplaceWallColor className={c} />,
+            label: t(langKeys.channel_workplace),
+            onClick: () => { history.push(paths.CHANNELS_ADD_FACEBOOKWORKPLACE.path, whatsAppData) },
         },
     ];
 

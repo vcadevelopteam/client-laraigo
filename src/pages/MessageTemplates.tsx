@@ -19,6 +19,7 @@ import {
     uploadFile,
     getCollectionPaginated,
     resetCollectionPaginated,
+    exportData,
 } from "store/main/actions";
 
 import {
@@ -33,6 +34,7 @@ import {
 
 import {
     dateToLocalDate,
+    getMessageTemplateExport,
     getPaginatedMessageTemplate,
     getValuesFromDomain,
     insMessageTemplate,
@@ -133,7 +135,9 @@ const MessageTemplates: FC = () => {
     const mainSynchronize = useSelector((state) => state.channel.requestSynchronizeTemplate);
     const query = useMemo(() => new URLSearchParams(location.search), [location]);
     const params = useQueryParams(query, { ignore: ["channelTypes"] });
+    const [waitSaveExport, setWaitSaveExport] = useState(false);
     const selectionKey = "id";
+    const resExportData = useSelector(state => state.main.exportData);
 
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({
         daterange: null,
@@ -189,20 +193,20 @@ const MessageTemplates: FC = () => {
             },
             ...(showId
                 ? [
-                      {
-                          accessor: "templateid",
-                          Header: t(langKeys.messagetemplateid),
-                          type: "number",
-                          Cell: (props: any) => {
-                              const row = props.cell.row.original;
-                              if (row.showid) {
-                                  return row.id;
-                              } else {
-                                  return null;
-                              }
-                          },
-                      },
-                  ]
+                    {
+                        accessor: "templateid",
+                        Header: t(langKeys.messagetemplateid),
+                        type: "number",
+                        Cell: (props: any) => {
+                            const row = props.cell.row.original;
+                            if (row.showid) {
+                                return row.id;
+                            } else {
+                                return null;
+                            }
+                        },
+                    },
+                ]
                 : []),
             {
                 accessor: "type",
@@ -299,6 +303,21 @@ const MessageTemplates: FC = () => {
             setTotalRow(mainPaginated.count);
         }
     }, [mainPaginated]);
+
+    useEffect(() => {
+        if (waitSaveExport) {
+            if (!resExportData.loading && !resExportData.error) {
+                dispatch(showBackdrop(false));
+                resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
+                setWaitSaveExport(false);
+            } else if (resExportData.error) {
+                const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitSaveExport(false);
+            }
+        }
+    }, [resExportData, waitSaveExport])
 
     useEffect(() => {
         if (!(Object.keys(selectedRows).length === 0 && rowWithDataSelected.length === 0)) {
@@ -411,8 +430,8 @@ const MessageTemplates: FC = () => {
                 callback,
                 question: channel
                     ? t(langKeys.messagetemplate_synchronize_alert01) +
-                      `${channel.communicationchanneldesc} (${channel.phone})` +
-                      t(langKeys.messagetemplate_synchronize_alert02)
+                    `${channel.communicationchanneldesc} (${channel.phone})` +
+                    t(langKeys.messagetemplate_synchronize_alert02)
                     : t(langKeys.messagetemplate_synchronize_alert03),
                 visible: true,
             })
@@ -467,6 +486,22 @@ const MessageTemplates: FC = () => {
                 visible: true,
             })
         );
+    };
+
+    const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
+        const columnsExport = columns.filter(x => !x.isComponent).map(x => ({
+            key: x.accessor,
+            alias: x.Header
+        }))
+        dispatch(exportData(getMessageTemplateExport({
+            communicationchannelid: communicationChannel?.communicationchannelid || 0,
+            filters: {
+                ...filters,
+            },
+            sorts,
+        }), "", "excel", false, columnsExport));
+        dispatch(showBackdrop(true));
+        setWaitSaveExport(true);
     };
 
     if (viewSelected === "view-1") {
@@ -535,6 +570,7 @@ const MessageTemplates: FC = () => {
                 download={true}
                 fetchData={fetchData}
                 filterGeneral={true}
+                exportPersonalized={triggerExportData}
                 handleRegister={handleRegister}
                 initialFilters={params.filters}
                 initialPageIndex={params.page}
@@ -573,7 +609,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const addRequest = useSelector((state) => state.channel.requestAddTemplate);
     const classes = useStyles();
     const dataCategory = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataChannel = multiData[2] && multiData[2].success ? multiData[2].data.filter((x) => x.type !== "WHAG") : [];
+    const dataChannel = multiData[2] && multiData[2].success ? multiData[2].data.filter((x) => x.type !== "WHAG" && x.type !== "WHAM") : [];
     const dataLanguage = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const executeRes = useSelector((state) => state.main.execute);
     const uploadResult = useSelector((state) => state.main.uploadFile);
@@ -1157,9 +1193,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 setValue("body", "");
                 setValue("namespace", "");
 
-                register("body", {
-                    validate: (value) => (value && value.length) || t(langKeys.field_required),
-                });
+                register("body", { validate: (value) => value || true });
                 register("footer", { validate: (value) => value || true });
                 register("header", {
                     validate: (value) => (value && value.length) || t(langKeys.field_required),

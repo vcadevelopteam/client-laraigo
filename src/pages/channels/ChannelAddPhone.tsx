@@ -2,6 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import { Box, Breadcrumbs, Button, makeStyles, FormControlLabel } from "@material-ui/core";
+import { ChannelPhone } from "icons";
 import { ColorInput, FieldEdit, FieldSelect, FieldView, IOSSwitchPurple } from "components";
 import { FC, useEffect, useState } from "react";
 import { formatNumber, getPhoneTax } from "common/helpers";
@@ -19,7 +20,6 @@ import { useTranslation } from "react-i18next";
 import InfoIcon from "@material-ui/icons/Info";
 import Link from "@material-ui/core/Link";
 import paths from "common/constants/paths";
-import PhoneIcon from "@material-ui/icons/Call";
 import Tooltip from "@material-ui/core/Tooltip";
 
 interface whatsAppData {
@@ -729,11 +729,11 @@ export const ChannelAddPhone: FC = () => {
                         <div className="row-zyx">
                             <div className="col-3"></div>
                             <div className="col-6">
-                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                <Box color="textPrimary" fontSize={14} fontWeight={500} lineHeight="18px" mb={1}>
                                     {t(langKeys.givechannelcolor)}
                                 </Box>
-                                <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                                    <PhoneIcon style={{ fill: `${coloricon}`, width: "100px", height: "100px" }} />
+                                <div style={{ alignItems: "center", display: "flex", justifyContent: "space-around", marginTop: '20px' }}>
+                                    <ChannelPhone style={{ fill: `${coloricon}`, height: "100px", width: "100px" }} />
                                     <ColorInput
                                         hex={fields.parameters.coloricon}
                                         onChange={e => {
@@ -778,11 +778,11 @@ export const ChannelAddPhone: FC = () => {
                         <div className="row-zyx">
                             <div className="col-3"></div>
                             <div className="col-6">
-                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                <Box color="textPrimary" fontSize={14} fontWeight={500} lineHeight="18px" mb={1}>
                                     {t(langKeys.givechannelcolor)}
                                 </Box>
-                                <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
-                                    <PhoneIcon style={{ fill: `${coloricon}`, width: "100px", height: "100px" }} />
+                                <div style={{ alignItems: "center", display: "flex", justifyContent: "space-around", marginTop: '20px' }}>
+                                    <ChannelPhone style={{ fill: `${coloricon}`, height: "100px", width: "100px" }} />
                                     <ColorInput
                                         hex={fields.parameters.coloricon}
                                         onChange={e => {
