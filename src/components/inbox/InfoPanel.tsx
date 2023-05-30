@@ -578,14 +578,14 @@ const Variables: React.FC = () => {
 
             {variablecontext && !(variablecontext instanceof Array) && configurationVariables.map(({ fontbold, fontcolor, variable, description }, index) => {
                 const variabletmp = variablecontext[variable];
-                if (!variabletmp?.Value) {
+                if (!variabletmp) {
                     return null;
                 }
                 return (
                     <div key={variable} className={classes.containerName}>
                         <div style={{ fontWeight: fontbold ? 'bold' : 'normal' }}>
                             <div className={classes.label}>{description}</div>
-                            <div style={{ color: fontcolor }} dangerouslySetInnerHTML={{ __html: validateIsUrl(variabletmp?.Value) || '-' }}>
+                            <div style={{ color: fontcolor }} dangerouslySetInnerHTML={{ __html: validateIsUrl(variabletmp) || '-' }}>
                             </div>
                         </div>
                     </div>
