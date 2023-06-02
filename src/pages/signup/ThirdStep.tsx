@@ -502,9 +502,6 @@ const Option: FC<OptionProps> = ({ option, selected, index }) => {
             >
                 <ControlPointIcon style={{ height: 'inherit', width: 'inherit' }} />
             </div>
-            {selected && <div className={classes.indexDecorator}>
-                {index + 1}
-            </div>}
             <div className={classes.optionIconContainer}>
                 {option.icon}
             </div>
