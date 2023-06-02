@@ -1632,6 +1632,7 @@ const translation: LangKeys = {
 
   error_cos_unexpected: '5005: Hubo un error, comuniquese con el administrador',
   error_zero_records: '5005: Nada a exportar',
+  consulthistoricaldata: "Consultar data histórica",
 
   error_already_exists_record: '23505: Ya existe un mismo {{module}} registrado',
   error_parameter_too_long: '22001: Hubo un error, comuniquese con el administrador',
