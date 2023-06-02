@@ -286,6 +286,7 @@ const FormToSend: FC<{
                                 {...field}
                                 variant="outlined"
                                 fullWidth
+                                countryCodeEditable={false}
                                 size="small"
                                 defaultCountry={getValues('phone') ? undefined : phoneCountry.toLowerCase()}
                                 error={!!errors?.phone}

@@ -1727,6 +1727,7 @@ export const PhoneFieldEdit: FC<PhoneFieldEditProps> = ({ label, error, classNam
             <CssPhonemui
                 variant="standard"
                 margin="none"
+                countryCodeEditable={false}
                 disableAreaCodes
                 error={!!error}
                 helperText={error || null}
