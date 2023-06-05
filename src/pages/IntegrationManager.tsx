@@ -1305,10 +1305,12 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                         valueDefault={getValues("name")}
                         onChange={(value) => setValue("name", value)}
                         error={errors?.name?.message}
+                        helperText={t(langKeys.tooltipintegrationname)}
                      />
                   ) : (
                      <FieldView
                         label={t(langKeys.name)}
+                        tooltip={t(langKeys.tooltipintegrationname)}
                         value={row?.name || ""}
                         className="col-12"
                      />
@@ -1371,11 +1373,13 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                                  valueDefault={getValues("url")}
                                  onChange={(value) => onChangeURL(value)}
                                  error={errors?.url?.message}
+                                 helperText={t(langKeys.tooltipintegrationurl)}
                               />
                            </React.Fragment>
                         ) : (
                            <FieldView
                               label={t(langKeys.url)}
+                              tooltip={t(langKeys.tooltipintegrationurl)}
                               value={row?.url || ""}
                               className="col-12"
                            />
