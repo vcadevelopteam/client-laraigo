@@ -2160,6 +2160,8 @@ const translation: LangKeys = {
   report_interaction_channel: "Channel",
   report_interaction_agent: "Agent",
   kanbanview: "Kanban view",
+  kanbanviewbyphase: "Kanban view by phase",
+  kanbanviewbyassignedgroup: "Kanban view by assigned group",
   listview: "List view",
   orderbiggerthan1: "Order can only have values ​greater than 1",
   iconscolorMessage: "Icon Color",

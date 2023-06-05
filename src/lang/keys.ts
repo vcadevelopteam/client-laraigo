@@ -84,6 +84,8 @@ export const langKeys = {
   cssheaderTooltip: "cssheaderTooltip",
   jsscriptTooltip: "jsscriptTooltip",
   kanbanview: "kanbanview",
+  kanbanviewbyphase: "kanbanviewbyphase",
+  kanbanviewbyassignedgroup: "kanbanviewbyassignedgroup",
   dashboardkpi: "dashboardkpi",
   firstavgassignment: "firstavgassignment",
   averageholdingtime: "averageholdingtime",

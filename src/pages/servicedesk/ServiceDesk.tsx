@@ -22,6 +22,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Rating } from '@material-ui/lab';
 import { DialogSendTemplate, NewActivityModal, NewNoteModal } from "./Modals";
 import { WhatsappIcon } from "icons";
+import GroupIcon from '@material-ui/icons/Group';
 
 interface dataBackend {
   columnid: number,
@@ -172,6 +173,7 @@ const ServiceDesk: FC = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const [dataColumn, setDataColumn] = useState<dataBackend[]>([])
+  const [dataColumnByPhase, setDataColumnByPhase] = useState<dataBackend[]>([])
   const [openDialog, setOpenDialog] = useState(false);
   // const display = useSelector(state => state.lead.display);
   const mainMulti = useSelector(state => state.main.multiData);
@@ -363,10 +365,8 @@ const ServiceDesk: FC = () => {
       const copiedItems = [...column.items!!]
       const leadIndex = copiedItems.findIndex(l => l.leadid === lead.leadid)
       copiedItems!.splice(leadIndex, 1);
-      const totalRevenue = copiedItems!.reduce((a,b) => a + parseFloat(b.expected_revenue), 0)
-      const newData = Object.values({...dataColumn, [index]: {...column, total_revenue: totalRevenue, items: copiedItems}}) as dataBackend[]
-      setDataColumn(newData);
       dispatch(execute(insSDLead({...lead, status: 'ELIMINADO'}, "UPDATE")))
+      fetchBoardLeadsWithFilter()
     }
     dispatch(manageConfirmation({
       visible: true,
@@ -686,14 +686,6 @@ const ServiceDesk: FC = () => {
         optionDesc="tags"
         optionValue="tags"
       />
-      <FieldEdit
-          size="small"
-          variant="outlined"
-          label={t(langKeys.client)}
-          className={classes.filterComponent}
-          valueDefault={allParameters.contact}
-          onChange={(value) => setAllParameters({...allParameters, contact: value})}
-      />
     </>
     // eslint-disable-next-line react-hooks/exhaustive-deps
   ), [user, allParameters, classes, mainMulti, t]);
@@ -706,7 +698,7 @@ const ServiceDesk: FC = () => {
       <div style={{ width: '100%', display: 'flex', flexDirection: 'column'}}>
         <div style={{ marginBottom: '34px' }}>
           <div style={{ position: 'fixed', right: '20px' }}>
-            <Tooltip title={t(langKeys.kanbanview) + ""} arrow placement="top">
+            <Tooltip title={t(langKeys.kanbanviewbyphase) + ""} arrow placement="top">
               <IconButton
                 color="default"
                 disabled={display === 'BOARD'}
@@ -714,6 +706,16 @@ const ServiceDesk: FC = () => {
                 style={{ padding: '5px' }}
               >
                 <ViewColumnIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={t(langKeys.kanbanviewbyassignedgroup) + ""} arrow placement="top">
+              <IconButton
+                color="default"
+                disabled={display === 'BOARDGROUP'}
+                onClick={() => setDisplay('BOARDGROUP')}
+                style={{ padding: '5px' }}
+              >
+                <GroupIcon />
               </IconButton>
             </Tooltip>
             <Tooltip title={t(langKeys.listview) + ""} arrow placement="top">
@@ -853,6 +855,121 @@ const ServiceDesk: FC = () => {
           </DialogZyx3Opt>
         </div>
         }
+        {display === 'BOARDGROUP' &&
+        <div style={{ display: "flex", flexDirection: 'column', height: "100%" }}>
+          <div className={classes.canvasFiltersHeader}>
+            <FieldSelect
+              variant="outlined"
+              label={t(langKeys.business)}
+              className={classes.filterComponent}//cambiar
+              valueDefault={boardFilter.company}
+              onChange={(value) => {setBoardFilter({...boardFilter, company: value?.domainvalue})}}
+              data={mainMulti.data[8]?.data || []}
+              optionDesc="domaindesc"
+              optionValue="domainvalue"
+              loading={mainMulti.loading}
+              disabled={user?.roledesc.includes("VISOR")}
+            />
+            <FieldMultiSelect
+              variant="outlined"
+              label={t(langKeys.group)}
+              className={classes.filterComponent}
+              valueDefault={boardFilter.groups}
+              onChange={(v) => {
+                const groups = v?.map((o: IDomain) => o.domainvalue).join(',') || '';
+                setBoardFilter(prev => ({ ...prev, groups }));
+              }}
+              data={mainMulti.data[4]?.data || []}
+              loading={mainMulti.loading}
+              optionDesc="domaindesc"
+              optionValue="domainvalue"
+            />
+            <FieldMultiSelect
+              variant="outlined"
+              label={t(langKeys.product)}
+              className={classes.filterComponent}
+              valueDefault={boardFilter.products}
+              onChange={(v) => {
+                const products = v?.map((o: IDomain) => o.domainvalue).join(',') || '';
+                setBoardFilter(prev => ({ ...prev, products }));
+              }}
+              data={mainMulti.data[5]?.data || []}
+              loading={mainMulti.loading}
+              optionDesc="domaindesc"
+              optionValue="domainvalue"
+            />
+            <FieldMultiSelect
+              variant="outlined"
+              label={t(langKeys.tag, { count: 2 })}
+              className={classes.filterComponent}
+              valueDefault={boardFilter.tags}
+              onChange={(v) => {
+                const tags = v?.map((o: any) => o.tags).join(',') || '';
+                setBoardFilter(prev => ({ ...prev, tags }));
+              }}
+              data={tags}
+              loading={mainMulti.loading}
+              optionDesc="tags"
+              optionValue="tags"
+            />
+            {(!user?.roledesc.includes("VISOR")) &&
+            <Button
+                variant="contained"
+                color="primary"
+                disabled={mainMulti.loading}
+                startIcon={<AddIcon color="secondary" />}
+                onClick={goToAddLead}
+                style={{ backgroundColor: "#55BD84" }}
+              >
+                <Trans i18nKey={langKeys.register} />
+            </Button>}
+            <Button
+                variant="contained"
+                color="primary"
+                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                style={{ backgroundColor: '#55BD84', width: 120 }}
+                onClick={fetchBoardLeadsWithFilter}
+                disabled={mainMulti.loading}
+            >
+                <Trans i18nKey={langKeys.search} />
+            </Button>
+          </div> 
+          <div style={{display:"flex", color: "white", paddingTop: 10, fontSize: "1.6em", fontWeight: "bold"}}>
+            <div style={{minWidth: 280, maxWidth: 280, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}></div>
+            <div style={{minWidth: 280, maxWidth: 280, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.support)} N1</div>
+            <div style={{minWidth: 280, maxWidth: 280, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.support)} N2</div>
+            <div style={{minWidth: 280, maxWidth: 280, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.support)} N3</div>
+          </div>
+          <DragDropContext onDragEnd={result => onDragEnd(result, dataColumn, setDataColumn)}>
+            <Droppable droppableId="all-columns" direction="horizontal" type="column" >
+              {(provided) => (
+                <div
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                  style={{display:'flex'}}
+                >
+                  {dataColumn.map((column, index) => 
+                       <DraggablesCategories column={column} index={index} handleDelete={handleDelete} handleCloseLead={handleCloseLead} role={user?.roledesc||""}/>
+                  )}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
+          <DialogZyx3Opt
+            open={openDialog}
+            title={t(langKeys.confirmation)}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.negative)}
+            buttonText3={t(langKeys.affirmative)}
+            handleClickButton1={() => setOpenDialog(false)}
+            maxWidth={'xs'}
+            >
+            <div>{t(langKeys.question_delete_all_items)}</div>
+            <div className="row-zyx">
+            </div>
+          </DialogZyx3Opt>
+        </div>
+        }
         {display === 'GRID' &&
         <div style={{ width: 'inherit' }}>
           <div className={classes.containerFilter}>
@@ -888,6 +1005,17 @@ const ServiceDesk: FC = () => {
               >
                   <Trans i18nKey={langKeys.send_sms} />
               </Button>
+              {(!user?.roledesc.includes("VISOR")) &&
+              <Button
+                  variant="contained"
+                  color="primary"
+                  disabled={mainMulti.loading}
+                  startIcon={<AddIcon color="secondary" />}
+                  onClick={goToAddLead}
+                  style={{ backgroundColor: "#55BD84" }}
+                >
+                  <Trans i18nKey={langKeys.register} />
+              </Button>}
             </div>}
           </div>
             <TablePaginated
