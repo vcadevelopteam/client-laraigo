@@ -113,7 +113,6 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const dataGroup = [...multiData[2] && multiData[2].success ? multiData[2].data : []];
     const dataMessageTemplate = [...multiData[3] && multiData[3].success ? multiData[3].data : []];
     const groupObligatory = multiData.filter(x=>x.key==="UFN_PROPERTY_SELBYNAMEVALIDACIONCAMPAÑASGRUPO")?.[0]?.data?.[0]?.propertyvalue === "1"
-    const user = useSelector(state => state.login.validateToken.user);
 
     const [openModal, setOpenModal] = useState(false);
 
@@ -168,9 +167,10 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         register('status', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('source', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('type', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-
-        register('usergroup', { validate: (value: any) => groupObligatory ? (value && value.length):true || t(langKeys.field_required) });
-    }, [edit, register, multiData]);
+        if(groupObligatory){
+            register('usergroup', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        }
+    }, [edit, register, multiData, groupObligatory]);
 
     useEffect(() => {
         if (row !== null && Object.keys(detaildata).length === 0) {
@@ -226,6 +226,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     useEffect(() => {
         if (frameProps.checkPage) {
             trigger().then((valid: any) => {
+                debugger
                 let data = getValues();
                 data.messagetemplateheader = data.messagetemplateheader || {};
                 data.messagetemplatebuttons = data.messagetemplatebuttons || [];
