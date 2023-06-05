@@ -445,6 +445,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                                 {...field}
                                                 fullWidth
                                                 defaultCountry={"pe"}
+                                                countryCodeEditable={false}
                                                 placeholder={t(langKeys.phone)}
                                                 onChange={(value: any) => {
                                                     setValue('personcommunicationchannel', value || "")
@@ -492,6 +493,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                                 {...field}
                                                 fullWidth
                                                 defaultCountry={"pe"}
+                                                countryCodeEditable={false}
                                                 placeholder={t(langKeys.alternativePhone)}
                                                 onChange={(value: any) => {
                                                     setValue('alternativephone', value || "");

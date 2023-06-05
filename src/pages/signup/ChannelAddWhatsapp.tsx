@@ -258,6 +258,7 @@ export const ChannelAddWhatsapp: FC<{ setOpenWarning: (param: any) => void }> = 
                         className={classes.fieldG}
                         variant="outlined"
                         margin="normal"
+                        countryCodeEditable={false}
                         size="small"
                         disableAreaCodes={true}
                         value={getValues('channels.whatsapp.phone')}

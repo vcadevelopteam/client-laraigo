@@ -7945,6 +7945,7 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({ data: { edi
                                     variant="outlined"
                                     margin="normal"
                                     fullWidth
+                                    countryCodeEditable={false}
                                     size="small"
                                     defaultCountry={'pe'}
                                     label={t(langKeys.phone)}
