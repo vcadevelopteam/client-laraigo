@@ -147,7 +147,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             currency: row?.currency || "",
             email: row?.email || "",
             port: row?.port || 0,
-            password: row?.password || "",
+            password: row?.pass || "",
             host: row?.host || "",
             ssl: row?.ssl || false,
             private_mail: row?.private_mail || false,
