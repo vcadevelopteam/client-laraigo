@@ -168,7 +168,7 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
         variablesList.forEach((x: any) => {
             let variableData = variablecontext?.[x.substring(2, x.length - 2)]
             if (!!variableData) {
-                myquickreply = myquickreply.replaceAll(x, variableData.Value)
+                myquickreply = myquickreply.replaceAll(x, variableData)
             } else {
                 myquickreply = myquickreply.replaceAll(x, "")
             }
