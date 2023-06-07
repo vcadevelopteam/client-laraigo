@@ -4,10 +4,8 @@ import { convertLocalDate, getAdviserFilteredUserRol, getColumnsSDSel, getCommCh
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
-import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
-import { DraggableServiceDeskCardContent, DraggableLeadColumn, DroppableLeadColumnList } from "./components";
+import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
 import { getMultiCollection, resetAllMain, execute, getCollectionPaginated, exportData } from "store/main/actions";
-import NaturalDragAnimation from "./prueba";
 import paths from "common/constants/paths";
 import { useHistory, useLocation } from "react-router";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
@@ -23,6 +21,8 @@ import { Rating } from '@material-ui/lab';
 import { DialogSendTemplate, NewActivityModal, NewNoteModal } from "./Modals";
 import { WhatsappIcon } from "icons";
 import GroupIcon from '@material-ui/icons/Group';
+import { DraggablesCategories } from "./components/DraggablesCategories";
+import { KanbanTable } from "./components/KanbanTable";
 
 interface dataBackend {
   columnid: number,
@@ -91,87 +91,12 @@ interface IBoardFilter {
   /**id del asesor */
 }
 
-const DraggablesCategories : FC<{column:any, index:number, handleDelete:(lead: IServiceDeskLead)=>void, handleCloseLead:(lead: IServiceDeskLead)=>void, role:string}> = ({column, 
-  index, handleDelete, handleCloseLead, role }) => {
-    const { t } = useTranslation();
-  return (
-    <Draggable draggableId={column.column_uuid} index={index+1} key={column.column_uuid}>
-      { (provided) => (
-        <div
-          {...provided.draggableProps}
-          ref={provided.innerRef}
-        >
-          <DraggableLeadColumn 
-            title={t(column.description.toLowerCase())}
-            key={index+1} 
-            snapshot={null} 
-            provided={provided} 
-            columnid={column.column_uuid} 
-            total_cards={column.items.length}            
-          >
-              <Droppable droppableId={column.column_uuid} type="task">
-                {(provided, snapshot) => {
-                  return (
-                    <div
-                      {...provided.droppableProps}
-                      ref={provided.innerRef}
-                      style={{ overflow: 'hidden', width: '100%' }}
-                    >
-                      <DroppableLeadColumnList snapshot={snapshot} itemCount={column.items?.length || 0}>
-                      {column.items?.map((item:any, index:any) => {
-                        return (
-                          <Draggable
-                            key={item.leadid}
-                            draggableId={item.leadid.toString()}
-                            index={index}
-                            isDragDisabled={true}
-                          >
-                            {(provided, snapshot) => {
-                              return(
-                                <NaturalDragAnimation
-                                  style={provided.draggableProps.style}
-                                  snapshot={snapshot}
-                                >
-                                  {(style:any) => (
-                                    <div
-                                      ref={provided.innerRef}
-                                      {...provided.draggableProps}
-                                      {...provided.dragHandleProps}
-                                      style={{width: '100%', ...style}}
-                                    >
-                                      <DraggableServiceDeskCardContent
-                                        lead={item}
-                                        snapshot={snapshot}
-                                        onDelete={handleDelete}
-                                        onCloseLead={handleCloseLead}
-                                        edit={!role.includes("VISOR")}
-                                      />
-                                    </div>
-                                  )}
-                                </NaturalDragAnimation>
-                              )
-                            }}
-                          </Draggable>
-                        );
-                      })}
-                      </DroppableLeadColumnList>
-                      {provided.placeholder}
-                    </div>
-                  );
-                }}
-              </Droppable>
-          </DraggableLeadColumn>
-        </div>
-      )}
-  </Draggable>
-  )
-}
-
 const ServiceDesk: FC = () => {
   const user = useSelector(state => state.login.validateToken.user);
   const history = useHistory();
   const location = useLocation();
   const dispatch = useDispatch();
+  const [columnsName, setColumnsName] = useState<any[]>([])
   const [dataColumn, setDataColumn] = useState<dataBackend[]>([])
   const [dataColumnByPhase, setDataColumnByPhase] = useState<dataBackend[]>([])
   const [openDialog, setOpenDialog] = useState(false);
@@ -228,6 +153,7 @@ const ServiceDesk: FC = () => {
           getLeadTasgsSel(),
           getValuesFromDomain('TIPOPERSONA'),
           getValuesFromDomain('EMPRESA'),
+          getValuesFromDomain('GRUPOSSERVICEDESK'),
       ]));
       return () => {
           dispatch(resetAllMain());
@@ -238,17 +164,17 @@ const ServiceDesk: FC = () => {
   useEffect(() => {
     if (!mainMulti.error && !mainMulti.loading) {
       if (mainMulti.data.length && mainMulti.data[0].key && mainMulti.data[0].key === "UFN_COLUMN_SD_SEL") {
+        setColumnsName(mainMulti.data[0] && mainMulti.data[0].success ? mainMulti.data[0].data : [])
         const columns = (mainMulti.data[0] && mainMulti.data[0].success ? mainMulti.data[0].data : []) as dataBackend[]
         const leads = (mainMulti.data[1] && mainMulti.data[1].success ? mainMulti.data[1].data : []) as IServiceDeskLead[]
         let unordeneddatacolumns = columns.map((column) => {
           column.items = leads.filter( x => x.column_uuid === column.column_uuid);
           return {...column, total_revenue: (column.items.reduce((a,b) => a + parseFloat(b.expected_revenue), 0))}
         })
-        let ordereddata = [...unordeneddatacolumns.filter((x:any)=>x.type==="SOPORTE N1"),
-          ...unordeneddatacolumns.filter((x)=>x.type==="SOPORTE N2"),
-          ...unordeneddatacolumns.filter((x)=>x.type==="SOPORTE N3"),
-          ...unordeneddatacolumns.filter((x)=>x.type==="RESUELTO"),
-        ];
+        let ordereddata: dataBackend[] =[];
+        columns.forEach((x,i)=>{
+          ordereddata = [...ordereddata, ...unordeneddatacolumns.filter((y:any)=>y.column_uuid===x.column_uuid)]
+        })
         setDataColumn(ordereddata)
       }
     }
@@ -282,6 +208,7 @@ const ServiceDesk: FC = () => {
       getLeadTasgsSel(),
       getValuesFromDomain('TIPOPERSONA'),
       getValuesFromDomain('EMPRESA'),
+      getValuesFromDomain('GRUPOSSERVICEDESK'),
     ]));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardFilter, dispatch]);
@@ -819,27 +746,12 @@ const ServiceDesk: FC = () => {
                 <Trans i18nKey={langKeys.search} />
             </Button>
           </div> 
-          <div style={{display:"flex", color: "white", paddingTop: 10, fontSize: "1.6em", fontWeight: "bold"}}>
-            <div style={{minWidth: 280, maxWidth: 280, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.support)} N1</div>
-            <div style={{minWidth: 280, maxWidth: 280, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.support)} N2</div>
-            <div style={{minWidth: 280, maxWidth: 280, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.support)} N3</div>
-            <div style={{minWidth: 280, maxWidth: 280, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.resolved)}</div>
-          </div>
-          <DragDropContext onDragEnd={result => onDragEnd(result, dataColumn, setDataColumn)}>
-            <Droppable droppableId="all-columns" direction="horizontal" type="column" >
-              {(provided) => (
-                <div
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  style={{display:'flex'}}
-                >
-                  {dataColumn.map((column, index) => 
-                       <DraggablesCategories column={column} index={index} handleDelete={handleDelete} handleCloseLead={handleCloseLead} role={user?.roledesc||""}/>
-                  )}
-                </div>
-              )}
-            </Droppable>
-          </DragDropContext>
+          <KanbanTable
+            dataColumn={dataColumn}
+            handleDelete= {handleDelete}
+            handleCloseLead={handleCloseLead}
+            columns={columnsName}
+          />
           <DialogZyx3Opt
             open={openDialog}
             title={t(langKeys.confirmation)}
