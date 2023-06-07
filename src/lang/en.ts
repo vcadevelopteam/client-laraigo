@@ -1632,6 +1632,7 @@ const translation: LangKeys = {
   error_limit_exceeded: "Limit exceeded",
   error_ticket_open:
     "There are open tickets for the channel to unlink. Please close these tickets.",
+  error_ticket_doesnt_belong_to_the_user: "The ticket belongs to another agent, por favor refrescar la página.",
   timeofday: "Time of day",
   calendarview: "Calendar view",
   linkcopysuccesfull: "Link copied successfully",

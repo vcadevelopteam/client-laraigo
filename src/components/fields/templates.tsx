@@ -103,7 +103,7 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ extraOption, viewF
                     <MenuItem onClick={(e) => {
                         e.stopPropagation();
                         setAnchorEl(null);
-                        deleteFunction && deleteFunction(e)
+                        deleteFunction?.(e)
                     }}>
                         <ListItemIcon color="inherit">
                             <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
@@ -115,7 +115,7 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ extraOption, viewF
                     <MenuItem onClick={(e) => {
                         e.stopPropagation();
                         setAnchorEl(null)
-                        extraFunction && extraFunction(e)
+                        extraFunction?.(e)
                     }}>
                         {ExtraICon &&
                             <ListItemIcon color="inherit">
