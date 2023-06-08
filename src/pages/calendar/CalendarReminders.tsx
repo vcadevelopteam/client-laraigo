@@ -10,6 +10,8 @@ import { Accordion, AccordionDetails, AccordionSummary, Box, Tooltip, Typography
 import InfoIcon from '@material-ui/icons/Info';
 import { ICalendarFormFields } from './ICalendar';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { apiUrls } from 'common/constants';
+const isIncremental = apiUrls.MAIN_URL.includes("incremental")
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -309,6 +311,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
 
                         <div className="row-zyx" >
                             <FieldSelect
+                                disabled={isIncremental}
                                 label={t(langKeys.notificationtype)}
                                 className="col-6"
                                 valueDefault={getValues("notificationtype")}
@@ -330,6 +333,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                             />
                             {(!!getValues("notificationtype") && getValues("notificationtype")!=="HSMEMAIL") && <FieldSelect
                                 label={t(langKeys.notificationtemplate)}
+                                disabled={isIncremental}
                                 className="col-6"
                                 valueDefault={getValues('hsmtemplateid')}
                                 error={errors?.hsmtemplateid?.message}
@@ -344,6 +348,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                 <div className='col-6'>
                                     <Typography style={{fontWeight: 'bold', flexBasis: '100%', marginBottom:8}}>{t(langKeys.email)}</Typography>
                                     <FieldSelect
+                                        disabled={isIncremental}
                                         label={t(langKeys.notificationtemplate)}
                                         className="col-12"
                                         valueDefault={getValues('emailtemplateid')}
@@ -357,6 +362,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                 <div className='col-6'>
                                     <Typography style={{fontWeight: 'bold', flexBasis: '100%', marginBottom:8}}>HSM</Typography>
                                     <FieldSelect
+                                        disabled={isIncremental}
                                         label={t(langKeys.notificationtemplate)}
                                         className="col-12"
                                         valueDefault={getValues('hsmtemplateid')}
@@ -368,6 +374,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                         style={{marginBottom:8}}
                                     />
                                     <FieldSelect
+                                        disabled={isIncremental}
                                         label={t(langKeys.communicationchannel)}
                                         className="col-12"
                                         valueDefault={getValues('communicationchannelid')}
@@ -394,6 +401,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                                     return (
                                                         <div key={`templateVariablesEmail-${i + 1}`} style={{ paddingTop: 10 }}>
                                                             <FieldSelect
+                                                                disabled={isIncremental}
                                                                 label={`Email Variable #${i + 1}`}
                                                                 className="col-6"
                                                                 valueDefault={templateVariablesEmail[x]}
@@ -423,6 +431,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                                         <div key={`templateVariables-${i + 1}`} style={{ paddingTop: 10 }}>
                                                             <FieldSelect
                                                                 label={`Email Variable #${i + 1}`}
+                                                                disabled={isIncremental}
                                                                 className="col-6"
                                                                 valueDefault={templateVariables[x]}
                                                                 onChange={(value) => { setTemplateVariables({ ...templateVariables, [x]: value?.domainvalue || "" }) }}
@@ -443,6 +452,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                             <FieldSelect
                                 label={t(langKeys.communicationchannel)}
                                 className="col-12"
+                                disabled={isIncremental}
                                 valueDefault={getValues('communicationchannelid')}
                                 error={errors?.communicationchannelid?.message}
                                 onChange={(value) => setValue('communicationchannelid', value?.communicationchannelid || 0)}
@@ -472,6 +482,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                             <div key={`templateVariables-${i + 1}`} style={{ paddingTop: 10 }}>
                                                 <FieldSelect
                                                     label={`Email Variable #${i + 1}`}
+                                                    disabled={isIncremental}
                                                     className="col-6"
                                                     valueDefault={templateVariables[x]}
                                                     onChange={(value) => { setTemplateVariables({ ...templateVariables, [x]: value?.domainvalue || "" }) }}
@@ -521,6 +532,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                             <FieldSelect
                                 label={t(langKeys.status)}
                                 className="col-6"
+                                disabled={isIncremental}
                                 valueDefault={getValues("statusreminder")}
                                 onChange={(value) => {
                                     setValue('statusreminder', (value?.domainvalue || ""));
@@ -545,6 +557,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                                 validate: (value: any) => (value && value.length) || t(langKeys.field_required)
                                             })
                                         }}
+                                        disabled={isIncremental}
                                         label={t(langKeys.notificationtype)}
                                         className="col-6"
                                         valueDefault={getValues("remindertype")}
@@ -569,6 +582,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                         <div className="col-6" >
                                             <div style={{ paddingBottom: 10, fontWeight: "bold", fontSize: "1.1em" }}>{t(langKeys.email)}</div>
                                             <FieldSelect
+                                                disabled={isIncremental}
                                                 fregister={{
                                                     ...register(`remindermailtemplateid`, {
                                                         validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
@@ -603,6 +617,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                                         validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
                                                     })
                                                 }}
+                                                disabled={isIncremental}
                                                 label={t(langKeys.notificationtemplate)}
                                                 className="col-6"
                                                 valueDefault={getValues('reminderhsmtemplateid')}
@@ -616,6 +631,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                                 <FieldSelect
                                                     label={t(langKeys.communicationchannel)}
                                                     className="col-12"
+                                                    disabled={isIncremental}
                                                     valueDefault={getValues('reminderhsmcommunicationchannelid')}
                                                     error={errors?.reminderhsmcommunicationchannelid?.message}
                                                     onChange={(value) => setValue('reminderhsmcommunicationchannelid', value?.communicationchannelid || 0)}
@@ -645,6 +661,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                                         <FieldSelect
                                                             label={`Email Variable #${i + 1}`}
                                                             className="col-6"
+                                                            disabled={isIncremental}
                                                             valueDefault={emailVariables[x]}
                                                             onChange={(value) => { setEmailVariables({ ...emailVariables, [x]: value?.domainvalue || "" }) }}
                                                             data={dataVariables}
@@ -664,6 +681,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                                         <FieldSelect
                                                             label={`Email Variable #${i + 1}`}
                                                             className="col-6"
+                                                            disabled={isIncremental}
                                                             valueDefault={hsmVariables[x]}
                                                             onChange={(value) => { setHsmVariables({ ...hsmVariables, [x]: value?.domainvalue || "" }) }}
                                                             data={dataVariables}
@@ -685,6 +703,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                         }}
                                         label={t(langKeys.reminderperiod)}
                                         className="col-6"
+                                        disabled={isIncremental}
                                         valueDefault={getValues('reminderperiod')}
                                         onChange={(value) => { setValue('reminderperiod', (value?.domainvalue || "")) }}
                                         error={errors?.reminderperiod?.message}
@@ -702,6 +721,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                         }}
                                         label={t(langKeys.value)}
                                         className="col-6"
+                                        disabled={isIncremental}
                                         type='number'
                                         InputProps={{ inputProps: { min: 0 } }}
                                         valueDefault={getValues('reminderfrecuency')}
@@ -739,6 +759,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                 label={t(langKeys.notificationtype)}
                                 className="col-6"
                                 valueDefault={getValues("rescheduletype")}
+                                disabled={isIncremental}
                                 onChange={(value) => {
                                     setValue('rescheduletype', (value?.val || ""))
                                     onSelectTemplateRescheduleEmail(null)
@@ -760,6 +781,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                 <div className="col-6" >
                                     <div style={{ paddingBottom: 10, fontWeight: "bold", fontSize: "1.1em" }}>{t(langKeys.email)}</div>
                                     <FieldSelect
+                                        disabled={isIncremental}
                                         fregister={{
                                             ...register(`rescheduletemplateidemail`, {
                                                 validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
@@ -794,6 +816,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                                 validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
                                             })
                                         }}
+                                        disabled={isIncremental}
                                         label={t(langKeys.notificationtemplate)}
                                         className="col-6"
                                         valueDefault={getValues('rescheduletemplateidhsm')}
@@ -807,6 +830,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                         <FieldSelect
                                             label={t(langKeys.communicationchannel)}
                                             className="col-12"
+                                            disabled={isIncremental}
                                             valueDefault={getValues('reschedulecommunicationchannelid')}
                                             error={errors?.reschedulecommunicationchannelid?.message}
                                             onChange={(value) => setValue('reschedulecommunicationchannelid', value?.communicationchannelid || 0)}
@@ -836,6 +860,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                                 <FieldSelect
                                                     label={`Email Variable #${i + 1}`}
                                                     className="col-6"
+                                                    disabled={isIncremental}
                                                     valueDefault={emailRescheduleVariables[x]}
                                                     onChange={(value) => { setEmailRescheduleVariables({ ...emailRescheduleVariables, [x]: value?.domainvalue || "" }) }}
                                                     data={dataVariables}
@@ -855,6 +880,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                                 <FieldSelect
                                                     label={`Email Variable #${i + 1}`}
                                                     className="col-6"
+                                                    disabled={isIncremental}
                                                     valueDefault={hsmRescheduleVariables[x]}
                                                     onChange={(value) => { setHsmRescheduleVariables({ ...hsmRescheduleVariables, [x]: value?.domainvalue || "" }) }}
                                                     data={dataVariables}
@@ -895,6 +921,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                 label={t(langKeys.notificationtype)}
                                 className="col-6"
                                 valueDefault={getValues("canceltype")}
+                                disabled={isIncremental}
                                 onChange={(value) => {
                                     setValue('canceltype', (value?.val || ""))
                                     onSelectTemplateCancelEmail(null)
@@ -921,6 +948,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                                 validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
                                             })
                                         }}
+                                        disabled={isIncremental}
                                         label={t(langKeys.notificationtemplate)}
                                         className="col-6"
                                         valueDefault={getValues('canceltemplateidemail')}
@@ -952,6 +980,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                         }}
                                         label={t(langKeys.notificationtemplate)}
                                         className="col-6"
+                                        disabled={isIncremental}
                                         valueDefault={getValues('canceltemplateidhsm')}
                                         error={errors?.canceltemplateidhsm?.message || dataTemplates.filter(x => x.type === "MAIL").length===0?t(langKeys.noavailabletemplates):""}
                                         onChange={onSelectTemplateCancelHSM}
@@ -963,6 +992,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                         <FieldSelect
                                             label={t(langKeys.communicationchannel)}
                                             className="col-12"
+                                            disabled={isIncremental}
                                             valueDefault={getValues('cancelcommunicationchannelid')}
                                             error={errors?.cancelcommunicationchannelid?.message}
                                             onChange={(value) => setValue('cancelcommunicationchannelid', value?.communicationchannelid || 0)}
@@ -992,6 +1022,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                                 <FieldSelect
                                                     label={`Email Variable #${i + 1}`}
                                                     className="col-6"
+                                                    disabled={isIncremental}
                                                     valueDefault={emailCancelVariables[x]}
                                                     onChange={(value) => { setEmailCancelVariables({ ...emailCancelVariables, [x]: value?.domainvalue || "" }) }}
                                                     data={dataVariables}
@@ -1011,6 +1042,7 @@ const CalendarReminders: React.FC<CalendarRemindersProps> = ({
                                                 <FieldSelect
                                                     label={`Email Variable #${i + 1}`}
                                                     className="col-6"
+                                                    disabled={isIncremental}
                                                     valueDefault={hsmCancelVariables[x]}
                                                     onChange={(value) => { setHsmCancelVariables({ ...hsmCancelVariables, [x]: value?.domainvalue || "" }) }}
                                                     data={dataVariables}

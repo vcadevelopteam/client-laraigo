@@ -15,6 +15,8 @@ import { ICalendarFormFields } from './ICalendar';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import Tooltip from '@material-ui/core/Tooltip';
 import EventPreview from 'images/event_preview.jpg';
+import { apiUrls } from 'common/constants';
+const isIncremental = apiUrls.MAIN_URL.includes("incremental")
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -110,6 +112,7 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                         fullWidth
                         value={generalstate.eventcode}
                         error={!!errors?.eventcode?.message}
+                        disabled={isIncremental}
                         helperText={errors?.eventcode?.message || null}
                         onInput={(e: any) => {
                             let val = e.target.value.replace(/[^0-9a-zA-Z ]/g, "").replace(/\s+/g, '')
@@ -126,6 +129,7 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                 </div>
                 <FieldEdit
                     label={t(langKeys.eventname)}
+                    disabled={isIncremental}
                     className="col-6"
                     valueDefault={getValues('eventname')}
                     onChange={(value) => { let val = value.trim(); setValue('eventname', val) }}
@@ -135,6 +139,7 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
             <div className="row-zyx">
                 <FieldEdit
                     label={t(langKeys.location)}
+                    disabled={isIncremental}
                     className="col-6"
                     valueDefault={getValues('location')}
                     onChange={(value) => setValue('location', value)}
@@ -152,7 +157,7 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                         spellCheck
                         image={false}
                     />
-                </React.Fragment>
+                </React.Fragment>            
             </div>
             <FieldEdit
                 label={''}
@@ -204,7 +209,7 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                 <div className="col-6">
                     <React.Fragment>
                         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.color)}</Box>
-                        <ColorInput hex={color} onChange={handleColorChange} />
+                        <ColorInput hex={color} onChange={handleColorChange} disabled={isIncremental}/>
                     </React.Fragment>
                 </div>
                 <FieldSelect
@@ -215,6 +220,7 @@ const CalendarGeneral: React.FC<CalendarGeneralProps> = ({
                     error={errors?.status?.message}
                     data={dataStatus}
                     uset={true}
+                    disabled={isIncremental}
                     prefixTranslation="status_"
                     optionDesc="domaindesc"
                     optionValue="domainvalue"

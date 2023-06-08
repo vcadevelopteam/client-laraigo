@@ -43,6 +43,8 @@ import { emojis } from "common/constants/emojis";
 import { sendHSM } from 'store/inbox/actions';
 import { setModalCall, setPhoneNumber } from 'store/voximplant/actions';
 import MailIcon from '@material-ui/icons/Mail';
+import { apiUrls } from 'common/constants';
+const isIncremental = apiUrls.MAIN_URL.includes("incremental")
 
 const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
 
@@ -1045,69 +1047,72 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                         >
                             <Trans i18nKey={langKeys.back} />
                         </Button>}
-                        {(edit && !!extraTriggers.phone) &&                      
-                            <Button
+                        {!isIncremental &&
+                        <>
+                            {(edit && !!extraTriggers.phone) &&                      
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    startIcon={<WhatsappIcon width={24} style={{ fill: '#FFF' }} />}
+                                    onClick={() => {
+                                        setOpenDialogTemplate(true);
+                                        setTypeTemplate("HSM");
+                                    }}
+                                >
+                                    <Trans i18nKey={langKeys.send_hsm} />
+                                </Button>
+                            }
+                            {(edit && !!extraTriggers.email && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(extraTriggers.email)) &&                    
+                                <Button
                                 variant="contained"
                                 color="primary"
-                                startIcon={<WhatsappIcon width={24} style={{ fill: '#FFF' }} />}
+                                startIcon={<MailIcon width={24} style={{ fill: '#FFF' }} />}
                                 onClick={() => {
                                     setOpenDialogTemplate(true);
-                                    setTypeTemplate("HSM");
+                                    setTypeTemplate("MAIL");
                                 }}
-                            >
-                                <Trans i18nKey={langKeys.send_hsm} />
-                            </Button>
-                        }
-                        {(edit && !!extraTriggers.email && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(extraTriggers.email)) &&                    
-                            <Button
-                            variant="contained"
-                            color="primary"
-                            startIcon={<MailIcon width={24} style={{ fill: '#FFF' }} />}
-                            onClick={() => {
-                                setOpenDialogTemplate(true);
-                                setTypeTemplate("MAIL");
-                            }}
-                            >
-                                <Trans i18nKey={langKeys.send_mail} />
-                            </Button>
-                        }
-                        {(edit && !!extraTriggers.phone) &&                      
-                            <Button
+                                >
+                                    <Trans i18nKey={langKeys.send_mail} />
+                                </Button>
+                            }
+                            {(edit && !!extraTriggers.phone) &&                      
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    startIcon={<SmsIcon width={24} style={{ fill: '#FFF' }} />}
+                                    onClick={() => {
+                                        setOpenDialogTemplate(true);
+                                        setTypeTemplate("SMS");
+                                    }}
+                                >
+                                    <Trans i18nKey={langKeys.send_sms} />
+                                </Button>
+                            }
+                            {(edit && lead.value && !isStatusClosed()) && (
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    color="secondary"
+                                    startIcon={<ArchiveIcon />}
+                                    onClick={handleCloseLead}
+                                    disabled={!canBeSentToHistory || iSProcessLoading()}
+                                >
+                                    <Trans i18nKey={langKeys.sendToHistory} />
+                                </Button>
+                            )}
+                            {(!isStatusClosed() && !lead.loading) && <Button
+                                className={classes.button}
                                 variant="contained"
                                 color="primary"
-                                startIcon={<SmsIcon width={24} style={{ fill: '#FFF' }} />}
-                                onClick={() => {
-                                    setOpenDialogTemplate(true);
-                                    setTypeTemplate("SMS");
-                                }}
-                            >
-                                <Trans i18nKey={langKeys.send_sms} />
-                            </Button>
-                        }
-                        {(edit && lead.value && !isStatusClosed()) && (
-                            <Button
-                                variant="contained"
                                 type="button"
-                                color="secondary"
-                                startIcon={<ArchiveIcon />}
-                                onClick={handleCloseLead}
-                                disabled={!canBeSentToHistory || iSProcessLoading()}
+                                startIcon={<SaveIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                                disabled={iSProcessLoading()}
+                                onClick={onSubmit}
                             >
-                                <Trans i18nKey={langKeys.sendToHistory} />
-                            </Button>
-                        )}
-                        {(!isStatusClosed() && !lead.loading) && <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            type="button"
-                            startIcon={<SaveIcon color="secondary" />}
-                            style={{ backgroundColor: "#55BD84" }}
-                            disabled={iSProcessLoading()}
-                            onClick={onSubmit}
-                        >
-                            <Trans i18nKey={langKeys.save} />
-                        </Button>}
+                                <Trans i18nKey={langKeys.save} />
+                            </Button>}
+                        </>}
                     </div>
                     <div style={{ height: '1em' }} />
                     <Grid container direction="row" style={{ backgroundColor: 'white', padding: '16px' }}>
@@ -1116,6 +1121,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 <FieldEdit
                                     label={t(langKeys.description)}
                                     className={classes.field}
+                                    disabled={isIncremental}
                                     onChange={(value) => setValue('description', value)}
                                     valueDefault={getValues('description')}
                                     error={errors?.description?.message}
@@ -1129,6 +1135,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     onChange={(value) => {setValue('email', value);setExtraTriggers({...extraTriggers, email: value || ''})}}
                                     valueDefault={getValues('email')}
                                     error={errors?.email?.message}
+                                    disabled={isIncremental}
                                     InputProps={{
                                         readOnly: isStatusClosed() || iSProcessLoading(),
                                     }}
@@ -1139,6 +1146,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     valueDefault={getValues('persontype')}
                                     loading={personTypeDomain.loading}
                                     data={personTypeDomain.data}
+                                    disabled={isIncremental}
                                     prefixTranslation="type_personlevel_"
                                     optionDesc="domainvalue"
                                     optionValue="domainvalue"
@@ -1148,6 +1156,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 <FieldEdit
                                     label={t(langKeys.expected_revenue)}
                                     className={classes.field}
+                                    disabled={isIncremental}
                                     valueDefault={getValues('expected_revenue')}
                                     error={errors?.expected_revenue?.message}
                                     type="number"
@@ -1168,6 +1177,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 <FieldMultiSelectFreeSolo
                                     label={t(langKeys.tags)}
                                     className={classes.field}
+                                    disabled={isIncremental}
                                     valueDefault={getValues('tags')}
                                     onChange={(value: ({ domaindesc: string } | string)[], value2: { action: "create-option" | "remove-option" | "select-option", option: { option: string } }) => {
                                         const tags = value.map((o: any) => o.domaindesc || o).join();
@@ -1188,6 +1198,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 <FieldSelect
                                     label={t(langKeys.agent)}
                                     className={classes.field}
+                                    disabled={isIncremental}
                                     valueDefault={getValues('userid')}
                                     loading={advisers.loading}
                                     data={advisers.data}
@@ -1200,6 +1211,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 <FieldMultiSelectVirtualized
                                     label={t(langKeys.product, { count: 2 })}
                                     className={classes.field}
+                                    disabled={isIncremental}
                                     valueDefault={getValues('leadproduct')}
                                     onChange={(v, value2: { action: "remove-option" | "select-option", option: { option: any } }) => {
                                         const products = v?.map((o: Dictionary) => o['productid']).join(',') || '';
@@ -1230,7 +1242,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                                         value={values?.displayname}
                                                     />
                                                 </div>                                                
-                                                {(!!lead?.value?.personid) && <IconButton size="small" onClick={(e) => {
+                                                {(!!lead?.value?.personid) && <IconButton size="small" disabled={isIncremental} onClick={(e) => {
                                                     e.preventDefault();
                                                     history.push(`/extras/person/${lead?.value?.personid}`)
                                                 }}>
@@ -1251,7 +1263,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                                 color="primary"
                                                 onClick={() => setOpenPersonmodal(true)}
                                                 size="small"
-                                                disabled={isStatusClosed() || iSProcessLoading()}
+                                                disabled={isIncremental || isStatusClosed() || iSProcessLoading()}
                                             >
                                                 <Add style={{ height: 22, width: 22 }} />
                                             </IconButton>
@@ -1266,6 +1278,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     label={t(langKeys.phone)}
                                     name="phone"
                                     fullWidth
+                                    disabled={isIncremental}
                                     defaultCountry={user!.countrycode.toLowerCase()}
                                     className={classes.field}
                                     onChange={(v: any) => {setValue('phone', v); setExtraTriggers({...extraTriggers, phone: v || ''})}}
@@ -1275,7 +1288,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                         endAdornment: (
                                             <InputAdornment position="end">
                                                 {(!voxiConnection.error && userConnected) &&
-                                                    <IconButton size="small" onClick={() => {
+                                                    <IconButton disabled={isIncremental} size="small" onClick={() => {
                                                         if(voxiConnection.error){
                                                             dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) })) 
                                                         }else {
@@ -1294,6 +1307,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     label={t(langKeys.endDate)}
                                     className={classes.field}
                                     type="datetime-local"
+                                    disabled={isIncremental}
                                     onChange={(value) => {
                                         // datetime formaT: yyyy-MM-ddTHH:mm
                                         setValue('date_deadline', value);
@@ -1311,6 +1325,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     <Rating
                                         name="simple-controlled"
                                         max={3}
+                                        disabled={isIncremental}
                                         value={prioritycontrol}
                                         onChange={(event, newValue) => {
                                             setValue('priority', returnpriority(newValue||0))
@@ -1331,6 +1346,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     name="radio-buttons-group-columnid"
                                     className={classes.field}
                                     row
+                                    disabled={isIncremental}
                                     optionDesc="description"
                                     optionValue="columnid"
                                     data={phasemenu}
@@ -1386,7 +1402,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 </Tabs>
                 <AntTabPanel index={0} currentIndex={tabIndex}>
                     <TabPanelLogNote
-                        readOnly={isStatusClosed()}
+                        readOnly={isIncremental || isStatusClosed()}
                         loading={saveNote.loading || leadNotes.loading}
                         notes={edit ? leadNotes.data : getValues('notes')}
                         leadId={edit ? Number(match.params.id) : 0}
@@ -1405,7 +1421,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 </AntTabPanel>
                 <AntTabPanel index={1} currentIndex={tabIndex}>
                     <TabPanelScheduleActivity
-                        readOnly={isStatusClosed()}
+                        readOnly={isIncremental || isStatusClosed()}
                         leadId={edit ? Number(match.params.id) : 0}
                         loading={saveActivity.loading || leadActivities.loading}
                         activities={edit ? leadActivities.data : getValues('activities')}
@@ -1689,7 +1705,7 @@ export const TabPanelLogNote: FC<TabPanelLogNoteProps> = ({ notes, loading, read
                                 fullWidth
                                 value={noteDescription}
                                 onChange={e => setNoteDescription(e.target.value)}
-                                disabled={loading}
+                                disabled={isIncremental || loading}
                             />
                             <div style={{ height: 4 }} />
                             {media && <FileCollectionPreview files={media} onCloseFile={deleteMediaFile} />}

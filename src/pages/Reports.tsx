@@ -47,7 +47,9 @@ import ReportKpiOperativo from 'components/report/ReportKpiOperativo';
 import VoiceChannelReport from './VoiceChannelReport';
 import ReportComplianceSLA from 'components/report/ReportComplianceSLA';
 import ReportRequestSD from 'components/report/ReportRequestSD';
+import { apiUrls } from 'common/constants';
 
+const isIncremental = apiUrls.MAIN_URL.includes("incremental")
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
@@ -1248,19 +1250,21 @@ const Reports: FC = () => {
                                         lazy
                                     />
                                 </div>
-                                <Button
-                                    // className={classes.button}
-                                    variant="contained"
-                                    color="primary"
-                                    // disabled={loading}
-                                    startIcon={<AddIcon color="secondary" />}
-                                    onClick={() => {
-                                        setViewSelected("view-3");
-                                        setRowReportSelected({ row: null, edit: true });
-                                    }}
-                                    style={{ backgroundColor: "#55BD84" }}
-                                >{t(langKeys.create_custom_report)}
-                                </Button>
+                                {!isIncremental &&
+                                    <Button
+                                        // className={classes.button}
+                                        variant="contained"
+                                        color="primary"
+                                        // disabled={loading}
+                                        startIcon={<AddIcon color="secondary" />}
+                                        onClick={() => {
+                                            setViewSelected("view-3");
+                                            setRowReportSelected({ row: null, edit: true });
+                                        }}
+                                        style={{ backgroundColor: "#55BD84" }}
+                                    >{t(langKeys.create_custom_report)}
+                                    </Button>
+                                }
                             </div>
                         </Box>
                     </>
@@ -1394,18 +1398,20 @@ const Reports: FC = () => {
                                                     </Typography>
                                                 </CardContent>
                                             </CardActionArea>
-                                            <IconButton
-                                                aria-label="settings"
-                                                aria-describedby={`${report?.reporttemplateid}reporttemplate`}
-                                                aria-haspopup="true"
-                                                style={{ position: 'absolute', right: 0, top: 0 }}
-                                                onClick={(e) => {
-                                                    setRowReportSelected({ row: report, edit: true });
-                                                    setAnchorEl(e.currentTarget)
-                                                }}
-                                            >
-                                                <MoreVertIcon />
-                                            </IconButton>
+                                            {!isIncremental &&
+                                                <IconButton
+                                                    aria-label="settings"
+                                                    aria-describedby={`${report?.reporttemplateid}reporttemplate`}
+                                                    aria-haspopup="true"
+                                                    style={{ position: 'absolute', right: 0, top: 0 }}
+                                                    onClick={(e) => {
+                                                        setRowReportSelected({ row: report, edit: true });
+                                                        setAnchorEl(e.currentTarget)
+                                                    }}
+                                                >
+                                                    <MoreVertIcon />
+                                                </IconButton>
+                                            }
                                         </Card>
                                     </Grid>
                                 ))}
