@@ -14,6 +14,7 @@ import GoogleLogIn from 'components/fields/GoogleLogIn';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { calendarGoogleDisconnect, calendarGoogleLogIn } from 'store/calendar/actions';
 import { Typography } from '@material-ui/core';
+const isIncremental = apiUrls.MAIN_URL.includes("incremental")
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -186,32 +187,34 @@ const CalendarConnections: React.FC<CalendarConnectionsProps> = ({
                         </div>
                     </div>
                 </div>
-                <div>
-                    {calendarGoogleActive ?
-                        <Button
-                            className={classes.integrationButton}
-                            variant="contained"
-                            disabled={resCalendarGoogleValidate.loading}
-                            color="primary"
-                            style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => googleConfirmDisconnect(row?.calendareventid)}
-                        >
-                            {t(langKeys.disconnect)} 
-                        </Button>
-                        :
-                        <GoogleOAuthProvider clientId={apiUrls.GOOGLECLIENTID_CALENDAR}>
-                            <GoogleLogIn
-                                label="Conectar"
-                                scope={'https://www.googleapis.com/auth/calendar.readonly'}
-                                googleDispatch={(e) => {
-                                    dispatch(calendarGoogleLogIn({ ...e, id: row?.calendareventid }))
-                                    setWaitGoogleLogIn(true);
-                                }}
-                                data={{id: row?.calendareventid, data_code: row?.code }}
-                            />
-                        </GoogleOAuthProvider>
-                    }
-                </div>
+                {!isIncremental &&
+                    <div>
+                        {calendarGoogleActive ?
+                            <Button
+                                className={classes.integrationButton}
+                                variant="contained"
+                                disabled={resCalendarGoogleValidate.loading}
+                                color="primary"
+                                style={{ backgroundColor: "#FB5F5F" }}
+                                onClick={() => googleConfirmDisconnect(row?.calendareventid)}
+                            >
+                                {t(langKeys.disconnect)} 
+                            </Button>
+                            :
+                            <GoogleOAuthProvider clientId={apiUrls.GOOGLECLIENTID_CALENDAR}>
+                                <GoogleLogIn
+                                    label="Conectar"
+                                    scope={'https://www.googleapis.com/auth/calendar.readonly'}
+                                    googleDispatch={(e) => {
+                                        dispatch(calendarGoogleLogIn({ ...e, id: row?.calendareventid }))
+                                        setWaitGoogleLogIn(true);
+                                    }}
+                                    data={{id: row?.calendareventid, data_code: row?.code }}
+                                />
+                            </GoogleOAuthProvider>
+                        }
+                    </div>
+                }
             </div>
         </div>
     )

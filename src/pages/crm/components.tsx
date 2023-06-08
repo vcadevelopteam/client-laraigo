@@ -12,6 +12,8 @@ import paths from 'common/constants/paths';
 import { ICrmLead } from '@types';
 import { FieldEdit, FieldSelect } from 'components';
 import { useSelector } from 'hooks';
+import { apiUrls } from 'common/constants';
+const isIncremental = apiUrls.MAIN_URL.includes("incremental")
 
 const columnWidth = 275;
 const columnMinHeight = 500;
@@ -182,9 +184,11 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                 </div>
             </div>
             <div className={classes.floatingMenuIcon}>
-                <IconButton size="small" aria-describedby={id} onClick={handleMoreVertClick}>
-                    <MoreVertIcon style={{ height: 'inherit', width: 'inherit' }} />
-                </IconButton>
+                {!isIncremental &&
+                    <IconButton size="small" aria-describedby={id} onClick={handleMoreVertClick}>
+                        <MoreVertIcon style={{ height: 'inherit', width: 'inherit' }} />
+                    </IconButton>
+                }
                 <Popover
                     id={id}
                     open={open}

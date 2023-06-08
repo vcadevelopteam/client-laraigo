@@ -31,6 +31,8 @@ import CalendarConnections from './CalendarConnections';
 import CalendarScheduledEvents from './CalendarScheduledEvents';
 import { ICalendarFormFields } from './ICalendar';
 import EventIcon from '@material-ui/icons/Event';
+import { apiUrls } from 'common/constants';
+const isIncremental = apiUrls.MAIN_URL.includes("incremental")
 
 const dataVariables = [
     { domainvalue: "eventname", domaindesc: "calendar_eventname" },
@@ -396,15 +398,17 @@ const DetailCalendar: React.FC<DetailCalendarProps> = ({
                             setViewSelected("view-1")
                         }}
                     >{t(langKeys.back)}</Button>
-                    <Button
-                        className={classes.button}
-                        variant="contained"
-                        color="primary"
-                        type="submit"
-                        startIcon={<SaveIcon color="secondary" />}
-                        style={{ backgroundColor: "#55BD84" }}>
-                        {t(langKeys.save)}
-                    </Button>
+                    {!isIncremental &&
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            type="submit"
+                            startIcon={<SaveIcon color="secondary" />}
+                            style={{ backgroundColor: "#55BD84" }}>
+                            {t(langKeys.save)}
+                        </Button>
+                    }
                 </div>
 
             </div>
@@ -689,19 +693,23 @@ const Calendar: FC = () => {
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
-                        <IconOptions
-                            onDelete={() => {
-                                handleDelete(row);
-                            }}
-                            onDuplicate={() => {
-                                handleDuplicate(row);
-                            }}
-                            onCopyLink={() => {
-                                let url = new URL(`events/${user?.orgid}/${row.code}`, window.location.origin)
-                                navigator.clipboard.writeText(url.href);
-                                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.linkcopysuccesfull) }))
-                            }}
-                        />
+                        <>
+                            {!isIncremental &&
+                                <IconOptions
+                                    onDelete={() => {
+                                        handleDelete(row);
+                                    }}
+                                    onDuplicate={() => {
+                                        handleDuplicate(row);
+                                    }}
+                                    onCopyLink={() => {
+                                        let url = new URL(`events/${user?.orgid}/${row.code}`, window.location.origin)
+                                        navigator.clipboard.writeText(url.href);
+                                        dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.linkcopysuccesfull) }))
+                                    }}
+                                />
+                            }
+                        </>
                     )
                 }
             },
@@ -802,7 +810,7 @@ const Calendar: FC = () => {
                     data={dataGrid}
                     download={true}
                     loading={mainResult.mainData.loading}
-                    register={true}
+                    register={!isIncremental}
                     handleRegister={handleRegister}
                 />
             </div>

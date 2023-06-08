@@ -26,7 +26,9 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import FileSaver from 'file-saver';
+import { apiUrls } from "common/constants";
 // import * as XLSX from 'xlsx';
+const isIncremental = apiUrls.MAIN_URL.includes("incremental")
 
 const ReactGridLayout = WidthProvider(RGL);
 
@@ -374,28 +376,31 @@ const DashboardLayout: FC = () => {
                     >
                         <Trans i18nKey={langKeys.back} />
                     </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        startIcon={<EditIcon color="secondary" />}
-                        onClick={() => {
-                            if (!dashboardtemplate.value) return;
-                            const id = dashboardtemplate.value!.dashboardtemplateid;
-                            history.push(paths.DASHBOARD_EDIT.resolve(id));
-                        }}
-                        disabled={dashboardSave.loading || dashboardtemplate.loading || !dashboardtemplate.value}
-                    >
-                        <Trans i18nKey={langKeys.edit} />
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        startIcon={<DeleteIcon color="secondary" />}
-                        onClick={onDelete}
-                        disabled={dashboardSave.loading || dashboardtemplate.loading || !dashboardtemplate.value}
-                    >
-                        <Trans i18nKey={langKeys.delete} />
-                    </Button>
+                    {!isIncremental &&                    
+                    <>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            startIcon={<EditIcon color="secondary" />}
+                            onClick={() => {
+                                if (!dashboardtemplate.value) return;
+                                const id = dashboardtemplate.value!.dashboardtemplateid;
+                                history.push(paths.DASHBOARD_EDIT.resolve(id));
+                            }}
+                            disabled={dashboardSave.loading || dashboardtemplate.loading || !dashboardtemplate.value}
+                        >
+                            <Trans i18nKey={langKeys.edit} />
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            startIcon={<DeleteIcon color="secondary" />}
+                            onClick={onDelete}
+                            disabled={dashboardSave.loading || dashboardtemplate.loading || !dashboardtemplate.value}
+                        >
+                            <Trans i18nKey={langKeys.delete} />
+                        </Button>
+                    </>}
                 </div>
             </div>
             <div style={{ height: '0.5em' }} />

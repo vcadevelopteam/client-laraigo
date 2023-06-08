@@ -215,6 +215,13 @@ const SignIn = () => {
     const onModalSuccess = () => {
         setOpenModal(false);
     }
+    const consultHistoricalData = () => {
+        if(apiUrls.MAIN_URL.includes("incremental")){
+            window.open("https://app.laraigo.com/", '_blank');
+        }else{
+            window.open("https://incremental-prod.laraigo.com/", '_blank');
+        }
+    }
 
     useEffect(() => {
         const ff = location.state || {} as any;
@@ -328,6 +335,15 @@ const SignIn = () => {
                                             accessType='online'
                                             autoLoad={false}
                                         />
+                                    </div>
+                                    <div className={classes.buttonGoogle} style={{marginTop: 16}}>
+                                        <Button
+                                            variant="outlined"
+                                            color="primary"
+                                            onClick={() => consultHistoricalData()}
+                                        >
+                                            {t(langKeys.consulthistoricaldata)}
+                                        </Button>
                                     </div>
                                 </div> :
                                 <CircularProgress className={classes.progress} />

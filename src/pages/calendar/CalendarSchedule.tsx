@@ -15,6 +15,8 @@ import Schedule from 'components/fields/Schedule';
 import AddIcon from '@material-ui/icons/Add';
 import { useTranslation } from 'react-i18next';
 import { ICalendarSchedule, ICalendarFormFields } from './ICalendar';
+import { apiUrls } from 'common/constants';
+const isIncremental = apiUrls.MAIN_URL.includes("incremental")
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -95,6 +97,7 @@ const LabelDays: React.FC<LabelDaysProps> = ({ flag, fieldsIntervals, errors, in
                                             <>
                                                 <div style={{ gridColumnStart: "first" }}>
                                                     <FieldSelect
+                                                        disabled={isIncremental}
                                                         fregister={{
                                                             ...register(`intervals.${i}.start`, {
                                                                 validate: {
@@ -139,6 +142,7 @@ const LabelDays: React.FC<LabelDaysProps> = ({ flag, fieldsIntervals, errors, in
                                                 </div>
                                                 <div style={{ gridColumnStart: "col2" }}>
                                                     <FieldSelect
+                                                        disabled={isIncremental}
                                                         fregister={{
                                                             ...register(`intervals.${i}.end`, {
                                                                 validate: (value: any) => (value && value.length) || t(langKeys.field_required)
@@ -179,7 +183,8 @@ const LabelDays: React.FC<LabelDaysProps> = ({ flag, fieldsIntervals, errors, in
                                                     />
                                                 </div>
                                                 <div style={{ gridColumnStart: "line2", width: "16.6%" }}>
-                                                    <IconButton style={{ pointerEvents: "auto" }} aria-label="delete" onClick={(e) => {
+                                                    <IconButton style={{ pointerEvents: "auto" }} aria-label="delete"
+                                                        disabled={isIncremental} onClick={(e) => {
 
                                                         let overlap = getValues(`intervals.${i}.overlap`)
                                                         if (overlap !== -1) {
@@ -210,6 +215,7 @@ const LabelDays: React.FC<LabelDaysProps> = ({ flag, fieldsIntervals, errors, in
                             <div>
                                 <IconButton
                                     style={{ pointerEvents: "auto", cursor: "pointer" }}
+                                    disabled={isIncremental}
                                     onClick={() => {
                                         if (dowfields?.length) {
                                             let indexofnexthour = hoursvalue.indexOf(dowfields[dowfields?.length - 1].end)
@@ -336,6 +342,7 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                             <FieldSelect
                                 label={t(langKeys.hour_plural)}
                                 className="col-6"
+                                disabled={isIncremental} 
                                 valueDefault={String(generalstate.hours)}
                                 onChange={(e) => {
                                     setgeneralstate({ ...generalstate, hours: Number(e?.domainvalue||"0") });
@@ -350,6 +357,7 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                                 label={t(langKeys.minute_plural)}
                                 className="col-6"
                                 valueDefault={String(generalstate.minutes)}
+                                disabled={isIncremental} 
                                 onChange={(e) => {
                                     setgeneralstate({ ...generalstate, minutes: Number(e?.val||"0") });
                                     setValue('duration', Number(e?.val||"0") + generalstate.hours * 60)
@@ -367,6 +375,7 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                                        color="primary"
                                        type="number"
                                        fullWidth
+                                       disabled={isIncremental} 
                                        value={generalstate.maximumcapacity}
                                        error={!!errors?.maximumcapacity?.message}
                                        helperText={errors?.maximumcapacity?.message}
@@ -391,6 +400,7 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                                     color="primary"
                                     type="number"
                                     fullWidth
+                                    disabled={isIncremental} 
                                     value={generalstate.timebeforeeventduration}
                                     error={!!errors?.timebeforeeventduration?.message}
                                     helperText={errors?.timebeforeeventduration?.message || null}
@@ -407,6 +417,7 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                             <FieldSelect
                                 label={t(langKeys.unitofmeasure)}
                                 className="col-6"
+                                disabled={isIncremental} 
                                 valueDefault={getValues("timebeforeeventunit")}
                                 onChange={(value) => setValue('timebeforeeventunit', (value?.val || ""))}
                                 error={errors?.timebeforeeventunit?.message}
@@ -425,6 +436,7 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                                     color="primary"
                                     type="number"
                                     fullWidth
+                                    disabled={isIncremental} 
                                     value={generalstate.timeaftereventduration}
                                     error={!!errors?.timeaftereventduration?.message}
                                     helperText={errors?.timeaftereventduration?.message || null}
@@ -441,6 +453,7 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                             <FieldSelect
                                 label={t(langKeys.unitofmeasure)}
                                 className="col-6"
+                                disabled={isIncremental} 
                                 valueDefault={getValues("timeaftereventunit")}
                                 onChange={(value) => setValue('timeaftereventunit', (value?.val || ""))}
                                 error={errors?.timeaftereventunit?.message}
@@ -455,12 +468,13 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                     <React.Fragment>
                         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.dateinterval)}</Box>
                         <RadioGroup aria-label="dateinterval" name="dateinterval1" value={dateinterval} onChange={handleChange}>
-                            <FormControlLabel value="DAYS" control={<Radio color="primary" />} label={<div style={{ display: "flex", margin: "auto" }}>{dateinterval === "DAYS" && (
+                            <FormControlLabel disabled={isIncremental} value="DAYS" control={<Radio color="primary" />} label={<div style={{ display: "flex", margin: "auto" }}>{dateinterval === "DAYS" && (
                                 <>
                                     <TextField
                                         color="primary"
                                         type="number"
                                         fullWidth
+                                        disabled={isIncremental} 
                                         size="small"
                                         value={generalstate.daysintothefuture}
                                         error={!!errors?.daysintothefuture?.message}
@@ -478,7 +492,7 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                                 </>
                             )}
                                 <div style={{ display: "flex", margin: "auto" }}>{t(langKeys.daysintothefuture)}</div></div>} />
-                            <FormControlLabel value="RANGE" control={<Radio color="primary" />} label={
+                            <FormControlLabel disabled={isIncremental} value="RANGE" control={<Radio color="primary" />} label={
                                 <div style={{ display: "flex", margin: "auto" }}>
                                     <div style={{ display: "flex", margin: "auto", paddingRight: 8 }}>{t(langKeys.withinadaterange)}  </div>
                                     {dateinterval === "RANGE" && (
@@ -492,6 +506,7 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                                                 <Button
                                                     className={classes.itemDate}
                                                     startIcon={<CalendarIcon />}
+                                                    disabled={isIncremental}
                                                     onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
                                                 >
                                                     {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
@@ -500,7 +515,7 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                                         </>
                                     )}
                                 </div>} />
-                            <FormControlLabel value="UNDEFINED" control={<Radio color="primary" />} label={t(langKeys.indefinetly)} />
+                            <FormControlLabel value="UNDEFINED" disabled={isIncremental} control={<Radio color="primary" />} label={t(langKeys.indefinetly)} />
                         </RadioGroup>
                     </React.Fragment>
                 </div>
@@ -512,7 +527,7 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                     <Box fontWeight={500} lineHeight="18px" fontSize={20} mb={1} color="textPrimary">{t(langKeys.availability)}</Box>
                     <div>
                         <FormControlLabel
-                            disabled={getValues("intervals").some(x => (x.overlap || -1) !== -1)}
+                            disabled={isIncremental || getValues("intervals").some(x => (x.overlap || -1) !== -1)}
                             control={<Switch
                                 color="primary" checked={generalstate.calendarview} onChange={(e) => {
                                     setgeneralstate({ ...generalstate, calendarview: e.target.checked });
@@ -531,6 +546,7 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                                     style={{ pointerEvents: "none" }}
                                     classes={{ label: classes.root }}
                                     control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={sun} onChange={handleChangeAvailability} name="sun" />}
+                                    disabled={isIncremental}
                                     label={<LabelDays
                                         flag={sun}
                                         fieldsIntervals={fieldsIntervals}
@@ -548,6 +564,7 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                                     style={{ pointerEvents: "none" }}
                                     classes={{ label: classes.root }}
                                     control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={mon} onChange={handleChangeAvailability} name="mon" />}
+                                    disabled={isIncremental}
                                     label={<LabelDays
                                         flag={mon}
                                         fieldsIntervals={fieldsIntervals}
@@ -566,6 +583,7 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                                     style={{ pointerEvents: "none" }}
                                     classes={{ label: classes.root }}
                                     control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={tue} onChange={handleChangeAvailability} name="tue" />}
+                                    disabled={isIncremental}
                                     label={<LabelDays
                                         flag={tue}
                                         fieldsIntervals={fieldsIntervals}
@@ -584,6 +602,7 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                                     style={{ pointerEvents: "none" }}
                                     classes={{ label: classes.root }}
                                     control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={wed} onChange={handleChangeAvailability} name="wed" />}
+                                    disabled={isIncremental}
                                     label={<LabelDays
                                         flag={wed}
                                         fieldsIntervals={fieldsIntervals}
@@ -602,6 +621,7 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                                     style={{ pointerEvents: "none" }}
                                     classes={{ label: classes.root }}
                                     control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={thu} onChange={handleChangeAvailability} name="thu" />}
+                                    disabled={isIncremental}
                                     label={<LabelDays
                                         flag={thu}
                                         fieldsIntervals={fieldsIntervals}
@@ -620,6 +640,7 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                                     style={{ pointerEvents: "none" }}
                                     classes={{ label: classes.root }}
                                     control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={fri} onChange={handleChangeAvailability} name="fri" />}
+                                    disabled={isIncremental}
                                     label={<LabelDays
                                         flag={fri}
                                         fieldsIntervals={fieldsIntervals}
@@ -637,6 +658,7 @@ const CalendarSchedule: React.FC<CalendarScheduleProps> = ({
                                 <FormControlLabel
                                     style={{ pointerEvents: "none" }}
                                     classes={{ label: classes.root }}
+                                    disabled={isIncremental}
                                     control={<Checkbox color="primary" style={{ pointerEvents: "auto" }} checked={sat} onChange={handleChangeAvailability} name="sat" />}
                                     label={<LabelDays
                                         flag={sat}

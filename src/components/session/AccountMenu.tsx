@@ -8,6 +8,7 @@ import { useSelector } from 'hooks';
 import { logout } from 'store/login/actions';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import { apiUrls } from 'common/constants';
 import Avatar from '@material-ui/core/Avatar';
 import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import { ManageOrganization, BadgeGo, StatusConnection } from 'components';
@@ -110,6 +111,14 @@ const AccountMenu: FC = () => {
     const openprivacypolicies = () => {
         window.open("/privacy", '_blank');
     }
+    
+    const consultHistoricalData = () => {
+        if(apiUrls.MAIN_URL.includes("incremental")){
+            window.open("https://app.laraigo.com/", '_blank');
+        }else{
+            window.open("https://incremental-prod.laraigo.com/", '_blank');
+        }
+    }
 
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popoverxx' : undefined;
@@ -184,6 +193,15 @@ const AccountMenu: FC = () => {
                         style={{ fontWeight: "normal" }}
                     >
                         <Trans i18nKey={langKeys.privacypoliciestitle} />
+                    </Button>
+                    <Button
+                        onClick={consultHistoricalData}
+                        variant="outlined"
+                        color="primary"
+                        fullWidth
+                        style={{ fontWeight: "normal" }}
+                    >
+                        <Trans i18nKey={langKeys.consulthistoricaldata} />
                     </Button>
                     <Button
                         variant="outlined"
