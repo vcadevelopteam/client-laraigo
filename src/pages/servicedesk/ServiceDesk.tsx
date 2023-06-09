@@ -22,8 +22,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Rating } from '@material-ui/lab';
 import { DialogSendTemplate, NewActivityModal, NewNoteModal } from "./Modals";
 import { WhatsappIcon } from "icons";
-import { apiUrls } from "common/constants";
-const isIncremental = apiUrls.MAIN_URL.includes("incremental")
+const isIncremental = window.location.href.includes("incremental")
 
 interface dataBackend {
   columnid: number,

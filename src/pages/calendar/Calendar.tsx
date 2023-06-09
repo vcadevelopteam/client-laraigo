@@ -31,8 +31,7 @@ import CalendarConnections from './CalendarConnections';
 import CalendarScheduledEvents from './CalendarScheduledEvents';
 import { ICalendarFormFields } from './ICalendar';
 import EventIcon from '@material-ui/icons/Event';
-import { apiUrls } from 'common/constants';
-const isIncremental = apiUrls.MAIN_URL.includes("incremental")
+const isIncremental = window.location.href.includes("incremental")
 
 const dataVariables = [
     { domainvalue: "eventname", domaindesc: "calendar_eventname" },

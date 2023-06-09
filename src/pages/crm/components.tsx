@@ -12,8 +12,7 @@ import paths from 'common/constants/paths';
 import { ICrmLead } from '@types';
 import { FieldEdit, FieldSelect } from 'components';
 import { useSelector } from 'hooks';
-import { apiUrls } from 'common/constants';
-const isIncremental = apiUrls.MAIN_URL.includes("incremental")
+const isIncremental = window.location.href.includes("incremental")
 
 const columnWidth = 275;
 const columnMinHeight = 500;

@@ -15,8 +15,7 @@ import { ICalendarFormFields } from './ICalendar';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import Tooltip from '@material-ui/core/Tooltip';
 import EventPreview from 'images/event_preview.jpg';
-import { apiUrls } from 'common/constants';
-const isIncremental = apiUrls.MAIN_URL.includes("incremental")
+const isIncremental = window.location.href.includes("incremental")
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {

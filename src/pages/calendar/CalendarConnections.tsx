@@ -14,7 +14,7 @@ import GoogleLogIn from 'components/fields/GoogleLogIn';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { calendarGoogleDisconnect, calendarGoogleLogIn } from 'store/calendar/actions';
 import { Typography } from '@material-ui/core';
-const isIncremental = apiUrls.MAIN_URL.includes("incremental")
+const isIncremental = window.location.href.includes("incremental")
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {

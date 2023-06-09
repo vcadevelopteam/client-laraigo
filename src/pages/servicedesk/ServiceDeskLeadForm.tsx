@@ -44,8 +44,7 @@ import { setModalCall, setPhoneNumber } from 'store/voximplant/actions';
 import MailIcon from '@material-ui/icons/Mail';
 import DialogInteractions from 'components/inbox/DialogInteractions';
 import { getCompany, getGroups, getImpact, getPriority, getSlaRules, getUrgency, resetGetCompany, resetGetGroups, resetGetImpact, resetGetPriority, resetGetSlaRules, resetGetUrgency } from 'store/servicedesk/actions';
-import { apiUrls } from "common/constants";
-const isIncremental = apiUrls.MAIN_URL.includes("incremental")
+const isIncremental = window.location.href.includes("incremental")
 
 const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
 

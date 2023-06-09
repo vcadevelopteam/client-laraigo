@@ -10,8 +10,7 @@ import { Accordion, AccordionDetails, AccordionSummary, Box, Tooltip, Typography
 import InfoIcon from '@material-ui/icons/Info';
 import { ICalendarFormFields } from './ICalendar';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { apiUrls } from 'common/constants';
-const isIncremental = apiUrls.MAIN_URL.includes("incremental")
+const isIncremental = window.location.href.includes("incremental")
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {

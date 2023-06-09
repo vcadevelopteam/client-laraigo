@@ -26,9 +26,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import FileSaver from 'file-saver';
-import { apiUrls } from "common/constants";
-// import * as XLSX from 'xlsx';
-const isIncremental = apiUrls.MAIN_URL.includes("incremental")
+const isIncremental = window.location.href.includes("incremental")
 
 const ReactGridLayout = WidthProvider(RGL);
 
