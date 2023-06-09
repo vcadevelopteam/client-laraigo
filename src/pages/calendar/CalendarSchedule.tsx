@@ -15,8 +15,7 @@ import Schedule from 'components/fields/Schedule';
 import AddIcon from '@material-ui/icons/Add';
 import { useTranslation } from 'react-i18next';
 import { ICalendarSchedule, ICalendarFormFields } from './ICalendar';
-import { apiUrls } from 'common/constants';
-const isIncremental = apiUrls.MAIN_URL.includes("incremental")
+const isIncremental = window.location.href.includes("incremental")
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {

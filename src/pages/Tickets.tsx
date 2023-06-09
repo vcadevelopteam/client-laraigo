@@ -24,9 +24,8 @@ import { Button, ListItemIcon, Tooltip } from '@material-ui/core';
 import PublishIcon from '@material-ui/icons/Publish';
 import { VoximplantService } from 'network';
 import DialogInteractions from 'components/inbox/DialogInteractions';
-import { apiUrls } from 'common/constants';
+const isIncremental = window.location.href.includes("incremental")
 
-const isIncremental = apiUrls.MAIN_URL.includes("incremental")
 const selectionKey = 'conversationid';
 
 const useStyles = makeStyles((theme) => ({
