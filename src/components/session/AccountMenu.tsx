@@ -8,7 +8,6 @@ import { useSelector } from 'hooks';
 import { logout } from 'store/login/actions';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { apiUrls } from 'common/constants';
 import Avatar from '@material-ui/core/Avatar';
 import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import { ManageOrganization, BadgeGo, StatusConnection } from 'components';
@@ -202,7 +201,7 @@ const AccountMenu: FC = () => {
                         fullWidth
                         style={{ fontWeight: "normal" }}
                     >
-                        <Trans i18nKey={isIncremental?langKeys.consulthistoricaldata: langKeys.gotolaraigo} />
+                        <Trans i18nKey={isIncremental?langKeys.gotolaraigo: langKeys.consulthistoricaldata} />
                     </Button>
                     <Button
                         variant="outlined"
