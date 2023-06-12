@@ -33,6 +33,7 @@ import { LaraigoLogo } from 'icons';
 import { useForm } from 'react-hook-form';
 import { FieldEdit, DialogZyx } from 'components';
 import { recoverPassword } from 'store/subscription/actions';
+const isIncremental = window.location.href.includes("incremental")
 
 export const useStyles = makeStyles((theme) => ({
     paper: {
@@ -216,8 +217,8 @@ const SignIn = () => {
         setOpenModal(false);
     }
     const consultHistoricalData = () => {
-        if(apiUrls.MAIN_URL.includes("incremental")){
-            window.open("https://app.laraigo.com/", '_blank');
+        if(isIncremental){
+            window.open("https://test-laraigo.s3-web.us-south.cloud-object-storage.appdomain.cloud/", '_blank');
         }else{
             window.open("https://incremental-prod.laraigo.com/", '_blank');
         }
@@ -342,7 +343,7 @@ const SignIn = () => {
                                             color="primary"
                                             onClick={() => consultHistoricalData()}
                                         >
-                                            {t(langKeys.consulthistoricaldata)}
+                                            {t(isIncremental?langKeys.consulthistoricaldata: langKeys.gotolaraigo)}
                                         </Button>
                                     </div>
                                 </div> :
