@@ -218,7 +218,7 @@ const SignIn = () => {
     }
     const consultHistoricalData = () => {
         if(isIncremental){
-            window.open("https://test-laraigo.s3-web.us-south.cloud-object-storage.appdomain.cloud/", '_blank');
+            window.open("https://testing.laraigo.com/sign-in", '_blank');
         }else{
             window.open("https://incremental-prod.laraigo.com/", '_blank');
         }
