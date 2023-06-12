@@ -14,6 +14,7 @@ import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import { ManageOrganization, BadgeGo, StatusConnection } from 'components';
 import { connectAgentUI, disconnectSocket, emitEvent } from "store/inbox/actions";
 import { disconnectVoxi } from "store/voximplant/actions";
+const isIncremental = window.location.href.includes("incremental")
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -113,8 +114,8 @@ const AccountMenu: FC = () => {
     }
     
     const consultHistoricalData = () => {
-        if(apiUrls.MAIN_URL.includes("incremental")){
-            window.open("https://app.laraigo.com/", '_blank');
+        if(isIncremental){
+            window.open("https://test-laraigo.s3-web.us-south.cloud-object-storage.appdomain.cloud/", '_blank');
         }else{
             window.open("https://incremental-prod.laraigo.com/", '_blank');
         }
@@ -201,7 +202,7 @@ const AccountMenu: FC = () => {
                         fullWidth
                         style={{ fontWeight: "normal" }}
                     >
-                        <Trans i18nKey={langKeys.consulthistoricaldata} />
+                        <Trans i18nKey={isIncremental?langKeys.consulthistoricaldata: langKeys.gotolaraigo} />
                     </Button>
                     <Button
                         variant="outlined"
