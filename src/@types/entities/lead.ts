@@ -350,5 +350,8 @@ export interface ISDLeadSel {
     supervisorid: number;
     company: string;
     groups: string;
+    startdate?: any;
+    enddate?: any;
+    offset?: any;
 	all?: boolean;
 }

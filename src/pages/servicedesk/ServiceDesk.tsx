@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { convertLocalDate, getAdviserFilteredUserRol, getColumnsSDSel, getCommChannelLst, getLeadExport, getLeadsSDSel, getLeadTasgsSel, getPaginatedSDLead, getUserGroupsSel, getValuesFromDomain, 
+import { convertLocalDate, getAdviserFilteredUserRol, getColumnsSDSel, getCommChannelLst, getDateCleaned, getLeadExport, getLeadsSDSel, getLeadTasgsSel, getPaginatedSDLead, getUserGroupsSel, getValuesFromDomain, 
   insArchiveServiceDesk, insSDLead, updateColumnsLeads, updateColumnsOrder } from "common/helpers";
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from 'react-redux';
@@ -11,7 +11,7 @@ import { useHistory, useLocation } from "react-router";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
-import { DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "components";
+import { DateRangePicker, DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "components";
 import { Search as SearchIcon, ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, Sms as SmsIcon, Mail as MailIcon, Add as AddIcon } from '@material-ui/icons';
 import { Button, IconButton, Tooltip } from "@material-ui/core";
 import { Dictionary, IDomain, IFetchData, IServiceDeskLead } from "@types";
@@ -19,10 +19,11 @@ import TablePaginated, { buildQueryFilters, useQueryParams } from 'components/fi
 import { makeStyles } from '@material-ui/core/styles';
 import { Rating } from '@material-ui/lab';
 import { DialogSendTemplate, NewActivityModal, NewNoteModal } from "./Modals";
-import { WhatsappIcon } from "icons";
+import { CalendarIcon, WhatsappIcon } from "icons";
 import GroupIcon from '@material-ui/icons/Group';
 import { DraggablesCategories } from "./components/DraggablesCategories";
 import { KanbanTable } from "./components/KanbanTable";
+import { Range } from 'react-date-range';
 
 interface dataBackend {
   columnid: number,
@@ -68,6 +69,13 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     flexWrap: 'wrap',
   },
+  itemDate: {
+      minHeight: 40,
+      height: 40,
+      border: '1px solid #bfbfc0',
+      borderRadius: 4,
+      color: 'rgb(143, 146, 161)'
+  },
 }));
 
 const selectionKey = 'leadid';
@@ -91,6 +99,12 @@ interface IBoardFilter {
   /**id del asesor */
 }
 
+const initialRange = {
+  startDate: new Date(new Date().setDate(1)),
+  endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+  key: 'selection'
+}
+
 const ServiceDesk: FC = () => {
   const user = useSelector(state => state.login.validateToken.user);
   const history = useHistory();
@@ -99,6 +113,8 @@ const ServiceDesk: FC = () => {
   const [columnsName, setColumnsName] = useState<any[]>([])
   const [dataColumn, setDataColumn] = useState<dataBackend[]>([])
   const [dataColumnByPhase, setDataColumnByPhase] = useState<dataBackend[]>([])
+  const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
+  const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
   const [openDialog, setOpenDialog] = useState(false);
   // const display = useSelector(state => state.lead.display);
   const mainMulti = useSelector(state => state.main.multiData);
@@ -144,6 +160,9 @@ const ServiceDesk: FC = () => {
             tags: boardFilter.tags,
             fullname: boardFilter.customer,
             supervisorid: user?.userid || 0,
+            startdate: dateRangeCreateDate.startDate,
+            enddate: dateRangeCreateDate.endDate,
+            offset: (new Date().getTimezoneOffset() / 60) * -1
           }),
           // adviserSel(),
           getAdviserFilteredUserRol(),
@@ -199,6 +218,9 @@ const ServiceDesk: FC = () => {
         leadproduct: boardFilter.products,
         tags: boardFilter.tags,
         supervisorid: user?.userid || 0,
+        startdate: dateRangeCreateDate.startDate,
+        enddate: dateRangeCreateDate.endDate,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
       }),
       // adviserSel(),
       getAdviserFilteredUserRol(),
@@ -560,6 +582,20 @@ const ServiceDesk: FC = () => {
 
   const filtersElement = useMemo(() => (
     <>
+      <DateRangePicker
+          open={openDateRangeCreateDateModal}
+          setOpen={setOpenDateRangeCreateDateModal}
+          range={dateRangeCreateDate}
+          onSelect={setDateRangeCreateDate}
+      >
+          <Button
+              className={classes.itemDate}
+              startIcon={<CalendarIcon />}
+              onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+          >
+              {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
+          </Button>
+      </DateRangePicker>
       
       <FieldSelect
         variant="outlined"
