@@ -343,7 +343,7 @@ const SignIn = () => {
                                             color="primary"
                                             onClick={() => consultHistoricalData()}
                                         >
-                                            {t(isIncremental?langKeys.consulthistoricaldata: langKeys.gotolaraigo)}
+                                            {t(isIncremental?langKeys.gotolaraigo: langKeys.consulthistoricaldata)}
                                         </Button>
                                     </div>
                                 </div> :
