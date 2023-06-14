@@ -1019,7 +1019,7 @@ const DashboardManagerial: FC = () => {
                 setreschannels(remultiaux.data[7].data)
                 const asesoretmp = [...remultiaux.data[6].data];
                 const arrayconbar = [...Array(24)].map((_, i) => {
-                    const hourFound = asesoretmp.find((x: Dictionary) => x.hora === i);
+                    const hourFound = asesoretmp.find((x: Dictionary) => Number(x.hora) === i);
                     if (hourFound)
                         return hourFound
                     else
