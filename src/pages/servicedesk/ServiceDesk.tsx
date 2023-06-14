@@ -24,6 +24,7 @@ import GroupIcon from '@material-ui/icons/Group';
 import { DraggablesCategories } from "./components/DraggablesCategories";
 import { KanbanTable } from "./components/KanbanTable";
 import { Range } from 'react-date-range';
+import { KanbanTableGroups } from "./components/KanbanTableGroups";
 
 interface dataBackend {
   columnid: number,
@@ -112,7 +113,8 @@ const ServiceDesk: FC = () => {
   const dispatch = useDispatch();
   const [columnsName, setColumnsName] = useState<any[]>([])
   const [dataColumn, setDataColumn] = useState<dataBackend[]>([])
-  const [dataColumnByPhase, setDataColumnByPhase] = useState<dataBackend[]>([])
+  const [columnGroups, setColumnGroups] = useState<any[]>([])
+  const [dataColumnByGroup, setDataColumnByGroup] = useState<dataBackend[]>([])
   const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
   const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
   const [openDialog, setOpenDialog] = useState(false);
@@ -151,7 +153,7 @@ const ServiceDesk: FC = () => {
 
   useEffect(() => {
       dispatch(getMultiCollection([
-          getColumnsSDSel(1),
+          getColumnsSDSel(1,true),
           getLeadsSDSel({
             id: 0,
             company: boardFilter?.company||"",
@@ -172,7 +174,7 @@ const ServiceDesk: FC = () => {
           getLeadTasgsSel(),
           getValuesFromDomain('TIPOPERSONA'),
           getValuesFromDomain('EMPRESA'),
-          getValuesFromDomain('GRUPOSSERVICEDESK'),
+          getValuesFromDomain('GRUPOSSERVICEDESK', '_GRUPOSSERVICEDESK'),
       ]));
       return () => {
           dispatch(resetAllMain());
@@ -184,12 +186,22 @@ const ServiceDesk: FC = () => {
     if (!mainMulti.error && !mainMulti.loading) {
       if (mainMulti.data.length && mainMulti.data[0].key && mainMulti.data[0].key === "UFN_COLUMN_SD_SEL") {
         setColumnsName(mainMulti.data[0] && mainMulti.data[0].success ? mainMulti.data[0].data : [])
+        setColumnGroups(mainMulti.data.filter(x=>x.key==="UFN_DOMAIN_LST_VALORES_GRUPOSSERVICEDESK")?.[0]?.data||[])
         const columns = (mainMulti.data[0] && mainMulti.data[0].success ? mainMulti.data[0].data : []) as dataBackend[]
         const leads = (mainMulti.data[1] && mainMulti.data[1].success ? mainMulti.data[1].data : []) as IServiceDeskLead[]
+        let columngroup = mainMulti.data.filter(x=>x.key==="UFN_DOMAIN_LST_VALORES_GRUPOSSERVICEDESK")?.[0]?.data||[]
+        columngroup.unshift({domainid: 0, domainvalue:"", domaindesc:""})
+        let unorderedcolumngroup= columngroup.reduce((acc:any,x)=>[...acc,{...x,items:[]}],[])
+
         let unordeneddatacolumns = columns.map((column) => {
           column.items = leads.filter( x => x.column_uuid === column.column_uuid);
           return {...column, total_revenue: (column.items.reduce((a,b) => a + parseFloat(b.expected_revenue), 0))}
         })
+        let ordergroup = unorderedcolumngroup.map((column:any) => {
+          column.items = leads.filter( x => x.leadgroups === column.domainvalue);
+          return {...column}
+        })
+        setDataColumnByGroup(ordergroup)
         let ordereddata: dataBackend[] =[];
         columns.forEach((x,i)=>{
           ordereddata = [...ordereddata, ...unordeneddatacolumns.filter((y:any)=>y.column_uuid===x.column_uuid)]
@@ -209,7 +221,7 @@ const ServiceDesk: FC = () => {
     history.push({ search: newParams.toString() });
 
     dispatch(getMultiCollection([
-      getColumnsSDSel(1),
+      getColumnsSDSel(1,true),
       getLeadsSDSel({
         id: 0,
         company: boardFilter?.company||"",
@@ -230,10 +242,10 @@ const ServiceDesk: FC = () => {
       getLeadTasgsSel(),
       getValuesFromDomain('TIPOPERSONA'),
       getValuesFromDomain('EMPRESA'),
-      getValuesFromDomain('GRUPOSSERVICEDESK'),
+      getValuesFromDomain('GRUPOSSERVICEDESK', '_GRUPOSSERVICEDESK'),
     ]));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [boardFilter, dispatch]);
+  }, [boardFilter,dateRangeCreateDate, dispatch]);
 
   const onDragEnd = (result:DropResult, columns:dataBackend[], setDataColumn:any) => {
     if (!result.destination) return;
@@ -442,6 +454,12 @@ const ServiceDesk: FC = () => {
         Cell: cell
       },
       {
+        Header: t(langKeys.channel),
+        accessor: 'communicationchannel',
+        isComponent: true,
+        Cell: cell
+      },
+      {
         Header: t(langKeys.lastUpdate),
         accessor: 'changedate',
         type: 'date',
@@ -452,6 +470,18 @@ const ServiceDesk: FC = () => {
       {
         Header: t(langKeys.type),
         accessor: 'type',
+        isComponent: true,
+        Cell: cell
+      },
+      {
+        Header: t(langKeys.group),
+        accessor: 'leadgroups',
+        isComponent: true,
+        Cell: cell
+      },
+      {
+        Header: t(langKeys.phase),
+        accessor: 'column_description',
         isComponent: true,
         Cell: cell
       },
@@ -581,22 +611,7 @@ const ServiceDesk: FC = () => {
   }, [mainMulti.data[6]]);
 
   const filtersElement = useMemo(() => (
-    <>
-      <DateRangePicker
-          open={openDateRangeCreateDateModal}
-          setOpen={setOpenDateRangeCreateDateModal}
-          range={dateRangeCreateDate}
-          onSelect={setDateRangeCreateDate}
-      >
-          <Button
-              className={classes.itemDate}
-              startIcon={<CalendarIcon />}
-              onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
-          >
-              {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
-          </Button>
-      </DateRangePicker>
-      
+    <>      
       <FieldSelect
         variant="outlined"
         label={t(langKeys.business)}
@@ -696,6 +711,20 @@ const ServiceDesk: FC = () => {
         {display === 'BOARD' &&
         <div style={{ display: "flex", flexDirection: 'column', height: "100%" }}>
           <div className={classes.canvasFiltersHeader}>
+            <DateRangePicker
+                open={openDateRangeCreateDateModal}
+                setOpen={setOpenDateRangeCreateDateModal}
+                range={dateRangeCreateDate}
+                onSelect={setDateRangeCreateDate}
+            >
+                <Button
+                    className={classes.itemDate}
+                    startIcon={<CalendarIcon />}
+                    onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+                >
+                    {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
+                </Button>
+            </DateRangePicker>
             <FieldSelect
               variant="outlined"
               label={t(langKeys.business)}
@@ -749,15 +778,6 @@ const ServiceDesk: FC = () => {
               loading={mainMulti.loading}
               optionDesc="tags"
               optionValue="tags"
-            />
-            <FieldEdit
-              size="small"
-              variant="outlined"
-              valueDefault={boardFilter.customer}
-              label={t(langKeys.customer)}
-              className={classes.filterComponent}
-              disabled={mainMulti.loading}
-              onChange={(v: string) => setBoardFilter(prev => ({ ...prev, customer: v }))}
             />
             <div style={{ flexGrow: 1 }} />
             {(!user?.roledesc.includes("VISOR")) &&
@@ -806,6 +826,20 @@ const ServiceDesk: FC = () => {
         {display === 'BOARDGROUP' &&
         <div style={{ display: "flex", flexDirection: 'column', height: "100%" }}>
           <div className={classes.canvasFiltersHeader}>
+            <DateRangePicker
+                open={openDateRangeCreateDateModal}
+                setOpen={setOpenDateRangeCreateDateModal}
+                range={dateRangeCreateDate}
+                onSelect={setDateRangeCreateDate}
+            >
+                <Button
+                    className={classes.itemDate}
+                    startIcon={<CalendarIcon />}
+                    onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+                >
+                    {getDateCleaned(dateRangeCreateDate.startDate!) + " - " + getDateCleaned(dateRangeCreateDate.endDate!)}
+                </Button>
+            </DateRangePicker>
             <FieldSelect
               variant="outlined"
               label={t(langKeys.business)}
@@ -882,27 +916,12 @@ const ServiceDesk: FC = () => {
                 <Trans i18nKey={langKeys.search} />
             </Button>
           </div> 
-          <div style={{display:"flex", color: "white", paddingTop: 10, fontSize: "1.6em", fontWeight: "bold"}}>
-            <div style={{minWidth: 280, maxWidth: 280, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}></div>
-            <div style={{minWidth: 280, maxWidth: 280, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.support)} N1</div>
-            <div style={{minWidth: 280, maxWidth: 280, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.support)} N2</div>
-            <div style={{minWidth: 280, maxWidth: 280, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.support)} N3</div>
-          </div>
-          <DragDropContext onDragEnd={result => onDragEnd(result, dataColumn, setDataColumn)}>
-            <Droppable droppableId="all-columns" direction="horizontal" type="column" >
-              {(provided) => (
-                <div
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  style={{display:'flex'}}
-                >
-                  {dataColumn.map((column, index) => 
-                       <DraggablesCategories column={column} index={index} handleDelete={handleDelete} handleCloseLead={handleCloseLead} role={user?.roledesc||""}/>
-                  )}
-                </div>
-              )}
-            </Droppable>
-          </DragDropContext>
+          <KanbanTableGroups
+            dataColumn={dataColumnByGroup}
+            handleDelete= {handleDelete}
+            handleCloseLead={handleCloseLead}
+            columns={columnGroups}
+          />
           <DialogZyx3Opt
             open={openDialog}
             title={t(langKeys.confirmation)}
@@ -972,7 +991,7 @@ const ServiceDesk: FC = () => {
               totalrow={totalrow}
               loading={mainPaginated.loading}
               pageCount={pageCount}
-              filterrange={false}
+              filterrange={true}
               download={true}
               fetchData={fetchGridData}
               autotrigger={true}

@@ -79,6 +79,7 @@ export interface IServiceDeskLead2 {
     index:string, 
     status:string, 
     column_uuid:string, 
+    column_description?: string | null;
 }
 
 export interface IServiceDeskLead {
@@ -132,6 +133,7 @@ export interface IServiceDeskLead {
     urgency?: string;
     first_contact_date?: string | null;
     first_contact_deadline?: string | null;
+    column_description?: string | null;
 }
 
 export interface ICRmSaveLead {
