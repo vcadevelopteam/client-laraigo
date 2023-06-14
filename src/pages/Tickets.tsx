@@ -24,6 +24,7 @@ import { Button, ListItemIcon, Tooltip } from '@material-ui/core';
 import PublishIcon from '@material-ui/icons/Publish';
 import { VoximplantService } from 'network';
 import DialogInteractions from 'components/inbox/DialogInteractions';
+const isIncremental = window.location.href.includes("incremental")
 
 const selectionKey = 'conversationid';
 
@@ -1209,44 +1210,46 @@ const Tickets = () => {
                 <div className={classes.title}>
                     {t(langKeys.ticket_plural)}
                 </div>
-                <div style={{ display: 'flex', gap: 8 }}>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                        startIcon={<ReassignIcon width={24} style={{ fill: '#FFF' }} />}
-                        onClick={() => {
-                            setRowToSend(rowWithDataSelected);
-                            setOpenDialogReassign(true);
-                        }}
-                    >
-                        {t(langKeys.reassign)}
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                        startIcon={<TipifyIcon width={24} style={{ fill: '#FFF' }} />}
-                        onClick={() => {
-                            setRowToSend(rowWithDataSelected);
-                            setOpenDialogTipify(true);
-                        }}
-                    >
-                        {t(langKeys.ticket_typify)}
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                        startIcon={<CloseTicketIcon width={24} style={{ fill: '#FFF' }} />}
-                        onClick={() => {
-                            setRowToSend(rowWithDataSelected);
-                            setOpenDialogClose(true);
-                        }}
-                    >
-                        {t(langKeys.close)}
-                    </Button>
-                </div>
+                {!isIncremental &&
+                    <div style={{ display: 'flex', gap: 8 }}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                            startIcon={<ReassignIcon width={24} style={{ fill: '#FFF' }} />}
+                            onClick={() => {
+                                setRowToSend(rowWithDataSelected);
+                                setOpenDialogReassign(true);
+                            }}
+                        >
+                            {t(langKeys.reassign)}
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                            startIcon={<TipifyIcon width={24} style={{ fill: '#FFF' }} />}
+                            onClick={() => {
+                                setRowToSend(rowWithDataSelected);
+                                setOpenDialogTipify(true);
+                            }}
+                        >
+                            {t(langKeys.ticket_typify)}
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                            startIcon={<CloseTicketIcon width={24} style={{ fill: '#FFF' }} />}
+                            onClick={() => {
+                                setRowToSend(rowWithDataSelected);
+                                setOpenDialogClose(true);
+                            }}
+                        >
+                            {t(langKeys.close)}
+                        </Button>
+                    </div>
+                }
             </Box>
             <TablePaginated
                 columns={columns}

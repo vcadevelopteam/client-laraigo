@@ -27,6 +27,8 @@ export const langKeys = {
   web_form: "web_form",
   phasechange: "phasechange",
   sdrequestcode: "sdrequestcode",
+  consulthistoricaldata: "consulthistoricaldata",
+  gotolaraigo: "gotolaraigo",
   resolution: "resolution",
   firstcontactcompliance: "firstcontactcompliance",
   registrationdate: "registrationdate",

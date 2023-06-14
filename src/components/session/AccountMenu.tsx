@@ -13,6 +13,7 @@ import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import { ManageOrganization, BadgeGo, StatusConnection } from 'components';
 import { connectAgentUI, disconnectSocket, emitEvent } from "store/inbox/actions";
 import { disconnectVoxi } from "store/voximplant/actions";
+const isIncremental = window.location.href.includes("incremental")
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -110,6 +111,14 @@ const AccountMenu: FC = () => {
     const openprivacypolicies = () => {
         window.open("/privacy", '_blank');
     }
+    
+    const consultHistoricalData = () => {
+        if(isIncremental){
+            window.open("https://testing.laraigo.com/sign-in", '_blank');
+        }else{
+            window.open("https://incremental-prod.laraigo.com/", '_blank');
+        }
+    }
 
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popoverxx' : undefined;
@@ -184,6 +193,15 @@ const AccountMenu: FC = () => {
                         style={{ fontWeight: "normal" }}
                     >
                         <Trans i18nKey={langKeys.privacypoliciestitle} />
+                    </Button>
+                    <Button
+                        onClick={consultHistoricalData}
+                        variant="outlined"
+                        color="primary"
+                        fullWidth
+                        style={{ fontWeight: "normal" }}
+                    >
+                        <Trans i18nKey={isIncremental?langKeys.gotolaraigo: langKeys.consulthistoricaldata} />
                     </Button>
                     <Button
                         variant="outlined"
