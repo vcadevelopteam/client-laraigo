@@ -494,7 +494,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         register('impact', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('urgency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('personid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('leadgroups', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('leadgroups')//, { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('ticketnum', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('priority');
         register('email', {
@@ -581,6 +581,9 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                 all: false,
                 company:'',
                 groups:'',
+                startdate: "",
+                enddate: "",  
+                offset: -5,
             })));
             dispatch(getLeadActivities(leadActivitySel(leadId)));
             dispatch(getLeadLogNotes(leadLogNotesSel(leadId)));
@@ -593,7 +596,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         dispatch(getLeadTagsDomain(getValuesFromDomain('OPORTUNIDADETIQUETAS')));
         dispatch(getLeadTemplates());
         dispatch(getLeadChannels());
-        dispatch(getGroups());
+        dispatch(getGroups(getValuesFromDomain('GRUPOSSERVICEDESK')));
         dispatch(getUrgency(getValuesFromDomain('URGENCIA')));
         dispatch(getImpact(getValuesFromDomain('IMPACTO')));
         dispatch(getPriority(getValuesFromDomain('PRIORIDAD')));
