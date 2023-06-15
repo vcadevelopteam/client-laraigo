@@ -3,6 +3,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import CulqiModal from 'components/fields/CulqiModal';
 import Popus from 'components/layout/Popus';
 
+import { apiUrls } from 'common/constants';
 import { FC, useEffect, useState } from 'react';
 import { langKeys } from 'lang/keys';
 import { makeStyles } from "@material-ui/core";
@@ -59,8 +60,8 @@ const useStyles = makeStyles(theme => ({
         flexDirection: 'column',
     },
     textTitle: {
-        border: '1px solid #7721AD',
-        background: '#7721AD',
+        border: apiUrls.BODEGAACME ? '1px solid #6127B1' : '1px solid #7721AD',
+        background: apiUrls.BODEGAACME ? '#6127B1' : '#7721AD',
         padding: '8px',
         fontWeight: 'bold',
         color: 'white',
@@ -110,12 +111,30 @@ export const PaymentOrder: FC = () => {
                 setWaitData(false);
 
                 if (mainResult.data.length) {
-                    setPaymentData(mainResult.data[0]);
+                    if (apiUrls.BODEGAACME) {
+                        if (mainResult.data[0].paymentstatus === "PAID") {
+                            window.open("https://wa.me/51994204479", '_blank');
+                            window.open("about:blank", "_self");
+                            window.close();
+                        }
+                        else {
+                            setPaymentData(mainResult.data[0]);
 
-                    const authCredentials = JSON.parse(mainResult.data[0].authcredentials || {});
+                            const authCredentials = JSON.parse(mainResult.data[0].authcredentials || {});
 
-                    if (authCredentials) {
-                        setPublicKey(authCredentials.publicKey);
+                            if (authCredentials) {
+                                setPublicKey(authCredentials.publicKey);
+                            }
+                        }
+                    }
+                    else {
+                        setPaymentData(mainResult.data[0]);
+
+                        const authCredentials = JSON.parse(mainResult.data[0].authcredentials || {});
+
+                        if (authCredentials) {
+                            setPublicKey(authCredentials.publicKey);
+                        }
                     }
                 }
             } else if (mainResult.error) {
@@ -155,7 +174,8 @@ export const PaymentOrder: FC = () => {
                     <div className={classes.back}>
                         <div className={classes.containerSuccess}>
                             <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                <LaraigoLogo style={{ height: 120, margin: '20px', width: "auto" }} />
+                                {!apiUrls.BODEGAACME && <LaraigoLogo style={{ height: 120, margin: '20px', width: "auto" }} />}
+                                {apiUrls.BODEGAACME && <img src={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/BODEGA%20ACME/40016109-be7d-4aa7-9287-743d35fcc05d/470e9a59-bbaa-4742-ba5b-e4aa1c21d865_waifu2x_art_noise3_scale.png'} style={{ height: 120, margin: '20px' }} />}
                             </div>
                             <div style={{ fontWeight: 'bold', fontSize: 20, marginBottom: '20px' }}>{t(langKeys.paymentorder_success)}</div>
                             {paymentData.ordercode && <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', marginBottom: '2px' }}>
@@ -166,7 +186,7 @@ export const PaymentOrder: FC = () => {
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', flexBasis: '100%', flex: 1 }}>
                                     <div className={classes.textField}>
-                                        {paymentData?.ordercode}
+                                        {apiUrls.BODEGAACME ? paymentData?.paymentorderid : paymentData?.ordercode}
                                     </div>
                                 </div>
                             </div>}
