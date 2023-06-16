@@ -1947,6 +1947,7 @@ export const langKeys = {
   error_excess_users: "error_excess_users",
   error_limit_exceeded: "error_limit_exceeded",
   error_ticket_open: "error_ticket_open",
+  error_ticket_doesnt_belong_to_the_user: "error_ticket_doesnt_belong_to_the_user",
 
   no_records: 'no_records',
 

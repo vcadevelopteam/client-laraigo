@@ -52,7 +52,7 @@ export function importTicket(data: FormData) {
 export function replyTicket(params: IReplyTicketParams | IReplyTicketParams[], isList: boolean = false) {
     if (params instanceof Array) {
         const data = params.map(item => {
-            const { conversationid, personid, communicationchannelid, ticketnum, personcommunicationchannel, interactiontext, interactiontype, communicationchannelsite, communicationchanneltype, postexternalid, commentexternalid, replyexternalid, isAnswered } = item;
+            const { conversationid, validateUserOnTicket, personid, communicationchannelid, ticketnum, personcommunicationchannel, interactiontext, interactiontype, communicationchannelsite, communicationchanneltype, postexternalid, commentexternalid, replyexternalid, isAnswered } = item;
 
             return {
                 p_conversationid: conversationid,
@@ -67,12 +67,13 @@ export function replyTicket(params: IReplyTicketParams | IReplyTicketParams[], i
                 commentexternalid,
                 replyexternalid,
                 ticketnum: ticketnum,
+                validateUserOnTicket,
                 newanswered: isAnswered,
             }
         })
         return APIManager.post(isList ? apiUrls.REPLY_LIST_TICKET : apiUrls.REPLY_TICKET, { data: { data } }, true);
     } else {
-        const { conversationid, personid, communicationchannelid, ticketnum, personcommunicationchannel, interactiontext, interactiontype, communicationchannelsite, communicationchanneltype, postexternalid, commentexternalid, replyexternalid, isAnswered }: IReplyTicketParams = params;
+        const { conversationid, validateUserOnTicket, personid, communicationchannelid, ticketnum, personcommunicationchannel, interactiontext, interactiontype, communicationchannelsite, communicationchanneltype, postexternalid, commentexternalid, replyexternalid, isAnswered }: IReplyTicketParams = params;
         const data = {
             p_conversationid: conversationid,
             p_personid: personid,
@@ -86,6 +87,7 @@ export function replyTicket(params: IReplyTicketParams | IReplyTicketParams[], i
             commentexternalid,
             replyexternalid,
             ticketnum: ticketnum,
+            validateUserOnTicket,
             newanswered: isAnswered,
         }
         return APIManager.post(isList ? apiUrls.REPLY_LIST_TICKET : apiUrls.REPLY_TICKET, { data: { data } }, true);
