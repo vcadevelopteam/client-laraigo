@@ -103,13 +103,14 @@ const FBButtonStyle2: CSSProperties = {
 }
 
 const FirstStep: FC = () => {
-    const { setStep } = useContext(SubscriptionContext);
+    const { setStep,selectedChannels } = useContext(SubscriptionContext);
     const { control, setValue, getValues, trigger } = useFormContext<MainData>();
     const rescheckuser = useSelector(state => state.signup);
     const [waitSave, setwaitSave] = useState(false);
 
     const dispatch = useDispatch();
     const [showPassword, setShowPassword] = useState(false);
+    const [disableButton, setDisableButton] = useState(true);
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
 
@@ -130,6 +131,9 @@ const FirstStep: FC = () => {
             }
         }
     }, [rescheckuser])
+    useEffect(() => {
+        setDisableButton(selectedChannels<1);
+    }, [selectedChannels])
     
     const openprivacypolicies = () => {
         window.open("/privacy", '_blank');
@@ -365,7 +369,7 @@ const FirstStep: FC = () => {
                     className={classes.button}
                     variant="contained"
                     color="primary"
-                    // disabled={disablebutton}
+                    disabled={disableButton}
                 >
                     <Trans i18nKey={langKeys.next} />
                 </Button>
