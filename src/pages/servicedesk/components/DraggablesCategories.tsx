@@ -8,6 +8,7 @@ import {
   DroppableLeadColumnList,
 } from "../components";
 import NaturalDragAnimation from "../prueba";
+const isIncremental = window.location.href.includes("incremental")
 
 export const DraggablesCategories: FC<{
   column: any;
@@ -71,7 +72,7 @@ export const DraggablesCategories: FC<{
                                         snapshot={snapshot}
                                         onDelete={handleDelete}
                                         onCloseLead={handleCloseLead}
-                                        edit={!role.includes("VISOR")}
+                                        edit={!isIncremental && !role.includes("VISOR")}
                                       />
                                     </div>
                                   )}
