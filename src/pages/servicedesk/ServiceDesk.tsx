@@ -1,17 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { convertLocalDate, getAdviserFilteredUserRol, getColumnsSDSel, getCommChannelLst, getDateCleaned, getLeadExport, getLeadsSDSel, getLeadTasgsSel, getPaginatedSDLead, getUserGroupsSel, getValuesFromDomain, 
-  insArchiveServiceDesk, insSDLead, updateColumnsLeads, updateColumnsOrder } from "common/helpers";
+  insArchiveServiceDesk, insSDLead } from "common/helpers";
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
-import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
 import { getMultiCollection, resetAllMain, execute, getCollectionPaginated, exportData } from "store/main/actions";
 import paths from "common/constants/paths";
 import { useHistory, useLocation } from "react-router";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
-import { DateRangePicker, DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "components";
+import { DateRangePicker, DialogZyx3Opt, FieldMultiSelect, FieldSelect } from "components";
 import { Search as SearchIcon, ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, Sms as SmsIcon, Mail as MailIcon, Add as AddIcon } from '@material-ui/icons';
 import { Button, IconButton, Tooltip } from "@material-ui/core";
 import { Dictionary, IDomain, IFetchData, IServiceDeskLead } from "@types";
@@ -21,7 +20,6 @@ import { Rating } from '@material-ui/lab';
 import { DialogSendTemplate, NewActivityModal, NewNoteModal } from "./Modals";
 import { CalendarIcon, WhatsappIcon } from "icons";
 import GroupIcon from '@material-ui/icons/Group';
-import { DraggablesCategories } from "./components/DraggablesCategories";
 import { KanbanTable } from "./components/KanbanTable";
 import { Range } from 'react-date-range';
 import { KanbanTableGroups } from "./components/KanbanTableGroups";
@@ -246,59 +244,6 @@ const ServiceDesk: FC = () => {
     ]));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardFilter,dateRangeCreateDate, dispatch]);
-
-  const onDragEnd = (result:DropResult, columns:dataBackend[], setDataColumn:any) => {
-    if (!result.destination) return;
-    const { source, destination, type } = result;
-  
-    if (type === 'column') {
-      const newColumnOrder = [...columns]
-      if(newColumnOrder[destination.index-1].type !== newColumnOrder[source.index-1].type) return;
-      const [removed] = newColumnOrder.splice((source.index-1),1)
-      newColumnOrder.splice(destination.index-1, 0, removed)
-      setDataColumn(newColumnOrder)
-      const columns_uuid = newColumnOrder.slice(1).map(x => x.column_uuid).join(',')
-      dispatch(execute(updateColumnsOrder({columns_uuid})));
-      return;
-    }
-  
-    if (source.droppableId === destination.droppableId) {
-      const index = columns.findIndex(c => c.column_uuid === source.droppableId)
-      if (index >= 0) {
-        const column = columns[index];
-        const copiedItems = [...column.items!!]
-        const [removed] = copiedItems!.splice(source.index, 1);
-        copiedItems!.splice(destination.index, 0, removed);
-        setDataColumn(Object.values({...columns, [index]: {...column, items: copiedItems}}));
-        
-        const cards_startingcolumn = copiedItems!.map(x => x.leadid).join(',')
-        const startingcolumn_uuid = column.column_uuid
-        dispatch(execute(updateColumnsLeads({cards_startingcolumn, cards_finalcolumn:'', startingcolumn_uuid, finalcolumn_uuid: startingcolumn_uuid})));
-      }
-    } else {
-      const sourceIndex = columns.findIndex(c => c.column_uuid === source.droppableId)
-      const destIndex = columns.findIndex(c => c.column_uuid === destination.droppableId)
-      if (sourceIndex >= 0 && destIndex >= 0) {
-        const sourceColumn = columns[sourceIndex];
-        const destColumn = columns[destIndex];
-        const sourceItems = (sourceColumn.items) ? [...sourceColumn.items] : null
-        const destItems = (destColumn.items) ? [...destColumn.items] : null
-        const [removed] = sourceItems!.splice(source.index, 1);
-        removed.column_uuid = destination.droppableId
-        destItems!.splice(destination.index, 0, removed);
-        const sourceTotalRevenue = sourceItems!.reduce((a,b) => a + parseFloat(b.expected_revenue), 0)
-        const destTotalRevenue = destItems!.reduce((a,b) => a+ parseFloat(b.expected_revenue), 0)
-      
-        setDataColumn(Object.values({...columns, [sourceIndex]: {...sourceColumn, total_revenue: sourceTotalRevenue,items: sourceItems}, [destIndex]: {...destColumn, total_revenue: destTotalRevenue,items: destItems}}));
-
-        const cards_startingcolumn = sourceItems!.map(x => x.leadid).join(',')
-        const cards_finalcolumn = destItems!.map(x => x.leadid).join(',')
-        const startingcolumn_uuid = sourceColumn.column_uuid
-        const finalcolumn_uuid = destColumn.column_uuid
-        dispatch(execute(updateColumnsLeads({cards_startingcolumn, cards_finalcolumn, startingcolumn_uuid, finalcolumn_uuid, leadid: removed.leadid})));
-      }
-    }
-  };
 
   const handleCloseLead = (lead: IServiceDeskLead) => {
     const callback = () => {
@@ -686,16 +631,6 @@ const ServiceDesk: FC = () => {
                 <ViewColumnIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title={t(langKeys.kanbanviewbyassignedgroup) + ""} arrow placement="top">
-              <IconButton
-                color="default"
-                disabled={display === 'BOARDGROUP'}
-                onClick={() => setDisplay('BOARDGROUP')}
-                style={{ padding: '5px' }}
-              >
-                <GroupIcon />
-              </IconButton>
-            </Tooltip>
             <Tooltip title={t(langKeys.listview) + ""} arrow placement="top">
               <IconButton
                 color="default"
@@ -704,6 +639,16 @@ const ServiceDesk: FC = () => {
                 style={{ padding: '5px' }}
               >
                 <ViewListIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={t(langKeys.kanbanviewbyassignedgroup) + ""} arrow placement="top">
+              <IconButton
+                color="default"
+                disabled={display === 'BOARDGROUP'}
+                onClick={() => setDisplay('BOARDGROUP')}
+                style={{ padding: '5px' }}
+              >
+                <GroupIcon />
               </IconButton>
             </Tooltip>
           </div>
