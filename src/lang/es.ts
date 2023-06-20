@@ -787,7 +787,7 @@ const translation: LangKeys = {
   cerrado: "Cerrado",
   cancelado: "Cancelado",
   "resuelto": "Resuelto",
-  "en progreso": "En progreso",
+  "en progreso": "En Progreso",
   "respondido": "Respondido",
   "contactado": "Contactado",
   "asignado": "Asignado",
