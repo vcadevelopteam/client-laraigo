@@ -2191,6 +2191,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   report_userproductivityhours_qtydisconnection_help: 'Cantidad de veces que el usuario se ha desconectado de la plataforma en el intervalo de tiempo analizado.',
 
   report_userproductivityhours_filter_adviser: 'Agente',
+  unnasigned: "Sin asignar",
   report_userproductivityhours_filter_channels: 'Canal',
   report_userproductivityhours_filter_hours: 'Hora',
 
