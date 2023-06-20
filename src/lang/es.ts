@@ -789,7 +789,7 @@ const translation: LangKeys = {
   "resuelto": "Resuelto",
   "en progreso": "En progreso",
   "respondido": "Respondido",
-  "contactado": "Cancelado",
+  "contactado": "Contactado",
   "asignado": "Asignado",
   "en espera de atención": "En espera de atención",
 
