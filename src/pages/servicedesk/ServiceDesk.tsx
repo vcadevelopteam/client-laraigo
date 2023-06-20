@@ -632,16 +632,6 @@ const ServiceDesk: FC = () => {
                 <ViewColumnIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title={t(langKeys.listview) + ""} arrow placement="top">
-              <IconButton
-                color="default"
-                disabled={display === 'GRID'}
-                onClick={() => setDisplay('GRID')}
-                style={{ padding: '5px' }}
-              >
-                <ViewListIcon />
-              </IconButton>
-            </Tooltip>
             <Tooltip title={t(langKeys.kanbanviewbyassignedgroup) + ""} arrow placement="top">
               <IconButton
                 color="default"
@@ -650,6 +640,16 @@ const ServiceDesk: FC = () => {
                 style={{ padding: '5px' }}
               >
                 <GroupIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={t(langKeys.listview) + ""} arrow placement="top">
+              <IconButton
+                color="default"
+                disabled={display === 'GRID'}
+                onClick={() => setDisplay('GRID')}
+                style={{ padding: '5px' }}
+              >
+                <ViewListIcon />
               </IconButton>
             </Tooltip>
           </div>
