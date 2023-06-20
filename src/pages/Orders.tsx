@@ -327,7 +327,7 @@ const DetailOrders: React.FC<DetailOrdersProps> = ({ data: { row, edit }, multiD
             <div className="row-zyx">
                 <div>
                     <div style={{ width: "100%" }}>
-                        <MapFixedLocation height={"200px"} longitude={row?.longitude||0} latitude={row?.latitude||0}/>
+                        <MapFixedLocation height={"200px"} longitude={parseFloat(row?.longitude||0)} latitude={parseFloat(row?.latitude||0)}/>
                     </div>
                 </div>
             </div>
