@@ -21,6 +21,7 @@ export const langKeys = {
   orderlist: "orderlist",
   reschedule_appointment: "reschedule_appointment",
   appointment_cancellation: "appointment_cancellation",
+  unnasigned: "unnasigned",
   downloadhtmlform: "downloadhtmlform",
   tooltipintegrationname: "tooltipintegrationname",
   tooltipintegrationurl: "tooltipintegrationurl",

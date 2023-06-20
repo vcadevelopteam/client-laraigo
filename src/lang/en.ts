@@ -3293,6 +3293,7 @@ const translation: LangKeys = {
   pattern: "Pattern",
   saleprice: "Sale Price",
   imagelink: "Image Link",
+  unnasigned: "Unnasigned",
   additionalimagelink: "Additional Image Link",
   keyword: "Keyword",
   catalogname: "Catalog Name",
