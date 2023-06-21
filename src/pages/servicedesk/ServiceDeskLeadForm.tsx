@@ -29,7 +29,7 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import TableZyx from 'components/fields/table-paginated';
 import { AttachFile, Clear, Close, GetApp, Create, Done, FileCopy, Info, Mood, Add } from '@material-ui/icons';
-import { getPersonListPaginated, resetGetPersonListPaginated } from 'store/person/actions';
+import { getDomainsByTypename, getPersonListPaginated, resetGetPersonListPaginated } from 'store/person/actions';
 import clsx from 'clsx';
 import { AccessTime as AccessTimeIcon, Flag as FlagIcon, Cancel as CancelIcon, Note as NoteIcon, LocalOffer as LocalOfferIcon, LowPriority as LowPriorityIcon, Star as StarIcon, History as HistoryIcon, TrackChanges as TrackChangesIcon } from '@material-ui/icons';
 import { useFieldArray, useForm } from 'react-hook-form';
@@ -589,7 +589,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
             dispatch(getLeadLogNotes(leadLogNotesSel(leadId)));
             dispatch(getLeadHistory(leadHistorySel(leadId)));
         }
-
+        dispatch(getDomainsByTypename());
         dispatch(getAdvisers(userSDSel()));
         dispatch(getSlaRules(getSLASel(0)));
         dispatch(getLeadPhases(getColumnsSDSel(0, true)));
