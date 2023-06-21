@@ -39,7 +39,7 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
             }
         }
 
-        register('channels.facebook.description', { validate: strRequired, value: '' });
+        /*register('channels.facebook.description', { validate: strRequired, value: '' });
         register('channels.facebook.accesstoken', { validate: strRequired, value: '' });
         register('channels.facebook.communicationchannelowner', { validate: strRequired, value: '' });
         register('channels.facebook.communicationchannelsite', { validate: strRequired, value: '' });
@@ -75,7 +75,7 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
         return () => {
             unregister('channels.facebook')
             dispatch(resetGetFacebookPages());
-        }
+        }*/
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [register, unregister, dispatch]);
 
@@ -97,10 +97,10 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
     }
 
     function setValueField(value: any) {
-        setValue('channels.facebook.communicationchannelsite', value?.id || "");
+        /*setValue('channels.facebook.communicationchannelsite', value?.id || "");
         setValue('channels.facebook.communicationchannelowner', value?.name || "");
         setValue('channels.facebook.siteid', value?.id || "");
-        setValue('channels.facebook.accesstoken', value?.access_token || "");
+        setValue('channels.facebook.accesstoken', value?.access_token || "");*/
     }
 
     return (
@@ -136,7 +136,7 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
                     </Typography>
                 </div>
             )}
-            <FieldEdit
+            {/*<FieldEdit
                 onChange={(value) => setValue('channels.facebook.description', value)}
                 label={t(langKeys.givechannelname)}
                 valueDefault={getValues('channels.facebook.description')}
@@ -162,8 +162,8 @@ export const ChannelAddFacebook: FC<ChannelAddFacebookProps> = ({ setOpenWarning
                 size="small"
                 disabled={mainResult.loading || mainResult.data.length === 0}
                 error={errors.channels?.facebook?.siteid?.message}
-            />
-            {((getValues('channels.facebook.siteid')?.length || 0) === 0) && (mainResult.data.length === 0) && (
+            />*/}
+            {/*((getValues('channels.facebook.siteid')?.length || 0) === 0) && */(mainResult.data.length === 0) && (
                 <FacebookLogin
                     appId={apiUrls.FACEBOOKAPP}
                     autoLoad={false}

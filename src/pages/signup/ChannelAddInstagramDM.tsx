@@ -36,7 +36,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
             }
         }
 
-        register('channels.instagramDM.description', { validate: strRequired, value: '' });
+        /*register('channels.instagramDM.description', { validate: strRequired, value: '' });
         register('channels.instagramDM.accesstoken', { validate: strRequired, value: '' });
         register('channels.instagramDM.communicationchannelowner', { validate: strRequired, value: '' });
         register('channels.instagramDM.communicationchannelsite', { validate: strRequired, value: '' });
@@ -72,7 +72,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
         return () => {
             unregister('channels.instagramDM');
             dispatch(resetGetInstagramDMPages());
-        }
+        }*/
     }, [register, unregister, dispatch]);
 
     useEffect(() => {
@@ -92,10 +92,10 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
     }
 
     function setValueField(value: any) {
-        setValue('channels.instagramDM.communicationchannelsite', value?.id || "");
+        /*setValue('channels.instagramDM.communicationchannelsite', value?.id || "");
         setValue('channels.instagramDM.communicationchannelowner', value?.name || "");
         setValue('channels.instagramDM.siteid', value?.id || "");
-        setValue('channels.instagramDM.accesstoken', value?.access_token || "");
+        setValue('channels.instagramDM.accesstoken', value?.access_token || "");*/
     }
 
     const openviewsteps = () => {
@@ -138,7 +138,7 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
                     </Typography>
                 </div>
             )}
-            <FieldEdit
+            {/*<FieldEdit
                 onChange={(value) => setValue('channels.instagramDM.description', value)}
                 valueDefault={getValues('channels.instagramDM.description')}
                 label={t(langKeys.givechannelname)}
@@ -164,8 +164,8 @@ export const ChannelAddInstagramDM: FC<{ setOpenWarning: (param: any) => void }>
                 size="small"
                 disabled={mainResult.loading || mainResult.data.length === 0}
                 error={errors.channels?.instagramDM?.siteid?.message}
-            />
-            {((getValues('channels.instagramDM.siteid')?.length || 0) === 0) && (mainResult.data.length === 0) && (
+            />*/}
+            {/*((getValues('channels.instagramDM.siteid')?.length || 0) === 0) && */(mainResult.data.length === 0) && (
                 <FacebookLogin
                     appId={apiUrls.INSTAGRAMAPP}
                     autoLoad={false}

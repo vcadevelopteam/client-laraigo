@@ -25,7 +25,7 @@ export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = 
             }
         }
 
-        register('channels.telegram.description', { validate: strRequired, value: '' });
+        /*register('channels.telegram.description', { validate: strRequired, value: '' });
         register('channels.telegram.accesstoken', { validate: strRequired, value: '' });
         register('channels.telegram.communicationchannelowner', { value: '' });
         register('channels.telegram.build', {
@@ -56,17 +56,17 @@ export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = 
 
         return () => {
             unregister('channels.telegram')
-        }
+        }*/
     }, [register, unregister]);
 
     function setBotKey(val: string) {
-        setValue('channels.telegram.accesstoken', val);
+        /*setValue('channels.telegram.accesstoken', val);
         setValue('channels.telegram.communicationchannelowner', "");
         if (val.length > 0 && !hasFinished) {
             setHasFinished(true);
         } else if (val.length === 0 && hasFinished) {
             setHasFinished(false);
-        }
+        }*/
     }
 
     return (
@@ -102,7 +102,7 @@ export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = 
                     </Typography>
                 </div>
             )}
-            <FieldEdit
+            {/*<FieldEdit
                 onChange={v => setValue('channels.telegram.description', v)}
                 valueDefault={getValues('channels.telegram.description')}
                 label={t(langKeys.givechannelname)}
@@ -124,7 +124,7 @@ export const ChannelAddTelegram: FC<{ setOpenWarning: (param: any) => void }> = 
                 variant="outlined"
                 size="small"
                 error={errors.channels?.telegram?.accesstoken?.message}
-            />
+            />*/}
         </div>
     );
 }

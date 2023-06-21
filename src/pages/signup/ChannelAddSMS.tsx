@@ -45,8 +45,7 @@ export const ChannelAddSMS: FC<{ setOpenWarning: (param: any) => void }> = ({ se
     const [nextbutton2, setNextbutton2] = useState(true);
 
     useEffect(() => {
-        const cb = async () => {
-
+        /*const cb = async () => {
             const v1 = await trigger('channels.sms.url');
             const v2 = await trigger('channels.sms.apikey');
             const v3 = await trigger('channels.sms.emittername');
@@ -56,7 +55,7 @@ export const ChannelAddSMS: FC<{ setOpenWarning: (param: any) => void }> = ({ se
         submitObservable.addListener(cb);
         return () => {
             submitObservable.removeListener(cb);
-        }
+        }*/
     }, [submitObservable, trigger]);
 
     useEffect(() => {
@@ -66,7 +65,7 @@ export const ChannelAddSMS: FC<{ setOpenWarning: (param: any) => void }> = ({ se
             }
         }
 
-        register('channels.sms.description', { validate: strRequired, value: '' });
+        /*register('channels.sms.description', { validate: strRequired, value: '' });
         register('channels.sms.url', { validate: strRequired, value: '' });
         register('channels.sms.apikey', { validate: strRequired, value: '' });
         register('channels.sms.emittername', { validate: strRequired, value: '' });
@@ -100,7 +99,7 @@ export const ChannelAddSMS: FC<{ setOpenWarning: (param: any) => void }> = ({ se
 
         return () => {
             unregister('channels.sms');
-        }
+        }*/
     }, [register, unregister]);
 
     useEffect(() => {
@@ -141,7 +140,7 @@ export const ChannelAddSMS: FC<{ setOpenWarning: (param: any) => void }> = ({ se
                         {'<< '}<Trans i18nKey={langKeys.previoustext} />
                     </Link>
                 </Breadcrumbs>
-                <div>
+                {/*<div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.smstitle)}</div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>{t(langKeys.smstitle2)}</div>
                     <div className="row-zyx">
@@ -204,7 +203,7 @@ export const ChannelAddSMS: FC<{ setOpenWarning: (param: any) => void }> = ({ se
 
                     </div>
 
-                </div>
+                </div>*/}
             </div>
         )
     }
@@ -242,7 +241,7 @@ export const ChannelAddSMS: FC<{ setOpenWarning: (param: any) => void }> = ({ se
                     </Typography>
                 </div>
             )}
-            <FieldEdit
+            {/*<FieldEdit
                 onChange={(value) => { setValue('channels.sms.description', value); setNextbutton2(!value); }}
                 valueDefault={getValues('channels.sms.description')}
                 label={t(langKeys.givechannelname)}
@@ -256,7 +255,7 @@ export const ChannelAddSMS: FC<{ setOpenWarning: (param: any) => void }> = ({ se
                         </InputAdornment>
                     )
                 }}
-            />
+            />*/}
             {!hasFinished && (
                 <Button
                     onClick={() => setView("view2")}

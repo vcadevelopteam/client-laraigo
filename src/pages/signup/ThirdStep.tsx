@@ -1,11 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useContext } from "react";
-import { makeStyles, Typography, Paper } from '@material-ui/core';
-import { langKeys } from "lang/keys";
-import { Trans, useTranslation } from "react-i18next";
-import clsx from "clsx";
 import { ControlPoint as ControlPointIcon } from "@material-ui/icons";
+import { FC, useContext } from "react";
+import { langKeys } from "lang/keys";
 import { ListChannels, SubscriptionContext, usePlanData } from "./context";
+import { makeStyles, Typography, Paper } from '@material-ui/core';
+import { Trans, useTranslation } from "react-i18next";
 
 import {
     AndroidColor,
@@ -32,217 +30,191 @@ import {
     YouTubeColor,
 } from "icons";
 
+import clsx from "clsx";
+
 interface ChannelOption {
     icon: React.ReactNode;
-    label: React.ReactNode;
     key: keyof ListChannels;
+    label: React.ReactNode;
     selected: Boolean;
     onClick: () => void;
 }
+
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
-        padding: 12,
-        fontWeight: "bold",
         fontSize: '40px',
-        //textTransform: 'initial',
-        width: "100%"
+        fontWeight: "bold",
+        padding: 12,
+        width: "100%",
     },
     buttonGoogle: {
         '& button': {
+            fontFamily: "Helvetica,sans-serif!important",
             fontSize: '24px!important',
             justifyContent: 'center',
-            fontFamily: "Helvetica,sans-serif!important",
-            width: "50%",
-            marginLeft: "25%",
             marginBottom: '20px',
+            marginLeft: "25%",
+            width: "50%",
         }
     },
     separator: {
         borderBottom: "grey solid 1px",
-        width: "10vh",
         height: "1.6vh",
-        margin: "0 40px"
+        margin: "0 40px",
+        width: "10vh",
     },
     root: {
-        width: '100%',
+        alignItems: 'center',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
+        width: '100%',
     },
     content: {
-        flexGrow: 1,
         backgroundColor: 'inherit',
-        textAlign: 'start',
-        padding: '0 34px',
         display: 'flex',
         flexDirection: 'column',
-        paddingBottom: "20px"
-    },
-    title: {
-        fontWeight: 500,
-        fontSize: 32,
-        textAlign: 'center',
-        // margin: '20px 0',
-        color: theme.palette.primary.main,
-    },
-    subtitle: {
-        margin: '8px 0 8px 4px',
-        fontSize: 20,
-        fontWeight: 500,
-        width: '100%',
+        flexGrow: 1,
+        padding: '0 34px',
+        paddingBottom: "20px",
         textAlign: 'start',
     },
+    title: {
+        color: theme.palette.primary.main,
+        fontSize: 32,
+        fontWeight: 500,
+        textAlign: 'center',
+    },
+    subtitle: {
+        fontSize: 20,
+        fontWeight: 500,
+        margin: '8px 0 8px 4px',
+        textAlign: 'start',
+        width: '100%',
+    },
     icon: {
-        // fill: 'inherit',
         fill: 'gray',
         height: 38,
         width: 'auto',
     },
     optionsContainer: {
+        alignItems: 'center',
         display: 'flex',
         flexDirection: 'row',
         flexWrap: 'wrap',
-        alignItems: 'center',
+        gap: 8,
         justifyContent: 'center',
         width: '100%',
-        gap: 8
     },
 }));
 
 const ThirdStep: FC = () => {
-    const { listchannels, toggleChannel } = useContext(SubscriptionContext);
-    const planData = usePlanData();
-    const classes = useChannelAddStyles();
     const { t } = useTranslation();
+    const { toggleChannel, listchannels } = useContext(SubscriptionContext);
+
+    const classes = useChannelAddStyles();
+    const planData = usePlanData();
 
     const socialMediaOptions: ChannelOption[] = [
         {
             icon: <FacebookColor className={classes.icon} />,
             label: t(langKeys.channel_facebook),
             key: 'facebook',
-            onClick: () => {
-                toggleChannel('facebook');
-            },
+            onClick: () => toggleChannel('facebook'),
             selected: listchannels.facebook,
         },
         {
             icon: <FacebookMessengerColor className={classes.icon} />,
             label: t(langKeys.channel_messenger),
             key: 'messenger',
-            onClick: () => {
-                toggleChannel('messenger');
-            },
+            onClick: () => toggleChannel('messenger'),
             selected: listchannels.messenger,
         },
         {
             icon: <InstagramColor className={classes.icon} />,
             label: t(langKeys.channel_instagram),
             key: 'instagram',
-            onClick: () => {
-                toggleChannel('instagram');
-            },
+            onClick: () => toggleChannel('instagram'),
             selected: listchannels.instagram,
         },
         {
             icon: <InstagramColor className={classes.icon} />,
             label: t(langKeys.channel_instagramdm),
             key: 'instagramDM',
-            onClick: () => {
-                toggleChannel('instagramDM');
-            },
+            onClick: () => toggleChannel('instagramDM'),
             selected: listchannels.instagramDM,
         },
         {
             icon: <WhatsAppColor className={classes.icon} />,
             label: t(langKeys.channel_whatsapp),
             key: 'whatsapp',
-            onClick: () => {
-                toggleChannel('whatsapp');
-            },
+            onClick: () => toggleChannel('whatsapp'),
             selected: listchannels.whatsapp,
         },
         {
             icon: <TelegramColor className={classes.icon} />,
             label: t(langKeys.channel_telegram),
             key: 'telegram',
-            onClick: () => {
-                toggleChannel('telegram');
-            },
+            onClick: () => toggleChannel('telegram'),
             selected: listchannels.telegram,
         },
         {
             icon: <TwitterColor className={classes.icon} />,
             label: t(langKeys.channel_twitter),
             key: 'twitter',
-            onClick: () => {
-                toggleChannel('twitter');
-            },
+            onClick: () => toggleChannel('twitter'),
             selected: listchannels.twitter,
         },
         {
             icon: <TwitterColor className={classes.icon} />,
             label: t(langKeys.channel_twitterdm),
             key: 'twitterDM',
-            onClick: () => {
-                toggleChannel('twitterDM');
-            },
+            onClick: () => toggleChannel('twitterDM'),
             selected: listchannels.twitterDM,
         },
         {
             icon: <TikTokColor className={classes.icon} />,
             label: t(langKeys.channel_tiktok),
             key: 'tiktok',
-            onClick: () => {
-                toggleChannel('tiktok');
-            },
+            onClick: () => toggleChannel('tiktok'),
             selected: listchannels.tiktok,
         },
         {
             icon: <YouTubeColor className={classes.icon} />,
             label: t(langKeys.channel_youtube),
             key: 'youtube',
-            onClick: () => {
-                toggleChannel('youtube');
-            },
+            onClick: () => toggleChannel('youtube'),
             selected: listchannels.youtube,
         },
         {
             icon: <MyBusinessColor className={classes.icon} />,
             label: t(langKeys.channel_business),
             key: 'business',
-            onClick: () => {
-                toggleChannel('business');
-            },
+            onClick: () => toggleChannel('business'),
             selected: listchannels.business,
         },
         {
             icon: <PlayStoreColor className={classes.icon} />,
             label: t(langKeys.channel_playstore),
             key: 'playstore',
-            onClick: () => {
-                toggleChannel('playstore');
-            },
+            onClick: () => toggleChannel('playstore'),
             selected: listchannels.playstore,
         },
         {
             icon: <AppStoreColor className={classes.icon} />,
             label: t(langKeys.channel_appstore),
             key: 'appstore',
-            onClick: () => {
-                toggleChannel('appstore');
-            },
+            onClick: () => toggleChannel('appstore'),
             selected: listchannels.appstore,
         },
         {
             icon: <LinkedInColor className={classes.icon} />,
             label: t(langKeys.channel_linkedin),
             key: 'linkedin',
-            onClick: () => {
-                toggleChannel('linkedin');
-            },
+            onClick: () => toggleChannel('linkedin'),
             selected: listchannels.linkedin,
         },
     ];
+
     const businessChannelOptions: ChannelOption[] = [
         {
             icon: <ChatWebColor className={classes.icon} />,
@@ -268,8 +240,8 @@ const ThirdStep: FC = () => {
         {
             icon: <VoiceColor className={classes.icon} />,
             label: t(langKeys.channel_phone),
-            key: 'phone',
-            onClick: () => toggleChannel('phone'),
+            key: 'voximplantphone',
+            onClick: () => toggleChannel('voximplantphone'),
             selected: listchannels.voximplantphone
         },
         {
@@ -283,49 +255,47 @@ const ThirdStep: FC = () => {
             icon: <IosColor className={classes.icon} />,
             label: t(langKeys.channel_ios),
             key: 'apple',
-            onClick: () => {
-                toggleChannel('apple');
-            },
+            onClick: () => toggleChannel('apple'),
             selected: listchannels.apple,
         },
         {
             icon: <AndroidColor className={classes.icon} />,
             label: t(langKeys.channel_android),
             key: 'android',
-            onClick: () => {
-                toggleChannel('android');
-            },
+            onClick: () => toggleChannel('android'),
             selected: listchannels.android,
         },
         {
             icon: <TeamsColor className={classes.icon} />,
             label: t(langKeys.channel_teams),
             key: 'teams',
-            onClick: () => {
-                toggleChannel('teams');
-            },
+            onClick: () => toggleChannel('teams'),
             selected: listchannels.teams,
         },
         {
             icon: <BloggerColor className={classes.icon} />,
             label: t(langKeys.channel_blogger),
             key: 'blogger',
-            onClick: () => {
-                toggleChannel('blogger');
-            },
+            onClick: () => toggleChannel('blogger'),
             selected: listchannels.blogger,
         },
     ];
 
     const description = () => {
         switch (planData.plan!.plan) {
-            case "BASIC": return `${t(langKeys.subscription_channellimit)} 1`;
-            case "PRO": return `${t(langKeys.subscription_channellimit)} 3`;
             case "ADVANCED":
             case "ENTERPRISE":
             case "PREMIUM":
                 return `${t(langKeys.subscription_channellimit)} ${t(langKeys.subscription_nolimit)}`;
-            default: return "-";
+
+            case "BASIC":
+                return `${t(langKeys.subscription_channellimit)} 1`;
+
+            case "PRO":
+                return `${t(langKeys.subscription_channellimit)} 3`;
+
+            default:
+                return "-";
         }
     }
 
@@ -384,35 +354,34 @@ const ThirdStep: FC = () => {
 
 const useOptionClasses = makeStyles(theme => ({
     optionsContainer: {
+        alignItems: 'center',
         display: 'flex',
         flexDirection: 'row',
         flexWrap: 'wrap',
-        alignItems: 'center',
         justifyContent: 'center',
-        width: '100%'
+        width: '100%',
     },
     optionContainer: {
-        padding: '0 8px',
-        display: 'flex',
-        flexDirection: 'column',
-        width: 120,
-        height: 110,
         backgroundColor: 'white',
-        fontSize: 15,
-        fontWeight: 400,
-        color: '#A59F9F',
-        fill: '#A59F9F',
-        justifyContent: 'center',
-        textAlign: 'center',
         borderRadius: 8,
+        color: '#A59F9F',
+        display: 'flex',
+        fill: '#A59F9F',
+        flexDirection: 'column',
+        fontSize: 14,
+        fontWeight: 400,
+        height: 110,
+        justifyContent: 'center',
+        padding: '0 8px',
         position: 'relative',
-
+        textAlign: 'center',
+        userSelect: 'none',
+        width: 120,
         '-webkit-touch-callout': 'none', /* iOS Safari */
         '-webkit-user-select': 'none', /* Safari */
         '-khtml-user-select': 'none', /* Konqueror HTML */
         '-moz-user-select': 'none', /* Old versions of Firefox */
         '-ms-user-select': 'none', /* Internet Explorer/Edge */
-        userSelect: 'none',
         [theme.breakpoints.down('xs')]: {
             width: 110,
         },
@@ -425,6 +394,7 @@ const useOptionClasses = makeStyles(theme => ({
         },
     },
     optionContainerSelected: {
+        border: '2px solid #6F1FA1',
         fontWeight: 700,
     },
     optionContainerActive: {
@@ -434,36 +404,36 @@ const useOptionClasses = makeStyles(theme => ({
         opacity: .5,
     },
     optionPlusDecorator: {
-        fill: theme.palette.primary.main,
         color: theme.palette.primary.main,
-        position: 'absolute',
-        top: 8,
-        right: 8,
-        width: 22,
+        fill: theme.palette.primary.main,
         height: 22,
+        position: 'absolute',
+        right: 8,
+        top: 8,
+        width: 22,
     },
     optionPlusDecoratorDisabled: {
-        fill: '#A59F9F',
         color: '#A59F9F',
+        fill: '#A59F9F',
     },
     indexDecorator: {
-        position: 'absolute',
-        top: -6,
-        left: -8,
-        width: 24,
-        height: 24,
-        color: 'white',
-        fontWeight: 500,
+        alignItems: 'center',
         backgroundColor: theme.palette.primary.main,
         borderRadius: 12,
+        color: 'white',
         display: 'flex',
+        fontWeight: 500,
+        height: 24,
         justifyContent: 'center',
-        alignItems: 'center',
+        left: -8,
+        position: 'absolute',
+        top: -6,
+        width: 24,
     },
     optionIconContainer: {
-        flexGrow: 1,
         alignItems: 'center',
         display: 'flex',
+        flexGrow: 1,
         justifyContent: 'center',
     },
 }));
@@ -475,10 +445,10 @@ interface OptionProps {
 }
 
 const Option: FC<OptionProps> = ({ option, selected, index }) => {
-    const classes = useOptionClasses();
     const { plan } = usePlanData();
     const { selectedChannels } = useContext(SubscriptionContext);
 
+    const classes = useOptionClasses();
     const reachedLimit = plan!.limitChannels <= selectedChannels;
     const withOpacity = reachedLimit && !selected;
 

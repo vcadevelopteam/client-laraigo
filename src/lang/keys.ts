@@ -537,7 +537,8 @@ export const langKeys = {
   postalcode: "postalcode",
   searchyourlocation: "searchyourlocation",
   zone: "zone",
-  tos: "tos",
+  tos1: "tos1",
+  tos2: "tos2",
   signupstep1title25: "signupstep1title25",
   recipientsname: "recipientsname",
   namehsm: "namehsm",
@@ -1896,7 +1897,8 @@ export const langKeys = {
   successful_transaction: 'successful_transaction',
   successful_edit: 'successful_edit',
   successful_register: 'successful_register',
-  successful_sign_up: 'successful_sign_up',
+  successful_sign_up1: 'successful_sign_up1',
+  successful_sign_up2: 'successful_sign_up2',
   successful_delete: 'successful_delete',
   successful_duplicate: 'successful_duplicate',
 
@@ -5172,8 +5174,14 @@ export const langKeys = {
   T_WORKPLACE_MESSENGER: 'T_WORKPLACE_MESSENGER',
   T_WORKPLACE_WALL: 'T_WORKPLACE_WALL',
   T_YOUTUBE: 'T_YOUTUBE',
-  channel_workplace: 'Workplace',
-  channel_workplacedm: 'Workplace DM',
+  channel_workplace: 'channel_workplace',
+  channel_workplacedm: 'channel_workplacedm',
+  subscription_billingregister: 'subscription_billingregister',
+  subscription_companyorname: 'subscription_companyorname',
+  subscription_documentnumber: 'subscription_documentnumber',
+  subscription_address: 'subscription_address',
+  subscription_email: 'subscription_email',
+  subscription_creditcardnumber: 'subscription_creditcardnumber',
 };
 
 export type LangKeys = typeof langKeys;

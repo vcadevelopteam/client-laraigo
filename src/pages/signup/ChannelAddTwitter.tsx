@@ -43,7 +43,7 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
     const [nextbutton2, setNextbutton2] = useState(true);
 
     useEffect(() => {
-        const cb = async () => {
+        /*const cb = async () => {
             const v1 = await trigger('channels.twitter.consumerkey');
             const v2 = await trigger('channels.twitter.consumersecret');
             const v3 = await trigger('channels.twitter.accesstoken');
@@ -54,7 +54,7 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
         submitObservable.addListener(cb);
         return () => {
             submitObservable.removeListener(cb);
-        }
+        }*/
     }, [submitObservable, trigger]);
 
     useEffect(() => {
@@ -64,7 +64,7 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
             }
         }
 
-        register('channels.twitter.description', { validate: strRequired, value: '' });
+        /*register('channels.twitter.description', { validate: strRequired, value: '' });
         register('channels.twitter.consumerkey', { validate: strRequired, value: '' });
         register('channels.twitter.consumersecret', { validate: strRequired, value: '' });
         register('channels.twitter.accesstoken', { validate: strRequired, value: '' });
@@ -103,7 +103,7 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
 
         return () => {
             unregister('channels.twitter');
-        }
+        }*/
     }, [register, unregister]);
 
     useEffect(() => {
@@ -144,7 +144,7 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
                         {'<< '}<Trans i18nKey={langKeys.previoustext} />
                     </Link>
                 </Breadcrumbs>
-                <div>
+                {/*<div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.twittertitle)}</div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>{t(langKeys.twittertitle2)}</div>
                     <div className="row-zyx">
@@ -209,7 +209,7 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
 
                     </div>
 
-                </div>
+                </div>*/}
             </div>
         )
     }
@@ -247,7 +247,7 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
                     </Typography>
                 </div>
             )}
-            <FieldEdit
+            {/*<FieldEdit
                 onChange={(value) => { setValue('channels.twitter.description', value); setNextbutton2(!value); }}
                 valueDefault={getValues('channels.twitter.description')}
                 label={t(langKeys.givechannelname)}
@@ -272,7 +272,7 @@ export const ChannelAddTwitter: FC<{ setOpenWarning: (param: any) => void }> = (
                 variant="outlined"
                 size="small"
                 error={errors.channels?.twitter?.devenvironment?.message}
-            />
+            />*/}
             {!hasFinished && (
                 <Button
                     onClick={() => setView("view2")}
