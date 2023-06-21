@@ -67,7 +67,7 @@ export const ChannelAddFacebookLead: FC = () => {
         "service": {
             "accesstoken": "",
             "siteid": "",
-            "appid": apiUrls.FACEBOOKAPP
+            "appid": apiUrls.FACEBOOKAPPLEAD
         }
     })
     const [nextbutton, setNextbutton] = useState(true);
@@ -112,7 +112,7 @@ export const ChannelAddFacebookLead: FC = () => {
 
     const processFacebookCallback = async (r: any) => {
         if (r.status !== "unknown" && !r.error) {
-            dispatch(getChannelsList(r.accessToken, apiUrls.FACEBOOKAPP));
+            dispatch(getChannelsList(r.accessToken, apiUrls.FACEBOOKAPPLEAD));
             setViewSelected("view2");
             dispatch(showBackdrop(true));
             setWaitSave(true);
@@ -150,7 +150,7 @@ export const ChannelAddFacebookLead: FC = () => {
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px" }}>{t(langKeys.connectface2)}</div>
                     <div style={{ textAlign: "center", padding: "20px", color: "#969ea5" }}>{t(langKeys.connectface3)}</div>
                     <FacebookLogin
-                        appId={apiUrls.FACEBOOKAPP}
+                        appId={apiUrls.FACEBOOKAPPLEAD}
                         autoLoad={false}
                         buttonStyle={{ margin: "auto", backgroundColor: "#7721ad", textTransform: "none", display: "flex", textAlign: "center", justifyItems: "center", alignItems: "center", justifyContent: "center" }}
                         fields="name,email,picture"
@@ -160,7 +160,7 @@ export const ChannelAddFacebookLead: FC = () => {
                         icon={<FacebookIcon style={{ color: "white", marginRight: "8px" }} />}
                         onClick={(e: any) => {
                             e.view.window.FB.init({
-                                appId: apiUrls.FACEBOOKAPP,
+                                appId: apiUrls.FACEBOOKAPPLEAD,
                                 cookie: true,
                                 xfbml: true,
                                 version: apiUrls.FACEBOOKVERSION,
