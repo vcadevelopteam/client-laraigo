@@ -4,7 +4,7 @@ import { FieldSelect } from "components";
 import { getCountryList } from "store/signup/actions";
 import { getValuesFromDomain } from "common/helpers/requestBodies";
 import { langKeys } from "lang/keys";
-import { MainData, SubscriptionContext } from "./context";
+import { MainData, SubscriptionContext, usePlanData } from "./context";
 import { makeStyles, Button, TextField, Breadcrumbs } from '@material-ui/core';
 import { resetMain, getCollectionPublic } from 'store/main/actions';
 import { styled } from '@material-ui/core/styles';
@@ -44,7 +44,13 @@ const useChannelAddStyles = makeStyles(theme => ({
         display: 'inline-block',
         height: '100%',
         justifyContent: 'center',
-    }
+    },
+    containerOther:{
+        [theme.breakpoints.down('xs')]: {
+            flexWrap: "wrap"
+        },
+
+    },
 }));
 
 const CssPhonemui = styled(MuiPhoneNumber)({
@@ -76,6 +82,7 @@ const SecondStep: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarni
 
     const executeResult = useSelector(state => state.signup.insertChannel);
     const mainResult = useSelector(state => state.main.mainData);
+    //const planData = usePlanData();
     const countryList = useSelector(state => state.signup.countryList);
 
     const fetchData = () => dispatch(getCollectionPublic(getValuesFromDomain("REASONSSIGNUP")));
@@ -351,172 +358,193 @@ const SecondStep: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarni
                     />
                 </div>
             </div>
-            <div className={classes.containerBorder} style={{ marginTop: '20px' }}>
-                <div style={{ display: "flex", width: "100%", flexWrap: 'wrap' }}>
-                    <div className={classes.containerInfoPay}>
-                        <h3 style={{ margin: "0px" }}>{t(langKeys.creditcard)}</h3>
-                        <div style={{ display: "flex" }}>
-                            <img alt="visa" src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{ padding: 5 }}></img>
-                            <img alt="mastercard" src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{ padding: 5 }}></img>
-                            <img alt="ammex" src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{ padding: 5 }}></img>
-                            <img alt="dinners" src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{ padding: 5 }}></img>
+            <div style={{display: "flex", gap: 8}} className={classes.containerOther}>
+
+                <div className={classes.containerBorder} style={{ marginTop: '20px' }}>
+                    <div style={{ display: "flex", width: "100%", flexWrap: 'wrap' }}>
+                        <div className={classes.containerInfoPay}>
+                            <h3 style={{ margin: "0px" }}>{t(langKeys.creditcard)}</h3>
+                            <div style={{ display: "flex" }}>
+                                <img alt="visa" src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{ padding: 5 }}></img>
+                                <img alt="mastercard" src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{ padding: 5 }}></img>
+                                <img alt="ammex" src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{ padding: 5 }}></img>
+                                <img alt="dinners" src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{ padding: 5 }}></img>
+                            </div>
+                            <div className="row-zyx" style={{ marginBottom: '-10px' }}>
+                                <Controller
+                                    control={control}
+                                    name="cardnumber"
+                                    rules={{
+                                        validate: (value) => {
+                                            if (value?.length === 0)
+                                                return `${t(langKeys.field_required)}`;
+                                            else if ((value?.length !== limitnumbers) || (limitnumbers < 12))
+                                                return `${t(langKeys.creditcardvalidate)}`;
+                                        }
+                                    }}
+                                    render={({ field, formState: { errors } }) => (
+                                        <TextField
+                                            {...field}
+                                            className="col-12"
+                                            error={!!errors.cardnumber}
+                                            fullWidth
+                                            helperText={errors.cardnumber?.message}
+                                            label={t(langKeys.creditcard)}
+                                            margin="normal"
+                                            size="small"
+                                            variant="outlined"
+                                            InputProps={{
+                                                endAdornment: icon,
+                                            }}
+                                            inputProps={{
+                                                maxLength: limitnumbers,
+                                            }}
+                                            onPaste={e => {
+                                                e.preventDefault()
+                                            }}
+                                            onChange={(e) => {
+                                                let val = e.target.value.replace(/[^0-9]/g, '');
+                                                let spaces = Math.floor(val.length / 4);
+                                                let partialvalue = val.slice(0, 4);
+                                                for (let i = 1; i <= spaces; i++) {
+                                                    partialvalue += " " + val.slice(i * 4, (i + 1) * 4)
+                                                }
+                                                setValue("cardnumber", partialvalue.trim());
+                                            }}
+                                            onInput={(e: any) => {
+                                                if (e.target.value.slice(0, 1) === "4") {
+                                                    setIcon(<img alt="visa" src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{ padding: 5 }}></img>)
+                                                    setlimitnumbers(19)
+                                                } else if (e.target.value.slice(0, 2) === "51" || e.target.value.slice(0, 2) === "55") {
+                                                    setIcon(<img alt="mastercard" src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{ padding: 5 }}></img>)
+                                                    setlimitnumbers(19)
+                                                } else if (e.target.value.slice(0, 2) === "37" || e.target.value.slice(0, 2) === "34") {
+                                                    setIcon(<img alt="ammex" src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{ padding: 5 }}></img>)
+                                                    setlimitnumbers(18)
+                                                } else if (e.target.value.slice(0, 2) === "36" || e.target.value.slice(0, 2) === "38" || e.target.value.slice(0, 3) === "300" || e.target.value.slice(0, 3) === "305") {
+                                                    setIcon(<img alt="dinners" src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{ padding: 5 }}></img>)
+                                                    setlimitnumbers(17)
+                                                } else {
+                                                    setIcon(<></>)
+                                                    setlimitnumbers(10)
+                                                }
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </div>
+                            <div className="row-zyx" style={{ marginBottom: '-10px' }}>
+                                <div style={{ padding: "0px" }}>{t(langKeys.dueDate)}</div>
+                                <Controller
+                                    control={control}
+                                    name="cardmonth"
+                                    rules={{
+                                        validate: (value) => {
+                                            if (value === null || value === undefined)
+                                                return `${t(langKeys.field_required)}`;
+                                        }
+                                    }}
+                                    render={({ field: { onChange }, formState: { errors } }) => (
+                                        <FieldSelect
+                                            className="col-3"
+                                            data={datamonth}
+                                            error={errors.cardmonth?.message}
+                                            label={"MM"}
+                                            optionDesc="desc"
+                                            optionValue="id"
+                                            style={{ marginTop: 8, marginRight: 10 }}
+                                            valueDefault={getValues('cardmonth')}
+                                            variant="outlined"
+                                            onChange={(data: typeof datamonth[number]) => {
+                                                onChange(data?.id || "");
+                                            }}
+                                        />
+                                    )}
+                                />
+                                <Controller
+                                    control={control}
+                                    name="cardyear"
+                                    rules={{
+                                        validate: (value) => {
+                                            if (value?.length === 0)
+                                                return `${t(langKeys.field_required)}`;
+                                            else if (value?.length !== 4)
+                                                return `${t(langKeys.field_required)}`;
+                                        }
+                                    }}
+                                    render={({ field, formState: { errors } }) => (
+                                        <TextField
+                                            {...field}
+                                            className="col-9"
+                                            error={!!errors.cardyear}
+                                            fullWidth
+                                            helperText={errors.cardyear?.message}
+                                            label={"YYYY"}
+                                            margin="normal"
+                                            size="small"
+                                            style={{ marginTop: 8 }}
+                                            type="number"
+                                            variant="outlined"
+                                            inputProps={{
+                                                maxLength: 4
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </div>
+                            <div className="row-zyx" style={{ marginBottom: '-10px' }}>
+                                <Controller
+                                    control={control}
+                                    name="cardsecuritycode"
+                                    rules={{
+                                        validate: (value) => {
+                                            if (value?.length === 0)
+                                                return `${t(langKeys.field_required)}`;
+                                        }
+                                    }}
+                                    render={({ field, formState: { errors } }) => (
+                                        <TextField
+                                            {...field}
+                                            className="col-12"
+                                            error={!!errors.cardsecuritycode}
+                                            fullWidth
+                                            helperText={errors.cardsecuritycode?.message}
+                                            label={t(langKeys.securitycode)}
+                                            margin="normal"
+                                            size="small"
+                                            type="password"
+                                            variant="outlined"
+                                            inputProps={{
+                                                maxLength: limitnumbers === 18 ? 4 : 3
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </div>
                         </div>
-                        <div className="row-zyx" style={{ marginBottom: '-10px' }}>
-                            <Controller
-                                control={control}
-                                name="cardnumber"
-                                rules={{
-                                    validate: (value) => {
-                                        if (value?.length === 0)
-                                            return `${t(langKeys.field_required)}`;
-                                        else if ((value?.length !== limitnumbers) || (limitnumbers < 12))
-                                            return `${t(langKeys.creditcardvalidate)}`;
-                                    }
-                                }}
-                                render={({ field, formState: { errors } }) => (
-                                    <TextField
-                                        {...field}
-                                        className="col-12"
-                                        error={!!errors.cardnumber}
-                                        fullWidth
-                                        helperText={errors.cardnumber?.message}
-                                        label={t(langKeys.creditcard)}
-                                        margin="normal"
-                                        size="small"
-                                        variant="outlined"
-                                        InputProps={{
-                                            endAdornment: icon,
-                                        }}
-                                        inputProps={{
-                                            maxLength: limitnumbers,
-                                        }}
-                                        onPaste={e => {
-                                            e.preventDefault()
-                                        }}
-                                        onChange={(e) => {
-                                            let val = e.target.value.replace(/[^0-9]/g, '');
-                                            let spaces = Math.floor(val.length / 4);
-                                            let partialvalue = val.slice(0, 4);
-                                            for (let i = 1; i <= spaces; i++) {
-                                                partialvalue += " " + val.slice(i * 4, (i + 1) * 4)
-                                            }
-                                            setValue("cardnumber", partialvalue.trim());
-                                        }}
-                                        onInput={(e: any) => {
-                                            if (e.target.value.slice(0, 1) === "4") {
-                                                setIcon(<img alt="visa" src="https://static.culqi.com/v2/v2/static/img/visa.svg" width="50px" style={{ padding: 5 }}></img>)
-                                                setlimitnumbers(19)
-                                            } else if (e.target.value.slice(0, 2) === "51" || e.target.value.slice(0, 2) === "55") {
-                                                setIcon(<img alt="mastercard" src="https://static.culqi.com/v2/v2/static/img/mastercard.svg" width="50px" style={{ padding: 5 }}></img>)
-                                                setlimitnumbers(19)
-                                            } else if (e.target.value.slice(0, 2) === "37" || e.target.value.slice(0, 2) === "34") {
-                                                setIcon(<img alt="ammex" src="https://static.culqi.com/v2/v2/static/img/amex.svg" width="50px" style={{ padding: 5 }}></img>)
-                                                setlimitnumbers(18)
-                                            } else if (e.target.value.slice(0, 2) === "36" || e.target.value.slice(0, 2) === "38" || e.target.value.slice(0, 3) === "300" || e.target.value.slice(0, 3) === "305") {
-                                                setIcon(<img alt="dinners" src="https://static.culqi.com/v2/v2/static/img/diners.svg" width="50px" style={{ padding: 5 }}></img>)
-                                                setlimitnumbers(17)
-                                            } else {
-                                                setIcon(<></>)
-                                                setlimitnumbers(10)
-                                            }
-                                        }}
-                                    />
-                                )}
-                            />
-                        </div>
-                        <div className="row-zyx" style={{ marginBottom: '-10px' }}>
-                            <div style={{ padding: "0px" }}>{t(langKeys.dueDate)}</div>
-                            <Controller
-                                control={control}
-                                name="cardmonth"
-                                rules={{
-                                    validate: (value) => {
-                                        if (value === null || value === undefined)
-                                            return `${t(langKeys.field_required)}`;
-                                    }
-                                }}
-                                render={({ field: { onChange }, formState: { errors } }) => (
-                                    <FieldSelect
-                                        className="col-3"
-                                        data={datamonth}
-                                        error={errors.cardmonth?.message}
-                                        label={"MM"}
-                                        optionDesc="desc"
-                                        optionValue="id"
-                                        style={{ marginTop: 8, marginRight: 10 }}
-                                        valueDefault={getValues('cardmonth')}
-                                        variant="outlined"
-                                        onChange={(data: typeof datamonth[number]) => {
-                                            onChange(data?.id || "");
-                                        }}
-                                    />
-                                )}
-                            />
-                            <Controller
-                                control={control}
-                                name="cardyear"
-                                rules={{
-                                    validate: (value) => {
-                                        if (value?.length === 0)
-                                            return `${t(langKeys.field_required)}`;
-                                        else if (value?.length !== 4)
-                                            return `${t(langKeys.field_required)}`;
-                                    }
-                                }}
-                                render={({ field, formState: { errors } }) => (
-                                    <TextField
-                                        {...field}
-                                        className="col-9"
-                                        error={!!errors.cardyear}
-                                        fullWidth
-                                        helperText={errors.cardyear?.message}
-                                        label={"YYYY"}
-                                        margin="normal"
-                                        size="small"
-                                        style={{ marginTop: 8 }}
-                                        type="number"
-                                        variant="outlined"
-                                        inputProps={{
-                                            maxLength: 4
-                                        }}
-                                    />
-                                )}
-                            />
-                        </div>
-                        <div className="row-zyx" style={{ marginBottom: '-10px' }}>
-                            <Controller
-                                control={control}
-                                name="cardsecuritycode"
-                                rules={{
-                                    validate: (value) => {
-                                        if (value?.length === 0)
-                                            return `${t(langKeys.field_required)}`;
-                                    }
-                                }}
-                                render={({ field, formState: { errors } }) => (
-                                    <TextField
-                                        {...field}
-                                        className="col-12"
-                                        error={!!errors.cardsecuritycode}
-                                        fullWidth
-                                        helperText={errors.cardsecuritycode?.message}
-                                        label={t(langKeys.securitycode)}
-                                        margin="normal"
-                                        size="small"
-                                        type="password"
-                                        variant="outlined"
-                                        inputProps={{
-                                            maxLength: limitnumbers === 18 ? 4 : 3
-                                        }}
-                                    />
-                                )}
-                            />
+                        <div className={classes.containerInfoPay}>
+                            <div className={classes.centeredElement}>
+                                <div style={{ textAlign: "center", padding: "20px", border: "1px solid #7721ad", borderRadius: "15px", margin: "10px", paddingTop: 'auto' }}>{t(langKeys.finishregwarn)}</div>
+                                <div style={{ textAlign: "center", padding: "20px", color: "#7721ad", margin: "10px", paddingBottom: 'auto' }}>{t(langKeys.finishregwarn2)}</div>
+                            </div>
                         </div>
                     </div>
-                    <div className={classes.containerInfoPay}>
-                        <div className={classes.centeredElement}>
-                            <div style={{ textAlign: "center", padding: "20px", border: "1px solid #7721ad", borderRadius: "15px", margin: "10px", paddingTop: 'auto' }}>{t(langKeys.finishregwarn)}</div>
-                            <div style={{ textAlign: "center", padding: "20px", color: "#7721ad", margin: "10px", paddingBottom: 'auto' }}>{t(langKeys.finishregwarn2)}</div>
+                </div>
+                <div className={classes.containerBorder} style={{ marginTop: '20px' }}>
+                    <div style={{ width: "100%" }}>
+                        <div>
+                            <h3 style={{ margin: "0px",  color: "#7721ad", textAlign: "center"}}>{t(langKeys.suscription)} PRO</h3>
+                            <h3> <b>$249</b> dólares mensuales</h3>
+                            <p><b>2000 Contactos/mes</b></p>
+                            <p><b>5 Usuarios/Agentes</b></p>
+                            <p>
+                                <ul>
+                                    <li>Acceso a las características principales de Laraigo.</li>
+                                    <li>Exportación de datos de contacto.</li>
+                                    <li>Inteligencia Artificial Hasta 1000 conversaciones (Costo por conversación adicional US$0.10).</li>
+                                </ul>
+
+                            </p>
                         </div>
                     </div>
                 </div>
