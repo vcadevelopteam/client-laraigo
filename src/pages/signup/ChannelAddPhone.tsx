@@ -127,7 +127,7 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     }
 
     useEffect(() => {
-        if (phonePrice) {
+        /*if (phonePrice) {
             setValue("channels.voximplantphone.cost", (phonePrice || 0))
             setValue("channels.voximplantphone.costinstallation", (phoneInstallation || 0))
             setValue("channels.voximplantphone.costvca", (formatNumber((phonePrice || 0) * (1 + (phoneTax || 0)))).toString())
@@ -136,7 +136,7 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
             setValue("channels.voximplantphone.cost", (0))
             setValue("channels.voximplantphone.costinstallation", (0))
             setValue("channels.voximplantphone.costvca", "0")
-        }
+        }*/
     }, [phonePrice, phoneInstallation])
 
     useEffect(() => {
@@ -147,7 +147,8 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                 }
             }
         }
-        register('channels.voximplantphone.country', { validate: strRequired, value: '' });
+
+        /*register('channels.voximplantphone.country', { validate: strRequired, value: '' });
         register('channels.voximplantphone.category', { validate: strRequired, value: '' });
         register('channels.voximplantphone.region', { validate: hasRegions ? strRequired : () => { return undefined }, value: '' });
         register('channels.voximplantphone.state', { validate: hasStates ? strRequired : () => { return undefined }, value: '' });
@@ -196,7 +197,7 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
 
         return () => {
             unregister('channels.voximplantphone')
-        }
+        }*/
     }, [register, unregister]);
 
     useEffect(() => {
@@ -205,21 +206,21 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     }, [])
 
     useEffect(() => {
-        if (phonePrice) {
+        /*if (phonePrice) {
             setValue('channels.voximplantphone.cost', phonePrice || 0)
         }
         else {
             setValue('channels.voximplantphone.cost', 0)
-        }
+        }*/
     }, [phonePrice])
 
     useEffect(() => {
-        if (phoneInstallation) {
+        /*if (phoneInstallation) {
             setValue('channels.voximplantphone.costinstallation', phoneInstallation || 0)
         }
         else {
             setValue('channels.voximplantphone.costinstallation', 0)
-        }
+        }*/
     }, [phoneInstallation])
 
     useEffect(() => {
@@ -291,7 +292,7 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
 
     function disableNextButton() {
         setNextButton(true);
-        if (getValues('channels.voximplantphone.category') && getValues('channels.voximplantphone.country')) {
+        /*if (getValues('channels.voximplantphone.category') && getValues('channels.voximplantphone.country')) {
             if (getValues('channels.voximplantphone.region')) {
                 if (hasStates) {
                     if (getValues('channels.voximplantphone.state')) {
@@ -316,52 +317,52 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                     }
                 }
             }
-        }
+        }*/
     }
 
     const handleSwitchRecordingQuality = (value: any) => {
-        setValue('channels.voximplantphone.recordingquality', value);
+        /*setValue('channels.voximplantphone.recordingquality', value);
 
-        disableNextButton();
+        disableNextButton();*/
     }
 
     const handleSwitchRecordingStorage = (value: any) => {
-        setValue('channels.voximplantphone.recordingstorage', value);
+        /*setValue('channels.voximplantphone.recordingstorage', value);
 
-        disableNextButton();
+        disableNextButton();*/
     }
 
     const handleSwitchRecording = (value: boolean) => {
-        setValue('channels.voximplantphone.recording', value);
+        /*setValue('channels.voximplantphone.recording', value);
 
         if (!value ) {
             setValue('channels.voximplantphone.recordingquality', '');
             setValue('channels.voximplantphone.recordingquality', '');
         }
 
-        disableNextButton();
+        disableNextButton();*/
     }
 
     const handleSwitchSms = (value: boolean) => {
-        setValue('channels.voximplantphone.sms', value);
+        /*setValue('channels.voximplantphone.sms', value);
 
-        disableNextButton();
+        disableNextButton();*/
     }
 
     const handleSwitchOutbound = (value: boolean) => {
-        setValue('channels.voximplantphone.outbound', value);
+        /*setValue('channels.voximplantphone.outbound', value);
 
-        disableNextButton();
+        disableNextButton();*/
     }
 
     const handleSwitchCallSupervison = (value: boolean) => {
-        setValue('channels.voximplantphone.voximplantcallsupervision', value);
+        /*setValue('channels.voximplantphone.voximplantcallsupervision', value);
 
-        disableNextButton();
+        disableNextButton();*/
     }
 
     const handleCountry = (value: any) => {
-        if (value) {
+        /*if (value) {
             setCategoryList(value.phone_categories || []);
             setValue('channels.voximplantphone.country', value.country_code)
             setValue('channels.voximplantphone.countryname', value.country_name)
@@ -384,11 +385,11 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
         setValue('channels.voximplantphone.categoryname', "")
         setValue('channels.voximplantphone.regionname', "")
         setValue('channels.voximplantphone.statename', "")
-        disableNextButton();
+        disableNextButton();*/
     }
 
     const handleCategory = (value: any) => {
-        if (value) {
+        /*if (value) {
             setHasStates(value.country_has_states || false);
             setPhoneBackup(value.phone_price || 0.00);
             setPhonePrice(value.phone_price || 0.00);
@@ -427,11 +428,11 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
         setValue('channels.voximplantphone.state', "")
         setValue('channels.voximplantphone.regionname', "")
         setValue('channels.voximplantphone.statename', "")
-        disableNextButton();
+        disableNextButton();*/
     }
 
     const handleState = (value: any) => {
-        if (value) {
+        /*if (value) {
             setValue('channels.voximplantphone.state', value.country_state)
             setValue('channels.voximplantphone.statename', value.country_state_name)
             setHasRegions(true);
@@ -447,11 +448,11 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
         }
         setValue('channels.voximplantphone.region', "")
         setValue('channels.voximplantphone.regionname', "")
-        disableNextButton();
+        disableNextButton();*/
     }
 
     const handleRegion = (value: any) => {
-        if (value) {
+        /*if (value) {
             setPhonePrice((value.phone_price || phoneBackup) || 0.00);
             setPhoneInstallation((value.phone_installation_price || phoneInstallationBackup) || 0.00);
             setValue('channels.voximplantphone.region', value.phone_region_id)
@@ -463,14 +464,14 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
             setValue('channels.voximplantphone.region', "")
             setValue('channels.voximplantphone.regionname', "")
         }
-        disableNextButton();
+        disableNextButton();*/
     }
 
     if (viewSelected === "view1") {
         return (
             <div style={{ width: "100%" }}>
                 <div>
-                    <div className={classes.containerDetail}>
+                    {/*<div className={classes.containerDetail}>
                         <div style={{ textAlign: "left", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.voximplant_buynumber)}</div>
                         <div className={classes.containerCapacities}>
                             <div style={{ verticalAlign: "middle", marginRight: "30px" }}>
@@ -619,7 +620,7 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                                 <p><b style={{ color: "#762AA9" }}>{t(langKeys.voicechannel_recordingalert)}</b><a style={{ fontWeight: 'bold', cursor: 'pointer' }} onClick={openPricingPage} rel="noopener noreferrer">https://laraigo.com/en/pricing/</a></p>
                             </div>
                         </div>}
-                    </div>
+                    </div>*/}
                     <div style={{ paddingLeft: "64%" }}>
                         <Button
                             disabled={nextButton || regionsResult.loading}
@@ -667,7 +668,7 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                         </Typography>
                     </div>
                 )}
-                <FieldEdit
+                {/*<FieldEdit
                     onChange={(val: string) => {
                         setValue('channels.voximplantphone.description', val);
                         if (val.length > 0 && !hasFinished) {
@@ -688,7 +689,7 @@ export const ChannelAddPhone: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                             </InputAdornment>
                         )
                     }}
-                />
+                />*/}
             </div>
         )
     }

@@ -1,47 +1,46 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-/* eslint-disable react-hooks/exhaustive-deps */
-import { CSSProperties, FC, useContext, useEffect, useState } from "react";
-import { makeStyles, Button, TextField, InputAdornment, IconButton } from '@material-ui/core';
-import { Visibility, VisibilityOff } from "@material-ui/icons";
-import { langKeys } from "lang/keys";
-import { Trans, useTranslation } from "react-i18next";
-import FacebookLogin from 'react-facebook-login';
-import { useDispatch } from "react-redux";
-import GoogleLogin from 'react-google-login';
-import { Facebook as FacebookIcon } from "@material-ui/icons";
-import { useSelector } from 'hooks';
 import { apiUrls } from 'common/constants';
-
-import { executeCheckNewUser } from "store/signup/actions";
-import { MainData, SubscriptionContext } from "./context";
-import { showSnackbar } from "store/popus/actions";
 import { Controller, useFormContext } from "react-hook-form";
+import { CSSProperties, FC, useContext, useEffect, useState } from "react";
+import { executeCheckNewUser } from "store/signup/actions";
+import { langKeys } from "lang/keys";
+import { MainData, SubscriptionContext } from "./context";
+import { makeStyles, Button, TextField, InputAdornment, IconButton } from '@material-ui/core';
+import { showSnackbar } from "store/popus/actions";
+import { Trans, useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
+import { useSelector } from 'hooks';
+import { Visibility, VisibilityOff, Facebook as FacebookIcon } from "@material-ui/icons";
+
+import FacebookLogin from 'react-facebook-login';
+import GoogleLogin from 'react-google-login';
 
 function validatePassword(password: string) {
-    var strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})");
+    let strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/;
 
     if (password) {
         return strongRegex.exec(password);
     }
-
-    return null
+    else {
+        return null;
+    }
 }
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
-        padding: 12,
-        fontWeight: "bold",
+        display: "block",
         fontSize: '40px',
-        //textTransform: 'initial',
-        width: "100%"
+        fontWeight: "bold",
+        margin: 'auto',
+        padding: 12,
+        width: "280px",
     },
     buttonfacebook: {
+        alignItems: 'center',
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center',
-        width: 400,
         marginLeft: 'auto',
         marginRight: 'auto',
+        width: 400,
         '& span': {
             width: '100%'
         },
@@ -53,88 +52,89 @@ const useChannelAddStyles = makeStyles(theme => ({
         },
     },
     buttonGoogle: {
+        alignItems: 'center',
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center',
-        width: 400,
         marginLeft: 'auto',
         marginRight: 'auto',
+        width: 400,
         '& button': {
-            fontSize: '20px!important',
-            justifyContent: 'center',
             alignItems: 'center',
-            width: '100%',
-            height: 50,
             color: '#FFF',
+            fontSize: '20px!important',
+            height: 50,
+            justifyContent: 'center',
+            width: '100%',
         },
         [theme.breakpoints.down('xs')]: {
             width: '100%'
         },
     },
     separator: {
-        width: 82,
         borderBottom: "2px solid #D1CBCB",
+        height: "0",
         marginLeft: 32,
         marginRight: 32,
-        height: "0",
+        width: 82,
     },
     orSeparator: {
-        display: "flex",
         alignItems: 'center',
+        display: "flex",
         justifyContent: 'center',
-        marginTop: 28,
         marginBottom: 18,
+        marginTop: 28,
     },
 }));
 
 const FBButtonStyle2: CSSProperties = {
-    borderRadius: '3px',
-    width: "100%",
-    height: 50,
-    display: 'flex',
     alignItems: 'center',
+    borderRadius: '3px',
+    display: 'flex',
     fontSize: 20,
     fontStyle: 'normal',
     fontWeight: 400,
-    textTransform: 'none',
+    height: 50,
     justifyContent: 'center',
     marginBottom: 16,
-    
+    textTransform: 'none',
+    width: "100%",
 }
 
 const FirstStep: FC = () => {
-    const { setStep,selectedChannels } = useContext(SubscriptionContext);
     const { control, setValue, getValues, trigger } = useFormContext<MainData>();
-    const rescheckuser = useSelector(state => state.signup);
+    const { selectedChannels, setStep } = useContext(SubscriptionContext);
+    const { t } = useTranslation();
+
+    const [disableButton, setDisableButton] = useState(true);
+    const [showPassword, setShowPassword] = useState(false);
     const [waitSave, setwaitSave] = useState(false);
 
-    const dispatch = useDispatch();
-    const [showPassword, setShowPassword] = useState(false);
-    const [disableButton, setDisableButton] = useState(true);
-    const { t } = useTranslation();
     const classes = useChannelAddStyles();
+    const dispatch = useDispatch();
+    const rescheckuser = useSelector(state => state.signup);
 
     useEffect(() => {
         if (waitSave) {
             if (!rescheckuser.loading) {
                 if (rescheckuser.isvalid) {
-                    setStep(2)
-                    setwaitSave(false)
+                    setStep(2);
+                    setwaitSave(false);
                 } else {
-                    dispatch(showSnackbar({
-                        show: true,
-                        severity: "error",
-                        message: t(langKeys.useralreadyregistered),
-                    }))
-                    setwaitSave(false)
+                    dispatch(showSnackbar({ message: t(langKeys.useralreadyregistered), severity: "error", show: true }))
+                    setwaitSave(false);
                 }
             }
         }
     }, [rescheckuser])
+
     useEffect(() => {
-        setDisableButton(selectedChannels<1);
+        setDisableButton(selectedChannels < 1);
     }, [selectedChannels])
-    
+
+    const opentermsofservice = () => {
+        window.open("/termsofservice", '_blank');
+    }
+
     const openprivacypolicies = () => {
         window.open("/privacy", '_blank');
     }
@@ -144,17 +144,17 @@ const FirstStep: FC = () => {
             const content = {
                 "method": "UFN_USERIDBYUSER",
                 "parameters": {
-                    "usr": null,
                     "facebookid": null,
-                    "googleid": String(r.googleId)
+                    "googleid": String(r.googleId),
+                    "usr": null,
                 }
             }
-            setwaitSave(true)
-            setValue('password', '');
-            setValue('confirmpassword', '');
-            setValue('email', '');
-            setValue('googleid', r.googleId);
-            setValue('facebookid', '');
+            setwaitSave(true);
+            setValue('loginfacebookid', '');
+            setValue('logingoogleid', r.googleId);
+            setValue('loginpassword', '');
+            setValue('loginpasswordrepeat', '');
+            setValue('loginusername', '');
             dispatch(executeCheckNewUser(content))
         }
     }
@@ -178,17 +178,17 @@ const FirstStep: FC = () => {
             const content = {
                 "method": "UFN_USERIDBYUSER",
                 "parameters": {
-                    "usr": r.email,
                     "facebookid": String(r.id),
-                    "googleid": null
+                    "googleid": null,
+                    "usr": r.email,
                 }
             }
-            setwaitSave(true)
-            setValue('password', '');
-            setValue('confirmpassword', '');
-            setValue('email', '');
-            setValue('googleid', '');
-            setValue('facebookid', r.id);
+            setwaitSave(true);
+            setValue('loginfacebookid', r.id);
+            setValue('logingoogleid', '');
+            setValue('loginpassword', '');
+            setValue('loginpasswordrepeat', '');
+            setValue('loginusername', '');
             dispatch(executeCheckNewUser(content))
         }
     }
@@ -197,9 +197,9 @@ const FirstStep: FC = () => {
         const content = {
             "method": "UFN_USERIDBYUSER",
             "parameters": {
-                "usr": getValues('email'),
                 "facebookid": null,
-                "googleid": null
+                "googleid": null,
+                "usr": getValues('loginusername'),
             }
         }
         setwaitSave(true)
@@ -207,7 +207,9 @@ const FirstStep: FC = () => {
     }
 
     const handleClickShowPassword = () => setShowPassword(!showPassword);
+
     const handleMouseDownPassword = (event: any) => event.preventDefault();
+
     return (
         <>
             <meta name="google-signin-client_id" content={apiUrls.GOOGLECLIENTID_LOGIN} />
@@ -216,29 +218,27 @@ const FirstStep: FC = () => {
             <div className={classes.buttonfacebook}>
                 <FacebookLogin
                     appId={apiUrls.FACEBOOKAPP}
-                    callback={onAuthWithFacebook}
-                    fields="name,email,picture"
                     buttonStyle={FBButtonStyle2}
-                    textButton={t(langKeys.signup_with_facebook)}
-                    icon={<FacebookIcon style={{ color: 'white', marginRight: '8px'}} />}
-                    isDisabled={false}
+                    callback={onAuthWithFacebook}
                     disableMobileRedirect={true}
+                    fields="name,email,picture"
+                    icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
+                    isDisabled={false}
+                    textButton={t(langKeys.signup_with_facebook)}
                 />
             </div>
             <div className={classes.buttonGoogle}>
                 <GoogleLogin
-                    clientId={apiUrls.GOOGLECLIENTID_LOGIN}
-                    buttonText={t(langKeys.signupgooglebutton)}
-                    style={{ borderRadius: '3px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                    onSuccess={onGoogleLoginSucess}
-                    onFailure={onGoogleLoginFailure}
-                    cookiePolicy={'single_host_origin'}
                     accessType='online'
-                    
                     autoLoad={false}
+                    buttonText={t(langKeys.signupgooglebutton)}
+                    clientId={apiUrls.GOOGLECLIENTID_LOGIN}
+                    cookiePolicy={'single_host_origin'}
+                    onFailure={onGoogleLoginFailure}
+                    onSuccess={onGoogleLoginSucess}
+                    style={{ borderRadius: '3px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 />
             </div>
-
             <div className={classes.orSeparator}>
                 <div className={classes.separator} />
                 <div style={{ fontSize: 24, fontWeight: 500, color: "#989898" }}>
@@ -246,68 +246,70 @@ const FirstStep: FC = () => {
                 </div>
                 <div className={classes.separator} />
             </div>
-
-            <div>
+            <div style={{ paddingLeft: '20px', paddingRight: '20px' }}>
                 <Controller
-                    name="email"
                     control={control}
-                    rules={{ validate: (value) => {
-                        if (value.length === 0) {
-                            return t(langKeys.field_required) as string;
-                        } else if (!/\S+@\S+\.\S+/.test(value)) {
-                            return t(langKeys.emailverification) as string;
+                    name="loginusername"
+                    rules={{
+                        validate: (value) => {
+                            if (value.length === 0) {
+                                return t(langKeys.field_required) as string;
+                            } else if (!/\S+@\S+\.\S+/.test(value)) {
+                                return t(langKeys.emailverification) as string;
+                            }
                         }
-                    }}}
+                    }}
                     render={({ field, formState: { errors } }) => (
                         <TextField
                             {...field}
-                            variant="outlined"
-                            size="small"
-                            margin="normal"
+                            error={!!errors.loginusername}
                             fullWidth
-                            type="email"
+                            helperText={errors.loginusername?.message}
                             label={t(langKeys.email)}
-                            error={!!errors.email}
-                            helperText={errors.email?.message}
+                            margin="normal"
+                            size="small"
+                            type="email"
+                            variant="outlined"
                         />
                     )}
                 />
                 <Controller
-                    name="password"
                     control={control}
-                    rules={{ validate: (value) => {
-                        if (value.length === 0) {
-                            return t(langKeys.field_required) as string;
-                        } else {
-                            if (validatePassword(value) === null) {
-                                return t(langKeys.password_strongvalidation) as string;
-                            }
-
-                            if (value !== getValues('confirmpassword')) {
-                                return t(langKeys.passwordsmustbeequal) as string;
+                    name="loginpassword"
+                    rules={{
+                        validate: (value) => {
+                            if (value.length === 0) {
+                                return `${t(langKeys.field_required)}`;
+                            } else {
+                                if (validatePassword(value) === null) {
+                                    return `${t(langKeys.password_strongvalidation)}`;
+                                }
+                                if (value !== getValues('loginpasswordrepeat')) {
+                                    return `${t(langKeys.passwordsmustbeequal)}`;
+                                }
                             }
                         }
-                    }}}
+                    }}
                     render={({ field, formState: { errors } }) => (
                         <TextField
                             {...field}
-                            variant="outlined"
-                            size="small"
-                            margin="normal"
-                            fullWidth
-                            label={t(langKeys.password)}
-                            type={showPassword ? 'text' : 'password'}
                             autoComplete="current-password"
-                            error={!!errors.password}
-                            helperText={errors.password?.message}
+                            error={!!errors.loginpassword}
+                            fullWidth
+                            helperText={errors.loginpassword?.message}
+                            label={t(langKeys.password)}
+                            margin="normal"
+                            size="small"
+                            type={showPassword ? 'text' : 'password'}
+                            variant="outlined"
                             InputProps={{
                                 endAdornment: (
                                     <InputAdornment position="end">
                                         <IconButton
                                             aria-label="toggle password visibility"
+                                            edge="end"
                                             onClick={handleClickShowPassword}
                                             onMouseDown={handleMouseDownPassword}
-                                            edge="end"
                                         >
                                             {showPassword ? <Visibility /> : <VisibilityOff />}
                                         </IconButton>
@@ -318,35 +320,37 @@ const FirstStep: FC = () => {
                     )}
                 />
                 <Controller
-                    name="confirmpassword"
                     control={control}
-                    rules={{ validate: (value) => {
-                        if (value.length === 0) {
-                            return t(langKeys.field_required) as string;
-                        } else if (value !== getValues('confirmpassword')) {
-                            return t(langKeys.passwordsmustbeequal) as string;
+                    name="loginpasswordrepeat"
+                    rules={{
+                        validate: (value) => {
+                            if (value.length === 0) {
+                                return `${t(langKeys.field_required)}`;
+                            } else if (value !== getValues('loginpassword')) {
+                                return `${t(langKeys.passwordsmustbeequal)}`;
+                            }
                         }
-                    }}}
-                    render={({ field, formState: { errors }}) => (
+                    }}
+                    render={({ field, formState: { errors } }) => (
                         <TextField
                             {...field}
-                            variant="outlined"
-                            size="small"
-                            margin="normal"
-                            fullWidth
-                            label={t(langKeys.confirmpassword)}
-                            type={showPassword ? 'text' : 'password'}
                             autoComplete="current-password"
-                            error={!!errors.password}
-                            helperText={errors.password?.message}
+                            error={!!errors.loginpasswordrepeat}
+                            fullWidth
+                            helperText={errors.loginpasswordrepeat?.message}
+                            label={t(langKeys.confirmpassword)}
+                            margin="normal"
+                            size="small"
+                            type={showPassword ? 'text' : 'password'}
+                            variant="outlined"
                             InputProps={{
                                 endAdornment: (
                                     <InputAdornment position="end">
                                         <IconButton
                                             aria-label="toggle password visibility"
+                                            edge="end"
                                             onClick={handleClickShowPassword}
                                             onMouseDown={handleMouseDownPassword}
-                                            edge="end"
                                         >
                                             {showPassword ? <Visibility /> : <VisibilityOff />}
                                         </IconButton>
@@ -356,24 +360,22 @@ const FirstStep: FC = () => {
                         />
                     )}
                 />
-                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid*/}
-                <div style={{ textAlign: "center", padding: "20px" }}>{t(langKeys.tos)}<a style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={openprivacypolicies} rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
-                <div style={{ textAlign: "center", padding: "20px" }}>{t(langKeys.tossub1)} <a href="#" style={{ fontWeight: 'bold', color: '#6F1FA1'}} rel="noopener noreferrer">{t(langKeys.creditcard)}</a> {t(langKeys.tossub2)}</div>
+                <div style={{ textAlign: "center", padding: "20px" }}>{t(langKeys.tos1)}<a style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={opentermsofservice} rel="noopener noreferrer">{t(langKeys.termsofservicetitle)}</a>{t(langKeys.tos2)}<a style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={openprivacypolicies} rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
+                <div style={{ textAlign: "center", padding: "20px" }}>{t(langKeys.tossub1)} <a href="#" style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'default', textDecorationLine: 'none' }} rel="noopener noreferrer">{`${t(langKeys.creditcard)}`.toUpperCase()}</a> {t(langKeys.tossub2)}</div>
                 <Button
+                    className={classes.button}
+                    color="primary"
+                    disabled={disableButton}
+                    variant="contained"
                     onClick={async () => {
                         const valid = await trigger();
                         if (valid) {
                             handlesubmit();
                         }
                     }}
-                    className={classes.button}
-                    variant="contained"
-                    color="primary"
-                    disabled={disableButton}
                 >
                     <Trans i18nKey={langKeys.next} />
                 </Button>
-
             </div>
         </>
     )

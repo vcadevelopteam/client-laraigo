@@ -43,7 +43,7 @@ export const ChannelAddPlayStore: FC<{ setOpenWarning: (param: any) => void }> =
     const mainResult = useSelector(state => state.channel.channelList)
 
     useEffect(() => {
-        const cb = async () => {
+        /*const cb = async () => {
             const v1 = await trigger('channels.playstore.appcode');
             const v2 = await trigger('channels.playstore.mail');
             setSubmitError(!v1 || !v2);
@@ -52,7 +52,7 @@ export const ChannelAddPlayStore: FC<{ setOpenWarning: (param: any) => void }> =
         submitObservable.addListener(cb);
         return () => {
             submitObservable.removeListener(cb);
-        }
+        }*/
     }, [submitObservable, trigger]);
 
     useEffect(() => {
@@ -62,7 +62,7 @@ export const ChannelAddPlayStore: FC<{ setOpenWarning: (param: any) => void }> =
             }
         }
 
-        register('channels.playstore.description', { validate: strRequired, value: '' });
+        /*register('channels.playstore.description', { validate: strRequired, value: '' });
         register('channels.playstore.appcode', { validate: strRequired, value: '' });
         register('channels.playstore.mail', { validate: strRequired, value: '' });
         register('channels.playstore.build', {
@@ -94,7 +94,7 @@ export const ChannelAddPlayStore: FC<{ setOpenWarning: (param: any) => void }> =
 
         return () => {
             unregister('channels.playstore');
-        }
+        }*/
     }, [register, unregister]);
 
     useEffect(() => {
@@ -135,7 +135,7 @@ export const ChannelAddPlayStore: FC<{ setOpenWarning: (param: any) => void }> =
                         {'<< '}<Trans i18nKey={langKeys.previoustext} />
                     </Link>
                 </Breadcrumbs>
-                <div>
+                {/*<div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.channel_playstoretitle1)}</div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>{t(langKeys.channel_playstoretitle2)}</div>
                     <div className="row-zyx">
@@ -182,7 +182,7 @@ export const ChannelAddPlayStore: FC<{ setOpenWarning: (param: any) => void }> =
                             <Trans i18nKey={langKeys.next} />
                         </Button>
                     </div>
-                </div>
+                </div>*/}
             </div>
         )
     }
@@ -219,7 +219,7 @@ export const ChannelAddPlayStore: FC<{ setOpenWarning: (param: any) => void }> =
                     </Typography>
                 </div>
             )}
-            <FieldEdit
+            {/*<FieldEdit
                 onChange={(value) => { setValue('channels.playstore.description', value); setNextbutton2(!value); }}
                 valueDefault={getValues('channels.playstore.description')}
                 label={t(langKeys.givechannelname)}
@@ -233,7 +233,7 @@ export const ChannelAddPlayStore: FC<{ setOpenWarning: (param: any) => void }> =
                         </InputAdornment>
                     )
                 }}
-            />
+            />*/}
             {!hasFinished && (
                 <Button
                     onClick={() => setView("view2")}

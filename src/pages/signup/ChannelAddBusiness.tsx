@@ -41,7 +41,7 @@ export const ChannelAddBusiness: FC<{ setOpenWarning: (param: any) => void }> = 
     }
 
     useEffect(() => {
-        const cb = async () => {
+        /*const cb = async () => {
             const v1 = await trigger('channels.business.accesstoken');
             const v2 = await trigger('channels.business.refreshtoken');
             const v3 = await trigger('channels.business.scope');
@@ -54,7 +54,7 @@ export const ChannelAddBusiness: FC<{ setOpenWarning: (param: any) => void }> = 
         submitObservable.addListener(cb);
         return () => {
             submitObservable.removeListener(cb);
-        }
+        }*/
     }, [submitObservable, trigger]);
 
     useEffect(() => {
@@ -64,7 +64,7 @@ export const ChannelAddBusiness: FC<{ setOpenWarning: (param: any) => void }> = 
             }
         }
 
-        register('channels.business.description', { validate: strRequired, value: '' });
+        /*register('channels.business.description', { validate: strRequired, value: '' });
         register('channels.business.accesstoken', { validate: strRequired, value: '' });
         register('channels.business.refreshtoken', { validate: strRequired, value: '' });
         register('channels.business.scope', { validate: strRequired, value: '' });
@@ -104,7 +104,7 @@ export const ChannelAddBusiness: FC<{ setOpenWarning: (param: any) => void }> = 
 
         return () => {
             unregister('channels.business');
-        }
+        }*/
     }, [register, unregister]);
 
     useEffect(() => {
@@ -136,11 +136,11 @@ export const ChannelAddBusiness: FC<{ setOpenWarning: (param: any) => void }> = 
                 if (!exchangeCodeResult.error) {
                     dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
                     if (exchangeCodeResult.data) {
-                        setValue('channels.business.accesstoken', exchangeCodeResult.data.access_token);
+                        /*setValue('channels.business.accesstoken', exchangeCodeResult.data.access_token);
                         setValue('channels.business.idtoken', exchangeCodeResult.data.id_token);
                         setValue('channels.business.refreshtoken', exchangeCodeResult.data.refresh_token);
                         setValue('channels.business.scope', exchangeCodeResult.data.scope);
-                        setValue('channels.business.tokentype', exchangeCodeResult.data.token_type);
+                        setValue('channels.business.tokentype', exchangeCodeResult.data.token_type);*/
 
                         setView("view1");
                         setHasFinished(true);
@@ -220,7 +220,7 @@ export const ChannelAddBusiness: FC<{ setOpenWarning: (param: any) => void }> = 
                     </Typography>
                 </div>
             )}
-            <FieldEdit
+            {/*<FieldEdit
                 onChange={(value) => { setValue('channels.business.description', value); setNextbutton2(!value); }}
                 valueDefault={getValues('channels.business.description')}
                 label={t(langKeys.givechannelname)}
@@ -234,7 +234,7 @@ export const ChannelAddBusiness: FC<{ setOpenWarning: (param: any) => void }> = 
                         </InputAdornment>
                     )
                 }}
-            />
+            />*/}
             {!hasFinished && (
                 <Button
                     onClick={() => setView("view2")}

@@ -1169,7 +1169,7 @@ const TabPanelExtras: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
         setIconColorDisabled(e.hex);
         setValue('extra.iconColorDisabled', e.hex);
     }
-    
+
     const handleWithBorderChange = (checked: boolean) => {
         setWithBorder(checked);
         setValue('extra.withBorder', checked);
@@ -1460,10 +1460,10 @@ const TabPanelExtras: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                     onChange={e => setValue('extra.botnametext', e.target.value)}
                 />
             </Grid>
-            
+
             <Divider style={{ margin: '22px 0 38px 0' }} />
-            
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}  style={{padding: "0 8px"}}>
+
+            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ padding: "0 8px" }}>
                 <Grid container direction="row">
                     <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                         <Grid container direction="row">
@@ -1497,7 +1497,7 @@ const TabPanelExtras: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                                         <label className={classes.text}>Icono de color activo</label>
                                     </Grid>
                                     <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
-                                        <ColorInput hex={iconColorActive||"#fff"} onChange={handleIconColorActiveChange} />
+                                        <ColorInput hex={iconColorActive || "#fff"} onChange={handleIconColorActiveChange} />
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -1511,7 +1511,7 @@ const TabPanelExtras: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                                         <label className={classes.text}>Icono de color disabled</label>
                                     </Grid>
                                     <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
-                                        <ColorInput hex={iconColorDisabled||"#fff"} onChange={handleIconColorDisabledChange} />
+                                        <ColorInput hex={iconColorDisabled || "#fff"} onChange={handleIconColorDisabledChange} />
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -1520,7 +1520,7 @@ const TabPanelExtras: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                 </Grid>
             </Grid>
             <Grid container direction="row">
-                <Grid item xs={12} sm={12} md={6} lg={6} xl={6} style={{padding:8}}>
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6} style={{ padding: 8 }}>
                     <TextField
                         variant="outlined"
                         placeholder="Tamaño de las letras de cliente/bot"
@@ -1530,7 +1530,7 @@ const TabPanelExtras: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                         onChange={e => setValue('extra.inputTextSize', Number(e.target.value))}
                     />
                 </Grid>
-                <Grid item xs={12} sm={12} md={6} lg={6} xl={6} style={{padding:8}}>
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6} style={{ padding: 8 }}>
                     <TextField
                         variant="outlined"
                         placeholder="Estilo de las letras de cliente/bot"
@@ -1541,9 +1541,9 @@ const TabPanelExtras: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                     />
                 </Grid>
             </Grid>
-            
+
             <Grid container direction="row">
-                <Grid item xs={12} sm={12} md={6} lg={6} xl={6} style={{padding:8}}>
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6} style={{ padding: 8 }}>
                     <TextField
                         variant="outlined"
                         placeholder="Tamaño de las letras del input de texto"
@@ -1553,7 +1553,7 @@ const TabPanelExtras: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                         onChange={e => setValue('extra.chatTextSize', Number(e.target.value))}
                     />
                 </Grid>
-                <Grid item xs={12} sm={12} md={6} lg={6} xl={6} style={{padding:8}}>
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6} style={{ padding: 8 }}>
                     <TextField
                         variant="outlined"
                         placeholder="Estilo de las letras del input de texto"
@@ -1780,7 +1780,7 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
     });
 
     useEffect(() => {
-        const strRequired = (value: string) => {
+        /*const strRequired = (value: string) => {
             if (!value) {
                 return t(langKeys.field_required);
             }
@@ -1800,7 +1800,7 @@ export const ChannelAddChatWeb: FC<{ setOpenWarning: (param: any) => void }> = (
 
         return () => {
             unregister('channels.chatWeb');
-        }
+        }*/
     }, [register, unregister]);
 
     useEffect(() => {
@@ -1959,7 +1959,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
                     </Typography>
                 </div>
             )}
-            <FieldEdit
+            {/*<FieldEdit
                 onChange={v => { setValue('channels.chatWeb.description', v); setNextbutton2(!v); }}
                 valueDefault={getValues('channels.chatWeb.description')}
                 label={t(langKeys.givechannelname)}
@@ -1974,7 +1974,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({
                         </InputAdornment>
                     )
                 }}
-            />
+            />*/}
             {!hasFinished && (
                 <Button
                     onClick={onNext}

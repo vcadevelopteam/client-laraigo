@@ -43,7 +43,7 @@ export const ChannelAddLinkedIn: FC<{ setOpenWarning: (param: any) => void }> = 
     const mainResult = useSelector(state => state.channel.channelList)
 
     useEffect(() => {
-        const cb = async () => {
+        /*const cb = async () => {
             const v1 = await trigger('channels.linkedin.clientid');
             const v2 = await trigger('channels.linkedin.clientsecret');
             const v3 = await trigger('channels.linkedin.accesstoken');
@@ -55,7 +55,7 @@ export const ChannelAddLinkedIn: FC<{ setOpenWarning: (param: any) => void }> = 
         submitObservable.addListener(cb);
         return () => {
             submitObservable.removeListener(cb);
-        }
+        }*/
     }, [submitObservable, trigger]);
 
     useEffect(() => {
@@ -65,7 +65,7 @@ export const ChannelAddLinkedIn: FC<{ setOpenWarning: (param: any) => void }> = 
             }
         }
 
-        register('channels.linkedin.description', { validate: strRequired, value: '' });
+        /*register('channels.linkedin.description', { validate: strRequired, value: '' });
         register('channels.linkedin.clientid', { validate: strRequired, value: '' });
         register('channels.linkedin.clientsecret', { validate: strRequired, value: '' });
         register('channels.linkedin.accesstoken', { validate: strRequired, value: '' });
@@ -103,7 +103,7 @@ export const ChannelAddLinkedIn: FC<{ setOpenWarning: (param: any) => void }> = 
 
         return () => {
             unregister('channels.linkedin');
-        }
+        }*/
     }, [register, unregister]);
 
     useEffect(() => {
@@ -144,7 +144,7 @@ export const ChannelAddLinkedIn: FC<{ setOpenWarning: (param: any) => void }> = 
                         {'<< '}<Trans i18nKey={langKeys.previoustext} />
                     </Link>
                 </Breadcrumbs>
-                <div>
+                {/*<div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.channel_linkedintitle)}</div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>{t(langKeys.channel_genericalert)}</div>
                     <div className="row-zyx">
@@ -233,7 +233,7 @@ export const ChannelAddLinkedIn: FC<{ setOpenWarning: (param: any) => void }> = 
                             <Trans i18nKey={langKeys.next} />
                         </Button>
                     </div>
-                </div>
+                </div>*/}
             </div>
         )
     }
@@ -270,7 +270,7 @@ export const ChannelAddLinkedIn: FC<{ setOpenWarning: (param: any) => void }> = 
                     </Typography>
                 </div>
             )}
-            <FieldEdit
+            {/*<FieldEdit
                 onChange={(value) => { setValue('channels.linkedin.description', value); setNextbutton2(!value); }}
                 valueDefault={getValues('channels.linkedin.description')}
                 label={t(langKeys.givechannelname)}
@@ -284,7 +284,7 @@ export const ChannelAddLinkedIn: FC<{ setOpenWarning: (param: any) => void }> = 
                         </InputAdornment>
                     )
                 }}
-            />
+            />*/}
             {!hasFinished && (
                 <Button
                     onClick={() => setView("view2")}

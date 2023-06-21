@@ -75,7 +75,7 @@ export const ChannelAddEmail: FC<{ setOpenWarning: (param: any) => void }> = ({ 
     }, [submitObservable, trigger]);
 
     const changeSubmitError = async () => {
-        if (registerInfobip) {
+        /*if (registerInfobip) {
             const v1 = await trigger('channels.email.url');
             const v2 = await trigger('channels.email.apikey');
             const v3 = await trigger('channels.email.emittername');
@@ -98,7 +98,7 @@ export const ChannelAddEmail: FC<{ setOpenWarning: (param: any) => void }> = ({ 
             const v6 = await trigger('channels.email.imapport');
             const v7 = await trigger('channels.email.imapssl');
             setSubmitError(!v1 || !v2 || !v3 || !v4 || !v5 || !v6 || !v7);
-        }
+        }*/
     }
 
     useEffect(() => {
@@ -108,7 +108,7 @@ export const ChannelAddEmail: FC<{ setOpenWarning: (param: any) => void }> = ({ 
             }
         }
 
-        register('channels.email.description', { validate: strRequired, value: '' });
+        /*register('channels.email.description', { validate: strRequired, value: '' });
         register('channels.email.url', { validate: strRequired, value: '' });
         register('channels.email.apikey', { validate: strRequired, value: '' });
         register('channels.email.emittername', { validate: strRequired, value: '' });
@@ -154,7 +154,7 @@ export const ChannelAddEmail: FC<{ setOpenWarning: (param: any) => void }> = ({ 
 
         return () => {
             unregister('channels.email');
-        }
+        }*/
     }, [register, unregister]);
 
     useEffect(() => {
@@ -186,14 +186,14 @@ export const ChannelAddEmail: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                 if (!exchangeCodeResult.error) {
                     dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.success) }));
                     if (exchangeCodeResult.data) {
-                        setValue('channels.email.accesstoken', exchangeCodeResult.data.access_token);
+                        /*setValue('channels.email.accesstoken', exchangeCodeResult.data.access_token);
                         setValue('channels.email.idtoken', exchangeCodeResult.data.id_token);
                         setValue('channels.email.refreshtoken', exchangeCodeResult.data.refresh_token);
                         setValue('channels.email.scope', exchangeCodeResult.data.scope);
                         setValue('channels.email.tokentype', exchangeCodeResult.data.token_type);
                         setValue('channels.email.url', 'NOUSE');
                         setValue('channels.email.apikey', 'NOUSE');
-                        setValue('channels.email.emittername', 'NOUSE');
+                        setValue('channels.email.emittername', 'NOUSE');*/
 
                         setView("view1");
                         setHasFinished(true);
@@ -226,7 +226,7 @@ export const ChannelAddEmail: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                             {'<< '}<Trans i18nKey={langKeys.previoustext} />
                         </Link>
                     </Breadcrumbs>
-                    <div>
+                    {/*<div>
                         <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.emailtitle)}</div>
                         <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>{t(langKeys.emailtitle2)}</div>
                         <div className="row-zyx">
@@ -301,7 +301,7 @@ export const ChannelAddEmail: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                                 <Trans i18nKey={langKeys.next} />
                             </Button>
                         </div>
-                    </div>
+                    </div>*/}
                 </div>
             )
         }
@@ -356,7 +356,7 @@ export const ChannelAddEmail: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                             {'<< '}<Trans i18nKey={langKeys.previoustext} />
                         </Link>
                     </Breadcrumbs>
-                    <div>
+                    {/*<div>
                         <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.imaptitle)}</div>
                         <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>{t(langKeys.imaptitle2)}</div>
                         <div className="row-zyx">
@@ -497,7 +497,7 @@ export const ChannelAddEmail: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                                 <Trans i18nKey={langKeys.next} />
                             </Button>
                         </div>
-                    </div>
+                    </div>*/}
                 </div>
             )
         }
@@ -516,7 +516,7 @@ export const ChannelAddEmail: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                             {'<< '}<Trans i18nKey={langKeys.previoustext} />
                         </Link>
                     </Breadcrumbs>
-                    <div style={{ width: "100%", marginTop: "20px", alignItems: "center", display: "flex" }}>
+                    {/*<div style={{ width: "100%", marginTop: "20px", alignItems: "center", display: "flex" }}>
                         <div style={{ flex: "1", margin: "0px 15px" }}>
                             <Button
                                 onClick={() => {
@@ -556,7 +556,7 @@ export const ChannelAddEmail: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                             >{t(langKeys.registerimap)}
                             </Button>
                         </div>
-                    </div>
+                    </div>*/}
                 </div>
             )
         }
@@ -595,7 +595,7 @@ export const ChannelAddEmail: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                     </Typography>
                 </div>
             )}
-            <FieldEdit
+            {/*<FieldEdit
                 onChange={(value) => { setValue('channels.email.description', value); setNextbutton2(!value); }}
                 valueDefault={getValues('channels.email.description')}
                 label={t(langKeys.givechannelname)}
@@ -609,7 +609,7 @@ export const ChannelAddEmail: FC<{ setOpenWarning: (param: any) => void }> = ({ 
                         </InputAdornment>
                     )
                 }}
-            />
+            />*/}
             {!hasFinished && (
                 <Button
                     onClick={() => setView("view2")}
