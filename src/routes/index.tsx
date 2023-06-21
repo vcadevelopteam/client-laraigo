@@ -61,6 +61,7 @@ const ChannelAdd = lazy(() => import('pages/channels/ChannelAdd'));
 const ChannelAddChatWeb = lazy(() => import('pages/channels/ChannelAddChatWeb'));
 const ChannelAddWebForm = lazy(() => import('pages/channels/ChannelAddWebForm'));
 const ChannelAddFacebook = lazy(() => import('pages/channels/ChannelAddFacebook'));
+const ChannelAddFacebookLead = lazy(() => import('pages/channels/ChannelAddFacebookLead'));
 const ChannelAddFacebookWorkplace = lazy(() => import('pages/channels/ChannelAddFacebookWorkplace'));
 const ChannelAddFacebookDM = lazy(() => import('pages/channels/ChannelAddFacebookDM'));
 const ChannelAddMessenger = lazy(() => import('pages/channels/ChannelAddMessenger'));
@@ -232,6 +233,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.CHANNELS_ADD} component={() => (<Layout mainClasses={classes.main}><ChannelAdd /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_CHATWEB} component={() => (<Layout mainClasses={classes.main}><ChannelAddChatWeb edit={false} /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_WEBFORM} component={() => (<Layout mainClasses={classes.main}><ChannelAddWebForm edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_FACEBOOK_LEAD.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddFacebookLead /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_FACEBOOK.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddFacebook /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_FACEBOOKDM.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddFacebookDM /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_FACEBOOKWORKPLACE.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddFacebookWorkplace /></Layout>)} />

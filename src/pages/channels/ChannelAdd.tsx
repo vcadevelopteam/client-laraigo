@@ -221,6 +221,11 @@ export const ChannelAdd: FC = () => {
 
     const businessChannelOptions: ChannelOption[] = [
         {
+            icon: c => <FacebookColor className={c} />,
+            label: "Facebook Leads",
+            onClick: () => { history.push(paths.CHANNELS_ADD_FACEBOOK_LEAD.path, whatsAppData) },
+        },
+        {
             icon: c => <ChatWebColor className={c} />,
             label: t(langKeys.channel_chatweb),
             onClick: () => history.push(paths.CHANNELS_ADD_CHATWEB),
