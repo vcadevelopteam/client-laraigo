@@ -122,9 +122,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
     const dictAutoCloseHolding = useSelector(state => state.login.validateToken.user?.properties?.auto_close_holding);
     const originLabel = useSelector(state => state.login.validateToken.user?.properties?.origin_label);
     const secondsToAnwserCall = useSelector(state => state.login.validateToken.user?.properties?.seconds_to_answer_call);
-    // const statusCall = useSelector(state => state.voximplant?.statusCall);
     const waitingcustomermessage = useSelector(state => state.login.validateToken.user?.properties?.waiting_customer_message);
-    // const callVoxi = useSelector(state => state.voximplant.call);
     const calls = useSelector(state => state.voximplant.calls);
     const [callVoxi, setCallVoxi] = useState<ICallGo | null>(null);
     const dispatch = useDispatch();
@@ -150,7 +148,9 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
             if (multiData?.data[6] && multiData.data[6].success) {
                 const channelSelected = multiData.data[6].data.find(x => x.communicationchannelid === communicationchannelid);
                 setIconColor(channelSelected?.coloricon || '#7721AD');
-            } else if (multiData?.data[14] && multiData.data[14].success) {
+            }
+            
+            if (multiData?.data[14] && multiData.data[14].success) {
                 data14.current = multiData.data[14].data;
             }
         }
@@ -293,8 +293,8 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                         <LabelGo
                             isTimer={status !== "CERRADO"}
                             tooltip={t(langKeys.waiting_person_time)}
-                            label={status === "CERRADO" ? getTimeBetweenDates(new Date(lastconversationdate || ""), new Date(finishdate || "")) : undefined}
-                            dateGo={status !== "CERRADO" ? (lastconversationdate || new Date().toISOString()) : undefined}
+                            label={status === "CERRADO" ? getTimeBetweenDates(new Date(lastconversationdate ?? ""), new Date(finishdate ?? "")) : undefined}
+                            dateGo={status !== "CERRADO" ? (lastconversationdate ?? new Date().toISOString()) : undefined}
                             color="#FB5F5F"
                             callback={validateTime}
                         />
