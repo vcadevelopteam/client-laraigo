@@ -583,7 +583,7 @@ const DashboardKPI: FC = () => {
                                     <XAxis dataKey="date" />
                                     <YAxis tickFormatter={v=>(v)} width={50} domain={[0, (dataMax:any) => (Math.floor(dataMax * 1.1) + 5)]}/>
                                     <RechartsTooltip formatter={(value: any, name: any) => [(value), t(name)]} />
-                                    <Line type="monotone" name={t(langKeys.report_kpioperativo_tickets)} dataKey="tickets_agents" stroke="#c0504d" strokeWidth={2}>
+                                    <Line type="monotone" name={ t(langKeys.report_kpioperativo_tickets) } dataKey="tickets_agents" stroke="#c0504d" strokeWidth={2}>
                                         <LabelList dataKey="tickets_count" position="top"  fill="#c0504d"/>
                                     </Line>
                                     <Line type="monotone" name={t(langKeys.agent_plural)} dataKey="agents" stroke="#4f81bd" strokeWidth={2}>
@@ -610,7 +610,7 @@ const DashboardKPI: FC = () => {
                                     <YAxis yAxisId="left"width={100} domain={[0, (dataMax:any) => (Math.floor(dataMax * 1.1) + 5)]}/>
                                     <RechartsTooltip formatter={(value: any, name: any, props:any) => [props.dataKey==="participacion"?value+"%":value, t(name)]} />
                                     <Legend verticalAlign="top" height={50}/>
-                                    <Line yAxisId="left" type="monotone" name={t(langKeys.report_kpioperativo_tickets)} dataKey="tickets_count" stroke="#c0504d" strokeWidth={2}>
+                                    <Line yAxisId="left" type="monotone" name={ t(langKeys.report_kpioperativo_tickets) } dataKey="tickets_count" stroke="#c0504d" strokeWidth={2}>
                                         <LabelList dataKey="tickets_count" position="top"  fill="#c0504d"/>
                                     </Line>
                                     <Line yAxisId="left" type="monotone" name={t(langKeys.report_kpioperativo_abandoned_tickets)} dataKey="abandoned_tickets" stroke="#4f81bd" strokeWidth={2}>
