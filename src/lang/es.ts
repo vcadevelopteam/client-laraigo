@@ -1856,7 +1856,7 @@ const translation: LangKeys = {
   invitation_phone: "Se ha enviado una invitación de calendario a su teléfono registrado.",
   schedule_event: "Programar evento",
   reschedule_event: "Reprogramar evento",
-  successfully_scheduled: "Ha programado una cita con éxito",
+  successfully_scheduled: "Ha programado el evento con éxito",
   confirmed: "Confirmado",
   enter_details: "Ingrese los detalles",
   confirm: "Confirmar",
