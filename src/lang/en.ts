@@ -545,12 +545,15 @@ const translation: LangKeys = {
 
   attending: 'Attending',
   orders: "Orders",
+  funnelType: "Funnel Type",
   orderlist: "Orders list",
   ordernumber: "Order N°",
   orderstatus: "Order status",
   ordersdetail: "Order details",
   picture: "Picture",
   view: "Watch",
+  byway: "By way",
+  bycount: "By count",
 
   type_domain_ninguno: 'None',
   type_domain_bot: 'Bot domain',
