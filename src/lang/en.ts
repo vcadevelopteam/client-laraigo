@@ -4392,7 +4392,7 @@ const translation: LangKeys = {
   channel_gmailalert1: 'Install the chatbot on your mail and start getting leads.',
   channel_gmailalert2: 'The selected mail account will be the one used on this process.',
   channel_gmailtitle: 'Connect Gmail',
-  subscription_missinginfo: 'You must complete the information of the selected channels',
+  subscription_missinginfo: 'You must complete the missing information to proceed with the registration',
 
   registergupshup: "Register as Gupshup",
   whatsapptitlegupshup: "To connect a WhatsApp Gupshup account please enter the information of the app you want to connect in the following form",
@@ -5269,6 +5269,7 @@ const translation: LangKeys = {
   subscription_address: 'Address',
   subscription_email: 'Electronic mail',
   subscription_creditcardnumber: 'Card number',
+  subscription_noselectedchannel: 'You must select at least one channel',
 };
 
 const enResource: ResourceLanguage = {
