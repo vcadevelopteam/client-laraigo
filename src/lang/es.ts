@@ -4292,7 +4292,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   channel_gmailalert1: 'Instala el chatbot en tu correo y empieza a conseguir clientes potenciales.',
   channel_gmailalert2: 'La cuenta de correo que selecciones será usada para este proceso',
   channel_gmailtitle: 'Conectar Gmail',
-  subscription_missinginfo: 'Debe completar la información faltante para los canales seleccionados',
+  subscription_missinginfo: 'Debe completar la información faltante para proceder con el registro',
 
   registergupshup: "Registrar como Gupshup",
   whatsapptitlegupshup: "Para conectar una cuenta de WhatsApp Gupshup, ingresa la información del App que deseas conectar en el siguiente formulario",
@@ -5174,6 +5174,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   subscription_address: 'Dirección',
   subscription_email: 'Correo electrónico',
   subscription_creditcardnumber: 'Número de tarjeta',
+  subscription_noselectedchannel: 'Debes seleccionar al menos un canal',
 };
 
 const esResource: ResourceLanguage = {
