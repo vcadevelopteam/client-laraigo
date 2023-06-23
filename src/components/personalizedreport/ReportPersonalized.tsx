@@ -318,13 +318,12 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
                             x[columnclean] = x[columnclean] ? t("yes") : t("no")
                         }
                         if (["conversation.tags"].includes(y.columnname)) {
-                            console.log("aaa")
                             const tagsCleaned = x[columnclean]?.split(',').reduce((accx: Dictionary, itemx: string) => ({
                                 lastTag: itemx,
                                 acc: accx.lastTag === itemx ? accx.acc : [...accx.acc, itemx]
                             }), { lastTag: '', acc: [] })
 
-                            x[columnclean] = tagsCleaned.acc.join(",") ?? "";
+                            x[columnclean] = tagsCleaned?.acc.join(",") ?? "";
                         }
                     })
                     return x;
