@@ -56,7 +56,7 @@ const Orders: FC = () => {
     const columns = React.useMemo(
         () => [
             {
-                accessor: 'orderid',
+                accessor: 'ordernumber',
                 NoFilter: true,
                 isComponent: true,
                 minWidth: 60,
@@ -73,12 +73,8 @@ const Orders: FC = () => {
             },
             {
                 Header: t(langKeys.ordernumber),
-                accessor: 'ordernumber',
-                NoFilter: true,                
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return row.orderid
-                }
+                accessor: 'orderid',
+                NoFilter: true,          
             },
             {
                 Header: t(langKeys.date),
