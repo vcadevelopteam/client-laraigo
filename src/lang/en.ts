@@ -5243,6 +5243,8 @@ const translation: LangKeys = {
   T_YOUTUBE: 'YOUTUBE',
   channel_workplace: 'channel_workplace',
   channel_workplacedm: 'channel_workplacedm',
+  ticket_originalpublishdate: 'Original publication date',
+  ticket_followercount: 'Follower amount',
 };
 
 const enResource: ResourceLanguage = {

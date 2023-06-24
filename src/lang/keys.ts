@@ -5160,6 +5160,8 @@ export const langKeys = {
   T_YOUTUBE: 'T_YOUTUBE',
   channel_workplace: 'Workplace',
   channel_workplacedm: 'Workplace DM',
+  ticket_originalpublishdate: 'ticket_originalpublishdate',
+  ticket_followercount: 'ticket_followercount',
 };
 
 export type LangKeys = typeof langKeys;

@@ -5171,6 +5171,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   T_YOUTUBE: 'YOUTUBE',
   channel_workplace: 'Workplace',
   channel_workplacedm: 'Workplace DM',
+  ticket_originalpublishdate: 'Fecha de publicación original',
+  ticket_followercount: 'Cantidad de seguidores',
 };
 
 const esResource: ResourceLanguage = {

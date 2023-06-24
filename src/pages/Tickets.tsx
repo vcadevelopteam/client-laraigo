@@ -657,12 +657,12 @@ const DialogLoadTickets: React.FC<{
         else {
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_channel_selected) }))
         }
-        
+
     });
-    
+
     const handleUpload = async (files: any) => {
         if (Array.from<File>(files).length > 10) {
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.max_limit_file_per_upload, {n: 10}) }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.max_limit_file_per_upload, { n: 10 }) }))
         }
         else {
             setFileList(Array.from<File>(files));
@@ -675,7 +675,7 @@ const DialogLoadTickets: React.FC<{
             {},
             {},
             {},
-            {'CLIENT': 'CLIENT', 'BOT': 'BOT'}
+            { 'CLIENT': 'CLIENT', 'BOT': 'BOT' }
         ];
         const header = [
             'date',
@@ -744,8 +744,8 @@ const DialogLoadTickets: React.FC<{
                 marginTop: "10px"
             }}>
                 {fileList && fileList?.map((x, i) => (
-                        <div>{i + 1}. {x.name}</div>
-                    )
+                    <div>{i + 1}. {x.name}</div>
+                )
                 )}
             </div>
         </DialogZyx>)
@@ -796,10 +796,10 @@ const Tickets = () => {
         // dispatch(getCallRecord({call_session_history_id: ticket.postexternalid}));
         // setWaitDownloadRecord(true);
         try {
-            const axios_result = await VoximplantService.getCallRecord({call_session_history_id: ticket.postexternalid});
+            const axios_result = await VoximplantService.getCallRecord({ call_session_history_id: ticket.postexternalid });
             if (axios_result.status === 200) {
                 let buff = Buffer.from(axios_result.data, 'base64');
-                const blob = new Blob([buff], {type: axios_result.headers['content-type'].split(';').find((x: string) => x.includes('audio'))});
+                const blob = new Blob([buff], { type: axios_result.headers['content-type'].split(';').find((x: string) => x.includes('audio')) });
                 const objectUrl = window.URL.createObjectURL(blob);
                 let a = document.createElement('a');
                 a.href = objectUrl;
@@ -815,7 +815,7 @@ const Tickets = () => {
 
     useEffect(() => {
         if (waitDownloadRecord) {
-            if (!getCallRecordRes.loading && !getCallRecordRes.error ) {
+            if (!getCallRecordRes.loading && !getCallRecordRes.error) {
                 if (getCallRecordRes.data) {
                     window.open(getCallRecordRes.data)
                 }
@@ -870,16 +870,16 @@ const Tickets = () => {
                     const row = props.cell.row.original;
                     return (
                         row.communicationchanneltype === 'VOXI'
-                        && row.postexternalid
-                        && row.callrecording
-                        && row.callanswereddate ?
-                        <Tooltip title={t(langKeys.download_record) || ""}>
-                            <IconButton size="small" onClick={() => downloadCallRecord(row)}
-                            >
-                                <CallRecordIcon style={{ fill: '#7721AD' }} />
-                            </IconButton>
-                        </Tooltip>
-                        : null
+                            && row.postexternalid
+                            && row.callrecording
+                            && row.callanswereddate ?
+                            <Tooltip title={t(langKeys.download_record) || ""}>
+                                <IconButton size="small" onClick={() => downloadCallRecord(row)}
+                                >
+                                    <CallRecordIcon style={{ fill: '#7721AD' }} />
+                                </IconButton>
+                            </Tooltip>
+                            : null
                     )
                 }
             },
@@ -1065,7 +1065,7 @@ const Tickets = () => {
                 type: 'time'
             },
             {
-                Header: t(langKeys.supervisionduration ),
+                Header: t(langKeys.supervisionduration),
                 accessor: 'supervisionduration',
                 type: 'time'
             },
@@ -1105,6 +1105,21 @@ const Tickets = () => {
                 Header: t(langKeys.ticket_labels),
                 helpText: t(langKeys.ticket_labels_help),
                 accessor: 'labels'
+            },
+            {
+                Header: t(langKeys.ticket_originalpublishdate),
+                accessor: 'originalpublicationdate',
+                type: 'date',
+                sortType: 'datetime',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return row.originalpublicationdate ? convertLocalDate(row.originalpublicationdate).toLocaleString() : ''
+                }
+            },
+            {
+                Header: t(langKeys.ticket_followercount),
+                accessor: 'numberfollowers',
+                type: 'number'
             },
         ],
         []
@@ -1259,7 +1274,7 @@ const Tickets = () => {
                 ButtonsElement={() => (
                     <>
                         {
-                            ['SUPERADMIN','ADMINISTRADOR','ADMINISTRADOR P'].includes(user?.roledesc || '')
+                            ['SUPERADMIN', 'ADMINISTRADOR', 'ADMINISTRADOR P'].includes(user?.roledesc || '')
                             && mainResult?.multiData?.data?.[8]?.data?.[0]?.propertyvalue === '1'
                             && <Button
                                 className={classes.button}
