@@ -5187,6 +5187,8 @@ export const langKeys = {
   subscription_email: 'subscription_email',
   subscription_creditcardnumber: 'subscription_creditcardnumber',
   subscription_noselectedchannel: 'subscription_noselectedchannel',
+  ticket_originalpublishdate: 'ticket_originalpublishdate',
+  ticket_followercount: 'ticket_followercount',
 };
 
 export type LangKeys = typeof langKeys;

@@ -5198,6 +5198,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   subscription_email: 'Correo electrónico',
   subscription_creditcardnumber: 'Número de tarjeta',
   subscription_noselectedchannel: 'Debes seleccionar al menos un canal',
+  ticket_originalpublishdate: 'Fecha de publicación original',
+  ticket_followercount: 'Cantidad de seguidores',
 };
 
 const esResource: ResourceLanguage = {

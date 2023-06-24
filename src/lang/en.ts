@@ -5270,6 +5270,8 @@ const translation: LangKeys = {
   subscription_email: 'Electronic mail',
   subscription_creditcardnumber: 'Card number',
   subscription_noselectedchannel: 'You must select at least one channel',
+  ticket_originalpublishdate: 'Original publication date',
+  ticket_followercount: 'Follower amount',
 };
 
 const enResource: ResourceLanguage = {
