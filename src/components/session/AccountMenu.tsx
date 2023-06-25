@@ -13,7 +13,8 @@ import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import { ManageOrganization, BadgeGo, StatusConnection } from 'components';
 import { connectAgentUI, disconnectSocket, emitEvent } from "store/inbox/actions";
 import { disconnectVoxi } from "store/voximplant/actions";
-const isIncremental = window.location.href.includes("incremental")
+import { apiUrls } from 'common/constants';
+const isIncremental = apiUrls.LOGIN_URL.includes("historical")
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -76,7 +77,7 @@ const AccountMenu: FC = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const history = useHistory();
-    const voxiConnection = useSelector(state => state.voximplant.connection);    
+    const voxiConnection = useSelector(state => state.voximplant.connection);
 
     const user = useSelector(state => state.login.validateToken.user);
     const userConnected = useSelector(state => state.inbox.userConnected);
@@ -111,12 +112,20 @@ const AccountMenu: FC = () => {
     const openprivacypolicies = () => {
         window.open("/privacy", '_blank');
     }
-    
+
     const consultHistoricalData = () => {
-        if(isIncremental){
-            window.open("https://testing.laraigo.com/sign-in", '_blank');
-        }else{
-            window.open("https://incremental-prod.laraigo.com/", '_blank');
+        if (isIncremental) {
+            if (window.location.hostname === 'incremental-claro.laraigo') {
+                window.open("https://claro.laraigo.com/sign-in", '_blank');
+            } else {
+                window.open("https://app.laraigo.com/sign-in", '_blank');
+            }
+        } else {
+            if (window.location.hostname === 'claro.laraigo.com') {
+                window.open("https://incremental-claro.laraigo.com/sign-in", '_blank');
+            } else {
+                window.open("https://incremental-prod.laraigo.com/sign-in", '_blank');
+            }
         }
     }
 
@@ -201,7 +210,7 @@ const AccountMenu: FC = () => {
                         fullWidth
                         style={{ fontWeight: "normal" }}
                     >
-                        <Trans i18nKey={isIncremental?langKeys.gotolaraigo: langKeys.consulthistoricaldata} />
+                        <Trans i18nKey={isIncremental ? langKeys.gotolaraigo : langKeys.consulthistoricaldata} />
                     </Button>
                     <Button
                         variant="outlined"

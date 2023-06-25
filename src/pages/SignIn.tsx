@@ -33,7 +33,7 @@ import { LaraigoLogo } from 'icons';
 import { useForm } from 'react-hook-form';
 import { FieldEdit, DialogZyx } from 'components';
 import { recoverPassword } from 'store/subscription/actions';
-const isIncremental = window.location.href.includes("incremental")
+const isIncremental = apiUrls.LOGIN_URL.includes("historical")
 
 export const useStyles = makeStyles((theme) => ({
     paper: {
@@ -217,10 +217,18 @@ const SignIn = () => {
         setOpenModal(false);
     }
     const consultHistoricalData = () => {
-        if(isIncremental){
-            window.open("https://testing.laraigo.com/sign-in", '_blank');
-        }else{
-            window.open("https://incremental-prod.laraigo.com/", '_blank');
+        if (isIncremental) {
+            if (window.location.hostname === 'incremental-claro.laraigo') {
+                window.open("https://claro.laraigo.com/sign-in", '_blank');
+            } else {
+                window.open("https://app.laraigo.com/sign-in", '_blank');
+            }
+        } else {
+            if (window.location.hostname === 'claro.laraigo.com') {
+                window.open("https://incremental-claro.laraigo.com/sign-in", '_blank');
+            } else {
+                window.open("https://incremental-prod.laraigo.com/sign-in", '_blank');
+            }
         }
     }
 
@@ -337,13 +345,13 @@ const SignIn = () => {
                                             autoLoad={false}
                                         />
                                     </div>
-                                    <div className={classes.buttonGoogle} style={{marginTop: 16}}>
+                                    <div className={classes.buttonGoogle} style={{ marginTop: 16 }}>
                                         <Button
                                             variant="outlined"
                                             color="primary"
-                                            onClick={() => consultHistoricalData()}
+                                            onClick={consultHistoricalData}
                                         >
-                                            {t(isIncremental?langKeys.gotolaraigo: langKeys.consulthistoricaldata)}
+                                            {t(isIncremental ? langKeys.gotolaraigo : langKeys.consulthistoricaldata)}
                                         </Button>
                                     </div>
                                 </div> :
