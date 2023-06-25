@@ -591,6 +591,8 @@ const translation: LangKeys = {
   intentionsdescription: "The intention is named and associated with the question the customer asks.",
   entitiesdescription: "The entity that associates the category and keyword is named, to be detected.",
   type_gender_masculino: 'Male',
+  consulthistoricaldata: "Consult historical data",
+  gotolaraigo: "Go to laraigo",
 
   type_documenttype_ce: 'Immigration card',
   type_documenttype_dni: 'National identity document',
