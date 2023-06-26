@@ -2452,6 +2452,8 @@ const translation: LangKeys = {
 
   report_conversationwhatsapp: 'Whatsapp conversations',
 
+  "personalizedreport_conversation.originalpublicationdate": "conversation publication date",
+  "personalizedreport_conversation.numberfollowers": "conversation follower number",
   "personalizedreport_conversation.userjoy": "conversation user joy",
   "personalizedreport_conversation.userfear": "conversation user fear",
   "personalizedreport_conversation.userdisgust": "conversation user disgust",
