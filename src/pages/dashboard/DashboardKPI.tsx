@@ -583,8 +583,8 @@ const DashboardKPI: FC = () => {
                                     <XAxis dataKey="date" />
                                     <YAxis tickFormatter={v=>(v)} width={50} domain={[0, (dataMax:any) => (Math.floor(dataMax * 1.1) + 5)]}/>
                                     <RechartsTooltip formatter={(value: any, name: any) => [(value), t(name)]} />
-                                    <Line type="monotone" name={ t(langKeys.report_kpioperativo_tickets) } dataKey="tickets_agents" stroke="#c0504d" strokeWidth={2}>
-                                        <LabelList dataKey="tickets_count" position="top"  fill="#c0504d"/>
+                                    <Line type="monotone" name={t(langKeys.report_kpioperativo_tickets)} dataKey="tickets_count" stroke="#c0504d" strokeWidth={2}>
+                                        <LabelList dataKey="tickets_agents" position="top"  fill="#c0504d"/>
                                     </Line>
                                     <Line type="monotone" name={t(langKeys.agent_plural)} dataKey="agents" stroke="#4f81bd" strokeWidth={2}>
                                         <LabelList dataKey="agents" position="top" fill="#4f81bd"/>
