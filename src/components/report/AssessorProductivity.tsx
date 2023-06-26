@@ -588,7 +588,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                 </Grid>
             </Grid>
 
-            <Grid container spacing={3} className={classes.containerDetails}>
+            <Grid container spacing={3} className={classes.containerDetails} style={{paddingTop:10}}>
                 <Grid item xs={12} md={6} lg={6}>
                     <Card>
                         <CardContent style={{ paddingBottom: 10, display: "flex" }}>

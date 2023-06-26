@@ -26,6 +26,10 @@ export const langKeys = {
   tooltipintegrationurl: "tooltipintegrationurl",
   web_form: "web_form",
   phasechange: "phasechange",
+  ticket_originalpublicationdate: "ticket_originalpublicationdate",
+  ticket_numberfollowers: "ticket_numberfollowers",
+  "personalizedreport_conversation.originalpublicationdate": "personalizedreport_conversation.originalpublicationdate",
+  "personalizedreport_conversation.numberfollowers":"personalizedreport_conversation.numberfollowers",
   sdrequestcode: "sdrequestcode",
   consulthistoricaldata: "consulthistoricaldata",
   gotolaraigo: "gotolaraigo",
@@ -2583,6 +2587,8 @@ export const langKeys = {
 
   report_conversationwhatsapp: 'report_conversationwhatsapp',
 
+  "personalizedreport_conversation.originalpublicationdate": "personalizedreport_conversation.originalpublicationdate",
+  "personalizedreport_conversation.numberfollowers": "personalizedreport_conversation.numberfollowers",
   "personalizedreport_conversation.userjoy": "personalizedreport_conversation.userjoy",
   "personalizedreport_conversation.userfear": "personalizedreport_conversation.userfear",
   "personalizedreport_conversation.userdisgust": "personalizedreport_conversation.userdisgust",
@@ -5163,6 +5169,8 @@ export const langKeys = {
   T_YOUTUBE: 'T_YOUTUBE',
   channel_workplace: 'Workplace',
   channel_workplacedm: 'Workplace DM',
+  ticket_originalpublishdate: 'ticket_originalpublishdate',
+  ticket_followercount: 'ticket_followercount',
 };
 
 export type LangKeys = typeof langKeys;

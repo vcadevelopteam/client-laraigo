@@ -548,6 +548,10 @@ const translation: LangKeys = {
   orderlist: "Orders list",
   ordernumber: "Order N°",
   orderstatus: "Order status",
+  ticket_originalpublicationdate: "Original publication date",
+  ticket_numberfollowers: "Number Followers",
+  "personalizedreport_conversation.originalpublicationdate": "Original publication date",
+  "personalizedreport_conversation.numberfollowers":"Number Followers",
   ordersdetail: "Order details",
   picture: "Picture",
   view: "Watch",
@@ -2436,6 +2440,8 @@ const translation: LangKeys = {
 
   report_conversationwhatsapp: 'Whatsapp conversations',
 
+  "personalizedreport_conversation.originalpublicationdate": "conversation publication date",
+  "personalizedreport_conversation.numberfollowers": "conversation follower number",
   "personalizedreport_conversation.userjoy": "conversation user joy",
   "personalizedreport_conversation.userfear": "conversation user fear",
   "personalizedreport_conversation.userdisgust": "conversation user disgust",
@@ -5246,6 +5252,8 @@ const translation: LangKeys = {
   T_YOUTUBE: 'YOUTUBE',
   channel_workplace: 'channel_workplace',
   channel_workplacedm: 'channel_workplacedm',
+  ticket_originalpublishdate: 'Original publication date',
+  ticket_followercount: 'Follower amount',
 };
 
 const enResource: ResourceLanguage = {
