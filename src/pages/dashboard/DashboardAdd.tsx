@@ -103,6 +103,7 @@ interface Item {
     graph: string;
     column: string;
     summarizationfunction?: string;
+    funnelType?: string;
     tags?: any[];
 }
 
@@ -535,6 +536,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
     const { t } = useTranslation();
     const [selectedIndex, setSelectedIndex] = useState(-1);
     const [contentType, setContentType] = useState('');
+    const [showLevel, setShowLevel] = useState(true);
     const [tagsdata, settagsdata] = useState<any>(getValues(`${key}.tags`)||[]);
     // const [graphicType, setgraphicType] = useState(getValues(`${key}.graph`));
     const [columns, setColumns] = useState<ColumnTemplate[]>([]);
@@ -588,11 +590,14 @@ export const LayoutItem: FC<LayoutItemProps> = ({
             register(`${key}.kpiid`, { validate: mandatoryNumField, value: getValues(`${key}.kpiid`) || 0 });
         }
         else if (contentType === "funnel") {
+            if(!getValues(`${key}.funnelType`)) setValue(`${key}.funnelType`, "byway");
+            setShowLevel(getValues(`${key}.funnelType`)!=="bycount")
             unregister(`${key}.kpiid`);
             unregister(`${key}.grouping`);
             unregister(`${key}.graph`);
             
             register(`${key}.reporttemplateid`, { validate: mandatoryReportTemplate, value: getValues(`${key}.reporttemplateid`) || 0 });
+            register(`${key}.funnelType`);
             register(`${key}.column`, { validate: mandatoryColumn, value: getValues(`${key}.column`) || '' });
             register(`${key}.tags`);
         }
@@ -801,6 +806,25 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                 <>
                     <FieldSelect
                         className={classes.field}
+                        label={t(langKeys.funnelType)}
+                        data={[
+                            {value: "byway", description: t(langKeys.byway)},
+                            {value: "bycount", description: t(langKeys.bycount)},
+                        ]}
+                        optionDesc="description"
+                        optionValue="value"
+                        valueDefault={!!getValues(`${key}.funnelType`)?getValues(`${key}.funnelType`):"bycount"}
+                        onChange={(v: any) => {
+                            debugger
+                            console.log(showLevel)
+                            const value = v?.value || "byway";
+                            setValue(`${key}.funnelType`, value);
+                            if(value==="bycount") setShowLevel(false)
+                        }}
+                        disabled={loading}
+                    />
+                    <FieldSelect
+                        className={classes.field}
                         label={t(langKeys.report)}
                         data={templates}
                         optionDesc="description"
@@ -841,7 +865,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                         {tagsdata.map((tag:any, i:number) => {
                             return <div key={`tagdatalevel${i+1}`}>
                                 <div className={classes.funnelLvlTitle}>
-                                    <p style={{fontSize: 14, fontWeight: 500}}>{t(langKeys.level)} {i+1}</p>
+                                    <p style={{fontSize: 14, fontWeight: 500}}>{showLevel?`${t(langKeys.level)} ${i+1}`:""}</p>
                                     <IconButton onClick={()=>deleteFunnel(i)} size="small" style={{ width: 18, height: 18, margin: 14, marginRight: 0 }} >
                                         <CloseIcon style={{ width: 18, height: 18 }} />
                                     </IconButton>
@@ -875,7 +899,7 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                                                 validate: (value: any) => (value && value.length) || t(langKeys.field_required)
                                             })
                                         }}
-                                        label={`${t(langKeys.title)} ${t(langKeys.level)} ${i+1}`}
+                                        label={showLevel?`${t(langKeys.title)} ${t(langKeys.level)} ${i+1}`:`${t(langKeys.title)} ${t(langKeys.tag)}`}
                                         valueDefault={getValues(`${key}.tags[${i}].title`)}
                                         className={classes.field}
                                         onChange={(value: any) => {
