@@ -218,7 +218,7 @@ const SignIn = () => {
     }
     const consultHistoricalData = () => {
         if (isIncremental) {
-            if (window.location.hostname === 'incremental-claro.laraigo') {
+            if (window.location.hostname === 'incremental-claro.laraigo.com') {
                 window.open("https://claro.laraigo.com/sign-in", '_blank');
             } else {
                 window.open("https://app.laraigo.com/sign-in", '_blank');
