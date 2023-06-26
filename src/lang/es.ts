@@ -2330,6 +2330,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   report_voicecall_closetype: "Tipo de cierre",
   report_voicecall_holdingtime: "Tiempo en espera",
 
+  "personalizedreport_conversation.originalpublicationdate": "fecha de publicación original de la conversación",
+  "personalizedreport_conversation.numberfollowers": "cantidad de seguidores de la conversación",
   "personalizedreport_conversation.context": "contexto de la conversación",
   "personalizedreport_conversation.personaveragereplytime": "tiempo promedio de respuesta de la persona de la conversación",
   "personalizedreport_conversation.closetype": "tipo de cierre de la conversación",
@@ -5175,6 +5177,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   T_YOUTUBE: 'YOUTUBE',
   channel_workplace: 'Workplace',
   channel_workplacedm: 'Workplace DM',
+  ticket_originalpublishdate: 'Fecha de publicación original',
+  ticket_followercount: 'Cantidad de seguidores',
 };
 
 const esResource: ResourceLanguage = {
