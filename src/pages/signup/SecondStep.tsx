@@ -45,7 +45,7 @@ const useChannelAddStyles = makeStyles(theme => ({
         height: '100%',
         justifyContent: 'center',
     },
-    containerOther:{
+    containerOther: {
         [theme.breakpoints.down('xs')]: {
             flexWrap: "wrap"
         },
@@ -160,537 +160,537 @@ const SecondStep: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarni
     const classes = useChannelAddStyles();
 
     return (
-      <div
-        style={{ marginTop: "auto", marginBottom: "auto", maxHeight: "100%" }}
-      >
-        <Breadcrumbs aria-label="breadcrumb">
-          <Link
-            color="textSecondary"
-            key={"mainview"}
-            href="/"
-            onClick={(e) => {
-              e.preventDefault();
-              setOpenWarning(true);
-            }}
-          >
-            {"<< "}
-            <Trans i18nKey={langKeys.previoustext} />
-          </Link>
-        </Breadcrumbs>
-        <h1 className={classes.title}>{t(langKeys.addpaymentmethod)}</h1>
-        <div style={{ padding: "0px", paddingBottom: "12px" }}>
-          {t(langKeys.addpaymentmethodsub)}
-        </div>
-        <div className={classes.containerBorder}>
-          <h3 style={{ margin: "0px" }}>
-            {t(langKeys.subscription_billingregister)}
-          </h3>
-          <div className="row-zyx" style={{ marginBottom: "-10px" }}>
-            <Controller
-              control={control}
-              name="contactdocumenttype"
-              rules={{
-                validate: (value) => {
-                  if (value === null || value === undefined) {
-                    return `${t(langKeys.field_required)}`;
-                  }
-                },
-              }}
-              render={({ field: { onChange }, formState: { errors } }) => (
-                <FieldSelect
-                  className="col-3"
-                  data={databilling}
-                  error={errors.contactdocumenttype?.message}
-                  label={t(langKeys.docType)}
-                  optionDesc="desc"
-                  optionValue="id"
-                  style={{ marginTop: 16 }}
-                  valueDefault={getValues("contactdocumenttype")}
-                  variant="outlined"
-                  onChange={(data: (typeof databilling)[number]) => {
-                    onChange(data?.id || "");
-                  }}
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name="contactdocumentnumber"
-              rules={{
-                validate: (value) =>
-                  docTypeValidate(value, getValues("contactdocumenttype")),
-              }}
-              render={({ field, formState: { errors } }) => (
-                <TextField
-                  {...field}
-                  className="col-3"
-                  error={!!errors.contactdocumentnumber}
-                  fullWidth
-                  helperText={errors.contactdocumentnumber?.message}
-                  label={t(langKeys.docNumber)}
-                  margin="normal"
-                  size="small"
-                  type="number"
-                  variant="outlined"
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name="contactnameorcompany"
-              rules={{
-                validate: (value) => {
-                  if (value.length === 0) {
-                    return `${t(langKeys.field_required)}`;
-                  }
-                },
-              }}
-              render={({ field, formState: { errors } }) => (
-                <TextField
-                  {...field}
-                  className="col-6"
-                  error={!!errors.contactnameorcompany}
-                  fullWidth
-                  helperText={errors.contactnameorcompany?.message}
-                  label={t(langKeys.subscription_companyorname)}
-                  margin="normal"
-                  size="small"
-                  variant="outlined"
-                />
-              )}
-            />
-          </div>
-          <div className="row-zyx" style={{ marginBottom: "-10px" }}>
-            <Controller
-              control={control}
-              name="contactaddress"
-              rules={{
-                validate: (value) => {
-                  if (value.length === 0) {
-                    return `${t(langKeys.field_required)}`;
-                  }
-                },
-              }}
-              render={({ field, formState: { errors } }) => (
-                <TextField
-                  {...field}
-                  className="col-9"
-                  error={!!errors.contactaddress}
-                  fullWidth
-                  helperText={errors.contactaddress?.message}
-                  label={t(langKeys.subscription_address)}
-                  margin="normal"
-                  size="small"
-                  variant="outlined"
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name="contactcountry"
-              rules={{
-                validate: (value) => {
-                  if (value === null || value === undefined)
-                    return `${t(langKeys.field_required)}`;
-                },
-              }}
-              render={({ field: { onChange }, formState: { errors } }) => (
-                <FieldSelect
-                  className="col-3"
-                  data={countries}
-                  error={errors.contactcountry?.message}
-                  label={t(langKeys.country)}
-                  optionDesc="description"
-                  optionValue="code"
-                  style={{ marginTop: 16 }}
-                  valueDefault={getValues("contactcountry")}
-                  variant="outlined"
-                  onChange={(data) => {
-                    onChange(data?.code || "");
-                    setValue(
-                      "contactdocumenttype",
-                      data?.code === "PE" ? 1 : 0
-                    );
-                    setPhoneCountry(data?.code || "");
-                  }}
-                />
-              )}
-            />
-          </div>
-          <div className="row-zyx" style={{ marginBottom: "-10px" }}>
-            <Controller
-              control={control}
-              name="contactmail"
-              rules={{
-                validate: (value) => {
-                  if (value?.length === 0)
-                    return `${t(langKeys.field_required)}`;
-                  else if (!/\S+@\S+\.\S+/.test(value))
-                    return `${t(langKeys.emailverification)}`;
-                },
-              }}
-              render={({ field, formState: { errors } }) => (
-                <TextField
-                  {...field}
-                  className="col-6"
-                  error={!!errors.contactmail}
-                  fullWidth
-                  helperText={errors.contactmail?.message}
-                  label={t(langKeys.subscription_email)}
-                  margin="normal"
-                  size="small"
-                  variant="outlined"
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name="contactphone"
-              rules={{
-                validate: (value) => {
-                  if (value.length === 0)
-                    return `${t(langKeys.field_required)}`;
-                  else if (value.length < 10)
-                    return `${t(langKeys.validationphone)}`;
-                },
-              }}
-              render={({ field, formState: { errors } }) => (
-                <CssPhonemui
-                  {...field}
-                  className="col-6"
-                  countryCodeEditable={false}
-                  defaultCountry={phoneCountry.toLowerCase()}
-                  error={!!errors?.contactphone}
-                  fullWidth
-                  helperText={errors?.contactphone?.message}
-                  label={t(langKeys.phone)}
-                  margin="normal"
-                  size="small"
-                  variant="outlined"
-                />
-              )}
-            />
-          </div>
-        </div>
         <div
-          style={{ display: "flex", gap: 8 }}
-          className={classes.containerOther}
+            style={{ marginTop: "auto", marginBottom: "auto", maxHeight: "100%" }}
         >
-          <div
-            className={classes.containerBorder}
-            style={{ marginTop: "20px" }}
-          >
-            <div style={{ display: "flex", width: "100%", flexWrap: "wrap" }}>
-              <div className={classes.containerInfoPay}>
-                <h3 style={{ margin: "0px" }}>{t(langKeys.creditcard)}</h3>
-                <div style={{ display: "flex" }}>
-                  <img
-                    alt="visa"
-                    src="https://static.culqi.com/v2/v2/static/img/visa.svg"
-                    width="50px"
-                    style={{ padding: 5 }}
-                  ></img>
-                  <img
-                    alt="mastercard"
-                    src="https://static.culqi.com/v2/v2/static/img/mastercard.svg"
-                    width="50px"
-                    style={{ padding: 5 }}
-                  ></img>
-                  <img
-                    alt="ammex"
-                    src="https://static.culqi.com/v2/v2/static/img/amex.svg"
-                    width="50px"
-                    style={{ padding: 5 }}
-                  ></img>
-                  <img
-                    alt="dinners"
-                    src="https://static.culqi.com/v2/v2/static/img/diners.svg"
-                    width="50px"
-                    style={{ padding: 5 }}
-                  ></img>
-                </div>
-                <div className="row-zyx" style={{ marginBottom: "-10px" }}>
-                  <Controller
-                    control={control}
-                    name="cardnumber"
-                    rules={{
-                      validate: (value) => {
-                        if (value?.length === 0)
-                          return `${t(langKeys.field_required)}`;
-                        else if (
-                          value?.length !== limitnumbers ||
-                          limitnumbers < 12
-                        )
-                          return `${t(langKeys.creditcardvalidate)}`;
-                      },
+            <Breadcrumbs aria-label="breadcrumb">
+                <Link
+                    color="textSecondary"
+                    key={"mainview"}
+                    href="/"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        setOpenWarning(true);
                     }}
-                    render={({ field, formState: { errors } }) => (
-                      <TextField
-                        {...field}
-                        className="col-12"
-                        error={!!errors.cardnumber}
-                        fullWidth
-                        helperText={errors.cardnumber?.message}
-                        label={t(langKeys.creditcard)}
-                        margin="normal"
-                        size="small"
-                        variant="outlined"
-                        InputProps={{
-                          endAdornment: icon,
-                        }}
-                        inputProps={{
-                          maxLength: limitnumbers,
-                        }}
-                        onPaste={(e) => {
-                          e.preventDefault();
-                        }}
-                        onChange={(e) => {
-                          let val = e.target.value.replace(/[^0-9]/g, "");
-                          let spaces = Math.floor(val.length / 4);
-                          let partialvalue = val.slice(0, 4);
-                          for (let i = 1; i <= spaces; i++) {
-                            partialvalue += " " + val.slice(i * 4, (i + 1) * 4);
-                          }
-                          setValue("cardnumber", partialvalue.trim());
-                        }}
-                        onInput={(e: any) => {
-                          if (e.target.value.slice(0, 1) === "4") {
-                            setIcon(
-                              <img
-                                alt="visa"
-                                src="https://static.culqi.com/v2/v2/static/img/visa.svg"
-                                width="50px"
-                                style={{ padding: 5 }}
-                              ></img>
-                            );
-                            setlimitnumbers(19);
-                          } else if (
-                            e.target.value.slice(0, 2) === "51" ||
-                            e.target.value.slice(0, 2) === "55"
-                          ) {
-                            setIcon(
-                              <img
-                                alt="mastercard"
-                                src="https://static.culqi.com/v2/v2/static/img/mastercard.svg"
-                                width="50px"
-                                style={{ padding: 5 }}
-                              ></img>
-                            );
-                            setlimitnumbers(19);
-                          } else if (
-                            e.target.value.slice(0, 2) === "37" ||
-                            e.target.value.slice(0, 2) === "34"
-                          ) {
-                            setIcon(
-                              <img
-                                alt="ammex"
-                                src="https://static.culqi.com/v2/v2/static/img/amex.svg"
-                                width="50px"
-                                style={{ padding: 5 }}
-                              ></img>
-                            );
-                            setlimitnumbers(18);
-                          } else if (
-                            e.target.value.slice(0, 2) === "36" ||
-                            e.target.value.slice(0, 2) === "38" ||
-                            e.target.value.slice(0, 3) === "300" ||
-                            e.target.value.slice(0, 3) === "305"
-                          ) {
-                            setIcon(
-                              <img
-                                alt="dinners"
-                                src="https://static.culqi.com/v2/v2/static/img/diners.svg"
-                                width="50px"
-                                style={{ padding: 5 }}
-                              ></img>
-                            );
-                            setlimitnumbers(17);
-                          } else {
-                            setIcon(<></>);
-                            setlimitnumbers(10);
-                          }
-                        }}
-                      />
-                    )}
-                  />
-                </div>
-                <div className="row-zyx" style={{ marginBottom: "-10px" }}>
-                  <div style={{ padding: "0px" }}>{t(langKeys.dueDate)}</div>
-                  <Controller
-                    control={control}
-                    name="cardmonth"
-                    rules={{
-                      validate: (value) => {
-                        if (value === null || value === undefined)
-                          return `${t(langKeys.field_required)}`;
-                        if (parseInt(value) < 1 || parseInt(value) > 12)
-                          return `${t(langKeys.invalid_data)}`;
-                      },
-                    }}
-                    render={({ field, formState: { errors } }) => (
-                      <TextField
-                        {...field}
-                        className="col-3"
-                        error={!!errors.cardmonth}
-                        fullWidth
-                        helperText={errors.cardyear?.message}
-                        label={"MM"}
-                        margin="normal"
-                        size="small"
-                        style={{ marginTop: 8, marginRight: 10 }}
-                        type="number"
-                        variant="outlined"
-                        inputProps={{
-                          maxLength: 2,
-                        }}
-                      />
-                    )}
-                  />
-                  <Controller
-                    control={control}
-                    name="cardmonth"
-                    rules={{
-                      validate: (value) => {
-                        if (value?.length === 0)
-                          return `${t(langKeys.field_required)}`;
-                        else if (value?.length !== 4)
-                          return `${t(langKeys.field_required)}`;
-                      },
-                    }}
-                    render={({ field, formState: { errors } }) => (
-                      <TextField
-                        {...field}
-                        className="col-9"
-                        error={!!errors.cardyear}
-                        fullWidth
-                        helperText={errors.cardyear?.message}
-                        label={"YYYY"}
-                        margin="normal"
-                        size="small"
-                        style={{ marginTop: 8 }}
-                        type="number"
-                        variant="outlined"
-                        inputProps={{
-                          maxLength: 4,
-                        }}
-                      />
-                    )}
-                  />
-                </div>
-                <div className="row-zyx" style={{ marginBottom: "-10px" }}>
-                  <Controller
-                    control={control}
-                    name="cardsecuritycode"
-                    rules={{
-                      validate: (value) => {
-                        if (value?.length === 0)
-                          return `${t(langKeys.field_required)}`;
-                      },
-                    }}
-                    render={({ field, formState: { errors } }) => (
-                      <TextField
-                        {...field}
-                        className="col-12"
-                        error={!!errors.cardsecuritycode}
-                        fullWidth
-                        helperText={errors.cardsecuritycode?.message}
-                        label={t(langKeys.securitycode)}
-                        margin="normal"
-                        size="small"
-                        type="password"
-                        variant="outlined"
-                        inputProps={{
-                          maxLength: limitnumbers === 18 ? 4 : 3,
-                        }}
-                      />
-                    )}
-                  />
-                </div>
-              </div>
-              <div className={classes.containerInfoPay}>
-                <div className={classes.centeredElement}>
-                  <div
-                    style={{
-                      textAlign: "center",
-                      padding: "20px",
-                      border: "1px solid #7721ad",
-                      borderRadius: "15px",
-                      margin: "10px",
-                      paddingTop: "auto",
-                    }}
-                  >
-                    {t(langKeys.finishregwarn)}
-                  </div>
-                  <div
-                    style={{
-                      textAlign: "center",
-                      padding: "20px",
-                      color: "#7721ad",
-                      margin: "10px",
-                      paddingBottom: "auto",
-                    }}
-                  >
-                    {t(langKeys.finishregwarn2)}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            className={classes.containerBorder}
-            style={{ marginTop: "20px" }}
-          >
-            <div style={{ width: "100%" }}>
-              <div>
-                <h3
-                  style={{
-                    margin: "0px",
-                    color: "#7721ad",
-                    textAlign: "center",
-                  }}
                 >
-                  {t(langKeys.suscription)} PRO
-                </h3>
-                <h3>
-                  {" "}
-                  <b>$249</b> dólares mensuales
-                </h3>
-                <p>
-                  <b>2000 Contactos/mes</b>
-                </p>
-                <p>
-                  <b>5 Usuarios/Agentes</b>
-                </p>
-                <p>
-                  <ul>
-                    <li>
-                      Acceso a las características principales de Laraigo.
-                    </li>
-                    <li>Exportación de datos de contacto.</li>
-                    <li>
-                      Inteligencia Artificial Hasta 1000 conversaciones (Costo
-                      por conversación adicional US$0.10).
-                    </li>
-                  </ul>
-                </p>
-              </div>
+                    {"<< "}
+                    <Trans i18nKey={langKeys.previoustext} />
+                </Link>
+            </Breadcrumbs>
+            <h1 className={classes.title}>{t(langKeys.addpaymentmethod)}</h1>
+            <div style={{ padding: "0px", paddingBottom: "12px" }}>
+                {t(langKeys.addpaymentmethodsub)}
             </div>
-          </div>
-        </div>
-        <Button
-          onClick={(e) => {
-            e.preventDefault();
-            finishreg();
-          }}
-          className={commonClasses.button}
-          style={{ marginTop: "3em" }}
-          variant="contained"
-          color="primary"
-          disabled={executeResult.loading}
-        >
-          <Trans i18nKey={langKeys.finishreg} />
-        </Button>
-        {/*<>
+            <div className={classes.containerBorder}>
+                <h3 style={{ margin: "0px" }}>
+                    {t(langKeys.subscription_billingregister)}
+                </h3>
+                <div className="row-zyx" style={{ marginBottom: "-10px" }}>
+                    <Controller
+                        control={control}
+                        name="contactdocumenttype"
+                        rules={{
+                            validate: (value) => {
+                                if (value === null || value === undefined) {
+                                    return `${t(langKeys.field_required)}`;
+                                }
+                            },
+                        }}
+                        render={({ field: { onChange }, formState: { errors } }) => (
+                            <FieldSelect
+                                className="col-3"
+                                data={databilling}
+                                error={errors.contactdocumenttype?.message}
+                                label={t(langKeys.docType)}
+                                optionDesc="desc"
+                                optionValue="id"
+                                style={{ marginTop: 16 }}
+                                valueDefault={getValues("contactdocumenttype")}
+                                variant="outlined"
+                                onChange={(data: (typeof databilling)[number]) => {
+                                    onChange(data?.id || "");
+                                }}
+                            />
+                        )}
+                    />
+                    <Controller
+                        control={control}
+                        name="contactdocumentnumber"
+                        rules={{
+                            validate: (value) =>
+                                docTypeValidate(value, getValues("contactdocumenttype")),
+                        }}
+                        render={({ field, formState: { errors } }) => (
+                            <TextField
+                                {...field}
+                                className="col-3"
+                                error={!!errors.contactdocumentnumber}
+                                fullWidth
+                                helperText={errors.contactdocumentnumber?.message}
+                                label={t(langKeys.docNumber)}
+                                margin="normal"
+                                size="small"
+                                type="number"
+                                variant="outlined"
+                            />
+                        )}
+                    />
+                    <Controller
+                        control={control}
+                        name="contactnameorcompany"
+                        rules={{
+                            validate: (value) => {
+                                if (value.length === 0) {
+                                    return `${t(langKeys.field_required)}`;
+                                }
+                            },
+                        }}
+                        render={({ field, formState: { errors } }) => (
+                            <TextField
+                                {...field}
+                                className="col-6"
+                                error={!!errors.contactnameorcompany}
+                                fullWidth
+                                helperText={errors.contactnameorcompany?.message}
+                                label={t(langKeys.subscription_companyorname)}
+                                margin="normal"
+                                size="small"
+                                variant="outlined"
+                            />
+                        )}
+                    />
+                </div>
+                <div className="row-zyx" style={{ marginBottom: "-10px" }}>
+                    <Controller
+                        control={control}
+                        name="contactaddress"
+                        rules={{
+                            validate: (value) => {
+                                if (value.length === 0) {
+                                    return `${t(langKeys.field_required)}`;
+                                }
+                            },
+                        }}
+                        render={({ field, formState: { errors } }) => (
+                            <TextField
+                                {...field}
+                                className="col-9"
+                                error={!!errors.contactaddress}
+                                fullWidth
+                                helperText={errors.contactaddress?.message}
+                                label={t(langKeys.subscription_address)}
+                                margin="normal"
+                                size="small"
+                                variant="outlined"
+                            />
+                        )}
+                    />
+                    <Controller
+                        control={control}
+                        name="contactcountry"
+                        rules={{
+                            validate: (value) => {
+                                if (value === null || value === undefined)
+                                    return `${t(langKeys.field_required)}`;
+                            },
+                        }}
+                        render={({ field: { onChange }, formState: { errors } }) => (
+                            <FieldSelect
+                                className="col-3"
+                                data={countries}
+                                error={errors.contactcountry?.message}
+                                label={t(langKeys.country)}
+                                optionDesc="description"
+                                optionValue="code"
+                                style={{ marginTop: 16 }}
+                                valueDefault={getValues("contactcountry")}
+                                variant="outlined"
+                                onChange={(data) => {
+                                    onChange(data?.code || "");
+                                    setValue(
+                                        "contactdocumenttype",
+                                        data?.code === "PE" ? 1 : 0
+                                    );
+                                    setPhoneCountry(data?.code || "");
+                                }}
+                            />
+                        )}
+                    />
+                </div>
+                <div className="row-zyx" style={{ marginBottom: "-10px" }}>
+                    <Controller
+                        control={control}
+                        name="contactmail"
+                        rules={{
+                            validate: (value) => {
+                                if (value?.length === 0)
+                                    return `${t(langKeys.field_required)}`;
+                                else if (!/\S+@\S+\.\S+/.test(value))
+                                    return `${t(langKeys.emailverification)}`;
+                            },
+                        }}
+                        render={({ field, formState: { errors } }) => (
+                            <TextField
+                                {...field}
+                                className="col-6"
+                                error={!!errors.contactmail}
+                                fullWidth
+                                helperText={errors.contactmail?.message}
+                                label={t(langKeys.subscription_email)}
+                                margin="normal"
+                                size="small"
+                                variant="outlined"
+                            />
+                        )}
+                    />
+                    <Controller
+                        control={control}
+                        name="contactphone"
+                        rules={{
+                            validate: (value) => {
+                                if (value.length === 0)
+                                    return `${t(langKeys.field_required)}`;
+                                else if (value.length < 10)
+                                    return `${t(langKeys.validationphone)}`;
+                            },
+                        }}
+                        render={({ field, formState: { errors } }) => (
+                            <CssPhonemui
+                                {...field}
+                                className="col-6"
+                                countryCodeEditable={false}
+                                defaultCountry={phoneCountry.toLowerCase()}
+                                error={!!errors?.contactphone}
+                                fullWidth
+                                helperText={errors?.contactphone?.message}
+                                label={t(langKeys.phone)}
+                                margin="normal"
+                                size="small"
+                                variant="outlined"
+                            />
+                        )}
+                    />
+                </div>
+            </div>
+            <div
+                style={{ display: "flex", gap: 8 }}
+                className={classes.containerOther}
+            >
+                <div
+                    className={classes.containerBorder}
+                    style={{ marginTop: "20px" }}
+                >
+                    <div style={{ display: "flex", width: "100%", flexWrap: "wrap" }}>
+                        <div className={classes.containerInfoPay}>
+                            <h3 style={{ margin: "0px" }}>{t(langKeys.creditcard)}</h3>
+                            <div style={{ display: "flex" }}>
+                                <img
+                                    alt="visa"
+                                    src="https://static.culqi.com/v2/v2/static/img/visa.svg"
+                                    width="50px"
+                                    style={{ padding: 5 }}
+                                ></img>
+                                <img
+                                    alt="mastercard"
+                                    src="https://static.culqi.com/v2/v2/static/img/mastercard.svg"
+                                    width="50px"
+                                    style={{ padding: 5 }}
+                                ></img>
+                                <img
+                                    alt="ammex"
+                                    src="https://static.culqi.com/v2/v2/static/img/amex.svg"
+                                    width="50px"
+                                    style={{ padding: 5 }}
+                                ></img>
+                                <img
+                                    alt="dinners"
+                                    src="https://static.culqi.com/v2/v2/static/img/diners.svg"
+                                    width="50px"
+                                    style={{ padding: 5 }}
+                                ></img>
+                            </div>
+                            <div className="row-zyx" style={{ marginBottom: "-10px" }}>
+                                <Controller
+                                    control={control}
+                                    name="cardnumber"
+                                    rules={{
+                                        validate: (value) => {
+                                            if (value?.length === 0)
+                                                return `${t(langKeys.field_required)}`;
+                                            else if (
+                                                value?.length !== limitnumbers ||
+                                                limitnumbers < 12
+                                            )
+                                                return `${t(langKeys.creditcardvalidate)}`;
+                                        },
+                                    }}
+                                    render={({ field, formState: { errors } }) => (
+                                        <TextField
+                                            {...field}
+                                            className="col-12"
+                                            error={!!errors.cardnumber}
+                                            fullWidth
+                                            helperText={errors.cardnumber?.message}
+                                            label={t(langKeys.creditcard)}
+                                            margin="normal"
+                                            size="small"
+                                            variant="outlined"
+                                            InputProps={{
+                                                endAdornment: icon,
+                                            }}
+                                            inputProps={{
+                                                maxLength: limitnumbers,
+                                            }}
+                                            onPaste={(e) => {
+                                                e.preventDefault();
+                                            }}
+                                            onChange={(e) => {
+                                                let val = e.target.value.replace(/[^0-9]/g, "");
+                                                let spaces = Math.floor(val.length / 4);
+                                                let partialvalue = val.slice(0, 4);
+                                                for (let i = 1; i <= spaces; i++) {
+                                                    partialvalue += " " + val.slice(i * 4, (i + 1) * 4);
+                                                }
+                                                setValue("cardnumber", partialvalue.trim());
+                                            }}
+                                            onInput={(e: any) => {
+                                                if (e.target.value.slice(0, 1) === "4") {
+                                                    setIcon(
+                                                        <img
+                                                            alt="visa"
+                                                            src="https://static.culqi.com/v2/v2/static/img/visa.svg"
+                                                            width="50px"
+                                                            style={{ padding: 5 }}
+                                                        ></img>
+                                                    );
+                                                    setlimitnumbers(19);
+                                                } else if (
+                                                    e.target.value.slice(0, 2) === "51" ||
+                                                    e.target.value.slice(0, 2) === "55"
+                                                ) {
+                                                    setIcon(
+                                                        <img
+                                                            alt="mastercard"
+                                                            src="https://static.culqi.com/v2/v2/static/img/mastercard.svg"
+                                                            width="50px"
+                                                            style={{ padding: 5 }}
+                                                        ></img>
+                                                    );
+                                                    setlimitnumbers(19);
+                                                } else if (
+                                                    e.target.value.slice(0, 2) === "37" ||
+                                                    e.target.value.slice(0, 2) === "34"
+                                                ) {
+                                                    setIcon(
+                                                        <img
+                                                            alt="ammex"
+                                                            src="https://static.culqi.com/v2/v2/static/img/amex.svg"
+                                                            width="50px"
+                                                            style={{ padding: 5 }}
+                                                        ></img>
+                                                    );
+                                                    setlimitnumbers(18);
+                                                } else if (
+                                                    e.target.value.slice(0, 2) === "36" ||
+                                                    e.target.value.slice(0, 2) === "38" ||
+                                                    e.target.value.slice(0, 3) === "300" ||
+                                                    e.target.value.slice(0, 3) === "305"
+                                                ) {
+                                                    setIcon(
+                                                        <img
+                                                            alt="dinners"
+                                                            src="https://static.culqi.com/v2/v2/static/img/diners.svg"
+                                                            width="50px"
+                                                            style={{ padding: 5 }}
+                                                        ></img>
+                                                    );
+                                                    setlimitnumbers(17);
+                                                } else {
+                                                    setIcon(<></>);
+                                                    setlimitnumbers(10);
+                                                }
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </div>
+                            <div className="row-zyx" style={{ marginBottom: "-10px" }}>
+                                <div style={{ padding: "0px" }}>{t(langKeys.dueDate)}</div>
+                                <Controller
+                                    control={control}
+                                    name="cardmonth"
+                                    rules={{
+                                        validate: (value) => {
+                                            if (value?.length === 0)
+                                                return `${t(langKeys.field_required)}`;
+                                            else if (value?.length !== 2)
+                                                return `${t(langKeys.field_required)}`;
+                                        },
+                                    }}
+                                    render={({ field, formState: { errors } }) => (
+                                        <TextField
+                                            {...field}
+                                            className="col-3"
+                                            error={!!errors.cardmonth}
+                                            fullWidth
+                                            helperText={errors.cardmonth?.message}
+                                            label={"MM"}
+                                            margin="normal"
+                                            size="small"
+                                            style={{ marginTop: 8 }}
+                                            type="number"
+                                            variant="outlined"
+                                            inputProps={{
+                                                maxLength: 2,
+                                            }}
+                                        />
+                                    )}
+                                />
+                                <Controller
+                                    control={control}
+                                    name="cardyear"
+                                    rules={{
+                                        validate: (value) => {
+                                            if (value?.length === 0)
+                                                return `${t(langKeys.field_required)}`;
+                                            else if (value?.length !== 4)
+                                                return `${t(langKeys.field_required)}`;
+                                        },
+                                    }}
+                                    render={({ field, formState: { errors } }) => (
+                                        <TextField
+                                            {...field}
+                                            className="col-9"
+                                            error={!!errors.cardyear}
+                                            fullWidth
+                                            helperText={errors.cardyear?.message}
+                                            label={"YYYY"}
+                                            margin="normal"
+                                            size="small"
+                                            style={{ marginTop: 8 }}
+                                            type="number"
+                                            variant="outlined"
+                                            inputProps={{
+                                                maxLength: 4,
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </div>
+                            <div className="row-zyx" style={{ marginBottom: "-10px" }}>
+                                <Controller
+                                    control={control}
+                                    name="cardsecuritycode"
+                                    rules={{
+                                        validate: (value) => {
+                                            if (value?.length === 0)
+                                                return `${t(langKeys.field_required)}`;
+                                        },
+                                    }}
+                                    render={({ field, formState: { errors } }) => (
+                                        <TextField
+                                            {...field}
+                                            className="col-12"
+                                            error={!!errors.cardsecuritycode}
+                                            fullWidth
+                                            helperText={errors.cardsecuritycode?.message}
+                                            label={t(langKeys.securitycode)}
+                                            margin="normal"
+                                            size="small"
+                                            type="password"
+                                            variant="outlined"
+                                            inputProps={{
+                                                maxLength: limitnumbers === 18 ? 4 : 3,
+                                            }}
+                                        />
+                                    )}
+                                />
+                            </div>
+                        </div>
+                        <div className={classes.containerInfoPay}>
+                            <div className={classes.centeredElement}>
+                                <div
+                                    style={{
+                                        textAlign: "center",
+                                        padding: "20px",
+                                        border: "1px solid #7721ad",
+                                        borderRadius: "15px",
+                                        margin: "10px",
+                                        paddingTop: "auto",
+                                    }}
+                                >
+                                    {t(langKeys.finishregwarn)}
+                                </div>
+                                <div
+                                    style={{
+                                        textAlign: "center",
+                                        padding: "20px",
+                                        color: "#7721ad",
+                                        margin: "10px",
+                                        paddingBottom: "auto",
+                                    }}
+                                >
+                                    {t(langKeys.finishregwarn2)}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    className={classes.containerBorder}
+                    style={{ marginTop: "20px" }}
+                >
+                    <div style={{ width: "100%" }}>
+                        <div>
+                            <h3
+                                style={{
+                                    margin: "0px",
+                                    color: "#7721ad",
+                                    textAlign: "center",
+                                }}
+                            >
+                                {t(langKeys.suscription)} PRO
+                            </h3>
+                            <h3>
+                                {" "}
+                                <b>$249</b> dólares mensuales
+                            </h3>
+                            <p>
+                                <b>2000 Contactos/mes</b>
+                            </p>
+                            <p>
+                                <b>5 Usuarios/Agentes</b>
+                            </p>
+                            <p>
+                                <ul>
+                                    <li>
+                                        Acceso a las características principales de Laraigo.
+                                    </li>
+                                    <li>Exportación de datos de contacto.</li>
+                                    <li>
+                                        Inteligencia Artificial Hasta 1000 conversaciones (Costo
+                                        por conversación adicional US$0.10).
+                                    </li>
+                                </ul>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <Button
+                onClick={(e) => {
+                    e.preventDefault();
+                    finishreg();
+                }}
+                className={commonClasses.button}
+                style={{ marginTop: "3em" }}
+                variant="contained"
+                color="primary"
+                disabled={executeResult.loading}
+            >
+                <Trans i18nKey={langKeys.finishreg} />
+            </Button>
+            {/*<>
             <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", marginTop: 15 }}>{t(langKeys.signupstep1title2)}</div>
             <div >
                 <Controller
@@ -835,7 +835,7 @@ const SecondStep: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarni
                 </Button>
             </div>
             </>*/}
-      </div>
+        </div>
     );
 }
 

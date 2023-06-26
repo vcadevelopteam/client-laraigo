@@ -5163,6 +5163,7 @@ export const langKeys = {
   subscription_address: 'subscription_address',
   subscription_email: 'subscription_email',
   subscription_creditcardnumber: 'subscription_creditcardnumber',
+  subscription_noselectedchannel: 'subscription_noselectedchannel',
 };
 
 export type LangKeys = typeof langKeys;

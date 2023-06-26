@@ -141,21 +141,26 @@ const FirstStep: FC = () => {
 
     const onGoogleLoginSucess = (r: any) => {
         if (r && r.googleId) {
-            const content = {
-                "method": "UFN_USERIDBYUSER",
-                "parameters": {
-                    "facebookid": null,
-                    "googleid": String(r.googleId),
-                    "usr": null,
-                }
+            if (disableButton) {
+                dispatch(showSnackbar({ message: t(langKeys.subscription_noselectedchannel), severity: "error", show: true }));
             }
-            setwaitSave(true);
-            setValue('loginfacebookid', '');
-            setValue('logingoogleid', r.googleId);
-            setValue('loginpassword', '');
-            setValue('loginpasswordrepeat', '');
-            setValue('loginusername', '');
-            dispatch(executeCheckNewUser(content))
+            else {
+                const content = {
+                    "method": "UFN_USERIDBYUSER",
+                    "parameters": {
+                        "facebookid": null,
+                        "googleid": String(r.googleId),
+                        "usr": null,
+                    }
+                }
+                setwaitSave(true);
+                setValue('loginfacebookid', '');
+                setValue('logingoogleid', r.googleId);
+                setValue('loginpassword', '');
+                setValue('loginpasswordrepeat', '');
+                setValue('loginusername', '');
+                dispatch(executeCheckNewUser(content));
+            }
         }
     }
 
@@ -175,21 +180,26 @@ const FirstStep: FC = () => {
 
     const onAuthWithFacebook = (r: any) => {
         if (r && r.id) {
-            const content = {
-                "method": "UFN_USERIDBYUSER",
-                "parameters": {
-                    "facebookid": String(r.id),
-                    "googleid": null,
-                    "usr": r.email,
-                }
+            if (disableButton) {
+                dispatch(showSnackbar({ message: t(langKeys.subscription_noselectedchannel), severity: "error", show: true }));
             }
-            setwaitSave(true);
-            setValue('loginfacebookid', r.id);
-            setValue('logingoogleid', '');
-            setValue('loginpassword', '');
-            setValue('loginpasswordrepeat', '');
-            setValue('loginusername', '');
-            dispatch(executeCheckNewUser(content))
+            else {
+                const content = {
+                    "method": "UFN_USERIDBYUSER",
+                    "parameters": {
+                        "facebookid": String(r.id),
+                        "googleid": null,
+                        "usr": r.email,
+                    }
+                }
+                setwaitSave(true);
+                setValue('loginfacebookid', r.id);
+                setValue('logingoogleid', '');
+                setValue('loginpassword', '');
+                setValue('loginpasswordrepeat', '');
+                setValue('loginusername', '');
+                dispatch(executeCheckNewUser(content));
+            }
         }
     }
 
