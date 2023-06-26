@@ -15,7 +15,7 @@ import {
     FormColor,
     InstagramColor,
     IosColor,
-    LaraigoLogo,
+    LogoSuscription,
     LinkedInColor,
     MailColor,
     MyBusinessColor,
@@ -301,7 +301,7 @@ const ThirdStep: FC = () => {
 
     return (
         <div className={classes.root}>
-            <LaraigoLogo style={{ width: '25%', height: 'auto', marginBottom: 10 }} />
+            <LogoSuscription style={{ width: '25%', height: 'auto', marginBottom: 10 }} />
             <div className={classes.title}>
                 {planData.plan!.plan}
             </div>

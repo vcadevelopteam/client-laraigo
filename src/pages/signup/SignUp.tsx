@@ -5,8 +5,7 @@ import RightSideMenu from './RightSideMenu';
 import { Button, CircularProgress, Dialog, DialogActions, DialogTitle } from '@material-ui/core';
 import { langKeys } from 'lang/keys';
 import { Trans } from 'react-i18next';
-import { LaraigoLogo } from 'icons';
-import { LeftSide } from './LeftSideMenu';
+import { LogoSuscription } from 'icons';
 import { SubscriptionContext, SubscriptionProvider, usePlanData } from './context';
 import Popus from 'components/layout/Popus';
 import { useFormContext } from 'react-hook-form';
@@ -231,7 +230,7 @@ const SignUpFunc: FC = () => {
                 {step !== 1 && (
                     <div className={classes.containerLogo}>
                         {/* containerlogo tiene flex 1, para q se divida con el texto */}
-                        <LaraigoLogo style={{ width: '50%' }} />
+                        <LogoSuscription style={{ width: '50%' }} />
                     </div>
                 )}
                 <div className={classes.containerLeft} style={{backgroundColor: "white"}}>
