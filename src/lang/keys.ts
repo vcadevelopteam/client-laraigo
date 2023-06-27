@@ -28,8 +28,6 @@ export const langKeys = {
   phasechange: "phasechange",
   ticket_originalpublicationdate: "ticket_originalpublicationdate",
   ticket_numberfollowers: "ticket_numberfollowers",
-  "personalizedreport_conversation.originalpublicationdate": "personalizedreport_conversation.originalpublicationdate",
-  "personalizedreport_conversation.numberfollowers":"personalizedreport_conversation.numberfollowers",
   sdrequestcode: "sdrequestcode",
   resolution: "resolution",
   firstcontactcompliance: "firstcontactcompliance",
