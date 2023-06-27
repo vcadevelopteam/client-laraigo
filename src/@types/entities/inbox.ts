@@ -67,6 +67,7 @@ export interface IReassignicketParams extends ITicket {
 
 export interface INewMessageParams extends ITicket {
     typemessage: string;
+    typeinteraction?: string;
     interactionid: number;
     newConversation: boolean;
     userid: number;
