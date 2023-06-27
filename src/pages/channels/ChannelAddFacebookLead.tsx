@@ -63,7 +63,7 @@ export const ChannelAddFacebookLead: FC = () => {
             "coloricon": "#2d88ff",
             "voximplantcallsupervision": false
         },
-        "type": "FACEBOOK",
+        "type": "FBLD",
         "service": {
             "accesstoken": "",
             "siteid": "",
@@ -111,6 +111,7 @@ export const ChannelAddFacebookLead: FC = () => {
     }, [mainResult])
 
     const processFacebookCallback = async (r: any) => {
+        debugger
         if (r.status !== "unknown" && !r.error) {
             dispatch(getChannelsList(r.accessToken, apiUrls.FACEBOOKAPPLEAD));
             setViewSelected("view2");
