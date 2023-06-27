@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, TemplateIcons, TitleDetail } from 'components';
 import { formatDate, formatNumber, getOrderLineSel, getOrderSel } from 'common/helpers';
 import { Dictionary } from "@types";
-import TableZyx from '../components/fields/table-simple';
+import TableZyx from 'components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -15,8 +15,10 @@ import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import paths from 'common/constants/paths';
 import Button from '@material-ui/core/Button';
 import ClearIcon from '@material-ui/icons/Clear';
-import { Avatar } from '@material-ui/core';
-import MapFixedLocation from './MapFixedLocation';
+import { Avatar, IconButton, Tooltip } from '@material-ui/core';
+import MapFixedLocation from '../MapFixedLocation';
+import OrderTable from './components/OrderTable';
+import { Search as SearchIcon, ViewColumn as ViewColumnIcon, ViewList as ViewListIcon } from '@material-ui/icons';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -49,7 +51,7 @@ const Orders: FC = () => {
     const executeResult = useSelector(state => state.main.execute);
 
     const [mainData, setMainData] = useState<any>([]);
-    const [viewSelected, setViewSelected] = useState("view-1");
+    const [viewSelected, setViewSelected] = useState("GRID");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
 
@@ -168,7 +170,7 @@ const Orders: FC = () => {
         dispatch(getMultiCollection([
             getOrderLineSel(row.orderid),
         ]));
-        setViewSelected("view-2");
+        setViewSelected("DETAIL");
         setRowSelected({ row, edit: true });
     }
 
@@ -179,32 +181,46 @@ const Orders: FC = () => {
         }
         setViewSelected(view)
     }
-
-    if (viewSelected === "view-1") {
-        return (
-            <div style={{ width: "100%" }}>
-                <TableZyx
-                    columns={columns}
-                    titlemodule={t(langKeys.orders, { count: 2 })}
-                    onClickRow={handleEdit}
-                    data={mainData}
-                    download={true}
-                    loading={mainResult.mainData.loading}
-                />
-            </div>
-        )
-    }
-    else if (viewSelected === "view-2") {
-        return (
-            <DetailOrders
-                data={rowSelected}
-                setViewSelected={redirectFunc}
-                multiData={mainResult.multiData.data}
-                fetchData={fetchData}
-            />
-        )
-    } else
-        return null;
+    return (
+    <div style={{ width: '100%', display: 'flex', flexDirection: 'column'}}>
+      <div style={{ marginBottom: '34px' }}>
+        <div style={{ position: 'fixed', right: '20px' }}>
+          <Tooltip title={t(langKeys.listview) + ""} arrow placement="top">
+            <IconButton
+              color="default"
+              disabled={viewSelected === 'GRID'}
+              onClick={() => setViewSelected('GRID')}
+              style={{ padding: '5px' }}
+            >
+              <ViewListIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={t(langKeys.kanbanview) + ""} arrow placement="top">
+            <IconButton
+              color="default"
+              disabled={viewSelected === 'KANBAN'}
+              onClick={() => setViewSelected('KANBAN')}
+              style={{ padding: '5px' }}
+            >
+              <ViewColumnIcon />
+            </IconButton>
+          </Tooltip>
+        </div>
+      </div>
+      {viewSelected === "GRID" &&
+        <OrderTable
+            mainResult={mainResult}
+            handleEdit={handleEdit}
+        />}
+      {viewSelected === "DETAIL" &&
+        <DetailOrders
+            data={rowSelected}
+            setViewSelected={redirectFunc}
+            multiData={mainResult.multiData.data}
+            fetchData={fetchData}
+        />}
+    </div>
+    )
 
 }
 
@@ -292,7 +308,7 @@ const DetailOrders: React.FC<DetailOrdersProps> = ({ data: { row, edit }, multiD
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div>
                     <TemplateBreadcrumbs
-                        breadcrumbs={[{ id: "view-1", name: t(langKeys.orders) }, { id: "view-2", name: t(langKeys.ordersdetail) }]}
+                        breadcrumbs={[{ id: "GRID", name: t(langKeys.orders) }, { id: "DETAIL", name: t(langKeys.ordersdetail) }]}
                         handleClick={setViewSelected}
                     />
                     <TitleDetail
@@ -306,7 +322,7 @@ const DetailOrders: React.FC<DetailOrdersProps> = ({ data: { row, edit }, multiD
                         color="primary"
                         startIcon={<ClearIcon color="secondary" />}
                         style={{ backgroundColor: "#FB5F5F" }}
-                        onClick={() => setViewSelected("view-1")}
+                        onClick={() => setViewSelected("GRID")}
                     >{t(langKeys.back)}</Button>
                 </div>
             </div>
