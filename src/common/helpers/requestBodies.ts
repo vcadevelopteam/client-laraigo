@@ -3974,3 +3974,8 @@ export const metaBusinessSel = ({ corpid, orgid, id }: Dictionary) => ({
     key: "UFN_METABUSINESS_SEL",
     parameters: { corpid, orgid, id },
 });
+export const rasaIntentSel = (rasaid: number) => ({
+    method: "UFN_RASA_INTENT_SEL",
+    key: "UFN_RASA_INTENT_SEL",
+    parameters: {  rasaid },
+});

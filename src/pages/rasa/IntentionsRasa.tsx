@@ -14,8 +14,8 @@ import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { convertLocalDate, exportExcel, filterPipe, uploadExcel } from 'common/helpers';
 import { intentdel, intentimport, intentutteranceins, trainwitai } from 'store/witia/actions';
-import { getCollection, getCollectionAux, getCollectionAux2, resetAllMain } from 'store/main/actions';
-import { exportintent, selEntities, selIntent, selUtterance } from 'common/helpers/requestBodies';
+import { getCollection, getCollectionAux, resetAllMain } from 'store/main/actions';
+import { exportintent, rasaIntentSel, selUtterance } from 'common/helpers/requestBodies';
 import AddIcon from '@material-ui/icons/Add';
 
 
@@ -477,8 +477,8 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
     const [waitImport, setWaitImport] = useState(false);
     const trainResult = useSelector(state => state.witai.witaitrainresult);
 
-    const fetchData = () => {dispatch(getCollection(selIntent()))};
-    const selectionKey = 'name';
+    const fetchData = () => {dispatch(getCollection(rasaIntentSel(0)))};
+    const selectionKey = 'rasaintentid';
 
     
     useEffect(() => {
@@ -510,7 +510,6 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
     
     useEffect(() => {
         fetchData();
-        dispatch(getCollectionAux2(selEntities()))
         return () => {
             dispatch(resetAllMain());
         };
@@ -566,7 +565,7 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
                                 setRowSelected({ row: row, edit: true })
                             }}
                         >
-                            #{row.name}
+                            #{row.intent_name}
                         </label>
                     )
                 }
@@ -574,13 +573,34 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
             },
             {
                 Header: t(langKeys.description),
-                accessor: 'description',
+                accessor: 'intent_examples',
+                width: "auto",
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <label
+                        >
+                            {row.intent_examples?.length||"-"}
+                        </label>
+                    )
+                }
+            },
+            {
+                Header: t(langKeys.entities),
+                accessor: 'entities',
                 width: "auto",
                 NoFilter: true,
             },
             {
-                Header: t(langKeys.examples),
-                accessor: 'utteranceqty',
+                Header: `${t(langKeys.examples)} ${t(langKeys.entities)}`,
+                accessor: 'entity_examples',
+                width: "auto",
+                NoFilter: true,
+            },            
+            {
+                Header: t(langKeys.entities),
+                accessor: 'entity_values',
                 width: "auto",
                 NoFilter: true,
             },
@@ -641,6 +661,9 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
             }
         }
     }, [mainResultAux, waitExport]);
+    useEffect(() => {
+        console.log(mainResult)
+    }, [mainResult]);
 
     const handleUpload = async (files: any[]) => {
         const file = files[0];
@@ -672,7 +695,6 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
                 },[])
                 dispatch(showBackdrop(true));
                 setWaitImport(true)
-                debugger
                 dispatch(intentimport({
                     utterance_datajson: JSON.stringify(datareduced.reduce((acc:any,x:any) => [...acc,...x.utterance_datajson],[])),
                     datajson: JSON.stringify(datareduced.map((x:any) => ({ name:x.name, description:x.description, datajson:x.datajson }))),
