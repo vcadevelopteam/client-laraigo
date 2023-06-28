@@ -42,7 +42,6 @@ const useStyles = makeStyles((theme) => ({
 
 const DraggablesCategories: FC<{ column: any, index: number, onClick: (row: Dictionary) => void }> = ({ column,
 	index, onClick }) => {
-
 	return (
 		<Draggable draggableId={column.column_uuid} index={index + 1} key={column.column_uuid}>
 			{(provided) => (
@@ -55,7 +54,7 @@ const DraggablesCategories: FC<{ column: any, index: number, onClick: (row: Dict
 						snapshot={null}
 						provided={provided}
 						// titleOnChange={(val) =>{handleEdit(column.column_uuid,val,dataColumn, setDataColumn)}}
-						columnid={column.column_uuid}
+						columnid={String(column.column_uuid)}
 					// onAddCard={() => history.push(paths.CRM_ADD_LEAD.resolve(column.columnid, column.column_uuid))}
 					>
 						<Droppable droppableId={column.column_uuid} type="task">
@@ -66,7 +65,7 @@ const DraggablesCategories: FC<{ column: any, index: number, onClick: (row: Dict
 										ref={provided.innerRef}
 										style={{ overflow: 'hidden', width: '100%' }}
 									>
-										<DroppableOrderColumnList snapshot={snapshot} itemCount={column.items?.length || 0}>
+										<DroppableOrderColumnList snapshot={snapshot} itemCount={column.cards?.length || 0}>
 											{column.cards?.map((item: any, index: any) => {
 												return (
 													<Draggable
@@ -168,16 +167,16 @@ const OrderKanban: FC<{ mainResult: any, mainAux: any, handleEdit: (row: Diction
 		if (source.droppableId === destination.droppableId) {
 			// Lógica para el caso en que el elemento se mantenga en la misma columna
 		} else {
-			const sourceIndex = columns.findIndex((c: any) => c.name === source.droppableId);
-			const destIndex = columns.findIndex((c: any) => c.name === destination.droppableId);
+			const sourceIndex = columns.findIndex((c: any) => c.column_uuid === source.droppableId);
+			const destIndex = columns.findIndex((c: any) => c.column_uuid === destination.droppableId);
 			if (sourceIndex >= 0 && destIndex >= 0) {
 				const updatedColumns = [...columns];
 				const [movedItem] = updatedColumns[sourceIndex].cards.splice(source.index, 1);
 				updatedColumns[destIndex].cards.splice(destination.index, 0, movedItem);
 				setDataColumn(updatedColumns);
-
 				// Actualiza el estado del pedido utilizando draggableId
-				dispatch(getCollectionAux2(updateOrderStatus({ orderid: draggableId, orderstatus: destination.droppableId })));
+				dispatch(execute(updateOrderStatus({ orderid: movedItem.orderid, orderstatus: updatedColumns[destIndex].name })));
+        debugger
 				return
 			}
 		}
@@ -226,7 +225,7 @@ const OrderKanban: FC<{ mainResult: any, mainAux: any, handleEdit: (row: Diction
 								style={{ display: 'flex' }}
 							>
 								{dataColumns.map((column: any, index: any) =>
-									<DraggablesCategories key={column.name} column={column} index={index} onClick={handleEdit} />
+									<DraggablesCategories column={column} index={index} onClick={handleEdit} />
 								)}
 							</div>
 						)}
