@@ -134,6 +134,7 @@ const ServiceDesk: FC = () => {
     contact: query.get('contact') || '',
     products: query.get('products') || '',
     tags: query.get('tags') || '',
+    phase: query.get('phase') || '',
   }), [query]);
   const [display, setDisplay] = useState(query.get('display') || 'BOARD');
   const [boardFilter, setBoardFilterPrivate] = useState<IBoardFilter>({
@@ -290,11 +291,12 @@ const ServiceDesk: FC = () => {
   const [waitExport, setWaitExport] = useState(false);
   const voxiConnection = useSelector(state => state.voximplant.connection);
   const callOnLine = useSelector(state => state.voximplant.callOnLine);
-  const [allParameters, setAllParametersPrivate] = useState<{ company: string, groups: string, contact: string, leadproduct:string }>({
+  const [allParameters, setAllParametersPrivate] = useState<{ company: string, groups: string, contact: string, leadproduct:string, phase: string }>({
     company: user?.roledesc.includes("VISOR") ? (user?.companyuser||"") : (otherParams?.company||""),
     groups: otherParams?.groups||"",
     leadproduct: otherParams?.products||"",
     contact: otherParams.contact,
+    phase: otherParams?.phase||""
   });
   const [selectedRows, setSelectedRows] = useState<Dictionary>({});
   const [personsSelected, setPersonsSelected] = useState<Dictionary[]>([]);
@@ -566,6 +568,18 @@ const ServiceDesk: FC = () => {
         data={mainMulti.data[8]?.data || []}
         optionDesc="domaindesc"
         optionValue="domainvalue"
+        disabled={user?.roledesc.includes("VISOR")}
+        loading={mainMulti.loading}
+      />
+      <FieldSelect
+        variant="outlined"
+        label={t(langKeys.phase)}
+        className={classes.filterComponent}//cambiar
+        valueDefault={allParameters.phase}
+        onChange={(value) => {setAllParameters({...allParameters, phase: value?.column_uuid||""})}}
+        data={ mainMulti?.data?.[0]?.data||[]}
+        optionDesc="description"
+        optionValue="column_uuid"
         disabled={user?.roledesc.includes("VISOR")}
         loading={mainMulti.loading}
       />
