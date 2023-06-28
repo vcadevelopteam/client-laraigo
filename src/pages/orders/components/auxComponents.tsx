@@ -7,7 +7,6 @@ import { langKeys } from 'lang/keys';
 import { Trans, useTranslation } from 'react-i18next';
 import { Dictionary } from '@types';
 import { FieldEdit, FieldSelect } from 'components';
-import { LangKeys } from '../../../lang/keys';
 
 const columnWidth = 275;
 const columnMinHeight = 500;

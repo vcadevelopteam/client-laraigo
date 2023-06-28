@@ -161,7 +161,7 @@ const OrderKanban: FC<{ mainResult: any, mainAux: any, handleEdit: (row: Diction
 		}
 	}, [mainResult]);
 
-	const onDragEnd = (result: DropResult, columns: any, setDataColumn: any) => {
+	const onDragEnd = async (result: DropResult, columns: any, setDataColumn: any) => {
 		if (!result.destination) return;
 		const { source, destination, draggableId } = result;
 		if (source.droppableId === destination.droppableId) {
@@ -175,8 +175,8 @@ const OrderKanban: FC<{ mainResult: any, mainAux: any, handleEdit: (row: Diction
 				updatedColumns[destIndex].cards.splice(destination.index, 0, movedItem);
 				setDataColumn(updatedColumns);
 				// Actualiza el estado del pedido utilizando draggableId
-				dispatch(execute(updateOrderStatus({ orderid: movedItem.orderid, orderstatus: updatedColumns[destIndex].name })));
-        debugger
+				await dispatch(execute(updateOrderStatus({ orderid: movedItem.orderid, orderstatus: updatedColumns[destIndex].name })));
+        fetchData()
 				return
 			}
 		}
