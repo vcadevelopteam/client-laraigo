@@ -339,10 +339,12 @@ export const getCorpSel = (id: number): IRequestBody => ({
         all: id === 0,
     }
 });
-export const getOrderSel = (): IRequestBody => ({
+export const getOrderSel = (product?:string): IRequestBody => ({
     method: "UFN_ORDER_SEL",
     key: "UFN_ORDER_SEL",
-    parameters: {}
+    parameters: {
+        product: product||""
+    }
 });
 export const getOrderLineSel = (orderid: number): IRequestBody => ({
     method: "UFN_ORDERLINE_SEL",
@@ -3973,4 +3975,9 @@ export const metaBusinessSel = ({ corpid, orgid, id }: Dictionary) => ({
     method: "UFN_METABUSINESS_SEL",
     key: "UFN_METABUSINESS_SEL",
     parameters: { corpid, orgid, id },
+});
+export const productOrderList = () => ({
+    method: "UFN_ORDERLINE_PRODUCT_LST",
+    key: "UFN_ORDERLINE_PRODUCT_LST",
+    parameters: { },
 });

@@ -45,6 +45,9 @@ const translation: LangKeys = {
   normal: "Normal",
   large: "Grande",
   huge: "Enorme",
+  prepared: "Preparado",
+  dispatched: "Despachado",
+  delivered: "Entregado",
 
   noname: "Sin nombre",
   cssheaderTooltip: "Permite aplicar estilos personalizados a la configuración del chat como tamaño de burbuja, estilos de letra entre otros.",

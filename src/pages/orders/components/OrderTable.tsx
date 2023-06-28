@@ -1,45 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
-import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { TemplateBreadcrumbs, TemplateIcons, TitleDetail } from 'components';
-import { formatDate, formatNumber, getOrderLineSel, getOrderSel } from 'common/helpers';
+import { TemplateIcons } from 'components';
+import { formatDate, getOrderSel } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from 'components/fields/table-simple';
-import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { useHistory } from 'react-router-dom';
-import { getCollection, getMultiCollection } from 'store/main/actions';
-import { showSnackbar, showBackdrop } from 'store/popus/actions';
-import paths from 'common/constants/paths';
-import Button from '@material-ui/core/Button';
-import ClearIcon from '@material-ui/icons/Clear';
-import { Avatar } from '@material-ui/core';
-import MapFixedLocation from 'pages/MapFixedLocation';
-
-interface RowSelected {
-    row: Dictionary | null,
-    edit: boolean
-}
-interface MultiData {
-    data: Dictionary[];
-    success: boolean;
-}
-
-const useStyles = makeStyles((theme) => ({
-    containerDetail: {
-        marginTop: theme.spacing(2),
-        padding: theme.spacing(2),
-        background: '#fff',
-    },
-    button: {
-        padding: 12,
-        fontWeight: 500,
-        fontSize: '14px',
-        textTransform: 'initial'
-    },
-}));
+import { getCollection } from 'store/main/actions';
 
 const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({mainResult,handleEdit}) => {
     const dispatch = useDispatch();
