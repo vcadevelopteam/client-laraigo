@@ -90,7 +90,6 @@ const Orders: FC = () => {
         />}
       {viewSelected === "KANBAN" &&
         <OrderKanban
-            mainResult={mainResult}
             mainAux={mainAux}
             handleEdit={handleEdit}
         />}

@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
+import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { getOrderSel, updateOrderStatus } from 'common/helpers';
 import { Dictionary } from "@types";
@@ -112,10 +113,11 @@ const DraggablesCategories: FC<{ column: any, index: number, onClick: (row: Dict
 	)
 }
 
-const OrderKanban: FC<{ mainResult: any, mainAux: any, handleEdit: (row: Dictionary) => void }> = ({ mainResult, mainAux, handleEdit }) => {
+const OrderKanban: FC<{ mainAux: any, handleEdit: (row: Dictionary) => void }> = ({ mainAux, handleEdit }) => {
 	const dispatch = useDispatch();
 	const { t } = useTranslation();
 	const classes = useStyles();
+	const mainResult = useSelector(state => state.main.mainData);
 	const [productFilter, setProductFilter] = useState("");
 	const [dataColumns, setDataColumns] = useState<any>([
 		{ name: "new", cards: [], column_uuid: "8ecfc7b7-6ac8-4d80-ad95-fee0910301fb" },
@@ -123,6 +125,7 @@ const OrderKanban: FC<{ mainResult: any, mainAux: any, handleEdit: (row: Diction
 		{ name: "dispatched", cards: [], column_uuid: "c9b9b27f-5bd5-4e17-88c6-514ed236943f" },
 		{ name: "delivered", cards: [], column_uuid: "6ce73933-9e35-433f-8acf-aef53e7a74c3" },
 	]);
+
 	const fetchData = () => dispatch(getCollection(getOrderSel(productFilter)));
 
 	// useEffect(() => {
@@ -130,36 +133,36 @@ const OrderKanban: FC<{ mainResult: any, mainAux: any, handleEdit: (row: Diction
 	// }, []);
 
 	useEffect(() => {
-		if (!mainResult.mainData.loading) {
-			if (!mainResult.mainData.error) {
-				setDataColumns([
-					{ column_uuid: "8ecfc7b7-6ac8-4d80-ad95-fee0910301fb", name: "new", cards: mainResult.mainData.data.map((x: Dictionary) => ({
+		if (!mainResult.loading && !mainResult.error) {
+			setDataColumns([
+				{
+					column_uuid: "8ecfc7b7-6ac8-4d80-ad95-fee0910301fb", name: "new", cards: mainResult.data.map((x: Dictionary) => ({
 						...x,
 						column_uuid: "8ecfc7b7-6ac8-4d80-ad95-fee0910301fb"
-					})).filter((x: any) => !x.orderstatus || x.orderstatus === "new") },
-					{ column_uuid: "a9dbc1e8-f080-47ff-a840-d82be3b8fcd2", name: "prepared", cards: mainResult.mainData.data.map((x: Dictionary) => ({
+					})).filter((x: any) => !x.orderstatus || x.orderstatus === "new")
+				},
+				{
+					column_uuid: "a9dbc1e8-f080-47ff-a840-d82be3b8fcd2", name: "prepared", cards: mainResult.data.map((x: Dictionary) => ({
 						...x,
 						column_uuid: "a9dbc1e8-f080-47ff-a840-d82be3b8fcd2"
-					})).filter((x: any) => x.orderstatus === "prepared") },
-					{ column_uuid: "c9b9b27f-5bd5-4e17-88c6-514ed236943f", name: "dispatched", cards: mainResult.mainData.data.map((x: Dictionary) => ({
+					})).filter((x: any) => x.orderstatus === "prepared")
+				},
+				{
+					column_uuid: "c9b9b27f-5bd5-4e17-88c6-514ed236943f", name: "dispatched", cards: mainResult.data.map((x: Dictionary) => ({
 						...x,
 						column_uuid: "c9b9b27f-5bd5-4e17-88c6-514ed236943f"
-					})).filter((x: any) => x.orderstatus === "dispatched") },
-					{ column_uuid: "6ce73933-9e35-433f-8acf-aef53e7a74c3", name: "delivered", cards: mainResult.mainData.data.map((x: Dictionary) => ({
+					})).filter((x: any) => x.orderstatus === "dispatched")
+				},
+				{
+					column_uuid: "6ce73933-9e35-433f-8acf-aef53e7a74c3", name: "delivered", cards: mainResult.data.map((x: Dictionary) => ({
 						...x,
 						column_uuid: "6ce73933-9e35-433f-8acf-aef53e7a74c3"
-					})).filter((x: any) => x.orderstatus === "delivered") },
-				])
-			} else {
-				setDataColumns([
-					{ column_uuid: "8ecfc7b7-6ac8-4d80-ad95-fee0910301fb", name: "new", cards: [] },
-					{ column_uuid: "a9dbc1e8-f080-47ff-a840-d82be3b8fcd2", name: "prepared", cards: [] },
-					{ column_uuid: "c9b9b27f-5bd5-4e17-88c6-514ed236943f", name: "dispatched", cards: [] },
-					{ column_uuid: "6ce73933-9e35-433f-8acf-aef53e7a74c3", name: "delivered", cards: [] },
-				])
-			}
+					})).filter((x: any) => x.orderstatus === "delivered")
+				},
+			])
 		}
 	}, [mainResult]);
+
 
 	const onDragEnd = async (result: DropResult, columns: any, setDataColumn: any) => {
 		if (!result.destination) return;
@@ -173,10 +176,10 @@ const OrderKanban: FC<{ mainResult: any, mainAux: any, handleEdit: (row: Diction
 				const updatedColumns = [...columns];
 				const [movedItem] = updatedColumns[sourceIndex].cards.splice(source.index, 1);
 				updatedColumns[destIndex].cards.splice(destination.index, 0, movedItem);
+
 				setDataColumn(updatedColumns);
 				// Actualiza el estado del pedido utilizando draggableId
-				await dispatch(execute(updateOrderStatus({ orderid: movedItem.orderid, orderstatus: updatedColumns[destIndex].name })));
-        fetchData()
+				dispatch(execute(updateOrderStatus({ orderid: movedItem.orderid, orderstatus: updatedColumns[destIndex].name })));
 				return
 			}
 		}
@@ -205,7 +208,7 @@ const OrderKanban: FC<{ mainResult: any, mainAux: any, handleEdit: (row: Diction
 						startIcon={<SearchIcon style={{ color: 'white' }} />}
 						style={{ backgroundColor: '#55BD84', width: 120 }}
 						onClick={fetchData}
-						disabled={mainResult.mainData.loading}
+						disabled={mainResult.loading}
 					>
 						<Trans i18nKey={langKeys.search} />
 					</Button>
