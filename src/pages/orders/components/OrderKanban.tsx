@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useEffect,useState } from 'react'; // we need this to make JSX compile
 import { useDispatch } from 'react-redux';
-import { getOrderSel } from 'common/helpers';
+import { getOrderSel, updateOrderStatus } from 'common/helpers';
 import { Dictionary } from "@types";
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { getCollection } from 'store/main/actions';
+import { execute, getCollection } from 'store/main/actions';
 import { makeStyles } from '@material-ui/core/styles';
 import { FieldSelect } from "components";
 import { Button } from "@material-ui/core";
@@ -134,7 +134,7 @@ const OrderKanban: FC<{mainResult: any, mainAux: any,handleEdit:(row: Dictionary
         if(!mainResult.mainData.loading){
             if(!mainResult.mainData.error){
               setDataColumns([
-                {name: "new", cards: mainResult.mainData.data.filter((x:any)=>!x.orderstatus)},
+                {name: "new", cards: mainResult.mainData.data.filter((x:any)=>!x.orderstatus || x.orderstatus === "new")},
                 {name: "prepared", cards: mainResult.mainData.data.filter((x:any)=>x.orderstatus === "prepared")},
                 {name: "dispatched", cards: mainResult.mainData.data.filter((x:any)=> x.orderstatus === "dispatched")},
                 {name: "delivered", cards: mainResult.mainData.data.filter((x:any)=>x.orderstatus === "delivered")},
@@ -152,55 +152,16 @@ const OrderKanban: FC<{mainResult: any, mainAux: any,handleEdit:(row: Dictionary
 
     const onDragEnd = (result:DropResult, columns:any, setDataColumn:any) => {
       if (!result.destination) return;
-      const { source, destination, type } = result;
-    /*
-      if (type === 'column') {
-        const newColumnOrder = [...columns]
-        if(newColumnOrder[destination.index-1].type !== newColumnOrder[source.index-1].type) return;
-        const [removed] = newColumnOrder.splice((source.index-1),1)
-        newColumnOrder.splice(destination.index-1, 0, removed)
-        setDataColumn(newColumnOrder)
-        const columns_uuid = newColumnOrder.slice(1).map(x => x.column_uuid).join(',')
-        dispatch(execute(updateColumnsOrder({columns_uuid})));
-        return;
-      }
-    
+      const { source, destination, draggableId } = result;   
       if (source.droppableId === destination.droppableId) {
-        const index = columns.findIndex(c => c.column_uuid === source.droppableId)
-        if (index >= 0) {
-          const column = columns[index];
-          const copiedItems = [...column.items!!]
-          const [removed] = copiedItems!.splice(source.index, 1);
-          copiedItems!.splice(destination.index, 0, removed);
-          setDataColumn(Object.values({...columns, [index]: {...column, items: copiedItems}}));
-          
-          const cards_startingcolumn = copiedItems!.map(x => x.leadid).join(',')
-          const startingcolumn_uuid = column.column_uuid
-          dispatch(execute(updateColumnsLeads({cards_startingcolumn, cards_finalcolumn:'', startingcolumn_uuid, finalcolumn_uuid: startingcolumn_uuid})));
-        }
       } else {
-        const sourceIndex = columns.findIndex(c => c.column_uuid === source.droppableId)
-        const destIndex = columns.findIndex(c => c.column_uuid === destination.droppableId)
+        const sourceIndex = columns.findIndex((c:any) => c.name === source.droppableId)
+        const destIndex = columns.findIndex((c:any) => c.name === destination.droppableId)
         if (sourceIndex >= 0 && destIndex >= 0) {
-          const sourceColumn = columns[sourceIndex];
-          const destColumn = columns[destIndex];
-          const sourceItems = (sourceColumn.items) ? [...sourceColumn.items] : null
-          const destItems = (destColumn.items) ? [...destColumn.items] : null
-          const [removed] = sourceItems!.splice(source.index, 1);
-          removed.column_uuid = destination.droppableId
-          destItems!.splice(destination.index, 0, removed);
-          const sourceTotalRevenue = sourceItems!.reduce((a,b) => a + parseFloat(b.expected_revenue), 0)
-          const destTotalRevenue = destItems!.reduce((a,b) => a+ parseFloat(b.expected_revenue), 0)
-        
-          setDataColumn(Object.values({...columns, [sourceIndex]: {...sourceColumn, total_revenue: sourceTotalRevenue,items: sourceItems}, [destIndex]: {...destColumn, total_revenue: destTotalRevenue,items: destItems}}));
-  
-          const cards_startingcolumn = sourceItems!.map(x => x.leadid).join(',')
-          const cards_finalcolumn = destItems!.map(x => x.leadid).join(',')
-          const startingcolumn_uuid = sourceColumn.column_uuid
-          const finalcolumn_uuid = destColumn.column_uuid
-          dispatch(execute(updateColumnsLeads({cards_startingcolumn, cards_finalcolumn, startingcolumn_uuid, finalcolumn_uuid, leadid: removed.leadid})));
+          dispatch(execute(updateOrderStatus({orderid: draggableId, orderstatus: destination.droppableId})));
+          fetchData();
         }
-      }*/
+      }
     };
 
     return (

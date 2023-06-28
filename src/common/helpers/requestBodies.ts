@@ -2420,6 +2420,14 @@ export const updateColumnsLeads = ({ cards_startingcolumn, cards_finalcolumn, st
         leadid
     }
 });
+export const updateOrderStatus = ({ orderid, orderstatus }: Dictionary): IRequestBody => ({
+    method: 'UFN_CHANGE_ORDERSTATUS',
+    key: "UFN_CHANGE_ORDERSTATUS",
+    parameters: {
+        orderid,
+        orderstatus,
+    }
+});
 
 export const updateColumnsOrder = ({ columns_uuid }: Dictionary): IRequestBody => ({
     method: 'UFN_UPDATE_COLUMNS',
