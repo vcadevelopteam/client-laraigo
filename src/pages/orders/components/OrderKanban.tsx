@@ -168,8 +168,8 @@ const OrderKanban: FC<{ mainResult: any, mainAux: any, handleEdit: (row: Diction
 		if (source.droppableId === destination.droppableId) {
 			// Lógica para el caso en que el elemento se mantenga en la misma columna
 		} else {
-			const sourceIndex = columns.findIndex((c: any) => c.name === source.droppableId);
-			const destIndex = columns.findIndex((c: any) => c.name === destination.droppableId);
+			const sourceIndex = columns.findIndex((c: any) => c.column_uuid === source.droppableId);
+			const destIndex = columns.findIndex((c: any) => c.column_uuid === destination.droppableId);
 			if (sourceIndex >= 0 && destIndex >= 0) {
 				const updatedColumns = [...columns];
 				const [movedItem] = updatedColumns[sourceIndex].cards.splice(source.index, 1);

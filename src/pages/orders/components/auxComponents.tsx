@@ -179,7 +179,7 @@ export const DraggableOrderColumn: FC<OrderColumnProps> = ({
 
     return (
         <Box {...boxProps}>
-            <div className={classes.root}>
+            <div className={classes.root} {...(provided?.dragHandleProps || {})}>
                 {children}
             </div>
         </Box>
