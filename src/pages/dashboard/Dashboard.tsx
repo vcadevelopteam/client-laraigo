@@ -487,7 +487,7 @@ const DashboardCard: FC<DashboardCardProps> = ({
                     component="img"
                     height="140"
                     className={classes.media}
-                    image="https://www.datacrm.com/upload/article/b201902121011569.jpg"
+                    image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/PROCESOSYCONSULTORIA/5444004f-d675-42cb-905f-27ea0604c0cf/image.png"
                     title={dashboardtemplate.description}
                 />
                 <CardContent>
