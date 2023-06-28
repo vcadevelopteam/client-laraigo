@@ -1,7 +1,6 @@
 import { FC } from "react";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { DraggablesCategories } from "./DraggablesCategories";
-import { useTranslation } from "react-i18next";
 import { useSelector } from "hooks";
 import { makeStyles } from "@material-ui/core/styles";
 import { IServiceDeskLead } from "@types";
