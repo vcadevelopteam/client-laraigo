@@ -49,7 +49,6 @@ const Orders: FC = () => {
         }
         setViewSelected(view)
     }
-    console.log(mainAux)
 
     if(viewSelected === "DETAIL"){        
         return (<DetailOrders
