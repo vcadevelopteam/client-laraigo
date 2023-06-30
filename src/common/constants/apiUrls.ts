@@ -244,6 +244,7 @@ export const apiUrls = {
     GETLOCATION: `${BASE_URL}/flow/location`,
     GETVERSION: `${BASE_URL}/check/version`,
     TRIGGERBLOCK: `${BASE_URL}/flow/triggerblock`,
+    RASATESTINT: `${BASE_URL}/rasa/test_model`,
 
     INTEGRATION_URL: `${BASE_URL}/load`,
     CHANNELS: `${BASE_URL}/channel`,
