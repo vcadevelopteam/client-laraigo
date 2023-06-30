@@ -18,6 +18,7 @@ import { Entities } from './assistant/Entities';
 import IAConfiguration from './Iaservices';
 import IntelligentModels from './IntelligentModels';
 import { IntentionsRasa } from './rasa/IntentionsRasa';
+import { SynonimsRasa } from './rasa/SynonimsRasa';
 
 interface DetailIaServiceProps {
     setViewSelected: (view: string) => void;
@@ -295,9 +296,9 @@ const RasaIA: React.FC<{arrayBread: any, setViewSelected: (view: string) => void
             setExternalViewSelected={functionChange}
             arrayBread={newArrayBread}
         />
-    }else if (viewSelectedTraining === "entities") {
+    }else if (viewSelectedTraining === "sinonims") {
         return (
-            <Entities 
+            <SynonimsRasa 
             setExternalViewSelected={functionChange}
             arrayBread={newArrayBread}
             />

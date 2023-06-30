@@ -3979,3 +3979,8 @@ export const rasaIntentSel = (rasaid: number) => ({
     key: "UFN_RASA_INTENT_SEL",
     parameters: {  rasaid },
 });
+export const rasaSynonimSel = (rasaid: number) => ({
+    method: "UFN_RASA_SYNONYM_SEL",
+    key: "UFN_RASA_SYNONYM_SEL",
+    parameters: {  rasaid },
+});
