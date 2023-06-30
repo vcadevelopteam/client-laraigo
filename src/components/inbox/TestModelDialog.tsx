@@ -16,7 +16,17 @@ import IOSSwitch from "components/fields/IOSSwitch";
 import Tooltip from "@material-ui/core/Tooltip";
 import clsx from "clsx";
 import { validateIsUrl } from "common/helpers";
-import { Avatar, IconButton, InputBase, List, ListItem, ListItemSecondaryAction, ListItemText, Popover, Typography } from "@material-ui/core";
+import {
+    Avatar,
+    IconButton,
+    InputBase,
+    List,
+    ListItem,
+    ListItemSecondaryAction,
+    ListItemText,
+    Popover,
+    Typography,
+} from "@material-ui/core";
 import { InfoOutlined, Visibility } from "@material-ui/icons";
 import { RasaService } from "network";
 
@@ -83,6 +93,17 @@ const useStyles = makeStyles((theme) => ({
     listItemTextSecondary: {
         textAlign: "right",
     },
+    iconButton: {
+        display: "inline-flex",
+        alignItems: "center",
+        cursor: "pointer",
+        width: "24px",
+        height: "24px",
+      },
+      visibilityIcon: {
+        width: "100%",
+        height: "100%",
+      },
 }));
 
 const TestModelDialog: React.FC<{ openModal: boolean; setOpenModal: (param: any) => void }> = ({
@@ -105,10 +126,10 @@ const TestModelDialog: React.FC<{ openModal: boolean; setOpenModal: (param: any)
         if (!formValue) return;
         e.preventDefault();
 
-        const axios_result = await RasaService.rasatest({ model_uuid: "3590f67e-b56d-4ac9-b56d-a0e4d1f014c4" });
-        if (axios_result.status === 200) {
-            console.log("rasa data", axios_result.data);
-        }
+        // const axios_result = await RasaService.rasatest({ model_uuid: "3590f67e-b56d-4ac9-b56d-a0e4d1f014c4" });
+        // if (axios_result.status === 200) {
+        //     console.log("rasa data", axios_result.data);
+        // }
 
         const newMessage = {
             mensaje: formValue,
@@ -245,13 +266,16 @@ const ChatMessage: React.FC<{ message: Dictionary }> = ({ message }) => {
                                     <div className={classes.timeInteraction}>{"10:05"}</div>
                                 </span>
                             </div>
-                            <div style={{ marginLeft: "15px" }}>
+                            <div style={{ marginLeft: "15px", color: "#7721ad" }}>
                                 <span>
                                     <b>Intencion:</b> chip_mas_equipo
                                 </span>
-                                <IconButton aria-describedby={id} onClick={handleClick}>
+                                {/* <IconButton aria-describedby={id} onClick={handleClick}>
                                     <Visibility />
-                                </IconButton>
+                                </IconButton> */}
+                                <span aria-describedby={id} onClick={handleClick} className={classes.iconButton}>
+                                    <Visibility className={classes.visibilityIcon} />
+                                </span>
                                 <Popover
                                     id={id}
                                     open={open}
@@ -268,21 +292,24 @@ const ChatMessage: React.FC<{ message: Dictionary }> = ({ message }) => {
                                 >
                                     <List>
                                         <ListItem>
-                                        <ListItemText primary={`chip_mas_equipo`} style={{marginRight: '20px'}}/>
+                                            <ListItemText primary={`chip_mas_equipo`} style={{ marginRight: "20px" }} />
                                             <ListItemSecondaryAction>
-                                                <span style={{color:'#B6B4BA'}}>0.83</span>
+                                                <span style={{ color: "#B6B4BA" }}>0.83</span>
                                             </ListItemSecondaryAction>
                                         </ListItem>
                                         <ListItem>
-                                            <ListItemText primary={`tipo_plan_post_pago`} style={{marginRight: '20px'}}/>
+                                            <ListItemText
+                                                primary={`tipo_plan_post_pago`}
+                                                style={{ marginRight: "20px" }}
+                                            />
                                             <ListItemSecondaryAction>
-                                                <span style={{color:'#B6B4BA'}}>0.29</span>
+                                                <span style={{ color: "#B6B4BA" }}>0.29</span>
                                             </ListItemSecondaryAction>
                                         </ListItem>
                                         <ListItem>
-                                            <ListItemText primary={`plan_max_play`} style={{marginRight: '20px'}}/>
+                                            <ListItemText primary={`plan_max_play`} style={{ marginRight: "20px" }} />
                                             <ListItemSecondaryAction>
-                                                <span style={{color:'#B6B4BA'}}>0.28</span>
+                                                <span style={{ color: "#B6B4BA" }}>0.28</span>
                                             </ListItemSecondaryAction>
                                         </ListItem>
                                     </List>
