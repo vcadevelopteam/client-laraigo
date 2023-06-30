@@ -1,21 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
-import { DialogZyx, SkeletonInteraction } from "components";
+import React, {  useRef, useState } from "react";
+import { DialogZyx } from "components";
 import { makeStyles } from "@material-ui/core/styles";
-import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { getInteractions } from "store/inbox/actions";
-import { Dictionary, IGroupInteraction } from "@types";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
-import ItemGroupInteraction from "./Interaction";
-import Button from "@material-ui/core/Button";
-import { Trans } from "react-i18next";
-import { AgentIcon, BotIcon, DownloadIcon, SendIcon } from "icons";
-import DomToImage from "dom-to-image";
-import IOSSwitch from "components/fields/IOSSwitch";
-import Tooltip from "@material-ui/core/Tooltip";
+import { SendIcon } from "icons";
 import clsx from "clsx";
-import { validateIsUrl } from "common/helpers";
 import {
     Avatar,
     IconButton,
@@ -96,6 +86,44 @@ const useStyles = makeStyles((theme) => ({
     visibilityIcon: {
         width: "100%",
         height: "100%",
+    },
+    flexColumn: {
+        display: "flex",
+        flexDirection: "column",
+        gap: "8px",
+    },
+    flexRow: {
+        display: "flex",
+        flexDirection: "row",
+        gap: "8px",
+    },
+    messageContainer: {
+        flex: "1 1 auto",
+        display: "flex",
+        flexDirection: "column",
+        gap: 8,
+        height: "60vh",
+        overflow: "auto",
+        overflowY: "auto",
+        paddingBottom: "80px",
+        paddingTop: "20px",
+        paddingLeft: "20px",
+        marginBottom: "10px",
+        backgroundColor: "rgb(242, 240, 247)",
+        backgroundImage:
+            "url('https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/wallpaper-laraigo.svg')",
+        backgroundRepeat: "repeat",
+        backgroundSize: "210px",
+    },
+    inputText: {
+        lineHeight: 1.5,
+        width: "100%",
+        fontSize: "1rem",
+        color: "#2E2C34",
+        outline: "none",
+        border: "none",
+        padding: "0 10px",
+        fontFamily: "dm-sans",
     },
 }));
 
@@ -186,54 +214,26 @@ const TestModelDialog: React.FC<{ openModal: boolean; setOpenModal: (param: any)
             handleClickButton1={() => setOpenModal(false)}
         >
             <div style={{ display: "flex", flexDirection: "column", minHeight: "400px" }}>
-                <div
-                    className="messages"
-                    style={{
-                        flex: "1 1 auto",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 8,
-                        height: "60vh",
-                        overflow: "auto",
-                        overflowY: "auto",
-                        paddingBottom: "80px",
-                        paddingTop: "20px",
-                        paddingLeft: "20px",
-                        marginBottom: "10px",
-                        backgroundColor: "rgb(242, 240, 247)",
-                        backgroundImage:
-                            "url('https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/wallpaper-laraigo.svg')",
-                        backgroundRepeat: "repeat",
-                        backgroundSize: "210px",
-                    }}
-                >
+                <div className={classes.messageContainer}>
                     {messages?.map((msg: IMessageTest, index: number) => (
                         <ChatMessage key={index} message={msg} />
                     ))}
                     <div ref={dummy}></div>
                 </div>
+
                 <div style={{ flex: "0 0 auto" }}>
                     <div style={{ display: "flex", justifyContent: "space-between" }}>
                         <input
                             type="text"
                             value={formValue}
                             onChange={(e) => setFormValue(e.target.value)}
+                            className={classes.inputText}
                             placeholder="Send your message..."
                             onKeyPress={(e) => {
                                 if (e.key === "Enter") {
                                     e.preventDefault();
                                     handleSubmit(e);
                                 }
-                            }}
-                            style={{
-                                lineHeight: 1.5,
-                                width: "100%",
-                                fontSize: "1rem",
-                                color: "#2E2C34",
-                                outline: "none",
-                                border: "none",
-                                padding: "0 10px",
-                                fontFamily: "dm-sans",
                             }}
                         />
                         <div style={{ display: "inline-block" }}>
@@ -268,10 +268,10 @@ const ChatMessage: React.FC<{ message: IMessageTest }> = ({ message }) => {
     const id = open ? "simple-popover" : undefined;
 
     return (
-        <div style={{ display: "flex", gap: 8 }}>
+        <div className={classes.flexRow}>
             <div style={{ flex: 1 }}>
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                    <div style={{ display: "flex", flexDirection: "row", gap: "8px", alignItems: "flex-end" }}>
+                <div className={classes.flexColumn}>
+                    <div className={classes.flexRow} style={{ alignItems: "flex-end" }}>
                         <Avatar src={photoUrl || undefined} style={{ width: "35px", height: "35px" }} />
                         <div className={classes.interactionText} style={{ display: "flex" }}>
                             <div style={{ flex: 1 }}>
