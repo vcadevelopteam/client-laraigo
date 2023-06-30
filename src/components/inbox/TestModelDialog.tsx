@@ -107,7 +107,12 @@ interface IIntent {
 
 interface IEntity {
     entity: string;
-    confidence: number;
+    confidence?: number;
+    confidence_entity?: number;
+    extractor?: string;
+    value?: string;
+    start?: number;
+    end: number;
     text: string;
 }
 
@@ -151,22 +156,22 @@ const TestModelDialog: React.FC<{ openModal: boolean; setOpenModal: (param: any)
         setMessages([...messages, newMessage]);
 
         try {
-            RasaService.rasatest({ model_uuid: "3590f67e-b56d-4ac9-b56d-a0e4d1f014c4", text: formValue }).then(axios_result => {
-                if (axios_result.status === 200) {
-                    newMessage.loading = false;
-                    newMessage.intent = axios_result.data.intent;
-                    newMessage.intent_ranking = axios_result.data.intent_ranking;
-                    newMessage.entities = axios_result.data.entities;
-                    setMessages(messages => messages.map(m => m.id === newMessage.id ? newMessage : m));
-                    console.log("rasa data", axios_result.data);
+            RasaService.rasatest({ model_uuid: "3590f67e-b56d-4ac9-b56d-a0e4d1f014c4", text: formValue }).then(
+                (axios_result) => {
+                    if (axios_result.status === 200) {
+                        newMessage.loading = false;
+                        newMessage.intent = axios_result.data.data.intent;
+                        newMessage.intent_ranking = axios_result.data.data.intent_ranking;
+                        newMessage.entities = axios_result.data.data.entities;
+                        setMessages((messages) => messages.map((m) => (m.id === newMessage.id ? newMessage : m)));
+                    }
                 }
-            });
+            );
         } catch (error) {
             newMessage.error = true;
-            setMessages(messages => messages.map(m => m.id === newMessage.id ? newMessage : m));
+            setMessages((messages) => messages.map((m) => (m.id === newMessage.id ? newMessage : m)));
         }
 
-        
         setFormValue("");
         if (dummy.current) {
             dummy.current.scrollIntoView({ behavior: "smooth" });
@@ -202,9 +207,9 @@ const TestModelDialog: React.FC<{ openModal: boolean; setOpenModal: (param: any)
                         backgroundSize: "210px",
                     }}
                 >
-                    {messages?.map((msg: IMessageTest, index: number) =>
+                    {messages?.map((msg: IMessageTest, index: number) => (
                         <ChatMessage key={index} message={msg} />
-                    )}
+                    ))}
                     <div ref={dummy}></div>
                 </div>
                 <div style={{ flex: "0 0 auto" }}>
@@ -273,29 +278,31 @@ const ChatMessage: React.FC<{ message: IMessageTest }> = ({ message }) => {
                                 <div style={{ position: "relative", borderBottom: "1px solid #d9d9d9" }}>
                                     <span>{message.message}</span>
                                 </div>
-                                {(!message.loading && !message.error) && (
-
+                                {!message.loading && !message.error && (
                                     <div style={{ color: "#7721ad", fontSize: "12px" }}>
                                         <div>
-                                            <b>Intencion:</b> chip_mas_equipo
+                                            <b>Intencion:</b> {message.intent?.name || "no encontrada"}
                                         </div>
                                         <div>
-                                            <b>Entidad: </b>marca_equipo:Apple (99%)
+                                            <b>Entidad: </b>
+                                            {message.entities?.length
+                                                ? `${message.entities?.[0]?.entity}:${message.entities?.[0]?.value} ( ${
+                                                      message.entities?.[0]?.extractor === "DucklingEntityExtractor"
+                                                          ? (Number(message.entities[0].confidence) * 100).toFixed(2)
+                                                          : (
+                                                                Number(message.entities[0].confidence_entity) * 100
+                                                            ).toFixed(2)
+                                                  } %)`
+                                                : "no encontrada"}
                                         </div>
                                     </div>
                                 )}
-                                {(!message.loading && message.error) && (
-                                    <div>Error...</div>
-                                )}
-                                {message.loading && (
-                                    <div>Cargando...</div>
-                                )}
+                                {!message.loading && message.error && <div>Error...</div>}
+                                {message.loading && <div>Cargando...</div>}
                             </div>
-                            {(!message.loading && !message.error) && (
+                            {!message.loading && !message.error && message.intent && (
                                 <div>
-                                    <IconButton
-                                        onClick={handleClick}
-                                    >
+                                    <IconButton onClick={handleClick}>
                                         <Visibility />
                                     </IconButton>
                                     <Popover
@@ -313,27 +320,20 @@ const ChatMessage: React.FC<{ message: IMessageTest }> = ({ message }) => {
                                         }}
                                     >
                                         <List>
-                                            <ListItem>
-                                                <ListItemText primary={`chip_mas_equipo`} style={{ marginRight: "20px" }} />
-                                                <ListItemSecondaryAction>
-                                                    <span style={{ color: "#B6B4BA" }}>0.83</span>
-                                                </ListItemSecondaryAction>
-                                            </ListItem>
-                                            <ListItem>
-                                                <ListItemText
-                                                    primary={`tipo_plan_post_pago`}
-                                                    style={{ marginRight: "20px" }}
-                                                />
-                                                <ListItemSecondaryAction>
-                                                    <span style={{ color: "#B6B4BA" }}>0.29</span>
-                                                </ListItemSecondaryAction>
-                                            </ListItem>
-                                            <ListItem>
-                                                <ListItemText primary={`plan_max_play`} style={{ marginRight: "20px" }} />
-                                                <ListItemSecondaryAction>
-                                                    <span style={{ color: "#B6B4BA" }}>0.28</span>
-                                                </ListItemSecondaryAction>
-                                            </ListItem>
+                                            {message.intent_ranking &&
+                                                message.intent_ranking.map((i) => (
+                                                    <ListItem key={i.id}>
+                                                        <ListItemText
+                                                            primary={i.name}
+                                                            style={{ marginRight: "20px" }}
+                                                        />
+                                                        <ListItemSecondaryAction>
+                                                            <span style={{ color: "#B6B4BA" }}>
+                                                                {Math.floor(i.confidence * 100) / 100}
+                                                            </span>
+                                                        </ListItemSecondaryAction>
+                                                    </ListItem>
+                                                ))}
                                         </List>
                                     </Popover>
                                 </div>
