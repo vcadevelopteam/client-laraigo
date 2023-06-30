@@ -2452,6 +2452,9 @@ const translation: LangKeys = {
   report_sentmessages_failed: '% Satisfactory',
   report_sentmessages_satisfactoryp: 'Failed',
   report_sentmessages_failedp: '% Failed',
+  prepared: "Prepared",
+  dispatched: "Dispatched",
+  delivered: "Delivered",
 
   report_conversationwhatsapp: 'Whatsapp conversations',
 
