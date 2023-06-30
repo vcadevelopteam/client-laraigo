@@ -93,18 +93,33 @@ const useStyles = makeStyles((theme) => ({
     listItemTextSecondary: {
         textAlign: "right",
     },
-    iconButton: {
-        display: "inline-flex",
-        alignItems: "center",
-        cursor: "pointer",
-        width: "24px",
-        height: "24px",
-      },
-      visibilityIcon: {
+    visibilityIcon: {
         width: "100%",
         height: "100%",
-      },
+    },
 }));
+
+interface IIntent {
+    id: number;
+    name: string;
+    confidence: number;
+}
+
+interface IEntity {
+    entity: string;
+    confidence: number;
+    text: string;
+}
+
+interface IMessageTest {
+    message: string;
+    id: number;
+    loading?: boolean;
+    error?: boolean;
+    intent?: IIntent;
+    intent_ranking?: IIntent[];
+    entities?: IEntity[];
+}
 
 const TestModelDialog: React.FC<{ openModal: boolean; setOpenModal: (param: any) => void }> = ({
     openModal,
@@ -117,26 +132,41 @@ const TestModelDialog: React.FC<{ openModal: boolean; setOpenModal: (param: any)
     const [usertype, setUsertype] = useState("agent");
     const [formValue, setFormValue] = useState("");
     const dummy = useRef<HTMLDivElement>(null);
-    const [messages, setMessages] = useState<Dictionary[]>([
-        { mensaje: "probando mensaje 1", id: 4 },
-        { mensaje: "probando mensaje 2", id: 5 },
+    const [messages, setMessages] = useState<IMessageTest[]>([
+        { message: "probando message 1", id: 4 },
+        { message: "probando message 2", id: 5 },
     ]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         if (!formValue) return;
         e.preventDefault();
+        const ID = Math.random();
 
-        // const axios_result = await RasaService.rasatest({ model_uuid: "3590f67e-b56d-4ac9-b56d-a0e4d1f014c4" });
-        // if (axios_result.status === 200) {
-        //     console.log("rasa data", axios_result.data);
-        // }
-
-        const newMessage = {
-            mensaje: formValue,
-            id: Math.random(), // Generar un ID único (en este caso, se utiliza Math.random())
+        const newMessage: IMessageTest = {
+            message: formValue,
+            loading: true,
+            id: ID,
         };
 
         setMessages([...messages, newMessage]);
+
+        try {
+            RasaService.rasatest({ model_uuid: "3590f67e-b56d-4ac9-b56d-a0e4d1f014c4", text: formValue }).then(axios_result => {
+                if (axios_result.status === 200) {
+                    newMessage.loading = false;
+                    newMessage.intent = axios_result.data.intent;
+                    newMessage.intent_ranking = axios_result.data.intent_ranking;
+                    newMessage.entities = axios_result.data.entities;
+                    setMessages(messages => messages.map(m => m.id === newMessage.id ? newMessage : m));
+                    console.log("rasa data", axios_result.data);
+                }
+            });
+        } catch (error) {
+            newMessage.error = true;
+            setMessages(messages => messages.map(m => m.id === newMessage.id ? newMessage : m));
+        }
+
+        
         setFormValue("");
         if (dummy.current) {
             dummy.current.scrollIntoView({ behavior: "smooth" });
@@ -152,7 +182,7 @@ const TestModelDialog: React.FC<{ openModal: boolean; setOpenModal: (param: any)
         >
             <div style={{ display: "flex", flexDirection: "column", minHeight: "400px" }}>
                 <div
-                    className="mensajes"
+                    className="messages"
                     style={{
                         flex: "1 1 auto",
                         display: "flex",
@@ -172,8 +202,9 @@ const TestModelDialog: React.FC<{ openModal: boolean; setOpenModal: (param: any)
                         backgroundSize: "210px",
                     }}
                 >
-                    {messages &&
-                        messages.map((msg: Dictionary, index: number) => <ChatMessage key={index} message={msg} />)}
+                    {messages?.map((msg: IMessageTest, index: number) =>
+                        <ChatMessage key={index} message={msg} />
+                    )}
                     <div ref={dummy}></div>
                 </div>
                 <div style={{ flex: "0 0 auto" }}>
@@ -215,7 +246,7 @@ const TestModelDialog: React.FC<{ openModal: boolean; setOpenModal: (param: any)
     );
 };
 
-const ChatMessage: React.FC<{ message: Dictionary }> = ({ message }) => {
+const ChatMessage: React.FC<{ message: IMessageTest }> = ({ message }) => {
     const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
     const photoUrl = "https://www.shareicon.net/data/128x128/2016/09/15/829453_user_512x512.png";
     const classes = useStyles();
@@ -231,94 +262,82 @@ const ChatMessage: React.FC<{ message: Dictionary }> = ({ message }) => {
     const open = Boolean(anchorEl);
     const id = open ? "simple-popover" : undefined;
 
-    const handlePopoverClose = () => {
-        setAnchorEl(null);
-    };
-
     return (
         <div style={{ display: "flex", gap: 8 }}>
             <div style={{ flex: 1 }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                     <div style={{ display: "flex", flexDirection: "row", gap: "8px", alignItems: "flex-end" }}>
                         <Avatar src={photoUrl || undefined} style={{ width: "35px", height: "35px" }} />
-                        <div title="hola" className={classes.interactionText}>
-                            <div style={{ position: "relative", borderBottom: "1px solid #d9d9d9" }}>
-                                <span>{message.mensaje}</span>
-                                <svg
-                                    viewBox="0 0 11 20"
-                                    width="11"
-                                    height="20"
-                                    style={{ position: "absolute", bottom: -1, left: -9, fill: "#efeff1" }}
-                                >
-                                    <svg id="message-tail-filled" viewBox="0 0 11 20">
-                                        <g transform="translate(9 -14)" fill="inherit" fillRule="evenodd">
-                                            <path
-                                                d="M-6 16h6v17c-.193-2.84-.876-5.767-2.05-8.782-.904-2.325-2.446-4.485-4.625-6.48A1 1 0 01-6 16z"
-                                                transform="matrix(1 0 0 -1 0 49)"
-                                                id="corner-fill"
-                                                fill="inherit"
-                                            ></path>
-                                        </g>
-                                    </svg>
-                                </svg>
-                                <span className={classes.containerTime}>
-                                    {"10:05"}
-                                    <div className={classes.timeInteraction}>{"10:05"}</div>
-                                </span>
+                        <div className={classes.interactionText} style={{ display: "flex" }}>
+                            <div style={{ flex: 1 }}>
+                                <div style={{ position: "relative", borderBottom: "1px solid #d9d9d9" }}>
+                                    <span>{message.message}</span>
+                                </div>
+                                {(!message.loading && !message.error) && (
+
+                                    <div style={{ color: "#7721ad", fontSize: "12px" }}>
+                                        <div>
+                                            <b>Intencion:</b> chip_mas_equipo
+                                        </div>
+                                        <div>
+                                            <b>Entidad: </b>marca_equipo:Apple (99%)
+                                        </div>
+                                    </div>
+                                )}
+                                {(!message.loading && message.error) && (
+                                    <div>Error...</div>
+                                )}
+                                {message.loading && (
+                                    <div>Cargando...</div>
+                                )}
                             </div>
-                            <div style={{ marginLeft: "15px", color: "#7721ad" }}>
-                                <span>
-                                    <b>Intencion:</b> chip_mas_equipo
-                                </span>
-                                {/* <IconButton aria-describedby={id} onClick={handleClick}>
-                                    <Visibility />
-                                </IconButton> */}
-                                <span aria-describedby={id} onClick={handleClick} className={classes.iconButton}>
-                                    <Visibility className={classes.visibilityIcon} />
-                                </span>
-                                <Popover
-                                    id={id}
-                                    open={open}
-                                    anchorEl={anchorEl}
-                                    onClose={handleClose}
-                                    anchorOrigin={{
-                                        vertical: "bottom",
-                                        horizontal: "center",
-                                    }}
-                                    transformOrigin={{
-                                        vertical: "top",
-                                        horizontal: "center",
-                                    }}
-                                >
-                                    <List>
-                                        <ListItem>
-                                            <ListItemText primary={`chip_mas_equipo`} style={{ marginRight: "20px" }} />
-                                            <ListItemSecondaryAction>
-                                                <span style={{ color: "#B6B4BA" }}>0.83</span>
-                                            </ListItemSecondaryAction>
-                                        </ListItem>
-                                        <ListItem>
-                                            <ListItemText
-                                                primary={`tipo_plan_post_pago`}
-                                                style={{ marginRight: "20px" }}
-                                            />
-                                            <ListItemSecondaryAction>
-                                                <span style={{ color: "#B6B4BA" }}>0.29</span>
-                                            </ListItemSecondaryAction>
-                                        </ListItem>
-                                        <ListItem>
-                                            <ListItemText primary={`plan_max_play`} style={{ marginRight: "20px" }} />
-                                            <ListItemSecondaryAction>
-                                                <span style={{ color: "#B6B4BA" }}>0.28</span>
-                                            </ListItemSecondaryAction>
-                                        </ListItem>
-                                    </List>
-                                </Popover>
-                                <br />
-                                <span>
-                                    <b>Entidad: </b>marca_equipo:Apple (99%)
-                                </span>
-                            </div>
+                            {(!message.loading && !message.error) && (
+                                <div>
+                                    <IconButton
+                                        onClick={handleClick}
+                                    >
+                                        <Visibility />
+                                    </IconButton>
+                                    <Popover
+                                        id={id}
+                                        open={open}
+                                        anchorEl={anchorEl}
+                                        onClose={handleClose}
+                                        anchorOrigin={{
+                                            vertical: "bottom",
+                                            horizontal: "center",
+                                        }}
+                                        transformOrigin={{
+                                            vertical: "top",
+                                            horizontal: "center",
+                                        }}
+                                    >
+                                        <List>
+                                            <ListItem>
+                                                <ListItemText primary={`chip_mas_equipo`} style={{ marginRight: "20px" }} />
+                                                <ListItemSecondaryAction>
+                                                    <span style={{ color: "#B6B4BA" }}>0.83</span>
+                                                </ListItemSecondaryAction>
+                                            </ListItem>
+                                            <ListItem>
+                                                <ListItemText
+                                                    primary={`tipo_plan_post_pago`}
+                                                    style={{ marginRight: "20px" }}
+                                                />
+                                                <ListItemSecondaryAction>
+                                                    <span style={{ color: "#B6B4BA" }}>0.29</span>
+                                                </ListItemSecondaryAction>
+                                            </ListItem>
+                                            <ListItem>
+                                                <ListItemText primary={`plan_max_play`} style={{ marginRight: "20px" }} />
+                                                <ListItemSecondaryAction>
+                                                    <span style={{ color: "#B6B4BA" }}>0.28</span>
+                                                </ListItemSecondaryAction>
+                                            </ListItem>
+                                        </List>
+                                    </Popover>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
