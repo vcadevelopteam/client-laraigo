@@ -49,6 +49,7 @@ const translation: LangKeys = {
   entitiesdescription: "Se nombra la entidad que asocie la categoría y palabra clave, para ser detectado.",
   font: "Fuente",
   hide_logs: 'Ocultar logs',
+  sinonim: "Sinónimo",
 
   small: "Pequeño",
   normal: "Normal",

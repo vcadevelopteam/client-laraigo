@@ -2439,6 +2439,7 @@ const translation: LangKeys = {
   report_sentmessages_failed: '% Satisfactory',
   report_sentmessages_satisfactoryp: 'Failed',
   report_sentmessages_failedp: '% Failed',
+  sinonim: "Sinonim",
 
   report_conversationwhatsapp: 'Whatsapp conversations',
 

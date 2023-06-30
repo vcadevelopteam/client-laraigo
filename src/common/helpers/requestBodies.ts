@@ -3984,3 +3984,8 @@ export const rasaSynonimSel = (rasaid: number) => ({
     key: "UFN_RASA_SYNONYM_SEL",
     parameters: {  rasaid },
 });
+export const rasaSynonimIns = ({id, rasaid, description, examples,values,status,operation}:Dictionary) => ({
+    method: "UFN_RASA_SYNONYM_INS",
+    key: "UFN_RASA_SYNONYM_INS",
+    parameters: {  id, rasaid, description, examples,values,status,operation },
+});

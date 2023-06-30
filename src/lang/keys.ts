@@ -26,6 +26,7 @@ export const langKeys = {
   tooltipintegrationurl: "tooltipintegrationurl",
   web_form: "web_form",
   phasechange: "phasechange",
+  sinonim: "sinonim",
   sdrequestcode: "sdrequestcode",
   resolution: "resolution",
   firstcontactcompliance: "firstcontactcompliance",

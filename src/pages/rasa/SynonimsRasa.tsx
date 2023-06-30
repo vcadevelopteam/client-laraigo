@@ -1,21 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
-import { FieldEdit, FieldEditWithSelect, TemplateBreadcrumbs, TitleDetail } from 'components';
+import { FieldEdit, TemplateBreadcrumbs, TitleDetail } from 'components';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Box, Button, makeStyles, TextField } from '@material-ui/core';
 import TableZyx from 'components/fields/table-simple';
 import ClearIcon from '@material-ui/icons/Clear';
-import { Dictionary } from '@types';
+import { Dictionary, IRequestBody } from '@types';
 import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import { convertLocalDate, exportExcel, filterPipe, uploadExcel } from 'common/helpers';
-import { intentdel, intentimport, intentutteranceins, trainwitai } from 'store/witia/actions';
-import { getCollection, getCollectionAux, resetAllMain } from 'store/main/actions';
-import { exportintent, rasaSynonimSel, selUtterance } from 'common/helpers/requestBodies';
+import { convertLocalDate, exportExcel, uploadExcel } from 'common/helpers';
+import { intentdel, intentimport, trainwitai } from 'store/witia/actions';
+import { execute, getCollection, getCollectionAux, getMultiCollection, resetAllMain } from 'store/main/actions';
+import { exportintent, rasaSynonimIns, rasaSynonimSel } from 'common/helpers/requestBodies';
 import AddIcon from '@material-ui/icons/Add';
 
 
@@ -53,93 +53,37 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-class VariableHandler {
-    show: boolean;
-    item: any;
-    inputkey: string;
-    inputvalue: string;
-    range: number[];
-    top: number;
-    left: number;
-    changer: ({ ...param }) => any;
-    constructor() {
-        this.show = false;
-        this.item = null;
-        this.inputkey = '';
-        this.inputvalue = '';
-        this.range = [-1, -1];
-        this.changer = ({ ...param }) => null;
-        this.top = 0;
-        this.left = 0;
-    }
-}
-
 const DetailSynonims: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,setViewSelected, setExternalViewSelected, arrayBread }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [disableSave, setDisableSave] = useState(!row);
     const [disableCreate, setDisableCreate] = useState(true);
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
-    const [dataEntities, setdataEntities] = useState<any>([]);
-    const [name, setname] = useState(row?.name || '');
-    const [variableHandler, setVariableHandler] = useState<VariableHandler>(new VariableHandler());
+    const [newExample, setNewExample] = useState("");
+    const [description, setDescription] = useState(row?.description || '');
     const operationRes = useSelector(state => state.witai.witaioperationresult);
-    const [newIntention, setnewIntention] = useState<Dictionary>({
-        name: "",
-        datajson: {
-            text: "",
-            traits: [],
-            entities: [],        
-            intent: {
-                name:row?.name || '',
-            },
-        }
-    });
-    const [examples, setexamples] = useState<any>([]);
+    const [examples, setexamples] = useState<any>(row?.values?.split(",")?.reduce((acc:any,x:any)=>[...acc,{name:x}],[])||[]);
     const mainResult = useSelector(state => state.main.mainAux);
-    const mainResultAux = useSelector(state => state.main.mainAux2);
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const selectionKey= "name"
-
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
-            id: row ? row.id : 0,
-            name: row?.name || '',
+            id: row?.rasasynonymid || 0,
+            rasaid: row?.rasaid || 0,
             description: row?.description || '',
             operation: row ? "EDIT" : "INSERT",
             status: "ACTIVO",
         }
     });
 
-    const fetchutterance = () => {dispatch(getCollectionAux(selUtterance(row?.name||"")))};
-    
-    useEffect(() => {
-        if(row){
-            fetchutterance();
-        }
-    }, []);
-    useEffect(() => {
-        if(!mainResultAux.loading && !mainResultAux.error){
-            setdataEntities(mainResultAux.data.map((e)=>e.datajson.keywords.map((x:any)=>({name: e.name + '.' + x.keyword, entity: e}))).reduce((acc,item)=>[...acc,...item],[]))
-        }
-    }, [mainResultAux]);
-
-    useEffect(() => {
-        if(!mainResult.loading && !mainResult.error){            
-            setexamples(mainResult.data);
-        }
-    }, [mainResult]);
-
     React.useEffect(() => {
         register('type');
         register('id');
         register('status');
         register('operation');
-        register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('description'//, { validate: (value) => (value && value.length) || t(langKeys.field_required) }
-        );
+        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
 
     useEffect(() => {
@@ -160,9 +104,8 @@ const DetailSynonims: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
     
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            let tempexamples = examples
-            tempexamples.forEach((e:any)=>delete e.updatedate)
-            dispatch(intentutteranceins({...data, datajson: JSON.stringify({name: data.name}), utterance_datajson: JSON.stringify(tempexamples)}));
+            let examplelist = examples.reduce((acc:any,x:any)=>[...acc,x.name],[])
+            dispatch(execute(rasaSynonimIns({...data, examples: examplelist.length, values: examplelist.join(",")})));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -178,87 +121,20 @@ const DetailSynonims: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
     const columns = React.useMemo(
         () => [
             {
-                Header: t(langKeys.userexample),
+                Header: t(langKeys.sinonims),
                 accessor: 'name',
                 NoFilter: true,
                 width: "auto",
             },
-            {
-                Header: t(langKeys.date),
-                accessor: 'updatedate',
-                NoFilter: true,
-                width: "auto",
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return convertLocalDate(row.updatedate).toLocaleString()
-                }
-            },
         ],
         []
     );
-    const selectionVariableSelect = (e: React.ChangeEvent<any>, value: string) => {
-        const { item, inputkey, inputvalue, range, changer } = variableHandler;
-        if (range[1] !== -1 && (range[1] > range[0] || range[0] !== -1)) {
-            changer({
-                ...item,
-                [inputkey]: inputvalue.substring(0, range[0] + 2)
-                    + value
-                    + (inputvalue[range[1] - 2] !== '}' ? '}}' : '')
-                    + inputvalue.substring(range[1] - 2)
-            });
-            setVariableHandler(new VariableHandler());
-        }
-    }
-
-    const toggleVariableSelect = (e: React.ChangeEvent<any>, item: any, inputkey: string, changefunc: (data:any) => void, filter = true) => {
-        let elem = e.target;
-        if (elem) {
-            let selectionStart = elem.selectionStart || 0;
-            let lines = (elem.value || '').substr(0, selectionStart).split('\n');
-            let row = lines.length - 1;
-            let column = lines[row].length * 3;
-            let startIndex = (elem.value || '').slice(0, selectionStart || 0)?.lastIndexOf('{{');
-            let partialText = '';
-            if (startIndex !== -1) {
-                if (elem.value.slice(startIndex, selectionStart).indexOf(' ') === -1
-                    && elem.value.slice(startIndex, selectionStart).indexOf('}}') === -1
-                    && elem.value[selectionStart - 1] !== '}') {
-                    partialText = elem.value.slice(startIndex + 2, selectionStart);
-                    let rightText = (elem.value || '').slice(selectionStart, elem.value.length);
-                    let selectionEnd = rightText.indexOf('}}') !== -1 ? rightText.indexOf('}}') : 0;
-                    let endIndex = startIndex + partialText.length + selectionEnd + 4;
-                    setVariableHandler({
-                        show: true,
-                        item: item,
-                        inputkey: inputkey,
-                        inputvalue: elem.value,
-                        range: [startIndex, endIndex],
-                        changer: ({ ...param }) => changefunc({ ...param }),
-                        top: 24 + row * 21,
-                        left: column
-                    })
-                    if (filter) {
-                        setdataEntities(filterPipe(mainResultAux.data.map((e)=>e.datajson.keywords.map((x:any)=>({name: e.name + '.' + x.keyword, entity: e}))).reduce((acc,item)=>[...acc,...item],[]), 'name', partialText, '%'));
-                    }
-                    else {
-                        setdataEntities(dataEntities);
-                    }
-                }else {
-                    setVariableHandler(new VariableHandler());
-                }
-            }
-            else {
-                setVariableHandler(new VariableHandler());
-            }
-        }
-    }
-
 
     return (
         <div style={{width: '100%'}}>
             {!!arrayBread && <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <TemplateBreadcrumbs
-                    breadcrumbs={[...arrayBread, { id: "view-2", name: t(langKeys.intentions) }]}
+                    breadcrumbs={[...arrayBread, { id: "view-2", name: t(langKeys.sinonims) }]}
                     handleClick={setExternalViewSelected}
                 />
             </div>}
@@ -266,7 +142,7 @@ const DetailSynonims: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TitleDetail
-                            title={row ? `${row.name}` : t(langKeys.newintention)}
+                            title={row ? `${row.description}` : `${t(langKeys.new)} ${t(langKeys.sinonim)}`}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center'  }}>
@@ -293,40 +169,27 @@ const DetailSynonims: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         <div className={classes.containerFields}>
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">{t(langKeys.name)}</Box>
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={.5} color="textPrimary">{t(langKeys.keyword)}</Box>
                             <TextField
                                 color="primary"
                                 fullWidth
                                 disabled={!disableSave}
-                                value={name}
-                                error={!!errors?.name?.message}
-                                helperText={errors?.name?.message || null}
+                                value={description}
+                                error={!!errors?.description?.message}
+                                helperText={errors?.description?.message || null}
                                 onInput={(e: any) => {
                                     // eslint-disable-next-line no-useless-escape
                                     if(!((/^[a-zA-Z_]/g).test(e.target.value) && (/[a-zA-Z0-9\_]$/g).test(e.target.value))){
-                                        if(e.target.value!=="") e.target.value = name
+                                        if(e.target.value!=="") e.target.value = description
                                     }
                                 }}
                                 onChange={(e) => {
-                                    setValue('name', e.target.value)
-                                    setname(e.target.value)
-                                    setDisableCreate(getValues("description")===""||e.target.value==="")
+                                    setValue('description', e.target.value)
+                                    setDescription(e.target.value)
+                                    setDisableCreate(e.target.value==="")
                                 }}
                             />
                         </div>
-                        <div style={{ paddingTop:"8px",paddingBottom:"16px"}}>{t(langKeys.intentionnametooltip)}</div>
-                        <FieldEdit
-                            label={t(langKeys.description)} 
-                            disabled={!disableSave}
-                            className={classes.containerFields}
-                            onChange={(value) => {
-                                setValue('description', value)
-                                setDisableCreate(getValues("name")===""||value==="")
-                            }}
-                            valueDefault={row?.description || ""}
-                            error={errors?.description?.message}
-                        />
-                        <div style={{ paddingTop:"8px"}}>{t(langKeys.intentiondescriptiontooltip)}</div>
                     </div>
                     {(disableSave) &&
                         <div className="row-zyx">
@@ -338,9 +201,6 @@ const DetailSynonims: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                                 color="primary"
                                 style={{ backgroundColor: disableCreate?"#dbdbdc":"#0078f6" }}
                                 onClick={() => {
-                                    let tempint =newIntention
-                                    tempint.datajson.intent.name = getValues("name")
-                                    setnewIntention(tempint)
                                     setDisableCreate(true);
                                     setDisableSave(false)
                                 }}
@@ -352,69 +212,25 @@ const DetailSynonims: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                 {!disableSave && (
                     
                     <div className={classes.containerDetail}>
-                        <FieldEditWithSelect
-                            label={t(langKeys.adduserexample)}
+                        <FieldEdit
+                            label={`${t(langKeys.register)} ${t(langKeys.sinonim)}`}
                             className="col-12"
                             rows={1}
-                            valueDefault={newIntention.name}
-                            onChange={(value) => setnewIntention({ ...newIntention, name: value })}
-                            inputProps={{
-                                onClick: (e: any) => toggleVariableSelect(e, newIntention, 'name', setnewIntention),
-                                onInput: (e: any) => toggleVariableSelect(e, newIntention, 'name', setnewIntention),
-                            }}
-                            show={variableHandler.show}
-                            data={dataEntities}
-                            datakey="name"
-                            top={variableHandler.top}
-                            left={variableHandler.left}
-                            onClickSelection={(e, value) => selectionVariableSelect(e, value)}
-                            onClickAway={(variableHandler) => setVariableHandler({ ...variableHandler, show: false })}
+                            valueDefault={newExample}
+                            onChange={(value) => setNewExample(value)}
                         />
-                        <div style={{paddingTop:"8px", paddingBottom:"8px"}}>{t(langKeys.uniqueexamplesuser)}</div>
+                        <div style={{paddingTop:"8px", paddingBottom:"8px"}}></div>
                         <Button
                             variant="contained"
                             type="button"
                             className='col-3'
-                            disabled={newIntention.name===""}
+                            disabled={newExample===""}
                             color="primary"
                             startIcon={<AddIcon color="secondary" />}
-                            style={{ backgroundColor: newIntention.name===""?"#dbdbdc":"#0078f6" }}
+                            style={{ backgroundColor: newExample===""?"#dbdbdc":"#0078f6" }}
                             onClick={() => {
-                                let holdingpos=0
-                                let cleanedstring=""
-                                let tempnewintention = newIntention
-                                newIntention.name.split("{{").forEach((e:any) => {
-                                    if(e.includes("}}")){
-                                        let entityfound = dataEntities.filter((x:any)=>x.name===e.split("}}")[0])[0]
-                                        tempnewintention.datajson.entities =[...tempnewintention.datajson.entities, 
-                                            {
-                                                name: entityfound.entity.name,
-                                                role: entityfound.entity.name,
-                                                body: e.split("}}")[0].split(".")[1], 
-                                                start:holdingpos,
-                                                end:holdingpos + e.split("}}")[0].split(".")[1].length,
-                                                entities:[] 
-                                            }
-                                        ]
-                                        holdingpos+=e.split("}}")[0].split(".")[1].length
-                                        cleanedstring+=e.split("}}")[0].split(".")[1]
-                                    }else{
-                                        holdingpos+=e.length
-                                        cleanedstring+=e
-                                    }
-                                });
-                                tempnewintention.name = cleanedstring
-                                tempnewintention.datajson.text = cleanedstring
-                                setexamples([...examples,tempnewintention]);
-                                setnewIntention({
-                                    name: "",
-                                    datajson: {
-                                        text: "",
-                                        traits: [],
-                                        entities: [],
-                                        intent: getValues("name"),
-                                    }
-                                })      
+                                setexamples([...examples,{name: newExample}]);
+                                setNewExample("")    
                             }}
                         >{t(langKeys.add)}</Button>
                         
@@ -472,6 +288,7 @@ export const SynonimsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected
     const [waitExport, setWaitExport] = useState(false);
     const mainResultAux = useSelector(state => state.main.mainAux);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
+    const multiResult = useSelector(state => state.main.multiData);
 
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitImport, setWaitImport] = useState(false);
@@ -517,19 +334,20 @@ export const SynonimsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected
 
     useEffect(() => {
         if (waitSave) {
-            if (!operationRes.loading && !operationRes.error) {
+            if (!multiResult.loading && !multiResult.error) {
+                debugger
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
-            } else if (operationRes.error) {
-                const errormessage = t(operationRes.code || "error_unexpected_error", { module: t(langKeys.intentions).toLocaleLowerCase() })
+            } else if (multiResult.error) {
+                const errormessage = t(multiResult.code || "error_unexpected_error", { module: t(langKeys.sinonims).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
         }
-    }, [operationRes, waitSave])
+    }, [multiResult, waitSave])
 
     useEffect(() => {
         if (waitImport) {
@@ -539,7 +357,7 @@ export const SynonimsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
             } else if (operationRes.error) {
-                const errormessage = t(operationRes.code || "error_unexpected_error", { module: t(langKeys.intentions).toLocaleLowerCase() })
+                const errormessage = t(operationRes.code || "error_unexpected_error", { module: t(langKeys.sinonims).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
@@ -559,8 +377,7 @@ export const SynonimsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected
                     return (
                         <label
                             className={classes.labellink}
-                            onClick={() => {      
-                                dispatch(getCollectionAux(selUtterance(row?.name||"")))                  
+                            onClick={() => {                    
                                 setViewSelected("view-2");
                                 setRowSelected({ row: row, edit: true })
                             }}
@@ -606,13 +423,16 @@ export const SynonimsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected
         []
     );
     const handleRegister = () => {
-        dispatch(getCollectionAux(selUtterance("")))    
         setViewSelected("view-2");
         setRowSelected({ row: null, edit: true })
     }
     const handleDelete = () => {
         const callback = () => {
-            dispatch(intentdel({table:JSON.stringify(Object.keys(selectedRows).map(x=>({name:x})))}))
+            let allRequestBody: IRequestBody[] = [];
+            Object.keys(selectedRows).forEach(x => {
+                allRequestBody.push(rasaSynonimIns({...mainResult.mainData.data.find(y=>y.rasasynonymid === parseInt(x)), operation:"DELETE", id: x}));
+            });
+            dispatch(getMultiCollection(allRequestBody))
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -640,7 +460,7 @@ export const SynonimsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected
             if (!mainResultAux.loading && !mainResultAux.error) {
                 dispatch(showBackdrop(false));
                 setWaitExport(false);
-                exportExcel(t(langKeys.intentions), mainResultAux.data.map(x=>({...x,intent_datajson: JSON.stringify(x.intent_datajson), utterance_datajson: JSON.stringify(x.utterance_datajson)})))
+                exportExcel(t(langKeys.sinonims), mainResultAux.data.map(x=>({...x,intent_datajson: JSON.stringify(x.intent_datajson), utterance_datajson: JSON.stringify(x.utterance_datajson)})))
             } else if (mainResultAux.error) {
                 const errormessage = t(mainResultAux.code || "error_unexpected_error", { module: t(langKeys.blacklist).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
@@ -701,7 +521,7 @@ export const SynonimsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected
                 <div style={{ width: "100%" }}>
                     {!!arrayBread && <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <TemplateBreadcrumbs
-                            breadcrumbs={[...arrayBread,{ id: "view-1", name:  t(langKeys.intentions) }]}
+                            breadcrumbs={[...arrayBread,{ id: "view-1", name:  t(langKeys.sinonims) }]}
                             handleClick={setExternalViewSelected}
                         />
                     </div>}
@@ -710,7 +530,7 @@ export const SynonimsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected
                         data={mainResult.mainData.data}
                         filterGeneral={false}
                         useSelection={true}
-                        titlemodule={!!arrayBread?t(langKeys.intentionsandentities):""}
+                        titlemodule={!!arrayBread?t(langKeys.sinonims):""}
                         selectionKey={selectionKey}
                         setSelectedRows={setSelectedRows}
                         ButtonsElement={() => (     
