@@ -2,7 +2,7 @@
 import { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { getOrderLineSel, productOrderList } from 'common/helpers';
+import { getOrderHistory, getOrderLineSel, productOrderList } from 'common/helpers';
 import { Dictionary } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -37,6 +37,7 @@ const Orders: FC = () => {
     const handleEdit = (row: Dictionary) => {
         dispatch(getMultiCollection([
             getOrderLineSel(row.orderid),
+            getOrderHistory(row.orderid)
         ]));
         setViewSelected("DETAIL");
         setRowSelected({ row, edit: true });

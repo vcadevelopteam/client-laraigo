@@ -339,17 +339,26 @@ export const getCorpSel = (id: number): IRequestBody => ({
         all: id === 0,
     }
 });
-export const getOrderSel = (product?:string): IRequestBody => ({
+export const getOrderSel = (product?:string, category?:string): IRequestBody => ({
     method: "UFN_ORDER_SEL",
     key: "UFN_ORDER_SEL",
     parameters: {
-        product: product||""
+        product: product ?? "",
+        category: category ?? "",
     }
 });
 export const getOrderLineSel = (orderid: number): IRequestBody => ({
     method: "UFN_ORDERLINE_SEL",
     key: "UFN_ORDERLINE_SEL",
     parameters: { orderid }
+});
+export const getOrderHistory = (orderid: number): IRequestBody => ({
+    method: "UFN_ORDERHISTORY_SEL",
+    key: "UFN_ORDERHISTORY_SEL",
+    parameters: { 
+        orderid,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
 });
 export const getOrgSel = (id: number, corpid?: number): IRequestBody => ({
     method: "UFN_ORG_SEL",

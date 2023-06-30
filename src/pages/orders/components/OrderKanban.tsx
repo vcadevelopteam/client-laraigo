@@ -14,6 +14,7 @@ import { Search as SearchIcon } from '@material-ui/icons';
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import { DraggableOrderCardContent, DraggableOrderColumn, DroppableOrderColumnList } from './auxComponents';
 import NaturalDragAnimation from 'pages/crm/prueba';
+import { googleCategory } from 'common/constants/googleCategory';
 
 const useStyles = makeStyles((theme) => ({
 	canvasFiltersHeader: {
@@ -119,6 +120,7 @@ const OrderKanban: FC<{ mainAux: any, handleEdit: (row: Dictionary) => void }> =
 	const classes = useStyles();
 	const mainResult = useSelector(state => state.main.mainData);
 	const [productFilter, setProductFilter] = useState("");
+	const [categoryFilter, setcategoryFilter] = useState("");
 	const [dataColumns, setDataColumns] = useState<any>([
 		{ name: "new", cards: [], column_uuid: "8ecfc7b7-6ac8-4d80-ad95-fee0910301fb" },
 		{ name: "prepared", cards: [], column_uuid: "a9dbc1e8-f080-47ff-a840-d82be3b8fcd2" },
@@ -128,36 +130,33 @@ const OrderKanban: FC<{ mainAux: any, handleEdit: (row: Dictionary) => void }> =
 
 	const fetchData = () => dispatch(getCollection(getOrderSel(productFilter)));
 
-	// useEffect(() => {
-	//     fetchData();
-	// }, []);
-
 	useEffect(() => {
 		if (!mainResult.loading && !mainResult.error) {
+			const data = [...mainResult.data].filter(item => {
+				if (item.orderstatus !== "delivered") {
+					return true;
+				}
+				var now = new Date();
+
+				// Crear una fecha que represente hace 24 horas
+				var twentyFourHoursAgo = new Date(now);
+				twentyFourHoursAgo.setHours(now.getHours() - 24);
+
+				var changedate = new Date(item.changedate);
+				return changedate > twentyFourHoursAgo && changedate <= now;
+			});
 			setDataColumns([
 				{
-					column_uuid: "8ecfc7b7-6ac8-4d80-ad95-fee0910301fb", name: "new", cards: mainResult.data.map((x: Dictionary) => ({
-						...x,
-						column_uuid: "8ecfc7b7-6ac8-4d80-ad95-fee0910301fb"
-					})).filter((x: any) => !x.orderstatus || x.orderstatus === "new")
+					column_uuid: "8ecfc7b7-6ac8-4d80-ad95-fee0910301fb", name: "new", cards: data.filter((x: any) => !x.orderstatus || x.orderstatus === "new")
 				},
 				{
-					column_uuid: "a9dbc1e8-f080-47ff-a840-d82be3b8fcd2", name: "prepared", cards: mainResult.data.map((x: Dictionary) => ({
-						...x,
-						column_uuid: "a9dbc1e8-f080-47ff-a840-d82be3b8fcd2"
-					})).filter((x: any) => x.orderstatus === "prepared")
+					column_uuid: "a9dbc1e8-f080-47ff-a840-d82be3b8fcd2", name: "prepared", cards: data.filter((x: any) => x.orderstatus === "prepared")
 				},
 				{
-					column_uuid: "c9b9b27f-5bd5-4e17-88c6-514ed236943f", name: "dispatched", cards: mainResult.data.map((x: Dictionary) => ({
-						...x,
-						column_uuid: "c9b9b27f-5bd5-4e17-88c6-514ed236943f"
-					})).filter((x: any) => x.orderstatus === "dispatched")
+					column_uuid: "c9b9b27f-5bd5-4e17-88c6-514ed236943f", name: "dispatched", cards: data.filter((x: any) => x.orderstatus === "dispatched")
 				},
 				{
-					column_uuid: "6ce73933-9e35-433f-8acf-aef53e7a74c3", name: "delivered", cards: mainResult.data.map((x: Dictionary) => ({
-						...x,
-						column_uuid: "6ce73933-9e35-433f-8acf-aef53e7a74c3"
-					})).filter((x: any) => x.orderstatus === "delivered")
+					column_uuid: "6ce73933-9e35-433f-8acf-aef53e7a74c3", name: "delivered", cards: data.filter((x: any) => x.orderstatus === "delivered")
 				},
 			])
 		}
@@ -166,7 +165,7 @@ const OrderKanban: FC<{ mainAux: any, handleEdit: (row: Dictionary) => void }> =
 
 	const onDragEnd = async (result: DropResult, columns: any, setDataColumn: any) => {
 		if (!result.destination) return;
-		const { source, destination, draggableId } = result;
+		const { source, destination } = result;
 		if (source.droppableId === destination.droppableId) {
 			// Lógica para el caso en que el elemento se mantenga en la misma columna
 		} else {
@@ -201,7 +200,16 @@ const OrderKanban: FC<{ mainAux: any, handleEdit: (row: Dictionary) => void }> =
 						optionDesc="product"
 						optionValue="product"
 					/>
-					<div style={{ flexGrow: 1 }} />
+					<FieldSelect
+						variant="outlined"
+						label={t(langKeys.category)}
+						className={classes.filterComponent}
+						data={googleCategory || []}
+						valueDefault={categoryFilter}
+						onChange={(v) => setcategoryFilter(v?.categoryname || "")}
+						optionDesc="categoryname"
+						optionValue="categoryname"
+					/>
 					<Button
 						variant="contained"
 						color="primary"
