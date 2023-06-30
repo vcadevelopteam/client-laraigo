@@ -19,6 +19,7 @@ import IAConfiguration from './Iaservices';
 import IntelligentModels from './IntelligentModels';
 import { IntentionsRasa } from './rasa/IntentionsRasa';
 import { SynonimsRasa } from './rasa/SynonimsRasa';
+import TestModelDialog from 'components/inbox/TestModelDialog';
 
 interface DetailIaServiceProps {
     setViewSelected: (view: string) => void;
@@ -100,6 +101,7 @@ const RasaIA: React.FC<{arrayBread: any, setViewSelected: (view: string) => void
     const [viewSelectedTraining, setViewSelectedTraining] = useState("view-1");
     const executeResult = useSelector(state => state.main.execute);
     const classes = useStyles();
+    const [openModal, setOpenModal] = useState(false);
 
     const newArrayBread = [
         ...arrayBread,
@@ -275,10 +277,14 @@ const RasaIA: React.FC<{arrayBread: any, setViewSelected: (view: string) => void
                                                 variant="contained"
                                                 color="primary"
                                                 style={{ backgroundColor: "#55BD84" }}
-                                                onClick={()=>setViewSelectedTraining("test")}
+                                                onClick={()=>setOpenModal(true)}
                                             >{t(langKeys.enter)}
                                             </Button>
                                         </div>
+                                        <TestModelDialog
+                                            openModal={openModal}
+                                            setOpenModal={setOpenModal}
+                                        />
                                         
                                         <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
                                             <EntidadesIALogo style={{ height: 220, width:"100%" }} />
