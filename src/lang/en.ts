@@ -553,7 +553,7 @@ const translation: LangKeys = {
   ticket_originalpublicationdate: "Original publication date",
   ticket_numberfollowers: "Number Followers",
   "personalizedreport_conversation.originalpublicationdate": "Original publication date",
-  "personalizedreport_conversation.numberfollowers":"Number Followers",
+  "personalizedreport_conversation.numberfollowers": "Number Followers",
   ordersdetail: "Order details",
   picture: "Picture",
   view: "Watch",
