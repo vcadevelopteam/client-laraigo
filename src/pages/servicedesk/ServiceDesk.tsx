@@ -10,7 +10,7 @@ import { useHistory, useLocation } from "react-router";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
-import { DateRangePicker, DialogZyx3Opt, FieldMultiSelect, FieldSelect } from "components";
+import { DateRangePicker, DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "components";
 import { Search as SearchIcon, ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, Sms as SmsIcon, Mail as MailIcon, Add as AddIcon } from '@material-ui/icons';
 import { Button, IconButton, Tooltip } from "@material-ui/core";
 import { Dictionary, IDomain, IFetchData, IServiceDeskLead } from "@types";
@@ -95,6 +95,7 @@ interface IBoardFilter {
   products: string;
   /**separados por coma */
   tags: string;
+  description: string;
   /**id del asesor */
 }
 
@@ -135,6 +136,7 @@ const ServiceDesk: FC = () => {
     products: query.get('products') || '',
     tags: query.get('tags') || '',
     phase: query.get('phase') || '',
+    description: query.get('description') || '',
   }), [query]);
   const [display, setDisplay] = useState(query.get('display') || 'BOARD');
   const [boardFilter, setBoardFilterPrivate] = useState<IBoardFilter>({
@@ -143,6 +145,7 @@ const ServiceDesk: FC = () => {
     customer: otherParams.contact,
     products: otherParams.products,
     tags: otherParams.tags,
+    description: otherParams.description,
   });
 
   const setBoardFilter = useCallback((prop: React.SetStateAction<typeof boardFilter>) => {
@@ -484,6 +487,7 @@ const ServiceDesk: FC = () => {
           take: pageSize,
           skip: pageIndex * pageSize,
           tags: boardFilter.tags,
+          description: boardFilter.description,
           supervisorid: user?.userid || 0,
           ...allParameters,
         }
@@ -622,6 +626,16 @@ const ServiceDesk: FC = () => {
         loading={mainMulti.loading}
         optionDesc="tags"
         optionValue="tags"
+      />
+      <FieldEdit
+        variant="outlined"
+        label={t(langKeys.description)}
+        className={classes.filterComponent}
+        valueDefault={boardFilter.description}
+        size="small"
+        onChange={(v) => {
+          setBoardFilter(prev => ({ ...prev, description: v }));
+        }}
       />
     </>
     // eslint-disable-next-line react-hooks/exhaustive-deps
