@@ -13,7 +13,7 @@ import { useForm } from 'react-hook-form';
 import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { convertLocalDate, exportExcel, uploadExcel } from 'common/helpers';
-import { intentdel, intentimport, trainwitai } from 'store/witia/actions';
+import { intentimport, trainwitai } from 'store/witia/actions';
 import { execute, getCollection, getCollectionAux, getMultiCollection, resetAllMain } from 'store/main/actions';
 import { exportintent, rasaSynonimIns, rasaSynonimSel } from 'common/helpers/requestBodies';
 import AddIcon from '@material-ui/icons/Add';
@@ -335,7 +335,6 @@ export const SynonimsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected
     useEffect(() => {
         if (waitSave) {
             if (!multiResult.loading && !multiResult.error) {
-                debugger
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));

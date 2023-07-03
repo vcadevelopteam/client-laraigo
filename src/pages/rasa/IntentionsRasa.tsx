@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
-import { FieldEdit, FieldEditWithSelect, TemplateBreadcrumbs, TitleDetail } from 'components';
+import { DialogZyx, FieldEdit, FieldEditWithSelect, TemplateBreadcrumbs, TitleDetail } from 'components';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Box, Button, makeStyles, TextField } from '@material-ui/core';
@@ -17,6 +17,7 @@ import { intentdel, intentimport, intentutteranceins, trainwitai } from 'store/w
 import { getCollection, getCollectionAux, resetAllMain } from 'store/main/actions';
 import { exportintent, rasaIntentSel, selUtterance } from 'common/helpers/requestBodies';
 import AddIcon from '@material-ui/icons/Add';
+import { entityins } from '../../store/witia/actions';
 
 
 interface RowSelected {
@@ -53,25 +54,19 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-class VariableHandler {
-    show: boolean;
-    item: any;
-    inputkey: string;
-    inputvalue: string;
-    range: number[];
-    top: number;
-    left: number;
-    changer: ({ ...param }) => any;
-    constructor() {
-        this.show = false;
-        this.item = null;
-        this.inputkey = '';
-        this.inputvalue = '';
-        this.range = [-1, -1];
-        this.changer = ({ ...param }) => null;
-        this.top = 0;
-        this.left = 0;
-    }
+const IntentionCell: React.FC<{row:any}> = ({row}) => {
+    let wordSeparation = row?.texto?.split(/\[|\]/).filter(Boolean)||[];
+    let entityList = row.entidades.reduce((acc:any,y:any)=>[...acc,y.value.toLowerCase()],[])
+    return <label>{wordSeparation.map((x:any)=>{
+        console.log(row)
+        if(entityList.includes(x.toLowerCase())){
+            debugger
+            let text = `[${x}]`
+            return <label>{text}</label>
+        }else{
+            return <>{x}</>
+        }
+    })}</label>
 }
 
 const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,setViewSelected, setExternalViewSelected, arrayBread }) => {
@@ -79,10 +74,10 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
     const [waitSave, setWaitSave] = useState(false);
     const [disableSave, setDisableSave] = useState(!row);
     const [disableCreate, setDisableCreate] = useState(true);
+    const [openModal, setOpenModal] = useState(false);
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [dataEntities, setdataEntities] = useState<any>([]);
-    const [name, setname] = useState(row?.name || '');
-    const [variableHandler, setVariableHandler] = useState<VariableHandler>(new VariableHandler());
+    const [name, setname] = useState(row?.intent_name || '');
     const operationRes = useSelector(state => state.witai.witaioperationresult);
     const [newIntention, setnewIntention] = useState<Dictionary>({
         name: "",
@@ -95,19 +90,24 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
             },
         }
     });
-    const [examples, setexamples] = useState<any>([]);
+    const [newEntity, setNewEntity] = useState<Dictionary>({
+        entity: "",
+        description: "",
+        value: "",
+    });
+    const [examples, setexamples] = useState(row?.intent_examples||[]);
     const mainResult = useSelector(state => state.main.mainAux);
     const mainResultAux = useSelector(state => state.main.mainAux2);
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const selectionKey= "name"
+    const selectionKey= "texto"
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
-            id: row ? row.id : 0,
-            name: row?.name || '',
-            description: row?.description || '',
+            id: row?.id || 0,
+            intent_name: row?.intent_name || '',
+            intent_description: row?.intent_description || '',
             operation: row ? "EDIT" : "INSERT",
             status: "ACTIVO",
         }
@@ -126,19 +126,13 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
         }
     }, [mainResultAux]);
 
-    useEffect(() => {
-        if(!mainResult.loading && !mainResult.error){            
-            setexamples(mainResult.data);
-        }
-    }, [mainResult]);
-
     React.useEffect(() => {
         register('type');
         register('id');
         register('status');
         register('operation');
-        register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('description'//, { validate: (value) => (value && value.length) || t(langKeys.field_required) }
+        register('intent_name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('intent_description'//, { validate: (value) => (value && value.length) || t(langKeys.field_required) }
         );
     }, [edit, register]);
 
@@ -162,7 +156,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
         const callback = () => {
             let tempexamples = examples
             tempexamples.forEach((e:any)=>delete e.updatedate)
-            dispatch(intentutteranceins({...data, datajson: JSON.stringify({name: data.name}), utterance_datajson: JSON.stringify(tempexamples)}));
+            dispatch(intentutteranceins({...data, datajson: JSON.stringify({name: data.intent_name}), utterance_datajson: JSON.stringify(tempexamples)}));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -173,86 +167,32 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
             callback
         }))
     });
+    
+    const addtoTable = ()=>{
+        setNewEntity({
+            entity: "",
+            description: "",
+            value: "",
+        });
+        setOpenModal(false)
+    }
 
     
     const columns = React.useMemo(
         () => [
             {
                 Header: t(langKeys.userexample),
-                accessor: 'name',
-                NoFilter: true,
-                width: "auto",
-            },
-            {
-                Header: t(langKeys.date),
-                accessor: 'updatedate',
+                accessor: 'texto',
                 NoFilter: true,
                 width: "auto",
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    return convertLocalDate(row.updatedate).toLocaleString()
+                    return <IntentionCell row={row}/>
                 }
             },
         ],
         []
     );
-    const selectionVariableSelect = (e: React.ChangeEvent<any>, value: string) => {
-        const { item, inputkey, inputvalue, range, changer } = variableHandler;
-        if (range[1] !== -1 && (range[1] > range[0] || range[0] !== -1)) {
-            changer({
-                ...item,
-                [inputkey]: inputvalue.substring(0, range[0] + 2)
-                    + value
-                    + (inputvalue[range[1] - 2] !== '}' ? '}}' : '')
-                    + inputvalue.substring(range[1] - 2)
-            });
-            setVariableHandler(new VariableHandler());
-        }
-    }
-
-    const toggleVariableSelect = (e: React.ChangeEvent<any>, item: any, inputkey: string, changefunc: (data:any) => void, filter = true) => {
-        let elem = e.target;
-        if (elem) {
-            let selectionStart = elem.selectionStart || 0;
-            let lines = (elem.value || '').substr(0, selectionStart).split('\n');
-            let row = lines.length - 1;
-            let column = lines[row].length * 3;
-            let startIndex = (elem.value || '').slice(0, selectionStart || 0)?.lastIndexOf('{{');
-            let partialText = '';
-            if (startIndex !== -1) {
-                if (elem.value.slice(startIndex, selectionStart).indexOf(' ') === -1
-                    && elem.value.slice(startIndex, selectionStart).indexOf('}}') === -1
-                    && elem.value[selectionStart - 1] !== '}') {
-                    partialText = elem.value.slice(startIndex + 2, selectionStart);
-                    let rightText = (elem.value || '').slice(selectionStart, elem.value.length);
-                    let selectionEnd = rightText.indexOf('}}') !== -1 ? rightText.indexOf('}}') : 0;
-                    let endIndex = startIndex + partialText.length + selectionEnd + 4;
-                    setVariableHandler({
-                        show: true,
-                        item: item,
-                        inputkey: inputkey,
-                        inputvalue: elem.value,
-                        range: [startIndex, endIndex],
-                        changer: ({ ...param }) => changefunc({ ...param }),
-                        top: 24 + row * 21,
-                        left: column
-                    })
-                    if (filter) {
-                        setdataEntities(filterPipe(mainResultAux.data.map((e)=>e.datajson.keywords.map((x:any)=>({name: e.name + '.' + x.keyword, entity: e}))).reduce((acc,item)=>[...acc,...item],[]), 'name', partialText, '%'));
-                    }
-                    else {
-                        setdataEntities(dataEntities);
-                    }
-                }else {
-                    setVariableHandler(new VariableHandler());
-                }
-            }
-            else {
-                setVariableHandler(new VariableHandler());
-            }
-        }
-    }
-
 
     return (
         <div style={{width: '100%'}}>
@@ -266,7 +206,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TitleDetail
-                            title={row ? `${row.name}` : t(langKeys.newintention)}
+                            title={row ? `${row.intent_name}` : t(langKeys.newintention)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center'  }}>
@@ -299,8 +239,8 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                                 fullWidth
                                 disabled={!disableSave}
                                 value={name}
-                                error={!!errors?.name?.message}
-                                helperText={errors?.name?.message || null}
+                                error={!!errors?.intent_name?.message}
+                                helperText={errors?.intent_name?.message || null}
                                 onInput={(e: any) => {
                                     // eslint-disable-next-line no-useless-escape
                                     if(!((/^[a-zA-Z_]/g).test(e.target.value) && (/[a-zA-Z0-9\_]$/g).test(e.target.value))){
@@ -308,9 +248,9 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                                     }
                                 }}
                                 onChange={(e) => {
-                                    setValue('name', e.target.value)
+                                    setValue('intent_name', e.target.value)
                                     setname(e.target.value)
-                                    setDisableCreate(getValues("description")===""||e.target.value==="")
+                                    setDisableCreate(getValues("intent_description")===""||e.target.value==="")
                                 }}
                             />
                         </div>
@@ -320,11 +260,11 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                             disabled={!disableSave}
                             className={classes.containerFields}
                             onChange={(value) => {
-                                setValue('description', value)
-                                setDisableCreate(getValues("name")===""||value==="")
+                                setValue('intent_description', value)
+                                setDisableCreate(getValues("intent_name")===""||value==="")
                             }}
-                            valueDefault={row?.description || ""}
-                            error={errors?.description?.message}
+                            valueDefault={row?.intent_description || ""}
+                            error={errors?.intent_description?.message}
                         />
                         <div style={{ paddingTop:"8px"}}>{t(langKeys.intentiondescriptiontooltip)}</div>
                     </div>
@@ -339,7 +279,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                                 style={{ backgroundColor: disableCreate?"#dbdbdc":"#0078f6" }}
                                 onClick={() => {
                                     let tempint =newIntention
-                                    tempint.datajson.intent.name = getValues("name")
+                                    tempint.datajson.intent.name = getValues("intent_name")
                                     setnewIntention(tempint)
                                     setDisableCreate(true);
                                     setDisableSave(false)
@@ -352,23 +292,11 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                 {!disableSave && (
                     
                     <div className={classes.containerDetail}>
-                        <FieldEditWithSelect
+                        <FieldEdit
                             label={t(langKeys.adduserexample)}
                             className="col-12"
-                            rows={1}
                             valueDefault={newIntention.name}
                             onChange={(value) => setnewIntention({ ...newIntention, name: value })}
-                            inputProps={{
-                                onClick: (e: any) => toggleVariableSelect(e, newIntention, 'name', setnewIntention),
-                                onInput: (e: any) => toggleVariableSelect(e, newIntention, 'name', setnewIntention),
-                            }}
-                            show={variableHandler.show}
-                            data={dataEntities}
-                            datakey="name"
-                            top={variableHandler.top}
-                            left={variableHandler.left}
-                            onClickSelection={(e, value) => selectionVariableSelect(e, value)}
-                            onClickAway={(variableHandler) => setVariableHandler({ ...variableHandler, show: false })}
                         />
                         <div style={{paddingTop:"8px", paddingBottom:"8px"}}>{t(langKeys.uniqueexamplesuser)}</div>
                         <Button
@@ -412,7 +340,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                                         text: "",
                                         traits: [],
                                         entities: [],
-                                        intent: getValues("name"),
+                                        intent: getValues("intent_name"),
                                     }
                                 })      
                             }}
@@ -449,6 +377,45 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                     </div>
                     
                 )}
+                <DialogZyx
+                    open={openModal}
+                    title={t(langKeys.entities)}
+                    buttonText1={t(langKeys.cancel)}
+                    buttonText2={t(langKeys.save)}
+                    handleClickButton1={() => setOpenModal(false)}
+                    handleClickButton2={addtoTable}
+                    button2Type="submit"
+                >
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.name)} 
+                            className={classes.containerFields}
+                            onChange={(value) => {
+                                setNewEntity({...newEntity, entity: value})
+                            }}
+                            valueDefault={newEntity.entity}
+                            error={errors?.intent_description?.message}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.description)} 
+                            className={classes.containerFields}
+                            onChange={(value) => {
+                                setNewEntity({...newEntity, description: value})
+                            }}
+                            valueDefault={newEntity.description}
+                            error={errors?.intent_description?.message}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.value)} 
+                            className={classes.containerFields}
+                            onChange={(value) => {
+                                setNewEntity({...newEntity, value: value})
+                            }}
+                            valueDefault={newEntity.value}
+                            error={errors?.intent_description?.message}
+                        />
+                    </div>
+                </DialogZyx>
             </form>
         </div>
     );
