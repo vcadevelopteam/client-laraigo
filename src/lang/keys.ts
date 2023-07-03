@@ -1084,6 +1084,7 @@ export const langKeys = {
   usertmopercentmax: 'usertmopercentmax',
   hasactionplan: 'hasactionplan',
   whitelist: 'whitelist',
+  errorRasaEntity: 'errorRasaEntity',
   import: 'import',
   connecttelegram: "connecttelegram",
   connecttelegramins: "connecttelegramins",

@@ -2431,6 +2431,7 @@ const translation: LangKeys = {
   report_sentmessages_CHATFLOW: 'Sent from flow',
   report_sentmessages_BOOKING: 'Sent from booking',
 
+  errorRasaEntity: 'The fields name and value are obligatory.',
   report_sentmessages_name: 'Shipping reason',
   report_sentmessages_shippingdate: 'Shipping Date',
   report_sentmessages_from: 'Sender',
