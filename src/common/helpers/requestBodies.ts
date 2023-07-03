@@ -3982,7 +3982,7 @@ export const rasaIntentSel = (rasaid: number) => ({
 export const rasaIntentIns = ({id, rasaid, intent_name, intent_description, intent_examples, entities, entity_examples, entity_values, status, operation}:Dictionary) => ({
     method: "UFN_RASA_INTENT_INS",
     key: "UFN_RASA_INTENT_INS",
-    parameters: {  id, rasaid, intent_name, intent_description, intent_examples, entities, entity_examples, entity_values, status, operation },
+    parameters: {  id, rasaid, intent_name, intent_description, intent_examples: JSON.stringify(intent_examples), entities, entity_examples, entity_values, status, operation },
 });
 export const rasaSynonimSel = (rasaid: number) => ({
     method: "UFN_RASA_SYNONYM_SEL",

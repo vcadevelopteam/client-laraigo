@@ -7,14 +7,14 @@ import { langKeys } from 'lang/keys';
 import { Box, Button, makeStyles, TextField } from '@material-ui/core';
 import TableZyx from 'components/fields/table-simple';
 import ClearIcon from '@material-ui/icons/Clear';
-import { Dictionary } from '@types';
+import { Dictionary, IRequestBody } from '@types';
 import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { convertLocalDate, exportExcel, uploadExcel } from 'common/helpers';
-import { intentdel, intentimport, trainwitai } from 'store/witia/actions';
-import { execute, getCollection, getCollectionAux, resetAllMain } from 'store/main/actions';
+import { intentimport, trainwitai } from 'store/witia/actions';
+import { execute, getCollection, getCollectionAux, getMultiCollection, resetAllMain } from 'store/main/actions';
 import { exportintent, rasaIntentIns, rasaIntentSel, selUtterance } from 'common/helpers/requestBodies';
 import AddIcon from '@material-ui/icons/Add';
 
@@ -168,7 +168,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
             });
             let tempexamples = examples
             tempexamples.forEach((e:any)=>delete e.updatedate)
-            dispatch(execute(rasaIntentIns({...data, intent_examples: JSON.stringify(examples), entity_examples: uniqueEntities.length, entities: uniqueEntities.join(","), entity_values: uniqueValues.join(",") })))
+            dispatch(execute(rasaIntentIns({...data, intent_examples: examples, entity_examples: uniqueEntities.length, entities: uniqueEntities.join(","), entity_values: uniqueValues.join(",") })))
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -365,7 +365,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                                             color="primary"
                                             startIcon={<ClearIcon color="secondary" />}
                                             style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
-                                            onClick={() => {setexamples(examples.filter((x:any)=>!Object.keys(selectedRows).includes(x.name)))}}
+                                            onClick={() => {setexamples(examples.filter((x:any)=>!Object.keys(selectedRows).includes(x.texto)))}}
                                         >{t(langKeys.delete)}</Button>
                                     </div>
                                 )}
@@ -445,6 +445,7 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitImport, setWaitImport] = useState(false);
     const trainResult = useSelector(state => state.witai.witaitrainresult);
+    const multiResult = useSelector(state => state.main.multiData);
 
     const fetchData = () => {dispatch(getCollection(rasaIntentSel(0)))};
     const selectionKey = 'rasaintentid';
@@ -486,19 +487,19 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
 
     useEffect(() => {
         if (waitSave) {
-            if (!operationRes.loading && !operationRes.error) {
+            if (!multiResult.loading && !multiResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
-            } else if (operationRes.error) {
-                const errormessage = t(operationRes.code || "error_unexpected_error", { module: t(langKeys.intentions).toLocaleLowerCase() })
+            } else if (multiResult.error) {
+                const errormessage = t(multiResult.code || "error_unexpected_error", { module: t(langKeys.sinonims).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
         }
-    }, [operationRes, waitSave])
+    }, [multiResult, waitSave])
 
     useEffect(() => {
         if (waitImport) {
@@ -520,7 +521,7 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
         () => [
             {
                 Header: t(langKeys.intentions),
-                accessor: 'name',
+                accessor: 'intent_name',
                 width: "auto",
                 NoFilter: true,
                 Cell: (props: any) => {
@@ -528,8 +529,7 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
                     return (
                         <label
                             className={classes.labellink}
-                            onClick={() => {      
-                                dispatch(getCollectionAux(selUtterance(row?.name||"")))                  
+                            onClick={() => {                 
                                 setViewSelected("view-2");
                                 setRowSelected({ row: row, edit: true })
                             }}
@@ -542,6 +542,12 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
             },
             {
                 Header: t(langKeys.description),
+                accessor: 'intent_description',
+                width: "auto",
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.examples),
                 accessor: 'intent_examples',
                 width: "auto",
                 NoFilter: true,
@@ -550,29 +556,38 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
                     return (
                         <label
                         >
-                            {row.intent_examples?.length||"-"}
+                            {row.intent_examples.length||"-"}
                         </label>
                     )
                 }
             },
             {
-                Header: t(langKeys.entities),
+                Header: `${t(langKeys.examples)} ${t(langKeys.entities)}`,
                 accessor: 'entities',
                 width: "auto",
                 NoFilter: true,
-            },
+            },                 
             {
                 Header: `${t(langKeys.examples)} ${t(langKeys.entities)}`,
                 accessor: 'entity_examples',
                 width: "auto",
                 NoFilter: true,
-            },            
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <label
+                        >
+                            {row.entity_examples||"-"}
+                        </label>
+                    )
+                }
+            },      
             {
-                Header: t(langKeys.entities),
+                Header: `${t(langKeys.value_plural)} ${t(langKeys.entities)}`,
                 accessor: 'entity_values',
                 width: "auto",
                 NoFilter: true,
-            },
+            }, 
             {
                 Header: t(langKeys.lastUpdate),
                 accessor: 'updatedate',
@@ -593,7 +608,11 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
     }
     const handleDelete = () => {
         const callback = () => {
-            dispatch(intentdel({table:JSON.stringify(Object.keys(selectedRows).map(x=>({name:x})))}))
+            let allRequestBody: IRequestBody[] = [];
+            Object.keys(selectedRows).forEach(x => {
+                allRequestBody.push(rasaIntentIns({...mainResult.mainData.data.find(y=>y.rasaintentid === parseInt(x)), operation:"DELETE", id: x}));
+            });
+            dispatch(getMultiCollection(allRequestBody))
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
