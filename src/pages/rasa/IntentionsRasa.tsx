@@ -54,15 +54,27 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const IntentionCell: React.FC<{row:any}> = ({row}) => {
-    let wordSeparation = row?.texto?.split(/\[|\]/).filter(Boolean)||[];
-    let entityList = row.entidades.reduce((acc:any,y:any)=>[...acc,y.value.toLowerCase()],[])
+const IntentionCell: React.FC<{row:any, openModalEntity: (entity: any)=>void}> = ({row, openModalEntity}) => {
+    const wordSeparation = [];
+    let startIndex = 0;
+    const classes = useStyles();
+    
+    while (true) {
+      const delimiterIndex = row?.texto.indexOf('[', startIndex);
+      
+      if (delimiterIndex === -1) {
+        wordSeparation.push(row?.texto.slice(startIndex));
+        break;
+      }
+      
+      wordSeparation.push(row?.texto.slice(startIndex, delimiterIndex));
+      wordSeparation.push('[' + row?.texto.slice(delimiterIndex + '['.length, row?.texto.indexOf("]", delimiterIndex) + 1));
+      
+      startIndex = row?.texto.indexOf("]", delimiterIndex) + 1;
+    }
     return <label>{wordSeparation.map((x:any)=>{
-        console.log(row)
-        if(entityList.includes(x.toLowerCase())){
-            debugger
-            let text = `[${x}]`
-            return <label>{text}</label>
+        if(x.includes('[')){
+            return <label className={classes.labellink} onClick={()=>openModalEntity(row)}>{x}</label>
         }else{
             return <>{x}</>
         }
@@ -168,6 +180,14 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
         }))
     });
     
+    const openModalEntity = (entity:any)=>{
+        setOpenModal(true)
+        setNewEntity({
+            entity: entity.entidades[0].entity,
+            description: entity.entidades[0]?.description||"",
+            value: entity.entidades[0].value,
+        });
+    }
     const addtoTable = ()=>{
         setNewEntity({
             entity: "",
@@ -187,7 +207,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                 width: "auto",
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    return <IntentionCell row={row}/>
+                    return <IntentionCell row={row} openModalEntity={openModalEntity}/>
                 }
             },
         ],
@@ -386,7 +406,7 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                     handleClickButton2={addtoTable}
                     button2Type="submit"
                 >
-                    <div className="row-zyx">
+                    <div className="row-zyx">                    
                         <FieldEdit
                             label={t(langKeys.name)} 
                             className={classes.containerFields}
@@ -396,6 +416,8 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                             valueDefault={newEntity.entity}
                             error={errors?.intent_description?.message}
                         />
+                    </div>
+                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.description)} 
                             className={classes.containerFields}
@@ -405,6 +427,8 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                             valueDefault={newEntity.description}
                             error={errors?.intent_description?.message}
                         />
+                    </div>
+                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.value)} 
                             className={classes.containerFields}
@@ -628,9 +652,6 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
             }
         }
     }, [mainResultAux, waitExport]);
-    useEffect(() => {
-        console.log(mainResult)
-    }, [mainResult]);
 
     const handleUpload = async (files: any[]) => {
         const file = files[0];
