@@ -1020,7 +1020,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
             reviewdescription: row?.reviewdescription || '',
             status: row?.status || '',
             unitmeasurement: row?.unitmeasurement || '',
-            quantity: row?.quantity || '',
+            quantity: row?.quantity || 0.0,
             type: row?.type || '',
             operation: (edit && row) ? "EDIT" : "INSERT",
         }
