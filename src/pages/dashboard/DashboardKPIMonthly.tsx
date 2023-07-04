@@ -1,5 +1,5 @@
 import { Box, Button, createStyles, makeStyles, Theme } from "@material-ui/core";
-import { timetoseconds, formattime, getUserGroupsSel, dashboardKPIMonthSummaryGraphSel, dashboardKPIMonthSummarySel, addTimes, varpercTime, varpercnumber, divisionTimeNumber, getDateCleaned, getUserAsesorByOrgID} from "common/helpers";
+import { timetoseconds, formattime, getUserGroupsSel, dashboardKPIMonthSummaryGraphSel, dashboardKPIMonthSummarySel, varpercTime, varpercnumber, getDateCleaned, getUserAsesorByOrgID} from "common/helpers";
 import { DateRangePicker, DialogZyx, FieldMultiSelect } from "components";
 import { useSelector } from "hooks";
 import { DownloadIcon } from "icons";
@@ -194,7 +194,7 @@ const DashboardKPIMonthly: FC = () => {
     });
 
     const [dataSummary, setDataSummary] = useState<any>([]);
-    const [filteredDays, setfilteredDays] = useState("");
+    const [filteredMonths, setFilteredMonths] = useState<any>([]);
     const el = React.useRef<null | HTMLDivElement>(null);
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
@@ -220,11 +220,22 @@ const DashboardKPIMonthly: FC = () => {
             supervisorid: user?.userid||0,
             userid: searchfields.asesor
         }
-        let days=[]
-        for (let i = dateRangeCreateDate?.startDate?.getDate()||1; i <= (dateRangeCreateDate?.endDate?.getDate()||1); i++) {
-            days.push(i);            
+        const months = [];
+        
+        if (dateRangeCreateDate?.startDate && dateRangeCreateDate?.endDate) {
+          const currentDate = new Date(dateRangeCreateDate?.startDate);
+          const endDateObj = new Date(dateRangeCreateDate?.endDate);
+        
+          while (currentDate <= endDateObj) {
+            const month = currentDate.getMonth() + 1; // Adding 1 since months are zero-based
+            const year = currentDate.getFullYear();
+            const monthYear = `${month.toString().padStart(2, '0')}/${year}`;
+            months.push(monthYear);
+        
+            currentDate.setMonth(currentDate.getMonth() + 1); // Increment to the next month
+          }
         }
-        setfilteredDays(days.join())
+        setFilteredMonths(months)
         dispatch(showBackdrop(true));
         setOpenDialog(false)
         dispatch(getMultiCollectionAux([
@@ -341,47 +352,48 @@ const DashboardKPIMonthly: FC = () => {
         }
         const prevmonth= remultiaux?.data?.[0]?.data[0]||emptydata;
         const actmonth= remultiaux?.data?.[0]?.data[1]||emptydata;
-        const selectedDays = filteredDays.split(",")
-        const cantdays = selectedDays.length
-        const dataDays = remultiaux?.data?.[1]?.data?.filter(x=>selectedDays.includes(String(x.day)))||[]
-        console.log(remultiaux)
-        //tme: timetoseconds(dataDays.filter(y=>String(y.day)===x)?.[0]?.tme_avg || "00:00:00")
+        const dataMonths = remultiaux?.data?.[1]?.data||[]
+        //tme: timetoseconds(dataMonths.filter(y=>String(y.day)===x)?.[0]?.tme_avg || "00:00:00")
         function compareFn(a:any,b:any){
-            let na = Number(a.date.split(" ")[1])
-            let nb = Number(b.date.split(" ")[1])
-            if(na<nb) return -1;
-            if(na>nb) return 1;
-            return 0;
+            const [monthA, yearA] = a.date.split("/");
+            const [monthB, yearB] = b.date.split("/");
+            
+            if (yearA !== yearB) {
+              return yearA.localeCompare(yearB);
+            } else {
+              return monthA.localeCompare(monthB);
+            }
         }
-        let graphdata = selectedDays.reduce((acc:any,x:string)=>{
-            let foundDay = dataDays.filter(y=>String(y.day)===x)?.[0];
+        let graphdata = filteredMonths.reduce((acc:any,x:string)=>{
+            const [month, year] = x.split("/");
+            let foundMonth = dataMonths.filter(y=>(y.month)===Number(month) && (y.year)===Number(year))?.[0];
             return [...acc, {
-            date: t(langKeys.day) + " "+ x,
-            tme: timetoseconds(foundDay?.tme_avg || "00:00:00"),
-            tmr: timetoseconds(foundDay?.tmr_avg || "00:00:00"),
-            tickets_agents: foundDay?.tickets_agents||0,
-            agents: foundDay?.agents||1,
-            balancetimes_avg: foundDay?.balancetimes_avg||0,
-            tickets_count: (foundDay?.tickets_count + foundDay?.abandoned_tickets)||0,
-            abandoned_tickets: foundDay?.abandoned_tickets||0,
+            date: x,
+            tme: timetoseconds(foundMonth?.tme_avg || "00:00:00"),
+            tmr: timetoseconds(foundMonth?.tmr_avg || "00:00:00"),
+            tickets_agents: foundMonth?.tickets_agents||0,
+            agents: foundMonth?.agents||1,
+            balancetimes_avg: foundMonth?.balancetimes_avg||0,
+            tickets_count: (foundMonth?.tickets_count + foundMonth?.abandoned_tickets)||0,
+            abandoned_tickets: foundMonth?.abandoned_tickets||0,
             //faltauno
-            holdingwaitingtime_avg: timetoseconds(foundDay?.holdingwaitingtime_avg || "00:00:00"),
-            firstassignedtime_avg: timetoseconds(foundDay?.firstassignedtime_avg || "00:00:00"),
-            firstreplytime_avg: timetoseconds(foundDay?.firstreplytime_avg || "00:00:00"),
-            participacion: foundDay?.stake||0,
+            holdingwaitingtime_avg: timetoseconds(foundMonth?.holdingwaitingtime_avg || "00:00:00"),
+            firstassignedtime_avg: timetoseconds(foundMonth?.firstassignedtime_avg || "00:00:00"),
+            firstreplytime_avg: timetoseconds(foundMonth?.firstreplytime_avg || "00:00:00"),
+            participacion: foundMonth?.stake||0,
         }]}, [])
         setDataSummary({
             month: auxdata.mes,
             year: auxdata.year,
-            firstassignedtime_avg: divisionTimeNumber(dataDays.reduce((acc,x)=>(addTimes(acc,x.firstassignedtime_avg)),"00:00:00"),cantdays),
-            holdingwaitingtime_avg: divisionTimeNumber(dataDays.reduce((acc,x)=>(addTimes(acc,x.holdingwaitingtime_avg)),"00:00:00"),cantdays),
-            firstreplytime_avg: divisionTimeNumber(dataDays.reduce((acc,x)=>(addTimes(acc,x.firstreplytime_avg)),"00:00:00"),cantdays),
-            tmr_avg: divisionTimeNumber(dataDays.reduce((acc,x)=>(addTimes(acc,x.tmr_avg)),"00:00:00"),cantdays),
-            tme_avg: divisionTimeNumber(dataDays.reduce((acc,x)=>(addTimes(acc,x.tme_avg)),"00:00:00"),cantdays),
-            agents: (dataDays.reduce((acc,x)=>(acc + x.agents),0)/cantdays).toFixed(0),
-            tickets_count: (dataDays.reduce((acc,x)=>(acc + x.tickets_count + x.abandoned_tickets),0)/cantdays).toFixed(0),
-            abandoned_tickets: (dataDays.reduce((acc,x)=>(acc + x.abandoned_tickets),0)/cantdays).toFixed(0),
-            balancetimes_avg: (dataDays.reduce((acc,x)=>(acc + x.balancetimes_avg),0)/cantdays).toFixed(2),
+            firstassignedtime_avg: actmonth.firstassignedtime_avg||"00:00:00",
+            holdingwaitingtime_avg: actmonth.holdingwaitingtime_avg||"00:00:00",
+            firstreplytime_avg: actmonth.firstreplytime_avg||"00:00:00",
+            tmr_avg: actmonth.tmr_avg||"00:00:00",
+            tme_avg: actmonth.tme_avg||"00:00:00",
+            tickets_count: actmonth.tickets_count + actmonth.abandoned_tickets,
+            abandoned_tickets: actmonth.abandoned_tickets,
+            agents: actmonth.agents,
+            balancetimes_avg: (actmonth.balancetimes_avg||0).toFixed(2),
             varperfata: varpercTime(actmonth.firstassignedtime_avg, prevmonth.firstassignedtime_avg,0),
             varperhwta: varpercTime(actmonth.holdingwaitingtime_avg, prevmonth.holdingwaitingtime_avg,0),
             varperfrta: varpercTime(actmonth.firstreplytime_avg, prevmonth.firstreplytime_avg,0),
@@ -458,10 +470,10 @@ const DashboardKPIMonthly: FC = () => {
             </DialogZyx>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-                <div className={classes.maintitle}> {t(langKeys.dashboardkpi)}</div>
+                <div className={classes.maintitle}> {t(langKeys.dashboardkpimonthly)}</div>
                 <div style={{display:"flex",gap: 6}}>
                     <GenericPdfDownloader
-                        downloadFileName={`kpi-${dataSummary.year}-${dataSummary.month}-${filteredDays}`}
+                        downloadFileName={`kpi-${filteredMonths.join()}`}
                     />
                     <Button
                         variant="contained"
