@@ -19,6 +19,7 @@ import { manageConfirmation, showSnackbar } from 'store/popus/actions';
 import { DashboardTemplate, IListStatePaginated } from '@types';
 import { deleteDashboardTemplate, resetDeleteDashboardTemplate } from 'store/dashboard/actions';
 import DashboardKPI from './DashboardKPI';
+import DashboardKPIMonthly from './DashboardKPIMonthly';
 
 
 const arrayBread = [
@@ -335,6 +336,25 @@ const Dashboard: FC = () => {
                                 </CardActionArea>
                             </Card>
                         </Grid>}
+                        {(t(langKeys.dashboardkpimonthly).toLowerCase().includes(searchValue.toLowerCase() ) && (user?.properties.environment==="CLARO")) && <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                            <Card>
+                                <CardActionArea onClick={() => handleSelected("dashboardkpimonthly")}>
+                                    <CardMedia
+                                        component="img"
+                                        height="140"
+                                        style={{objectFit: "contain"}}
+                                        className={classes.media}
+                                        image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/PROCESOSYCONSULTORIA/d4a7c4c3-1ff8-48ea-b10a-6a74a03142e4/desconexionestickets.png'}
+                                        title={t(langKeys.dashboardkpimonthly)}
+                                    />
+                                    <CardContent>
+                                        <Typography gutterBottom variant="h6" component="div">
+                                            {t(langKeys.dashboardkpimonthly)}
+                                        </Typography>
+                                    </CardContent>
+                                </CardActionArea>
+                            </Card>
+                        </Grid>}
                         {allDashboardsToShow.map((e:any, i:number) => (
                             <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }} key={i}>
                                 <DashboardCard
@@ -440,6 +460,20 @@ const Dashboard: FC = () => {
                         handleClick={handleSelected}
                     />
                     <DashboardKPI/>
+                </div>
+            </Fragment>
+        )
+    }    
+    else if(viewSelected === "dashboardkpimonthly"){
+        return(
+            
+            <Fragment>
+                <div style={{ width: '100%' }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={[...arrayBread, {id: 'dashboardkpimonthly', name: t(langKeys.dashboardkpimonthly) }]}
+                        handleClick={handleSelected}
+                    />
+                    <DashboardKPIMonthly/>
                 </div>
             </Fragment>
         )
