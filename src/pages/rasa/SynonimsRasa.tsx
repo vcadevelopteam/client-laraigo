@@ -12,12 +12,11 @@ import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import { convertLocalDate, uploadExcel } from 'common/helpers';
-import { intentimport } from 'store/witia/actions';
+import { convertLocalDate } from 'common/helpers';
 import { execute, getCollection, getMultiCollection, resetAllMain } from 'store/main/actions';
 import { rasaSynonimIns, rasaSynonimSel } from 'common/helpers/requestBodies';
 import AddIcon from '@material-ui/icons/Add';
-import { downloadrasaia, trainrasaia } from 'store/rasaia/actions';
+import { downloadrasaia, trainrasaia, uploadrasaia } from 'store/rasaia/actions';
 
 
 interface RowSelected {
@@ -285,7 +284,7 @@ export const SynonimsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected
     const [selectedRows, setSelectedRows] = useState<any>({});
     const [waitSave, setWaitSave] = useState(false);
     const [sendTrainCall, setSendTrainCall] = useState(false);
-    const operationRes = useSelector(state => state.witai.witaioperationresult);
+    const operationRes = useSelector(state => state.rasaia.rasaiauploadresult);
     const [waitExport, setWaitExport] = useState(false);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const multiResult = useSelector(state => state.main.multiData);
@@ -460,42 +459,15 @@ export const SynonimsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected
 
     const handleUpload = async (files: any[]) => {
         const file = files[0];
+        debugger
         if (file) {
-            const data: any = (await uploadExcel(file, undefined) as any[]).filter((d: any) => !['', null, undefined].includes(d.intent_name));
-            if (data.length > 0) {
-                let datareduced = data.reduce((acc:any,element:any)=>{
-                    let repeatedindex = acc.findIndex((item:any)=>item.name === element.intent_name)
-                    if (repeatedindex < 0){
-                        return [...acc, {
-                            name: element.intent_name,
-                            description: element.intent_description,
-                            datajson: JSON.parse(element.intent_datajson),
-                            utterance_datajson: [{
-                                name: element.utterance_name,
-                                datajson: JSON.parse(element.utterance_datajson)
-                            }]
-                        }]
-                    }else{
-                        let newacc = acc
-                        newacc[repeatedindex].utterance_datajson.push(
-                            {
-                                name: element.utterance_name,
-                                datajson: JSON.parse(element.utterance_datajson)
-                            })                         
-                        return newacc
-
-                    }
-                },[])
-                dispatch(showBackdrop(true));
-                setWaitImport(true)
-                dispatch(intentimport({
-                    utterance_datajson: JSON.stringify(datareduced.reduce((acc:any,x:any) => [...acc,...x.utterance_datajson],[])),
-                    datajson: JSON.stringify(datareduced.map((x:any) => ({ name:x.name, description:x.description, datajson:x.datajson }))),
-                }))            
-            }
-            else {
-                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) }));
-            }
+            const fd = new FormData();
+            fd.append('file', file, file.name);
+            fd.append('model_uuid', dataModelAi?.data?.[0]?.model_uuid||"");
+            fd.append('origin', "synonym");
+            dispatch(showBackdrop(true));
+            setWaitImport(true)
+            dispatch(uploadrasaia(fd))    
         }
     }
     
@@ -549,6 +521,7 @@ export const SynonimsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected
                         handleRegister={handleRegister}
                         importCSV={handleUpload}
                         pageSizeDefault={20}
+                        acceptTypeLoad={"application/x-yaml, text/yaml"}
                         initialPageIndex={0}
                     />
                 </div>

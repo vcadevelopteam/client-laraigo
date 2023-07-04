@@ -345,7 +345,8 @@ const TableZyx = React.memo(({
     setDataFiltered,
     useFooter = false,
     heightWithCheck = 43,
-    checkHistoryCenter = false
+    checkHistoryCenter = false,
+    acceptTypeLoad = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
 }: TableConfig) => {
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -789,7 +790,7 @@ const TableZyx = React.memo(({
                         <>
                             <input
                                 name="file"
-                                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
+                                accept={acceptTypeLoad}
                                 id="laraigo-upload-csv-file"
                                 type="file"
                                 style={{ display: 'none' }}

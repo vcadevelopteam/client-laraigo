@@ -249,30 +249,6 @@ const RasaIA: React.FC<{arrayBread: any, setViewSelected: (view: string) => void
 
                                         <div className="col-6" style={{width: "50%"}}>
                                             <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
-                                            <div className={classes.containerInnertittle2}>Insights</div>
-                                            <div className={classes.containerInnertittle3}>{t(langKeys.insightsdescription)}</div>                                            
-                                            <Button
-                                                className={classes.button}
-                                                variant="contained"
-                                                color="primary"
-                                                style={{ backgroundColor: "#55BD84" }}
-                                                onClick={()=>setViewSelectedTraining("insights")}
-                                            >{t(langKeys.enter)}
-                                            </Button>
-                                        </div>
-                                        
-                                        <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                            <EntidadesIALogo style={{ height: 220, width:"100%" }} />
-                                        </div>
-                                    </div>
-                                </Card>
-                            </Grid>
-                            <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
-                                <Card style={{ position: 'relative', display:"flex" }}>
-                                    <div className={classes.containerInner}>
-
-                                        <div className="col-6" style={{width: "50%"}}>
-                                            <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
                                             <div className={classes.containerInnertittle2}>{t(langKeys.testmodel)}</div>
                                             <div className={classes.containerInnertittle3}>{t(langKeys.testmodeldescription)}</div>                                            
                                             <Button

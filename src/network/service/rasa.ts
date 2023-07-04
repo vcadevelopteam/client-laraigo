@@ -10,8 +10,8 @@ export function rasatrain(requestBody: any) {
 export function rasadownload(requestBody: any) {
     return APIManager.post(apiUrls.RASADOWNLOADINT, { data: requestBody }, true);
 }
-export function rasaupload(requestBody: any) {
-    return APIManager.post(apiUrls.RASAUPLOADINT, { data: requestBody }, true);
+export function rasaupload(data: any) {
+    return APIManager.post(apiUrls.RASAUPLOADINT, { data }, true);
 }
 export function rasamodellist(requestBody: any) {
     return APIManager.post(apiUrls.RASAMODELLIST, { data: requestBody }, true);
