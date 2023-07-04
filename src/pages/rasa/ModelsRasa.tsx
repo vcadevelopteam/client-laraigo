@@ -234,10 +234,10 @@ export const ModelsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected, 
                         </div>
                     )}
                     loading={mainData.loading}
-                    download={true}
+                    download={false}
                     triggerExportPersonalized={true}
                     exportPersonalized={triggerExportData}
-                    importCSV={handleUpload}
+                    //importCSV={handleUpload}
                     pageSizeDefault={20}
                     initialPageIndex={0}
                 />
