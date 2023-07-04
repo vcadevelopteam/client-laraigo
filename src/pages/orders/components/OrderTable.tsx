@@ -83,6 +83,20 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
                 accessor: 'status',
                 NoFilter: true
             },
+            {
+                Header: "Tipo entrega",
+                accessor: 'var_tipoentrega',
+                NoFilter: true
+            },
+            {
+                Header: "Fecha programada entrega",
+                accessor: 'var_horaentrega',
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const { var_fechaentrega, var_horaentrega } = props.cell.row.original;
+                    return `${var_fechaentrega} ${var_horaentrega}`
+                }
+            },
         ],
         []
     );
@@ -94,22 +108,22 @@ const OrderTable: FC<{mainResult: any,handleEdit:(row: Dictionary)=>void}> = ({m
     }, []);
 
     useEffect(() => {
-        setMainData(mainResult.mainData.data.map((x:any) => ({
+        setMainData(mainResult.data.map((x:any) => ({
             ...x,
             typedesc: (t(`type_corp_${x.type}`.toLowerCase()) || "").toUpperCase(),
             statusdesc: (t(`status_${x.status}`.toLowerCase()) || "").toUpperCase()
         })))
-    }, [mainResult.mainData.data])
+    }, [mainResult.data])
 
     return (
         <div style={{ width: "100%" }}>
             <TableZyx
                 columns={columns}
-                titlemodule={t(langKeys.orders, { count: 2 })}
+                titlemodule={""}
                 onClickRow={handleEdit}
                 data={mainData}
-                download={true}
-                loading={mainResult.mainData.loading}
+                download={false}
+                loading={mainResult.loading}
             />
         </div>)
 

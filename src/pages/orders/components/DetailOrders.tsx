@@ -191,6 +191,12 @@ const DetailOrders: React.FC<DetailOrdersProps> = ({ data: { row, edit }, multiD
                         <div style={{ fontSize: "1.2em" }}>{t(langKeys.ticket_numeroticket)}: {row?.ticketnum}</div>
                     </div>
                     <div style={{ width: "100%", display: "flex", justifyContent: "space-between", padding: 10 }}>
+                        <div style={{ fontSize: "1.2em" }}>{"Tipo entrega"}: {row?.var_tipoentrega}</div>
+                        <div style={{ fontSize: "1.2em" }}>{"Fecha programada entrega"}: {row?.var_fechaentrega} {row?.var_horaentrega}</div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                    <div style={{ width: "100%", display: "flex", justifyContent: "space-between", padding: 10 }}>
                         <div style={{ fontSize: "1.2em" }}>{t(langKeys.address)}: {row?.address}</div>
                     </div>
                     <div className="row-zyx">
