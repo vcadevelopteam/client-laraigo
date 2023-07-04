@@ -2,6 +2,7 @@ import React, {  useRef, useState } from "react";
 import { DialogZyx } from "components";
 import { makeStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
+import { useSelector } from 'hooks';
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { SendIcon } from "icons";
@@ -165,6 +166,7 @@ const TestModelDialog: React.FC<{ openModal: boolean; setOpenModal: (param: any)
     const [usertype, setUsertype] = useState("agent");
     const [formValue, setFormValue] = useState("");
     const dummy = useRef<HTMLDivElement>(null);
+    const dataModelAi = useSelector(state => state.main.mainAux);
     const [messages, setMessages] = useState<IMessageTest[]>([
         { message: "probando message 1", id: 4 },
         { message: "probando message 2", id: 5 },
@@ -184,7 +186,7 @@ const TestModelDialog: React.FC<{ openModal: boolean; setOpenModal: (param: any)
         setMessages([...messages, newMessage]);
 
         try {
-            RasaService.rasatest({ model_uuid: "", text: formValue }).then(
+            RasaService.rasatest({ model_uuid: dataModelAi?.data?.[0]?.model_uuid||null, text: formValue }).then(
                 (axios_result) => {
                     if (axios_result.status === 200) {
                         newMessage.loading = false;
