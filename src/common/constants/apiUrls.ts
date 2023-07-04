@@ -245,6 +245,10 @@ export const apiUrls = {
     GETVERSION: `${BASE_URL}/check/version`,
     TRIGGERBLOCK: `${BASE_URL}/flow/triggerblock`,
     RASATESTINT: `${BASE_URL}/rasa/test`,
+    RASATRAININT: `${BASE_URL}/rasa/train`,
+    RASADOWNLOADINT: `${BASE_URL}/rasa/download`,
+    RASAUPLOADINT: `${BASE_URL}/rasa/upload`,
+    RASAMODELLIST: `${BASE_URL}/rasa/list`,
 
     INTEGRATION_URL: `${BASE_URL}/load`,
     CHANNELS: `${BASE_URL}/channel`,

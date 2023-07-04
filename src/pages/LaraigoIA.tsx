@@ -9,7 +9,7 @@ import { TemplateBreadcrumbs } from 'components';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { resetAllMain } from 'store/main/actions';
+import { getCollectionAux, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import {Box, Card, Grid } from '@material-ui/core';
 import { ConectoresIALogo, ConfiguracionIALogo, EntrenamientoIALogo, IntencionesIALogo, EntidadesIALogo } from 'icons';
@@ -20,6 +20,8 @@ import IntelligentModels from './IntelligentModels';
 import { IntentionsRasa } from './rasa/IntentionsRasa';
 import { SynonimsRasa } from './rasa/SynonimsRasa';
 import TestModelDialog from 'components/inbox/TestModelDialog';
+import { rasaModelSel } from 'common/helpers';
+import { ModelsRasa } from './rasa/ModelsRasa';
 
 interface DetailIaServiceProps {
     setViewSelected: (view: string) => void;
@@ -101,7 +103,7 @@ const RasaIA: React.FC<{arrayBread: any, setViewSelected: (view: string) => void
     const [viewSelectedTraining, setViewSelectedTraining] = useState("view-1");
     const executeResult = useSelector(state => state.main.execute);
     const classes = useStyles();
-    const [openModal, setOpenModal] = useState(false);
+    const [openModal, setOpenModal] = useState(false);    
 
     const newArrayBread = [
         ...arrayBread,
@@ -121,6 +123,7 @@ const RasaIA: React.FC<{arrayBread: any, setViewSelected: (view: string) => void
     }
 
     useEffect(() => {
+        dispatch(getCollectionAux(rasaModelSel()))
         return () => {
             dispatch(resetAllMain());
         };
@@ -305,6 +308,13 @@ const RasaIA: React.FC<{arrayBread: any, setViewSelected: (view: string) => void
     }else if (viewSelectedTraining === "sinonims") {
         return (
             <SynonimsRasa 
+            setExternalViewSelected={functionChange}
+            arrayBread={newArrayBread}
+            />
+        )
+    }else if (viewSelectedTraining === "models") {
+        return (
+            <ModelsRasa 
             setExternalViewSelected={functionChange}
             arrayBread={newArrayBread}
             />

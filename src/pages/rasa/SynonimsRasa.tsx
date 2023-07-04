@@ -12,11 +12,12 @@ import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import SaveIcon from '@material-ui/icons/Save';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import { convertLocalDate, exportExcel, uploadExcel } from 'common/helpers';
-import { intentimport, trainwitai } from 'store/witia/actions';
-import { execute, getCollection, getCollectionAux, getMultiCollection, resetAllMain } from 'store/main/actions';
-import { exportintent, rasaSynonimIns, rasaSynonimSel } from 'common/helpers/requestBodies';
+import { convertLocalDate, uploadExcel } from 'common/helpers';
+import { intentimport } from 'store/witia/actions';
+import { execute, getCollection, getMultiCollection, resetAllMain } from 'store/main/actions';
+import { rasaSynonimIns, rasaSynonimSel } from 'common/helpers/requestBodies';
 import AddIcon from '@material-ui/icons/Add';
+import { downloadrasaia, trainrasaia } from 'store/rasaia/actions';
 
 
 interface RowSelected {
@@ -286,13 +287,14 @@ export const SynonimsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected
     const [sendTrainCall, setSendTrainCall] = useState(false);
     const operationRes = useSelector(state => state.witai.witaioperationresult);
     const [waitExport, setWaitExport] = useState(false);
-    const mainResultAux = useSelector(state => state.main.mainAux);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const multiResult = useSelector(state => state.main.multiData);
+    const dataModelAi = useSelector(state => state.main.mainAux);
 
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitImport, setWaitImport] = useState(false);
-    const trainResult = useSelector(state => state.witai.witaitrainresult);
+    const trainResult = useSelector(state => state.rasaia.rasaiatrainresult);
+    const exportResult = useSelector(state => state.rasaia.rasaiadownloadresult);
 
     const fetchData = () => {dispatch(getCollection(rasaSynonimSel(0)))};
     const selectionKey = 'rasasynonymid';
@@ -301,24 +303,12 @@ export const SynonimsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected
     useEffect(() => {
         if(sendTrainCall){
             if(!trainResult.loading && !trainResult.error){
-                let message="";
-                switch (trainResult.data.training_status) {
-                    case ("done"):
-                        message=t(langKeys.bot_training_done)
-                        break;
-                    case ("scheduled"):
-                        message=t(langKeys.bot_training_scheduled)
-                        break;
-                    case ("ongoing"):
-                        message=t(langKeys.bot_training_ongoing)
-                        break;
-                }
+                let message=t(langKeys.bot_training_scheduled)
                 dispatch(showSnackbar({ show: true, severity: "success", message:  message}))
                 setSendTrainCall(false);
                 dispatch(showBackdrop(false));
             }else if(trainResult.error){
-                const errormessage = t(trainResult.code || "error_unexpected_error", { module: t(langKeys.test).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: trainResult.message + "" }))
                 setSendTrainCall(false);
                 dispatch(showBackdrop(false));
             }
@@ -445,29 +435,25 @@ export const SynonimsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected
 
     
     const triggerExportData = () => {
-        if (Object.keys(selectedRows).length === 0) {
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_record_selected)}));
-            return null;
-        }
-        dispatch(getCollectionAux(exportintent({name_json: JSON.stringify(Object.keys(selectedRows).map(x=>({name:x})))})))    
+        dispatch(downloadrasaia({model_uuid: dataModelAi?.data?.[0]?.model_uuid||"", origin: "synonym"}))
         dispatch(showBackdrop(true));
         setWaitExport(true);
     };
 
     useEffect(() => {
         if (waitExport) {
-            if (!mainResultAux.loading && !mainResultAux.error) {
+            if (!exportResult.loading && !exportResult.error) {
                 dispatch(showBackdrop(false));
                 setWaitExport(false);
-                exportExcel(t(langKeys.sinonims), mainResultAux.data.map(x=>({...x,intent_datajson: JSON.stringify(x.intent_datajson), utterance_datajson: JSON.stringify(x.utterance_datajson)})))
-            } else if (mainResultAux.error) {
-                const errormessage = t(mainResultAux.code || "error_unexpected_error", { module: t(langKeys.blacklist).toLocaleLowerCase() })
+                window.open(exportResult?.url||"", '_blank');
+            } else if (exportResult.error) {
+                const errormessage = t(exportResult.code || "error_unexpected_error", { module: t(langKeys.blacklist).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitExport(false);
             }
         }
-    }, [mainResultAux, waitExport]);
+    }, [exportResult, waitExport]);
     useEffect(() => {
         console.log(mainResult)
     }, [mainResult]);
@@ -548,8 +534,9 @@ export const SynonimsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected
                                         variant="contained"
                                         type="button"
                                         color="primary"
+                                        disabled={dataModelAi.loading|| trainResult.loading}
                                         style={{ backgroundColor: "#7721ad" }}
-                                        onClick={()=>{dispatch(trainwitai());setSendTrainCall(true)}}
+                                        onClick={()=>{dispatch(trainrasaia({model_uuid: dataModelAi?.data?.[0]?.model_uuid||""}));setSendTrainCall(true);}}
                                     >{t(langKeys.train)}</Button>
                                 </div>
                             </div>

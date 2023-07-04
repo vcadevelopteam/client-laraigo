@@ -184,7 +184,7 @@ const TestModelDialog: React.FC<{ openModal: boolean; setOpenModal: (param: any)
         setMessages([...messages, newMessage]);
 
         try {
-            RasaService.rasatest({ model_uuid: "3590f67e-b56d-4ac9-b56d-a0e4d1f014c4", text: formValue }).then(
+            RasaService.rasatest({ model_uuid: "", text: formValue }).then(
                 (axios_result) => {
                     if (axios_result.status === 200) {
                         newMessage.loading = false;
