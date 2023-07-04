@@ -339,12 +339,13 @@ export const getCorpSel = (id: number): IRequestBody => ({
         all: id === 0,
     }
 });
-export const getOrderSel = (product?:string, category?:string): IRequestBody => ({
+export const getOrderSel = (product?:string, category?:string, type?: string): IRequestBody => ({
     method: "UFN_ORDER_SEL",
     key: "UFN_ORDER_SEL",
     parameters: {
         product: product ?? "",
         category: category ?? "",
+        type: type ?? "",
     }
 });
 export const getOrderLineSel = (orderid: number): IRequestBody => ({
