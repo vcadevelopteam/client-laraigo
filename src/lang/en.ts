@@ -533,6 +533,7 @@ const translation: LangKeys = {
   type_org_34: 'Lodging and food services',
   type_org_35: 'Information and communications',
   type_org_36: 'Financial and insurance activities',
+  dashboardkpimonthly: "Dashboard KPI monthly",
   type_org_37: 'Real estate activities',
   type_org_38: 'Professional, scientific and technical activities',
   type_org_39: 'Administrative and support service activities',

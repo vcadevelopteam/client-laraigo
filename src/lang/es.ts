@@ -844,6 +844,7 @@ const translation: LangKeys = {
 
   dateactivity: "Fecha actividad",
   dashboardkpi: "Dashboard KPI",
+  dashboardkpimonthly: "Dashboard KPI mensualizado",
   leadactivity: "Actividad",
   datenote: "Fecha nota",
   note: "Nota",

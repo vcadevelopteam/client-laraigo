@@ -101,6 +101,7 @@ export const langKeys = {
   kanbanviewbyphase: "kanbanviewbyphase",
   kanbanviewbyassignedgroup: "kanbanviewbyassignedgroup",
   dashboardkpi: "dashboardkpi",
+  dashboardkpimonthly: "dashboardkpimonthly",
   firstavgassignment: "firstavgassignment",
   averageholdingtime: "averageholdingtime",
   avg1stresponsetime: "avg1stresponsetime",
