@@ -2,15 +2,12 @@
 import { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { getOrderSel, updateOrderStatus } from 'common/helpers';
+import { updateOrderStatus } from 'common/helpers';
 import { Dictionary } from "@types";
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { execute, getCollection, getCollectionAux2 } from 'store/main/actions';
+import { execute } from 'store/main/actions';
 import { makeStyles } from '@material-ui/core/styles';
-import { FieldSelect } from "components";
-import { Button } from "@material-ui/core";
-import { Search as SearchIcon } from '@material-ui/icons';
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import { DraggableOrderCardContent, DraggableOrderColumn, DroppableOrderColumnList } from './auxComponents';
 import NaturalDragAnimation from 'pages/crm/prueba';
@@ -56,6 +53,7 @@ const DraggablesCategories: FC<{ column: any, index: number, onClick: (row: Dict
 						provided={provided}
 						// titleOnChange={(val) =>{handleEdit(column.column_uuid,val,dataColumn, setDataColumn)}}
 						columnid={String(column.column_uuid)}
+						total_revenue={column.total_revenue!}
 					// onAddCard={() => history.push(paths.CRM_ADD_LEAD.resolve(column.columnid, column.column_uuid))}
 					>
 						<Droppable droppableId={column.column_uuid} type="task">
@@ -143,16 +141,20 @@ const OrderKanban: FC<{ mainAux: any, handleEdit: (row: Dictionary) => void }> =
 			});
 			setDataColumns([
 				{
-					column_uuid: "8ecfc7b7-6ac8-4d80-ad95-fee0910301fb", name: "new", cards: data.filter((x: any) => !x.orderstatus || x.orderstatus === "new")
+					column_uuid: "8ecfc7b7-6ac8-4d80-ad95-fee0910301fb", name: "new", cards: data.filter((x: any) => !x.orderstatus || x.orderstatus === "new"),
+					total_revenue: data.filter((x) => !x.orderstatus || x.orderstatus === "new").reduce((acc,y)=>acc+y.amount,0)
 				},
 				{
-					column_uuid: "a9dbc1e8-f080-47ff-a840-d82be3b8fcd2", name: "prepared", cards: data.filter((x: any) => x.orderstatus === "prepared")
+					column_uuid: "a9dbc1e8-f080-47ff-a840-d82be3b8fcd2", name: "prepared", cards: data.filter((x: any) => x.orderstatus === "prepared"),
+					total_revenue: data.filter((x) => x.orderstatus === "prepared").reduce((acc,y)=>acc+y.amount,0)
 				},
 				{
-					column_uuid: "c9b9b27f-5bd5-4e17-88c6-514ed236943f", name: "dispatched", cards: data.filter((x: any) => x.orderstatus === "dispatched")
+					column_uuid: "c9b9b27f-5bd5-4e17-88c6-514ed236943f", name: "dispatched", cards: data.filter((x: any) => x.orderstatus === "dispatched"),
+					total_revenue: data.filter((x) => x.orderstatus === "dispatched").reduce((acc,y)=>acc+y.amount,0)
 				},
 				{
-					column_uuid: "6ce73933-9e35-433f-8acf-aef53e7a74c3", name: "delivered", cards: data.filter((x: any) => x.orderstatus === "delivered")
+					column_uuid: "6ce73933-9e35-433f-8acf-aef53e7a74c3", name: "delivered", cards: data.filter((x: any) => x.orderstatus === "delivered"),
+					total_revenue: data.filter((x) => x.orderstatus === "delivered").reduce((acc,y)=>acc+y.amount,0)
 				},
 			])
 		}
@@ -170,6 +172,8 @@ const OrderKanban: FC<{ mainAux: any, handleEdit: (row: Dictionary) => void }> =
 			if (sourceIndex >= 0 && destIndex >= 0) {
 				const updatedColumns = [...columns];
 				const [movedItem] = updatedColumns[sourceIndex].cards.splice(source.index, 1);
+				updatedColumns[sourceIndex].total_revenue -= movedItem.amount
+				updatedColumns[destIndex].total_revenue += movedItem.amount
 				updatedColumns[destIndex].cards.splice(destination.index, 0, movedItem);
 
 				setDataColumn(updatedColumns);
