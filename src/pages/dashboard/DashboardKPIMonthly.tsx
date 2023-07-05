@@ -348,7 +348,7 @@ const DashboardKPIMonthly: FC = () => {
             agents: 0,
             tickets_count: 0,
             abandoned_tickets: 0,
-            balancetimes_avg: "00:00:00",
+            balancetimes_avg: 0,
         }
         const prevmonth= remultiaux?.data?.[0]?.data[0]||emptydata;
         const actmonth= remultiaux?.data?.[0]?.data[1]||emptydata;
@@ -364,6 +364,7 @@ const DashboardKPIMonthly: FC = () => {
               return monthA.localeCompare(monthB);
             }
         }
+        debugger
         let graphdata = filteredMonths.reduce((acc:any,x:string)=>{
             const [month, year] = x.split("/");
             let foundMonth = dataMonths.filter(y=>(y.month)===Number(month) && (y.year)===Number(year))?.[0];
