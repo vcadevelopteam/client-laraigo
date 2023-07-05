@@ -172,7 +172,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const initialRange = {
-    startDate: new Date(new Date().setDate(1)),
+    startDate: new Date(new Date().getFullYear(), 0, 1),
     endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
     key: 'selection'
 }
@@ -364,7 +364,6 @@ const DashboardKPIMonthly: FC = () => {
               return monthA.localeCompare(monthB);
             }
         }
-        debugger
         let graphdata = filteredMonths.reduce((acc:any,x:string)=>{
             const [month, year] = x.split("/");
             let foundMonth = dataMonths.filter(y=>(y.month)===Number(month) && (y.year)===Number(year))?.[0];
