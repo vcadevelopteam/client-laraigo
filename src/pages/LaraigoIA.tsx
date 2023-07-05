@@ -112,18 +112,17 @@ const RasaIA: React.FC<{arrayBread: any, setViewSelected: (view: string) => void
     // const [mainData, setMainData] = useState<any>([]);
     const [waitSave, setWaitSave] = useState(false);
 
-    
+    const fetchData = () => dispatch(getCollectionAux(rasaModelSel()))
     const functionChange = (change:string) => {
-        debugger
         if(change === "rasaia"){
             setViewSelectedTraining("view-1")
+            fetchData()
         }else{
             setViewSelected(change);
         }
     }
-
     useEffect(() => {
-        dispatch(getCollectionAux(rasaModelSel()))
+        fetchData()
         return () => {
             dispatch(resetAllMain());
         };
