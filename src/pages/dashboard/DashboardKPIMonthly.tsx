@@ -350,8 +350,8 @@ const DashboardKPIMonthly: FC = () => {
             abandoned_tickets: 0,
             balancetimes_avg: 0,
         }
-        const prevmonth= remultiaux?.data?.[0]?.data[0]||emptydata;
-        const actmonth= remultiaux?.data?.[0]?.data[1]||emptydata;
+        const prevmonth= remultiaux?.data?.[0]?.data?.[0]||emptydata;
+        const actmonth= remultiaux?.data?.[0]?.data?.[1]||emptydata;
         const dataMonths = remultiaux?.data?.[1]?.data||[]
         //tme: timetoseconds(dataMonths.filter(y=>String(y.day)===x)?.[0]?.tme_avg || "00:00:00")
         function compareFn(a:any,b:any){
