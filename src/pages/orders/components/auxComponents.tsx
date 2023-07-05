@@ -7,6 +7,7 @@ import { langKeys } from 'lang/keys';
 import { Trans, useTranslation } from 'react-i18next';
 import { Dictionary } from '@types';
 import { FieldEdit, FieldSelect } from 'components';
+import { useSelector } from 'hooks';
 
 const columnWidth = 275;
 const columnMinHeight = 500;
@@ -125,6 +126,8 @@ interface OrderColumnProps extends Omit<BoxProps, 'title'> {
     onAddCard?: () => void;
     provided?: DraggableProvided;
     columnid: string;
+    total_revenue: number;
+    
 }
 
 const useLeadColumnStyles = makeStyles(theme => ({
@@ -172,15 +175,20 @@ export const DraggableOrderColumn: FC<OrderColumnProps> = ({
     provided,
     columnid,
     titleOnChange,
+    total_revenue,
     onAddCard,
     ...boxProps
 }) => {
     const classes = useLeadColumnStyles();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    const user = useSelector(state => state.login.validateToken.user);
 
     return (
         <Box {...boxProps}>
             <div className={classes.root} {...(provided?.dragHandleProps || {})}>
+                <div style={{display:"flex", justifyContent: "space-between", width: "100%"}}>
+                    <span className={classes.currency}>{user?.currencysymbol||"S/."} {total_revenue?.toLocaleString('en-US') || 0}</span>
+                </div>
                 {children}
             </div>
         </Box>
