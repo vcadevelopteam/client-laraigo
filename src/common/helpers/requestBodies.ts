@@ -2372,7 +2372,7 @@ export const getAutomatizationRulesSel = ({ id, communicationchannelid }: Dictio
     }
 })
 
-export const insAutomatizationRules = ({ id, description, status, type, columnid, communicationchannelid, messagetemplateid, messagetemplateparameters, shippingtype, xdays, schedule, tags, products, operation }: Dictionary): IRequestBody => ({
+export const insAutomatizationRules = ({ id, description, status, type, columnid,order, communicationchannelid, messagetemplateid, messagetemplateparameters, shippingtype, xdays, schedule, tags, products, operation }: Dictionary): IRequestBody => ({
     method: 'UFN_LEADAUTOMATIZATIONRULES_INS',
     key: "UFN_LEADAUTOMATIZATIONRULES_INS",
     parameters: {
@@ -2381,6 +2381,7 @@ export const insAutomatizationRules = ({ id, description, status, type, columnid
         status,
         type,
         columnid,
+        order,
         communicationchannelid,
         messagetemplateid,
         messagetemplateparameters,
