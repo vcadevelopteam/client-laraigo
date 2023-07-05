@@ -20,7 +20,7 @@ const Users = lazy(() => import('pages/Users'));
 const ReportScheduler = lazy(() => import('pages/ReportScheduler'));
 const ProductCatalog = lazy(() => import('pages/ProductCatalog'));
 const CatalogMaster = lazy(() => import('pages/CatalogMaster'));
-const Orders = lazy(() => import('pages/Orders'));
+const Orders = lazy(() => import('pages/orders/Orders'));
 const SignIn = lazy(() => import('pages/SignIn'));
 const Properties = lazy(() => import('pages/Properties'));
 const Quickreplies = lazy(() => import('pages/Quickreplies'));
