@@ -194,6 +194,7 @@ export interface AutomatizationRuleSave {
     status: string,
     type: string,
     schedule: string,
+    orderstatus: string,
     tags: string,
     products: string,
     messagetemplateid: number,
