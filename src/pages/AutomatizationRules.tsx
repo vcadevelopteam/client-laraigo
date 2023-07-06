@@ -8,7 +8,7 @@ import TableZyx from '../components/fields/table-simple';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateIcons, TemplateBreadcrumbs, FieldView, FieldEdit, FieldSelect, TitleDetail, FieldMultiSelectFreeSolo, FieldEditArray } from 'components';
-import { getProductCatalogSel, getValuesFromDomain , getAutomatizationRulesSel, getCommChannelLst, getColumnsSel, insAutomatizationRules} from 'common/helpers';
+import { getProductCatalogSel, getValuesFromDomain , getAutomatizationRulesSel, getCommChannelLst, getColumnsSel, insAutomatizationRules, getOrderColumns} from 'common/helpers';
 import { AutomatizationRuleSave, Dictionary, MultiData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -56,6 +56,7 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
     const useradmin = ["ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '');
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
+    const [orderVariable, setOrderVariable] = useState(row?.typeorder? "ORDER":"LEAD");
     const executeRes = useSelector(state => state.main.execute);
     const [shippingtype, setshippingtype] = useState(row?.shippingtype || "");
     const templates = useSelector(state => state.lead.leadTemplates);
@@ -65,6 +66,7 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
     const dataCommChannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const dataLeads = multiData[3] && multiData[3].success ? multiData[3].data : [];
     const dataTags = multiData[4] && multiData[4].success ? multiData[4].data : [];
+    const dataOrder = multiData[5] && multiData[5].success ? multiData[5].data : [];
 
     const { register, handleSubmit, setValue,control, getValues,trigger, formState: { errors } } = useForm<AutomatizationRuleSave>({
         defaultValues: {
@@ -82,6 +84,7 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
             tags: row?.tags || "",
             products: row?.products || "",
             messagetemplateid: row?.messagetemplateid||0,
+            order: row?.typeorder ||false,
             hsmtemplatename: row?.hsmtemplatename||"",
             variables: row?.messagetemplateparameters||[],
         }
@@ -120,6 +123,7 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
         register('messagetemplateid', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
         register('hsmtemplatename');
         register('variables');
+        register('order');
         if(shippingtype === "DAY"){
             register('xdays', { validate: (value) => Boolean(value && Number(value)>0) || String(t(langKeys.field_required)) });
         }
@@ -221,21 +225,43 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                             prefixTranslation="status_"
                             optionValue="domainvalue"
                         />
+                    </div>
+                    <div className="row-zyx">
                         <FieldSelect
-                            label={t(langKeys.whensettingstate)}
+                            label={"App"}
                             className="col-6"
-                            valueDefault={row?.columnname||""}
+                            valueDefault={orderVariable}
                             onChange={(value) => {
-                                setValue('columnname', value?.description || "")
-                                setValue('columnid', value?.columnid || 0)
+                                setOrderVariable(value?.alt || "")
+                                setValue('order', value?.value || false)
+                                setValue('columnname', "")
+                                setValue('columnid', 0)
                             }}
-                            error={errors?.columnname?.message}
-                            data={dataLeads}
-                            prefixTranslation=""
-                            optionDesc="description"
-                            uset={true}
-                            optionValue="description"
+                            error={!!orderVariable?"":t(langKeys.field_required)}
+                            data={[
+                                {column: t(langKeys.lead_plural), value: false, alt: "LEAD"},
+                                {column: t(langKeys.orders), value: true, alt: "ORDER"},
+                            ]}
+                            optionDesc="column"
+                            optionValue="alt"
                         />
+                        {orderVariable &&
+                            <FieldSelect
+                                label={t(langKeys.whensettingstate)}
+                                className="col-6"
+                                valueDefault={getValues('columnname')}
+                                onChange={(value) => {
+                                    setValue('columnname', value?.description || "")
+                                    setValue('columnid', value?.columnid || 0)
+                                }}
+                                error={errors?.columnname?.message}
+                                data={orderVariable==="ORDER"?dataOrder:dataLeads}
+                                prefixTranslation=""
+                                optionDesc="description"
+                                uset={true}
+                                optionValue="description"
+                            />
+                        }
                     </div>
                     <div className="row-zyx">
                         <FieldSelect
@@ -503,6 +529,7 @@ const AutomatizationRules: FC = () => {
             getCommChannelLst(),
             getColumnsSel(0, true),
             getValuesFromDomain('OPORTUNIDADETIQUETAS'),
+            getOrderColumns({ id: 0 })
         ]));
         dispatch(getLeadTemplates());
 
@@ -544,7 +571,7 @@ const AutomatizationRules: FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(insAutomatizationRules({ ...row,id: row?.leadautomatizationrulesid, operation: 'DELETE', status: 'ELIMINADO' })));
+            dispatch(execute(insAutomatizationRules({ ...row,id: row?.leadautomatizationrulesid, order: row?.typeorder, operation: 'DELETE', status: 'ELIMINADO' })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
