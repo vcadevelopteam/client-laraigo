@@ -94,6 +94,7 @@ export const langKeys = {
   jsscriptTooltip: "jsscriptTooltip",
   kanbanview: "kanbanview",
   dashboardkpi: "dashboardkpi",
+  dashboardkpimonthly: "dashboardkpimonthly",
   firstavgassignment: "firstavgassignment",
   averageholdingtime: "averageholdingtime",
   avg1stresponsetime: "avg1stresponsetime",
