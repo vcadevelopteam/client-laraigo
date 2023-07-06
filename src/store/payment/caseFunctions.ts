@@ -74,3 +74,77 @@ export const niubizCreateSessionTokenReset = (state: IState): IState => ({
     ...state,
     requestNiubizCreateSessionToken: initialState.requestNiubizCreateSessionToken,
 })
+
+export const openpayGetPaymentOrder = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestOpenpayGetPaymentOrder: {
+        ...state.requestOpenpayGetPaymentOrder,
+        error: false,
+        loading: true,
+    }
+})
+
+export const openpayGetPaymentOrderFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestOpenpayGetPaymentOrder: {
+        ...state.requestOpenpayGetPaymentOrder,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message || 'error_unexpected_error',
+    }
+})
+
+export const openpayGetPaymentOrderSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestOpenpayGetPaymentOrder: {
+        ...state.requestOpenpayGetPaymentOrder,
+        code: action?.payload?.code,
+        data: action?.payload?.data,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message,
+    }
+})
+
+export const openpayGetPaymentOrderReset = (state: IState): IState => ({
+    ...state,
+    requestOpenpayGetPaymentOrder: initialState.requestOpenpayGetPaymentOrder,
+})
+
+export const openpayProcessTransaction = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestOpenpayProcessTransaction: {
+        ...state.requestOpenpayProcessTransaction,
+        error: false,
+        loading: true,
+    }
+})
+
+export const openpayProcessTransactionFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestOpenpayProcessTransaction: {
+        ...state.requestOpenpayProcessTransaction,
+        code: action?.payload?.code,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message || 'error_unexpected_error',
+    }
+})
+
+export const openpayProcessTransactionSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    requestOpenpayProcessTransaction: {
+        ...state.requestOpenpayProcessTransaction,
+        code: action?.payload?.code,
+        data: action?.payload?.data,
+        error: action?.payload?.success ? false : true,
+        loading: false,
+        msg: action?.payload?.message,
+    }
+})
+
+export const openpayProcessTransactionReset = (state: IState): IState => ({
+    ...state,
+    requestOpenpayProcessTransaction: initialState.requestOpenpayProcessTransaction,
+})
