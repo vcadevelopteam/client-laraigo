@@ -627,13 +627,14 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
     }, [exportResult, waitExport]);
 
     const handleUpload = async (files: any[]) => {
-        const file = files[0];
-        debugger
+        let file = files[0];
         if (file) {
             const fd = new FormData();
+            //file.type = "application/x-yaml";
             fd.append('file', file, file.name);
             fd.append('model_uuid', dataModelAi?.data?.[0]?.model_uuid||"");
-            fd.append('origin', "synonym");
+            fd.append('origin', "intent");
+            fd.append('Content-Type', 'text/yaml');
             dispatch(showBackdrop(true));
             setWaitImport(true)
             dispatch(uploadrasaia(fd))    
