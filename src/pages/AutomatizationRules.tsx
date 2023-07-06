@@ -8,7 +8,7 @@ import TableZyx from '../components/fields/table-simple';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateIcons, TemplateBreadcrumbs, FieldView, FieldEdit, FieldSelect, TitleDetail, FieldMultiSelectFreeSolo, FieldEditArray } from 'components';
-import { getProductCatalogSel, getValuesFromDomain , getAutomatizationRulesSel, getCommChannelLst, getColumnsSel, insAutomatizationRules, getOrderColumns} from 'common/helpers';
+import { getProductCatalogSel, getValuesFromDomain , getAutomatizationRulesSel, getCommChannelLst, getColumnsSel, insAutomatizationRules} from 'common/helpers';
 import { AutomatizationRuleSave, Dictionary, MultiData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -66,7 +66,12 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
     const dataCommChannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const dataLeads = multiData[3] && multiData[3].success ? multiData[3].data : [];
     const dataTags = multiData[4] && multiData[4].success ? multiData[4].data : [];
-    const dataOrder = multiData[5] && multiData[5].success ? multiData[5].data : [];
+    const dataOrder = [
+        {value: "new",description:t(langKeys.new)},
+        {value: "dispatched",description:t(langKeys.dispatched)},
+        {value: "delivered",description:t(langKeys.delivered)},
+        {value: "prepared",description:t(langKeys.prepared)},
+    ]
 
     const { register, handleSubmit, setValue,control, getValues,trigger, formState: { errors } } = useForm<AutomatizationRuleSave>({
         defaultValues: {
@@ -81,6 +86,7 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
             status: row?.status || 'ACTIVO',
             type: "NINGUNO",
             schedule: row?.schedule || "",
+            orderstatus: row?.orderstatus || "",
             tags: row?.tags || "",
             products: row?.products || "",
             messagetemplateid: row?.messagetemplateid||0,
@@ -109,13 +115,15 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
             }
         }
     }, [executeRes, waitSave])
+    useEffect(() => {
+        console.log(errors)
+    }, [errors])
 
     React.useEffect(() => {
         register('id');
         register('description', { validate: (value:any) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('communicationchannelid', { validate: (value:any) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
         register('columnid');
-        register('columnname', { validate: (value:any) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('shippingtype', { validate: (value:any) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('schedule', { validate: (value:any) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('tags');
@@ -127,7 +135,9 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
         if(shippingtype === "DAY"){
             register('xdays', { validate: (value) => Boolean(value && Number(value)>0) || String(t(langKeys.field_required)) });
         }
-    }, [register]);
+        register('columnname', { validate: (value:any) => orderVariable === "ORDER" || Boolean(value && value.length) || String(t(langKeys.field_required)) });
+        register('orderstatus', { validate: (value:any) => orderVariable === "LEAD" || Boolean(value && value.length) || String(t(langKeys.field_required)) });
+    }, [register, orderVariable, shippingtype]);
     const onSelectTemplate = (value: Dictionary) => {
         if (value) {
             setBodyMessage(value.body);
@@ -145,6 +155,7 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
     }
 
     const onSubmit = handleSubmit((data) => {
+        debugger
         const callback = () => {
             dispatch(showBackdrop(true));
             dispatch(execute(insAutomatizationRules({...data, messagetemplateparameters: JSON.stringify(data.variables)})));
@@ -233,7 +244,9 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                             valueDefault={orderVariable}
                             onChange={(value) => {
                                 setOrderVariable(value?.alt || "")
+                                console.log(value?.alt||"")
                                 setValue('order', value?.value || false)
+                                setValue('orderstatus', "")
                                 setValue('columnname', "")
                                 setValue('columnid', 0)
                             }}
@@ -245,7 +258,7 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                             optionDesc="column"
                             optionValue="alt"
                         />
-                        {orderVariable &&
+                        {orderVariable==="LEAD" &&
                             <FieldSelect
                                 label={t(langKeys.whensettingstate)}
                                 className="col-6"
@@ -255,11 +268,25 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                                     setValue('columnid', value?.columnid || 0)
                                 }}
                                 error={errors?.columnname?.message}
-                                data={orderVariable==="ORDER"?dataOrder:dataLeads}
+                                data={dataLeads}
                                 prefixTranslation=""
                                 optionDesc="description"
                                 uset={true}
                                 optionValue="description"
+                            />
+                        }
+                        {orderVariable==="ORDER" &&
+                            <FieldSelect
+                                label={t(langKeys.whensettingstate)}
+                                className="col-6"
+                                valueDefault={getValues('orderstatus')}
+                                onChange={(value) => {
+                                    setValue('orderstatus', value?.value || "")
+                                }}
+                                error={errors?.orderstatus?.message}
+                                data={dataOrder}
+                                optionDesc="description"
+                                optionValue="value"
                             />
                         }
                     </div>
@@ -529,7 +556,6 @@ const AutomatizationRules: FC = () => {
             getCommChannelLst(),
             getColumnsSel(0, true),
             getValuesFromDomain('OPORTUNIDADETIQUETAS'),
-            getOrderColumns({ id: 0 })
         ]));
         dispatch(getLeadTemplates());
 
