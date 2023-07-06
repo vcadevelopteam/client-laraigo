@@ -461,7 +461,7 @@ const AutomatizationRules: FC = () => {
     }
     useEffect(() => {
         let data = mainResult.mainData.data
-        data = data.map(x=>({...x,columnamefilter: (t(`${x.columnname?.toLowerCase()}`.toLowerCase()) || "").toUpperCase()}))
+        data = data.map(x=>({...x,columnamefilter: (x.typeorder) ? (t(`${x.orderstatus?.toLowerCase()}`)).toUpperCase() :(t(`${x.columnname?.toLowerCase()}`.toLowerCase()) || "").toUpperCase()}))
         setDataGrid(data)
     }, [mainResult.mainData.data])
     const columns = React.useMemo(
