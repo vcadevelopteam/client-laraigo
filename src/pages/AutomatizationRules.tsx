@@ -8,7 +8,7 @@ import TableZyx from '../components/fields/table-simple';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateIcons, TemplateBreadcrumbs, FieldView, FieldEdit, FieldSelect, TitleDetail, FieldMultiSelectFreeSolo, FieldEditArray } from 'components';
-import { getProductCatalogSel, getValuesFromDomain , getAutomatizationRulesSel, getCommChannelLst, getColumnsSel, insAutomatizationRules} from 'common/helpers';
+import { getProductCatalogSel, getValuesFromDomain , getAutomatizationRulesSel, getCommChannelLst, getColumnsSel, insAutomatizationRules, getOrderColumns} from 'common/helpers';
 import { AutomatizationRuleSave, Dictionary, MultiData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -66,6 +66,7 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
     const dataCommChannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const dataLeads = multiData[3] && multiData[3].success ? multiData[3].data : [];
     const dataTags = multiData[4] && multiData[4].success ? multiData[4].data : [];
+    const dataOrder = multiData[5] && multiData[5].success ? multiData[5].data : [];
 
     const { register, handleSubmit, setValue,control, getValues,trigger, formState: { errors } } = useForm<AutomatizationRuleSave>({
         defaultValues: {
@@ -248,13 +249,13 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                             <FieldSelect
                                 label={t(langKeys.whensettingstate)}
                                 className="col-6"
-                                valueDefault={row?.columnname||""}
+                                valueDefault={getValues('columnname')}
                                 onChange={(value) => {
                                     setValue('columnname', value?.description || "")
                                     setValue('columnid', value?.columnid || 0)
                                 }}
                                 error={errors?.columnname?.message}
-                                data={dataLeads}
+                                data={orderVariable==="ORDER"?dataOrder:dataLeads}
                                 prefixTranslation=""
                                 optionDesc="description"
                                 uset={true}
@@ -528,6 +529,7 @@ const AutomatizationRules: FC = () => {
             getCommChannelLst(),
             getColumnsSel(0, true),
             getValuesFromDomain('OPORTUNIDADETIQUETAS'),
+            getOrderColumns({ id: 0 })
         ]));
         dispatch(getLeadTemplates());
 
