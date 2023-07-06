@@ -168,8 +168,6 @@ const TestModelDialog: React.FC<{ openModal: boolean; setOpenModal: (param: any)
     const dummy = useRef<HTMLDivElement>(null);
     const dataModelAi = useSelector(state => state.main.mainAux);
     const [messages, setMessages] = useState<IMessageTest[]>([
-        { message: "probando message 1", id: 4 },
-        { message: "probando message 2", id: 5 },
     ]);
 
     const handleSubmit = async (e: React.FormEvent) => {
