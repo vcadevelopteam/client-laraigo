@@ -19,9 +19,8 @@ import { manageConfirmation, showSnackbar } from 'store/popus/actions';
 import { DashboardTemplate, IListStatePaginated } from '@types';
 import { deleteDashboardTemplate, resetDeleteDashboardTemplate } from 'store/dashboard/actions';
 import DashboardKPI from './DashboardKPI';
-const isIncremental = window.location.href.includes("incremental")
 import DashboardKPIMonthly from './DashboardKPIMonthly';
-
+const isIncremental = window.location.href.includes("incremental")
 
 const arrayBread = [
     { id: "view-1", name: "Dashboard" }
