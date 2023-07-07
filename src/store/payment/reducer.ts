@@ -12,11 +12,15 @@ export interface IRequest extends ITemplate {
 export interface IState {
     requestNiubizAuthorizeTransaction: IRequest;
     requestNiubizCreateSessionToken: IRequest;
+    requestOpenpayGetPaymentOrder: IRequest;
+    requestOpenpayProcessTransaction: IRequest;
 }
 
 export const initialState: IState = {
     requestNiubizAuthorizeTransaction: { ...initialCommon, data: null, loading: false, error: false },
     requestNiubizCreateSessionToken: { ...initialCommon, data: null, loading: false, error: false },
+    requestOpenpayGetPaymentOrder: { ...initialCommon, data: null, loading: false, error: false },
+    requestOpenpayProcessTransaction: { ...initialCommon, data: null, loading: false, error: false },
 };
 
 export default createReducer<IState>(initialState, {
@@ -29,4 +33,14 @@ export default createReducer<IState>(initialState, {
     [actionTypes.PAYMENT_NIUBIZ_CREATESESSIONTOKEN_FAILURE]: caseFunctions.niubizCreateSessionTokenFailure,
     [actionTypes.PAYMENT_NIUBIZ_CREATESESSIONTOKEN_SUCCESS]: caseFunctions.niubizCreateSessionTokenSuccess,
     [actionTypes.PAYMENT_NIUBIZ_CREATESESSIONTOKEN_RESET]: caseFunctions.niubizCreateSessionTokenReset,
+
+    [actionTypes.PAYMENT_OPENPAY_GETPAYMENTORDER]: caseFunctions.openpayGetPaymentOrder,
+    [actionTypes.PAYMENT_OPENPAY_GETPAYMENTORDER_FAILURE]: caseFunctions.openpayGetPaymentOrderFailure,
+    [actionTypes.PAYMENT_OPENPAY_GETPAYMENTORDER_SUCCESS]: caseFunctions.openpayGetPaymentOrderSuccess,
+    [actionTypes.PAYMENT_OPENPAY_GETPAYMENTORDER_RESET]: caseFunctions.openpayGetPaymentOrderReset,
+
+    [actionTypes.PAYMENT_OPENPAY_PROCESSTRANSACTION]: caseFunctions.openpayProcessTransaction,
+    [actionTypes.PAYMENT_OPENPAY_PROCESSTRANSACTION_FAILURE]: caseFunctions.openpayProcessTransactionFailure,
+    [actionTypes.PAYMENT_OPENPAY_PROCESSTRANSACTION_SUCCESS]: caseFunctions.openpayProcessTransactionSuccess,
+    [actionTypes.PAYMENT_OPENPAY_PROCESSTRANSACTION_RESET]: caseFunctions.openpayProcessTransactionReset,
 });
