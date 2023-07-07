@@ -2615,7 +2615,7 @@ export const getPaginatedSDLead = ({ skip, take, filters, sorts, startdate, endd
         methodCollection: "UFN_LEADGRID_SD_SEL",
         methodCount: "UFN_LEADGRID_SD_TOTALRECORDS",
         parameters: {
-            origin: "lead",
+            origin: "servicedesk",
             startdate,
             enddate,
             skip,

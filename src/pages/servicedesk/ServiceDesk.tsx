@@ -401,13 +401,10 @@ const ServiceDesk: FC = () => {
       {
         Header: t(langKeys.request),
         accessor: 'sd_request',
-        isComponent: true,
-        Cell: cell
       },
       {
         Header: t(langKeys.channel),
         accessor: 'communicationchannel',
-        isComponent: true,
         Cell: cell
       },
       {
@@ -415,61 +412,52 @@ const ServiceDesk: FC = () => {
         accessor: 'changedate',
         type: 'date',
         sortType: 'datetime',
-        isComponent: true,
+        NoFilter: true,
         Cell: cell,
       },
       {
         Header: t(langKeys.type),
         accessor: 'type',
-        isComponent: true,
         Cell: cell
       },
       {
         Header: t(langKeys.group),
         accessor: 'leadgroups',
-        isComponent: true,
         Cell: cell
       },
       {
         Header: t(langKeys.phase),
         accessor: 'column_description',
-        isComponent: true,
         Cell: cell
       },
       {
         Header: t(langKeys.description),
         accessor: 'description',
-        isComponent: true,
         Cell: cell
       },
       {
         Header: t(langKeys.ticket),
         accessor: 'ticketnum',
-        isComponent: true,
         Cell: cell
       },
       {
         Header: t(langKeys.user),
         accessor: 'displayname',
-        isComponent: true,
-        NoFilter: true,
         Cell: cell
       },
       {
         Header: t(langKeys.tags),
         accessor: 'tags',
-        isComponent: true,
         Cell: cell
       },
       {
         Header: t(langKeys.priority),
         accessor: 'priority',
-        isComponent: true,
+        Cell: cell
       },
       {
         Header: t(langKeys.business),
         accessor: 'company',
-        isComponent: true,
         Cell: cell
       },
     ],
@@ -505,7 +493,7 @@ const ServiceDesk: FC = () => {
 
   const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
     const columnsExport = [
-      ...columns.filter(x => !x.isComponent && x.accessor !== 'comments').map(x => ({
+      ...columns.filter(x => x.accessor !== 'comments').map(x => ({
         key: x.accessor,
         alias: x.Header,
       })),
@@ -970,7 +958,6 @@ const ServiceDesk: FC = () => {
               fetchData={fetchGridData}
               autotrigger={true}
               autoRefresh={{value: autoRefresh, callback: (value) => setAutoRefresh(value) }}
-              ButtonsElement={() => (<div></div>)}
               exportPersonalized={triggerExportData}
               useSelection={true}
               selectionFilter={{ key: 'status', value: 'ACTIVO' }}
