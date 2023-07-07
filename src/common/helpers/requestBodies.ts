@@ -2369,7 +2369,7 @@ export const getColumnsSDSel = (id: number, lost: boolean = false): IRequestBody
     parameters: {
         id: id,
         all: true,
-        lost
+        lost:false
     }
 })
 
