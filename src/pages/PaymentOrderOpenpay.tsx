@@ -294,7 +294,7 @@ export const PaymentOrderOpenpay: FC = () => {
                 setShowPayment(false);
                 fetchData();
             } else if (resultProcessTransaction.error) {
-                dispatch(showSnackbar({ show: true, severity: "error", message: t(resultProcessTransaction.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() }) }))
+                dispatch(showSnackbar({ show: true, severity: "error", message: t(resultProcessTransaction.msg || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() }) }))
                 dispatch(showBackdrop(false));
                 setWaitProcess(false);
             }
