@@ -52,10 +52,9 @@ export const KanbanTableGroups: FC<{
   return (
     <>
       <div className={classes.columnheadercontainer}>
-        <div className={classes.columnheader}>{t(langKeys.unnasigned)}</div>
-        <div className={classes.columnheader}>{t(langKeys.support)} N1</div>
-        <div className={classes.columnheader}>{t(langKeys.support)} N2</div>
-        <div className={classes.columnheader}>{t(langKeys.support)} N3</div>
+        {columns.map(x=>{
+          return <div className={classes.columnheader}>{x.domaindesc}</div>
+        })}        
       </div>
       <DragDropContext onDragEnd={() => {}}>
         <Droppable
