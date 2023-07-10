@@ -5290,6 +5290,14 @@ const translation: LangKeys = {
   subscription_noselectedchannel: 'You must select at least one channel',
   ticket_originalpublishdate: 'Original publication date',
   ticket_followercount: 'Follower amount',
+  openpay_message01: 'Remember that some cards have a security code or Dynamic CVV, check it from your bank\'s App.',
+  openpay_message02: 'Name of Owner',
+  openpay_message03: 'Expiration Month (MM)',
+  openpay_message04: 'Card Number',
+  openpay_message05: 'Security Code',
+  openpay_message06: 'Pay',
+  openpay_message07: 'Go Back',
+  openpay_message08: 'Expiration Year (YY)',
 };
 
 const enResource: ResourceLanguage = {

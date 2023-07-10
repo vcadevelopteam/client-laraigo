@@ -5218,6 +5218,14 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   subscription_noselectedchannel: 'Debes seleccionar al menos un canal',
   ticket_originalpublishdate: 'Fecha de publicación original',
   ticket_followercount: 'Cantidad de seguidores',
+  openpay_message01: 'Recuerda que algunas tarjetas cuentan con el código de seguridad o CVV Dinámico, consúltalo desde el App de tu banco.',
+  openpay_message02: 'Nombre del Titular',
+  openpay_message03: 'Mes de Expiración (MM)',
+  openpay_message04: 'Número de la Tarjeta',
+  openpay_message05: 'Código de Seguridad',
+  openpay_message06: 'Pagar',
+  openpay_message07: 'Regresar',
+  openpay_message08: 'Año de Expiración (AA)',
 };
 
 const esResource: ResourceLanguage = {
