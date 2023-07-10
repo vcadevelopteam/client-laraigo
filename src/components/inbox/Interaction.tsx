@@ -722,13 +722,14 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     } else if (interactiontype === "post-image") {
         return (
             <div title={convertLocalDate(createdate).toLocaleString()} className={classes.interactionImage} style={{ marginLeft: 'auto', marginRight: 'auto' }}>
-                <img
+                {(!interactiontext?.toUpperCase()?.includes(".MP4")) && <img
                     className={classes.imageCard}
                     src={interactiontext} alt=""
                     onClick={() => {
                         dispatch(manageLightBox({ visible: true, images: listImage!!, index: indexImage!! }))
                     }}
-                />
+                />}
+                {interactiontext?.toUpperCase()?.includes(".MP4") && <video className={classes.imageCard} width="200" controls src={interactiontext} />}
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} background={true} />
             </div>
         );
