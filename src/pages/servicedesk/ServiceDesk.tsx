@@ -193,7 +193,7 @@ const ServiceDesk: FC = () => {
         const columns = (mainMulti.data[0] && mainMulti.data[0].success ? mainMulti.data[0].data : []) as dataBackend[]
         const leads = (mainMulti.data[1] && mainMulti.data[1].success ? mainMulti.data[1].data : []) as IServiceDeskLead[]
         let columngroup = mainMulti.data.filter(x=>x.key==="UFN_DOMAIN_LST_VALORES_GRUPOSSERVICEDESK")?.[0]?.data||[]
-        columngroup.unshift({domainid: 0, domainvalue:"", domaindesc:""})
+        columngroup.unshift({domainid: 0, domainvalue:"", domaindesc:"Sin Asignar"})
         let unorderedcolumngroup= columngroup.reduce((acc:any,x)=>[...acc,{...x,items:[]}],[])
 
         let unordeneddatacolumns = columns.map((column) => {
