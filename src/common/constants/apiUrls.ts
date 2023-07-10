@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 const ENV = "TESTING";
-=======
-const ENV = "LOCAL";
->>>>>>> 410c116f1c71c7871d3c0cc3fbd9fe58d5eb9da2
 
 const APIS_URL = {
     DEVELOP: {
