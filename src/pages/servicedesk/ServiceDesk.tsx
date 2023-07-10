@@ -404,6 +404,7 @@ const ServiceDesk: FC = () => {
       {
         Header: t(langKeys.channel),
         accessor: 'communicationchannel',
+        NoFilter: true,
         Cell: cell
       },
       {
