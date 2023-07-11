@@ -1087,7 +1087,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
             console.log('Importación terminada')
             setWaitImport(false);
          } else if (executeRes.error) {
-            const errormessage = t(langKeys.invalid_data);
+            const errormessage = t(executeRes.code || "error_unexpected_error", { module: `${t(langKeys.key).toLocaleLowerCase()}` })
             dispatch(
                showSnackbar({
                   show: true,
