@@ -58,6 +58,12 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
         background: '#fff',
     },
+    containerDetailMainEvaluation:{
+        marginTop: theme.spacing(2),
+        padding: theme.spacing(2),
+        background: '#fff',
+        display: 'flex'
+    },
     button: {
         padding: 12,
         fontWeight: 500,
@@ -110,6 +116,12 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const [waitGetBalance, setWaitGetBalance] = useState(false);
     const [waitUpdateScenario, setWaitUpdateScenario] = useState(false);
     const [waitGetConsumption, setWaitGetConsumption] = useState(false);
+    const [apiconsumption, setApiConsumption] = useState({
+        infocorp: false,
+        sentinel: false,
+        reniec: false,
+        sunarp: false,
+    });
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -180,14 +192,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             voximplantadditionalperchannel: row ? (row?.voximplantadditionalperchannel || 0.00) : (parseFloat(defaultChannel[0]?.propertyvalue) || 0),
         }
     });
-
-    const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataType = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const dataCorp = multiData[2] && multiData[2].success ? multiData[2].data : [];
-    const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
-    const typeofcreditList = multiData[4] && multiData[4].success ? multiData[4].data : [];
-    const timezoneList = multiData[5] && multiData[5].success ? multiData[5]?.data : [];
-
     const [chargeAmount, setChargeAmount] = useState(0.00);
     const [rangeAmount, setRangeAmount] = useState(row?.voximplantrechargerange || 0.00);
     const [percentageAmount, setPercentageAmount] = useState(row?.voximplantrechargepercentage || 0.00);
@@ -200,6 +204,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const [chatBtn, setChatBtn] = useState<File | null>(getValues("iconbot") as File);
     const [headerBtn, setHeaderBtn] = useState<File | null>(getValues("iconadvisor") as File);
     const [botBtn, setBotBtn] = useState<File | null>(getValues("iconclient") as File);
+
 
     React.useEffect(() => {
         register('corpid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
@@ -349,6 +354,39 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         }
     }, [updateScenarioResult, waitUpdateScenario])
 
+    const countries = useMemo(() => {
+        if (countryList.loading) return [];
+        return countryList.data.sort((a: Dictionary, b: Dictionary) => {
+            return a.description.localeCompare(b.description);
+        });
+    }, [countryList]);
+
+    const docTypes = useMemo(() => {
+        if (!dataDocType || dataDocType.length === 0) return [];
+
+        let val: { domaindesc: string }[];
+        if (getValues("sunatcountry") === "PE") {
+            // FILTRAR NO DOMICILIARIO // OTROS
+            val = dataDocType.filter(x => x.domainvalue !== "0") as any[];
+        } else {
+            val = dataDocType as any[];
+        }
+
+        return val.sort((a, b) => {
+            return a.domaindesc.localeCompare(b.domaindesc);
+        });
+    }, [multiData, getValues("sunatcountry")]);
+
+    const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const dataType = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataCorp = multiData[2] && multiData[2].success ? multiData[2].data : [];
+    const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
+    const typeofcreditList = multiData[4] && multiData[4].success ? multiData[4].data : [];
+    const timezoneList = multiData[5] && multiData[5].success ? multiData[5]?.data : [];
+
+
+
+
     const handleUpdateScenario = () => {
         dispatch(updateScenario({}));
         setWaitUpdateScenario(true);
@@ -407,6 +445,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         setValue("iconbot", e.target.files[0]);
         onSelectImage(e.target.files[0], "iconbot")
     }
+
 
     const onChangeHeaderInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         if (!e.target.files) return;
@@ -470,29 +509,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const headerImgUrl = getImgUrl(headerBtn);
     const botImgUrl = getImgUrl(botBtn);
 
-    const countries = useMemo(() => {
-        if (countryList.loading) return [];
-        return countryList.data.sort((a: Dictionary, b: Dictionary) => {
-            return a.description.localeCompare(b.description);
-        });
-    }, [countryList]);
-
-    const docTypes = useMemo(() => {
-        if (!dataDocType || dataDocType.length === 0) return [];
-
-        let val: { domaindesc: string }[];
-        if (getValues("sunatcountry") === "PE") {
-            // FILTRAR NO DOMICILIARIO // OTROS
-            val = dataDocType.filter(x => x.domainvalue !== "0") as any[];
-        } else {
-            val = dataDocType as any[];
-        }
-
-        return val.sort((a, b) => {
-            return a.domaindesc.localeCompare(b.domaindesc);
-        });
-    }, [dataDocType, getValues("sunatcountry")]);
-
     const emailRequired = (value: string) => {
         if (value.length === 0) {
             return t(langKeys.field_required) as string;
@@ -547,6 +563,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                     <AntTab label={t(langKeys.informationorganization)} />
                     <AntTab label={t(langKeys.emailconfiguration)} />
                     {roledesc === "SUPERADMIN" && <AntTab label={t(langKeys.voximplant_organizationchanneltab)} />}
+                    <AntTab label={t(langKeys.customer_evaluation)} />
                     {false && <AntTab label={t(langKeys.chatimages)} />}
                 </Tabs>
                 {pageSelected === 0 && <div className={classes.containerDetail}>
@@ -923,7 +940,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
 
                     }
                 </div>}
-                {pageSelected === 2 && <>
+                {(pageSelected === 2 )&& <>
                     <div className={classes.containerDetail}>
                         {row?.orgid && <div>
                             <div style={{ marginLeft: "auto", marginRight: "0px", float: "right" }}>
@@ -1112,7 +1129,101 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                         </div>}
                     </div>
                 </>}
-                {pageSelected === 3 && <div className={classes.containerDetail}>
+                {pageSelected === 3 && 
+                <div >
+                <div className={classes.containerDetailMainEvaluation}>
+                    <Grid  xs={12} sm={12} md={3} lg={3} xl={3}>
+                        <Box m={1}>
+                            <Grid container direction="column">
+                                <Grid  xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <label className={classes.text}>
+                                        {t(langKeys.apiconsumptionevaluation)} (Infocorp)
+                                    </label>
+                                </Grid>
+                                <Grid  xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <TemplateSwitch
+                                        label={""}
+                                        className="col-6"
+                                        valueDefault={apiconsumption.infocorp}
+                                        onChange={(value) => {setApiConsumption({...apiconsumption,infocorp: value})}}
+                                    />
+                                </Grid>
+                                {apiconsumption.infocorp && <Grid  xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    test
+                                </Grid>}
+                            </Grid>
+                        </Box>
+                    </Grid>
+                    <Grid  xs={12} sm={12} md={3} lg={3} xl={3}>
+                        <Box m={1}>
+                            <Grid container direction="column">
+                                <Grid  xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <label className={classes.text}>
+                                        {t(langKeys.apiconsumptionevaluation)} (Sentinel)
+                                    </label>
+                                </Grid>
+                                <Grid  xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <TemplateSwitch
+                                        label={""}
+                                        className="col-6"
+                                        valueDefault={apiconsumption.sentinel}
+                                        onChange={(value) => {setApiConsumption({...apiconsumption,sentinel: value})}}
+                                    />
+                                </Grid>
+                                {apiconsumption.sentinel && <Grid  xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    test
+                                </Grid>}
+                            </Grid>
+                        </Box>
+                    </Grid>
+                    <Grid  xs={12} sm={12} md={3} lg={3} xl={3}>
+                        <Box m={1}>
+                            <Grid container direction="column">
+                                <Grid  xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <label className={classes.text}>
+                                        {t(langKeys.apiconsumptionevaluation)} (RENIEC)
+                                    </label>
+                                </Grid>
+                                <Grid  xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <TemplateSwitch
+                                        label={""}
+                                        className="col-6"
+                                        valueDefault={apiconsumption.reniec}
+                                        onChange={(value) => {setApiConsumption({...apiconsumption,reniec: value})}}
+                                    />
+                                </Grid>
+                                {apiconsumption.reniec && <Grid  xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    test
+                                </Grid>}
+                            </Grid>
+                        </Box>
+                    </Grid>
+                    <Grid  xs={12} sm={12} md={3} lg={3} xl={3}>
+                        <Box m={1}>
+                            <Grid container direction="column">
+                                <Grid  xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <label className={classes.text}>
+                                        {t(langKeys.apiconsumptionevaluation)} (SUNARP)
+                                    </label>
+                                </Grid>
+                                <Grid  xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <TemplateSwitch
+                                        label={""}
+                                        className="col-6"
+                                        valueDefault={apiconsumption.sunarp}
+                                        onChange={(value) => {setApiConsumption({...apiconsumption,sunarp: value})}}
+                                    />
+                                </Grid>
+                                {apiconsumption.sunarp && <Grid  xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    test
+                                </Grid>}
+                            </Grid>
+                        </Box>
+                    </Grid>
+                </div>
+                </div>
+                }
+                {pageSelected === 4 && <div className={classes.containerDetail}>
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Box m={1}>
                             <Grid container direction="row">
@@ -1212,7 +1323,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                             </Grid>
                         </Box>
                     </Grid>
-                </div>}
+                        </div>}
             </form>
         </div>
     );

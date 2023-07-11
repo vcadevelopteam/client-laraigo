@@ -533,6 +533,8 @@ const translation: LangKeys = {
   type_org_35: 'Information and communications',
   type_org_36: 'Financial and insurance activities',
   type_org_37: 'Real estate activities',
+  customer_evaluation: "Customer evaluation",
+  apiconsumptionevaluation: "API consumption to perform evaluations",
   type_org_38: 'Professional, scientific and technical activities',
   type_org_39: 'Administrative and support service activities',
   type_org_40: 'Public administration and defense',

@@ -4127,6 +4127,8 @@ export const langKeys = {
   type_close_nocompletado: 'type_close_nocompletado',
   type_close_resuelto: 'type_close_resuelto',
   available: 'available',
+  customer_evaluation: "customer_evaluation",
+  apiconsumptionevaluation: "apiconsumptionevaluation",
   already_call_person: 'already_call_person',
 
   voximplant_organizationchanneltab: 'voximplant_organizationchanneltab',

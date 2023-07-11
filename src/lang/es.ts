@@ -1760,6 +1760,8 @@ const translation: LangKeys = {
   ticket_canalpersonareferencia: 'ID Persona canal',
   ticket_fechainicio: 'Fecha de inicio',
   ticket_fechafin: 'Fecha de fin',
+  customer_evaluation: "Evaluación de clientes",
+  apiconsumptionevaluation: "Consumo de API para realizar evaluaciones",
   ticket_fechaprimeraconversacion: 'Primera comunicación',
   ticket_fechaultimaconversacion: 'Fecha de última interacción',
   ticket_fechaultimaconversacion_help: 'Es la fecha en que se recibe el último mensaje por parte del cliente o el agente',
