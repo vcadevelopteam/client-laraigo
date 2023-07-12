@@ -1927,6 +1927,7 @@ export const langKeys = {
   confirmation_close: 'confirmation_close',
   question_delete_all_items: 'question_delete_all_items',
   login_with_facebook: 'login_with_facebook',
+  propertybuttonslogic: 'propertybuttonslogic',
   signup_with_facebook: 'signup_with_facebook',
   login_with_google: 'login_with_google',
   info: 'info',

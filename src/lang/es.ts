@@ -1702,6 +1702,7 @@ const translation: LangKeys = {
   beforeequals: 'Antes o igual del',
   all: 'Todos',
   istrue: 'Es verdadero',
+  propertybuttonslogic: 'Permite habilitar o deshabilitar los botones pasados o anteriores en la conversación del cliente, para que el cliente pueda o no seguir por ese camino, solo aplica para canales Whatsapp (360 Dialog)',
   isfalse: 'Es falso',
 
   true: 'Verdadero',
