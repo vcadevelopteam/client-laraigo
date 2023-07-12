@@ -542,6 +542,7 @@ const translation: LangKeys = {
   type_org_42: 'Human health care and social assistance activities',
   type_org_43: 'Artistic, entertainment and recreation activities',
   type_org_44: 'Association activitie',
+  propertybuttonslogic: "Allows you to enable or disable the past or previous buttons in the customer's conversation, so that the customer can continue on that path or not, only applies to WhatsApp channels (360 Dialog)",
   dashboardkpi: "Dashboard KPI",
   atleasthafanhour: "The duration must have a value greater than 0",
 
