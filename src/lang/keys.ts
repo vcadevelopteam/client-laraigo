@@ -1287,6 +1287,7 @@ export const langKeys = {
   action: 'action',
   action_plural: 'action_plural',
 
+  lapsetimetoevaluate: 'lapsetimetoevaluate',
   corporation: 'corporation',
   corporation_plural: 'corporation_plural',
   logo: 'logo',
@@ -1925,6 +1926,7 @@ export const langKeys = {
   confirmation_duplicate: 'confirmation_duplicate',
   confirmation_delete_data: 'confirmation_delete_data',
   confirmation_close: 'confirmation_close',
+  fieldlessthan31: "fieldlessthan31",
   question_delete_all_items: 'question_delete_all_items',
   login_with_facebook: 'login_with_facebook',
   signup_with_facebook: 'signup_with_facebook',

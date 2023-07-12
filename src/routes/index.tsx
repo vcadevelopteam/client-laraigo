@@ -48,7 +48,7 @@ const Forbidden = lazy(() => import('pages/Forbidden'));
 const InternalServererror = lazy(() => import('pages/InternalServerError'));
 const Corporations = lazy(() => import('pages/Corporations'));
 const BillingSetups = lazy(() => import('pages/BillingSetups'));
-const Organizations = lazy(() => import('pages/Organizations'));
+const Organizations = lazy(() => import('pages/organizations/Organizations'));
 const Tickets = lazy(() => import('pages/Tickets'));
 const UserSettings = lazy(() => import('pages/UserSettings'));
 const Invoice = lazy(() => import('pages/Invoice'));

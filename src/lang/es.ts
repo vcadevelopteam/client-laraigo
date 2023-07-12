@@ -1433,6 +1433,7 @@ const translation: LangKeys = {
   failed: 'Fallido',
   failed_percent: '% Fallido',
   attended: 'Atendido',
+  lapsetimetoevaluate: 'Tiempo a transcurrir para evaluar al mismo cliente',
   locked: 'Bloqueado',
   blacklisted: 'Lista negra',
   default: 'Predeterminado',
@@ -1701,6 +1702,7 @@ const translation: LangKeys = {
   before: 'Antes del',
   beforeequals: 'Antes o igual del',
   all: 'Todos',
+  fieldlessthan31: "El valor debe ser menor o igual a 31",
   istrue: 'Es verdadero',
   isfalse: 'Es falso',
 
