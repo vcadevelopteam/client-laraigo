@@ -42,12 +42,6 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
         background: '#fff',
     },
-    containerDetailMainEvaluation:{
-        marginTop: theme.spacing(2),
-        padding: theme.spacing(2),
-        background: '#fff',
-        display: 'flex'
-    },
     button: {
         padding: 12,
         fontWeight: 500,
@@ -87,6 +81,12 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         iconclient: row?.iconclient || "",
     });
     const [apiconsumption, setApiConsumption] = useState({
+        infocorp: false,
+        sentinel: false,
+        reniec: false,
+        sunarp: false,
+    });
+    const [ownCredentials, setOwnCredentials] = useState({
         infocorp: false,
         sentinel: false,
         reniec: false,
@@ -144,18 +144,32 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                 infocorp: {
                     evaluationtime: "DÍA",
                     timevalue: 0,
+                    username: "",
+                    password: "",
+                    urlapi: "",
                 },
                 sentinel: {
                     evaluationtime: "DÍA",
                     timevalue: 0,
+                    username: "",
+                    password: "",
+                    urlapi1: "",
+                    urlapi2: "",
+                    publickey: "",
                 },
                 reniec: {
                     evaluationtime: "DÍA",
                     timevalue: 0,
+                    username: "",
+                    password: "",
+                    urlapi: "",
                 },
                 sunarp: {
                     evaluationtime: "DÍA",
                     timevalue: 0,
+                    username: "",
+                    password: "",
+                    urlapi: "",
                 },
             }
         }
@@ -207,23 +221,40 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             hasvalue: (value) => apiconsumption.infocorp ? ((value && value>0)|| t(langKeys.field_required)) : true,
             limitdays: (value) => apiconsumption.infocorp ? ((value && value<32)|| t(langKeys.fieldlessthan31)) : true,
         } });
+        register('evaluationData.infocorp.username', { validate: (value) => (apiconsumption.infocorp && ownCredentials.infocorp) ? ((value && value.length)|| t(langKeys.field_required)) : true });
+        register('evaluationData.infocorp.password', { validate: (value) => (apiconsumption.infocorp && ownCredentials.infocorp) ? ((value && value.length)|| t(langKeys.field_required)) : true });
+        register('evaluationData.infocorp.urlapi', { validate: (value) => (apiconsumption.infocorp && ownCredentials.infocorp) ? ((value && value.length)|| t(langKeys.field_required)) : true });
+
         register('evaluationData.sentinel.evaluationtime', { validate: (value) => apiconsumption.sentinel ? ((value && value.length)|| t(langKeys.field_required)) : true });
         register('evaluationData.sentinel.timevalue', { validate: {
             hasvalue: (value) => apiconsumption.sentinel ? ((value && value>0)|| t(langKeys.field_required)) : true,
             limitdays: (value) => apiconsumption.sentinel ? ((value && value<32)|| t(langKeys.fieldlessthan31)) : true,
         } });
+        register('evaluationData.sentinel.username', { validate: (value) => apiconsumption.sentinel ? ((value && value.length)|| t(langKeys.field_required)) : true });
+        register('evaluationData.sentinel.password', { validate: (value) => apiconsumption.sentinel ? ((value && value.length)|| t(langKeys.field_required)) : true });
+        register('evaluationData.sentinel.urlapi1', { validate: (value) => apiconsumption.sentinel ? ((value && value.length)|| t(langKeys.field_required)) : true });
+        register('evaluationData.sentinel.urlapi2', { validate: (value) => apiconsumption.sentinel ? ((value && value.length)|| t(langKeys.field_required)) : true });
+        register('evaluationData.sentinel.publickey', { validate: (value) => apiconsumption.sentinel ? ((value && value.length)|| t(langKeys.field_required)) : true });
+
         register('evaluationData.reniec.evaluationtime', { validate: (value) => apiconsumption.reniec ? ((value && value.length)|| t(langKeys.field_required)) : true });
         register('evaluationData.reniec.timevalue', { validate: {
             hasvalue: (value) => apiconsumption.reniec ? ((value && value>0)|| t(langKeys.field_required)) : true,
             limitdays: (value) => apiconsumption.reniec ? ((value && value<32)|| t(langKeys.fieldlessthan31)) : true,
         } });
+        register('evaluationData.reniec.username', { validate: (value) => apiconsumption.reniec ? ((value && value.length)|| t(langKeys.field_required)) : true });
+        register('evaluationData.reniec.password', { validate: (value) => apiconsumption.reniec ? ((value && value.length)|| t(langKeys.field_required)) : true });
+        register('evaluationData.reniec.urlapi', { validate: (value) => apiconsumption.reniec ? ((value && value.length)|| t(langKeys.field_required)) : true });
+
         register('evaluationData.sunarp.evaluationtime', { validate: (value) => apiconsumption.sunarp ? ((value && value.length)|| t(langKeys.field_required)) : true });
         register('evaluationData.sunarp.timevalue', { validate: {
             hasvalue: (value) => apiconsumption.sunarp ? ((value && value>0)|| t(langKeys.field_required)) : true,
             limitdays: (value) => apiconsumption.sunarp ? ((value && value<32)|| t(langKeys.fieldlessthan31)) : true,
         } });
+        register('evaluationData.sunarp.username', { validate: (value) => apiconsumption.sunarp ? ((value && value.length)|| t(langKeys.field_required)) : true });
+        register('evaluationData.sunarp.password', { validate: (value) => apiconsumption.sunarp ? ((value && value.length)|| t(langKeys.field_required)) : true });
+        register('evaluationData.sunarp.urlapi', { validate: (value) => apiconsumption.sunarp ? ((value && value.length)|| t(langKeys.field_required)) : true });
 
-    }, [edit, register, doctype, getValues, t, apiconsumption]);
+    }, [edit, register, doctype, getValues, t, apiconsumption, ownCredentials]);
 
     useEffect(() => {
         if (waitSave) {
@@ -347,8 +378,11 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                     getValues={getValues}
                     setValue={setValue}
                     errors={errors}
+                    row={row}
                     apiconsumption ={apiconsumption}
                     setApiConsumption={setApiConsumption}
+                    ownCredentials ={ownCredentials}
+                    setOwnCredentials={setOwnCredentials}
                 />
                 }
             </form>
