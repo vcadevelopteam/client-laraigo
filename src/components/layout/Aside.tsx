@@ -19,6 +19,7 @@ import { langKeys } from 'lang/keys';
 import { WifiCalling } from 'icons';
 import { showSnackbar } from 'store/popus/actions';
 import paths from "common/constants/paths";
+import { viewsClassifications } from 'routes/routes';
 
 type IProps = {
     classes: any;
@@ -108,7 +109,8 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
     const voxiConnection = useSelector(state => state.voximplant.connection);
     const location = useLocation();
     const userConnected = useSelector(state => state.inbox.userConnected);
-
+    console.log(applications)
+    console.log(viewsClassifications)
     return (
         <Drawer
             className={clsx(classes.drawer, {

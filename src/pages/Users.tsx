@@ -39,8 +39,6 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { DuplicateIcon } from 'icons';
-import { useHistory } from 'react-router-dom';
-import paths from 'common/constants/paths';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -1074,7 +1072,6 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
 }
 
 const Users: FC = () => {
-    const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main.mainData);
@@ -1102,14 +1099,9 @@ const Users: FC = () => {
     const [messageError, setMessageError] = useState('');
     const [importCount, setImportCount] = useState(0)
     const arrayBread = [
-        { id: "view-0", name: t(langKeys.configuration_plural) },
         { id: "view-1", name: t(langKeys.user_plural) },
     ];
     function redirectFunc(view:string){
-        if(view ==="view-0"){
-            history.push(paths.CONFIGURATION)
-            return;
-        }
         setViewSelected(view)
     }
 
@@ -1537,12 +1529,6 @@ const Users: FC = () => {
 
         return (
             <div style={{ width: "100%", display: 'flex', flexDirection: 'column', flex: 1 }}>
-                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
-                    <TemplateBreadcrumbs
-                        breadcrumbs={arrayBread}
-                        handleClick={redirectFunc}
-                    />
-                </div>
                 <TableZyx
                     columns={columns}
                     titlemodule={t(langKeys.user, { count: 2 })}
@@ -1559,15 +1545,6 @@ const Users: FC = () => {
                     onClickRow={handleEdit}
                     ButtonsElement={() => (
                         <>
-                            <Button
-                                disabled={mainResult.loading}
-                                variant="contained"
-                                type="button"
-                                color="primary"
-                                startIcon={<ClearIcon color="secondary" />}
-                                style={{ backgroundColor: "#FB5F5F" }}
-                                onClick={() => history.push(paths.CONFIGURATION)}
-                            >{t(langKeys.back)}</Button>
                             <Button
                                 variant="contained"
                                 color="primary"

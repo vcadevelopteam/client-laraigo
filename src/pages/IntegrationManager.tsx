@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, SyntheticEvent, useEffect, useMemo, useState } from "react"; // we need this to make JSX compile
+import React, { FC, useEffect, useMemo, useState } from "react"; // we need this to make JSX compile
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import IconButton from "@material-ui/core/IconButton";
@@ -56,15 +56,9 @@ import ClearIcon from "@material-ui/icons/Clear";
 import { apiUrls } from "common/constants";
 import { request_send, resetRequest } from "store/integrationmanager/actions";
 import { dictToArrayKV, extractVariables, isJson } from "common/helpers";
-import BackupIcon from "@material-ui/icons/Backup";
 import ListAltIcon from "@material-ui/icons/ListAlt";
 import GetAppIcon from '@material-ui/icons/GetApp';
-import { useHistory } from "react-router-dom";
-import paths from "common/constants/paths";
-import { RadioGroupProps, TextField } from "@material-ui/core";
-import axios from "axios";
-import { set } from "date-fns";
-import { main } from "network/service/common";
+import { TextField } from "@material-ui/core";
 
 interface RowSelected {
    row: Dictionary | null;
@@ -173,7 +167,6 @@ const levelFields: Record<string,string> = {
 // let tailFields: any[] = [];
 
 const IntegrationManager: FC = () => {
-   const history = useHistory();
    const dispatch = useDispatch();
    const { t } = useTranslation();
    const mainResult = useSelector((state) => state.main);
@@ -188,14 +181,9 @@ const IntegrationManager: FC = () => {
    const [waitSave, setWaitSave] = useState(false);
    const [mainData, setMainData] = useState<any>([]);
    const arrayBread = [
-      { id: "view-0", name: t(langKeys.configuration_plural) },
       { id: "view-1", name: t(langKeys.integrationmanager_plural) },
    ];
    function redirectFunc(view: string) {
-      if (view === "view-0") {
-         history.push(paths.CONFIGURATION);
-         return;
-      }
       setViewSelected(view);
    }
 
@@ -348,37 +336,12 @@ const IntegrationManager: FC = () => {
                flex: 1,
             }}
          >
-            <div
-               style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-               }}
-            >
-               <TemplateBreadcrumbs
-                  breadcrumbs={arrayBread}
-                  handleClick={redirectFunc}
-               />
-            </div>
             <TableZyx
                columns={columns}
                titlemodule={t(langKeys.integrationmanager_plural, {
                   count: 2,
                })}
                data={mainData}
-               ButtonsElement={() => (
-                  <Button
-                     disabled={mainResult.mainData.loading}
-                     variant="contained"
-                     type="button"
-                     color="primary"
-                     startIcon={<ClearIcon color="secondary" />}
-                     style={{ backgroundColor: "#FB5F5F" }}
-                     onClick={() => history.push(paths.CONFIGURATION)}
-                  >
-                     {t(langKeys.back)}
-                  </Button>
-               )}
                onClickRow={handleEdit}
                download={true}
                loading={mainResult.mainData.loading}
