@@ -399,12 +399,12 @@ export const SynonimsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected
             },
             {
                 Header: t(langKeys.lastUpdate),
-                accessor: 'updatedate',
+                accessor: 'changedate',
                 width: "auto",
                 NoFilter: true,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    return convertLocalDate(row.updatedate).toLocaleString()
+                    return convertLocalDate(row.changedate).toLocaleString()
                 }
             },
         ],

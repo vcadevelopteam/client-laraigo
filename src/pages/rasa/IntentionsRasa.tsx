@@ -258,7 +258,6 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                             <TextField
                                 color="primary"
                                 fullWidth
-                                disabled={!disableSave}
                                 value={name}
                                 error={!!errors?.intent_name?.message}
                                 helperText={errors?.intent_name?.message || null}
@@ -278,7 +277,6 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
                         <div style={{ paddingTop:"8px",paddingBottom:"16px"}}>{t(langKeys.intentionnametooltip)}</div>
                         <FieldEdit
                             label={t(langKeys.description)} 
-                            disabled={!disableSave}
                             className={classes.containerFields}
                             onChange={(value) => {
                                 setValue('intent_description', value)
@@ -496,7 +494,6 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
             }
         }
     }, [operationRes, operationRes]);
-
     const columns = React.useMemo(
         () => [
             {
@@ -514,7 +511,7 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
                                 setRowSelected({ row: row, edit: true })
                             }}
                         >
-                            #{row.intent_name}
+                            {row.intent_name}
                         </label>
                     )
                 }
@@ -570,12 +567,12 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
             }, 
             {
                 Header: t(langKeys.lastUpdate),
-                accessor: 'updatedate',
+                accessor: 'changedate',
                 width: "auto",
                 NoFilter: true,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    return convertLocalDate(row.updatedate).toLocaleString()
+                    return convertLocalDate(row.changedate).toLocaleString()
                 }
             },
         ],
@@ -676,7 +673,7 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
                                         variant="contained"
                                         type="button"
                                         color="primary"
-                                        disabled={dataModelAi.loading}
+                                        disabled={dataModelAi.loading || mainResult.mainData.data.some(x=>x.model_trained) || trainResult.loading}
                                         style={{ backgroundColor: "#7721ad" }}
                                         onClick={()=>{dispatch(trainrasaia({model_uuid: dataModelAi?.data?.[0]?.model_uuid||""}));setSendTrainCall(true);}}
                                     >{t(langKeys.train)}</Button>
