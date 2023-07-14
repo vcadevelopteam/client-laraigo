@@ -279,7 +279,7 @@ const ChatMessage: React.FC<{ message: IMessageTest }> = ({ message }) => {
                                     <span>{message.message}</span>
                                 </div>
                                 {!message.loading && !message.error && (
-                                    <div style={{ color: "#7721ad", fontSize: "12px" }}>
+                                    <div style={{ color: "#7721ad", fontSize: "14px" }}>
                                         <div>
                                             <b>Intencion:</b> {message.intent?.name || "no encontrada"}
                                         </div>
