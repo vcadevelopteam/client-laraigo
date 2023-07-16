@@ -179,6 +179,7 @@ const paths = {
         resolve: (channelId: string | number) => `/configuration/channels/edit/${channelId}/whatsapp`,
     },
     BILLING_SETUPS: '/billing_setups',
+    TIMESHEET: '/timesheet',
     CONFIGURATION: '/configuration',
     EXTRAS: '/extras',
     PROPERTIES: '/extras/properties',

@@ -551,7 +551,7 @@ const translation: LangKeys = {
   ticket_originalpublicationdate: "Original publication date",
   ticket_numberfollowers: "Number Followers",
   "personalizedreport_conversation.originalpublicationdate": "Original publication date",
-  "personalizedreport_conversation.numberfollowers":"Number Followers",
+  "personalizedreport_conversation.numberfollowers": "Number Followers",
   ordersdetail: "Order details",
   picture: "Picture",
   view: "Watch",
@@ -5249,6 +5249,15 @@ const translation: LangKeys = {
   channel_workplacedm: 'channel_workplacedm',
   ticket_originalpublishdate: 'Original publication date',
   ticket_followercount: 'Follower amount',
+  timesheet: 'Time Sheet',
+  timesheet_date: 'Date',
+  timesheet_user: 'User',
+  timesheet_registerdate: 'Register Date',
+  timesheet_registeruser: 'Liable User',
+  timesheet_organization: 'Organization',
+  timesheet_profile: 'Profile',
+  timesheet_duration: 'Duration (Reported Hours)',
+  timesheet_detail: 'Detail',
 };
 
 const enResource: ResourceLanguage = {

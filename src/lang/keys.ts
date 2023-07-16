@@ -5166,6 +5166,15 @@ export const langKeys = {
   channel_workplacedm: 'Workplace DM',
   ticket_originalpublishdate: 'ticket_originalpublishdate',
   ticket_followercount: 'ticket_followercount',
+  timesheet: 'timesheet',
+  timesheet_date: 'timesheet_date',
+  timesheet_user: 'timesheet_user',
+  timesheet_registerdate: 'timesheet_registerdate',
+  timesheet_registeruser: 'timesheet_registeruser',
+  timesheet_organization: 'timesheet_organization',
+  timesheet_profile: 'timesheet_profile',
+  timesheet_duration: 'timesheet_duration',
+  timesheet_detail: 'timesheet_detail',
 };
 
 export type LangKeys = typeof langKeys;
