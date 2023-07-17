@@ -144,6 +144,7 @@ const ProductCatalog: FC = () => {
             getValuesFromDomain("PRODUCTOCONDICION"),
             getValuesFromDomain("PRODUCTOESTADOREVISION"),
             metaCatalogSel({ metabusinessid: 0, id: 0 }),
+            getValuesFromDomain("UNIDADMEDIDA"),
         ]));
 
         return () => {
@@ -570,6 +571,20 @@ const ProductCatalog: FC = () => {
                 accessor: 'reviewdescription',
                 Header: t(langKeys.productcatalog_reviewdescription),
             },
+            {
+                accessor: 'unitmeasurement',
+                Header: t(langKeys.measureunit),
+            },
+            {
+                accessor: 'quantity',
+                Header: "Stock",
+                sortType: 'number',
+                type: 'number',
+                Cell: (props: any) => {
+                    const { quantity } = props.cell.row.original;
+                    return formatNumber(quantity || 0);
+                }
+            },
         ],
         []
     );
@@ -910,21 +925,22 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
 
     const { t } = useTranslation();
 
-    const classes = useStyles();
-    const dataDomainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataDomainAvailability = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const dataDomainCurrency = multiData[2] && multiData[2].success ? multiData[2].data : [];
-    const dataDomainGender = multiData[3] && multiData[3].success ? multiData[3].data : [];
-    const dataDomainCondition = multiData[4] && multiData[4].success ? multiData[4].data : [];
-    const resultManageProduct = useSelector(state => state.catalog.requestCatalogManageProduct);
-    const uploadResult = useSelector(state => state.main.uploadFile);
-    const user = useSelector(state => state.login.validateToken.user);
-    const isClaro = user?.properties?.environment === "CLARO";
-
     const [fieldupload, setfieldupload] = useState<"imagelink" | "additionalimagelink">("imagelink");
     const [fileAttachment, setFileAttachment] = useState<File | null>(null);
     const [fileAttachmentAditional, setFileAttachmentAditional] = useState<File | null>(null);
     const [labels, setlabels] = useState(row?.labels?.split(',') || []);
+    const resultManageProduct = useSelector(state => state.catalog.requestCatalogManageProduct);
+    const uploadResult = useSelector(state => state.main.uploadFile);
+    const user = useSelector(state => state.login.validateToken.user);
+    const classes = useStyles();
+    const dataDomainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const dataDomainUnit = multiData[7] && multiData[7].success ? multiData[7].data : [];
+    const dataDomainAvailability = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataDomainCurrency = multiData[2] && multiData[2].success ? multiData[2].data : [];
+    const dataDomainGender = multiData[3] && multiData[3].success ? multiData[3].data : [];
+    const dataDomainCondition = multiData[4] && multiData[4].success ? multiData[4].data : [];
+    const isClaro = user?.properties?.environment === "CLARO";
+
     const [waitSave, setWaitSave] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
 
@@ -1017,6 +1033,8 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
             reviewstatus: row?.reviewstatus || '',
             reviewdescription: row?.reviewdescription || '',
             status: row?.status || '',
+            unitmeasurement: row?.unitmeasurement || '',
+            quantity: row?.quantity || 0.0,
             type: row?.type || '',
             operation: (edit && row) ? "EDIT" : "INSERT",
         }
@@ -1063,6 +1081,8 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
         register('reviewstatus');
         register('reviewdescription');
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('unitmeasurement');
+        register('quantity');
         register('type');
         register('operation');
     }, [edit, register]);
@@ -1337,6 +1357,27 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
                             prefixTranslation="status_"
                             uset={true}
                             valueDefault={row?.status || ''}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldSelect
+                            className="col-6"
+                            data={dataDomainUnit || []}
+                            disabled={!edit}
+                            label={t(langKeys.measureunit)}
+                            onChange={(value) => setValue('unitmeasurement', value?.domainvalue || '')}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                            valueDefault={row?.unitmeasurement || ''}
+                        />
+                        <FieldEdit
+                            className="col-6"
+                            disabled={!edit}
+                            inputProps={{ step: "any" }}
+                            label={t(langKeys.quantity)}
+                            onChange={(value) => setValue('quantity', value)}
+                            type="number"
+                            valueDefault={row?.quantity || 0.0}
                         />
                     </div>
                     <div className="row-zyx">
