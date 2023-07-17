@@ -5176,6 +5176,14 @@ export const langKeys = {
   channel_workplacedm: 'Workplace DM',
   ticket_originalpublishdate: 'ticket_originalpublishdate',
   ticket_followercount: 'ticket_followercount',
+  openpay_message01: 'openpay_message01',
+  openpay_message02: 'openpay_message02',
+  openpay_message03: 'openpay_message03',
+  openpay_message04: 'openpay_message04',
+  openpay_message05: 'openpay_message05',
+  openpay_message06: 'openpay_message06',
+  openpay_message07: 'openpay_message07',
+  openpay_message08: 'openpay_message08',
 };
 
 export type LangKeys = typeof langKeys;

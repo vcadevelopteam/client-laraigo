@@ -239,6 +239,7 @@ export const apiUrls = {
     MAIN_URL_PUBLIC: `${BASE_URL}/main/public/domainvalues`,
     MAIN_URL_PAYMENTORDER: `${BASE_URL}/main/public/paymentorder`,
     MAIN_URL_PAYMENTORDERNIUBIZ: `${BASE_URL}/main/public/paymentorderniubiz`,
+    MAIN_URL_PAYMENTORDEROPENPAY: `${BASE_URL}/main/public/paymentorderopenpay`,
     MAIN_MULTI: `${BASE_URL}/main/multi`,
     MAIN_MULTI_PUBLIC: `${BASE_URL}/main/public/multi/domainvalues`,
     EXECUTE_TRANSACTION: `${BASE_URL}/main/executetransaction`,
@@ -355,4 +356,7 @@ export const apiUrls = {
 
     PAYMENTORDER_NIUBIZ_CREATESESSIONTOKEN: `${BASE_URL}/paymentniubiz/createsessiontoken`,
     PAYMENTORDER_NIUBIZ_AUTHORIZETRANSACTION: `${BASE_URL}/paymentniubiz/authorizetransaction`,
+
+    PAYMENTORDER_OPENPAY_GETPAYMENTORDER: `${BASE_URL}/paymentopenpay/getpaymentorder`,
+    PAYMENTORDER_OPENPAY_PROCESSTRANSACTION: `${BASE_URL}/paymentopenpay/processtransaction`,
 };
