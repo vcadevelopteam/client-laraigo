@@ -323,8 +323,8 @@ export const getSlaRules = (body: IRequestBody): IActionCall => ({
 
 export const resetGetSlaRules = (): IActionCall => ({ type: actionTypes.GET_SLARULES_RESET });
 
-export const getGroups = (): IActionCall => ({
-    callAPI: () => CommonService.main(getUserGroupsSel()),
+export const getGroups = (body: IRequestBody): IActionCall => ({
+    callAPI: () => CommonService.main(body),
     types: {
         loading: actionTypes.GET_GROUPS,
         success: actionTypes.GET_GROUPS_SUCCESS,

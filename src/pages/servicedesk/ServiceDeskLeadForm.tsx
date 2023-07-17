@@ -29,7 +29,7 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import TableZyx from 'components/fields/table-paginated';
 import { AttachFile, Clear, Close, GetApp, Create, Done, FileCopy, Info, Mood, Add } from '@material-ui/icons';
-import { getPersonListPaginated, resetGetPersonListPaginated } from 'store/person/actions';
+import { getDomainsByTypename, getPersonListPaginated, resetGetPersonListPaginated } from 'store/person/actions';
 import clsx from 'clsx';
 import { AccessTime as AccessTimeIcon, Flag as FlagIcon, Cancel as CancelIcon, Note as NoteIcon, LocalOffer as LocalOfferIcon, LowPriority as LowPriorityIcon, Star as StarIcon, History as HistoryIcon, TrackChanges as TrackChangesIcon } from '@material-ui/icons';
 import { useFieldArray, useForm } from 'react-hook-form';
@@ -223,7 +223,7 @@ const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, o
             if (type === "MAIL") {
                 setPersonWithData(persons.filter(x => x.email && x.email.length > 0))
             } else if (type === "HSM") {
-                setPersonWithData(persons.filter(x => !!x.phonewhatsapp))
+                setPersonWithData(persons.filter(x => !!x.phone))
             } else {
                 setPersonWithData(persons.filter(x => x.phone && x.phone.length > 0))
             }
@@ -494,7 +494,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
         register('impact', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('urgency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('personid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('leadgroups', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('leadgroups')//, { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('ticketnum', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('priority');
         register('email', {
@@ -581,19 +581,22 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                 all: false,
                 company:'',
                 groups:'',
+                startdate: "",
+                enddate: "",  
+                offset: -5,
             })));
             dispatch(getLeadActivities(leadActivitySel(leadId)));
             dispatch(getLeadLogNotes(leadLogNotesSel(leadId)));
             dispatch(getLeadHistory(leadHistorySel(leadId)));
         }
-
+        dispatch(getDomainsByTypename());
         dispatch(getAdvisers(userSDSel()));
         dispatch(getSlaRules(getSLASel(0)));
         dispatch(getLeadPhases(getColumnsSDSel(0, true)));
         dispatch(getLeadTagsDomain(getValuesFromDomain('OPORTUNIDADETIQUETAS')));
         dispatch(getLeadTemplates());
         dispatch(getLeadChannels());
-        dispatch(getGroups());
+        dispatch(getGroups(getValuesFromDomain('GRUPOSSERVICEDESK')));
         dispatch(getUrgency(getValuesFromDomain('URGENCIA')));
         dispatch(getImpact(getValuesFromDomain('IMPACTO')));
         dispatch(getPriority(getValuesFromDomain('PRIORIDAD')));

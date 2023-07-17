@@ -115,7 +115,6 @@ export const DraggableServiceDeskCardContent: FC<ServiceDeskCardContentProps> = 
     const handleMoreVertClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
-
     const handleClose = () => {
         setAnchorEl(null);
     };
@@ -130,13 +129,14 @@ export const DraggableServiceDeskCardContent: FC<ServiceDeskCardContentProps> = 
         setAnchorEl(null);
         onDelete?.(lead);
     };
-
     const open = Boolean(anchorEl);
     const id = open ? `lead-card-popover-${String(lead)}` : undefined;
     return (
         <Box {...boxProps} style={{ position: 'relative' }} pb={1}>
             <div className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)} onClick={handleClick}>
                 <span className={classes.title}>{lead?.sd_request||""}</span>
+                <span className={classes.info}>{lead?.column_description}</span>
+                <span className={classes.info}>{lead.leadgroups}</span>
                 <span className={classes.info}>{lead.type}</span>
                 <span className={classes.info}>{lead.description}</span>
                 <span className={classes.info}>{lead?.ticketnum}</span>
