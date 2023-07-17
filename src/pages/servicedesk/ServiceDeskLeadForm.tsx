@@ -44,6 +44,7 @@ import { setModalCall, setPhoneNumber } from 'store/voximplant/actions';
 import MailIcon from '@material-ui/icons/Mail';
 import DialogInteractions from 'components/inbox/DialogInteractions';
 import { getCompany, getGroups, getImpact, getPriority, getSlaRules, getUrgency, resetGetCompany, resetGetGroups, resetGetImpact, resetGetPriority, resetGetSlaRules, resetGetUrgency } from 'store/servicedesk/actions';
+const isIncremental = window.location.href.includes("incremental")
 
 const EMOJISINDEXED = emojis.reduce((acc: any, item: any) => ({ ...acc, [item.emojihex]: item }), {});
 
@@ -438,7 +439,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
     };
 
     useEffect(() => {
-        setVisorSD(!!user?.roledesc.includes("VISOR"))
+        setVisorSD(!!user?.roledesc.includes("VISOR") || isIncremental)
     }, [user]);
 
     const { register, setValue, getValues, formState: { errors }, reset, trigger } = useForm<any>({
@@ -1111,6 +1112,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
                                             className={classes.field}
                                             onChange={(value) => setValue('ticketnum', value)}
                                             valueDefault={getValues('ticketnum')}
+                                            disabled={visorSD}
                                             error={errors?.ticketnum?.message}
                                         />
                                     :

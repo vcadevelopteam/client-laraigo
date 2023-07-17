@@ -22,6 +22,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Rating } from '@material-ui/lab';
 import { DialogSendTemplate, NewActivityModal, NewNoteModal } from "./Modals";
 import { WhatsappIcon } from "icons";
+const isIncremental = window.location.href.includes("incremental")
 
 interface dataBackend {
   columnid: number,
@@ -143,7 +144,7 @@ const DraggablesCategories : FC<{column:any, index:number, handleDelete:(lead: I
                                         snapshot={snapshot}
                                         onDelete={handleDelete}
                                         onCloseLead={handleCloseLead}
-                                        edit={!role.includes("VISOR")}
+                                        edit={!isIncremental && !role.includes("VISOR")}
                                       />
                                     </div>
                                   )}
@@ -795,7 +796,7 @@ const ServiceDesk: FC = () => {
               onChange={(v: string) => setBoardFilter(prev => ({ ...prev, customer: v }))}
             />
             <div style={{ flexGrow: 1 }} />
-            {(!user?.roledesc.includes("VISOR")) &&
+            {(!isIncremental && !user?.roledesc.includes("VISOR")) &&
             <Button
                 variant="contained"
                 color="primary"
@@ -859,7 +860,7 @@ const ServiceDesk: FC = () => {
             <div style={{ display: 'flex', gap: 8 }}>
               
             </div>
-            {(!user?.roledesc.includes("VISOR")) &&
+            {(!isIncremental && !user?.roledesc.includes("VISOR")) &&
             <div style={{ display: 'flex', gap: 8 }}>
               <Button
                   variant="contained"

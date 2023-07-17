@@ -32,6 +32,8 @@ export const langKeys = {
   ticket_originalpublicationdate: "ticket_originalpublicationdate",
   ticket_numberfollowers: "ticket_numberfollowers",
   sdrequestcode: "sdrequestcode",
+  consulthistoricaldata: "consulthistoricaldata",
+  gotolaraigo: "gotolaraigo",
   resolution: "resolution",
   firstcontactcompliance: "firstcontactcompliance",
   registrationdate: "registrationdate",

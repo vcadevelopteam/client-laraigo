@@ -33,6 +33,7 @@ import { LaraigoLogo } from 'icons';
 import { useForm } from 'react-hook-form';
 import { FieldEdit, DialogZyx } from 'components';
 import { recoverPassword } from 'store/subscription/actions';
+const isIncremental = apiUrls.LOGIN_URL.includes("historical")
 
 export const useStyles = makeStyles((theme) => ({
     paper: {
@@ -215,6 +216,21 @@ const SignIn = () => {
     const onModalSuccess = () => {
         setOpenModal(false);
     }
+    const consultHistoricalData = () => {
+        if (isIncremental) {
+            if (window.location.hostname === 'incremental-claro.laraigo.com') {
+                window.open("https://claro.laraigo.com/sign-in", '_blank');
+            } else {
+                window.open("https://app.laraigo.com/sign-in", '_blank');
+            }
+        } else {
+            if (window.location.hostname === 'claro.laraigo.com') {
+                window.open("https://incremental-claro.laraigo.com/sign-in", '_blank');
+            } else {
+                window.open("https://incremental-prod.laraigo.com/sign-in", '_blank');
+            }
+        }
+    }
 
     useEffect(() => {
         const ff = location.state || {} as any;
@@ -328,6 +344,15 @@ const SignIn = () => {
                                             accessType='online'
                                             autoLoad={false}
                                         />
+                                    </div>
+                                    <div className={classes.buttonGoogle} style={{ marginTop: 16 }}>
+                                        <Button
+                                            variant="outlined"
+                                            color="primary"
+                                            onClick={consultHistoricalData}
+                                        >
+                                            {t(isIncremental ? langKeys.gotolaraigo : langKeys.consulthistoricaldata)}
+                                        </Button>
                                     </div>
                                 </div> :
                                 <CircularProgress className={classes.progress} />
