@@ -571,6 +571,20 @@ const ProductCatalog: FC = () => {
                 accessor: 'reviewdescription',
                 Header: t(langKeys.productcatalog_reviewdescription),
             },
+            {
+                accessor: 'unitmeasurement',
+                Header: t(langKeys.measureunit),
+            },
+            {
+                accessor: 'quantity',
+                Header: "Stock",
+                sortType: 'number',
+                type: 'number',
+                Cell: (props: any) => {
+                    const { quantity } = props.cell.row.original;
+                    return formatNumber(quantity || 0);
+                }
+            },
         ],
         []
     );
