@@ -35,6 +35,8 @@ export const langKeys = {
   phasechange: "phasechange",
   ticket_originalpublicationdate: "ticket_originalpublicationdate",
   ticket_numberfollowers: "ticket_numberfollowers",
+  "personalizedreport_conversation.originalpublicationdate": "personalizedreport_conversation.originalpublicationdate",
+  "personalizedreport_conversation.numberfollowers": "personalizedreport_conversation.numberfollowers",
   sdrequestcode: "sdrequestcode",
   consulthistoricaldata: "consulthistoricaldata",
   gotolaraigo: "gotolaraigo",
@@ -1970,6 +1972,7 @@ export const langKeys = {
   error_excess_users: "error_excess_users",
   error_limit_exceeded: "error_limit_exceeded",
   error_ticket_open: "error_ticket_open",
+  error_ticket_doesnt_belong_to_the_user: "error_ticket_doesnt_belong_to_the_user",
 
   no_records: 'no_records',
 
@@ -2603,8 +2606,6 @@ export const langKeys = {
 
   report_conversationwhatsapp: 'report_conversationwhatsapp',
 
-  "personalizedreport_conversation.originalpublicationdate": "personalizedreport_conversation.originalpublicationdate",
-  "personalizedreport_conversation.numberfollowers": "personalizedreport_conversation.numberfollowers",
   "personalizedreport_conversation.userjoy": "personalizedreport_conversation.userjoy",
   "personalizedreport_conversation.userfear": "personalizedreport_conversation.userfear",
   "personalizedreport_conversation.userdisgust": "personalizedreport_conversation.userdisgust",

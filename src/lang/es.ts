@@ -1666,6 +1666,7 @@ const translation: LangKeys = {
   error_kpi_sql: 'Query error: {{error}}',
   error_limit_exceeded: "Límite excedido",
   error_ticket_open: "Existen tickets abiertos para el canal a desvincular. Por favor cierre estos tickets.",
+  error_ticket_doesnt_belong_to_the_user: "El ticket le pertenece a otro agente, por favor refrescar la página.",
   dateRangeFilterTitle: 'Filtrar por rango de fechas',
 
   successful_change_plan: 'El plan fue cambiado satisfactoriamente. Vuelva a iniciar sesión para que pueda ver el cambio de plan.',

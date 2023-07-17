@@ -22,7 +22,6 @@ import DashboardKPI from './DashboardKPI';
 import DashboardKPIMonthly from './DashboardKPIMonthly';
 const isIncremental = window.location.href.includes("incremental")
 
-
 const arrayBread = [
     { id: "view-1", name: "Dashboard" }
 ];

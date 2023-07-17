@@ -1,4 +1,4 @@
-const ENV = "TESTING";
+const ENV = "PRODUCTION";
 
 const APIS_URL = {
     DEVELOP: {
@@ -46,6 +46,24 @@ const APIS_URL = {
         CHATFLOW: 'https://chatflow.s3-web.us-east.cloud-object-storage.appdomain.cloud',
         FACEBOOKAPP: '1980305408682607',
         FACEBOOKAPPLEAD: '278694331357045',
+        APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
+        INSTAGRAMAPP: '1924971937716955',
+        CATALOGAPP: '2131127810437236',
+        CULQIKEY: 'pk_test_041501e753dcb2f9',
+        GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
+        GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
+        FACEBOOKVERSION: 'v15.0',
+        DIALOG360PARTNERID: 'nPJXndPA',
+        GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
+        NIUBIZSCRIPT: 'https://static-content.vnforapps.com/v2/js/checkout.js',
+        WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
+        USELARAIGO: true,
+    },
+    MARKETING: {
+        API: 'https://apimarketing.laraigo.com/api',
+        WS: 'https://brokermarketing.laraigo.com',
+        CHATFLOW: 'https://chatflow-marketing.s3-web.us-east.cloud-object-storage.appdomain.cloud',
+        FACEBOOKAPP: '1980305408682607',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
