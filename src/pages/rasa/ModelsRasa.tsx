@@ -38,7 +38,7 @@ export const ModelsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected, 
     const mainData = useSelector(state => state.rasaia.rasaiamodellistresult);
 
     const fetchData = () => {dispatch(modellistrasaia({model_uuid: dataModelAi?.data?.[0]?.model_uuid||""}))};
-    const selectionKey = 'name';
+    const selectionKey = 'model_name';
 
     
     useEffect(() => {
@@ -57,7 +57,7 @@ export const ModelsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected, 
     }, [trainResult,sendTrainCall]);
     useEffect(() => {
         if(mainData.success && !mainData.error){
-            setModelData(mainData.data.reduce((acc:any,x:any)=>[...acc, {name:x}],[]))
+            setModelData(mainData?.data||[])
         }
     }, [mainData]);
     
@@ -103,10 +103,31 @@ export const ModelsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected, 
         () => [
             {
                 Header: t(langKeys.name),
-                accessor: 'name',
+                accessor: 'model_name',
                 width: "auto",
                 NoFilter: true,
                 
+            },
+            {
+                Header: t(langKeys.creationDate),
+                accessor: 'createdate',
+                width: "auto",
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return convertLocalDate(row.createdate).toLocaleString()
+                }
+            },
+            {
+                Header: t(langKeys.status),
+                accessor: 'status',
+                NoFilter: true,
+                prefixTranslation: 'status_',
+                width: "auto",
+                Cell: (props: any) => {
+                    const { status } = props.cell.row.original;
+                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+                }
             },
         ],
         []
@@ -150,47 +171,6 @@ export const ModelsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected, 
             }
         }
     }, [exportResult, waitExport]);
-
-    const handleUpload = async (files: any[]) => {
-        const file = files[0];
-        if (file) {
-            const data: any = (await uploadExcel(file, undefined) as any[]).filter((d: any) => !['', null, undefined].includes(d.intent_name));
-            if (data.length > 0) {
-                let datareduced = data.reduce((acc:any,element:any)=>{
-                    let repeatedindex = acc.findIndex((item:any)=>item.name === element.intent_name)
-                    if (repeatedindex < 0){
-                        return [...acc, {
-                            name: element.intent_name,
-                            description: element.intent_description,
-                            datajson: JSON.parse(element.intent_datajson),
-                            utterance_datajson: [{
-                                name: element.utterance_name,
-                                datajson: JSON.parse(element.utterance_datajson)
-                            }]
-                        }]
-                    }else{
-                        let newacc = acc
-                        newacc[repeatedindex].utterance_datajson.push(
-                            {
-                                name: element.utterance_name,
-                                datajson: JSON.parse(element.utterance_datajson)
-                            })                         
-                        return newacc
-
-                    }
-                },[])
-                dispatch(showBackdrop(true));
-                setWaitImport(true)
-                dispatch(intentimport({
-                    utterance_datajson: JSON.stringify(datareduced.reduce((acc:any,x:any) => [...acc,...x.utterance_datajson],[])),
-                    datajson: JSON.stringify(datareduced.map((x:any) => ({ name:x.name, description:x.description, datajson:x.datajson }))),
-                }))            
-            }
-            else {
-                dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_records_valid) }));
-            }
-        }
-    }
     
     return (
         <React.Fragment>
