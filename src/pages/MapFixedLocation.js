@@ -21,11 +21,11 @@ export default function MapFixedLocation({longitude,latitude, height}) {
     googleMapsApiKey: apiUrls.APIKEY_GMAPS,
     libraries,
   });
-  const [center, setcenter] = React.useState({
+  const center= {
     lat: latitude,
     lng: longitude,
     time: new Date(),
-  });
+  };
 
   const mapRef = React.useRef();
   const onMapLoad = React.useCallback((map) => {

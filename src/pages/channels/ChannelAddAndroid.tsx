@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { ChannelAndroid } from "icons";
 import { Close, CloudUpload } from "@material-ui/icons";
 import { ColorChangeHandler } from "react-color";

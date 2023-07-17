@@ -16,7 +16,6 @@ import { resetCollectionPaginatedAux, resetMainAux } from 'store/main/actions';
 import { useDispatch } from 'react-redux';
 import { FrameProps } from './CampaignDetail';
 import { showSnackbar } from 'store/popus/actions';
-import { useSelector } from 'hooks';
 
 interface DetailProps {
     row: Dictionary | null,

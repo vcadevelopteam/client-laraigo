@@ -54,7 +54,7 @@ import {
 } from "store/popus/actions";
 import ClearIcon from "@material-ui/icons/Clear";
 import { apiUrls } from "common/constants";
-import { request_send, resetRequest } from "store/integrationmanager/actions";
+import { resetRequest } from "store/integrationmanager/actions";
 import { dictToArrayKV, extractVariables, isJson } from "common/helpers";
 import ListAltIcon from "@material-ui/icons/ListAlt";
 import GetAppIcon from '@material-ui/icons/GetApp';
@@ -467,13 +467,12 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
 
    const {
       control,
-      watch,
       register,
       handleSubmit,
       setValue,
       getValues,
       trigger,
-      formState: { errors, isValid },
+      formState: { errors },
    } = useForm<FormFields>({
       defaultValues: {
          isnew: row ? false : true,
@@ -517,7 +516,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
       fields: urlParams,
       append: urlParamsAppend,
       remove: urlParamsRemove,
-      update: urlParamsUpdate,
    } = useFieldArray({
       control,
       name: "url_params",
@@ -861,13 +859,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
       return rex.test(value);
    };
 
-   const testRequestRes = useSelector(
-      (state) => state.integrationmanager.request
-   );
-   const onClickTest = () => {
-      dispatch(request_send(getValues()));
-   };
-
    const onClickTestButton = async () => {
       const allOk = await trigger();
       if (!allOk) {
@@ -875,13 +866,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
       }
       setOpenTestModal(true);
    };
-   const [openDialogDomain, setOpenDialogDomain] = useState(false);
-
-   useEffect(() => {
-      if (testRequestRes?.data !== null) {
-         setOpenDialogDomain(true);
-      }
-   }, [testRequestRes]);
 
    const cleanRequestData = () => {
       dispatch(resetRequest());
@@ -2724,7 +2708,7 @@ const ModalTestIntegrationManager: React.FC<
       // debugger
       const cleanedParams = cleanParams(formData?.url);
 
-      const { hasMissingParams, missingParams } = compareParams(
+      const { hasMissingParams } = compareParams(
          formData?.url_params,
          cleanedParams
       );
