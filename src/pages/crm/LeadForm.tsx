@@ -687,7 +687,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     }, [advisers, t, dispatch]);
 
     useEffect(() => {
-        console.log(values)
         setExtraTriggers({
             email:values?.email || "",
             phone: values?.phone || ""
@@ -1292,7 +1291,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                                             dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) })) 
                                                         }else {
                                                             dispatch(setModalCall(true))
-                                                            console.log(getValues("phone"))
                                                             dispatch(setPhoneNumber(getValues("phone")))
                                                         }}}>
                                                         <PhoneIcon />

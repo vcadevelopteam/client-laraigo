@@ -1,5 +1,5 @@
 import { IActionCall, ICrmLeadNoteSave, IRequestBody, ITransaction } from "@types";
-import { getCommChannelLst, getMessageTemplateLst, getProductCatalogSel, getUserGroupsSel } from "common/helpers";
+import { getCommChannelLst, getMessageTemplateLst, getProductCatalogSel } from "common/helpers";
 import { CommonService } from "network";
 import actionTypes from "./actionTypes";
 

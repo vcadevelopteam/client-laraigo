@@ -112,7 +112,6 @@ const ProductCatalog: FC = () => {
     const selectionKey = 'productcatalogid';
     const query = useMemo(() => new URLSearchParams(location.search), [location]);
     const params = useQueryParams(query, { ignore: ['channelTypes'] });
-    console.log(params)
 
     const { trigger, register, setValue, getValues } = useForm({
         defaultValues: {

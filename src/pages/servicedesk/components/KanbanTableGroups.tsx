@@ -1,10 +1,8 @@
 import { FC } from "react";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
-import { useTranslation } from "react-i18next";
 import { useSelector } from "hooks";
 import { makeStyles } from "@material-ui/core/styles";
 import { IServiceDeskLead } from "@types";
-import { langKeys } from "lang/keys";
 import { DraggablesCategoriesGroup } from "./DraggablesCategoriesGroups";
 
 interface dataBackend {
@@ -47,7 +45,6 @@ export const KanbanTableGroups: FC<{
   columns: any[];
 }> = ({ dataColumn, handleDelete, handleCloseLead,columns }) => {
   const classes = useStyles();
-  const { t } = useTranslation();
   const user = useSelector((state) => state.login.validateToken.user);
   return (
     <>

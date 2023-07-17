@@ -90,7 +90,7 @@ export const ChannelAddTikTok: FC<{ setOpenWarning: (param: any) => void }> = ({
         return () => {
             unregister("channels.tiktok");
         };
-    }, [register, unregister]);
+    }, [register, unregister, t]);
 
     useEffect(() => {
         if (foreground !== "tiktok" && viewSelected !== "view1") {
@@ -103,6 +103,7 @@ export const ChannelAddTikTok: FC<{ setOpenWarning: (param: any) => void }> = ({
             dispatch(showBackdrop(false));
             setWaitSave(false);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mainResult]);
 
     const setView = (option: "view1" | "view2") => {

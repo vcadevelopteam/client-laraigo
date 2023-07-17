@@ -279,9 +279,6 @@ const DialogCancelBooking: React.FC<{
                         { name: "personmail", "text": booking?.personmail }
                     ]
                 }
-                console.log(booking)
-                console.log(data)
-                console.log(event)
                 dispatch(getCancelEventBooking(calendarBookingCancel(datat)));
                 setValue("comment", "")
                 setWaitSave(true);

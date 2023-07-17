@@ -95,7 +95,6 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                     <IconButton
                         style={{color: "#7721ad", width: 16, height: 16, padding: 0, position: "relative", right: 25, marginRight: -16, bottom: 30}}
                         onClick={() => {
-                            console.log(fields.length)
                             let tempfields = fields;
                             let tempfield = fields[index]
                             tempfields[index] = tempfields[index + 1]
@@ -110,7 +109,6 @@ const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title, form, index
                     <IconButton
                         style={{color: "#7721ad", width: 16, height: 16, padding: 0, right: 9, marginRight: -16, bottom: 30}}
                         onClick={() => {
-                            console.log(fields.length)
                             let tempfields = fields;
                             let tempfield = fields[index]
                             tempfields[index] = tempfields[index - 1]

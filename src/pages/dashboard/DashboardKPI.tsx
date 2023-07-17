@@ -343,8 +343,7 @@ const DashboardKPI: FC = () => {
         const selectedDays = filteredDays.split(",")
         const cantdays = selectedDays.length
         const dataDays = remultiaux?.data?.[1]?.data?.filter(x=>selectedDays.includes(String(x.day)))||[]
-        console.log(remultiaux)
-        //tme: timetoseconds(dataDays.filter(y=>String(y.day)===x)?.[0]?.tme_avg || "00:00:00")
+        
         function compareFn(a:any,b:any){
             let na = Number(a.date.split(" ")[1])
             let nb = Number(b.date.split(" ")[1])
