@@ -339,15 +339,27 @@ export const getCorpSel = (id: number): IRequestBody => ({
         all: id === 0,
     }
 });
-export const getOrderSel = (): IRequestBody => ({
+export const getOrderSel = (product?:string, category?:string, type?: string): IRequestBody => ({
     method: "UFN_ORDER_SEL",
     key: "UFN_ORDER_SEL",
-    parameters: {}
+    parameters: {
+        product: product ?? "",
+        category: category ?? "",
+        type: type ?? "",
+    }
 });
 export const getOrderLineSel = (orderid: number): IRequestBody => ({
     method: "UFN_ORDERLINE_SEL",
     key: "UFN_ORDERLINE_SEL",
     parameters: { orderid }
+});
+export const getOrderHistory = (orderid: number): IRequestBody => ({
+    method: "UFN_ORDERHISTORY_SEL",
+    key: "UFN_ORDERHISTORY_SEL",
+    parameters: { 
+        orderid,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
 });
 export const getOrgSel = (id: number, corpid?: number): IRequestBody => ({
     method: "UFN_ORG_SEL",
@@ -2418,6 +2430,14 @@ export const updateColumnsLeads = ({ cards_startingcolumn, cards_finalcolumn, st
         leadid
     }
 });
+export const updateOrderStatus = ({ orderid, orderstatus }: Dictionary): IRequestBody => ({
+    method: 'UFN_CHANGE_ORDERSTATUS',
+    key: "UFN_CHANGE_ORDERSTATUS",
+    parameters: {
+        orderid,
+        orderstatus,
+    }
+});
 
 export const updateColumnsOrder = ({ columns_uuid }: Dictionary): IRequestBody => ({
     method: 'UFN_UPDATE_COLUMNS',
@@ -3973,4 +3993,9 @@ export const metaBusinessSel = ({ corpid, orgid, id }: Dictionary) => ({
     method: "UFN_METABUSINESS_SEL",
     key: "UFN_METABUSINESS_SEL",
     parameters: { corpid, orgid, id },
+});
+export const productOrderList = () => ({
+    method: "UFN_ORDERLINE_PRODUCT_LST",
+    key: "UFN_ORDERLINE_PRODUCT_LST",
+    parameters: { },
 });
