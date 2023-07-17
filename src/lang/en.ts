@@ -533,6 +533,7 @@ const translation: LangKeys = {
   type_org_34: 'Lodging and food services',
   type_org_35: 'Information and communications',
   type_org_36: 'Financial and insurance activities',
+  dashboardkpimonthly: "Dashboard KPI monthly",
   type_org_37: 'Real estate activities',
   type_org_38: 'Professional, scientific and technical activities',
   type_org_39: 'Administrative and support service activities',
@@ -541,6 +542,7 @@ const translation: LangKeys = {
   type_org_42: 'Human health care and social assistance activities',
   type_org_43: 'Artistic, entertainment and recreation activities',
   type_org_44: 'Association activitie',
+  propertybuttonslogic: "Allows you to enable or disable the past or previous buttons in the customer's conversation, so that the customer can continue on that path or not, only applies to WhatsApp channels (360 Dialog)",
   dashboardkpi: "Dashboard KPI",
   atleasthafanhour: "The duration must have a value greater than 0",
 
@@ -594,6 +596,15 @@ const translation: LangKeys = {
   iaconfiguration: "AI Configuration",
   iaconfigurationdescription: "Configure how and where to use your artificial intelligence services",
   trainingwithai: "Training with AI",
+  aitraining: "Training AI",
+  aitrainingdescription: "Train your AI service",
+  sinonimsdescription: "Train synonyms referring to your created entity.",
+  modeldescription: "Check the models that have previously been trained in RASA",
+  insightsdescription: "Assess the degree of confidence of the training of your intentions",
+  testmodel: "Test your model",
+  testmodeldescription: "Test your model with the created intents and entities.",
+  intentionsandentities: "Intentions and Entities",
+  intentionsandentitiesdescription: "Train your model by providing examples of intentions and entities.",
   trainingwithaidescription: "Train your artificial intelligence service",
   training: "Training",
   intentionsdescription: "The intention is named and associated with the question the customer asks.",
@@ -2444,6 +2455,7 @@ const translation: LangKeys = {
   report_sentmessages_CHATFLOW: 'Sent from flow',
   report_sentmessages_BOOKING: 'Sent from booking',
 
+  errorRasaEntity: 'The fields name and value are obligatory.',
   report_sentmessages_name: 'Shipping reason',
   report_sentmessages_shippingdate: 'Shipping Date',
   report_sentmessages_from: 'Sender',
@@ -2455,6 +2467,7 @@ const translation: LangKeys = {
   prepared: "Prepared",
   dispatched: "Dispatched",
   delivered: "Delivered",
+  sinonim: "Sinonim",
 
   report_conversationwhatsapp: 'Whatsapp conversations',
 
@@ -5278,6 +5291,14 @@ const translation: LangKeys = {
   subscription_noselectedchannel: 'You must select at least one channel',
   ticket_originalpublishdate: 'Original publication date',
   ticket_followercount: 'Follower amount',
+  openpay_message01: 'Remember that some cards have a security code or Dynamic CVV, check it from your bank\'s App.',
+  openpay_message02: 'Name of Owner',
+  openpay_message03: 'Expiration Month (MM)',
+  openpay_message04: 'Card Number',
+  openpay_message05: 'Security Code',
+  openpay_message06: 'Pay',
+  openpay_message07: 'Go Back',
+  openpay_message08: 'Expiration Year (YY)',
 };
 
 const enResource: ResourceLanguage = {

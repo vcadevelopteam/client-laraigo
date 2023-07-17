@@ -10,7 +10,7 @@ import { useHistory, useLocation } from "react-router";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
-import { DateRangePicker, DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "components";
+import { DateRangePicker, DialogZyx3Opt, FieldMultiSelect, FieldSelect } from "components";
 import { Search as SearchIcon, ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, Sms as SmsIcon, Mail as MailIcon, Add as AddIcon } from '@material-ui/icons';
 import { Button, IconButton, Tooltip } from "@material-ui/core";
 import { Dictionary, IDomain, IFetchData, IServiceDeskLead } from "@types";
@@ -193,7 +193,7 @@ const ServiceDesk: FC = () => {
         const columns = (mainMulti.data[0] && mainMulti.data[0].success ? mainMulti.data[0].data : []) as dataBackend[]
         const leads = (mainMulti.data[1] && mainMulti.data[1].success ? mainMulti.data[1].data : []) as IServiceDeskLead[]
         let columngroup = mainMulti.data.filter(x=>x.key==="UFN_DOMAIN_LST_VALORES_GRUPOSSERVICEDESK")?.[0]?.data||[]
-        columngroup.unshift({domainid: 0, domainvalue:"", domaindesc:""})
+        columngroup.unshift({domainid: 0, domainvalue:"", domaindesc:"Sin Asignar"})
         let unorderedcolumngroup= columngroup.reduce((acc:any,x)=>[...acc,{...x,items:[]}],[])
 
         let unordeneddatacolumns = columns.map((column) => {
@@ -306,11 +306,6 @@ const ServiceDesk: FC = () => {
   const [personsSelected, setPersonsSelected] = useState<Dictionary[]>([]);
   const [gridModal, setGridModal] = useState<IModalProps>({ name: '', open: false, payload: null });
 
-  const setAllParameters = useCallback((prop: typeof allParameters) => {
-    if (!user) return;
-    setAllParametersPrivate(prop);
-  }, [user]);
-
   const CustomCellRender = ({column, row}: any) => {
     switch (column.id) {
       case 'status':
@@ -401,13 +396,10 @@ const ServiceDesk: FC = () => {
       {
         Header: t(langKeys.request),
         accessor: 'sd_request',
-        isComponent: true,
-        Cell: cell
       },
       {
         Header: t(langKeys.channel),
         accessor: 'communicationchannel',
-        isComponent: true,
         Cell: cell
       },
       {
@@ -415,61 +407,52 @@ const ServiceDesk: FC = () => {
         accessor: 'changedate',
         type: 'date',
         sortType: 'datetime',
-        isComponent: true,
+        NoFilter: true,
         Cell: cell,
       },
       {
         Header: t(langKeys.type),
         accessor: 'type',
-        isComponent: true,
         Cell: cell
       },
       {
         Header: t(langKeys.group),
         accessor: 'leadgroups',
-        isComponent: true,
         Cell: cell
       },
       {
         Header: t(langKeys.phase),
         accessor: 'column_description',
-        isComponent: true,
         Cell: cell
       },
       {
         Header: t(langKeys.description),
         accessor: 'description',
-        isComponent: true,
         Cell: cell
       },
       {
         Header: t(langKeys.ticket),
         accessor: 'ticketnum',
-        isComponent: true,
         Cell: cell
       },
       {
         Header: t(langKeys.user),
         accessor: 'displayname',
-        isComponent: true,
-        NoFilter: true,
         Cell: cell
       },
       {
         Header: t(langKeys.tags),
         accessor: 'tags',
-        isComponent: true,
         Cell: cell
       },
       {
         Header: t(langKeys.priority),
         accessor: 'priority',
-        isComponent: true,
+        Cell: cell
       },
       {
         Header: t(langKeys.business),
         accessor: 'company',
-        isComponent: true,
         Cell: cell
       },
     ],
@@ -505,7 +488,7 @@ const ServiceDesk: FC = () => {
 
   const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
     const columnsExport = [
-      ...columns.filter(x => !x.isComponent && x.accessor !== 'comments').map(x => ({
+      ...columns.filter(x => x.accessor !== 'comments').map(x => ({
         key: x.accessor,
         alias: x.Header,
       })),
@@ -561,86 +544,6 @@ const ServiceDesk: FC = () => {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mainMulti.data[6]]);
-
-  const filtersElement = useMemo(() => (
-    <>      
-      <FieldSelect
-        variant="outlined"
-        label={t(langKeys.business)}
-        className={classes.filterComponent}//cambiar
-        valueDefault={allParameters.company}
-        onChange={(value) => {setAllParameters({...allParameters, company: value?.domainvalue||""})}}
-        data={mainMulti.data[8]?.data || []}
-        optionDesc="domaindesc"
-        optionValue="domainvalue"
-        disabled={user?.roledesc.includes("VISOR")}
-        loading={mainMulti.loading}
-      />
-      <FieldSelect
-        variant="outlined"
-        label={t(langKeys.phase)}
-        className={classes.filterComponent}//cambiar
-        valueDefault={allParameters.phase}
-        onChange={(value) => {setAllParameters({...allParameters, phase: value?.column_uuid||""})}}
-        data={ mainMulti?.data?.[0]?.data||[]}
-        optionDesc="description"
-        optionValue="column_uuid"
-        disabled={user?.roledesc.includes("VISOR")}
-        loading={mainMulti.loading}
-      />
-      <FieldMultiSelect
-        variant="outlined"
-        label={t(langKeys.group)}
-        className={classes.filterComponent}
-        valueDefault={allParameters.groups}
-        onChange={(value) => {setAllParameters({...allParameters, groups: value?.map((o: Dictionary) => o['domainvalue']).join(',')})}}
-        data={mainMulti.data[4]?.data || []}
-        loading={mainMulti.loading}
-        optionDesc="domaindesc"
-        optionValue="domainvalue"
-      />
-      <FieldMultiSelect
-        variant="outlined"
-        label={t(langKeys.product)}
-        className={classes.filterComponent}
-        valueDefault={boardFilter.products}
-        onChange={(v) => {
-          const products = v?.map((o: IDomain) => o.domainvalue).join(',') || '';
-          setAllParameters({...allParameters, leadproduct: products})
-          setBoardFilter(prev => ({ ...prev, products }));
-        }}
-        data={mainMulti.data[5]?.data || []}
-        loading={mainMulti.loading}
-        optionDesc="domaindesc"
-        optionValue="domainvalue"
-      />
-      <FieldMultiSelect
-        variant="outlined"
-        label={t(langKeys.tag, { count: 2 })}
-        className={classes.filterComponent}
-        valueDefault={boardFilter.tags}
-        onChange={(v) => {
-          const tags = v?.map((o: any) => o.tags).join(',') || '';
-          setBoardFilter(prev => ({ ...prev, tags }));
-        }}
-        data={tags}
-        loading={mainMulti.loading}
-        optionDesc="tags"
-        optionValue="tags"
-      />
-      <FieldEdit
-        variant="outlined"
-        label={t(langKeys.description)}
-        className={classes.filterComponent}
-        valueDefault={boardFilter.description}
-        size="small"
-        onChange={(v) => {
-          setBoardFilter(prev => ({ ...prev, description: v }));
-        }}
-      />
-    </>
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  ), [user, allParameters, classes, mainMulti, t]);
 
   const goToAddLead = useCallback(() => {
     history.push(paths.SERVICE_DESK_ADD_LEAD);
@@ -970,14 +873,12 @@ const ServiceDesk: FC = () => {
               fetchData={fetchGridData}
               autotrigger={true}
               autoRefresh={{value: autoRefresh, callback: (value) => setAutoRefresh(value) }}
-              ButtonsElement={() => (<div></div>)}
               exportPersonalized={triggerExportData}
               useSelection={true}
               selectionFilter={{ key: 'status', value: 'ACTIVO' }}
               selectionKey={selectionKey}
               setSelectedRows={setSelectedRows}
               onClickRow={onClickRow}
-              FiltersElement={filtersElement}
               onFilterChange={f => {
                 const params = buildQueryFilters(f, location.search);
                 params.set('contact', String(allParameters.contact));

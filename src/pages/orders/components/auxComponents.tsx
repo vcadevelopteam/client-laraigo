@@ -7,6 +7,7 @@ import { langKeys } from 'lang/keys';
 import { Trans, useTranslation } from 'react-i18next';
 import { Dictionary } from '@types';
 import { FieldEdit, FieldSelect } from 'components';
+import { useSelector } from 'hooks';
 
 const columnWidth = 275;
 const columnMinHeight = 500;
@@ -104,12 +105,14 @@ export const DraggableOrderCardContent: FC<OrderCardContentProps> = ({ order, sn
     const { t } = useTranslation();
     return (
         <Box {...boxProps} style={{ position: 'relative' }} pb={1}>
-            <div className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)} onClick={()=>onClick(order)}>
+            <div className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)} onClick={() => onClick(order)}>
                 <span className={classes.title}>ID: {order.orderid}</span>
                 <span className={classes.info}>{t(langKeys.amount)}: {order.currency} {Number(order.amount).toLocaleString('en-US')}</span>
                 <span className={classes.info}>{t(langKeys.client)}: {order.name}</span>
                 <span className={classes.info}>{t(langKeys.phone)}: {order.phone}</span>
                 <span className={classes.info}>Items: {order.num_items}</span>
+                <span className={classes.info} style={{ color: "#7ca772" }}>Tipo entrega: {order.var_tipoentrega}</span>
+                <span className={classes.info}>Fecha programada entrega: {order.var_fechaentrega} {order.var_horaentrega}</span>
             </div>
         </Box>
     );
@@ -123,6 +126,8 @@ interface OrderColumnProps extends Omit<BoxProps, 'title'> {
     onAddCard?: () => void;
     provided?: DraggableProvided;
     columnid: string;
+    total_revenue: number;
+    
 }
 
 const useLeadColumnStyles = makeStyles(theme => ({
@@ -170,15 +175,20 @@ export const DraggableOrderColumn: FC<OrderColumnProps> = ({
     provided,
     columnid,
     titleOnChange,
+    total_revenue,
     onAddCard,
     ...boxProps
 }) => {
     const classes = useLeadColumnStyles();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    const user = useSelector(state => state.login.validateToken.user);
 
     return (
         <Box {...boxProps}>
             <div className={classes.root} {...(provided?.dragHandleProps || {})}>
+                <div style={{display:"flex", justifyContent: "space-between", width: "100%"}}>
+                    <span className={classes.currency}>{user?.currencysymbol||"S/."} {total_revenue?.toLocaleString('en-US') || 0}</span>
+                </div>
                 {children}
             </div>
         </Box>
@@ -338,37 +348,37 @@ const ColumnTemplate: FC<ColumnTemplateProps> = ({ onSubmit }) => {
     return (
         <div className={classes.root}>
             <div className={classes.titleSection}>
-                <div  style={{padding: "10px 0"}}>
+                <div style={{ padding: "10px 0" }}>
                     <FieldEdit
                         label={t(langKeys.columntitle)}
                         valueDefault={title}
-                        onChange={value =>{setdisabled(value.trim().length === 0 || !type);setTitle(value)}}
+                        onChange={value => { setdisabled(value.trim().length === 0 || !type); setTitle(value) }}
                     />
                 </div>
-                
-                <div  style={{padding: "10px 0"}}>
+
+                <div style={{ padding: "10px 0" }}>
                     <FieldSelect
                         label={`${t(langKeys.type)}`}
                         size="small"
                         valueDefault={type}
-                        onChange={e =>{ setdisabled(!(e?.type) || title.trim().length === 0); settype(e?.type||"")}}
+                        onChange={e => { setdisabled(!(e?.type) || title.trim().length === 0); settype(e?.type || "") }}
                         data={[
-                            {type: "QUALIFIED", desc: t(langKeys.qualified)},
-                            {type: "PROPOSITION", desc: t(langKeys.proposition)},
-                            {type: "WON", desc: t(langKeys.won)},
+                            { type: "QUALIFIED", desc: t(langKeys.qualified) },
+                            { type: "PROPOSITION", desc: t(langKeys.proposition) },
+                            { type: "WON", desc: t(langKeys.won) },
                         ]}
                         optionDesc="desc"
                         optionValue="type"
                     />
                 </div>
-                
-                <div  style={{padding: "10px 0", width: "100%"}}>
+
+                <div style={{ padding: "10px 0", width: "100%" }}>
                     <Button
                         variant="contained"
                         color="primary"
                         size="small"
                         className={classes.btn}
-                        onClick={() => onSubmit({title: title, type:type})}
+                        onClick={() => onSubmit({ title: title, type: type })}
                         disabled={disabled}
                     >
                         <Trans i18nKey={langKeys.add} />

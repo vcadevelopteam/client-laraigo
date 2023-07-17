@@ -339,12 +339,13 @@ export const getCorpSel = (id: number): IRequestBody => ({
         all: id === 0,
     }
 });
-export const getOrderSel = (product?:string, category?:string): IRequestBody => ({
+export const getOrderSel = (product?:string, category?:string, type?: string): IRequestBody => ({
     method: "UFN_ORDER_SEL",
     key: "UFN_ORDER_SEL",
     parameters: {
         product: product ?? "",
         category: category ?? "",
+        type: type ?? "",
     }
 });
 export const getOrderLineSel = (orderid: number): IRequestBody => ({
@@ -1754,11 +1755,27 @@ export const dashboardKPISummarySel = ({ date, origin, usergroup, supervisorid, 
         offset: (new Date().getTimezoneOffset() / 60) * -1,userid
     }
 });
+export const dashboardKPIMonthSummarySel = ({ enddate, origin, usergroup, supervisorid, userid }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_KPI_SUMMARY_BY_MONTH',
+    key: "UFN_DASHBOARD_KPI_SUMMARY_BY_MONTH",
+    parameters: {
+        date:enddate, origin, usergroup, supervisorid,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,userid
+    }
+});
 export const dashboardKPISummaryGraphSel = ({ date, origin, usergroup, supervisorid, userid }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_KPI_SUMMARY_GRAPH_SEL',
     key: "UFN_DASHBOARD_KPI_SUMMARY_GRAPH_SEL",
     parameters: {
         date, origin, usergroup, supervisorid,
+        offset: (new Date().getTimezoneOffset() / 60) * -1, userid
+    }
+});
+export const dashboardKPIMonthSummaryGraphSel = ({ startdate, enddate, origin, usergroup, supervisorid, userid }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_KPI_SUMMARY_GRAPH_BY_MONTH',
+    key: "UFN_DASHBOARD_KPI_SUMMARY_GRAPH_BY_MONTH",
+    parameters: {
+        startdate,enddate, origin, usergroup, supervisorid,
         offset: (new Date().getTimezoneOffset() / 60) * -1, userid
     }
 });
@@ -2352,7 +2369,7 @@ export const getColumnsSDSel = (id: number, lost: boolean = false): IRequestBody
     parameters: {
         id: id,
         all: true,
-        lost
+        lost:false
     }
 })
 
@@ -2382,8 +2399,16 @@ export const getAutomatizationRulesSel = ({ id, communicationchannelid }: Dictio
         all: id === 0
     }
 })
+export const getOrderColumns = ({ id = 0 }: Dictionary): IRequestBody => ({
+    method: "UFN_COLUMN_ORDER_SEL",
+    key: "UFN_COLUMN_ORDER_SEL",
+    parameters: {
+        id,
+        all: id === 0
+    }
+})
 
-export const insAutomatizationRules = ({ id, description, status, type, columnid, communicationchannelid, messagetemplateid, messagetemplateparameters, shippingtype, xdays, schedule, tags, products, operation }: Dictionary): IRequestBody => ({
+export const insAutomatizationRules = ({ id, description, status, type, columnid,order,orderstatus, communicationchannelid, messagetemplateid, messagetemplateparameters, shippingtype, xdays, schedule, tags, products, operation }: Dictionary): IRequestBody => ({
     method: 'UFN_LEADAUTOMATIZATIONRULES_INS',
     key: "UFN_LEADAUTOMATIZATIONRULES_INS",
     parameters: {
@@ -2392,12 +2417,14 @@ export const insAutomatizationRules = ({ id, description, status, type, columnid
         status,
         type,
         columnid,
+        order,
         communicationchannelid,
         messagetemplateid,
         messagetemplateparameters,
         shippingtype,
         xdays,
         schedule,
+        orderstatus,
         tags,
         products,
         operation,
@@ -2588,7 +2615,7 @@ export const getPaginatedSDLead = ({ skip, take, filters, sorts, startdate, endd
         methodCollection: "UFN_LEADGRID_SD_SEL",
         methodCount: "UFN_LEADGRID_SD_TOTALRECORDS",
         parameters: {
-            origin: "lead",
+            origin: "servicedesk",
             startdate,
             enddate,
             skip,
@@ -3998,5 +4025,30 @@ export const metaBusinessSel = ({ corpid, orgid, id }: Dictionary) => ({
 export const productOrderList = () => ({
     method: "UFN_ORDERLINE_PRODUCT_LST",
     key: "UFN_ORDERLINE_PRODUCT_LST",
+    parameters: { },
+});
+export const rasaIntentSel = (rasaid: number) => ({
+    method: "UFN_RASA_INTENT_SEL",
+    key: "UFN_RASA_INTENT_SEL",
+    parameters: {  rasaid },
+});
+export const rasaIntentIns = ({id, rasaid, intent_name, intent_description, intent_examples, entities, entity_examples, entity_values, status, operation}:Dictionary) => ({
+    method: "UFN_RASA_INTENT_INS",
+    key: "UFN_RASA_INTENT_INS",
+    parameters: {  id, rasaid, intent_name, intent_description, intent_examples: JSON.stringify(intent_examples), entities, entity_examples, entity_values, status, operation },
+});
+export const rasaSynonimSel = (rasaid: number) => ({
+    method: "UFN_RASA_SYNONYM_SEL",
+    key: "UFN_RASA_SYNONYM_SEL",
+    parameters: {  rasaid },
+});
+export const rasaSynonimIns = ({id, rasaid, description, examples,values,status,operation}:Dictionary) => ({
+    method: "UFN_RASA_SYNONYM_INS",
+    key: "UFN_RASA_SYNONYM_INS",
+    parameters: {  id, rasaid, description, examples,values,status,operation },
+});
+export const rasaModelSel = () => ({
+    method: "UFN_RASA_MODEL_SEL",
+    key: "UFN_RASA_MODEL_SEL",
     parameters: { },
 });
