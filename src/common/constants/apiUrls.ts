@@ -7,6 +7,7 @@ const APIS_URL = {
         WS: 'https://socket.laraigo.com',
         CHATFLOW: 'https://zyxmelinux2.zyxmeapp.com/zyxme/chatflow',
         FACEBOOKAPP: '235008923608113',
+        FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
         INSTAGRAMAPP: '467230660781510',
         CATALOGAPP: '2131127810437236',
@@ -25,6 +26,7 @@ const APIS_URL = {
         WS: 'https://testsocket.laraigo.com',
         CHATFLOW: 'https://zyxmelinux2.zyxmeapp.com/zyxmetest/chatflow',
         FACEBOOKAPP: '1094526090706564',
+        FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
         INSTAGRAMAPP: '1872023336244866',
         CATALOGAPP: '2131127810437236',
@@ -43,6 +45,7 @@ const APIS_URL = {
         WS: 'https://broker.laraigo.com',
         CHATFLOW: 'https://chatflow.s3-web.us-east.cloud-object-storage.appdomain.cloud',
         FACEBOOKAPP: '1980305408682607',
+        FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
@@ -61,6 +64,7 @@ const APIS_URL = {
         WS: 'https://socket.laraigo.com',
         CHATFLOW: 'https://chatflow.s3-web.us-east.cloud-object-storage.appdomain.cloud',
         FACEBOOKAPP: '1980305408682607',
+        FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
@@ -79,6 +83,7 @@ const APIS_URL = {
         WS: 'https://socket.laraigo.com',
         CHATFLOW: 'https://chatflow.s3-web.us-east.cloud-object-storage.appdomain.cloud',
         FACEBOOKAPP: '1980305408682607',
+        FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
@@ -97,6 +102,7 @@ const APIS_URL = {
         WS: 'https://clarobroker.laraigo.com',
         CHATFLOW: 'https://chatflow-claro.s3-web.us-east.cloud-object-storage.appdomain.cloud',
         FACEBOOKAPP: '1980305408682607',
+        FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyCDfPhg86YSt25QynLajl7GA5Ux6YEphoA",
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
@@ -115,6 +121,7 @@ const APIS_URL = {
         WS: 'https://clarobroker.laraigo.com',
         CHATFLOW: 'https://chatflow-claro.s3-web.us-east.cloud-object-storage.appdomain.cloud',
         FACEBOOKAPP: '1980305408682607',
+        FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
@@ -131,6 +138,7 @@ const APIS_URL = {
         WS: 'https://cloudbroker.laraigo.com',
         CHATFLOW: 'https://zyxmelinux2.zyxmeapp.com/zyxmedemo/chatflowcloud',
         FACEBOOKAPP: '235008923608113',
+        FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
         INSTAGRAMAPP: '467230660781510',
         CATALOGAPP: '2131127810437236',
@@ -149,6 +157,7 @@ const APIS_URL = {
         WS: 'https://demosocket.laraigo.com',
         CHATFLOW: 'https://zyxmelinux2.zyxmeapp.com/zyxmedemo/chatflow',
         FACEBOOKAPP: '235008923608113',
+        FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
         INSTAGRAMAPP: '467230660781510',
         CATALOGAPP: '2131127810437236',
@@ -169,6 +178,7 @@ const APIS_URL = {
         WS: 'https://socket.laraigo.com',
         CHATFLOW: 'https://zyxmelinux2.zyxmeapp.com/zyxme/chatflow',
         FACEBOOKAPP: '235008923608113',
+        FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
         INSTAGRAMAPP: '467230660781510',
         CATALOGAPP: '2131127810437236',
@@ -188,6 +198,7 @@ const BASE_URL = APIS_URL[ENV].API
 const WS_URL = APIS_URL[ENV].WS
 const CHATFLOW_URL = APIS_URL[ENV].CHATFLOW
 const FACEBOOKAPP = APIS_URL[ENV].FACEBOOKAPP
+const FACEBOOKAPPLEAD = APIS_URL[ENV].FACEBOOKAPPLEAD
 const INSTAGRAMAPP = APIS_URL[ENV].INSTAGRAMAPP
 const CATALOGAPP = APIS_URL[ENV].CATALOGAPP
 const CULQIKEY = APIS_URL[ENV].CULQIKEY
@@ -204,6 +215,7 @@ const USELARAIGO = APIS_URL[ENV].USELARAIGO
 export const apiUrls = {
     WS_URL,
     FACEBOOKAPP,
+    FACEBOOKAPPLEAD,
     INSTAGRAMAPP,
     CATALOGAPP,
     CULQIKEY,
