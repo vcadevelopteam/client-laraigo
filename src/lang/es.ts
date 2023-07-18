@@ -572,6 +572,7 @@ const translation: LangKeys = {
   group: 'Grupo',
   group_plural: 'Grupos',
   hasactionplan: 'Tiene Plan de Acción',
+  waitinginteractions: "Esperando {{time}} segundos para enviar los siguientes mensajes",
   operationalpush: "Operativo push",
   action: 'Acción',
   useralreadyregistered: "El usuario ya se encuentra registrado",
