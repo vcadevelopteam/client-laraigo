@@ -448,6 +448,17 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
         setHeight(((ref as any)?.current.contentWindow.document.body.scrollHeight + 20) + "px");
     };
 
+    const checkUrl = (url: string) => {
+        return (RegExp(/\.(jpeg|jpg|gif|png)$/).exec(url) != null);
+    }
+
+    const checkFile = (url: string) => {
+        let newUrl = new URL(url)?.pathname || '';
+        let newUrlSplit = newUrl.split('/') || [];
+        let newUrlSplitPop = newUrlSplit.pop() ?? '';
+        return newUrlSplitPop.indexOf('.') > 0;
+    }
+
     if (!interactiontext.trim() || interactiontype === "typing")
         return null;
     if (interactiontype === "text")
@@ -722,13 +733,15 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     } else if (interactiontype === "post-image") {
         return (
             <div title={convertLocalDate(createdate).toLocaleString()} className={classes.interactionImage} style={{ marginLeft: 'auto', marginRight: 'auto' }}>
-                <img
+                {(checkUrl(interactiontext) && checkFile(interactiontext)) && <img
                     className={classes.imageCard}
                     src={interactiontext} alt=""
                     onClick={() => {
                         dispatch(manageLightBox({ visible: true, images: listImage!!, index: indexImage!! }))
                     }}
-                />
+                />}
+                {(!checkUrl(interactiontext) && checkFile(interactiontext)) && <video className={classes.imageCard} width="200" controls src={interactiontext} />}
+                {(!checkFile) && <>{interactiontext}</>}
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} background={true} />
             </div>
         );

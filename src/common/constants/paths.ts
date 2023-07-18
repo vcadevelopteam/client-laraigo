@@ -51,6 +51,10 @@ const paths = {
         path: "/paymentorderniubizstatus/:corpid/:orgid/:ordercode",
         resolve: (corpid: number, orgid: number, ordercode: string) => `/paymentorderniubizstatus/${corpid}/${orgid}/${ordercode}`,
     },
+    OPENPAY_PAYMENTORDER: {
+        path: "/paymentorderopenpay/:corpid/:orgid/:ordercode",
+        resolve: (corpid: number, orgid: number, ordercode: string) => `/paymentorderopenpay/${corpid}/${orgid}/${ordercode}`,
+    },
     LOCATION: {
         path: "/getLocations/:token",
         resolve: (token: string) => `/getLocations/${token}`,
@@ -66,6 +70,10 @@ const paths = {
     CHANNELS_ADD_FACEBOOK: {
         path: '/configuration/channels/:id/add/facebook',
         resolve: (channelId: string | number) => `/configuration/channels/${channelId}/add/facebook`,
+    },
+    CHANNELS_ADD_FACEBOOK_LEAD: {
+        path: '/configuration/channels/:id/add/facebooklead',
+        resolve: (channelId: string | number) => `/configuration/channels/${channelId}/add/facebooklead`,
     },
     CHANNELS_ADD_FACEBOOKWORKPLACE: {
         path: '/channels/:id/add/facebookworkplace',

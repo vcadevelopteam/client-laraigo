@@ -231,7 +231,6 @@ const DashboardDisconnections: FC = () => {
             let multiData = mainResult.multiData.data;
             setdataasesors(multiData[0] && multiData[0].success ? multiData[0].data : []);
             setdisconnectiontypes(multiData[1]?.data?.reduce((acc:any,x)=>[...acc,x.domainvalue],[]))
-            console.log(user?.groups)
             let usergroups = user?.groups?.split(',')
             let unfilteredGroups=multiData[2] && multiData[2].success ? multiData[2].data : []
             if(!!usergroups){
