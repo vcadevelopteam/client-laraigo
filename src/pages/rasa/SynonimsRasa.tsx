@@ -90,8 +90,8 @@ const DetailSynonims: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
         if (waitSave) {
             if (!operationRes.loading && !operationRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
-                fetchData && fetchData();
                 dispatch(showBackdrop(false));
+                fetchData && fetchData();
                 setViewSelected("view-1")
             } else if (operationRes.error) {
                 const errormessage = t(operationRes.code || "error_unexpected_error", { module: t(langKeys.whitelist).toLocaleLowerCase() })
@@ -508,7 +508,7 @@ export const SynonimsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected
                                         type="button"
                                         color="primary"
                                         disabled={dataModelAi.loading|| trainResult.loading}
-                                        style={{ backgroundColor: "#7721ad" }}
+                                        style={{ backgroundColor: (dataModelAi.loading || trainResult.loading)?"#dbdbdc":"#7721ad" }}
                                         onClick={()=>{dispatch(trainrasaia({model_uuid: dataModelAi?.data?.[0]?.model_uuid||""}));setSendTrainCall(true);}}
                                     >{t(langKeys.train)}</Button>
                                 </div>

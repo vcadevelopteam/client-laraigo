@@ -674,7 +674,7 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
                                         type="button"
                                         color="primary"
                                         disabled={dataModelAi.loading || mainResult.mainData.data.some(x=>x.model_trained) || trainResult.loading}
-                                        style={{ backgroundColor: "#7721ad" }}
+                                        style={{ backgroundColor: (dataModelAi.loading || mainResult.mainData.data.some(x=>x.model_trained) || trainResult.loading)?"#dbdbdc":"#7721ad" }}
                                         onClick={()=>{dispatch(trainrasaia({model_uuid: dataModelAi?.data?.[0]?.model_uuid||""}));setSendTrainCall(true);}}
                                     >{t(langKeys.train)}</Button>
                                 </div>

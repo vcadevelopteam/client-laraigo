@@ -9,8 +9,7 @@ import TableZyx from 'components/fields/table-simple';
 import ClearIcon from '@material-ui/icons/Clear';
 import { useDispatch } from 'react-redux';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import { convertLocalDate, uploadExcel } from 'common/helpers';
-import { intentimport } from 'store/witia/actions';
+import { convertLocalDate } from 'common/helpers';
 import { resetAllMain } from 'store/main/actions'
 import { downloadrasaia, modellistrasaia, trainrasaia } from 'store/rasaia/actions';
 
@@ -207,7 +206,7 @@ export const ModelsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected, 
                                     type="button"
                                     color="primary"
                                     disabled={dataModelAi.loading|| trainResult.loading}
-                                    style={{ backgroundColor: "#7721ad" }}
+                                    style={{ backgroundColor: (dataModelAi.loading || trainResult.loading)?"#dbdbdc":"#7721ad" }}
                                     onClick={()=>{dispatch(trainrasaia({model_uuid: dataModelAi?.data?.[0]?.model_uuid||""}));setSendTrainCall(true);}}
                                 >{t(langKeys.train)}</Button>
                             </div>
