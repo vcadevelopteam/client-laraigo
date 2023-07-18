@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { ChannelWhatsApp01 } from "icons";
 import { Dictionary } from "@types";
 import { FC, Fragment, useEffect, useState } from "react";

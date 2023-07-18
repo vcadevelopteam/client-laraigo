@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { apiUrls } from "common/constants";
 import { ChannelFacebook } from "icons";
 import { ColorInput, FieldEdit, FieldSelect } from "components";

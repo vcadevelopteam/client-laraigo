@@ -244,7 +244,6 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                             valueDefault={orderVariable}
                             onChange={(value) => {
                                 setOrderVariable(value?.alt || "")
-                                console.log(value?.alt||"")
                                 setValue('order', value?.value || false)
                                 setValue('orderstatus', "")
                                 setValue('columnname', "")

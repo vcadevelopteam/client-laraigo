@@ -295,13 +295,13 @@ const ServiceDesk: FC = () => {
   const [waitExport, setWaitExport] = useState(false);
   const voxiConnection = useSelector(state => state.voximplant.connection);
   const callOnLine = useSelector(state => state.voximplant.callOnLine);
-  const [allParameters, setAllParametersPrivate] = useState<{ company: string, groups: string, contact: string, leadproduct:string, phase: string }>({
+  const allParameters = {
     company: user?.roledesc.includes("VISOR") ? (user?.companyuser||"") : (otherParams?.company||""),
     groups: otherParams?.groups||"",
     leadproduct: otherParams?.products||"",
     contact: otherParams.contact,
     phase: otherParams?.phase||""
-  });
+  };
   const [selectedRows, setSelectedRows] = useState<Dictionary>({});
   const [personsSelected, setPersonsSelected] = useState<Dictionary[]>([]);
   const [gridModal, setGridModal] = useState<IModalProps>({ name: '', open: false, payload: null });

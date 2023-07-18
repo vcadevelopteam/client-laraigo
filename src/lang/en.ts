@@ -1575,6 +1575,7 @@ const translation: LangKeys = {
   socialmediachannel: "Social Media Channel",
   businesschannel: "Business Channel",
   hasactionplan: "Has action plan",
+  waitinginteractions: "Waiting {{time}} seconds to send the next messages",
   error_already_exists_record:
     "23505: There is already the same {{module}} registered",
 

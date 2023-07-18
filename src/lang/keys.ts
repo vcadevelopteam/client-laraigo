@@ -1967,6 +1967,7 @@ export const langKeys = {
   login_with_google: 'login_with_google',
   info: 'info',
   validnumber: "validnumber",
+  waitinginteractions: "waitinginteractions",
   error_request_services: 'error_request_services',
   error_request_bridge: 'error_request_bridge',
   error_already_exists_record: 'error_already_exists_record',

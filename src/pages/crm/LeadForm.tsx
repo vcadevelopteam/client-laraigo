@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, IconButton, Checkbox, Tabs, Avatar, Paper, InputAdornment } from '@material-ui/core';
@@ -687,7 +688,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     }, [advisers, t, dispatch]);
 
     useEffect(() => {
-        console.log(values)
         setExtraTriggers({
             email:values?.email || "",
             phone: values?.phone || ""
@@ -1292,7 +1292,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                                             dispatch(showSnackbar({ show: true, severity: "warning", message: t(langKeys.nochannelvoiceassociated) })) 
                                                         }else {
                                                             dispatch(setModalCall(true))
-                                                            console.log(getValues("phone"))
                                                             dispatch(setPhoneNumber(getValues("phone")))
                                                         }}}>
                                                         <PhoneIcon />
