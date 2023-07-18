@@ -50,6 +50,12 @@ const useStyles = makeStyles((theme) => ({
 const TabEvaluation: React.FC<TabEvaluationProps> = ({getValues, errors, setValue, apiconsumption, setApiConsumption, row, ownCredentials, setOwnCredentials}) => {
     const classes = useStyles();
     const { t } = useTranslation();
+    const [showApiFields, setShowApiFields] = useState({
+        infocorp: getValues("status_api_equifax")||false
+    })
+    const [showFieldsCredentials, setShowFieldsCredentials] = useState({
+        infocorp: getValues("type_credencials_equifax")||false
+    })
     const [showPassword, setShowPassword] = useState({
         infocorp: false,
         sentinel: false,
@@ -71,11 +77,11 @@ const TabEvaluation: React.FC<TabEvaluationProps> = ({getValues, errors, setValu
                             <TemplateSwitch
                                 label={""}
                                 className="col-6"
-                                valueDefault={apiconsumption.infocorp}
-                                onChange={(value) => {setApiConsumption({...apiconsumption,infocorp: value})}}
+                                valueDefault={getValues("status_api_equifax")}
+                                onChange={(value) => {setShowApiFields({...showApiFields,infocorp: value});setValue("status_api_equifax",value)}}
                             />
                         </Grid>
-                        {apiconsumption.infocorp && <Grid container direction="row">
+                        {showApiFields.infocorp && <Grid container direction="row">
                             <Grid item  xs={12} sm={12} md={9} lg={9} xl={9}>
                                 <FieldSelect
                                     label={t(langKeys.lapsetimetoevaluate)}
@@ -92,9 +98,9 @@ const TabEvaluation: React.FC<TabEvaluationProps> = ({getValues, errors, setValu
                             <Grid item  xs={12} sm={12} md={3} lg={3} xl={3}>
                                 <FieldEdit
                                     label={`${t(langKeys.value)}`}
-                                    valueDefault={getValues('evaluationData.infocorp.timevalue')}
-                                    onChange={(value) => { setValue('evaluationData.infocorp.timevalue',value)}}
-                                    error={errors?.evaluationData?.infocorp?.timevalue?.message}
+                                    valueDefault={getValues('days_api_equifax')}
+                                    onChange={(value) => { setValue('days_api_equifax',value)}}
+                                    error={errors?.days_api_equifax?.message}
                                     type="number"
                                     inputProps={{ step: "any" }}
                                 />
@@ -238,7 +244,7 @@ const TabEvaluation: React.FC<TabEvaluationProps> = ({getValues, errors, setValu
         </div>
         <Grid container direction="row" style={{ width: '100%' }}>
             
-            {apiconsumption.infocorp && <Grid item xs={12} sm={12} md={4} lg={4} xl={4} style={{padding: '4px'}}>
+            {showApiFields.infocorp && <Grid item xs={12} sm={12} md={4} lg={4} xl={4} style={{padding: '4px'}}>
                     <Grid container direction="column" className={classes.containerDetailMainBox}>
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12} >
                             <label className={classes.text}>
@@ -257,27 +263,28 @@ const TabEvaluation: React.FC<TabEvaluationProps> = ({getValues, errors, setValu
                             <TemplateSwitch
                                 label={""}
                                 className="col-6"
-                                valueDefault={ownCredentials.infocorp}
-                                onChange={(value) => {setOwnCredentials({...ownCredentials,infocorp: value})}}
+                                valueDefault={showFieldsCredentials.infocorp}
+                                onChange={(value) => {setValue("type_credencials_equifax", value); setShowFieldsCredentials({...showFieldsCredentials, infocorp: value})
+                            }}
                             />
                         </Grid>
-                        {ownCredentials.infocorp && <>
+                        {showFieldsCredentials.infocorp && <>
                             <Grid item  xs={12} sm={12} md={12} lg={12} xl={12} style={{paddingBottom: "15px"}}>
                                 <FieldEdit
                                     label={`${t(langKeys.username)}`}
-                                    valueDefault={getValues('evaluationData.infocorp.username')}
-                                    onChange={(value) => { setValue('evaluationData.infocorp.username',value)}}
-                                    error={errors?.evaluationData?.infocorp?.username?.message}
+                                    valueDefault={getValues('user_own_equifax')}
+                                    onChange={(value) => { setValue('user_own_equifax',value)}}
+                                    error={errors?.user_own_equifax?.message}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{paddingBottom: "15px"}}>
                                 <FieldEdit
                                     label={t(langKeys.password)}
                                     className="col-6"
-                                    valueDefault={getValues('evaluationData.infocorp.password')}
+                                    valueDefault={getValues('pass_own_equifax')}
                                     type={showPassword.infocorp ? 'text' : 'password'}
-                                    onChange={(value) => { setValue('evaluationData.infocorp.password',value)}}
-                                    error={errors?.evaluationData?.infocorp?.password?.message}
+                                    onChange={(value) => { setValue('pass_own_equifax',value)}}
+                                    error={errors?.pass_own_equifax?.message}
                                     InputProps={{
                                         endAdornment: (
                                             <InputAdornment position="end">
@@ -296,9 +303,9 @@ const TabEvaluation: React.FC<TabEvaluationProps> = ({getValues, errors, setValu
                             <Grid item  xs={12} sm={12} md={12} lg={12} xl={12} style={{paddingBottom: "15px"}}>
                                 <FieldEdit
                                     label="URL API"
-                                    valueDefault={getValues('evaluationData.infocorp.urlapi')}
-                                    onChange={(value) => { setValue('evaluationData.infocorp.urlapi',value)}}
-                                    error={errors?.evaluationData?.infocorp?.urlapi?.message}
+                                    valueDefault={getValues('url_own_equifax')}
+                                    onChange={(value) => { setValue('url_own_equifax',value)}}
+                                    error={errors?.url_own_equifax?.message}
                                 />
                             </Grid>
                         </>}

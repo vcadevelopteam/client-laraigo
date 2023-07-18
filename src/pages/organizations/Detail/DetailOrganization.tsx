@@ -81,13 +81,11 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         iconclient: row?.iconclient || "",
     });
     const [apiconsumption, setApiConsumption] = useState({
-        infocorp: false,
         sentinel: false,
         reniec: false,
         sunarp: false,
     });
     const [ownCredentials, setOwnCredentials] = useState({
-        infocorp: false,
         sentinel: false,
         reniec: false,
         sunarp: false,
@@ -140,13 +138,15 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             voximplantrechargepercentage: row ? (row?.voximplantrechargepercentage || 0.00) : (parseFloat(defaultPercentage[0]?.propertyvalue) || 0),
             voximplantrechargefixed: row?.voximplantrechargefixed || 0.00,
             voximplantadditionalperchannel: row ? (row?.voximplantadditionalperchannel || 0.00) : (parseFloat(defaultChannel[0]?.propertyvalue) || 0),
+            days_api_equifax: row?.days_api_equifax||0,
+            type_credencials_equifax: row?.type_credencials_equifax||false,
+            status_api_equifax: row?.status_api_equifax||false,
+            user_own_equifax: row?.user_own_equifax||"",
+            pass_own_equifax: row?.pass_own_equifax||"",
+            url_own_equifax: row?.url_own_equifax||"",
             evaluationData: row?.evaluationData||{
                 infocorp: {
                     evaluationtime: "DÍA",
-                    timevalue: 0,
-                    username: "",
-                    password: "",
-                    urlapi: "",
                 },
                 sentinel: {
                     evaluationtime: "DÍA",
@@ -216,14 +216,14 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('voximplantadditionalperchannel', { validate: (value) => roledesc === "SUPERADMIN" ? (((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required)) : true });
         register('voximplantadditionalperchannel', { validate: (value) => roledesc === "SUPERADMIN" ? (((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required)) : true });
         
-        register('evaluationData.infocorp.evaluationtime', { validate: (value) => apiconsumption.infocorp ? ((value && value.length)|| t(langKeys.field_required)) : true });
-        register('evaluationData.infocorp.timevalue', { validate: {
-            hasvalue: (value) => apiconsumption.infocorp ? ((value && value>0)|| t(langKeys.field_required)) : true,
-            limitdays: (value) => apiconsumption.infocorp ? ((value && value<32)|| t(langKeys.fieldlessthan31)) : true,
+        register('evaluationData.infocorp.evaluationtime', { validate: (value) => getValues("status_api_equifax") ? ((value && value.length)|| t(langKeys.field_required)) : true });
+        register('days_api_equifax', { validate: {
+            hasvalue: (value) => getValues("status_api_equifax") ? ((value && value>0)|| t(langKeys.field_required)) : true,
+            limitdays: (value) => getValues("status_api_equifax") ? ((value && value<32)|| t(langKeys.fieldlessthan31)) : true,
         } });
-        register('evaluationData.infocorp.username', { validate: (value) => (apiconsumption.infocorp && ownCredentials.infocorp) ? ((value && value.length)|| t(langKeys.field_required)) : true });
-        register('evaluationData.infocorp.password', { validate: (value) => (apiconsumption.infocorp && ownCredentials.infocorp) ? ((value && value.length)|| t(langKeys.field_required)) : true });
-        register('evaluationData.infocorp.urlapi', { validate: (value) => (apiconsumption.infocorp && ownCredentials.infocorp) ? ((value && value.length)|| t(langKeys.field_required)) : true });
+        register('user_own_equifax', { validate: (value) => (getValues("status_api_equifax") && getValues("type_credencials_equifax")) ? ((value && value.length)|| t(langKeys.field_required)) : true });
+        register('pass_own_equifax', { validate: (value) => (getValues("status_api_equifax") && getValues("type_credencials_equifax")) ? ((value && value.length)|| t(langKeys.field_required)) : true });
+        register('url_own_equifax', { validate: (value) => (getValues("status_api_equifax") && getValues("type_credencials_equifax")) ? ((value && value.length)|| t(langKeys.field_required)) : true });
 
         register('evaluationData.sentinel.evaluationtime', { validate: (value) => apiconsumption.sentinel ? ((value && value.length)|| t(langKeys.field_required)) : true });
         register('evaluationData.sentinel.timevalue', { validate: {
