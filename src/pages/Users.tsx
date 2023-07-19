@@ -228,7 +228,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         })
 
         register('orgid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
-        register('roleid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
+        register('roleid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('supervisor');
         // register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('channels');
@@ -285,20 +285,31 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     }
 
     const onChangeRole = (value: Dictionary) => {
-        setValue('roleid', value ? value.roleid : 0);
-        setValue('roledesc', value ? value.roldesc : 0);
-        setValue('type', value ? value.type : 0);
+        setValue('roleid', value.map((o: Dictionary) => o.roleid).join());
+        setValue('roledesc', value.map((o: Dictionary) => o.roledesc).join());
+        const types:any[] =[];
+        const uniqueTypes:any[] = [];
+
+        value.forEach((o:Dictionary) => {
+          if (!types.includes(o.type)) {
+            types.push(o.type);
+            uniqueTypes.push(o.type);
+          }
+        });
+        debugger
+
+        setValue('type', uniqueTypes.join());
         setValue('redirect', ''); 
         updatefield('redirect', '');
 
         updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
-            p[index] = { ...p[index], roleid: value?.roleid || 0, roledesc: value?.roldesc || 0, type: value?.type || 0 }
+            p[index] = { ...p[index], roleid: value.map((o: Dictionary) => o.roleid).join(), roledesc: value.map((o: Dictionary) => o.roledesc).join(), type: uniqueTypes.join() }
             return p;
         })
-        if (value) {
+        if (!!value.length) {
             setDataApplications({ loading: true, data: [] });
             dispatch(getMultiCollectionAux([
-                getApplicationsByRole(value.roleid, index + 1),
+                getApplicationsByRole(value.map((o: Dictionary) => o.roleid).join(), index + 1),
             ]))
         } else {
             setDataApplications({ loading: false, data: [] })
@@ -330,7 +341,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 optionDesc="orgdesc"
                                 optionValue="orgid"
                             />
-                            <FieldSelect
+                            <FieldMultiSelect
                                 label={t(langKeys.role)}
                                 className={classes.mb2}
                                 valueDefault={row?.roleid || ""}
