@@ -1,5 +1,5 @@
 import { Dictionary, MultiData } from "@types";
-import { FieldEdit, FieldSelect, TemplateBreadcrumbs, TemplateIcons, TitleDetail } from "components";
+import { DialogZyx, FieldEdit, FieldSelect, TemplateBreadcrumbs, TemplateIcons, TitleDetail } from "components";
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { langKeys } from "lang/keys";
 import { makeStyles } from "@material-ui/core/styles";
@@ -119,7 +119,6 @@ const TimeSheet: FC = () => {
     const [userList, setUserList] = useState<any>([]);
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitDelete, setWaitDelete] = useState(false);
-    const [waitSave, setWaitSave] = useState(false);
 
     const [rowSelected, setRowSelected] = useState<RowSelected>({
         edit: false,
@@ -156,6 +155,29 @@ const TimeSheet: FC = () => {
             setUserList(multiResult.data[1] && multiResult.data[1].success ? multiResult.data[1].data : []);
         }
     }, [multiResult, getInformation]);
+
+    useEffect(() => {
+        if (waitDelete) {
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }));
+                dispatch(showBackdrop(false));
+                setWaitDelete(false);
+                fetchData();
+            } else if (executeResult.error) {
+                dispatch(
+                    showSnackbar({
+                        severity: "error",
+                        show: true,
+                        message: t(executeResult.code ?? "error_unexpected_error", {
+                            module: t(langKeys.domain).toLocaleLowerCase(),
+                        }),
+                    })
+                );
+                dispatch(showBackdrop(false));
+                setWaitDelete(false);
+            }
+        }
+    }, [executeResult, waitDelete]);
 
     const fetchData = () => dispatch(getCollection(timeSheetSel(mainFilter)));
 
@@ -249,6 +271,7 @@ const TimeSheet: FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
+            dispatch(execute(timeSheetIns({ ...row, operation: "DELETE", status: "ELIMINADO" })));
             dispatch(showBackdrop(true));
             setWaitDelete(true);
         };
@@ -271,13 +294,14 @@ const TimeSheet: FC = () => {
                     ButtonsElement={() => (
                         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                             <MuiPickersUtilsProvider
-                                locale={(localesLaraigo() as any)[navigator.language.split("-")[0]]}
+                                locale={localesLaraigo()[navigator.language.split("-")[0]]}
                                 utils={DateFnsUtils}
                             >
                                 <KeyboardDatePicker
                                     defaultValue={mainFilter.startdate}
                                     format="dd-MM-yyyy"
                                     InputProps={{ disableUnderline: true }}
+                                    invalidDateMessage={""}
                                     placeholder={t(langKeys.timesheet_startdate)}
                                     value={mainFilter.startdate}
                                     onChange={(value: any) =>
@@ -327,6 +351,10 @@ const TimeSheet: FC = () => {
                     filterGeneral={false}
                     handleRegister={handleRegister}
                     hoverShadow={true}
+                    loading={mainResult.mainData.loading}
+                    onClickRow={handleEdit}
+                    register={true}
+                    titlemodule={t(langKeys.timesheet)}
                     initialPageIndex={
                         IDTIMESHEET === memoryTable.id ? (memoryTable.page === -1 ? 0 : memoryTable.page) : 0
                     }
@@ -335,13 +363,9 @@ const TimeSheet: FC = () => {
                             ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value }))
                             : undefined
                     }
-                    loading={mainResult.mainData.loading}
-                    onClickRow={handleEdit}
                     pageSizeDefault={
                         IDTIMESHEET === memoryTable.id ? (memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize) : 20
                     }
-                    register={true}
-                    titlemodule={t(langKeys.timesheet)}
                 />
             );
         }
@@ -369,9 +393,15 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
 
     const { t } = useTranslation();
 
-    const executeResult = useSelector((state) => state.main.execute);
     const classes = useStyles();
+    const executeResult = useSelector((state) => state.main.execute);
+    const user = useSelector((state) => state.login.validateToken.user);
+    const userAvailable = (userList || []).filter((data) => data.userid === (user?.userid ?? 0))
+        ? user?.userid ?? 0
+        : 0;
 
+    const [hasChange, setHasChange] = useState(false);
+    const [openModal, setOpenModal] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
 
     const {
@@ -383,17 +413,17 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
         trigger,
     } = useForm({
         defaultValues: {
-            corpid: row?.corpid || 0,
+            corpid: row?.corpid || (user?.corpid ?? 0),
             description: row?.description || "",
             id: row ? row.id : 0,
             operation: row ? "EDIT" : "INSERT",
-            orgid: row?.orgid || 0,
-            registerdate: row?.registerdate || null,
+            orgid: row?.orgid || (user?.orgid ?? 0),
+            registerdate: row?.registerdate || new Date(),
             registerdetail: row?.registerdetail || "",
             registerprofile: row?.registerprofile || "",
-            registeruserid: row ? row.registeruserid : 0,
-            startdate: row?.startdate || null,
-            startuserid: row ? row.startuserid : 0,
+            registeruserid: row ? row.registeruserid : userAvailable,
+            startdate: row?.startdate || new Date(),
+            startuserid: row ? row.startuserid : userAvailable,
             status: row?.status || "ACTIVO",
             timeduration: row?.timeduration || null,
             type: row?.type || "",
@@ -433,6 +463,12 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
         );
     });
 
+    const onModalSuccess = () => {
+        setOpenModal(false);
+        setViewSelected("view-1");
+        fetchData && fetchData();
+    };
+
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
@@ -445,7 +481,7 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
                     showSnackbar({
                         severity: "error",
                         show: true,
-                        message: t(executeResult.code || "error_unexpected_error", {
+                        message: t(executeResult.code ?? "error_unexpected_error", {
                             module: t(langKeys.timesheet).toLocaleLowerCase(),
                         }),
                     })
@@ -458,6 +494,7 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
 
     return (
         <div style={{ width: "100%" }}>
+            <TimeSheetModal openModal={openModal} setOpenModal={setOpenModal} onTrigger={onModalSuccess} />
             <form onSubmit={onSubmit}>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <div>
@@ -476,7 +513,13 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
                     >
                         <Button
                             color="primary"
-                            onClick={() => setViewSelected("view-1")}
+                            onClick={() => {
+                                if (hasChange) {
+                                    setOpenModal(true);
+                                } else {
+                                    setViewSelected("view-1");
+                                }
+                            }}
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
                             type="button"
@@ -499,7 +542,7 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         <MuiPickersUtilsProvider
-                            locale={(localesLaraigo() as any)[navigator.language.split("-")[0]]}
+                            locale={localesLaraigo()[navigator.language.split("-")[0]]}
                             utils={DateFnsUtils}
                         >
                             <KeyboardDatePicker
@@ -514,6 +557,7 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
                                 onChange={(value: any) => {
                                     setValue("startdate", value || null);
                                     trigger("startdate");
+                                    setHasChange(true);
                                 }}
                             />
                         </MuiPickersUtilsProvider>
@@ -530,12 +574,13 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
                             variant="outlined"
                             onChange={(value: any) => {
                                 setValue("startuserid", value?.userid || 0);
+                                setHasChange(true);
                             }}
                         />
                     </div>
                     <div className="row-zyx">
                         <MuiPickersUtilsProvider
-                            locale={(localesLaraigo() as any)[navigator.language.split("-")[0]]}
+                            locale={localesLaraigo()[navigator.language.split("-")[0]]}
                             utils={DateFnsUtils}
                         >
                             <KeyboardDatePicker
@@ -550,6 +595,7 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
                                 onChange={(value: any) => {
                                     setValue("registerdate", value || null);
                                     trigger("registerdate");
+                                    setHasChange(true);
                                 }}
                             />
                         </MuiPickersUtilsProvider>
@@ -566,6 +612,7 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
                             variant="outlined"
                             onChange={(value: any) => {
                                 setValue("registeruserid", value?.userid || 0);
+                                setHasChange(true);
                             }}
                         />
                     </div>
@@ -584,6 +631,7 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
                             onChange={(value: any) => {
                                 setValue("corpid", value?.corpid || 0);
                                 setValue("orgid", value?.orgid || 0);
+                                setHasChange(true);
                             }}
                         />
                         <FieldEdit
@@ -591,7 +639,10 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
                             disabled={!edit}
                             error={errors?.registerprofile?.message}
                             label={t(langKeys.timesheet_registerprofile)}
-                            onChange={(value) => setValue("registerprofile", value)}
+                            onChange={(value) => {
+                                setValue("registerprofile", value);
+                                setHasChange(true);
+                            }}
                             size="small"
                             valueDefault={getValues("registerprofile")}
                             variant="outlined"
@@ -603,7 +654,10 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
                             disabled={!edit}
                             error={errors?.timeduration?.message}
                             label={t(langKeys.timesheet_timeduration)}
-                            onChange={(value: any) => setValue("timeduration", value || null)}
+                            onChange={(value: any) => {
+                                setValue("timeduration", value || null);
+                                setHasChange(true);
+                            }}
                             size="small"
                             type="time"
                             valueDefault={getValues("timeduration")}
@@ -614,7 +668,10 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
                             disabled={!edit}
                             error={errors?.registerdetail?.message}
                             label={t(langKeys.timesheet_registerdetail)}
-                            onChange={(value) => setValue("registerdetail", value)}
+                            onChange={(value) => {
+                                setValue("registerdetail", value);
+                                setHasChange(true);
+                            }}
                             size="small"
                             valueDefault={getValues("registerdetail")}
                             variant="outlined"
@@ -623,6 +680,32 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
                 </div>
             </form>
         </div>
+    );
+};
+
+const TimeSheetModal: FC<{
+    openModal: boolean;
+    setOpenModal: (param: any) => void;
+    onTrigger: () => void;
+}> = ({ openModal, setOpenModal, onTrigger }) => {
+    const { t } = useTranslation();
+
+    const classes = useStyles();
+
+    return (
+        <DialogZyx
+            button2Type="button"
+            buttonText1={t(langKeys.modal_changevalidation_yes)}
+            buttonText2={t(langKeys.modal_changevalidation_no)}
+            handleClickButton1={() => onTrigger()}
+            handleClickButton2={() => setOpenModal(false)}
+            open={openModal}
+            title={t(langKeys.modal_changevalidation_title)}
+        >
+            <div className={classes.containerDetail}>
+                <span>{t(langKeys.modal_changevalidation_description)}</span>
+            </div>
+        </DialogZyx>
     );
 };
 
