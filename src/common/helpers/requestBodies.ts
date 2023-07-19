@@ -339,7 +339,7 @@ export const getCorpSel = (id: number): IRequestBody => ({
         all: id === 0,
     }
 });
-export const getOrderSel = (product?:string, category?:string, type?: string): IRequestBody => ({
+export const getOrderSel = (product?: string, category?: string, type?: string): IRequestBody => ({
     method: "UFN_ORDER_SEL",
     key: "UFN_ORDER_SEL",
     parameters: {
@@ -356,7 +356,7 @@ export const getOrderLineSel = (orderid: number): IRequestBody => ({
 export const getOrderHistory = (orderid: number): IRequestBody => ({
     method: "UFN_ORDERHISTORY_SEL",
     key: "UFN_ORDERHISTORY_SEL",
-    parameters: { 
+    parameters: {
         orderid,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
@@ -1752,15 +1752,15 @@ export const dashboardKPISummarySel = ({ date, origin, usergroup, supervisorid, 
     key: "UFN_DASHBOARD_KPI_SUMMARY_SEL",
     parameters: {
         date, origin, usergroup, supervisorid,
-        offset: (new Date().getTimezoneOffset() / 60) * -1,userid
+        offset: (new Date().getTimezoneOffset() / 60) * -1, userid
     }
 });
 export const dashboardKPIMonthSummarySel = ({ enddate, origin, usergroup, supervisorid, userid }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_KPI_SUMMARY_BY_MONTH',
     key: "UFN_DASHBOARD_KPI_SUMMARY_BY_MONTH",
     parameters: {
-        date:enddate, origin, usergroup, supervisorid,
-        offset: (new Date().getTimezoneOffset() / 60) * -1,userid
+        date: enddate, origin, usergroup, supervisorid,
+        offset: (new Date().getTimezoneOffset() / 60) * -1, userid
     }
 });
 export const dashboardKPISummaryGraphSel = ({ date, origin, usergroup, supervisorid, userid }: Dictionary): IRequestBody => ({
@@ -1775,7 +1775,7 @@ export const dashboardKPIMonthSummaryGraphSel = ({ startdate, enddate, origin, u
     method: 'UFN_DASHBOARD_KPI_SUMMARY_GRAPH_BY_MONTH',
     key: "UFN_DASHBOARD_KPI_SUMMARY_GRAPH_BY_MONTH",
     parameters: {
-        startdate,enddate, origin, usergroup, supervisorid,
+        startdate, enddate, origin, usergroup, supervisorid,
         offset: (new Date().getTimezoneOffset() / 60) * -1, userid
     }
 });
@@ -2369,7 +2369,7 @@ export const getColumnsSDSel = (id: number, lost: boolean = false): IRequestBody
     parameters: {
         id: id,
         all: true,
-        lost:false
+        lost: false
     }
 })
 
@@ -2408,7 +2408,7 @@ export const getOrderColumns = ({ id = 0 }: Dictionary): IRequestBody => ({
     }
 })
 
-export const insAutomatizationRules = ({ id, description, status, type, columnid,order,orderstatus, communicationchannelid, messagetemplateid, messagetemplateparameters, shippingtype, xdays, schedule, tags, products, operation }: Dictionary): IRequestBody => ({
+export const insAutomatizationRules = ({ id, description, status, type, columnid, order, orderstatus, communicationchannelid, messagetemplateid, messagetemplateparameters, shippingtype, xdays, schedule, tags, products, operation }: Dictionary): IRequestBody => ({
     method: 'UFN_LEADAUTOMATIZATIONRULES_INS',
     key: "UFN_LEADAUTOMATIZATIONRULES_INS",
     parameters: {
@@ -2611,7 +2611,7 @@ export const getPaginatedLead = ({ skip, take, filters, sorts, startdate, enddat
 })
 
 export const getPaginatedSDLead = ({ skip, take, filters, sorts, startdate, enddate, contact, leadproduct, tags, company,
-    groups, supervisorid,phase, description, ...allParameters }: Dictionary): IRequestBodyPaginated => ({
+    groups, supervisorid, phase, description, ...allParameters }: Dictionary): IRequestBodyPaginated => ({
         methodCollection: "UFN_LEADGRID_SD_SEL",
         methodCount: "UFN_LEADGRID_SD_TOTALRECORDS",
         parameters: {
@@ -4022,8 +4022,27 @@ export const metaBusinessSel = ({ corpid, orgid, id }: Dictionary) => ({
     key: "UFN_METABUSINESS_SEL",
     parameters: { corpid, orgid, id },
 });
+
 export const productOrderList = () => ({
     method: "UFN_ORDERLINE_PRODUCT_LST",
     key: "UFN_ORDERLINE_PRODUCT_LST",
-    parameters: { },
+    parameters: {},
+});
+
+export const timeSheetIns = ({ corpid, orgid, id, description, type, status, username, operation, startdate, startuserid, registerdate, registeruserid, registerprofile, registerdetail, timeduration }: Dictionary) => ({
+    method: "UFN_TIMESHEET_INS",
+    key: "UFN_TIMESHEET_INS",
+    parameters: { corpid, orgid, id, description, type, status, username, operation, startdate, startuserid, registerdate, registeruserid, registerprofile, registerdetail, timeduration },
+});
+
+export const timeSheetSel = ({ corpid, orgid, timesheetid, startdate, all }: Dictionary) => ({
+    method: "UFN_TIMESHEET_SEL",
+    key: "UFN_TIMESHEET_SEL",
+    parameters: { corpid, orgid, timesheetid, startdate, all },
+});
+
+export const timeSheetUserSel = ({ corpid, orgid }: Dictionary) => ({
+    method: "UFN_TIMESHEET_USER_SEL",
+    key: "UFN_TIMESHEET_USER_SEL",
+    parameters: { corpid, orgid },
 });
