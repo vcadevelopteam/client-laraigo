@@ -4,14 +4,14 @@ import { useSelector } from 'hooks';
 import { TemplateBreadcrumbs } from 'components';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { Button } from '@material-ui/core';
+import { IconButton } from '@material-ui/core';
 import TableZyx from 'components/fields/table-simple';
-import ClearIcon from '@material-ui/icons/Clear';
 import { useDispatch } from 'react-redux';
-import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
+import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { convertLocalDate } from 'common/helpers';
 import { resetAllMain } from 'store/main/actions'
-import { downloadrasaia, modellistrasaia, trainrasaia } from 'store/rasaia/actions';
+import { downloadmodelrasaia, downloadrasaia, modellistrasaia } from 'store/rasaia/actions';
+import GetAppIcon from '@material-ui/icons/GetApp';
 
 interface IntentionProps {
     setExternalViewSelected?: (view: string) => void;
@@ -22,7 +22,6 @@ export const ModelsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected, 
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
-    const [selectedRows, setSelectedRows] = useState<any>({});
     const [waitSave, setWaitSave] = useState(false);
     const [sendTrainCall, setSendTrainCall] = useState(false);
     const operationRes = useSelector(state => state.witai.witaioperationresult);
@@ -31,13 +30,14 @@ export const ModelsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected, 
     const dataModelAi = useSelector(state => state.main.mainAux);
 
     const [waitImport, setWaitImport] = useState(false);
+    const [waitDownload, setWaitDownload] = useState(false);
     const [modelData, setModelData] = useState<any>([]);
     const trainResult = useSelector(state => state.rasaia.rasaiatrainresult);
     const exportResult = useSelector(state => state.rasaia.rasaiadownloadresult);
+    const dowloadResult = useSelector(state => state.rasaia.downloadModel);
     const mainData = useSelector(state => state.rasaia.rasaiamodellistresult);
 
     const fetchData = () => {dispatch(modellistrasaia({model_uuid: dataModelAi?.data?.[0]?.model_uuid||""}))};
-    const selectionKey = 'model_name';
 
     
     useEffect(() => {
@@ -83,6 +83,22 @@ export const ModelsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected, 
     }, [multiResult, waitSave])
 
     useEffect(() => {
+        if (waitDownload) {
+            if (!dowloadResult.loading && !dowloadResult.error) {
+                dispatch(showBackdrop(false));
+                setWaitDownload(false);
+                window.open(dowloadResult?.url||"", "_blank");
+                debugger
+            } else if (dowloadResult.error) {
+                const errormessage = t(dowloadResult.code || "error_unexpected_error", { module: t(langKeys.model_plural).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitDownload(false);
+            }
+        }
+    }, [dowloadResult, waitDownload]);
+    
+    useEffect(() => {
         if (waitImport) {
             if (!operationRes.loading && !operationRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_transaction) }))
@@ -96,10 +112,34 @@ export const ModelsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected, 
                 setWaitImport(false);
             }
         }
-    }, [operationRes, operationRes]);
+    }, [operationRes, waitImport]);
 
     const columns = React.useMemo(
         () => [
+            {
+                Header: "",
+                accessor: 'personid',
+                NoFilter: true,
+                isComponent: true,
+                minWidth: 60,
+                width: '1%',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <IconButton
+                            size='small'
+                            disabled={waitDownload}
+                            onClick={() => {
+                                dispatch(downloadmodelrasaia({model_uuid: dataModelAi?.data?.[0]?.model_uuid||"", model_name: row?.model_name||""}));
+                                setWaitDownload(true);
+                            }}
+                        >
+                            <GetAppIcon />
+                        </IconButton>
+    
+                    )
+                }
+            },
             {
                 Header: t(langKeys.name),
                 accessor: 'model_name',
@@ -131,23 +171,6 @@ export const ModelsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected, 
         ],
         []
     );
-    const handleDelete = () => {
-        const callback = () => {/*
-            let allRequestBody: IRequestBody[] = [];
-            Object.keys(selectedRows).forEach(x => {
-                allRequestBody.push(rasaSynonimIns({...mainResult.mainData.data.find(y=>y.rasasynonymid === parseInt(x)), operation:"DELETE", id: x}));
-            });
-            dispatch(getMultiCollection(allRequestBody))
-            dispatch(showBackdrop(true));
-            setWaitSave(true);*/
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_delete),
-            callback
-        }))
-    }
 
     
     const triggerExportData = () => {
@@ -185,38 +208,11 @@ export const ModelsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected, 
                     columns={columns}
                     data={modelData}
                     filterGeneral={false}
-                    useSelection={true}
                     titlemodule={!!arrayBread?t(langKeys.model_plural):""}
-                    selectionKey={selectionKey}
-                    setSelectedRows={setSelectedRows}
-                    ButtonsElement={() => (     
-                        <div style={{display: "flex", justifyContent: "end", width: "100%"}}>                       
-                            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                                <Button
-                                    disabled={Object.keys(selectedRows).length===0}
-                                    variant="contained"
-                                    type="button"
-                                    color="primary"
-                                    startIcon={<ClearIcon color="secondary" />}
-                                    style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
-                                    onClick={handleDelete}
-                                >{t(langKeys.delete)}</Button>
-                                <Button
-                                    variant="contained"
-                                    type="button"
-                                    color="primary"
-                                    disabled={dataModelAi.loading|| trainResult.loading}
-                                    style={{ backgroundColor: (dataModelAi.loading || trainResult.loading)?"#dbdbdc":"#7721ad" }}
-                                    onClick={()=>{dispatch(trainrasaia({model_uuid: dataModelAi?.data?.[0]?.model_uuid||""}));setSendTrainCall(true);}}
-                                >{t(langKeys.train)}</Button>
-                            </div>
-                        </div>
-                    )}
                     loading={mainData.loading}
                     download={false}
                     triggerExportPersonalized={true}
                     exportPersonalized={triggerExportData}
-                    //importCSV={handleUpload}
                     pageSizeDefault={20}
                     initialPageIndex={0}
                 />

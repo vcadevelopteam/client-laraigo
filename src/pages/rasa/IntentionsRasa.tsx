@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { DialogZyx, FieldEdit, TemplateBreadcrumbs, TitleDetail } from 'components';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { Box, Button, makeStyles, TextField } from '@material-ui/core';
+import { Box, Button, makeStyles, TextField, Tooltip } from '@material-ui/core';
 import TableZyx from 'components/fields/table-simple';
 import ClearIcon from '@material-ui/icons/Clear';
 import { Dictionary, IRequestBody } from '@types';
@@ -545,7 +545,7 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
                 NoFilter: true,
             },                 
             {
-                Header: `${t(langKeys.examples)} ${t(langKeys.entities)}`,
+                Header: `${t(langKeys.examples)} ${t(langKeys.quantity)}`,
                 accessor: 'entity_examples',
                 width: "auto",
                 NoFilter: true,
@@ -669,14 +669,18 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
                                         style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
                                         onClick={handleDelete}
                                     >{t(langKeys.delete)}</Button>
-                                    <Button
-                                        variant="contained"
-                                        type="button"
-                                        color="primary"
-                                        disabled={dataModelAi.loading || mainResult.mainData.data.some(x=>x.model_trained) || trainResult.loading}
-                                        style={{ backgroundColor: (dataModelAi.loading || mainResult.mainData.data.some(x=>x.model_trained) || trainResult.loading)?"#dbdbdc":"#7721ad" }}
-                                        onClick={()=>{dispatch(trainrasaia({model_uuid: dataModelAi?.data?.[0]?.model_uuid||""}));setSendTrainCall(true);}}
-                                    >{t(langKeys.train)}</Button>
+                                    <Tooltip title={(dataModelAi.loading || mainResult.mainData.data.some(x=>x.model_trained) || trainResult.loading)?"El modelo ya se encuentra entrenado con la configuración actual": ""} placement="top">
+                                        <div>
+                                            <Button
+                                                variant="contained"
+                                                type="button"
+                                                color="primary"
+                                                disabled={dataModelAi.loading || mainResult.mainData.data.some(x=>x.model_trained) || trainResult.loading}
+                                                style={{ backgroundColor: (dataModelAi.loading || mainResult.mainData.data.some(x=>x.model_trained) || trainResult.loading)?"#dbdbdc":"#7721ad" }}
+                                                onClick={()=>{dispatch(trainrasaia({model_uuid: dataModelAi?.data?.[0]?.model_uuid||""}));setSendTrainCall(true);}}
+                                            >{t(langKeys.train)}</Button>
+                                        </div>
+                                    </Tooltip>
                                 </div>
                             </div>
                         )}
