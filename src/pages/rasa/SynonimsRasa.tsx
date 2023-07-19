@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { FieldEdit, TemplateBreadcrumbs, TitleDetail } from 'components';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { Box, Button, makeStyles, TextField } from '@material-ui/core';
+import { Box, Button, makeStyles, TextField, Tooltip } from '@material-ui/core';
 import TableZyx from 'components/fields/table-simple';
 import ClearIcon from '@material-ui/icons/Clear';
 import { Dictionary, IRequestBody } from '@types';
@@ -503,14 +503,16 @@ export const SynonimsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected
                                         style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
                                         onClick={handleDelete}
                                     >{t(langKeys.delete)}</Button>
-                                    <Button
-                                        variant="contained"
-                                        type="button"
-                                        color="primary"
-                                        disabled={dataModelAi.loading|| trainResult.loading}
-                                        style={{ backgroundColor: (dataModelAi.loading || trainResult.loading)?"#dbdbdc":"#7721ad" }}
-                                        onClick={()=>{dispatch(trainrasaia({model_uuid: dataModelAi?.data?.[0]?.model_uuid||""}));setSendTrainCall(true);}}
-                                    >{t(langKeys.train)}</Button>
+                                    <Tooltip title={(dataModelAi.loading || trainResult.loading)?"El modelo ya se encuentra entrenado con la configuración actual": ""} placement="top">
+                                        <Button
+                                            variant="contained"
+                                            type="button"
+                                            color="primary"
+                                            disabled={dataModelAi.loading|| trainResult.loading}
+                                            style={{ backgroundColor: (dataModelAi.loading || trainResult.loading)?"#dbdbdc":"#7721ad" }}
+                                            onClick={()=>{dispatch(trainrasaia({model_uuid: dataModelAi?.data?.[0]?.model_uuid||""}));setSendTrainCall(true);}}
+                                        >{t(langKeys.train)}</Button>
+                                    </Tooltip>
                                 </div>
                             </div>
                         )}

@@ -51,3 +51,15 @@ export const modellistrasaia = (request:any): any => ({
 });
 
 export const resetRasaiaModelList = (): IActionCall => ({type: actionTypes.MODELLIST_RESET});
+
+export const downloadmodelrasaia = (request:any): any => ({
+    callAPI: () => RasaService.rasamodedownload(request),
+    types: {
+        loading: actionTypes.MODELDOWNLOAD_SEND,
+        success: actionTypes.MODELDOWNLOAD_SUCCESS,
+        failure: actionTypes.MODELDOWNLOAD_FAILURE,
+    },
+    type: null,
+});
+
+export const resetdownloadmodelrasaia = (): IActionCall => ({type: actionTypes.MODELDOWNLOAD_RESET});
