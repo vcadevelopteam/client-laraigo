@@ -102,6 +102,7 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
     const { t } = useTranslation();
     const openDrawer = useSelector(state => state.popus.openDrawer);
     const applications = useSelector(state => state.login?.validateToken?.user?.menu);
+    console.log(applications)
     const dispatch = useDispatch();
     const showcall = useSelector(state => state.voximplant.showcall);
     const calls = useSelector(state => state.voximplant.calls);
