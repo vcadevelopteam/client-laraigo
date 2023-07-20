@@ -335,7 +335,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
         });
         register('sunatcountry', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('credittype', { validate: (value) => !billbyorg ? ((value && value.length) || t(langKeys.field_required)) : true });
-        register('paymentmethod', { validate: (value) => user?.roledesc === "SUPERADMIN" ? ((value && value.length) || t(langKeys.field_required)) : true });
+        register('paymentmethod', { validate: (value) => user?.roledesc?.includes("SUPERADMIN") ? ((value && value.length) || t(langKeys.field_required)) : true });
         register('paymentplanid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('automaticpayment');
         register('automaticperiod');
@@ -539,7 +539,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                             optionValue="paymentplanid"
                         />
                     </div>
-                    {user?.roledesc === "SUPERADMIN" && <div className="row-zyx">
+                    {user?.roledesc?.includes("SUPERADMIN") && <div className="row-zyx">
                         <FieldSelect
                             label={t(langKeys.paymentmethod)}
                             className="col-12"
@@ -627,7 +627,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                     error={errors?.contactemail?.message}
                                 />
                             </div>
-                            {user?.roledesc === "SUPERADMIN" &&
+                            {user?.roledesc?.includes("SUPERADMIN") &&
                                 <>
                                     <div className="row-zyx">
                                         <FieldSelect
@@ -636,7 +636,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                             valueDefault={getValues("credittype")}
                                             onChange={(value) => { setValue("credittype", value?.domainvalue || ""); }}
                                             error={errors?.credittype?.message}
-                                            disabled={user?.roledesc !== "SUPERADMIN"}
+                                            disabled={!user?.roledesc?.includes("SUPERADMIN")}
                                             data={typeofcreditList}
                                             uset={true}
                                             optionDesc="domainvalue"
@@ -647,7 +647,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                             className="col-6"
                                             valueDefault={getValues('autosendinvoice')}
                                             onChange={(value) => setValue('autosendinvoice', value)}
-                                            disabled={user?.roledesc !== "SUPERADMIN"}
+                                            disabled={!user?.roledesc?.includes("SUPERADMIN")}
                                         />
                                     </div>
                                     <div className="row-zyx">
@@ -656,14 +656,14 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                             className="col-6"
                                             valueDefault={getValues('automaticpayment')}
                                             onChange={(value) => setValue('automaticpayment', value)}
-                                            disabled={user?.roledesc !== "SUPERADMIN"}
+                                            disabled={!user?.roledesc?.includes("SUPERADMIN")}
                                         />
                                         <TemplateSwitch
                                             label={t(langKeys.automaticperiod)}
                                             className="col-6"
                                             valueDefault={getValues('automaticperiod')}
                                             onChange={(value) => setValue('automaticperiod', value)}
-                                            disabled={user?.roledesc !== "SUPERADMIN"}
+                                            disabled={!user?.roledesc?.includes("SUPERADMIN")}
                                         />
                                     </div>
                                     <div className="row-zyx">
@@ -672,7 +672,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                             className="col-6"
                                             valueDefault={getValues('automaticinvoice')}
                                             onChange={(value) => setValue('automaticinvoice', value)}
-                                            disabled={user?.roledesc !== "SUPERADMIN"}
+                                            disabled={!user?.roledesc?.includes("SUPERADMIN")}
                                         />
                                     </div>
                                 </>

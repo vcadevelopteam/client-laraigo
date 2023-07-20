@@ -212,7 +212,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         //PARA MODALES SE DEBE RESETEAR EN EL EDITAR
         reset({
             orgid: row ? row.orgid : (dataOrganizationsTmp.length === 1 ? dataOrganizationsTmp[0].orgid : 0),
-            roleid: row ? row.roleid : 0,
+            roleid: row ? row.rolegroups : 0,
             roledesc: row ? row.roledesc : '', //for table
             orgdesc: row ? row.orgdesc : '', //for table
             supervisordesc: row ? row.supervisordesc : '', //for table
@@ -248,7 +248,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         if (row && row.id !== 0) {
             setDataApplications({ loading: true, data: [] });
             dispatch(getMultiCollectionAux([
-                getApplicationsByRole(row.roleid, index + 1),
+                getApplicationsByRole(row.rolegroups, index + 1),
             ]))
         }
     }, [preData])
@@ -296,7 +296,6 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
             uniqueTypes.push(o.type);
           }
         });
-        debugger
 
         setValue('type', uniqueTypes.join());
         setValue('redirect', ''); 
@@ -344,7 +343,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                             <FieldMultiSelect
                                 label={t(langKeys.role)}
                                 className={classes.mb2}
-                                valueDefault={row?.roleid || ""}
+                                valueDefault={row?.rolegroups || ""}
                                 onChange={onChangeRole}
                                 error={errors?.roleid?.message}
                                 // triggerOnChangeOnFirst={true}

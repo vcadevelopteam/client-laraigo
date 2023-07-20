@@ -439,7 +439,7 @@ export const ServiceDeskLeadForm: FC<{ edit?: boolean }> = ({ edit = false }) =>
     };
 
     useEffect(() => {
-        setVisorSD(!!user?.roledesc.includes("VISOR") || isIncremental)
+        setVisorSD(!!user?.roledesc?.includes("VISOR") || isIncremental)
     }, [user]);
 
     const { register, setValue, getValues, formState: { errors }, reset, trigger } = useForm<any>({
