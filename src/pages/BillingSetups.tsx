@@ -62,7 +62,6 @@ import {
 
 import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import Popus from "components/layout/Popus";
 import TableZyx from "../components/fields/table-simple";
 import SaveIcon from "@material-ui/icons/Save";
 import ClearIcon from "@material-ui/icons/Clear";
