@@ -137,7 +137,7 @@ const MessageTemplates: FC = () => {
     const params = useQueryParams(query, { ignore: ["channelTypes"] });
     const [waitSaveExport, setWaitSaveExport] = useState(false);
     const selectionKey = "id";
-    const resExportData = useSelector(state => state.main.exportData);
+    const resExportData = useSelector((state) => state.main.exportData);
 
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({
         daterange: null,
@@ -227,7 +227,7 @@ const MessageTemplates: FC = () => {
                 Header: t(langKeys.category),
                 Cell: (props: any) => {
                     const { category, type } = props.cell.row.original;
-                    return (type === 'HSM' ? t(`TEMPLATE_${category}`) : category).toUpperCase()
+                    return (type === "HSM" ? t(`TEMPLATE_${category}`) : category).toUpperCase();
                 },
             },
             {
@@ -235,8 +235,8 @@ const MessageTemplates: FC = () => {
                 Header: t(langKeys.body),
                 Cell: (props: any) => {
                     const { body } = props.cell.row.original;
-                    return (body && body.length > 40) ? `${body.substring(0, 40)}...` : body
-                }
+                    return body && body.length > 40 ? `${body.substring(0, 40)}...` : body;
+                },
             },
             {
                 accessor: "namespace",
@@ -324,16 +324,18 @@ const MessageTemplates: FC = () => {
         if (waitSaveExport) {
             if (!resExportData.loading && !resExportData.error) {
                 dispatch(showBackdrop(false));
-                resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
+                resExportData.url?.split(",").forEach((x) => window.open(x, "_blank"));
                 setWaitSaveExport(false);
             } else if (resExportData.error) {
-                const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                const errormessage = t(resExportData.code || "error_unexpected_error", {
+                    module: t(langKeys.property).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
                 dispatch(showBackdrop(false));
                 setWaitSaveExport(false);
             }
         }
-    }, [resExportData, waitSaveExport])
+    }, [resExportData, waitSaveExport]);
 
     useEffect(() => {
         if (!(Object.keys(selectedRows).length === 0 && rowWithDataSelected.length === 0)) {
@@ -505,17 +507,27 @@ const MessageTemplates: FC = () => {
     };
 
     const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
-        const columnsExport = columns.filter(x => !x.isComponent).map(x => ({
-            key: x.accessor,
-            alias: x.Header
-        }))
-        dispatch(exportData(getMessageTemplateExport({
-            communicationchannelid: communicationChannel?.communicationchannelid || 0,
-            filters: {
-                ...filters,
-            },
-            sorts,
-        }), "", "excel", false, columnsExport));
+        const columnsExport = columns
+            .filter((x) => !x.isComponent)
+            .map((x) => ({
+                key: x.accessor,
+                alias: x.Header,
+            }));
+        dispatch(
+            exportData(
+                getMessageTemplateExport({
+                    communicationchannelid: communicationChannel?.communicationchannelid || 0,
+                    filters: {
+                        ...filters,
+                    },
+                    sorts,
+                }),
+                "",
+                "excel",
+                false,
+                columnsExport
+            )
+        );
         dispatch(showBackdrop(true));
         setWaitSaveExport(true);
     };
@@ -625,7 +637,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const addRequest = useSelector((state) => state.channel.requestAddTemplate);
     const classes = useStyles();
     const dataCategory = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataChannel = multiData[2] && multiData[2].success ? multiData[2].data.filter((x) => x.type !== "WHAG" && x.type !== "WHAM") : [];
+    const dataChannel =
+        multiData[2] && multiData[2].success
+            ? multiData[2].data.filter((x) => x.type !== "WHAG" && x.type !== "WHAM")
+            : [];
     const dataLanguage = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const executeRes = useSelector((state) => state.main.execute);
     const uploadResult = useSelector((state) => state.main.uploadFile);
@@ -649,10 +664,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [waitUploadFile, setWaitUploadFile] = useState(false);
 
     const dataNewCategory = [
-        { value: 'UTILITY', description: t(langKeys.TEMPLATE_UTILITY) },
-        { value: 'AUNTHENTICATION', description: t(langKeys.TEMPLATE_AUNTHENTICATION) },
-        { value: 'MARKETING', description: t(langKeys.TEMPLATE_MARKETING) },
-    ]
+        { value: "UTILITY", description: t(langKeys.TEMPLATE_UTILITY) },
+        { value: "AUNTHENTICATION", description: t(langKeys.TEMPLATE_AUNTHENTICATION) },
+        { value: "MARKETING", description: t(langKeys.TEMPLATE_MARKETING) },
+    ];
 
     const dataExternalCategory = [
         {

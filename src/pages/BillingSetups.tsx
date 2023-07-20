@@ -62,6 +62,7 @@ import {
 
 import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Popus from "components/layout/Popus";
 import TableZyx from "../components/fields/table-simple";
 import SaveIcon from "@material-ui/icons/Save";
 import ClearIcon from "@material-ui/icons/Clear";
@@ -1749,6 +1750,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
                     <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                         <Button
                             color="primary"
+                            disabled={executeRes.loading}
                             onClick={() => setViewSelected("view-1")}
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
@@ -1761,6 +1763,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
                             <Button
                                 className={classes.button}
                                 color="primary"
+                                disabled={executeRes.loading}
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
                                 type="submit"
@@ -1800,7 +1803,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
                             data={currencyList}
                             error={errors?.plancurrency?.message}
                             label={t(langKeys.billingconfiguration_plancurrency)}
-                            onChange={(value) => setValue("plancurrency", value?.domainvalue)}
+                            onChange={(value) => setValue("plancurrency", value?.value)}
                             optionDesc="description"
                             optionValue="value"
                             orderbylabel={true}
