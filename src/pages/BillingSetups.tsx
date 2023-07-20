@@ -1,6 +1,7 @@
 import { Box, FormControlLabel, Tabs, TextField } from "@material-ui/core";
 import { Dictionary, MultiData } from "@types";
 import { getCountryList } from "store/signup/actions";
+import { getExchangeRate } from "store/culqi/actions";
 import { langKeys } from "lang/keys";
 import { makeStyles } from "@material-ui/core/styles";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
@@ -60,6 +61,7 @@ import {
 } from "store/main/actions";
 
 import Button from "@material-ui/core/Button";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import TableZyx from "../components/fields/table-simple";
 import SaveIcon from "@material-ui/icons/Save";
 import ClearIcon from "@material-ui/icons/Clear";
@@ -74,6 +76,7 @@ interface RowSelected {
 interface DetailSupportPlanProps {
     data: RowSelected;
     dataPlan: any[];
+    exchangeData?: any;
     fetchData: () => void;
     setViewSelected: (view: string) => void;
 }
@@ -617,471 +620,479 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
         );
     });
 
-    return (
-        <div style={{ width: "100%" }}>
-            <form onSubmit={onSubmit}>
-                <div style={{ display: "flex", justifyContent: "end" }}>
-                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                        <Button
-                            className={classes.button}
-                            color="primary"
-                            startIcon={<SaveIcon color="secondary" />}
-                            style={{ backgroundColor: "#55BD84" }}
-                            type="submit"
-                            variant="contained"
-                        >
-                            {t(langKeys.save)}
-                        </Button>
+    if (executeResult.loading || mainResult.mainData.loading || multiResult.loading) {
+        return (
+            <div style={{ width: "100%" }}>
+                <CircularProgress />
+            </div>
+        );
+    } else {
+        return (
+            <div style={{ width: "100%" }}>
+                <form onSubmit={onSubmit}>
+                    <div style={{ display: "flex", justifyContent: "end" }}>
+                        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                            <Button
+                                className={classes.button}
+                                color="primary"
+                                startIcon={<SaveIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                                type="submit"
+                                variant="contained"
+                            >
+                                {t(langKeys.save)}
+                            </Button>
+                        </div>
                     </div>
-                </div>
-                <div className={classes.containerDetail}>
-                    <Typography style={{ fontSize: 20, paddingBottom: "10px" }} color="textPrimary">
-                        {t(langKeys.billingsetupgeneralinformation)}
-                    </Typography>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.ruc?.message}
-                            label={t(langKeys.billingsetupruc)}
-                            onChange={(value) => setValue("ruc", value)}
-                            valueDefault={getValues("ruc")}
-                        />
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.businessname?.message}
-                            label={t(langKeys.billingcompanyname)}
-                            onChange={(value) => setValue("businessname", value)}
-                            valueDefault={getValues("businessname")}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.tradename?.message}
-                            label={t(langKeys.billingcommercialname)}
-                            onChange={(value) => setValue("tradename", value)}
-                            valueDefault={getValues("tradename")}
-                        />
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.fiscaladdress?.message}
-                            label={t(langKeys.billingfiscaladdress)}
-                            onChange={(value) => setValue("fiscaladdress", value)}
-                            valueDefault={getValues("fiscaladdress")}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            className="col-6"
-                            disabled={blockUbigee}
-                            error={errors?.ubigeo?.message}
-                            label={t(langKeys.billingubigeocode)}
-                            onChange={(value) => setValue("ubigeo", value)}
-                            valueDefault={getValues("ubigeo")}
-                        />
-                        {showCountry ? (
-                            <FieldSelect
-                                className="col-6"
-                                data={dataPlan}
-                                error={errors?.country?.message}
-                                label={t(langKeys.billingcountry)}
-                                optionDesc="description"
-                                optionValue="code"
-                                orderbylabel={true}
-                                valueDefault={getValues("country")}
-                                onChange={(value) => {
-                                    setValue("country", value?.code);
-                                    if (value?.code !== "PE") {
-                                        setValue("ubigeo", "");
-                                        setBlockUbigee(true);
-                                    } else {
-                                        setBlockUbigee(false);
-                                    }
-                                }}
-                            />
-                        ) : (
+                    <div className={classes.containerDetail}>
+                        <Typography style={{ fontSize: 20, paddingBottom: "10px" }} color="textPrimary">
+                            {t(langKeys.billingsetupgeneralinformation)}
+                        </Typography>
+                        <div className="row-zyx">
                             <FieldEdit
                                 className="col-6"
-                                disabled={true}
-                                error={errors?.country?.message}
-                                label={t(langKeys.billingcountry)}
-                                valueDefault={""}
+                                error={errors?.ruc?.message}
+                                label={t(langKeys.billingsetupruc)}
+                                onChange={(value) => setValue("ruc", value)}
+                                valueDefault={getValues("ruc")}
                             />
-                        )}
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.businessname?.message}
+                                label={t(langKeys.billingcompanyname)}
+                                onChange={(value) => setValue("businessname", value)}
+                                valueDefault={getValues("businessname")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.tradename?.message}
+                                label={t(langKeys.billingcommercialname)}
+                                onChange={(value) => setValue("tradename", value)}
+                                valueDefault={getValues("tradename")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.fiscaladdress?.message}
+                                label={t(langKeys.billingfiscaladdress)}
+                                onChange={(value) => setValue("fiscaladdress", value)}
+                                valueDefault={getValues("fiscaladdress")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                disabled={blockUbigee}
+                                error={errors?.ubigeo?.message}
+                                label={t(langKeys.billingubigeocode)}
+                                onChange={(value) => setValue("ubigeo", value)}
+                                valueDefault={getValues("ubigeo")}
+                            />
+                            {showCountry ? (
+                                <FieldSelect
+                                    className="col-6"
+                                    data={dataPlan}
+                                    error={errors?.country?.message}
+                                    label={t(langKeys.billingcountry)}
+                                    optionDesc="description"
+                                    optionValue="code"
+                                    orderbylabel={true}
+                                    valueDefault={getValues("country")}
+                                    onChange={(value) => {
+                                        setValue("country", value?.code);
+                                        if (value?.code !== "PE") {
+                                            setValue("ubigeo", "");
+                                            setBlockUbigee(true);
+                                        } else {
+                                            setBlockUbigee(false);
+                                        }
+                                    }}
+                                />
+                            ) : (
+                                <FieldEdit
+                                    className="col-6"
+                                    disabled={true}
+                                    error={errors?.country?.message}
+                                    label={t(langKeys.billingcountry)}
+                                    valueDefault={""}
+                                />
+                            )}
+                        </div>
                     </div>
-                </div>
-                <div className={classes.containerDetail}>
-                    <Typography style={{ fontSize: 20, paddingBottom: "10px" }} color="textPrimary">
-                        {t(langKeys.billingsetupbillinginformation)}
-                    </Typography>
-                    <div className="row-zyx">
-                        <FieldSelect
-                            className="col-6"
-                            data={domainDocument.data}
-                            error={errors?.emittertype?.message}
-                            label={t(langKeys.billingemittertype)}
-                            loading={domainDocument.loading}
-                            onChange={(value) => setValue("emittertype", value?.domainvalue)}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                            orderbylabel={true}
-                            prefixTranslation="billingfield_"
-                            uset={true}
-                            valueDefault={getValues("emittertype")}
-                        />
-                        <FieldSelect
-                            className="col-6"
-                            data={domainCurrency.data}
-                            error={errors?.currency?.message}
-                            label={t(langKeys.billingcurrency)}
-                            loading={domainCurrency.loading}
-                            onChange={(value) => setValue("currency", value?.domainvalue)}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                            orderbylabel={true}
-                            prefixTranslation="billingfield_"
-                            uset={true}
-                            valueDefault={getValues("currency")}
-                        />
+                    <div className={classes.containerDetail}>
+                        <Typography style={{ fontSize: 20, paddingBottom: "10px" }} color="textPrimary">
+                            {t(langKeys.billingsetupbillinginformation)}
+                        </Typography>
+                        <div className="row-zyx">
+                            <FieldSelect
+                                className="col-6"
+                                data={domainDocument.data}
+                                error={errors?.emittertype?.message}
+                                label={t(langKeys.billingemittertype)}
+                                loading={domainDocument.loading}
+                                onChange={(value) => setValue("emittertype", value?.domainvalue)}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                                orderbylabel={true}
+                                prefixTranslation="billingfield_"
+                                uset={true}
+                                valueDefault={getValues("emittertype")}
+                            />
+                            <FieldSelect
+                                className="col-6"
+                                data={domainCurrency.data}
+                                error={errors?.currency?.message}
+                                label={t(langKeys.billingcurrency)}
+                                loading={domainCurrency.loading}
+                                onChange={(value) => setValue("currency", value?.domainvalue)}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                                orderbylabel={true}
+                                prefixTranslation="billingfield_"
+                                uset={true}
+                                valueDefault={getValues("currency")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.invoiceserie?.message}
+                                label={t(langKeys.billingserial)}
+                                onChange={(value) => setValue("invoiceserie", value)}
+                                valueDefault={getValues("invoiceserie")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.invoicecorrelative?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.billingcorrelative)}
+                                onChange={(value) => setValue("invoicecorrelative", value)}
+                                type="number"
+                                valueDefault={getValues("invoicecorrelative")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.ticketserie?.message}
+                                label={t(langKeys.ticketserial)}
+                                onChange={(value) => setValue("ticketserie", value)}
+                                valueDefault={getValues("ticketserie")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.ticketcorrelative?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.ticketcorrelative)}
+                                onChange={(value) => setValue("ticketcorrelative", value)}
+                                type="number"
+                                valueDefault={getValues("ticketcorrelative")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.invoicecreditserie?.message}
+                                label={t(langKeys.invoicecreditserial)}
+                                onChange={(value) => setValue("invoicecreditserie", value)}
+                                valueDefault={getValues("invoicecreditserie")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.invoicecreditcorrelative?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.invoicecreditcorrelative)}
+                                onChange={(value) => setValue("invoicecreditcorrelative", value)}
+                                type="number"
+                                valueDefault={getValues("invoicecreditcorrelative")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.ticketcreditserie?.message}
+                                label={t(langKeys.ticketcreditserial)}
+                                onChange={(value) => setValue("ticketcreditserie", value)}
+                                valueDefault={getValues("ticketcreditserie")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.ticketcreditcorrelative?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.ticketcreditcorrelative)}
+                                onChange={(value) => setValue("ticketcreditcorrelative", value)}
+                                type="number"
+                                valueDefault={getValues("ticketcreditcorrelative")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.annexcode?.message}
+                                label={t(langKeys.billingannexcode)}
+                                onChange={(value) => setValue("annexcode", value)}
+                                valueDefault={getValues("annexcode")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.igv?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.billingtax)}
+                                onChange={(value) => setValue("igv", value)}
+                                type="number"
+                                valueDefault={getValues("igv")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.detractioncode?.message}
+                                label={t(langKeys.detractioncode)}
+                                onChange={(value) => setValue("detractioncode", value)}
+                                valueDefault={getValues("detractioncode")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.detraction?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.detraction)}
+                                onChange={(value) => setValue("detraction", value)}
+                                type="number"
+                                valueDefault={getValues("detraction")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.detractionaccount?.message}
+                                label={t(langKeys.detractionaccount)}
+                                onChange={(value) => setValue("detractionaccount", value)}
+                                valueDefault={getValues("detractionaccount")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.detractionminimum?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.detractionminimum)}
+                                onChange={(value) => setValue("detractionminimum", value)}
+                                type="number"
+                                valueDefault={getValues("detractionminimum")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.operationcodeperu?.message}
+                                label={t(langKeys.operationcodeperu)}
+                                onChange={(value) => setValue("operationcodeperu", value)}
+                                valueDefault={getValues("operationcodeperu")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.operationcodeother?.message}
+                                label={t(langKeys.operationcodeother)}
+                                onChange={(value) => setValue("operationcodeother", value)}
+                                valueDefault={getValues("operationcodeother")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldSelect
+                                className="col-6"
+                                data={domainPrinting.data}
+                                error={errors?.printingformat?.message}
+                                label={t(langKeys.billingprintingformat)}
+                                loading={domainPrinting.loading}
+                                onChange={(value) => setValue("printingformat", value?.domainvalue)}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                                orderbylabel={true}
+                                prefixTranslation="billingfield_"
+                                uset={true}
+                                valueDefault={getValues("printingformat")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.xmlversion?.message}
+                                label={t(langKeys.billingxmlversion)}
+                                onChange={(value) => setValue("xmlversion", value)}
+                                valueDefault={getValues("xmlversion")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.ublversion?.message}
+                                label={t(langKeys.billingublversion)}
+                                onChange={(value) => setValue("ublversion", value)}
+                                valueDefault={getValues("ublversion")}
+                            />
+                            <TemplateSwitch
+                                className="col-6"
+                                label={t(langKeys.billingreturnpdf)}
+                                onChange={(value) => setValue("returnpdf", value)}
+                                valueDefault={getValues("returnpdf")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <TemplateSwitch
+                                className="col-6"
+                                label={t(langKeys.billingreturncsv)}
+                                onChange={(value) => setValue("returnxmlsunat", value)}
+                                valueDefault={getValues("returnxmlsunat")}
+                            />
+                            <TemplateSwitch
+                                className="col-6"
+                                label={t(langKeys.billingreturnxml)}
+                                onChange={(value) => setValue("returnxml", value)}
+                                valueDefault={getValues("returnxml")}
+                            />
+                        </div>
                     </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.invoiceserie?.message}
-                            label={t(langKeys.billingserial)}
-                            onChange={(value) => setValue("invoiceserie", value)}
-                            valueDefault={getValues("invoiceserie")}
-                        />
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.invoicecorrelative?.message}
-                            inputProps={{ step: "any" }}
-                            label={t(langKeys.billingcorrelative)}
-                            onChange={(value) => setValue("invoicecorrelative", value)}
-                            type="number"
-                            valueDefault={getValues("invoicecorrelative")}
-                        />
+                    <div className={classes.containerDetail}>
+                        <Typography style={{ fontSize: 20, paddingBottom: "10px" }} color="textPrimary">
+                            {t(langKeys.billingsetupsunatinformation)}
+                        </Typography>
+                        <div className="row-zyx">
+                            <FieldSelect
+                                className="col-6"
+                                data={domainInvoiceProvider.data}
+                                error={errors?.invoiceprovider?.message}
+                                label={t(langKeys.billinginvoiceprovider)}
+                                loading={domainInvoiceProvider.loading}
+                                onChange={(value) => setValue("invoiceprovider", value?.domainvalue)}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                                orderbylabel={true}
+                                prefixTranslation="billingfield_"
+                                uset={true}
+                                valueDefault={getValues("invoiceprovider")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.sunaturl?.message}
+                                label={t(langKeys.billingapiendpoint)}
+                                onChange={(value) => setValue("sunaturl", value)}
+                                valueDefault={getValues("sunaturl")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.token?.message}
+                                label={t(langKeys.billingtoken)}
+                                onChange={(value) => setValue("token", value)}
+                                valueDefault={getValues("token")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.sunatusername?.message}
+                                label={t(langKeys.billingusername)}
+                                onChange={(value) => setValue("sunatusername", value)}
+                                valueDefault={getValues("sunatusername")}
+                            />
+                        </div>
                     </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.ticketserie?.message}
-                            label={t(langKeys.ticketserial)}
-                            onChange={(value) => setValue("ticketserie", value)}
-                            valueDefault={getValues("ticketserie")}
-                        />
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.ticketcorrelative?.message}
-                            inputProps={{ step: "any" }}
-                            label={t(langKeys.ticketcorrelative)}
-                            onChange={(value) => setValue("ticketcorrelative", value)}
-                            type="number"
-                            valueDefault={getValues("ticketcorrelative")}
-                        />
+                    <div className={classes.containerDetail}>
+                        <Typography style={{ fontSize: 20, paddingBottom: "10px" }} color="textPrimary">
+                            {t(langKeys.billingsetuppaymentinformation)}
+                        </Typography>
+                        <div className="row-zyx">
+                            <FieldSelect
+                                className="col-6"
+                                data={domainPaymentProvider.data}
+                                error={errors?.paymentprovider?.message}
+                                label={t(langKeys.billingpaymentprovider)}
+                                loading={domainPaymentProvider.loading}
+                                onChange={(value) => setValue("paymentprovider", value?.domainvalue)}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                                orderbylabel={true}
+                                prefixTranslation="billingfield_"
+                                uset={true}
+                                valueDefault={getValues("paymentprovider")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.culqiurl?.message}
+                                label={t(langKeys.billingpaymentendpoint)}
+                                onChange={(value) => setValue("culqiurl", value)}
+                                valueDefault={getValues("culqiurl")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.publickey?.message}
+                                label={t(langKeys.billingpublickey)}
+                                onChange={(value) => setValue("publickey", value)}
+                                valueDefault={getValues("publickey")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.privatekey?.message}
+                                label={t(langKeys.billingprivatekey)}
+                                onChange={(value) => setValue("privatekey", value)}
+                                valueDefault={getValues("privatekey")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.culqiurlcardcreate?.message}
+                                label={t(langKeys.culqiurlcardcreate)}
+                                onChange={(value) => setValue("culqiurlcardcreate", value)}
+                                valueDefault={getValues("culqiurlcardcreate")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.culqiurlclient?.message}
+                                label={t(langKeys.culqiurlclient)}
+                                onChange={(value) => setValue("culqiurlclient", value)}
+                                valueDefault={getValues("culqiurlclient")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.culqiurltoken?.message}
+                                label={t(langKeys.culqiurltoken)}
+                                onChange={(value) => setValue("culqiurltoken", value)}
+                                valueDefault={getValues("culqiurltoken")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.culqiurlcharge?.message}
+                                label={t(langKeys.culqiurlcharge)}
+                                onChange={(value) => setValue("culqiurlcharge", value)}
+                                valueDefault={getValues("culqiurlcharge")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.culqiurlcardget?.message}
+                                label={t(langKeys.culqiurlcardget)}
+                                onChange={(value) => setValue("culqiurlcardget", value)}
+                                valueDefault={getValues("culqiurlcardget")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.culqiurlcarddelete?.message}
+                                label={t(langKeys.culqiurlcarddelete)}
+                                onChange={(value) => setValue("culqiurlcarddelete", value)}
+                                valueDefault={getValues("culqiurlcarddelete")}
+                            />
+                        </div>
                     </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.invoicecreditserie?.message}
-                            label={t(langKeys.invoicecreditserial)}
-                            onChange={(value) => setValue("invoicecreditserie", value)}
-                            valueDefault={getValues("invoicecreditserie")}
-                        />
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.invoicecreditcorrelative?.message}
-                            inputProps={{ step: "any" }}
-                            label={t(langKeys.invoicecreditcorrelative)}
-                            onChange={(value) => setValue("invoicecreditcorrelative", value)}
-                            type="number"
-                            valueDefault={getValues("invoicecreditcorrelative")}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.ticketcreditserie?.message}
-                            label={t(langKeys.ticketcreditserial)}
-                            onChange={(value) => setValue("ticketcreditserie", value)}
-                            valueDefault={getValues("ticketcreditserie")}
-                        />
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.ticketcreditcorrelative?.message}
-                            inputProps={{ step: "any" }}
-                            label={t(langKeys.ticketcreditcorrelative)}
-                            onChange={(value) => setValue("ticketcreditcorrelative", value)}
-                            type="number"
-                            valueDefault={getValues("ticketcreditcorrelative")}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.annexcode?.message}
-                            label={t(langKeys.billingannexcode)}
-                            onChange={(value) => setValue("annexcode", value)}
-                            valueDefault={getValues("annexcode")}
-                        />
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.igv?.message}
-                            inputProps={{ step: "any" }}
-                            label={t(langKeys.billingtax)}
-                            onChange={(value) => setValue("igv", value)}
-                            type="number"
-                            valueDefault={getValues("igv")}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.detractioncode?.message}
-                            label={t(langKeys.detractioncode)}
-                            onChange={(value) => setValue("detractioncode", value)}
-                            valueDefault={getValues("detractioncode")}
-                        />
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.detraction?.message}
-                            inputProps={{ step: "any" }}
-                            label={t(langKeys.detraction)}
-                            onChange={(value) => setValue("detraction", value)}
-                            type="number"
-                            valueDefault={getValues("detraction")}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.detractionaccount?.message}
-                            label={t(langKeys.detractionaccount)}
-                            onChange={(value) => setValue("detractionaccount", value)}
-                            valueDefault={getValues("detractionaccount")}
-                        />
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.detractionminimum?.message}
-                            inputProps={{ step: "any" }}
-                            label={t(langKeys.detractionminimum)}
-                            onChange={(value) => setValue("detractionminimum", value)}
-                            type="number"
-                            valueDefault={getValues("detractionminimum")}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.operationcodeperu?.message}
-                            label={t(langKeys.operationcodeperu)}
-                            onChange={(value) => setValue("operationcodeperu", value)}
-                            valueDefault={getValues("operationcodeperu")}
-                        />
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.operationcodeother?.message}
-                            label={t(langKeys.operationcodeother)}
-                            onChange={(value) => setValue("operationcodeother", value)}
-                            valueDefault={getValues("operationcodeother")}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldSelect
-                            className="col-6"
-                            data={domainPrinting.data}
-                            error={errors?.printingformat?.message}
-                            label={t(langKeys.billingprintingformat)}
-                            loading={domainPrinting.loading}
-                            onChange={(value) => setValue("printingformat", value?.domainvalue)}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                            orderbylabel={true}
-                            prefixTranslation="billingfield_"
-                            uset={true}
-                            valueDefault={getValues("printingformat")}
-                        />
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.xmlversion?.message}
-                            label={t(langKeys.billingxmlversion)}
-                            onChange={(value) => setValue("xmlversion", value)}
-                            valueDefault={getValues("xmlversion")}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.ublversion?.message}
-                            label={t(langKeys.billingublversion)}
-                            onChange={(value) => setValue("ublversion", value)}
-                            valueDefault={getValues("ublversion")}
-                        />
-                        <TemplateSwitch
-                            className="col-6"
-                            label={t(langKeys.billingreturnpdf)}
-                            onChange={(value) => setValue("returnpdf", value)}
-                            valueDefault={getValues("returnpdf")}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <TemplateSwitch
-                            className="col-6"
-                            label={t(langKeys.billingreturncsv)}
-                            onChange={(value) => setValue("returnxmlsunat", value)}
-                            valueDefault={getValues("returnxmlsunat")}
-                        />
-                        <TemplateSwitch
-                            className="col-6"
-                            label={t(langKeys.billingreturnxml)}
-                            onChange={(value) => setValue("returnxml", value)}
-                            valueDefault={getValues("returnxml")}
-                        />
-                    </div>
-                </div>
-                <div className={classes.containerDetail}>
-                    <Typography style={{ fontSize: 20, paddingBottom: "10px" }} color="textPrimary">
-                        {t(langKeys.billingsetupsunatinformation)}
-                    </Typography>
-                    <div className="row-zyx">
-                        <FieldSelect
-                            className="col-6"
-                            data={domainInvoiceProvider.data}
-                            error={errors?.invoiceprovider?.message}
-                            label={t(langKeys.billinginvoiceprovider)}
-                            loading={domainInvoiceProvider.loading}
-                            onChange={(value) => setValue("invoiceprovider", value?.domainvalue)}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                            orderbylabel={true}
-                            prefixTranslation="billingfield_"
-                            uset={true}
-                            valueDefault={getValues("invoiceprovider")}
-                        />
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.sunaturl?.message}
-                            label={t(langKeys.billingapiendpoint)}
-                            onChange={(value) => setValue("sunaturl", value)}
-                            valueDefault={getValues("sunaturl")}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.token?.message}
-                            label={t(langKeys.billingtoken)}
-                            onChange={(value) => setValue("token", value)}
-                            valueDefault={getValues("token")}
-                        />
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.sunatusername?.message}
-                            label={t(langKeys.billingusername)}
-                            onChange={(value) => setValue("sunatusername", value)}
-                            valueDefault={getValues("sunatusername")}
-                        />
-                    </div>
-                </div>
-                <div className={classes.containerDetail}>
-                    <Typography style={{ fontSize: 20, paddingBottom: "10px" }} color="textPrimary">
-                        {t(langKeys.billingsetuppaymentinformation)}
-                    </Typography>
-                    <div className="row-zyx">
-                        <FieldSelect
-                            className="col-6"
-                            data={domainPaymentProvider.data}
-                            error={errors?.paymentprovider?.message}
-                            label={t(langKeys.billingpaymentprovider)}
-                            loading={domainPaymentProvider.loading}
-                            onChange={(value) => setValue("paymentprovider", value?.domainvalue)}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                            orderbylabel={true}
-                            prefixTranslation="billingfield_"
-                            uset={true}
-                            valueDefault={getValues("paymentprovider")}
-                        />
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.culqiurl?.message}
-                            label={t(langKeys.billingpaymentendpoint)}
-                            onChange={(value) => setValue("culqiurl", value)}
-                            valueDefault={getValues("culqiurl")}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.publickey?.message}
-                            label={t(langKeys.billingpublickey)}
-                            onChange={(value) => setValue("publickey", value)}
-                            valueDefault={getValues("publickey")}
-                        />
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.privatekey?.message}
-                            label={t(langKeys.billingprivatekey)}
-                            onChange={(value) => setValue("privatekey", value)}
-                            valueDefault={getValues("privatekey")}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.culqiurlcardcreate?.message}
-                            label={t(langKeys.culqiurlcardcreate)}
-                            onChange={(value) => setValue("culqiurlcardcreate", value)}
-                            valueDefault={getValues("culqiurlcardcreate")}
-                        />
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.culqiurlclient?.message}
-                            label={t(langKeys.culqiurlclient)}
-                            onChange={(value) => setValue("culqiurlclient", value)}
-                            valueDefault={getValues("culqiurlclient")}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.culqiurltoken?.message}
-                            label={t(langKeys.culqiurltoken)}
-                            onChange={(value) => setValue("culqiurltoken", value)}
-                            valueDefault={getValues("culqiurltoken")}
-                        />
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.culqiurlcharge?.message}
-                            label={t(langKeys.culqiurlcharge)}
-                            onChange={(value) => setValue("culqiurlcharge", value)}
-                            valueDefault={getValues("culqiurlcharge")}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.culqiurlcardget?.message}
-                            label={t(langKeys.culqiurlcardget)}
-                            onChange={(value) => setValue("culqiurlcardget", value)}
-                            valueDefault={getValues("culqiurlcardget")}
-                        />
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.culqiurlcarddelete?.message}
-                            label={t(langKeys.culqiurlcarddelete)}
-                            onChange={(value) => setValue("culqiurlcarddelete", value)}
-                            valueDefault={getValues("culqiurlcarddelete")}
-                        />
-                    </div>
-                </div>
-            </form>
-        </div>
-    );
+                </form>
+            </div>
+        );
+    }
 };
 
 const IDCONTRACTEDPLAN = "IDCONTRACTEDPLAN";
-const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
+const ContractedPlanByPeriod: React.FC<{ dataPlan: any; exchangeData: any }> = ({ dataPlan, exchangeData }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -1156,11 +1167,35 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
             },
             {
                 accessor: "plan",
-                Header: "Plan",
+                Header: t(langKeys.billingconfiguration_plan),
+            },
+            {
+                Header: t(langKeys.billingconfiguration_plancurrency),
+                accessor: "plancurrency",
+            },
+            {
+                accessor: "vcacomission",
+                Header: t(langKeys.billingconfiguration_vcacomission),
+                sortType: "number",
+                type: "number",
+                Cell: (props: any) => {
+                    const { vcacomission } = props.cell.row.original;
+                    return formatNumberFourDecimals(vcacomission || 0);
+                },
+            },
+            {
+                accessor: "basicanualfee",
+                Header: t(langKeys.billingconfiguration_basicanualfee),
+                sortType: "number",
+                type: "number",
+                Cell: (props: any) => {
+                    const { basicanualfee } = props.cell.row.original;
+                    return formatNumber(basicanualfee || 0);
+                },
             },
             {
                 accessor: "basicfee",
-                Header: t(langKeys.costbasedonthecontractedplan),
+                Header: t(langKeys.billingconfiguration_basicfee),
                 sortType: "number",
                 type: "number",
                 Cell: (props: any) => {
@@ -1223,16 +1258,6 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 },
             },
             {
-                accessor: "channelwhatsappfee",
-                Header: t(langKeys.channelwhatsappfee),
-                sortType: "number",
-                type: "number",
-                Cell: (props: any) => {
-                    const { channelwhatsappfee } = props.cell.row.original;
-                    return formatNumberFourDecimals(channelwhatsappfee || 0);
-                },
-            },
-            {
                 accessor: "freewhatsappchannel",
                 Header: t(langKeys.contractedplanfreewhatsappchannel),
                 sortType: "number",
@@ -1240,6 +1265,16 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 Cell: (props: any) => {
                     const { freewhatsappchannel } = props.cell.row.original;
                     return formatNumberNoDecimals(freewhatsappchannel || 0);
+                },
+            },
+            {
+                accessor: "channelwhatsappfee",
+                Header: t(langKeys.channelwhatsappfee),
+                sortType: "number",
+                type: "number",
+                Cell: (props: any) => {
+                    const { channelwhatsappfee } = props.cell.row.original;
+                    return formatNumberFourDecimals(channelwhatsappfee || 0);
                 },
             },
             {
@@ -1426,7 +1461,7 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                             <FieldSelect
                                 className={classes.fieldsfilter}
                                 data={dataPlan}
-                                label="Plan"
+                                label={t(langKeys.billingconfiguration_plan)}
                                 onChange={(value) => setdataMain((prev) => ({ ...prev, plan: value?.plan || "" }))}
                                 optionDesc="plan"
                                 optionValue="plan"
@@ -1477,6 +1512,7 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
             <DetailContractedPlanByPeriod
                 data={rowSelected}
                 dataPlan={dataPlan}
+                exchangeData={exchangeData}
                 fetchData={fetchData}
                 setViewSelected={setViewSelected}
             />
@@ -1487,6 +1523,7 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
 const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
     data: { row, edit },
     dataPlan,
+    exchangeData,
     fetchData,
     setViewSelected,
 }) => {
@@ -1515,6 +1552,11 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
         { id: "view-2", name: t(langKeys.contractedplandetail) },
     ];
 
+    const currencyList = [
+        { value: "PEN", description: t(langKeys.billingconfiguration_pen) },
+        { value: "USD", description: t(langKeys.billingconfiguration_usd) },
+    ];
+
     const {
         formState: { errors },
         getValues,
@@ -1524,6 +1566,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
     } = useForm({
         defaultValues: {
             allowhsm: row?.allowhsm || false,
+            basicanualfee: row?.basicanualfee || 0,
             basicfee: row?.basicfee || 0,
             channelcreateoverride: row?.channelcreateoverride || false,
             channelfreequantity: row?.channelfreequantity || 0,
@@ -1538,11 +1581,13 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
             month: row?.month || new Date().getMonth() + 1,
             operation: row ? "UPDATE" : "INSERT",
             plan: row?.plan || "",
+            plancurrency: row ? row.plancurrency : "",
             status: row ? row.status : "ACTIVO",
             type: row ? row.type : "",
             useradditionalfee: row?.useradditionalfee || 0,
             usercreateoverride: row?.usercreateoverride || false,
             userfreequantity: row?.userfreequantity || 0,
+            vcacomission: row?.vcacomission || 0,
             vcacomissionperhsm: row?.vcacomissionperhsm || 0,
             vcacomissionpervoicechannel: row?.vcacomissionpervoicechannel || 0,
             whatsappconversationfreequantity: row?.whatsappconversationfreequantity || 0,
@@ -1571,10 +1616,16 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
         register("month");
         register("operation");
         register("plan", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register("plancurrency", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register("status");
         register("type");
         register("usercreateoverride");
         register("year");
+
+        register("basicanualfee", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
 
         register("basicfee", {
             validate: (value) =>
@@ -1617,6 +1668,11 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
         });
 
         register("userfreequantity", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
+
+        register("vcacomission", {
             validate: (value) =>
                 ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
         });
@@ -1732,24 +1788,55 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
                             className="col-6"
                             data={dataPlan}
                             error={errors?.plan?.message}
-                            label="Plan"
+                            label={t(langKeys.billingconfiguration_plan)}
                             onChange={(value) => setValue("plan", value?.plan)}
                             optionDesc="plan"
                             optionValue="plan"
                             orderbylabel={true}
                             valueDefault={getValues("plan")}
                         />
+                        <FieldSelect
+                            className="col-6"
+                            data={currencyList}
+                            error={errors?.plancurrency?.message}
+                            label={t(langKeys.billingconfiguration_plancurrency)}
+                            onChange={(value) => setValue("plancurrency", value?.domainvalue)}
+                            optionDesc="description"
+                            optionValue="value"
+                            orderbylabel={true}
+                            valueDefault={getValues("plancurrency")}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            className="col-6"
+                            error={errors?.vcacomission?.message}
+                            inputProps={{ step: "any" }}
+                            label={t(langKeys.billingconfiguration_vcacomission)}
+                            onChange={(value) => setValue("vcacomission", value)}
+                            type="number"
+                            valueDefault={getValues("vcacomission")}
+                        />
+                        <FieldEdit
+                            className="col-6"
+                            error={errors?.basicanualfee?.message}
+                            inputProps={{ step: "any" }}
+                            label={t(langKeys.billingconfiguration_basicanualfee)}
+                            onChange={(value) => setValue("basicanualfee", value)}
+                            type="number"
+                            valueDefault={getValues("basicanualfee")}
+                        />
+                    </div>
+                    <div className="row-zyx">
                         <FieldEdit
                             className="col-6"
                             error={errors?.basicfee?.message}
                             inputProps={{ step: "any" }}
-                            label={t(langKeys.costbasedonthecontractedplan)}
+                            label={t(langKeys.billingconfiguration_basicfee)}
                             onChange={(value) => setValue("basicfee", value)}
                             type="number"
                             valueDefault={getValues("basicfee")}
                         />
-                    </div>
-                    <div className="row-zyx">
                         <FieldEdit
                             className="col-6"
                             error={errors?.userfreequantity?.message}
@@ -1758,6 +1845,8 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
                             type="number"
                             valueDefault={getValues("userfreequantity")}
                         />
+                    </div>
+                    <div className="row-zyx">
                         <FieldEdit
                             className="col-6"
                             error={errors?.useradditionalfee?.message}
@@ -1767,8 +1856,6 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
                             type="number"
                             valueDefault={getValues("useradditionalfee")}
                         />
-                    </div>
-                    <div className="row-zyx">
                         <div className={"col-6"} style={{ paddingBottom: "3px" }}>
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">
                                 {t(langKeys.allowuseroverride)}
@@ -1911,6 +1998,11 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
                             onChange={(value) => setValue("vcacomissionpervoicechannel", value)}
                             type="number"
                             valueDefault={getValues("vcacomissionpervoicechannel")}
+                        />
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.billingconfiguration_exchangerate)}
+                            value={formatNumber(exchangeData || 0)}
                         />
                     </div>
                 </div>
@@ -3540,7 +3632,7 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({
                             className="col-6"
                             data={dataPlan}
                             error={errors?.plan?.message}
-                            label="Plan"
+                            label={t(langKeys.supportplan)}
                             onChange={(value) => setValue("plan", value?.description)}
                             optionDesc="description"
                             optionValue="description"
@@ -4095,37 +4187,46 @@ const BillingSetup: FC = () => {
 
     const { t } = useTranslation();
 
-    const countryListreq = useSelector((state) => state.signup.countryList);
-    const multiData = useSelector((state) => state.main.multiData);
+    const countryResult = useSelector((state) => state.signup.countryList);
+    const exchangeResult = useSelector((state) => state.culqi.requestGetExchangeRate);
+    const multiResult = useSelector((state) => state.main.multiData);
     const user = useSelector((state) => state.login.validateToken.user);
 
-    const [countryList, setcountryList] = useState<any>([]);
-    const [dataPaymentPlan, setdataPaymentPlan] = useState<any>([]);
-    const [dataPlan, setdataPlan] = useState<any>([]);
+    const [countryList, setCountryList] = useState<any>([]);
+    const [dataPaymentPlan, setDataPaymentPlan] = useState<any>([]);
+    const [dataPlan, setDataPlan] = useState<any>([]);
+    const [exchangeData, setExchangeData] = useState(0.0);
     const [pageSelected, setPageSelected] = useState(user?.roledesc === "SUPERADMIN" ? 0 : 6);
     const [planList, setPlanList] = useState<any>([]);
     const [providerList, setProviderList] = useState<any>([]);
-    const [sentfirstinfo, setsentfirstinfo] = useState(false);
+    const [sentFirstInfo, setSentFirstInfo] = useState(false);
 
     useEffect(() => {
-        if (!multiData.loading && sentfirstinfo) {
-            setsentfirstinfo(false);
-            setdataPaymentPlan(multiData.data[3] && multiData.data[3].success ? multiData.data[3].data : []);
-            setdataPlan(multiData.data[0] && multiData.data[0].success ? multiData.data[0].data : []);
-            setPlanList(multiData.data[4] && multiData.data[4].success ? multiData.data[4].data : []);
-            setProviderList(multiData.data[5] && multiData.data[5].success ? multiData.data[5].data : []);
+        if (!multiResult.loading && sentFirstInfo) {
+            setSentFirstInfo(false);
+            setDataPaymentPlan(multiResult.data[3] && multiResult.data[3].success ? multiResult.data[3].data : []);
+            setDataPlan(multiResult.data[0] && multiResult.data[0].success ? multiResult.data[0].data : []);
+            setPlanList(multiResult.data[4] && multiResult.data[4].success ? multiResult.data[4].data : []);
+            setProviderList(multiResult.data[5] && multiResult.data[5].success ? multiResult.data[5].data : []);
         }
-    }, [multiData]);
+    }, [multiResult]);
 
     useEffect(() => {
-        if (!countryListreq.loading && countryListreq.data.length) {
-            setcountryList(countryListreq.data);
+        if (!countryResult.loading && countryResult.data.length) {
+            setCountryList(countryResult.data);
         }
-    }, [countryListreq]);
+    }, [countryResult]);
 
     useEffect(() => {
-        setsentfirstinfo(true);
+        if (!exchangeResult.loading && exchangeResult.exchangerate) {
+            setExchangeData(exchangeResult.exchangerate);
+        }
+    }, [exchangeResult]);
+
+    useEffect(() => {
+        setSentFirstInfo(true);
         dispatch(getCountryList());
+        dispatch(getExchangeRate(null));
         dispatch(
             getMultiCollection([
                 getPlanSel(),
@@ -4162,7 +4263,7 @@ const BillingSetup: FC = () => {
             )}
             {pageSelected === 1 && (
                 <div style={{ marginTop: 16 }}>
-                    <ContractedPlanByPeriod dataPlan={dataPaymentPlan} />
+                    <ContractedPlanByPeriod dataPlan={dataPaymentPlan} exchangeData={exchangeData} />
                 </div>
             )}
             {pageSelected === 2 && (
