@@ -223,6 +223,22 @@ const MessageTemplates: FC = () => {
                 Header: t(langKeys.name),
             },
             {
+                accessor: "category",
+                Header: t(langKeys.category),
+                Cell: (props: any) => {
+                    const { category, type } = props.cell.row.original;
+                    return (type === 'HSM' ? t(`TEMPLATE_${category}`) : category).toUpperCase()
+                },
+            },
+            {
+                accessor: "body",
+                Header: t(langKeys.body),
+                Cell: (props: any) => {
+                    const { body } = props.cell.row.original;
+                    return (body && body.length > 40) ? `${body.substring(0, 40)}...` : body
+                }
+            },
+            {
                 accessor: "namespace",
                 Header: t(langKeys.namespace),
             },
@@ -631,6 +647,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [waitAdd, setWaitAdd] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
+
+    const dataNewCategory = [
+        { value: 'UTILITY', description: t(langKeys.TEMPLATE_UTILITY) },
+        { value: 'AUNTHENTICATION', description: t(langKeys.TEMPLATE_AUNTHENTICATION) },
+        { value: 'MARKETING', description: t(langKeys.TEMPLATE_MARKETING) },
+    ]
 
     const dataExternalCategory = [
         {
@@ -1499,12 +1521,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         />
                     </div>
                     <div className="row-zyx">
-                        {isProvider && (
+                        {getValues("type") === "HSM" && (
                             <>
                                 {isNew && (
                                     <FieldSelect
                                         className="col-6"
-                                        data={dataExternalCategory}
+                                        data={dataNewCategory}
                                         disabled={disableInput}
                                         error={errors?.category?.message}
                                         label={t(langKeys.category)}
@@ -1523,7 +1545,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 )}
                             </>
                         )}
-                        {!isProvider && (
+                        {getValues("type") !== "HSM" && (
                             <FieldSelect
                                 className="col-6"
                                 data={dataCategory}

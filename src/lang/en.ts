@@ -4427,6 +4427,8 @@ const translation: LangKeys = {
   messagetemplate_synchronize_alert03: "The selected templates will be updated according to the their latest status in the Meta platform.",
 
   TEMPLATE_ACCOUNT_UPDATE: "ACCOUNT UPDATE",
+  TEMPLATE_UTILITY: "UTILITY",
+  TEMPLATE_AUNTHENTICATION: "AUNTHENTICATION",
   TEMPLATE_PAYMENT_UPDATE: "PAYMENT UPDATE",
   TEMPLATE_PERSONAL_FINANCE_UPDATE: "PERSONAL FINANCE UPDATE",
   TEMPLATE_SHIPPING_UPDATE: "SHIPPING UPDATE",

@@ -4350,6 +4350,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   messagetemplate_synchronize_alert03: "Las plantillas seleccionadas sera actualizadas de acuerdo a su ultimo estado en Meta.",
 
   TEMPLATE_ACCOUNT_UPDATE: "ACTUALIZACIÓN DE CUENTA",
+  TEMPLATE_UTILITY: "UTILITY",
+  TEMPLATE_AUNTHENTICATION: "AUNTHENTICATION",
   TEMPLATE_PAYMENT_UPDATE: "ACTUALIZACIÓN DE PAGO",
   TEMPLATE_PERSONAL_FINANCE_UPDATE: "ACTUALIZACIÓN DE FINANZAS PERSONALES",
   TEMPLATE_SHIPPING_UPDATE: "ACTUALIZACIÓN DE ENVÍO",
