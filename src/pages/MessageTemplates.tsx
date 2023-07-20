@@ -214,11 +214,6 @@ const MessageTemplates: FC = () => {
                 prefixTranslation: "messagetemplate_",
             },
             {
-                accessor: "templatetype",
-                Header: t(langKeys.templatetype),
-                prefixTranslation: "messagetemplate_",
-            },
-            {
                 accessor: "name",
                 Header: t(langKeys.name),
             },
@@ -231,47 +226,20 @@ const MessageTemplates: FC = () => {
                 },
             },
             {
+                accessor: "language",
+                Header: t(langKeys.language),
+            },
+            {
+                accessor: "templatetype",
+                Header: t(langKeys.templatetype),
+                prefixTranslation: "messagetemplate_",
+            },
+            {
                 accessor: "body",
                 Header: t(langKeys.body),
                 Cell: (props: any) => {
                     const { body } = props.cell.row.original;
                     return body && body.length > 40 ? `${body.substring(0, 40)}...` : body;
-                },
-            },
-            {
-                accessor: "namespace",
-                Header: t(langKeys.namespace),
-            },
-            {
-                accessor: "status",
-                Header: t(langKeys.status),
-                NoFilter: true,
-                prefixTranslation: "status_",
-                Cell: (props: any) => {
-                    const { status } = props.cell.row.original;
-                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
-                },
-            },
-            {
-                accessor: "fromprovider",
-                Header: t(langKeys.messagetemplate_fromprovider),
-                NoFilter: true,
-                Cell: (props: any) => {
-                    const { fromprovider } = props.cell.row.original;
-                    return (fromprovider ? t(langKeys.yes) : t(langKeys.no)).toUpperCase();
-                },
-            },
-            {
-                accessor: "communicationchanneldesc",
-                Header: t(langKeys.communicationchanneldesc),
-            },
-            {
-                accessor: "externalstatus",
-                Header: t(langKeys.messagetemplate_externalstatus),
-                NoFilter: true,
-                Cell: (props: any) => {
-                    const { externalstatus } = props.cell.row.original;
-                    return (externalstatus ? t(`TEMPLATE_${externalstatus}`) : t(langKeys.none)).toUpperCase();
                 },
             },
         ],
