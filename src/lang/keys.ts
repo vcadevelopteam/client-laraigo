@@ -5213,6 +5213,14 @@ export const langKeys = {
   openpay_message06: 'openpay_message06',
   openpay_message07: 'openpay_message07',
   openpay_message08: 'openpay_message08',
+  billingconfiguration_plancurrency: 'billingconfiguration_plancurrency',
+  billingconfiguration_vcacomission: 'billingconfiguration_vcacomission',
+  billingconfiguration_basicanualfee: 'billingconfiguration_basicanualfee',
+  billingconfiguration_basicfee: 'billingconfiguration_basicfee',
+  billingconfiguration_exchangerate: 'billingconfiguration_exchangerate',
+  billingconfiguration_plan: 'billingconfiguration_plan',
+  billingconfiguration_usd: 'billingconfiguration_usd',
+  billingconfiguration_pen: 'billingconfiguration_pen',
 };
 
 export type LangKeys = typeof langKeys;
