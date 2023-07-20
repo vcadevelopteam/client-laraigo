@@ -503,13 +503,13 @@ export const SynonimsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected
                                         style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
                                         onClick={handleDelete}
                                     >{t(langKeys.delete)}</Button>
-                                    <Tooltip title={(dataModelAi.loading || trainResult.loading)?"El modelo ya se encuentra entrenado con la configuración actual": ""} placement="top">
+                                    <Tooltip title={(dataModelAi.loading || mainResult.mainData.data.some(x=>x.model_trained) || trainResult.loading)?"El modelo ya se encuentra entrenado con la configuración actual": ""} placement="top">
                                         <Button
                                             variant="contained"
                                             type="button"
                                             color="primary"
-                                            disabled={dataModelAi.loading|| trainResult.loading}
-                                            style={{ backgroundColor: (dataModelAi.loading || trainResult.loading)?"#dbdbdc":"#7721ad" }}
+                                            disabled={dataModelAi.loading|| trainResult.loading || mainResult.mainData.data.some(x=>x.model_trained)}
+                                            style={{ backgroundColor: (dataModelAi.loading || mainResult.mainData.data.some(x=>x.model_trained) || trainResult.loading)?"#dbdbdc":"#7721ad" }}
                                             onClick={()=>{dispatch(trainrasaia({model_uuid: dataModelAi?.data?.[0]?.model_uuid||""}));setSendTrainCall(true);}}
                                         >{t(langKeys.train)}</Button>
                                     </Tooltip>
