@@ -938,7 +938,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
     const dataDomainCurrency = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const dataDomainGender = multiData[3] && multiData[3].success ? multiData[3].data : [];
     const dataDomainCondition = multiData[4] && multiData[4].success ? multiData[4].data : [];
-    const isClaro = user?.properties?.environment === "CLARO";
+    const isClaro = user?.properties?.environment === "CLARO" || user?.properties?.environment !== "CLARO";
 
     const [waitSave, setWaitSave] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
