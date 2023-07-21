@@ -32,7 +32,7 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
         options: [paths.DASHBOARD,paths.REPORTS,paths.KPIMANAGER]
     },
     {
-        key: "crm",
+        key: "CRM",
         description: <Trans i18nKey={langKeys.crm} />,
         tooltip: <Trans i18nKey={langKeys.crm} />,
         icon: (className) => <ReportsIcon style={{ width: 22, height: 22 }} className={className} />,
@@ -236,6 +236,34 @@ export const routes: RouteConfig[] = [
     //     description: <Trans i18nKey={langKeys.outboundMessage} count={2} />,
     //     tooltip: <Trans i18nKey={langKeys.outboundMessage} count={2} />,
     // },
+    {
+        key: paths.CORPORATIONS,
+        description: <Trans i18nKey={langKeys.corporation} />,
+        tooltip: <Trans i18nKey={langKeys.corporation} />,
+        subroute: true,
+        path: paths.CORPORATIONS,
+        initialSubroute: paths.CORPORATIONS,
+        icon: (className) => <ConfigurationIcon style={{ width: 22, height: 22 }} className={className} />,
+    },
+    {
+        key: paths.ORGANIZATIONS,
+        description: <Trans i18nKey={langKeys.organization} />,
+        tooltip: <Trans i18nKey={langKeys.organization} />,
+        subroute: true,
+        path: paths.ORGANIZATIONS,
+        initialSubroute: paths.ORGANIZATIONS,
+        icon: (className) => <ConfigurationIcon style={{ width: 22, height: 22 }} className={className} />,
+    },
+    {
+        key: paths.CHANNELS,
+        description: <Trans i18nKey={langKeys.channel} />,
+        tooltip: <Trans i18nKey={langKeys.channel} />,
+        subroute: true,
+        path: paths.CHANNELS,
+        initialSubroute: paths.CHANNELS,
+        icon: (className) => <ConfigurationIcon style={{ width: 22, height: 22 }} className={className} />,
+    },
+
     {
         key: paths.MESSAGETEMPLATE,
         description: <Trans i18nKey={langKeys.messagetemplate} count={2} />,
