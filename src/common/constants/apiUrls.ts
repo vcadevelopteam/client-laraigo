@@ -1,4 +1,4 @@
-const ENV = "TESTING";
+const ENV = "DEVELOP";
 
 const APIS_URL = {
     DEVELOP: {
@@ -311,7 +311,10 @@ export const apiUrls = {
     RASAUPLOADINT: `${BASE_URL}/rasa/upload`,
     RASAMODELLIST: `${BASE_URL}/rasa/list`,
 
+
+    GENERATE_APIKEY: `${BASE_URL}/user/generatetoken`,
     INTEGRATION_URL: `${BASE_URL}/load`,
+    REPORT_DATA: `${BASE_URL}/report-data/`,
     CHANNELS: `${BASE_URL}/channel`,
     GET_PAGELIST: `${BASE_URL}/channel/getpagelist`,
     GET_PHONELIST: `${BASE_URL}/channel/getphonelist`,

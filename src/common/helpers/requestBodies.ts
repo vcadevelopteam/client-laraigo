@@ -1552,6 +1552,7 @@ export const insertReportTemplate = (
         filterjson,
         dataorigin,
         summaryjson,
+        nameapi,
         operation }: Dictionary
 ) => ({
     method: "UFN_REPORTTEMPLATE_INS",
@@ -1565,6 +1566,7 @@ export const insertReportTemplate = (
         summaryjson,
         dataorigin,
         communicationchannelid: '',
+        nameapi,
         operation,
     },
 });

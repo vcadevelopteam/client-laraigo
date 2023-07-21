@@ -833,6 +833,10 @@ const translation: LangKeys = {
   tablePageOf: 'Page <0>{{currentPage}}</0> of <1>{{totalPages}}</1>',
   tableShowingRecordOf: 'Showing {{itemCount}} records of {{totalItems}}',
   tableShowingRecordOfMore: 'Showing {{itemCount}} records of {{totalItems}} or more',
+  integration_intro: 'This integration will allow you to consume reports via API. To enable it, you must add the name of the parameters to the name of the parameter without placing special characters, spaces, or capital letters. When you enter it automatically it will be added to the link.',
+  integration_apikey_intro: 'The api key will go as Authorization Bearer token',
+  integration_json_intro: 'You can manually edit the bold text, if required',
+
   tipification: 'Tipification',
   tipification_plural: 'Classifications',
 

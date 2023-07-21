@@ -62,6 +62,10 @@ export function testRequest(data: Dictionary) {
     return APIManager.post(apiUrls.TEST_REQUEST, { data: data }, true);
 }
 
+export function generateApiKey() {
+    return APIManager.get(apiUrls.GENERATE_APIKEY, {  }, true);
+}
+
 export function mainGraphic(requestBody: IRequestBody) {
     return APIManager.post(apiUrls.MAIN_GRAPHIC, { data: requestBody }, true);
 }
