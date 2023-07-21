@@ -53,6 +53,7 @@ const checkSubRoutes = (pathname: string) => {
 
 const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig, classname: string }> =
     ({ classes, config, classname }) => {
+        const applications = useSelector(state => state.login?.validateToken?.user?.menu);
 
 
 
@@ -69,15 +70,12 @@ const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig,
             // }
             console.log(path);
         }
-        // debugger;
         const navigationRoutes = config.options.map(
             (option: string) =>
                 routes.find(route => route?.path === option)
                 || subroutes.find(route => route?.path === option));
 
-        // debugger;
-        console.log(navigationRoutes);
-        const filteredNavigationRoutes = navigationRoutes.filter((route: any) => route !== undefined);
+        const filteredNavigationRoutes = navigationRoutes.filter((route: any) => (route !== undefined && applications?.[route.key]?.[0]));
         const numElements = filteredNavigationRoutes.length;
 
         // const getColumnCount = () => {
@@ -214,8 +212,14 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
     const voxiConnection = useSelector(state => state.voximplant.connection);
     const location = useLocation();
     const userConnected = useSelector(state => state.inbox.userConnected);
-    console.log(applications)
-    console.log(viewsClassifications)
+    const showableViews = viewsClassifications.reduce((acc:any,x:any)=>{
+        let findPermit = x.options.find((key:any) => applications?.[key] && (applications?.[key]?.[0]))
+        if(findPermit){
+            return [...acc,x]
+        }else{
+            return acc;
+        }
+    }, [])
     return (
         <Drawer
             className={clsx(classes.drawer, {
@@ -235,7 +239,7 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
         >
             <div style={{ overflowX: 'hidden', borderRight: '1px solid #EBEAED', marginTop: headerHeight }}>
                 {/* {routes.map((ele) => (applications && applications[ele.key] && applications[ele.key][0]) ? <LinkList classes={classes} config={ele} key={ele.key} open={openDrawer} /> : null)} */}
-                {viewsClassifications.map((route) => (applications) ? <LinkList classes={classes} config={route} key={route.key + '_upper'} open={openDrawer} /> : null)}
+                {showableViews.map((route:any) => (applications) ? <LinkList classes={classes} config={route} key={route.key + '_upper'} open={openDrawer} /> : null)}
                 {(!voxiConnection.error && !voxiConnection.loading && !openDrawer && location.pathname === "/message_inbox" && userConnected) && (
                     <ListItem
                         button
