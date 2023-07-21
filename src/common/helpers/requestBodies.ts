@@ -2836,10 +2836,10 @@ export const getBillingSupportSel = ({ year, month, plan }: Dictionary): IReques
     parameters: { year, month, plan }
 })
 
-export const billingSupportIns = ({ year, month, plan, basicfee, starttime, finishtime, status, description, id, type, operation }: Dictionary): IRequestBody => ({
+export const billingSupportIns = ({ year, month, plan, basicfee, starttime, finishtime, plancurrency, status, description, id, type, operation }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGSUPPORT_INS",
     key: "UFN_BILLINGSUPPORT_INS",
-    parameters: { year, month, plan, basicfee, starttime, finishtime, status, type, description, operation, id }
+    parameters: { year, month, plan, basicfee, starttime, finishtime, plancurrency, status, type, description, operation, id }
 })
 
 export const getBillingConfigurationSel = ({ year, month, plan }: Dictionary): IRequestBody => ({
@@ -2860,11 +2860,10 @@ export const getBillingConversationSel = ({ year, month, countrycode = "" }: Dic
     parameters: { year, month, countrycode: countrycode ? countrycode : "" }
 })
 
-
-export const billingConversationIns = ({ year, month, countrycode, id, companystartfee, clientstartfee, vcacomission, freeconversations, description, status, type, operation }: Dictionary): IRequestBody => ({
+export const billingConversationIns = ({ id, year, month, countrycode, vcacomission, description, status, type, plancurrency, businessutilityfee, businessauthenticationfee, businessmarketingfee, usergeneralfee, freequantity, username, operation }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGCONVERSATION_INS",
     key: "UFN_BILLINGCONVERSATION_INS",
-    parameters: { year, month, countrycode, id, companystartfee, clientstartfee, vcacomission, freeconversations, description, status, type, operation }
+    parameters: { id, year, month, countrycode, vcacomission, description, status, type, plancurrency, businessutilityfee, businessauthenticationfee, businessmarketingfee, usergeneralfee, freequantity, username, operation }
 })
 
 export const getBillingPeriodSel = ({ corpid, orgid, year, month, billingplan, supportplan }: Dictionary): IRequestBody => ({

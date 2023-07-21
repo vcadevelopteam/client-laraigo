@@ -3,6 +3,11 @@
 import { Dictionary } from "@types";
 // import * as XLSX from 'xlsx';
 
+export const currencyList = [
+    { value: "PEN", description: "PEN" },
+    { value: "USD", description: "USD" },
+];
+
 export const dataYears = Array.from(Array(21).keys()).map(x => ({ value: `${new Date().getFullYear() + x - 10}` }));
 
 export const dataMonths = [

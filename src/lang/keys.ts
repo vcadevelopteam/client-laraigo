@@ -5221,6 +5221,14 @@ export const langKeys = {
   billingconfiguration_plan: 'billingconfiguration_plan',
   billingconfiguration_usd: 'billingconfiguration_usd',
   billingconfiguration_pen: 'billingconfiguration_pen',
+  billingconversation_vcacomission: 'billingconversation_vcacomission',
+  billingconversation_plancurrency: 'billingconversation_plancurrency',
+  billingconversation_businessutilityfee: 'billingconversation_businessutilityfee',
+  billingconversation_businessauthenticationfee: 'billingconversation_businessauthenticationfee',
+  billingconversation_businessmarketingfee: 'billingconversation_businessmarketingfee',
+  billingconversation_usergeneralfee: 'billingconversation_usergeneralfee',
+  billingconversation_freequantity: 'billingconversation_freequantity',
+  billingsupport_plancurrency: 'billingsupport_plancurrency',
 };
 
 export type LangKeys = typeof langKeys;

@@ -502,7 +502,8 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
                             handleClick={setViewSelected}
                             breadcrumbs={arrayBread(t(langKeys.timesheet), t(langKeys.timesheet_detail))}
                         />
-                        <TitleDetail title={t(langKeys.timesheet_new)} />
+                        {row && <TitleDetail title={t(langKeys.timesheet)} />}
+                        {!row && <TitleDetail title={t(langKeys.timesheet_new)} />}
                     </div>
                     <div
                         style={{
@@ -661,7 +662,6 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
                             size="small"
                             type="time"
                             valueDefault={getValues("timeduration")}
-                            variant="outlined"
                         />
                         <FieldEdit
                             className="col-6"

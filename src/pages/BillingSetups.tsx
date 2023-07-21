@@ -20,6 +20,7 @@ import {
     billingConversationIns,
     billingMessagingIns,
     billingSupportIns,
+    currencyList,
     dataMonths,
     dataYears,
     formatNumber,
@@ -1170,8 +1171,8 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any; exchangeData: any }> = (
                 Header: t(langKeys.billingconfiguration_plan),
             },
             {
-                Header: t(langKeys.billingconfiguration_plancurrency),
                 accessor: "plancurrency",
+                Header: t(langKeys.billingconfiguration_plancurrency),
             },
             {
                 accessor: "vcacomission",
@@ -1552,11 +1553,6 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
         { id: "view-2", name: t(langKeys.contractedplandetail) },
     ];
 
-    const currencyList = [
-        { value: "PEN", description: t(langKeys.billingconfiguration_pen) },
-        { value: "USD", description: t(langKeys.billingconfiguration_usd) },
-    ];
-
     const {
         formState: { errors },
         getValues,
@@ -1566,13 +1562,13 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
     } = useForm({
         defaultValues: {
             allowhsm: row?.allowhsm || false,
-            basicanualfee: row?.basicanualfee || 0,
-            basicfee: row?.basicfee || 0,
+            basicanualfee: row?.basicanualfee || 0.0,
+            basicfee: row?.basicfee || 0.0,
             channelcreateoverride: row?.channelcreateoverride || false,
             channelfreequantity: row?.channelfreequantity || 0,
-            channelotherfee: row?.channelotherfee || 0,
-            channelwhatsappfee: row?.channelwhatsappfee || 0,
-            clientadditionalfee: row?.clientadditionalfee || 0,
+            channelotherfee: row?.channelotherfee || 0.0,
+            channelwhatsappfee: row?.channelwhatsappfee || 0.0,
+            clientadditionalfee: row?.clientadditionalfee || 0.0,
             clientfreequantity: row?.clientfreequantity || 0,
             description: row ? row.description : "",
             freewhatsappchannel: row?.freewhatsappchannel || 0,
@@ -1744,7 +1740,8 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <div>
                         <TemplateBreadcrumbs breadcrumbs={arrayBreadContractedPlan} handleClick={setViewSelected} />
-                        <TitleDetail title={row ? `${row.description}` : t(langKeys.newcontractedplanbyperiod)} />
+                        {row && <TitleDetail title={t(langKeys.contractedplan)} />}
+                        {!row && <TitleDetail title={t(langKeys.newcontractedplanbyperiod)} />}
                     </div>
                     <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                         <Button
@@ -2014,7 +2011,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
 };
 
 const IDCONVERSATIONCOST = "IDCONVERSATIONCOST";
-const ConversationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
+const ConversationCost: React.FC<{ dataPlan: any; exchangeData: any }> = ({ dataPlan, exchangeData }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -2096,23 +2093,67 @@ const ConversationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
                 Header: t(langKeys.country),
             },
             {
-                accessor: "companystartfee",
-                Header: t(langKeys.coststartedbycompany),
+                accessor: "vcacomission",
+                Header: t(langKeys.billingconversation_vcacomission),
                 sortType: "number",
                 type: "number",
                 Cell: (props: any) => {
-                    const { companystartfee } = props.cell.row.original;
-                    return formatNumberFourDecimals(companystartfee || 0);
+                    const { vcacomission } = props.cell.row.original;
+                    return formatNumberFourDecimals(vcacomission || 0);
                 },
             },
             {
-                accessor: "clientstartfee",
-                Header: t(langKeys.customerinitiatedcost),
+                accessor: "plancurrency",
+                Header: t(langKeys.billingconversation_plancurrency),
+            },
+            {
+                accessor: "businessutilityfee",
+                Header: t(langKeys.billingconversation_businessutilityfee),
                 sortType: "number",
                 type: "number",
                 Cell: (props: any) => {
-                    const { clientstartfee } = props.cell.row.original;
-                    return formatNumberFourDecimals(clientstartfee || 0);
+                    const { businessutilityfee } = props.cell.row.original;
+                    return formatNumberFourDecimals(businessutilityfee || 0);
+                },
+            },
+            {
+                accessor: "businessauthenticationfee",
+                Header: t(langKeys.billingconversation_businessauthenticationfee),
+                sortType: "number",
+                type: "number",
+                Cell: (props: any) => {
+                    const { businessauthenticationfee } = props.cell.row.original;
+                    return formatNumberFourDecimals(businessauthenticationfee || 0);
+                },
+            },
+            {
+                accessor: "businessmarketingfee",
+                Header: t(langKeys.billingconversation_businessmarketingfee),
+                sortType: "number",
+                type: "number",
+                Cell: (props: any) => {
+                    const { businessmarketingfee } = props.cell.row.original;
+                    return formatNumberFourDecimals(businessmarketingfee || 0);
+                },
+            },
+            {
+                accessor: "usergeneralfee",
+                Header: t(langKeys.billingconversation_usergeneralfee),
+                sortType: "number",
+                type: "number",
+                Cell: (props: any) => {
+                    const { usergeneralfee } = props.cell.row.original;
+                    return formatNumberFourDecimals(usergeneralfee || 0);
+                },
+            },
+            {
+                accessor: "freequantity",
+                Header: t(langKeys.billingconversation_freequantity),
+                sortType: "number",
+                type: "number",
+                Cell: (props: any) => {
+                    const { freequantity } = props.cell.row.original;
+                    return formatNumberNoDecimals(freequantity || 0);
                 },
             },
         ],
@@ -2276,6 +2317,7 @@ const ConversationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
             <DetailConversationCost
                 data={rowSelected}
                 dataPlan={dataPlan}
+                exchangeData={exchangeData}
                 fetchData={fetchData}
                 setViewSelected={setViewSelected}
             />
@@ -2286,6 +2328,7 @@ const ConversationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
 const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({
     data: { row, edit },
     dataPlan,
+    exchangeData,
     fetchData,
     setViewSelected,
 }) => {
@@ -2319,16 +2362,19 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({
         setValue,
     } = useForm({
         defaultValues: {
-            clientstartfee: row?.clientstartfee || 0.0,
-            companystartfee: row?.companystartfee || 0.0,
-            countrycode: row?.countrycode || "PE",
+            businessauthenticationfee: row?.businessauthenticationfee || 0.0,
+            businessmarketingfee: row?.businessmarketingfee || 0.0,
+            businessutilityfee: row?.businessutilityfee || 0.0,
+            countrycode: row?.countrycode || "",
             description: row?.description || "",
-            freeconversations: row?.freeconversations || 0,
+            freequantity: row?.freequantity || 0,
             id: row ? row.billingconversationid : 0,
             month: row?.month || new Date().getMonth() + 1,
             operation: row ? "UPDATE" : "INSERT",
+            plancurrency: row ? row.plancurrency : "",
             status: row ? row.status : "ACTIVO",
             type: row ? row.type : "",
+            usergeneralfee: row?.usergeneralfee || 0.0,
             vcacomission: row?.vcacomission || 0.0,
             year: row?.year || new Date().getFullYear(),
         },
@@ -2348,26 +2394,41 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({
 
     React.useEffect(() => {
         register("countrycode", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register("description", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register("description");
         register("id");
         register("month");
         register("operation");
+        register("plancurrency", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register("status");
         register("type");
-        register("vcacomission");
         register("year");
 
-        register("clientstartfee", {
+        register("businessauthenticationfee", {
             validate: (value) =>
                 ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
         });
 
-        register("companystartfee", {
+        register("businessmarketingfee", {
             validate: (value) =>
                 ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
         });
 
-        register("freeconversations", {
+        register("businessutilityfee", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
+
+        register("freequantity", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
+
+        register("usergeneralfee", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
+
+        register("vcacomission", {
             validate: (value) =>
                 ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
         });
@@ -2424,11 +2485,13 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <div>
                         <TemplateBreadcrumbs breadcrumbs={arrayBreadConversationCost} handleClick={setViewSelected} />
-                        <TitleDetail title={row ? `${row.description}` : t(langKeys.newconversationplan)} />
+                        {row && <TitleDetail title={t(langKeys.conversationcost)} />}
+                        {!row && <TitleDetail title={t(langKeys.newconversationplan)} />}
                     </div>
                     <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                         <Button
                             color="primary"
+                            disabled={executeRes.loading}
                             onClick={() => setViewSelected("view-1")}
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
@@ -2441,6 +2504,7 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({
                             <Button
                                 className={classes.button}
                                 color="primary"
+                                disabled={executeRes.loading}
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
                                 type="submit"
@@ -2465,7 +2529,7 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({
                     </div>
                     <div className="row-zyx">
                         <FieldSelect
-                            className="col-12"
+                            className="col-6"
                             data={dataPlan}
                             error={errors?.countrycode?.message}
                             label={t(langKeys.country)}
@@ -2474,39 +2538,92 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({
                             optionValue="code"
                             orderbylabel={true}
                             valueDefault={getValues("countrycode")}
-                            variant="outlined"
+                        />
+                        <FieldEdit
+                            className="col-6"
+                            error={errors?.vcacomission?.message}
+                            inputProps={{ step: "any" }}
+                            label={t(langKeys.billingconversation_vcacomission)}
+                            onChange={(value) => setValue("vcacomission", value)}
+                            type="number"
+                            valueDefault={getValues("vcacomission")}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldSelect
+                            className="col-6"
+                            data={currencyList}
+                            error={errors?.plancurrency?.message}
+                            label={t(langKeys.billingconversation_plancurrency)}
+                            onChange={(value) => setValue("plancurrency", value?.value)}
+                            optionDesc="description"
+                            optionValue="value"
+                            orderbylabel={true}
+                            valueDefault={getValues("plancurrency")}
+                        />
+                        <FieldEdit
+                            className="col-6"
+                            error={errors?.businessutilityfee?.message}
+                            inputProps={{ step: "any" }}
+                            label={t(langKeys.billingconversation_businessutilityfee)}
+                            onChange={(value) => setValue("businessutilityfee", value)}
+                            type="number"
+                            valueDefault={getValues("businessutilityfee")}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
                             className="col-6"
-                            error={errors?.companystartfee?.message}
+                            error={errors?.businessauthenticationfee?.message}
                             inputProps={{ step: "any" }}
-                            label={t(langKeys.coststartedbycompany)}
-                            onChange={(value) => setValue("companystartfee", value)}
+                            label={t(langKeys.billingconversation_businessauthenticationfee)}
+                            onChange={(value) => setValue("businessauthenticationfee", value)}
                             type="number"
-                            valueDefault={getValues("companystartfee")}
+                            valueDefault={getValues("businessauthenticationfee")}
                         />
                         <FieldEdit
                             className="col-6"
-                            error={errors?.clientstartfee?.message}
+                            error={errors?.businessmarketingfee?.message}
                             inputProps={{ step: "any" }}
-                            label={t(langKeys.customerinitiatedcost)}
-                            onChange={(value) => setValue("clientstartfee", value)}
+                            label={t(langKeys.billingconversation_businessmarketingfee)}
+                            onChange={(value) => setValue("businessmarketingfee", value)}
                             type="number"
-                            valueDefault={getValues("clientstartfee")}
+                            valueDefault={getValues("businessmarketingfee")}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
+                            className="col-6"
+                            error={errors?.usergeneralfee?.message}
+                            inputProps={{ step: "any" }}
+                            label={t(langKeys.billingconversation_usergeneralfee)}
+                            onChange={(value) => setValue("usergeneralfee", value)}
+                            type="number"
+                            valueDefault={getValues("usergeneralfee")}
+                        />
+                        <FieldEdit
+                            className="col-6"
+                            error={errors?.freequantity?.message}
+                            label={t(langKeys.billingconversation_freequantity)}
+                            onChange={(value) => setValue("freequantity", value)}
+                            type="number"
+                            valueDefault={getValues("freequantity")}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            className="col-6"
                             error={errors?.description?.message}
+                            inputProps={{ step: "any" }}
                             label={t(langKeys.description)}
                             onChange={(value) => setValue("description", value)}
                             valueDefault={getValues("description")}
                         />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldView label="" value={t(langKeys.costcommentary)} className={classes.commentary} />
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.billingconfiguration_exchangerate)}
+                            value={formatNumber(exchangeData || 0)}
+                        />
                     </div>
                 </div>
             </form>
@@ -3037,17 +3154,13 @@ const DetailArtificialIntelligence: React.FC<DetailArtificialIntelligenceProps> 
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <div>
                         <TemplateBreadcrumbs breadcrumbs={arrayBread} handleClick={setViewSelected} />
-                        <TitleDetail
-                            title={
-                                row
-                                    ? `${row.provider} - ${row.type}`
-                                    : t(langKeys.billingsetup_artificialintelligencenew)
-                            }
-                        />
+                        {row && <TitleDetail title={t(langKeys.billingsetup_artificialintelligence)} />}
+                        {!row && <TitleDetail title={t(langKeys.billingsetup_artificialintelligencenew)} />}
                     </div>
                     <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                         <Button
                             color="primary"
+                            disabled={executeRes.loading}
                             onClick={() => setViewSelected("view-1")}
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
@@ -3060,6 +3173,7 @@ const DetailArtificialIntelligence: React.FC<DetailArtificialIntelligenceProps> 
                             <Button
                                 className={classes.button}
                                 color="primary"
+                                disabled={executeRes.loading}
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
                                 type="submit"
@@ -3072,13 +3186,6 @@ const DetailArtificialIntelligence: React.FC<DetailArtificialIntelligenceProps> 
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.description?.message}
-                            label={t(langKeys.description)}
-                            onChange={(value) => setValue("description", value)}
-                            valueDefault={getValues("description")}
-                        />
                         <TextField
                             className="col-6"
                             id="date"
@@ -3087,6 +3194,13 @@ const DetailArtificialIntelligence: React.FC<DetailArtificialIntelligenceProps> 
                             type="month"
                             value={datetoshow}
                             variant="outlined"
+                        />
+                        <FieldEdit
+                            className="col-6"
+                            error={errors?.description?.message}
+                            label={t(langKeys.description)}
+                            onChange={(value) => setValue("description", value)}
+                            valueDefault={getValues("description")}
                         />
                     </div>
                     <div className="row-zyx">
@@ -3189,7 +3303,7 @@ const DetailArtificialIntelligence: React.FC<DetailArtificialIntelligenceProps> 
 };
 
 const IDSUPPORTPLAN = "IDSUPPORTPLAN";
-const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
+const SupportPlan: React.FC<{ dataPlan: any; exchangeData: any }> = ({ dataPlan, exchangeData }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -3261,6 +3375,10 @@ const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
             {
                 accessor: "plan",
                 Header: t(langKeys.supportplan),
+            },
+            {
+                accessor: "plancurrency",
+                Header: t(langKeys.billingsupport_plancurrency),
             },
             {
                 accessor: "basicfee",
@@ -3439,6 +3557,7 @@ const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
             <DetailSupportPlan
                 data={rowSelected}
                 dataPlan={dataPlan}
+                exchangeData={exchangeData}
                 fetchData={fetchData}
                 setViewSelected={setViewSelected}
             />
@@ -3449,6 +3568,7 @@ const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
 const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({
     data: { row, edit },
     dataPlan,
+    exchangeData,
     fetchData,
     setViewSelected,
 }) => {
@@ -3490,6 +3610,7 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({
             month: row?.month || new Date().getMonth() + 1,
             operation: row ? "UPDATE" : "INSERT",
             plan: row?.plan || "",
+            plancurrency: row?.plancurrency || "",
             startdate: row?.startdate || new Date(new Date().setDate(1)),
             starttime: row?.starttime || new Date().getTime(),
             status: row ? row.status : "ACTIVO",
@@ -3521,6 +3642,7 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({
         register("month");
         register("operation");
         register("plan", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register("plancurrency", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register("starttime", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register("status");
         register("type");
@@ -3583,11 +3705,13 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <div>
                         <TemplateBreadcrumbs breadcrumbs={arrayBread} handleClick={setViewSelected} />
-                        <TitleDetail title={row ? `${row.description}` : t(langKeys.newsupportplan)} />
+                        {row && <TitleDetail title={t(langKeys.supportplan)} />}
+                        {!row && <TitleDetail title={t(langKeys.newsupportplan)} />}
                     </div>
                     <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                         <Button
                             color="primary"
+                            disabled={executeRes.loading}
                             onClick={() => setViewSelected("view-1")}
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
@@ -3600,6 +3724,7 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({
                             <Button
                                 className={classes.button}
                                 color="primary"
+                                disabled={executeRes.loading}
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
                                 type="submit"
@@ -3612,13 +3737,6 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        <FieldEdit
-                            className="col-6"
-                            error={errors?.description?.message}
-                            label={t(langKeys.description)}
-                            onChange={(value) => setValue("description", value)}
-                            valueDefault={getValues("description")}
-                        />
                         <TextField
                             className="col-6"
                             id="date"
@@ -3627,6 +3745,13 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({
                             type="month"
                             value={datetoshow}
                             variant="outlined"
+                        />
+                        <FieldEdit
+                            className="col-6"
+                            error={errors?.description?.message}
+                            label={t(langKeys.description)}
+                            onChange={(value) => setValue("description", value)}
+                            valueDefault={getValues("description")}
                         />
                     </div>
                     <div className="row-zyx">
@@ -3641,6 +3766,27 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({
                             orderbylabel={true}
                             valueDefault={getValues("plan")}
                         />
+                        <FieldSelect
+                            className="col-6"
+                            data={currencyList}
+                            error={errors?.plancurrency?.message}
+                            label={t(langKeys.billingsupport_plancurrency)}
+                            onChange={(value) => setValue("plancurrency", value?.value)}
+                            optionDesc="description"
+                            optionValue="value"
+                            orderbylabel={true}
+                            valueDefault={getValues("plancurrency")}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            className="col-6"
+                            error={errors?.starttime?.message}
+                            label={t(langKeys.starttime)}
+                            onChange={(value) => setValue("starttime", value)}
+                            type="time"
+                            valueDefault={getValues("starttime")}
+                        />
                         <FieldEdit
                             label={t(langKeys.supportprice)}
                             className="col-6"
@@ -3654,19 +3800,16 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({
                     <div className="row-zyx">
                         <FieldEdit
                             className="col-6"
-                            error={errors?.starttime?.message}
-                            label={t(langKeys.starttime)}
-                            onChange={(value) => setValue("starttime", value)}
-                            type="time"
-                            valueDefault={getValues("starttime")}
-                        />
-                        <FieldEdit
-                            className="col-6"
                             error={errors?.finishtime?.message}
                             label={t(langKeys.finishtime)}
                             onChange={(value) => setValue("finishtime", value)}
                             type="time"
                             valueDefault={getValues("finishtime")}
+                        />
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.billingconfiguration_exchangerate)}
+                            value={formatNumber(exchangeData || 0)}
                         />
                     </div>
                 </div>
@@ -4079,11 +4222,13 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <div>
                         <TemplateBreadcrumbs breadcrumbs={arrayBreadConversationCost} handleClick={setViewSelected} />
-                        <TitleDetail title={row ? `${row.description}` : t(langKeys.newmessagingplan)} />
+                        {row && <TitleDetail title={t(langKeys.messagingcost)} />}
+                        {!row && <TitleDetail title={t(langKeys.newmessagingplan)} />}
                     </div>
                     <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                         <Button
                             color="primary"
+                            disabled={executeRes.loading}
                             onClick={() => setViewSelected("view-1")}
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
@@ -4096,6 +4241,7 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                             <Button
                                 className={classes.button}
                                 color="primary"
+                                disabled={executeRes.loading}
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
                                 type="submit"
@@ -4270,7 +4416,7 @@ const BillingSetup: FC = () => {
             )}
             {pageSelected === 2 && (
                 <div style={{ marginTop: 16 }}>
-                    <ConversationCost dataPlan={countryList} />
+                    <ConversationCost dataPlan={countryList} exchangeData={exchangeData} />
                 </div>
             )}
             {pageSelected === 3 && (
@@ -4285,7 +4431,7 @@ const BillingSetup: FC = () => {
             )}
             {pageSelected === 5 && (
                 <div style={{ marginTop: 16 }}>
-                    <SupportPlan dataPlan={dataPlan} />
+                    <SupportPlan dataPlan={dataPlan} exchangeData={exchangeData} />
                 </div>
             )}
         </div>
