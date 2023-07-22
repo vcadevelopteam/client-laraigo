@@ -8,6 +8,11 @@ export const currencyList = [
     { value: "USD", description: "USD" },
 ];
 
+export const dataCurrency = [
+    { value: "PEN", description: "PEN" },
+    { value: "USD", description: "USD" },
+];
+
 export const dataYears = Array.from(Array(21).keys()).map(x => ({ value: `${new Date().getFullYear() + x - 10}` }));
 
 export const dataMonths = [
