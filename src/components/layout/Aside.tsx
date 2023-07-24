@@ -100,6 +100,9 @@ const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig,
         console.log(filteredNavigationRoutes);
         return (
             <Paper title={config.key}>
+                <Typography variant="h6" className={classes.drawerItemActive} style={{ textAlign: 'start', paddingLeft: 23, backgroundColor: '#F9F9FA'  }}>
+                    {config.description}
+                </Typography>
                 <Box display="grid" gridTemplateColumns={gridTemplateColumns} bgcolor={'#F9F9FA'} >
                     {
                         filteredNavigationRoutes.map((navRoute: RouteConfig) => (

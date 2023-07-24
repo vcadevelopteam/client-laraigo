@@ -624,7 +624,7 @@ const translation: LangKeys = {
   finishreg: "FINALIZAR REGISTRO",
   validnumber: "Por favor inserte un número válido",
   automatizationrules: "Reglas de Automatización",
-  automatization: "Áutomatización",
+  automatization: "Automatización",
   automatizationrule: "Regla de automatización",
   supportplan: "Plan de Soporte",
   finishregmessage: "Para finalizar la suscripción deberá agregar el método de pago, información de contacto y guardarlo",

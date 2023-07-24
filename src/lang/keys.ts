@@ -947,7 +947,7 @@ export const langKeys = {
   firstandlastname: "firstandlastname",
   companybusinessname: "companybusinessname",
   mobilephoneoptional: "mobilephoneoptional",
-  reason_sales: "sales",
+  reason_sales: "reason_sales",
   reason_customerservice: "customerservice",
   reason_marketing: "marketing",
   laraigouse: "laraigouse",
