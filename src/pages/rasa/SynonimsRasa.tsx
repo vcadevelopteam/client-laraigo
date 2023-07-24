@@ -304,6 +304,7 @@ export const SynonimsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected
             if(!trainResult.loading && !trainResult.error){
                 let message=t(langKeys.bot_training_scheduled)
                 dispatch(showSnackbar({ show: true, severity: "success", message:  message}))
+                fetchData();
                 setSendTrainCall(false);
                 dispatch(showBackdrop(false));
             }else if(trainResult.error){
