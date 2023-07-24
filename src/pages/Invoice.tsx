@@ -8339,7 +8339,7 @@ const MessagingPackages: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp
 
     useEffect(() => {
         fetchData();
-
+        setCanRegister(true);
         if (user?.paymentmethod === "PREPAGO") {
             setCanRegister(true);
         }
@@ -10141,7 +10141,7 @@ const PaymentMethodsDetails: React.FC<DetailPropsPaymentMethod> = ({
                             className="col-6"
                             disabled={!edit}
                             error={errors?.mail?.message}
-                            label={t(langKeys.mail)}
+                            label={t(langKeys.mailsection)}
                             onChange={(value) => setValue("mail", value)}
                             valueDefault={getValues("mail")}
                         />
