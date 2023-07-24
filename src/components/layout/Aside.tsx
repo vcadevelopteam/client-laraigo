@@ -74,7 +74,7 @@ const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig,
             (option: string) =>
                 routes.find(route => route?.path === option)
                 || subroutes.find(route => route?.path === option));
-
+        console.log(navigationRoutes);
         const filteredNavigationRoutes = navigationRoutes.filter((route: any) => (route !== undefined && applications?.[route.key]?.[0]));
         const numElements = filteredNavigationRoutes.length;
 
@@ -223,6 +223,7 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
             return acc;
         }
     }, [])
+    console.log(applications);
     return (
         <Drawer
             className={clsx(classes.drawer, {

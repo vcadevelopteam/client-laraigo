@@ -3338,7 +3338,7 @@ export const langKeys = {
   users: "users",
   channels: "channels",
   emojis: "emojis",
-  crm: "Oportunities",
+  crm: "crm",
   app_tipifications: "app_tipifications",
   app_block: "app_block",
   app_outbound_messages: "app_outbound messages",
