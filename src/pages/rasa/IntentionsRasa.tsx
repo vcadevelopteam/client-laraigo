@@ -471,7 +471,7 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (multiResult.error) {
-                const errormessage = t(multiResult.code || "error_unexpected_error", { module: t(langKeys.sinonims).toLocaleLowerCase() })
+                const errormessage = t(multiResult.code || "error_unexpected_error", { module: t(langKeys.intentions).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
