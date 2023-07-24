@@ -19,10 +19,7 @@ import { setModalCall } from 'store/voximplant/actions';
 import { langKeys } from 'lang/keys';
 import { WifiCalling } from 'icons';
 import { showSnackbar } from 'store/popus/actions';
-import paths from "common/constants/paths";
 import { viewsClassifications, routes, subroutes } from 'routes/routes';
-import { set } from 'date-fns';
-import { de, is } from 'date-fns/locale';
 
 type IProps = {
     classes: any;
@@ -31,28 +28,27 @@ type IProps = {
     headerHeight: number;
 }
 
-const checkSubRoutes = (pathname: string) => {
-    if (pathname.includes(paths.ORGANIZATIONS)) return true;
-    if (pathname.includes(paths.CORPORATIONS)) return true;
-    if (pathname.includes(paths.DOMAINS)) return true;
-    if (pathname.includes(paths.EMOJIS)) return true;
-    if (pathname.includes(paths.INAPPROPRIATEWORDS)) return true;
-    if (pathname.includes(paths.USERS)) return true;
-    if (pathname.includes(paths.INTEGRATIONMANAGER)) return true;
-    if (pathname.includes(paths.QUICKREPLIES)) return true;
-    if (pathname.includes(paths.SLA)) return true;
-    if (pathname.includes(paths.TIPIFICATIONS)) return true;
-    if (pathname.includes(paths.INPUTVALIDATION)) return true;
-    if (pathname.includes(paths.WHITELIST)) return true;
-    if (pathname.includes(paths.EXTRASLOCATION)) return true;
-    if (pathname.includes(paths.SECURITYRULES)) return true;
-    if (pathname.includes(paths.PROPERTIES)) return true;
-
-    return false;
-}
-
-const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig, classname: string }> =
-    ({ classes, config, classname }) => {
+const ListViewItem: React.FC<{ navRoute: any, clickToNavigate: any, classes:any }> =
+    ({ navRoute, clickToNavigate,classes }) => {
+        
+        const [classname, setClassname] = useState<String>(classes.drawerItemInactive);
+        return <ListItem
+            button
+            key={navRoute?.key}
+            onClick={() => clickToNavigate(navRoute?.path || navRoute?.key)}
+            component="a"
+            onMouseOver={()=>{ setClassname(classes.drawerItemActive)}}
+            onMouseOut={()=>{ setClassname(classes.drawerItemInactive)}}
+            href={navRoute?.path}
+        >
+            <Tooltip title={navRoute?.tooltip}>
+                <ListItemIcon>{navRoute?.icon?.(classname)}</ListItemIcon>
+            </Tooltip>
+            <ListItemText primary={navRoute?.description} />
+        </ListItem>
+    }
+const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig }> =
+    ({ classes, config }) => {
         const applications = useSelector(state => state.login?.validateToken?.user?.menu);
 
 
@@ -105,23 +101,12 @@ const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig,
                 </Typography>
                 <Box display="grid" gridTemplateColumns={gridTemplateColumns} bgcolor={'#F9F9FA'} >
                     {
-                        filteredNavigationRoutes.map((navRoute: RouteConfig) => (
-                            <ListItem
-                                button
-                                key={navRoute?.key}
-                                onClick={() => clickToNavigate(navRoute?.path || navRoute?.key)}
-                                // className={clsx(className)}
-                                component="a"
-                                href={navRoute?.path}
-                            >
-                                <Tooltip title={navRoute?.tooltip}>
-                                    <ListItemIcon>{navRoute?.icon?.(classname)}</ListItemIcon>
-                                </Tooltip>
-                                <ListItemText primary={navRoute?.description} />
-                            </ListItem>
-
-                            // <Button onClick={() => clickToNavigate(option)} key={option} className={classes.title}>{routes.find(route => route?.key === option)?.description}</Button>
-                        ))
+                        filteredNavigationRoutes.map((navRoute: RouteConfig) => 
+                            <ListViewItem 
+                                navRoute={navRoute}
+                                clickToNavigate={clickToNavigate}
+                                classes={classes}
+                            />)
                     }
                 </Box>
             </Paper>
@@ -197,8 +182,7 @@ const LinkList: FC<{ config: ViewsClassificationConfig, classes: any, open: bool
             >
                 <PopperContent
                     classes={classes}
-                    config={config}
-                    classname={classes.drawerItemActive} />
+                    config={config} />
             </HoverPopover>
 
         </>
