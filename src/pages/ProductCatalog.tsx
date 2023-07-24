@@ -87,6 +87,7 @@ const ProductCatalog: FC = () => {
     const resultSynchroProduct = useSelector(state => state.catalog.requestCatalogSynchroProduct);
     const user = useSelector(state => state.login.validateToken.user);
     const superadmin = ["SUPERADMIN", "ADMINISTRADOR", "ADMINISTRADOR P"].includes(user?.roledesc || '');
+    const isClaro = true;
 
     const [availabilityTemplate] = useState<Dictionary[]>([{ "key": t(langKeys.productcatalog_domain_availability_available_for_order), "value": "available for order" }, { "key": t(langKeys.productcatalog_domain_availability_discontinued), "value": "discontinued" }, { "key": t(langKeys.productcatalog_domain_availability_in_stock), "value": "in stock" }, { "key": t(langKeys.productcatalog_domain_availability_out_of_stock), "value": "out of stock" }, { "key": t(langKeys.productcatalog_domain_availability_pending), "value": "pending" }, { "key": t(langKeys.productcatalog_domain_availability_preorder), "value": "preorder" }]);
     const [currencyTemplate] = useState<Dictionary[]>([{ "key": t(langKeys.productcatalog_domain_currency_pen), "value": "PEN" }, { "key": t(langKeys.productcatalog_domain_currency_usd), "value": "USD" }]);
@@ -508,21 +509,21 @@ const ProductCatalog: FC = () => {
             },
             {
                 accessor: 'customlabel0',
-                Header: `${t(langKeys.customlabel)}${user?.properties?.environment === "CLARO" ? ' 0' : ''}`,
+                Header: `${t(langKeys.customlabel)}${isClaro ? ' 0' : ''}`,
             },
-            ...(user?.properties?.environment === "CLARO" ? [{
+            ...(isClaro ? [{
                 accessor: 'customlabel1',
                 Header: `${t(langKeys.customlabel)} 1`,
             }] : []),
-            ...(user?.properties?.environment === "CLARO" ? [{
+            ...(isClaro ? [{
                 accessor: 'customlabel2',
                 Header: `${t(langKeys.customlabel)} 2`,
             }] : []),
-            ...(user?.properties?.environment === "CLARO" ? [{
+            ...(isClaro ? [{
                 accessor: 'customlabel3',
                 Header: `${t(langKeys.customlabel)} 3`,
             }] : []),
-            ...(user?.properties?.environment === "CLARO" ? [{
+            ...(isClaro ? [{
                 accessor: 'customlabel4',
                 Header: `${t(langKeys.customlabel)} 4`,
             }] : []),
@@ -930,7 +931,6 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
     const [labels, setlabels] = useState(row?.labels?.split(',') || []);
     const resultManageProduct = useSelector(state => state.catalog.requestCatalogManageProduct);
     const uploadResult = useSelector(state => state.main.uploadFile);
-    const user = useSelector(state => state.login.validateToken.user);
     const classes = useStyles();
     const dataDomainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataDomainUnit = multiData[7] && multiData[7].success ? multiData[7].data : [];
@@ -938,7 +938,7 @@ const DetailProductCatalog: React.FC<DetailProps> = ({ data: { row, edit }, setV
     const dataDomainCurrency = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const dataDomainGender = multiData[3] && multiData[3].success ? multiData[3].data : [];
     const dataDomainCondition = multiData[4] && multiData[4].success ? multiData[4].data : [];
-    const isClaro = user?.properties?.environment === "CLARO";
+    const isClaro = true;
 
     const [waitSave, setWaitSave] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
