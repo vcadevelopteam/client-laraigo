@@ -591,7 +591,7 @@ const translation: LangKeys = {
   enter: "Enter",
   iaconfiguration: "AI Configuration",
   iaconfigurationdescription: "Configure how and where to use your artificial intelligence services",
-  trainingwithai: "Training with AI",
+  trainingwithai: "Training AI",
   trainingwithaidescription: "Train your artificial intelligence service",
   training: "Training",
   intentionsdescription: "The intention is named and associated with the question the customer asks.",

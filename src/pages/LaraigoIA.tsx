@@ -18,10 +18,6 @@ import { Entities } from './assistant/Entities';
 import IAConfiguration from './Iaservices';
 import IntelligentModels from './IntelligentModels';
 
-interface DetailIaServiceProps {
-    setViewSelected: (view: string) => void;
-}
-
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
@@ -91,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const IATraining: React.FC<DetailIaServiceProps> = ({ setViewSelected }) => {
+const IATraining: React.FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
@@ -100,7 +96,6 @@ const IATraining: React.FC<DetailIaServiceProps> = ({ setViewSelected }) => {
     const classes = useStyles();
 
     const arrayBread = [
-        { id: "view-0", name:  t(langKeys.laraigoia) },
         { id: "view-1", name: t(langKeys.training) }
     ];
     // const [mainData, setMainData] = useState<any>([]);
@@ -109,7 +104,6 @@ const IATraining: React.FC<DetailIaServiceProps> = ({ setViewSelected }) => {
     
     const functionChange = (change:string) => {
         if(change==="view-0"){
-            setViewSelected("view-1");
         }else{
             setViewSelectedTraining(change);
         }
@@ -148,12 +142,6 @@ const IATraining: React.FC<DetailIaServiceProps> = ({ setViewSelected }) => {
     if (viewSelectedTraining === "view-1") {
         return (
             <div style={{ width: "100%" }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <TemplateBreadcrumbs
-                        breadcrumbs={arrayBread}
-                        handleClick={functionChange}
-                    />
-                </div>
                 <div className={classes.container}>
                     <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" style={{ marginBottom: 8 }}>
                         <span className={classes.title}>
@@ -233,134 +221,4 @@ const IATraining: React.FC<DetailIaServiceProps> = ({ setViewSelected }) => {
 
 }
 
-const Iaservices: FC = () => {
-    const dispatch = useDispatch();
-    const { t } = useTranslation();
-    const classes = useStyles();
-
-    const [viewSelected, setViewSelected] = useState("view-1");
-
-    useEffect(() => {
-        return () => {
-            dispatch(resetAllMain());
-        };
-    }, []);
-    
-    const arrayBread = [
-        { id: "view-0", name:  t(langKeys.laraigoia) },
-    ];
-
-    if (viewSelected === "view-1") {
-
-        return (
-            <div className={classes.container}>
-                <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" style={{ marginBottom: 8 }}>
-                    <span className={classes.title}>
-                        {t(langKeys.laraigoia)}
-                    </span>
-                </Box>
-                <div className={classes.containerDetails}>
-                    <Grid container spacing={3} >
-                        
-                        <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
-                            <Card style={{ position: 'relative', display:"flex" }}>
-                                <div className={classes.containerInner}>
-
-                                    <div className="col-6" style={{width: "50%"}}>
-                                        <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
-                                        <div className={classes.containerInnertittle2}>{t(langKeys.iaconnectors)}</div>
-                                        <div className={classes.containerInnertittle3}>{t(langKeys.iaconnectorsdescription)}</div>                                            
-                                        <Button
-                                            className={classes.button}
-                                            variant="contained"
-                                            color="primary"
-                                            onClick={()=>setViewSelected("connectors")}
-                                            style={{ backgroundColor: "#55BD84" }}
-                                        >{t(langKeys.enter)}
-                                        </Button>
-                                    </div>
-                                    
-                                    <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                        <ConectoresIALogo style={{ height: 220, width:"100%" }} />
-                                    </div>
-                                </div>
-                            </Card>
-                        </Grid>
-                        <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
-                            <Card style={{ position: 'relative', display:"flex" }}>
-                                <div className={classes.containerInner}>
-
-                                    <div className="col-6" style={{width: "50%"}}>
-                                        <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
-                                        <div className={classes.containerInnertittle2}>{t(langKeys.iaconfiguration)}</div>
-                                        <div className={classes.containerInnertittle3}>{t(langKeys.iaconfigurationdescription)}</div>                                            
-                                        <Button
-                                            className={classes.button}
-                                            variant="contained"
-                                            color="primary"
-                                            onClick={()=>setViewSelected("configuration")}
-                                            style={{ backgroundColor: "#55BD84" }}
-                                        >{t(langKeys.enter)}
-                                        </Button>
-                                    </div>
-                                    
-                                    <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                        <ConfiguracionIALogo style={{ height: 220, width:"100%" }} />
-                                    </div>
-                                </div>
-                            </Card>
-                        </Grid>
-                        <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
-                            <Card style={{ position: 'relative', display:"flex" }}>
-                                <div className={classes.containerInner}>
-
-                                    <div className="col-6" style={{width: "50%"}}>
-                                        <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
-                                        <div className={classes.containerInnertittle2}>{t(langKeys.trainingwithai)}</div>
-                                        <div className={classes.containerInnertittle3}>{t(langKeys.trainingwithaidescription)}</div>                                            
-                                        <Button
-                                            className={classes.button}
-                                            variant="contained"
-                                            color="primary"
-                                            style={{ backgroundColor: "#55BD84" }}
-                                            onClick={()=>setViewSelected("training")}
-                                        >{t(langKeys.enter)}
-                                        </Button>
-                                    </div>
-                                    
-                                    <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                        <EntrenamientoIALogo style={{ height: 220, width:"100%" }} />
-                                    </div>
-                                </div>
-                            </Card>
-                        </Grid>
-                    </Grid>
-                </div>
-            </div>
-        )
-    }else if (viewSelected === "connectors") {
-        return (
-            <IntelligentModels
-                arrayBread={arrayBread}
-                setExternalViewSelected={setViewSelected}
-            />
-        )
-    }else if (viewSelected === "configuration") {
-        return (
-            <IAConfiguration  
-                arrayBread={arrayBread}
-                setExternalViewSelected={setViewSelected}
-            />
-        )
-    }else if (viewSelected === "training") {
-        return (
-            <IATraining
-                setViewSelected={setViewSelected}
-            />
-        )
-    } else
-        return null;
-
-}
-
-export default Iaservices;
+export default IATraining;

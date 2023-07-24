@@ -25,7 +25,7 @@ const paths = {
     CORPORATIONS: '/corporations',
     IACONECTORS: '/iaconectors',
     IACONFIGURATION: '/iaconfigurations',
-    IATRAINING: '/iatraining ',
+    IATRAINING: '/iatraining',
     ORGANIZATIONS: '/organizations',
     SIGNIN: "/sign-in",
     SIGNUPBASIC: "/sign-up/BASIC",

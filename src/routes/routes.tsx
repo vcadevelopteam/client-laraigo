@@ -495,8 +495,8 @@ export const routes: RouteConfig[] = [
     },
     {
         key: paths.IACONECTORS,
-        description: <Trans i18nKey={langKeys.corporation} />,
-        tooltip: <Trans i18nKey={langKeys.corporation} />,
+        description: <Trans i18nKey={langKeys.iaconnectors} />,
+        tooltip: <Trans i18nKey={langKeys.iaconnectors} />,
         subroute: true,
         path: paths.IACONECTORS,
         initialSubroute: paths.IACONECTORS,
@@ -504,8 +504,8 @@ export const routes: RouteConfig[] = [
     },
     {
         key: paths.IACONFIGURATION,
-        description: <Trans i18nKey={langKeys.corporation} />,
-        tooltip: <Trans i18nKey={langKeys.corporation} />,
+        description: <Trans i18nKey={langKeys.iaconfiguration} />,
+        tooltip: <Trans i18nKey={langKeys.iaconfiguration} />,
         subroute: true,
         path: paths.IACONFIGURATION,
         initialSubroute: paths.IACONFIGURATION,
@@ -513,8 +513,8 @@ export const routes: RouteConfig[] = [
     },
     {
         key: paths.IATRAINING,
-        description: <Trans i18nKey={langKeys.corporation} />,
-        tooltip: <Trans i18nKey={langKeys.corporation} />,
+        description: <Trans i18nKey={langKeys.trainingwithai} />,
+        tooltip: <Trans i18nKey={langKeys.trainingwithai} />,
         subroute: true,
         path: paths.IATRAINING,
         initialSubroute: paths.IATRAINING,
