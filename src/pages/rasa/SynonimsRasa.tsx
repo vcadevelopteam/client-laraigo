@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
 const DetailSynonims: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,setViewSelected, setExternalViewSelected, arrayBread }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
-    const [disableSave, setDisableSave] = useState(!row);
+    const [disableSave, setDisableSave] = useState(false);
     const [disableCreate, setDisableCreate] = useState(true);
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [newExample, setNewExample] = useState("");

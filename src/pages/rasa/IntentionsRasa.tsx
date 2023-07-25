@@ -447,6 +447,7 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
                 let message=t(langKeys.bot_training_scheduled)
                 dispatch(showSnackbar({ show: true, severity: "success", message:  message}))
                 setSendTrainCall(false);
+                fetchData();
                 dispatch(showBackdrop(false));
             }else if(trainResult.error){
                 dispatch(showSnackbar({ show: true, severity: "error", message: trainResult.message + "" }))
