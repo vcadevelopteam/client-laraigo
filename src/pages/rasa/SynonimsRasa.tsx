@@ -91,8 +91,8 @@ const DetailSynonims: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
             if (!operationRes.loading && !operationRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 dispatch(showBackdrop(false));
-                fetchData && fetchData();
                 setViewSelected("view-1")
+                setTimeout(()=>{fetchData && fetchData()},500);
             } else if (operationRes.error) {
                 const errormessage = t(operationRes.code || "error_unexpected_error", { module: t(langKeys.sinonim).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
