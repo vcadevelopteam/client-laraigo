@@ -8339,7 +8339,7 @@ const MessagingPackages: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp
 
     useEffect(() => {
         fetchData();
-        setCanRegister(true);
+        
         if (user?.paymentmethod === "PREPAGO") {
             setCanRegister(true);
         }
