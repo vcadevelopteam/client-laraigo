@@ -173,7 +173,6 @@ const DetailSynonims: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                             <TextField
                                 color="primary"
                                 fullWidth
-                                disabled={!disableSave}
                                 value={description}
                                 error={!!errors?.description?.message}
                                 helperText={errors?.description?.message || null}
