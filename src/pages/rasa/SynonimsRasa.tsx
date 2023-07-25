@@ -94,7 +94,7 @@ const DetailSynonims: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                 fetchData && fetchData();
                 setViewSelected("view-1")
             } else if (operationRes.error) {
-                const errormessage = t(operationRes.code || "error_unexpected_error", { module: t(langKeys.whitelist).toLocaleLowerCase() })
+                const errormessage = t(operationRes.code || "error_unexpected_error", { module: t(langKeys.sinonim).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
@@ -505,6 +505,7 @@ export const SynonimsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected
                                         onClick={handleDelete}
                                     >{t(langKeys.delete)}</Button>
                                     <Tooltip title={(dataModelAi.loading || mainResult.mainData.data.some(x=>x.model_trained) || trainResult.loading)?"El modelo ya se encuentra entrenado con la configuración actual": ""} placement="top">
+                                        <div>
                                         <Button
                                             variant="contained"
                                             type="button"
@@ -513,6 +514,7 @@ export const SynonimsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected
                                             style={{ backgroundColor: (dataModelAi.loading || mainResult.mainData.data.some(x=>x.model_trained) || trainResult.loading)?"#dbdbdc":"#7721ad" }}
                                             onClick={()=>{dispatch(trainrasaia({model_uuid: dataModelAi?.data?.[0]?.model_uuid||""}));setSendTrainCall(true);}}
                                         >{t(langKeys.train)}</Button>
+                                        </div>
                                     </Tooltip>
                                 </div>
                             </div>
