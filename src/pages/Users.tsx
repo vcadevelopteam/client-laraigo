@@ -229,6 +229,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
 
         register('orgid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('roleid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('supervisor');
         // register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('channels');
@@ -287,22 +288,12 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     const onChangeRole = (value: Dictionary) => {
         setValue('roleid', value.map((o: Dictionary) => o.roleid).join());
         setValue('roledesc', value.map((o: Dictionary) => o.roledesc).join());
-        const types:any[] =[];
-        const uniqueTypes:any[] = [];
 
-        value.forEach((o:Dictionary) => {
-          if (!types.includes(o.type)) {
-            types.push(o.type);
-            uniqueTypes.push(o.type);
-          }
-        });
-
-        setValue('type', uniqueTypes.join());
         setValue('redirect', ''); 
         updatefield('redirect', '');
 
         updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
-            p[index] = { ...p[index], roleid: value.map((o: Dictionary) => o.roleid).join(), roledesc: value.map((o: Dictionary) => o.roledesc).join(), type: uniqueTypes.join() }
+            p[index] = { ...p[index], roleid: value.map((o: Dictionary) => o.roleid).join(), roledesc: value.map((o: Dictionary) => o.roledesc).join() }
             return p;
         })
         if (!!value.length) {
@@ -366,6 +357,19 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 data={dataChannels.data}
                                 optionDesc="description"
                                 optionValue="communicationchannelid"
+                            />
+                            <FieldSelect
+                                label={t(langKeys.type)}
+                                className={classes.mb2}
+                                valueDefault={getValues('type')}
+                                onChange={(e)=>setValue('type', e?.value||"")}
+                                error={errors?.type?.message}
+                                data={[
+                                    {value: "SUPERVISOR"},
+                                    {value: "ASESOR"},
+                                ]}
+                                optionDesc="value"
+                                optionValue="value"
                             />
                         </div>
                         <div className="col-6">
