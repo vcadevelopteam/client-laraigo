@@ -358,19 +358,11 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 optionDesc="description"
                                 optionValue="communicationchannelid"
                             />
-                            <FieldSelect
-                                label={t(langKeys.type)}
+                            <TemplateSwitchYesNo
+                                label={"Balanceo"}
                                 className={classes.mb2}
-                                valueDefault={getValues('type')}
-                                onChange={(e)=>setValue('type', e?.value||"")}
-                                error={errors?.type?.message}
-                                data={[
-                                    {value: "SUPERVISOR"},
-                                    {value: "ASESOR"},
-                                ]}
-                                optionDesc="value"
-                                optionValue="value"
-                            />
+                                valueDefault={row?.type === "ASESOR"}
+                                onChange={(value) => { setValue('type', value?"ASESOR":"SUPERVISOR"); }} />
                         </div>
                         <div className="col-6">
                             <TemplateSwitchYesNo
