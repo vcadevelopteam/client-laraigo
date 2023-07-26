@@ -36,6 +36,7 @@ import {
     LocationIcon,
     Corporation2Icon,
     ChannelsIcon,
+    WhitelistIcon,
 } from 'icons';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import InputIcon from '@material-ui/icons/Input';
@@ -52,7 +53,8 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
     },
     {
         key: "CRM",
-        description: <Trans i18nKey={langKeys.crm} />,
+        description: <span>CRM</span>, 
+        // description: <Trans i18nKey={langKeys.crm} />,
         tooltip: <Trans i18nKey={langKeys.crm} />,
         icon: (className) => <DashboardRouteIcon style={{ width: 22, height: 22 }} className={className} />,
         options: [paths.MESSAGE_INBOX,paths.SUPERVISOR,paths.PERSON, paths.CRM, paths.CAMPAIGN, paths.MESSAGETEMPLATE, paths.POSTCREATOR, paths.TICKETS]
@@ -62,7 +64,7 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
         description: <Trans i18nKey={langKeys.automatization}/>,
         tooltip: <Trans i18nKey={langKeys.automatization}/>,
         icon: (className) => <AutomatizationRouteIcon style={{ width: 22, height: 22 }} className={className} />,
-        options:[paths.BOTDESIGNER, paths.VARIABLECONFIGURATION, paths.INTEGRATIONMANAGER, paths.CALENDAR, paths.AUTOMATIZATIONRULES, paths.REPORTSCHEDULER]
+        options:[paths.BOTDESIGNER, paths.VARIABLECONFIGURATION,  paths.INTEGRATIONMANAGER, paths.CALENDAR, paths.AUTOMATIZATIONRULES, paths.REPORTSCHEDULER]
     },
     {
         key: "sales",
@@ -73,7 +75,8 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
     },
     {
         key: "servicedesk",
-        description: <Trans i18nKey={langKeys.servicedesk} />,
+        description: <span>Service Desk</span>, 
+        // description: <Trans i18nKey={langKeys.servicedesk} />,
         tooltip: <Trans i18nKey={langKeys.servicedesk} />,
         icon: (className) => <ServiceDeskRouteIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
         options: [paths.SERVICE_DESK,paths.SLA]
@@ -83,14 +86,14 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
         description: <Trans i18nKey={langKeys.ia} />, // prop:count for plural purposes
         tooltip: <Trans i18nKey={langKeys.ia} />,
         icon: (className) => <IARouteIcon style={{ width: 22, height: 22 }} className={className} />,
-        options: [paths.IACONECTORS,paths.INTELLIGENTMODELS,paths.IATRAINING, paths.IACONFIGURATION]
+        options: [paths.IACONECTORS, paths.IATRAINING, paths.IACONFIGURATION]
     },
     {
         key: "configuration",
         description: <Trans i18nKey={langKeys.configuration} />,
         tooltip: <Trans i18nKey={langKeys.configuration} />,
         icon: (className) => <ConfigurationIcon style={{ width: 22, height: 22 }} className={className} />,
-        options: [paths.CORPORATIONS, paths.DOMAINS, paths.ORGANIZATIONS, paths.EMOJIS, paths.CHANNELS, paths.INAPPROPRIATEWORDS, paths.USERS, paths.INTEGRATIONMANAGER,paths.QUICKREPLIES,
+        options: [paths.CORPORATIONS, paths.DOMAINS, paths.ORGANIZATIONS, paths.EMOJIS, paths.CHANNELS, paths.INAPPROPRIATEWORDS, paths.USERS, paths.QUICKREPLIES,
         paths.TIPIFICATIONS, paths.INPUTVALIDATION,paths.WHITELIST, paths.EXTRASLOCATION, paths.SECURITYRULES,paths.PROPERTIES, paths.BILLING_SETUPS, paths.INVOICE]
     },
 ];
@@ -440,7 +443,7 @@ export const routes: RouteConfig[] = [
         description: <Trans i18nKey={langKeys.whitelist} count={2} />,
         tooltip: "",
         path: paths.WHITELIST,
-        icon: (className) => <ClassificationIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
+        icon: (className) => <WhitelistIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
     },
     {
         key: paths.SECURITYRULES,
