@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { ChannelAppStore } from "icons";
 import { FC, useEffect, useState } from "react";
 import { FieldEdit, FieldEditMulti, ColorInput } from "components";

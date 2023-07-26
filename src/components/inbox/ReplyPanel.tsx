@@ -441,6 +441,10 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const { t } = useTranslation();
 
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+
+    const resReplyTicket = useSelector(state => state.inbox.triggerReplyTicket);
+    const [triggerReply, settriggerReply] = useState(false);
+
     const variablecontext = useSelector(state => state.inbox.person.data?.variablecontext);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const user = useSelector(state => state.login.validateToken.user);
@@ -500,6 +504,17 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     }, [previousTicket])
 
     useEffect(() => {
+        if (triggerReply) {
+            if (!resReplyTicket.loading && resReplyTicket.error) {
+                const errormessage = t(resReplyTicket.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                settriggerReply(false);
+            }
+        }
+    }, [resReplyTicket, triggerReply])
+
+
+    useEffect(() => {
         if (!flagundo) {
             if (!flagredo) {
                 setredotext([])
@@ -549,9 +564,11 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                 const listMessages = files.map(x => ({
                     ...ticketSelected!!,
                     interactiontype: x.type,
+                    validateUserOnTicket: userType === "AGENT",
                     interactiontext: x.url,
                 }))
                 wasSend = true;
+                settriggerReply(true);
                 dispatch(replyTicket(listMessages, true))
 
                 files.forEach((x, i) => {
@@ -611,10 +628,12 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                             }));
                         }
                         //send to answer with integration
+                        settriggerReply(true);
                         dispatch(replyTicket({
                             ...ticketSelected!!,
                             interactiontype: ticketSelected?.communicationchanneltype === "MAIL" ? "email" : "text",
                             interactiontext: textCleaned,
+                            validateUserOnTicket: userType === "AGENT",
                             isAnswered: !ticketSelected!!.isAnswered,
                         }));
                         setText("");
@@ -653,6 +672,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             // setinnappropiatewords(multiData?.data[11].data.filter(x => (x.status === "ACTIVO")).map(y => (y.description)) || [])
         }
     }, [multiData])
+
     useEffect(() => {
         setquickRepliesToShow(quickReplies?.data?.filter(x => !!x.favorite) || [])
     }, [quickReplies])
@@ -708,11 +728,12 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                 dispatch(showSnackbar({ show: true, severity: "error", message: 'No hay cards' }))
                 return;
             }
-
+            settriggerReply(true);
             dispatch(replyTicket(listInteractions.map(x => ({
                 ...ticketSelected!!,
                 interactiontype: x.type,
-                interactiontext: x.content
+                interactiontext: x.content,
+                validateUserOnTicket: userType === "AGENT",
             })), true));
 
             listInteractions.forEach((x: Dictionary, i: number) => {

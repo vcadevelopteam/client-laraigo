@@ -20,7 +20,7 @@ const Users = lazy(() => import('pages/Users'));
 const ReportScheduler = lazy(() => import('pages/ReportScheduler'));
 const ProductCatalog = lazy(() => import('pages/ProductCatalog'));
 const CatalogMaster = lazy(() => import('pages/CatalogMaster'));
-const Orders = lazy(() => import('pages/Orders'));
+const Orders = lazy(() => import('pages/orders/Orders'));
 const SignIn = lazy(() => import('pages/SignIn'));
 const Properties = lazy(() => import('pages/Properties'));
 const Quickreplies = lazy(() => import('pages/Quickreplies'));
@@ -62,6 +62,7 @@ const ChannelAdd = lazy(() => import('pages/channels/ChannelAdd'));
 const ChannelAddChatWeb = lazy(() => import('pages/channels/ChannelAddChatWeb'));
 const ChannelAddWebForm = lazy(() => import('pages/channels/ChannelAddWebForm'));
 const ChannelAddFacebook = lazy(() => import('pages/channels/ChannelAddFacebook'));
+const ChannelAddFacebookLead = lazy(() => import('pages/channels/ChannelAddFacebookLead'));
 const ChannelAddFacebookWorkplace = lazy(() => import('pages/channels/ChannelAddFacebookWorkplace'));
 const ChannelAddFacebookDM = lazy(() => import('pages/channels/ChannelAddFacebookDM'));
 const ChannelAddMessenger = lazy(() => import('pages/channels/ChannelAddMessenger'));
@@ -105,6 +106,7 @@ const CalendarEvent = lazy(() => import('pages/CalendarEvent'));
 const PaymentOrder = lazy(() => import('pages/PaymentOrder'));
 const PaymentOrderNiubiz = lazy(() => import('pages/PaymentOrderNiubiz'));
 const PaymentOrderNiubizStatus = lazy(() => import('pages/PaymentOrderNiubizStatus'));
+const PaymentOrderOpenpay = lazy(() => import('pages/PaymentOrderOpenpay'));
 const Assistant = lazy(() => import('pages/assistant/Assistant'));
 const Location = lazy(() => import('pages/Location'));
 const SecurityRules = lazy(() => import('pages/SecurityRules'));
@@ -219,6 +221,7 @@ const RouterApp: FC = () => {
 					<Route exact path={paths.CULQI_PAYMENTORDER.path} render={() => <PaymentOrder />} />
 					<Route exact path={paths.NIUBIZ_PAYMENTORDER.path} render={() => <PaymentOrderNiubiz />} />
 					<Route exact path={paths.NIUBIZ_PAYMENTORDERSTATUS.path} render={() => <PaymentOrderNiubizStatus />} />
+					<Route exact path={paths.OPENPAY_PAYMENTORDER.path} render={() => <PaymentOrderOpenpay />} />
 					<Route exact path={paths.PRIVACY} render={() => <Privacy />} />
 					<Route exact path={paths.TERMSOFSERVICE} render={() => <TermsOfService />} />
 					<Route exact path={paths.ACTIVATE_USER.path} render={() => <ActivateUser />} />
@@ -233,6 +236,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.CHANNELS_ADD} component={() => (<Layout mainClasses={classes.main}><ChannelAdd /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_CHATWEB} component={() => (<Layout mainClasses={classes.main}><ChannelAddChatWeb edit={false} /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_WEBFORM} component={() => (<Layout mainClasses={classes.main}><ChannelAddWebForm edit={false} /></Layout>)} />
+					<ProtectRoute exact path={paths.CHANNELS_ADD_FACEBOOK_LEAD.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddFacebookLead /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_FACEBOOK.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddFacebook /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_FACEBOOKDM.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddFacebookDM /></Layout>)} />
 					<ProtectRoute exact path={paths.CHANNELS_ADD_FACEBOOKWORKPLACE.path} component={() => (<Layout mainClasses={classes.main}><ChannelAddFacebookWorkplace /></Layout>)} />

@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { apiUrls } from 'common/constants';
 import { Breadcrumbs, Box, Button, makeStyles } from '@material-ui/core';
 import { ChannelYouTube } from 'icons';
