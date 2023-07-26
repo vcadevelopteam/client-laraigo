@@ -1,7 +1,6 @@
 import React, {  useRef, useState } from "react";
 import { DialogZyx } from "components";
 import { makeStyles } from "@material-ui/core/styles";
-import { useDispatch } from "react-redux";
 import { useSelector } from 'hooks';
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
@@ -10,15 +9,13 @@ import clsx from "clsx";
 import {
     Avatar,
     IconButton,
-    InputBase,
     List,
     ListItem,
     ListItemSecondaryAction,
     ListItemText,
     Popover,
-    Typography,
 } from "@material-ui/core";
-import { InfoOutlined, Visibility } from "@material-ui/icons";
+import { Visibility } from "@material-ui/icons";
 import { RasaService } from "network";
 
 const useStyles = makeStyles((theme) => ({
@@ -161,9 +158,6 @@ const TestModelDialog: React.FC<{ openModal: boolean; setOpenModal: (param: any)
 }) => {
     const { t } = useTranslation();
     const classes = useStyles();
-    const dispatch = useDispatch();
-    const el = React.useRef<null | HTMLDivElement>(null);
-    const [usertype, setUsertype] = useState("agent");
     const [formValue, setFormValue] = useState("");
     const dummy = useRef<HTMLDivElement>(null);
     const dataModelAi = useSelector(state => state.main.mainAux);
