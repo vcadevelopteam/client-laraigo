@@ -29,6 +29,7 @@ import calendarReducer, { IState as ICalendar } from './calendar/reducer';
 import postHistoryReducer, { IState as IPostHistory } from './posthistory/reducer';
 import catalogReducer, { IState as ICatalog } from './catalog/reducer';
 import paymentReducer, { IState as IPayment } from './payment/reducer';
+import rasaiaReducer, { IState as IRasaia } from './rasaia/reducer';
 
 export interface IRootState {
     login: ILogin,
@@ -57,6 +58,7 @@ export interface IRootState {
     catalog: ICatalog;
     payment: IPayment;
     servicedesk: IServiceDesk;
+    rasaia: IRasaia
 }
 
 declare global {
@@ -92,6 +94,7 @@ const rootReducer = combineReducers<IRootState>({
     catalog: catalogReducer,
     payment: paymentReducer,
     servicedesk: servicedeskReducer,
+    rasaia: rasaiaReducer,
 });
 
 export default function configureStore(preloadedState?: IRootState) {

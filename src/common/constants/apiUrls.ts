@@ -312,6 +312,7 @@ export const apiUrls = {
     RASADOWNLOADINT: `${BASE_URL}/rasa/download`,
     RASAUPLOADINT: `${BASE_URL}/rasa/upload`,
     RASAMODELLIST: `${BASE_URL}/rasa/list`,
+    RASAMODELDOWNLOAD: `${BASE_URL}/rasa/download-model`,
 
     INTEGRATION_URL: `${BASE_URL}/load`,
     CHANNELS: `${BASE_URL}/channel`,
