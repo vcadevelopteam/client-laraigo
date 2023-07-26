@@ -1,7 +1,9 @@
+import { Add, Close, FileCopy, GetApp, Refresh, Search } from "@material-ui/icons";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { Dictionary, MultiData } from "@types";
 import { DownloadIcon } from "icons";
 import { getCountryList } from "store/signup/actions";
+import { KeyboardDatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { langKeys } from "lang/keys";
 import { makeStyles, styled, withStyles } from "@material-ui/core/styles";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
@@ -22,9 +24,8 @@ import {
     TextField,
 } from "@material-ui/core";
 
-import { Add, Close, FileCopy, GetApp, Refresh, Search } from "@material-ui/icons";
-
 import {
+    agentModeList,
     billingArtificialIntelligenceSel,
     billingPeriodArtificialIntelligenceInsArray,
     billingPeriodArtificialIntelligenceSel,
@@ -34,8 +35,10 @@ import {
     billingReportHsmHistory,
     billinguserreportsel,
     convertLocalDate,
+    currencyList,
     dataCurrency,
     dataMonths,
+    dateToLocalDate,
     dataYears,
     deleteInvoice,
     exportExcel,
@@ -62,7 +65,9 @@ import {
     insInvoiceComment,
     invoiceRefresh,
     listPaymentCard,
+    localesLaraigo,
     paymentCardInsert,
+    planModeList,
     selBalanceData,
     selInvoice,
     selInvoiceClient,
@@ -123,6 +128,7 @@ import Button from "@material-ui/core/Button";
 import ClearIcon from "@material-ui/icons/Clear";
 import clsx from "clsx";
 import CulqiModal from "components/fields/CulqiModal";
+import DateFnsUtils from "@date-io/date-fns";
 import DeleteIcon from "@material-ui/icons/Delete";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import MuiPhoneNumber from "material-ui-phone-number";
@@ -386,6 +392,22 @@ const CostPerPeriod: React.FC<{ dataCorp: any; dataOrg: any; dataPaymentPlan: an
                 Header: t(langKeys.supportplan),
             },
             {
+                accessor: "plancurrency",
+                Header: t(langKeys.billingperiod_plancurrency),
+            },
+            {
+                accessor: "planmode",
+                Header: t(langKeys.billingperiod_planmode),
+            },
+            {
+                accessor: "plandate",
+                Header: t(langKeys.billingperiod_plandate),
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return <div>{dateToLocalDate(row.plandate)}</div>;
+                },
+            },
+            {
                 accessor: "taxableamount",
                 Header: t(langKeys.taxableamount),
                 sortType: "number",
@@ -437,7 +459,7 @@ const CostPerPeriod: React.FC<{ dataCorp: any; dataOrg: any; dataPaymentPlan: an
             },
             {
                 accessor: "supervisorquantity",
-                Header: t(langKeys.supervisor_plural),
+                Header: t(langKeys.billingreport_supervisor),
                 sortType: "number",
                 type: "number",
                 Cell: (props: any) => {
@@ -447,7 +469,7 @@ const CostPerPeriod: React.FC<{ dataCorp: any; dataOrg: any; dataPaymentPlan: an
             },
             {
                 accessor: "asesorquantity",
-                Header: t(langKeys.agent_plural),
+                Header: t(langKeys.billingreport_agent),
                 sortType: "number",
                 type: "number",
                 Cell: (props: any) => {
@@ -777,6 +799,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
         handleSubmit,
         register,
         setValue,
+        trigger,
     } = useForm({
         defaultValues: {
             additionalservicefee1: row?.additionalservicefee1 || 0,
@@ -859,6 +882,15 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
             voximplantcallvoipcost: row?.voximplantcallvoipcost || 0,
             voximplantcallvoipvcacost: row?.voximplantcallvoipvcacost || 0,
             year: row?.year || new Date().getFullYear(),
+
+            billingcurrency: row?.billingcurrency || "",
+            plancurrency: row?.plancurrency || "",
+            plandate: row?.plandate || null,
+            planmode: row?.planmode || "",
+            plancost: row?.plancost || 0,
+            planinfrastructure: row?.planinfrastructure || 0,
+            agentcurrency: row?.agentcurrency || "",
+            agentmode: row?.agentmode || "",
         },
     });
 
@@ -1142,19 +1174,17 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                         >
                             {t(langKeys.back)}
                         </Button>
-                        {canEdit && (
-                            <Button
-                                className={classes.button}
-                                color="primary"
-                                disabled={executeRes.loading}
-                                startIcon={<SaveIcon color="secondary" />}
-                                style={{ backgroundColor: "#55BD84" }}
-                                type="submit"
-                                variant="contained"
-                            >
-                                {t(langKeys.save)}
-                            </Button>
-                        )}
+                        <Button
+                            className={classes.button}
+                            color="primary"
+                            disabled={executeRes.loading || !canEdit}
+                            startIcon={<SaveIcon color="secondary" />}
+                            style={{ backgroundColor: "#55BD84" }}
+                            type="submit"
+                            variant="contained"
+                        >
+                            {t(langKeys.save)}
+                        </Button>
                     </div>
                 </div>
                 <Tabs
@@ -1194,80 +1224,138 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                             <FieldView className="col-6" label={t(langKeys.month)} value={getValues("month")} />
                         </div>
                         <div className="row-zyx">
-                            {canEdit ? (
-                                <FieldSelect
-                                    className="col-6"
-                                    data={dataPaymentPlan}
-                                    error={errors?.billingplan?.message}
-                                    label={t(langKeys.contractedplan)}
-                                    onChange={(value) => setValue("billingplan", value?.plan)}
-                                    optionDesc="plan"
-                                    optionValue="plan"
-                                    orderbylabel={true}
-                                    valueDefault={getValues("billingplan")}
-                                />
-                            ) : (
-                                <FieldView
-                                    className="col-6"
-                                    label={t(langKeys.contractedplan)}
-                                    value={getValues("billingplan")}
-                                />
-                            )}
-                            {canEdit ? (
-                                <FieldSelect
-                                    className="col-6"
-                                    data={dataPlan}
-                                    error={errors?.supportplan?.message}
-                                    label={t(langKeys.contractedsupportplan)}
-                                    onChange={(value) => setValue("supportplan", value?.description)}
-                                    optionDesc="description"
-                                    optionValue="description"
-                                    orderbylabel={true}
-                                    valueDefault={getValues("supportplan")}
-                                />
-                            ) : (
-                                <FieldView
-                                    className="col-6"
-                                    label={t(langKeys.contractedsupportplan)}
-                                    value={getValues("supportplan")}
-                                />
-                            )}
+                            <FieldSelect
+                                className="col-6"
+                                data={dataPaymentPlan}
+                                disabled={!canEdit}
+                                error={errors?.billingplan?.message}
+                                label={t(langKeys.contractedplan)}
+                                onChange={(value) => setValue("billingplan", value?.plan)}
+                                optionDesc="plan"
+                                optionValue="plan"
+                                orderbylabel={true}
+                                valueDefault={getValues("billingplan")}
+                            />
+                            <FieldSelect
+                                className="col-6"
+                                data={dataPlan}
+                                disabled={!canEdit}
+                                error={errors?.supportplan?.message}
+                                label={t(langKeys.contractedsupportplan)}
+                                onChange={(value) => setValue("supportplan", value?.description)}
+                                optionDesc="description"
+                                optionValue="description"
+                                orderbylabel={true}
+                                valueDefault={getValues("supportplan")}
+                            />
                         </div>
                         <div className="row-zyx">
-                            {canEdit ? (
-                                <FieldEdit
-                                    className="col-6"
-                                    error={errors?.basicfee?.message}
-                                    inputProps={{ step: "any" }}
-                                    label={t(langKeys.costbasedonthecontractedplan)}
-                                    onChange={(value) => setValue("basicfee", value)}
-                                    type="number"
-                                    valueDefault={getValues("basicfee")}
-                                />
-                            ) : (
-                                <FieldView
-                                    className="col-6"
-                                    label={t(langKeys.costbasedonthecontractedplan)}
-                                    value={getValues("basicfee")}
-                                />
-                            )}
-                            {canEdit ? (
-                                <FieldEdit
-                                    className="col-6"
-                                    error={errors?.supportbasicfee?.message}
-                                    inputProps={{ step: "any" }}
-                                    label={t(langKeys.costbasedonthesupportplan)}
-                                    onChange={(value) => setValue("supportbasicfee", value)}
-                                    type="number"
-                                    valueDefault={getValues("supportbasicfee")}
-                                />
-                            ) : (
-                                <FieldView
-                                    className="col-6"
-                                    label={t(langKeys.costbasedonthesupportplan)}
-                                    value={formatNumber(getValues("supportbasicfee") || 0)}
-                                />
-                            )}
+                            <FieldSelect
+                                className="col-6"
+                                data={currencyList}
+                                disabled={!canEdit}
+                                error={errors?.billingcurrency?.message}
+                                label={t(langKeys.billingperiod_billingcurrency)}
+                                onChange={(value) => setValue("billingcurrency", value?.value)}
+                                optionDesc="description"
+                                optionValue="value"
+                                orderbylabel={true}
+                                valueDefault={getValues("billingcurrency")}
+                            />
+                            <FieldSelect
+                                className="col-6"
+                                data={currencyList}
+                                disabled={!canEdit}
+                                error={errors?.plancurrency?.message}
+                                label={t(langKeys.billingperiod_plancurrency)}
+                                onChange={(value) => setValue("plancurrency", value?.value)}
+                                optionDesc="description"
+                                optionValue="value"
+                                orderbylabel={true}
+                                valueDefault={getValues("plancurrency")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <div className="col-6">
+                                <MuiPickersUtilsProvider
+                                    locale={localesLaraigo()[navigator.language.split("-")[0]]}
+                                    utils={DateFnsUtils}
+                                >
+                                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                        {t(langKeys.billingperiod_plandate)}
+                                    </Box>
+                                    <KeyboardDatePicker
+                                        defaultValue={row?.plandate}
+                                        disabled={!canEdit}
+                                        error={errors?.plandate?.message}
+                                        format="dd-MM-yyyy"
+                                        invalidDateMessage={t(langKeys.invalid_date_format)}
+                                        value={getValues("plandate")}
+                                        onChange={(value: any) => {
+                                            setValue("plandate", value || null);
+                                            trigger("plandate");
+                                        }}
+                                        style={{ width: "100%" }}
+                                    />
+                                </MuiPickersUtilsProvider>
+                            </div>
+                            <FieldSelect
+                                className="col-6"
+                                data={planModeList}
+                                disabled={!canEdit}
+                                error={errors?.planmode?.message}
+                                label={t(langKeys.billingperiod_planmode)}
+                                onChange={(value) => setValue("planmode", value?.value)}
+                                optionDesc="description"
+                                optionValue="value"
+                                orderbylabel={true}
+                                valueDefault={getValues("planmode")}
+                                uset={true}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.basicfee?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.costbasedonthecontractedplan)}
+                                onChange={(value) => setValue("basicfee", value)}
+                                type="number"
+                                valueDefault={getValues("basicfee")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.plancost?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.billingperiod_plancost)}
+                                onChange={(value) => setValue("plancost", value)}
+                                type="number"
+                                valueDefault={getValues("plancost")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.supportbasicfee?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.costbasedonthesupportplan)}
+                                onChange={(value) => setValue("supportbasicfee", value)}
+                                type="number"
+                                valueDefault={getValues("supportbasicfee")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.planinfrastructure?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.billingperiod_planinfrastructure)}
+                                onChange={(value) => setValue("planinfrastructure", value)}
+                                type="number"
+                                valueDefault={getValues("planinfrastructure")}
+                            />
                         </div>
                         <div className="row-zyx">
                             <FieldView
@@ -1281,22 +1369,15 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                 {pageSelected === 1 && (
                     <div className={classes.containerDetail}>
                         <div className="row-zyx">
-                            {canEdit ? (
-                                <FieldEdit
-                                    className="col-6"
-                                    error={errors?.userfreequantity?.message}
-                                    label={t(langKeys.numberofagentshired)}
-                                    onChange={(value) => setValue("userfreequantity", value)}
-                                    type="number"
-                                    valueDefault={getValues("userfreequantity")}
-                                />
-                            ) : (
-                                <FieldView
-                                    className="col-6"
-                                    label={t(langKeys.numberofagentshired)}
-                                    value={String(getValues("userfreequantity"))}
-                                />
-                            )}
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.userfreequantity?.message}
+                                label={t(langKeys.numberofagentshired)}
+                                onChange={(value) => setValue("userfreequantity", value)}
+                                type="number"
+                                valueDefault={getValues("userfreequantity")}
+                            />
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.numberofactiveagents)}
@@ -1316,30 +1397,35 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                             />
                         </div>
                         <div className="row-zyx">
-                            {canEdit ? (
-                                <FieldEdit
-                                    className="col-6"
-                                    error={errors?.useradditionalfee?.message}
-                                    inputProps={{ step: "any" }}
-                                    label={t(langKeys.useradditionalfee)}
-                                    onChange={(value) => setValue("useradditionalfee", value)}
-                                    type="number"
-                                    valueDefault={getValues("useradditionalfee")}
-                                />
-                            ) : (
-                                <FieldView
-                                    className="col-6"
-                                    label={t(langKeys.useradditionalfee)}
-                                    value={formatNumber(getValues("useradditionalfee") || 0)}
-                                />
-                            )}
+                            <FieldSelect
+                                className="col-6"
+                                data={currencyList}
+                                disabled={!canEdit}
+                                error={errors?.agentcurrency?.message}
+                                label={t(langKeys.billingperiod_agentcurrency)}
+                                onChange={(value) => setValue("agentcurrency", value?.value)}
+                                optionDesc="description"
+                                optionValue="value"
+                                orderbylabel={true}
+                                valueDefault={getValues("agentcurrency")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.useradditionalfee?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.useradditionalfee)}
+                                onChange={(value) => setValue("useradditionalfee", value)}
+                                type="number"
+                                valueDefault={getValues("useradditionalfee")}
+                            />
+                        </div>
+                        <div className="row-zyx">
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.useradditionalcharge)}
                                 value={formatNumber(getValues("useradditionalcharge") || 0)}
                             />
-                        </div>
-                        <div className="row-zyx">
                             <div className={"col-6"} style={{ paddingBottom: "3px" }}>
                                 <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">
                                     {t(langKeys.allowuseroverride)}
@@ -1350,7 +1436,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                                     control={
                                         <IOSSwitch
                                             checked={checkedUser}
-                                            disabled={canEdit === false}
+                                            disabled={!canEdit}
                                             onChange={(e) => {
                                                 setCheckedUser(e.target.checked);
                                                 setValue("usercreateoverride", e.target.checked);
@@ -1360,79 +1446,66 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                                 />
                             </div>
                         </div>
+                        <div className="row-zyx">
+                            <FieldSelect
+                                className="col-6"
+                                data={agentModeList}
+                                disabled={!canEdit}
+                                error={errors?.agentmode?.message}
+                                label={t(langKeys.billingperiod_agentmode)}
+                                onChange={(value) => setValue("agentmode", value?.value)}
+                                optionDesc="description"
+                                optionValue="value"
+                                orderbylabel={true}
+                                valueDefault={getValues("agentmode")}
+                                uset={true}
+                            />
+                        </div>
                     </div>
                 )}
                 {pageSelected === 2 && (
                     <div className={classes.containerDetail}>
                         <div className="row-zyx">
-                            {canEdit ? (
-                                <FieldEdit
-                                    className="col-6"
-                                    error={errors?.channelfreequantity?.message}
-                                    label={t(langKeys.channelfreequantity)}
-                                    onChange={(value) => setValue("channelfreequantity", value)}
-                                    type="number"
-                                    valueDefault={getValues("channelfreequantity")}
-                                />
-                            ) : (
-                                <FieldView
-                                    className="col-6"
-                                    label={t(langKeys.channelfreequantity)}
-                                    value={getValues("channelfreequantity")}
-                                />
-                            )}
-                            {canEdit ? (
-                                <FieldEdit
-                                    className="col-6"
-                                    error={errors?.channelotherfee?.message}
-                                    inputProps={{ step: "any" }}
-                                    label={t(langKeys.contractedplanchannelotherfee)}
-                                    onChange={(value) => setValue("channelotherfee", value)}
-                                    type="number"
-                                    valueDefault={getValues("channelotherfee")}
-                                />
-                            ) : (
-                                <FieldView
-                                    className="col-6"
-                                    label={t(langKeys.contractedplanchannelotherfee)}
-                                    value={formatNumberFourDecimals(getValues("channelotherfee") || 0)}
-                                />
-                            )}
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.channelfreequantity?.message}
+                                label={t(langKeys.channelfreequantity)}
+                                onChange={(value) => setValue("channelfreequantity", value)}
+                                type="number"
+                                valueDefault={getValues("channelfreequantity")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.channelotherfee?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.contractedplanchannelotherfee)}
+                                onChange={(value) => setValue("channelotherfee", value)}
+                                type="number"
+                                valueDefault={getValues("channelotherfee")}
+                            />
                         </div>
                         <div className="row-zyx">
-                            {canEdit ? (
-                                <FieldEdit
-                                    className="col-6"
-                                    error={errors?.freewhatsappchannel?.message}
-                                    label={t(langKeys.contractedplanfreewhatsappchannel)}
-                                    onChange={(value) => setValue("freewhatsappchannel", value)}
-                                    type="number"
-                                    valueDefault={getValues("freewhatsappchannel")}
-                                />
-                            ) : (
-                                <FieldView
-                                    className="col-6"
-                                    label={t(langKeys.contractedplanfreewhatsappchannel)}
-                                    value={getValues("freewhatsappchannel").toString()}
-                                />
-                            )}
-                            {canEdit ? (
-                                <FieldEdit
-                                    className="col-6"
-                                    error={errors?.channelwhatsappfee?.message}
-                                    inputProps={{ step: "any" }}
-                                    label={t(langKeys.channelwhatsappfee)}
-                                    onChange={(value) => setValue("channelwhatsappfee", value)}
-                                    type="number"
-                                    valueDefault={getValues("channelwhatsappfee")}
-                                />
-                            ) : (
-                                <FieldView
-                                    className="col-6"
-                                    label={t(langKeys.channelwhatsappfee)}
-                                    value={formatNumberFourDecimals(getValues("channelwhatsappfee") || 0)}
-                                />
-                            )}
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.freewhatsappchannel?.message}
+                                label={t(langKeys.contractedplanfreewhatsappchannel)}
+                                onChange={(value) => setValue("freewhatsappchannel", value)}
+                                type="number"
+                                valueDefault={getValues("freewhatsappchannel")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.channelwhatsappfee?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.channelwhatsappfee)}
+                                onChange={(value) => setValue("channelwhatsappfee", value)}
+                                type="number"
+                                valueDefault={getValues("channelwhatsappfee")}
+                            />
                         </div>
                         <div className="row-zyx">
                             <FieldView
@@ -1469,7 +1542,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                                     control={
                                         <IOSSwitch
                                             checked={checkedChannel}
-                                            disabled={canEdit === false}
+                                            disabled={!canEdit}
                                             onChange={(e) => {
                                                 setCheckedChannel(e.target.checked);
                                                 setValue("channelcreateoverride", e.target.checked);
@@ -1495,90 +1568,153 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                                 value={getValues("interactionquantity").toString()}
                             />
                         </div>
+                        <h3>
+                            <b>{t(langKeys.billingperiod_conversationusersection)}</b>
+                        </h3>
                         <div className="row-zyx">
                             <FieldView
                                 className="col-6"
-                                label={t(langKeys.conversationclientwhatquantity)}
-                                value={getValues("conversationclientwhatquantity").toString()}
+                                label={t(langKeys.billingperiod_conversationuserquantity)}
+                                value={getValues("conversationuserquantity").toString()}
                             />
                             <FieldView
                                 className="col-6"
-                                label={t(langKeys.conversationclientwhatfreequantity)}
-                                value={getValues("conversationclientwhatfreequantity").toString()}
+                                label={t(langKeys.billingperiod_conversationuserfreequantity)}
+                                value={getValues("conversationuserfreequantity").toString()}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldSelect
+                                className="col-6"
+                                data={currencyList}
+                                disabled={!canEdit}
+                                error={errors?.conversationusercurrency?.message}
+                                label={t(langKeys.billingperiod_conversationusercurrency)}
+                                onChange={(value) => setValue("conversationusercurrency", value?.value)}
+                                optionDesc="description"
+                                optionValue="value"
+                                orderbylabel={true}
+                                valueDefault={getValues("conversationusercurrency")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.conversationusergeneralvcacomission?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.billingperiod_conversationusergeneralvcacomission)}
+                                onChange={(value) => setValue("conversationusergeneralvcacomission", value)}
+                                type="number"
+                                valueDefault={getValues("conversationusergeneralvcacomission")}
                             />
                         </div>
                         <div className="row-zyx">
                             <FieldView
                                 className="col-6"
-                                label={t(langKeys.conversationclientwhatcharge)}
-                                value={formatNumber(getValues("conversationclientwhatcharge") || 0)}
+                                label={t(langKeys.billingperiod_conversationusergeneralvcafee)}
+                                value={formatNumber(getValues("conversationusergeneralvcafee") || 0)}
+                            />
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.billingperiod_conversationusermetacurrency)}
+                                value={getValues("conversationusermetacurrency")}
                             />
                         </div>
                         <div className="row-zyx">
-                            <FieldView
+                            <FieldEdit
                                 className="col-6"
-                                label={t(langKeys.conversationcompanywhatquantity)}
-                                value={getValues("conversationcompanywhatquantity").toString()}
+                                disabled={!canEdit}
+                                error={errors?.conversationusergeneralfee?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.billingperiod_conversationusergeneralfee)}
+                                onChange={(value) => setValue("conversationusergeneralfee", value)}
+                                type="number"
+                                valueDefault={getValues("conversationusergeneralfee")}
                             />
                             <FieldView
                                 className="col-6"
-                                label={t(langKeys.conversationcompanywhatfreequantity)}
-                                value={getValues("conversationcompanywhatfreequantity").toString()}
+                                label={t(langKeys.billingperiod_conversationusergeneraltotalfee)}
+                                value={formatNumber(getValues("conversationusergeneraltotalfee") || 0)}
+                            />
+                        </div>
+                        <h3>
+                            <b>{t(langKeys.billingperiod_conversationbusinesssection)}</b>
+                        </h3>
+                        <div className="row-zyx">
+                        <FieldView
+                                className="col-6"
+                                label={t(langKeys.billingperiod_conversationbusinessutilityquantity)}
+                                value={getValues("conversationbusinessutilityquantity").toString()}
                             />
                         </div>
                         <div className="row-zyx">
-                            <FieldView
+                        <FieldView
                                 className="col-6"
-                                label={t(langKeys.conversationcompanywhatcharge)}
-                                value={formatNumber(getValues("conversationcompanywhatcharge") || 0)}
+                                label={t(langKeys.billingperiod_conversationbusinessmarketingquantity)}
+                                value={getValues("conversationbusinessmarketingquantity").toString()}
                             />
                         </div>
                         <div className="row-zyx">
-                            {canEdit && (
-                                <FieldEdit
-                                    className="col-6"
-                                    error={errors?.vcacomissionperhsm?.message}
-                                    inputProps={{ step: "any" }}
-                                    label={t(langKeys.vcacomissionperhsm)}
-                                    onChange={(value) => setValue("vcacomissionperhsm", value)}
-                                    type="number"
-                                    valueDefault={getValues("vcacomissionperhsm")}
-                                />
-                            )}
-                            {!canEdit && (
-                                <FieldView
-                                    className="col-6"
-                                    label={t(langKeys.vcacomissionperhsm)}
-                                    value={formatNumberFourDecimals(getValues("vcacomissionperhsm") || 0)}
-                                />
-                            )}
-                            <FieldView
+                        <FieldEdit
                                 className="col-6"
-                                label={t(langKeys.conversationwhatcharge)}
-                                value={formatNumber(getValues("conversationwhatcharge") || 0)}
+                                disabled={!canEdit}
+                                error={errors?.conversationbusinessutilityvcacomission?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.billingperiod_conversationbusinessutilityvcacomission)}
+                                onChange={(value) => setValue("conversationbusinessutilityvcacomission", value)}
+                                type="number"
+                                valueDefault={getValues("conversationbusinessutilityvcacomission")}
                             />
                         </div>
+                        <div className="row-zyx">
+                        <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.conversationbusinessmarketingvcacomission?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.billingperiod_conversationbusinessmarketingvcacomission)}
+                                onChange={(value) => setValue("conversationbusinessmarketingvcacomission", value)}
+                                type="number"
+                                valueDefault={getValues("conversationbusinessmarketingvcacomission")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                        <FieldView
+                                className="col-6"
+                                label={t(langKeys.billingperiod_conversationbusinessauthenticationvcafee)}
+                                value={formatNumber(getValues("conversationbusinessauthenticationvcafee") || 0)}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                        <FieldSelect
+                                className="col-6"
+                                data={currencyList}
+                                disabled={!canEdit}
+                                error={errors?.conversationbusinessmetacurrency?.message}
+                                label={t(langKeys.billingperiod_conversationbusinessmetacurrency)}
+                                onChange={(value) => setValue("conversationbusinessmetacurrency", value?.value)}
+                                optionDesc="description"
+                                optionValue="value"
+                                orderbylabel={true}
+                                valueDefault={getValues("conversationbusinessmetacurrency")}
+                            />
+                        </div>
+                        <div className="row-zyx"></div>
+                        <div className="row-zyx"></div>
+                        <div className="row-zyx"></div>
                     </div>
                 )}
                 {pageSelected === 4 && (
                     <div className={classes.containerDetail}>
                         <div className="row-zyx">
-                            {canEdit ? (
-                                <FieldEdit
-                                    className="col-6"
-                                    error={errors?.clientfreequantity?.message}
-                                    label={t(langKeys.clientfreequantity)}
-                                    onChange={(value) => setValue("clientfreequantity", value)}
-                                    type="number"
-                                    valueDefault={getValues("clientfreequantity")}
-                                />
-                            ) : (
-                                <FieldView
-                                    className="col-6"
-                                    label={t(langKeys.clientfreequantity)}
-                                    value={getValues("clientfreequantity").toString()}
-                                />
-                            )}
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.clientfreequantity?.message}
+                                label={t(langKeys.clientfreequantity)}
+                                onChange={(value) => setValue("clientfreequantity", value)}
+                                type="number"
+                                valueDefault={getValues("clientfreequantity")}
+                            />
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.clientquantity)}
@@ -1586,23 +1722,16 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                             />
                         </div>
                         <div className="row-zyx">
-                            {canEdit ? (
-                                <FieldEdit
-                                    className="col-6"
-                                    error={errors?.clientadditionalfee?.message}
-                                    inputProps={{ step: "any" }}
-                                    label={t(langKeys.clientadditionalfee)}
-                                    onChange={(value) => setValue("clientadditionalfee", value)}
-                                    type="number"
-                                    valueDefault={getValues("clientadditionalfee")}
-                                />
-                            ) : (
-                                <FieldView
-                                    className="col-6"
-                                    label={t(langKeys.clientadditionalfee)}
-                                    value={formatNumberFourDecimals(getValues("clientadditionalfee") || 0)}
-                                />
-                            )}
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.clientadditionalfee?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.clientadditionalfee)}
+                                onChange={(value) => setValue("clientadditionalfee", value)}
+                                type="number"
+                                valueDefault={getValues("clientadditionalfee")}
+                            />
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.clientadditionalcharge)}
@@ -1614,40 +1743,26 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                 {pageSelected === 5 && (
                     <div className={classes.containerDetail}>
                         <div className="row-zyx">
-                            {canEdit ? (
-                                <FieldEdit
-                                    className="col-6"
-                                    error={errors?.unitpricepersms?.message}
-                                    inputProps={{ step: "any" }}
-                                    label={t(langKeys.unitpricepersms)}
-                                    onChange={(value) => setValue("unitpricepersms", value)}
-                                    type="number"
-                                    valueDefault={getValues("unitpricepersms")}
-                                />
-                            ) : (
-                                <FieldView
-                                    className="col-6"
-                                    label={t(langKeys.unitpricepersms)}
-                                    value={formatNumberFourDecimals(getValues("unitpricepersms") || 0)}
-                                />
-                            )}
-                            {canEdit ? (
-                                <FieldEdit
-                                    className="col-6"
-                                    error={errors?.vcacomissionpersms?.message}
-                                    inputProps={{ step: "any" }}
-                                    label={t(langKeys.vcacomissionpersms)}
-                                    onChange={(value) => setValue("vcacomissionpersms", value)}
-                                    type="number"
-                                    valueDefault={getValues("vcacomissionpersms")}
-                                />
-                            ) : (
-                                <FieldView
-                                    className="col-6"
-                                    label={t(langKeys.vcacomissionpersms)}
-                                    value={formatNumberFourDecimals(getValues("vcacomissionpersms") || 0)}
-                                />
-                            )}
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.unitpricepersms?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.unitpricepersms)}
+                                onChange={(value) => setValue("unitpricepersms", value)}
+                                type="number"
+                                valueDefault={getValues("unitpricepersms")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.vcacomissionpersms?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.vcacomissionpersms)}
+                                onChange={(value) => setValue("vcacomissionpersms", value)}
+                                type="number"
+                                valueDefault={getValues("vcacomissionpersms")}
+                            />
                         </div>
                         <div className="row-zyx">
                             <FieldView
@@ -1655,22 +1770,15 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                                 label={t(langKeys.smsquantity)}
                                 value={formatNumberNoDecimals(getValues("smsquantity") || 0)}
                             />
-                            {canEdit ? (
-                                <FieldEdit
-                                    className="col-6"
-                                    error={errors?.minimumsmsquantity?.message}
-                                    label={t(langKeys.minimumsmsquantity)}
-                                    onChange={(value) => setValue("minimumsmsquantity", value)}
-                                    type="number"
-                                    valueDefault={getValues("minimumsmsquantity")}
-                                />
-                            ) : (
-                                <FieldView
-                                    className="col-6"
-                                    label={t(langKeys.minimumsmsquantity)}
-                                    value={formatNumberFourDecimals(getValues("minimumsmsquantity") || 0)}
-                                />
-                            )}
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.minimumsmsquantity?.message}
+                                label={t(langKeys.minimumsmsquantity)}
+                                onChange={(value) => setValue("minimumsmsquantity", value)}
+                                type="number"
+                                valueDefault={getValues("minimumsmsquantity")}
+                            />
                         </div>
                         <div className="row-zyx">
                             <FieldView
@@ -1680,40 +1788,26 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                             />
                         </div>
                         <div className="row-zyx">
-                            {canEdit ? (
-                                <FieldEdit
-                                    className="col-6"
-                                    error={errors?.unitepricepermail?.message}
-                                    inputProps={{ step: "any" }}
-                                    label={t(langKeys.unitepricepermail)}
-                                    onChange={(value) => setValue("unitepricepermail", value)}
-                                    type="number"
-                                    valueDefault={getValues("unitepricepermail")}
-                                />
-                            ) : (
-                                <FieldView
-                                    className="col-6"
-                                    label={t(langKeys.unitepricepermail)}
-                                    value={formatNumberFourDecimals(getValues("unitepricepermail") || 0)}
-                                />
-                            )}
-                            {canEdit ? (
-                                <FieldEdit
-                                    className="col-6"
-                                    error={errors?.vcacomissionpermail?.message}
-                                    inputProps={{ step: "any" }}
-                                    label={t(langKeys.vcacomissionpermail)}
-                                    onChange={(value) => setValue("vcacomissionpermail", value)}
-                                    type="number"
-                                    valueDefault={getValues("vcacomissionpermail")}
-                                />
-                            ) : (
-                                <FieldView
-                                    className="col-6"
-                                    label={t(langKeys.vcacomissionpermail)}
-                                    value={formatNumberFourDecimals(getValues("vcacomissionpermail") || 0)}
-                                />
-                            )}
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.unitepricepermail?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.unitepricepermail)}
+                                onChange={(value) => setValue("unitepricepermail", value)}
+                                type="number"
+                                valueDefault={getValues("unitepricepermail")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.vcacomissionpermail?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.vcacomissionpermail)}
+                                onChange={(value) => setValue("vcacomissionpermail", value)}
+                                type="number"
+                                valueDefault={getValues("vcacomissionpermail")}
+                            />
                         </div>
                         <div className="row-zyx">
                             <FieldView
@@ -1721,23 +1815,16 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                                 label={t(langKeys.mailquantity)}
                                 value={formatNumberNoDecimals(getValues("mailquantity") || 0)}
                             />
-                            {canEdit ? (
-                                <FieldEdit
-                                    className="col-6"
-                                    error={errors?.minimummailquantity?.message}
-                                    inputProps={{ step: "any" }}
-                                    label={t(langKeys.minimummailquantity)}
-                                    onChange={(value) => setValue("minimummailquantity", value)}
-                                    type="number"
-                                    valueDefault={getValues("minimummailquantity")}
-                                />
-                            ) : (
-                                <FieldView
-                                    className="col-6"
-                                    label={t(langKeys.minimummailquantity)}
-                                    value={formatNumberFourDecimals(getValues("minimummailquantity") || 0)}
-                                />
-                            )}
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.minimummailquantity?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.minimummailquantity)}
+                                onChange={(value) => setValue("minimummailquantity", value)}
+                                type="number"
+                                valueDefault={getValues("minimummailquantity")}
+                            />
                         </div>
                         <div className="row-zyx">
                             <FieldView
@@ -1751,23 +1838,16 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                 {pageSelected === 6 && (
                     <div className={classes.containerDetail}>
                         <div className="row-zyx">
-                            {canEdit ? (
-                                <FieldEdit
-                                    className="col-12"
-                                    error={errors?.vcacomissionpervoicechannel?.message}
-                                    inputProps={{ step: "any" }}
-                                    label={t(langKeys.vcacomissionpervoicechannel)}
-                                    onChange={(value) => setValue("vcacomissionpervoicechannel", value)}
-                                    type="number"
-                                    valueDefault={getValues("vcacomissionpervoicechannel")}
-                                />
-                            ) : (
-                                <FieldView
-                                    className="col-6"
-                                    label={t(langKeys.vcacomissionpervoicechannel)}
-                                    value={formatNumber(getValues("vcacomissionpervoicechannel") || 0)}
-                                />
-                            )}
+                            <FieldEdit
+                                className="col-12"
+                                disabled={!canEdit}
+                                error={errors?.vcacomissionpervoicechannel?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.vcacomissionpervoicechannel)}
+                                onChange={(value) => setValue("vcacomissionpervoicechannel", value)}
+                                type="number"
+                                valueDefault={getValues("vcacomissionpervoicechannel")}
+                            />
                         </div>
                         <div className="row-zyx">
                             <FieldView
@@ -1915,106 +1995,64 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                 {pageSelected === 8 && (
                     <div className={classes.containerDetail}>
                         <div className="row-zyx">
-                            {canEdit ? (
-                                <FieldEdit
-                                    className="col-6"
-                                    error={errors?.additionalservicename1?.message}
-                                    label={`${t(langKeys.additionalservicename)} 1`}
-                                    onChange={(value) => setValue("additionalservicename1", value)}
-                                    valueDefault={getValues("additionalservicename1")}
-                                />
-                            ) : (
-                                <FieldView
-                                    className="col-6"
-                                    label={`${t(langKeys.additionalservicename)} 1`}
-                                    value={getValues("additionalservicename1")}
-                                />
-                            )}
-                            {canEdit ? (
-                                <FieldEdit
-                                    className="col-6"
-                                    error={errors?.additionalservicefee1?.message}
-                                    inputProps={{ step: "any" }}
-                                    label={`${t(langKeys.additionalservicefee)} 1`}
-                                    onChange={(value) => setValue("additionalservicefee1", value)}
-                                    type="number"
-                                    valueDefault={getValues("additionalservicefee1")}
-                                />
-                            ) : (
-                                <FieldView
-                                    className="col-6"
-                                    label={`${t(langKeys.additionalservicefee)} 1`}
-                                    value={formatNumberFourDecimals(getValues("additionalservicefee1") || 0)}
-                                />
-                            )}
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.additionalservicename1?.message}
+                                label={`${t(langKeys.additionalservicename)} 1`}
+                                onChange={(value) => setValue("additionalservicename1", value)}
+                                valueDefault={getValues("additionalservicename1")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.additionalservicefee1?.message}
+                                inputProps={{ step: "any" }}
+                                label={`${t(langKeys.additionalservicefee)} 1`}
+                                onChange={(value) => setValue("additionalservicefee1", value)}
+                                type="number"
+                                valueDefault={getValues("additionalservicefee1")}
+                            />
                         </div>
                         <div className="row-zyx">
-                            {canEdit ? (
-                                <FieldEdit
-                                    className="col-6"
-                                    error={errors?.additionalservicename2?.message}
-                                    label={`${t(langKeys.additionalservicename)} 2`}
-                                    onChange={(value) => setValue("additionalservicename2", value)}
-                                    valueDefault={getValues("additionalservicename2")}
-                                />
-                            ) : (
-                                <FieldView
-                                    className="col-6"
-                                    label={`${t(langKeys.additionalservicename)} 2`}
-                                    value={getValues("additionalservicename2")}
-                                />
-                            )}
-                            {canEdit ? (
-                                <FieldEdit
-                                    className="col-6"
-                                    error={errors?.additionalservicefee2?.message}
-                                    inputProps={{ step: "any" }}
-                                    label={`${t(langKeys.additionalservicefee)} 2`}
-                                    onChange={(value) => setValue("additionalservicefee2", value)}
-                                    type="number"
-                                    valueDefault={getValues("additionalservicefee2")}
-                                />
-                            ) : (
-                                <FieldView
-                                    className="col-6"
-                                    label={`${t(langKeys.additionalservicefee)} 2`}
-                                    value={formatNumberFourDecimals(getValues("additionalservicefee2") || 0)}
-                                />
-                            )}
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.additionalservicename2?.message}
+                                label={`${t(langKeys.additionalservicename)} 2`}
+                                onChange={(value) => setValue("additionalservicename2", value)}
+                                valueDefault={getValues("additionalservicename2")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.additionalservicefee2?.message}
+                                inputProps={{ step: "any" }}
+                                label={`${t(langKeys.additionalservicefee)} 2`}
+                                onChange={(value) => setValue("additionalservicefee2", value)}
+                                type="number"
+                                valueDefault={getValues("additionalservicefee2")}
+                            />
                         </div>
                         <div className="row-zyx">
-                            {canEdit ? (
-                                <FieldEdit
-                                    className="col-6"
-                                    error={errors?.additionalservicename3?.message}
-                                    label={`${t(langKeys.additionalservicename)} 3`}
-                                    onChange={(value) => setValue("additionalservicename3", value)}
-                                    valueDefault={getValues("additionalservicename3")}
-                                />
-                            ) : (
-                                <FieldView
-                                    className="col-6"
-                                    label={`${t(langKeys.additionalservicename)} 3`}
-                                    value={getValues("additionalservicename3")}
-                                />
-                            )}
-                            {canEdit ? (
-                                <FieldEdit
-                                    className="col-6"
-                                    error={errors?.additionalservicefee3?.message}
-                                    inputProps={{ step: "any" }}
-                                    label={`${t(langKeys.additionalservicefee)} 3`}
-                                    onChange={(value) => setValue("additionalservicefee3", value)}
-                                    type="number"
-                                    valueDefault={getValues("additionalservicefee3")}
-                                />
-                            ) : (
-                                <FieldView
-                                    className="col-6"
-                                    label={`${t(langKeys.additionalservicefee)} 3`}
-                                    value={formatNumberFourDecimals(getValues("additionalservicefee3") || 0)}
-                                />
-                            )}
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.additionalservicename3?.message}
+                                label={`${t(langKeys.additionalservicename)} 3`}
+                                onChange={(value) => setValue("additionalservicename3", value)}
+                                valueDefault={getValues("additionalservicename3")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.additionalservicefee3?.message}
+                                inputProps={{ step: "any" }}
+                                label={`${t(langKeys.additionalservicefee)} 3`}
+                                onChange={(value) => setValue("additionalservicefee3", value)}
+                                type="number"
+                                valueDefault={getValues("additionalservicefee3")}
+                            />
                         </div>
                     </div>
                 )}
@@ -2498,6 +2536,12 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
 
     const triggerExportDataConversation = () => {
         dispatch(exportData(billingReportConversationWhatsApp(dataMain), "BillingUserConversation", "excel", true));
+        dispatch(showBackdrop(true));
+        setWaitExport(true);
+    };
+
+    const triggerExportDataConsulting = () => {
+        window.alert("MISSING QUERY");
         dispatch(showBackdrop(true));
         setWaitExport(true);
     };
@@ -3091,6 +3135,16 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                 className={classes.button}
                                 color="primary"
                                 disabled={resExportData.loading}
+                                onClick={() => triggerExportDataConsulting()}
+                                startIcon={<DownloadIcon />}
+                                variant="contained"
+                            >
+                                {`${t(langKeys.report)} ${t(langKeys.billingreport_consulting)}`}
+                            </Button>
+                            <Button
+                                className={classes.button}
+                                color="primary"
+                                disabled={resExportData.loading}
                                 onClick={() => triggerExportDataHsmHistory("SMS")}
                                 startIcon={<DownloadIcon />}
                                 variant="contained"
@@ -3343,9 +3397,13 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                 <div>
                                                     <b>{t(langKeys.billingreportconversations)}</b>
                                                 </div>
-                                                <div>{t(langKeys.reportfreeconversations)}</div>
-                                                <div>{t(langKeys.userinitiatedconversations)}</div>
-                                                <div>{t(langKeys.businessinitiatedconversations)}</div>
+                                                <div>{t(langKeys.billingreport_conversationfree)}</div>
+                                                <div>{t(langKeys.billingreport_conversationusergeneral)}</div>
+                                                <div>{t(langKeys.billingreport_conversationbusinessutility)}</div>
+                                                <div>
+                                                    {t(langKeys.billingreport_conversationbusinessauthentication)}
+                                                </div>
+                                                <div>{t(langKeys.billingreport_conversationbusinessmarketing)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
@@ -3365,8 +3423,12 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                         datareport.conversationcompanywhatquantity || 0
                                                     )}
                                                 </div>
+                                                <div>{formatNumberNoDecimals(0)}</div>
+                                                <div>{formatNumberNoDecimals(0)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
@@ -3393,6 +3455,8 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                         )
                                                         : formatNumber(datareport.conversationcompanywhatcharge)}
                                                 </div>
+                                                <div>${formatNumber(0)}</div>
+                                                <div>${formatNumber(0)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
@@ -3415,6 +3479,8 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                         )
                                                         : "0.00"}
                                                 </div>
+                                                <div>${formatNumber(0)}</div>
+                                                <div>${formatNumber(0)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
@@ -3423,6 +3489,8 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                 <div>
                                                     ${formatNumber(datareport.conversationcompanywhatcharge || 0)}
                                                 </div>
+                                                <div>${formatNumber(0)}</div>
+                                                <div>${formatNumber(0)}</div>
                                             </StyledTableCell>
                                         </StyledTableRow>
                                         <StyledTableRow>
@@ -3704,6 +3772,16 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                 <div>${formatNumber(datareport.clientadditionalcharge || 0)}</div>
                                             </StyledTableCell>
                                         </StyledTableRow>
+                                        <StyledTableRow>
+                                            <StyledTableCell>
+                                                <b>{t(langKeys.billingreport_infrastructure)}</b>
+                                            </StyledTableCell>
+                                            <StyledTableCell></StyledTableCell>
+                                            <StyledTableCell></StyledTableCell>
+                                            <StyledTableCell align="right">${formatNumber(0)}</StyledTableCell>
+                                            <StyledTableCell align="right">${formatNumber(0)}</StyledTableCell>
+                                            <StyledTableCell align="right">${formatNumber(0)}</StyledTableCell>
+                                        </StyledTableRow>
                                         {datareport?.artificialintelligencedata?.map((item: any) => (
                                             <StyledTableRow>
                                                 <StyledTableCell>
@@ -3771,6 +3849,16 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                             <StyledTableCell align="right">
                                                 ${formatNumber(datareport.supportbasicfee)}
                                             </StyledTableCell>
+                                        </StyledTableRow>
+                                        <StyledTableRow>
+                                            <StyledTableCell>
+                                                <b>{t(langKeys.billingreport_consulting)}</b>
+                                            </StyledTableCell>
+                                            <StyledTableCell></StyledTableCell>
+                                            <StyledTableCell></StyledTableCell>
+                                            <StyledTableCell align="right">${formatNumber(0)}</StyledTableCell>
+                                            <StyledTableCell align="right">${formatNumber(0)}</StyledTableCell>
+                                            <StyledTableCell align="right">${formatNumber(0)}</StyledTableCell>
                                         </StyledTableRow>
                                         <StyledTableRow>
                                             <StyledTableCell>
@@ -5244,6 +5332,10 @@ const Billing: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp, dataOrg 
                         </Fragment>
                     );
                 },
+            },
+            {
+                accessor: "description",
+                Header: t(langKeys.description),
             },
             {
                 accessor: "invoicedate",
@@ -8339,7 +8431,7 @@ const MessagingPackages: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp
 
     useEffect(() => {
         fetchData();
-        
+
         if (user?.paymentmethod === "PREPAGO") {
             setCanRegister(true);
         }

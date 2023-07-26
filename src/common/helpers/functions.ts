@@ -3,6 +3,16 @@
 import { Dictionary } from "@types";
 // import * as XLSX from 'xlsx';
 
+export const agentModeList = [
+    { value: "PER_DAY", description: "per_day" },
+    { value: "PER_MONTH", description: "per_month" },
+];
+
+export const planModeList = [
+    { value: "YEARLY", description: "yearly" },
+    { value: "MONTHLY", description: "monthly" },
+];
+
 export const currencyList = [
     { value: "PEN", description: "PEN" },
     { value: "USD", description: "USD" },
