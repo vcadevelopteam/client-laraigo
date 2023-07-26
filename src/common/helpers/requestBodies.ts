@@ -234,7 +234,7 @@ export const insUser = ({ id, usr, doctype, send_password_by_email, docnum, pass
 export const insOrgUser = ({ roleid, orgid, bydefault, labels, groups, channels, status, type, supervisor = "", operation, redirect }: Dictionary): IRequestBody => ({
     method: "UFN_ORGUSER_INS",
     key: "UFN_ORGUSER_INS",
-    parameters: { orgid, roleid, usersupervisor: supervisor, bydefault, labels, groups, channels, status, type, defaultsort: 1, operation, redirect }
+    parameters: { orgid, rolegroups: roleid, usersupervisor: supervisor, bydefault, labels, groups, channels, status, type, defaultsort: 1, operation, redirect }
 });
 export const selOrgSimpleList = (): IRequestBody => ({
     method: "UFN_ORG_LST_SIMPLE",

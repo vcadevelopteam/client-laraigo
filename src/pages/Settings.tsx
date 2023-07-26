@@ -356,12 +356,12 @@ const Settings: FC = () => {
                 </Title>
             </Box>
             <div style={{ height: 23 }} />
-            {user?.roledesc!=='SUPERVISOR'?
+            {!user?.roledesc?.includes('SUPERVISOR')?
                 <>
                     <Grid container direction="row">
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                             <Grid container direction="column">
-                                {user?.roledesc === "SUPERADMIN" && (
+                                {user?.roledesc?.includes("SUPERADMIN") && (
                                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                                         <ItemTile
                                             title={<Trans i18nKey={langKeys.corporation} count={2} />}

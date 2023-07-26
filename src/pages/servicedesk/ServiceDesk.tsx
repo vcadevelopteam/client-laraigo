@@ -141,7 +141,7 @@ const ServiceDesk: FC = () => {
   }), [query]);
   const [display, setDisplay] = useState(query.get('display') || 'BOARD');
   const [boardFilter, setBoardFilterPrivate] = useState<IBoardFilter>({
-    company: user?.roledesc.includes("VISOR") ? (user?.companyuser||"") : (otherParams?.company||""),
+    company: user?.roledesc?.includes("VISOR") ? (user?.companyuser||"") : (otherParams?.company||""),
     groups: otherParams?.groups||"",
     customer: otherParams.contact,
     products: otherParams.products,
@@ -296,7 +296,7 @@ const ServiceDesk: FC = () => {
   const voxiConnection = useSelector(state => state.voximplant.connection);
   const callOnLine = useSelector(state => state.voximplant.callOnLine);
   const allParameters = {
-    company: user?.roledesc.includes("VISOR") ? (user?.companyuser||"") : (otherParams?.company||""),
+    company: user?.roledesc?.includes("VISOR") ? (user?.companyuser||"") : (otherParams?.company||""),
     groups: otherParams?.groups||"",
     leadproduct: otherParams?.products||"",
     contact: otherParams.contact,
@@ -386,7 +386,7 @@ const ServiceDesk: FC = () => {
   }
 
   const onClickRow = (row: any) => {
-    if (row.leadid && !user?.roledesc.includes("VISOR")) {
+    if (row.leadid && !user?.roledesc?.includes("VISOR")) {
       history.push({pathname: paths.SERVICE_DESK_EDIT_LEAD.resolve(row.leadid),});
     }
   }
@@ -612,7 +612,7 @@ const ServiceDesk: FC = () => {
               optionDesc="domaindesc"
               optionValue="domainvalue"
               loading={mainMulti.loading}
-              disabled={user?.roledesc.includes("VISOR")}
+              disabled={user?.roledesc?.includes("VISOR")}
             />
             <FieldMultiSelect
               variant="outlined"
@@ -657,7 +657,7 @@ const ServiceDesk: FC = () => {
               optionValue="tags"
             />
             <div style={{ flexGrow: 1 }} />
-            {(!isIncremental && !user?.roledesc.includes("VISOR")) &&
+            {(!isIncremental && !user?.roledesc?.includes("VISOR")) &&
             <Button
                 variant="contained"
                 color="primary"
@@ -727,7 +727,7 @@ const ServiceDesk: FC = () => {
               optionDesc="domaindesc"
               optionValue="domainvalue"
               loading={mainMulti.loading}
-              disabled={user?.roledesc.includes("VISOR")}
+              disabled={user?.roledesc?.includes("VISOR")}
             />
             <FieldMultiSelect
               variant="outlined"
@@ -771,7 +771,7 @@ const ServiceDesk: FC = () => {
               optionDesc="tags"
               optionValue="tags"
             />
-            {(!user?.roledesc.includes("VISOR")) &&
+            {(!user?.roledesc?.includes("VISOR")) &&
             <Button
                 variant="contained"
                 color="primary"
@@ -820,7 +820,7 @@ const ServiceDesk: FC = () => {
             <div style={{ display: 'flex', gap: 8 }}>
               
             </div>
-            {(!isIncremental && !user?.roledesc.includes("VISOR")) &&
+            {(!isIncremental && !user?.roledesc?.includes("VISOR")) &&
             <div style={{ display: 'flex', gap: 8 }}>
               <Button
                   variant="contained"
@@ -849,7 +849,7 @@ const ServiceDesk: FC = () => {
               >
                   <Trans i18nKey={langKeys.send_sms} />
               </Button>
-              {(!user?.roledesc.includes("VISOR")) &&
+              {(!user?.roledesc?.includes("VISOR")) &&
               <Button
                   variant="contained"
                   color="primary"

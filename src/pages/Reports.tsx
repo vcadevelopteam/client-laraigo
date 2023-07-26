@@ -821,7 +821,7 @@ const Reports: FC = () => {
     const [allReports, setAllReports] = useState<Dictionary[]>([]);
     const [allReportsToShow, setallReportsToShow] = useState<Dictionary[]>([]);
     const user = useSelector(state => state.login.validateToken.user);
-    const superadmin = user?.roledesc === "SUPERADMIN"
+    const superadmin = user?.roledesc?.includes("SUPERADMIN")
 
     const fetchData = () => {
         dispatch(getCollection(getReportSel('')))
@@ -1164,7 +1164,7 @@ const Reports: FC = () => {
                     </Grid>
                 )
             case 'UNIQUECONTACTS':
-                if (user?.roledesc === "SUPERADMIN") {
+                if (user?.roledesc?.includes("SUPERADMIN")) {
                     return (
                         <Grid item key={"uniquecontactsreport"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
                             <Card >
