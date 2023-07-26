@@ -26,8 +26,6 @@ import { TreeItem, TreeView } from '@material-ui/lab';
 import { IconButton, Input, InputAdornment, InputLabel, Menu, MenuItem } from '@material-ui/core';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import { DetailTipification } from './Tipifications';
-import { useHistory } from 'react-router-dom';
-import paths from 'common/constants/paths';
 import {
     MoreVert as MoreVertIcon,
 } from '@material-ui/icons';
@@ -703,7 +701,6 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
 }
 
 const Quickreplies: FC = () => {
-    const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
@@ -717,7 +714,6 @@ const Quickreplies: FC = () => {
     const [dataUPD, setDataUPD] = useState<any>(null)
     const [insertexcel, setinsertexcel] = useState(false);
     const arrayBread = [
-        { id: "view-0", name: t(langKeys.configuration_plural) },
         { id: "view-1", name: t(langKeys.quickreply_plural) },
     ];
     const [anchorEl, setAnchorEl] = useState(null);
@@ -727,10 +723,6 @@ const Quickreplies: FC = () => {
         setAnchorEl(null);
     };
     function redirectFunc(view:string){
-        if(view ==="view-0"){
-            history.push(paths.CONFIGURATION)
-            return;
-        }
         setViewSelected(view)
     }
 
@@ -905,14 +897,7 @@ const Quickreplies: FC = () => {
     if (viewSelected === "view-1") {
 
         return (
-            <div style={{ width: "100%", display: 'flex', flexDirection: 'column', flex: 1 }}>
-                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
-                    <TemplateBreadcrumbs
-                        breadcrumbs={arrayBread}
-                        handleClick={redirectFunc}
-                    />
-                </div>
-            
+            <div style={{ width: "100%", display: 'flex', flexDirection: 'column', flex: 1 }}>            
                 <Menu
                     id="long-menu"
                     anchorEl={anchorEl}
@@ -963,15 +948,6 @@ const Quickreplies: FC = () => {
                         onClickRow={handleEdit}
                         ButtonsElement={()=>
                             <>
-                                <Button
-                                    disabled={mainResult.mainData.loading}
-                                    variant="contained"
-                                    type="button"
-                                    color="primary"
-                                    startIcon={<ClearIcon color="secondary" />}
-                                    style={{ backgroundColor: "#FB5F5F" }}
-                                    onClick={() => history.push(paths.CONFIGURATION)}
-                                >{t(langKeys.back)}</Button>
                                 <Button
                                     variant="contained"
                                     type="button"
