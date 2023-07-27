@@ -207,10 +207,11 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     }, [resFromOrg])
 
     useEffect(() => {
+        console.log("entro")
         //PARA MODALES SE DEBE RESETEAR EN EL EDITAR
         reset({
             orgid: row ? row.orgid : (dataOrganizationsTmp.length === 1 ? dataOrganizationsTmp[0].orgid : 0),
-            roleid: row ? row.rolegroups : 0,
+            roleid: row ? row.rolegroups : "",
             roledesc: row ? row.roledesc : '', //for table
             orgdesc: row ? row.orgdesc : '', //for table
             supervisordesc: row ? row.supervisordesc : '', //for table
@@ -227,7 +228,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
 
         register('orgid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('roleid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('type');
         register('supervisor');
         // register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('channels');
@@ -332,7 +333,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                             <FieldMultiSelect
                                 label={t(langKeys.role)}
                                 className={classes.mb2}
-                                valueDefault={row?.rolegroups || ""}
+                                valueDefault={getValues("roleid")}
                                 onChange={onChangeRole}
                                 error={errors?.roleid?.message}
                                 // triggerOnChangeOnFirst={true}
@@ -359,7 +360,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                             <TemplateSwitchYesNo
                                 label={"Balanceo"}
                                 className={classes.mb2}
-                                valueDefault={row?.type === "ASESOR"}
+                                valueDefault={getValues("type") === "ASESOR"}
                                 onChange={(value) => { setValue('type', value?"ASESOR":"SUPERVISOR"); }} />
                         </div>
                         <div className="col-6">
