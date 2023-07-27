@@ -552,7 +552,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     } else if (interactiontype === "image" || interactiontype === "comment-image")
         return (
             <div title={convertLocalDate(createdate).toLocaleString()} className={classes.interactionImage}>
-                <img
+                {(checkUrl(interactiontext) && checkFile(interactiontext)) && <img
                     className={classes.imageCard}
                     src={interactiontext}
                     alt=""
@@ -560,7 +560,9 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                     onClick={() => {
                         dispatch(manageLightBox({ visible: true, images: listImage!!, index: indexImage!! }))
                     }}
-                />
+                />}
+                {(!checkUrl(interactiontext) && checkFile(interactiontext)) && <video className={classes.imageCard} width="200" controls src={interactiontext} />}
+                {(!checkFile) && <>{interactiontext}</>}
                 <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} background={true} />
             </div>
         );
