@@ -67,7 +67,7 @@ const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig 
             //         console.assert(config.initialSubroute != null || config.initialSubroute !== undefined, message);
             //     }
             // }
-            console.log(path);
+            // console.log(path);
         }
         const navigationRoutes = config.options.map(
             (option: string) =>
@@ -121,7 +121,7 @@ const LinkList: FC<{ config: ViewsClassificationConfig, classes: any, open: bool
     // if (!config.path) {
     //     return <Typography className={open ? classes.drawerLabel : classes.drawerCloseLabel}>{config.description}</Typography>;
     // }
-    console.log(popupState);
+    // console.log(popupState);
     // const isSelected = config.options?.some((option: string) => option === history.location.pathname);
 
     let className = "";
