@@ -56,6 +56,7 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
     const useradmin = ["ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '');
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
+    const [orderVariable, setOrderVariable] = useState(row?.typeorder? "ORDER":"LEAD");
     const executeRes = useSelector(state => state.main.execute);
     const [shippingtype, setshippingtype] = useState(row?.shippingtype || "");
     const templates = useSelector(state => state.lead.leadTemplates);
@@ -65,6 +66,12 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
     const dataCommChannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const dataLeads = multiData[3] && multiData[3].success ? multiData[3].data : [];
     const dataTags = multiData[4] && multiData[4].success ? multiData[4].data : [];
+    const dataOrder = [
+        {value: "new",description:t(langKeys.new)},
+        {value: "dispatched",description:t(langKeys.dispatched)},
+        {value: "delivered",description:t(langKeys.delivered)},
+        {value: "prepared",description:t(langKeys.prepared)},
+    ]
 
     const { register, handleSubmit, setValue,control, getValues,trigger, formState: { errors } } = useForm<AutomatizationRuleSave>({
         defaultValues: {
@@ -79,9 +86,11 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
             status: row?.status || 'ACTIVO',
             type: "NINGUNO",
             schedule: row?.schedule || "",
+            orderstatus: row?.orderstatus || "",
             tags: row?.tags || "",
             products: row?.products || "",
             messagetemplateid: row?.messagetemplateid||0,
+            order: row?.typeorder ||false,
             hsmtemplatename: row?.hsmtemplatename||"",
             variables: row?.messagetemplateparameters||[],
         }
@@ -106,13 +115,15 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
             }
         }
     }, [executeRes, waitSave])
+    useEffect(() => {
+        console.log(errors)
+    }, [errors])
 
     React.useEffect(() => {
         register('id');
         register('description', { validate: (value:any) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('communicationchannelid', { validate: (value:any) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
         register('columnid');
-        register('columnname', { validate: (value:any) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('shippingtype', { validate: (value:any) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('schedule', { validate: (value:any) => Boolean(value && value.length) || String(t(langKeys.field_required)) });
         register('tags');
@@ -120,10 +131,13 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
         register('messagetemplateid', { validate: (value) => Boolean(value && value>0) || String(t(langKeys.field_required)) });
         register('hsmtemplatename');
         register('variables');
+        register('order');
         if(shippingtype === "DAY"){
             register('xdays', { validate: (value) => Boolean(value && Number(value)>0) || String(t(langKeys.field_required)) });
         }
-    }, [register]);
+        register('columnname', { validate: (value:any) => orderVariable === "ORDER" || Boolean(value && value.length) || String(t(langKeys.field_required)) });
+        register('orderstatus', { validate: (value:any) => orderVariable === "LEAD" || Boolean(value && value.length) || String(t(langKeys.field_required)) });
+    }, [register, orderVariable, shippingtype]);
     const onSelectTemplate = (value: Dictionary) => {
         if (value) {
             setBodyMessage(value.body);
@@ -141,6 +155,7 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
     }
 
     const onSubmit = handleSubmit((data) => {
+        debugger
         const callback = () => {
             dispatch(showBackdrop(true));
             dispatch(execute(insAutomatizationRules({...data, messagetemplateparameters: JSON.stringify(data.variables)})));
@@ -221,21 +236,58 @@ const DetailAutomatizationRules: React.FC<DetailProps> = ({ data: { row, domainn
                             prefixTranslation="status_"
                             optionValue="domainvalue"
                         />
+                    </div>
+                    <div className="row-zyx">
                         <FieldSelect
-                            label={t(langKeys.whensettingstate)}
+                            label={"App"}
                             className="col-6"
-                            valueDefault={row?.columnname||""}
+                            valueDefault={orderVariable}
                             onChange={(value) => {
-                                setValue('columnname', value?.description || "")
-                                setValue('columnid', value?.columnid || 0)
+                                setOrderVariable(value?.alt || "")
+                                setValue('order', value?.value || false)
+                                setValue('orderstatus', "")
+                                setValue('columnname', "")
+                                setValue('columnid', 0)
                             }}
-                            error={errors?.columnname?.message}
-                            data={dataLeads}
-                            prefixTranslation=""
-                            optionDesc="description"
-                            uset={true}
-                            optionValue="description"
+                            error={!!orderVariable?"":t(langKeys.field_required)}
+                            data={[
+                                {column: t(langKeys.lead_plural), value: false, alt: "LEAD"},
+                                {column: t(langKeys.orders), value: true, alt: "ORDER"},
+                            ]}
+                            optionDesc="column"
+                            optionValue="alt"
                         />
+                        {orderVariable==="LEAD" &&
+                            <FieldSelect
+                                label={t(langKeys.whensettingstate)}
+                                className="col-6"
+                                valueDefault={getValues('columnname')}
+                                onChange={(value) => {
+                                    setValue('columnname', value?.description || "")
+                                    setValue('columnid', value?.columnid || 0)
+                                }}
+                                error={errors?.columnname?.message}
+                                data={dataLeads}
+                                prefixTranslation=""
+                                optionDesc="description"
+                                uset={true}
+                                optionValue="description"
+                            />
+                        }
+                        {orderVariable==="ORDER" &&
+                            <FieldSelect
+                                label={t(langKeys.whensettingstate)}
+                                className="col-6"
+                                valueDefault={getValues('orderstatus')}
+                                onChange={(value) => {
+                                    setValue('orderstatus', value?.value || "")
+                                }}
+                                error={errors?.orderstatus?.message}
+                                data={dataOrder}
+                                optionDesc="description"
+                                optionValue="value"
+                            />
+                        }
                     </div>
                     <div className="row-zyx">
                         <FieldSelect
@@ -408,7 +460,7 @@ const AutomatizationRules: FC = () => {
     }
     useEffect(() => {
         let data = mainResult.mainData.data
-        data = data.map(x=>({...x,columnamefilter: (t(`${x.columnname?.toLowerCase()}`.toLowerCase()) || "").toUpperCase()}))
+        data = data.map(x=>({...x,columnamefilter: (x.typeorder) ? (t(`${x.orderstatus?.toLowerCase()}`)).toUpperCase() :(t(`${x.columnname?.toLowerCase()}`.toLowerCase()) || "").toUpperCase()}))
         setDataGrid(data)
     }, [mainResult.mainData.data])
     const columns = React.useMemo(
@@ -544,7 +596,7 @@ const AutomatizationRules: FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(insAutomatizationRules({ ...row,id: row?.leadautomatizationrulesid, operation: 'DELETE', status: 'ELIMINADO' })));
+            dispatch(execute(insAutomatizationRules({ ...row,id: row?.leadautomatizationrulesid, order: row?.typeorder, operation: 'DELETE', status: 'ELIMINADO' })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }

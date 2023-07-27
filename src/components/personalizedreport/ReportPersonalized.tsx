@@ -278,13 +278,13 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
                     }
                 })
             }
-            const columnsDate = columns.filter(x => ["timestamp without time zone", "date", "boolean", "interval"].includes(x.type));
+            const columnsDate = columns.filter(x => ["timestamp without time zone", "date", "boolean", "interval"].includes(x.type) || ["conversation.tags"].includes(x.columnname));
             if (columnsDate.length > 0) {
                 setDataCleaned(datato.map(x => {
                     columnsDate.forEach(y => {
                         const columnclean = y.columnname.replace(".", "");
                         if (["timestamp without time zone", "date"].includes(y.type)) {
-                            if (!!x[columnclean]) {
+                            if (x[columnclean]) {
                                 const date = new Date(x[columnclean]);
                                 if (!isNaN(date.getTime())) {
                                     if (y.type === "timestamp without time zone") {
@@ -313,9 +313,17 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
                             }
                         } else if (y.type === "interval" && x[columnclean]) {
                             x[columnclean] = secondsToTime(x[columnclean], y.format)
-                        }
+                        } 
                         if (["boolean"].includes(y.type)) {
                             x[columnclean] = x[columnclean] ? t("yes") : t("no")
+                        }
+                        if (["conversation.tags"].includes(y.columnname)) {
+                            const tagsCleaned = x[columnclean]?.split(',').reduce((accx: Dictionary, itemx: string) => ({
+                                lastTag: itemx,
+                                acc: accx.lastTag === itemx ? accx.acc : [...accx.acc, itemx]
+                            }), { lastTag: '', acc: [] })
+
+                            x[columnclean] = tagsCleaned?.acc.join(",") ?? "";
                         }
                     })
                     return x;

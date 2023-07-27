@@ -1,3 +1,5 @@
+/* eslint-disable no-useless-escape */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { ChannelTeams } from "icons";
 import { FC, useEffect, useState } from "react";
 import { FieldEdit, ColorInput } from "components";

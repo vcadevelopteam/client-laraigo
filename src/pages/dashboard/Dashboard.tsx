@@ -19,7 +19,8 @@ import { manageConfirmation, showSnackbar } from 'store/popus/actions';
 import { DashboardTemplate, IListStatePaginated } from '@types';
 import { deleteDashboardTemplate, resetDeleteDashboardTemplate } from 'store/dashboard/actions';
 import DashboardKPI from './DashboardKPI';
-
+import DashboardKPIMonthly from './DashboardKPIMonthly';
+const isIncremental = window.location.href.includes("incremental")
 
 const arrayBread = [
     { id: "view-1", name: "Dashboard" }
@@ -88,7 +89,6 @@ const Dashboard: FC = () => {
     const [searchValue, setSearchValue] = useState('');
     const [allDashboards, setAllDashboards] = useState<any>([]);
     const [allDashboardsToShow, setallDashboardsToShow] = useState<any[]>([]);
-
     
     useEffect(() => {
         dispatch(getCollection(getDashboardTemplateSel()));
@@ -212,16 +212,18 @@ const Dashboard: FC = () => {
                             lazy
                         />
                     </div>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        disabled={dashboardtemplates.loading}
-                        startIcon={<AddIcon color="secondary" />}
-                        onClick={() => history.push(paths.DASHBOARD_ADD)}
-                        style={{ backgroundColor: "#55BD84" }}
-                    >
-                        <Trans i18nKey={langKeys.create_custom_dashboard} />
-                    </Button>
+                    {!isIncremental &&
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            disabled={dashboardtemplates.loading}
+                            startIcon={<AddIcon color="secondary" />}
+                            onClick={() => history.push(paths.DASHBOARD_ADD)}
+                            style={{ backgroundColor: "#55BD84" }}
+                        >
+                            <Trans i18nKey={langKeys.create_custom_dashboard} />
+                        </Button>
+                    }
                 </Box>
                 <div className={classes.containerDetails}>
                     <Grid container spacing={3}>
@@ -330,6 +332,25 @@ const Dashboard: FC = () => {
                                     <CardContent>
                                         <Typography gutterBottom variant="h6" component="div">
                                             {t(langKeys.dashboardkpi)}
+                                        </Typography>
+                                    </CardContent>
+                                </CardActionArea>
+                            </Card>
+                        </Grid>}
+                        {(t(langKeys.dashboardkpimonthly).toLowerCase().includes(searchValue.toLowerCase() ) && (user?.properties.environment==="CLARO")) && <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                            <Card>
+                                <CardActionArea onClick={() => handleSelected("dashboardkpimonthly")}>
+                                    <CardMedia
+                                        component="img"
+                                        height="140"
+                                        style={{objectFit: "contain"}}
+                                        className={classes.media}
+                                        image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/PROCESOSYCONSULTORIA/d4a7c4c3-1ff8-48ea-b10a-6a74a03142e4/desconexionestickets.png'}
+                                        title={t(langKeys.dashboardkpimonthly)}
+                                    />
+                                    <CardContent>
+                                        <Typography gutterBottom variant="h6" component="div">
+                                            {t(langKeys.dashboardkpimonthly)}
                                         </Typography>
                                     </CardContent>
                                 </CardActionArea>
@@ -444,6 +465,20 @@ const Dashboard: FC = () => {
             </Fragment>
         )
     }    
+    else if(viewSelected === "dashboardkpimonthly"){
+        return(
+            
+            <Fragment>
+                <div style={{ width: '100%' }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={[...arrayBread, {id: 'dashboardkpimonthly', name: t(langKeys.dashboardkpimonthly) }]}
+                        handleClick={handleSelected}
+                    />
+                    <DashboardKPIMonthly/>
+                </div>
+            </Fragment>
+        )
+    }    
     else{
         return (
             <div>error</div>
@@ -496,57 +531,60 @@ const DashboardCard: FC<DashboardCardProps> = ({
                     </Typography>
                 </CardContent>
             </CardActionArea>
-            <IconButton
-                aria-label="settings"
-                aria-describedby={`${dashboardtemplate.dashboardtemplateid}reporttemplate`}
-                aria-haspopup
-                style={{ position: 'absolute', right: 0, top: 0 }}
-                onClick={(e) => setAnchorEl(e.currentTarget)}
-            >
-                <MoreVertIcon />
-            </IconButton>
-            <Menu
-                anchorEl={anchorEl}
-                getContentAnchorEl={null}
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
-                }}
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                }}
-                open={Boolean(anchorEl)}
-                onClose={() => setAnchorEl(null)}
-            >
-                <MenuItem
-                    onClick={e => {
-                        onEdit(e);
-                        setAnchorEl(null);
-                    }}
-                    disabled={disabled}
+            {!isIncremental && 
+            <>
+                <IconButton
+                    aria-label="settings"
+                    aria-describedby={`${dashboardtemplate.dashboardtemplateid}reporttemplate`}
+                    aria-haspopup
+                    style={{ position: 'absolute', right: 0, top: 0 }}
+                    onClick={(e) => setAnchorEl(e.currentTarget)}
                 >
-                    <Trans i18nKey={langKeys.edit} />
-                </MenuItem>
-                <MenuItem
-                    onClick={e => {
-                        onDuplicate(e);
-                        setAnchorEl(null);
+                    <MoreVertIcon />
+                </IconButton>
+                <Menu
+                    anchorEl={anchorEl}
+                    getContentAnchorEl={null}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'right',
                     }}
-                    disabled={disabled}
-                >
-                    <Trans i18nKey={langKeys.duplicate} />
-                </MenuItem>
-                <MenuItem
-                    onClick={e => {
-                        onDelete(e);
-                        setAnchorEl(null);
+                    transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
                     }}
-                    disabled={disabled}
+                    open={Boolean(anchorEl)}
+                    onClose={() => setAnchorEl(null)}
                 >
-                    <Trans i18nKey={langKeys.delete} />
-                </MenuItem>
-            </Menu>
+                    <MenuItem
+                        onClick={e => {
+                            onEdit(e);
+                            setAnchorEl(null);
+                        }}
+                        disabled={disabled}
+                    >
+                        <Trans i18nKey={langKeys.edit} />
+                    </MenuItem>
+                    <MenuItem
+                        onClick={e => {
+                            onDuplicate(e);
+                            setAnchorEl(null);
+                        }}
+                        disabled={disabled}
+                    >
+                        <Trans i18nKey={langKeys.duplicate} />
+                    </MenuItem>
+                    <MenuItem
+                        onClick={e => {
+                            onDelete(e);
+                            setAnchorEl(null);
+                        }}
+                        disabled={disabled}
+                    >
+                        <Trans i18nKey={langKeys.delete} />
+                    </MenuItem>
+                </Menu>
+            </>}
         </Card>
     );
 }

@@ -100,7 +100,6 @@ const ReportRequestSD: FC = () => {
         if (!multiData.loading){
             dispatch(showBackdrop(false));
         }
-        console.log(multiData)
     }, [multiData])
 
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {

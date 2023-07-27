@@ -47,7 +47,7 @@ import ReportKpiOperativo from 'components/report/ReportKpiOperativo';
 import VoiceChannelReport from './VoiceChannelReport';
 import ReportComplianceSLA from 'components/report/ReportComplianceSLA';
 import ReportRequestSD from 'components/report/ReportRequestSD';
-
+const isIncremental = window.location.href.includes("incremental")
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
@@ -821,7 +821,7 @@ const Reports: FC = () => {
     const [allReports, setAllReports] = useState<Dictionary[]>([]);
     const [allReportsToShow, setallReportsToShow] = useState<Dictionary[]>([]);
     const user = useSelector(state => state.login.validateToken.user);
-    const superadmin = user?.roledesc === "SUPERADMIN"
+    const superadmin = user?.roledesc?.includes("SUPERADMIN")
 
     const fetchData = () => {
         dispatch(getCollection(getReportSel('')))
@@ -1164,7 +1164,7 @@ const Reports: FC = () => {
                     </Grid>
                 )
             case 'UNIQUECONTACTS':
-                if (user?.roledesc === "SUPERADMIN") {
+                if (user?.roledesc?.includes("SUPERADMIN")) {
                     return (
                         <Grid item key={"uniquecontactsreport"} xs={12} md={4} lg={2} style={{ minWidth: 330 }}>
                             <Card >
@@ -1248,19 +1248,21 @@ const Reports: FC = () => {
                                         lazy
                                     />
                                 </div>
-                                <Button
-                                    // className={classes.button}
-                                    variant="contained"
-                                    color="primary"
-                                    // disabled={loading}
-                                    startIcon={<AddIcon color="secondary" />}
-                                    onClick={() => {
-                                        setViewSelected("view-3");
-                                        setRowReportSelected({ row: null, edit: true });
-                                    }}
-                                    style={{ backgroundColor: "#55BD84" }}
-                                >{t(langKeys.create_custom_report)}
-                                </Button>
+                                {!isIncremental &&
+                                    <Button
+                                        // className={classes.button}
+                                        variant="contained"
+                                        color="primary"
+                                        // disabled={loading}
+                                        startIcon={<AddIcon color="secondary" />}
+                                        onClick={() => {
+                                            setViewSelected("view-3");
+                                            setRowReportSelected({ row: null, edit: true });
+                                        }}
+                                        style={{ backgroundColor: "#55BD84" }}
+                                    >{t(langKeys.create_custom_report)}
+                                    </Button>
+                                }
                             </div>
                         </Box>
                     </>
@@ -1394,18 +1396,20 @@ const Reports: FC = () => {
                                                     </Typography>
                                                 </CardContent>
                                             </CardActionArea>
-                                            <IconButton
-                                                aria-label="settings"
-                                                aria-describedby={`${report?.reporttemplateid}reporttemplate`}
-                                                aria-haspopup="true"
-                                                style={{ position: 'absolute', right: 0, top: 0 }}
-                                                onClick={(e) => {
-                                                    setRowReportSelected({ row: report, edit: true });
-                                                    setAnchorEl(e.currentTarget)
-                                                }}
-                                            >
-                                                <MoreVertIcon />
-                                            </IconButton>
+                                            {!isIncremental &&
+                                                <IconButton
+                                                    aria-label="settings"
+                                                    aria-describedby={`${report?.reporttemplateid}reporttemplate`}
+                                                    aria-haspopup="true"
+                                                    style={{ position: 'absolute', right: 0, top: 0 }}
+                                                    onClick={(e) => {
+                                                        setRowReportSelected({ row: report, edit: true });
+                                                        setAnchorEl(e.currentTarget)
+                                                    }}
+                                                >
+                                                    <MoreVertIcon />
+                                                </IconButton>
+                                            }
                                         </Card>
                                     </Grid>
                                 ))}

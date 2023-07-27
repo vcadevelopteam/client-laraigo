@@ -267,10 +267,12 @@ const DashboardKPI: FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const GenericPdfDownloader: React.FC<{ downloadFileName: string }> = ({ downloadFileName }) => {
+
+    const GenericPdfDownloader: React.FC<{ downloadFileName: string; el: null | HTMLDivElement }> = ({ downloadFileName, el }) => {
+
         const downloadPdfDocument = () => {
             import('jspdf').then(jsPDF => {
-                if (el.current) {
+                if (el) {
                     const gg = document.createElement('div');
                     gg.style.display = 'flex';
                     gg.style.flexDirection = 'column';
@@ -278,27 +280,25 @@ const DashboardKPI: FC = () => {
                     gg.style.width = '460mm';
                     gg.style.paddingTop = '14mm';
                     gg.id = "newexportcontainer"
-
-                    gg.innerHTML = el.current.innerHTML;
-
-                    gg.querySelectorAll(".interaction-gmap").forEach(x => x.remove())
-                    gg.querySelectorAll(".interaction-gmap-text").forEach(x => (x as HTMLDivElement).style.display = "")
+    
+                    gg.innerHTML = el.innerHTML;
+    
                     document.body.appendChild(gg);
                     const pdf = new jsPDF.jsPDF('l', 'mm');
                     if (pdf) {
                         DomToImage.toPng(gg)
                             .then(imgData => {
-                                var imgWidth = 280;
-                                var pageHeight = 210;
-                                var imgHeight = Math.ceil(gg.scrollHeight * 0.2645833333);
-                                var heightLeft = imgHeight;
-                                var doc = new jsPDF.jsPDF('l', 'mm');
-                                var topPadding = 10;
-                                var position = topPadding; // give some top padding to first page
-
+                                const imgWidth = 280;
+                                const pageHeight = 210;
+                                const imgHeight = Math.ceil(gg.scrollHeight * 0.2645833333);
+                                let heightLeft = imgHeight;
+                                const doc = new jsPDF.jsPDF('l', 'mm');
+                                const topPadding = 10;
+                                let position = topPadding; // give some top padding to first page
+    
                                 doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
                                 heightLeft -= pageHeight;
-
+    
                                 while (heightLeft >= 0) {
                                     position = heightLeft - imgHeight + topPadding; // top padding for other pages
                                     doc.addPage();
@@ -311,8 +311,9 @@ const DashboardKPI: FC = () => {
                     }
                 }
             });
-
+    
         }
+    
         return (
             <Button
                 variant="contained"
@@ -342,8 +343,7 @@ const DashboardKPI: FC = () => {
         const selectedDays = filteredDays.split(",")
         const cantdays = selectedDays.length
         const dataDays = remultiaux?.data?.[1]?.data?.filter(x=>selectedDays.includes(String(x.day)))||[]
-        console.log(remultiaux)
-        //tme: timetoseconds(dataDays.filter(y=>String(y.day)===x)?.[0]?.tme_avg || "00:00:00")
+        
         function compareFn(a:any,b:any){
             let na = Number(a.date.split(" ")[1])
             let nb = Number(b.date.split(" ")[1])
@@ -461,6 +461,7 @@ const DashboardKPI: FC = () => {
                 <div style={{display:"flex",gap: 6}}>
                     <GenericPdfDownloader
                         downloadFileName={`kpi-${dataSummary.year}-${dataSummary.month}-${filteredDays}`}
+                        el={el.current}
                     />
                     <Button
                         variant="contained"

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { ChannelWorkplace } from "icons";
 import { ColorInput, FieldEdit } from "components";
 import { FC, useEffect, useState } from "react";

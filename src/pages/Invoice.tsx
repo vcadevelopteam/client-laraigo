@@ -3018,7 +3018,7 @@ const Payments: React.FC<{ dataCorp: any, dataOrg: any, setCustomSearch(value: R
                         showPayButton = true;
                     }
 
-                    if (row.invoicestatus !== "INVOICED" && row.paymentstatus !== "PAID" && row.hasreport && user?.roledesc === "SUPERADMIN") {
+                    if (row.invoicestatus !== "INVOICED" && row.paymentstatus !== "PAID" && row.hasreport && user?.roledesc?.includes("SUPERADMIN")) {
                         showUpdateButton = true;
                     }
 
@@ -3738,7 +3738,7 @@ const Billing: React.FC<{ dataCorp: any, dataOrg: any }> = ({ dataCorp, dataOrg 
         return () => {
             dispatch(cleanMemoryTable());
             dispatch(getMultiCollection([
-                getCorpSel(user?.roledesc === "ADMINISTRADOR" ? user?.corpid : 0),
+                getCorpSel(user?.roledesc?.includes("ADMINISTRADOR") ? user?.corpid : 0),
                 getMeasureUnit(),
                 getValuesFromDomain("TYPECREDIT", null, user?.orgid, user?.corpid),
                 getAppsettingInvoiceSel()]));
@@ -5574,13 +5574,13 @@ const BillingRegister: FC<DetailProps> = ({ data, setViewSelected, fetchData }) 
         setOrgList({ loading: false, data: [] });
         setProductList({ loading: false, data: [] });
 
-        dispatch(getMultiCollectionAux([getCorpSel(user?.roledesc === "ADMINISTRADOR" ? user?.corpid : 0), getMeasureUnit(), getValuesFromDomain("TYPECREDIT", null, user?.orgid, user?.corpid), getAppsettingInvoiceSel()]));
+        dispatch(getMultiCollectionAux([getCorpSel(user?.roledesc?.includes("ADMINISTRADOR") ? user?.corpid : 0), getMeasureUnit(), getValuesFromDomain("TYPECREDIT", null, user?.orgid, user?.corpid), getAppsettingInvoiceSel()]));
     }, [])
 
     useEffect(() => {
         if (waitLoad) {
             if (data?.row) {
-                if (data.row.invoicestatus !== "INVOICED" && data.row.paymentstatus !== "PAID" && invoicehasreport && user?.roledesc === "SUPERADMIN") {
+                if (data.row.invoicestatus !== "INVOICED" && data.row.paymentstatus !== "PAID" && invoicehasreport && user?.roledesc?.includes("SUPERADMIN")) {
                     setShowUpdateButton(true);
                 }
 
@@ -8138,7 +8138,7 @@ const Invoice: FC = () => {
     useEffect(() => {
         setSentFirstInfo(true);
         dispatch(getCountryList())
-        if (user?.roledesc === "SUPERADMIN") {
+        if (user?.roledesc?.includes("SUPERADMIN")) {
             dispatch(getMultiCollection([
                 getPlanSel(),
                 getOrgSelList(0),
@@ -8158,7 +8158,7 @@ const Invoice: FC = () => {
 
     return (
         <div style={{ width: '100%' }}>
-            {user?.roledesc === "SUPERADMIN" && <div>
+            {user?.roledesc?.includes("SUPERADMIN") && <div>
                 <Tabs
                     value={pageSelected}
                     indicatorColor="primary"

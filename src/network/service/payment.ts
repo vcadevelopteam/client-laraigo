@@ -8,3 +8,11 @@ export function niubizAuthorizeTransaction(request: any) {
 export function niubizCreateSessionToken(request: any) {
     return APIManager.post(apiUrls.PAYMENTORDER_NIUBIZ_CREATESESSIONTOKEN, { data: request }, true);
 }
+
+export function openpayGetPaymentOrder(request: any) {
+    return APIManager.post(apiUrls.PAYMENTORDER_OPENPAY_GETPAYMENTORDER, { data: request }, true);
+}
+
+export function openpayProcessTransaction(request: any) {
+    return APIManager.post(apiUrls.PAYMENTORDER_OPENPAY_PROCESSTRANSACTION, { data: request }, true);
+}

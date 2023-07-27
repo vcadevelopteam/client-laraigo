@@ -23,6 +23,7 @@ import { Rating } from '@material-ui/lab';
 import { DialogSendTemplate, NewActivityModal, NewNoteModal } from "./Modals";
 import { WhatsappIcon } from "icons";
 import { setModalCall, setPhoneNumber } from "store/voximplant/actions";
+const isIncremental = window.location.href.includes("incremental")
 
 interface dataBackend {
   columnid: number,
@@ -92,11 +93,11 @@ interface IBoardFilter {
   persontype: string;
 }
 
-const DraggablesCategories : FC<{column:any,deletable:boolean, index:number, hanldeDeleteColumn:(a:string)=>void, handleDelete:(lead: ICrmLead)=>void, handleCloseLead:(lead: ICrmLead)=>void}> = ({column, 
-  index, hanldeDeleteColumn, handleDelete, handleCloseLead, deletable }) => {
+const DraggablesCategories : FC<{column:any,deletable:boolean, index:number, hanldeDeleteColumn:(a:string)=>void, handleDelete:(lead: ICrmLead)=>void, handleCloseLead:(lead: ICrmLead)=>void, isIncremental:boolean}> = ({column, 
+  index, hanldeDeleteColumn, handleDelete, handleCloseLead, deletable, isIncremental }) => {
     const { t } = useTranslation();
   return (
-    <Draggable draggableId={column.column_uuid} index={index+1} key={column.column_uuid}>
+    <Draggable draggableId={column.column_uuid} index={index+1} key={column.column_uuid} isDragDisabled={isIncremental}>
       { (provided) => (
         <div
           {...provided.draggableProps}
@@ -127,6 +128,7 @@ const DraggablesCategories : FC<{column:any,deletable:boolean, index:number, han
                       {column.items?.map((item:any, index:any) => {
                         return (
                           <Draggable
+                            isDragDisabled={isIncremental}
                             key={item.leadid}
                             draggableId={item.leadid.toString()}
                             index={index}
@@ -630,80 +632,10 @@ const CRM: FC = () => {
           const row = props.cell.row.original;
           if (row.status === 'ACTIVO') {
             return (
-              <React.Fragment>
-                <div style={{display: 'flex'}}>
-                  <IconButton
-                    aria-label="more"
-                    aria-controls="long-menu"
-                    aria-haspopup="true"
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'HSM' }})
-                    }}
-                  >
-                    <WhatsappIcon
-                      width={24}
-                      style={{ fill: 'rgba(0, 0, 0, 0.54)' }}
-                    />
-                  </IconButton>
-                  <IconButton
-                    aria-label="more"
-                    aria-controls="long-menu"
-                    aria-haspopup="true"
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'MAIL' }}) 
-                    }}
-                  >
-                    <MailIcon color="action" />
-                  </IconButton>
-                  <IconButton
-                    aria-label="more"
-                    aria-controls="long-menu"
-                    aria-haspopup="true"
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'SMS' }}) 
-                    }}
-                  >
-                    <SmsIcon color="action" />
-                  </IconButton>
-                </div>
-                <div style={{display: 'flex'}}>
-                  <IconButton
-                    aria-label="more"
-                    aria-controls="long-menu"
-                    aria-haspopup="true"
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setGridModal({name: 'ACTIVITY', open: true, payload: {leadid: row['leadid']}}) 
-                    }}
-                  >
-                    <AccessTimeIcon
-                      titleAccess={t(langKeys.activities)}
-                      color="action" 
-                    />
-                  </IconButton>
-                  <IconButton
-                    aria-label="more"
-                    aria-controls="long-menu"
-                    aria-haspopup="true"
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setGridModal({name: 'NOTE', open: true, payload: {leadid: row['leadid']}}) 
-                    }}
-                  >
-                    <NoteIcon
-                      titleAccess={t(langKeys.logNote)}
-                      color="action" 
-                    />
-                  </IconButton>
-                  {(!voxiConnection.error && !voxiConnection.loading && userConnected && !callOnLine && !!row.phone) &&
+              <>
+              {!isIncremental &&
+                <React.Fragment>
+                  <div style={{display: 'flex'}}>
                     <IconButton
                       aria-label="more"
                       aria-controls="long-menu"
@@ -711,15 +643,88 @@ const CRM: FC = () => {
                       size="small"
                       onClick={(e) => {
                         e.stopPropagation();
-                        dispatch(setPhoneNumber(row.phone))
-                        dispatch(setModalCall(true))
+                        setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'HSM' }})
                       }}
                     >
-                      <PhoneIcon color="action" titleAccess={t(langKeys.make_call)}/>
+                      <WhatsappIcon
+                        width={24}
+                        style={{ fill: 'rgba(0, 0, 0, 0.54)' }}
+                      />
                     </IconButton>
-                  }
-                </div>
-              </React.Fragment>
+                    <IconButton
+                      aria-label="more"
+                      aria-controls="long-menu"
+                      aria-haspopup="true"
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'MAIL' }}) 
+                      }}
+                    >
+                      <MailIcon color="action" />
+                    </IconButton>
+                    <IconButton
+                      aria-label="more"
+                      aria-controls="long-menu"
+                      aria-haspopup="true"
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'SMS' }}) 
+                      }}
+                    >
+                      <SmsIcon color="action" />
+                    </IconButton>
+                  </div>
+                  <div style={{display: 'flex'}}>
+                    <IconButton
+                      aria-label="more"
+                      aria-controls="long-menu"
+                      aria-haspopup="true"
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setGridModal({name: 'ACTIVITY', open: true, payload: {leadid: row['leadid']}}) 
+                      }}
+                    >
+                      <AccessTimeIcon
+                        titleAccess={t(langKeys.activities)}
+                        color="action" 
+                      />
+                    </IconButton>
+                    <IconButton
+                      aria-label="more"
+                      aria-controls="long-menu"
+                      aria-haspopup="true"
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setGridModal({name: 'NOTE', open: true, payload: {leadid: row['leadid']}}) 
+                      }}
+                    >
+                      <NoteIcon
+                        titleAccess={t(langKeys.logNote)}
+                        color="action" 
+                      />
+                    </IconButton>
+                    {(!voxiConnection.error && !voxiConnection.loading && userConnected && !callOnLine && !!row.phone) &&
+                      <IconButton
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          dispatch(setPhoneNumber(row.phone))
+                          dispatch(setModalCall(true))
+                        }}
+                      >
+                        <PhoneIcon color="action" titleAccess={t(langKeys.make_call)}/>
+                      </IconButton>
+                    }
+                  </div>
+                </React.Fragment>}
+              </>
             )
           }
           else {
@@ -851,7 +856,7 @@ const CRM: FC = () => {
           data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
           optionDesc={'fullname'}
           optionValue={'userid'}
-          disabled={user?.roledesc === "ASESOR" || false}
+          disabled={!!user?.roledesc?.includes("ASESOR") || false}
       />}
       <FieldMultiSelect
           variant="outlined"
@@ -927,7 +932,7 @@ const CRM: FC = () => {
                 data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
                 optionDesc={'fullname'}
                 optionValue={'userid'}
-                disabled={user?.roledesc === "ASESOR" || false}
+                disabled={!!user?.roledesc?.includes("ASESOR") || false}
             />}
             <FieldSelect
               variant="outlined"
@@ -992,6 +997,7 @@ const CRM: FC = () => {
               optionValue="domainvalue"
             />
             <div style={{ flexGrow: 1 }} />
+            {!isIncremental &&
             <Button
                 variant="contained"
                 color="primary"
@@ -1001,7 +1007,7 @@ const CRM: FC = () => {
                 style={{ backgroundColor: "#55BD84" }}
               >
                 <Trans i18nKey={langKeys.register} />
-            </Button>
+            </Button>}
             <Button
                 variant="contained"
                 color="primary"
@@ -1013,7 +1019,7 @@ const CRM: FC = () => {
                 <Trans i18nKey={langKeys.search} />
             </Button>
           </div>
-          <AddColumnTemplate onSubmit={(data) =>{ handleInsert(data,dataColumn, setDataColumn)}} /> 
+          {!isIncremental && <AddColumnTemplate onSubmit={(data) =>{ handleInsert(data,dataColumn, setDataColumn)}} /> }
           <div style={{display:"flex", color: "white", paddingTop: 10, fontSize: "1.6em", fontWeight: "bold"}}>
             <div style={{minWidth: 280, maxWidth: 280, backgroundColor:"#aa53e0", padding:"10px 0", margin: "0 5px", display: "flex", overflow: "hidden", maxHeight: "100%", textAlign: "center", flexDirection: "column",}}>{t(langKeys.new)}</div>
             <div style={{minWidth: 280*dataColumn.filter((x:any)=>x.type==="QUALIFIED").length + 10*(dataColumn.filter((x:any)=>x.type==="QUALIFIED").length-1), 
@@ -1032,7 +1038,7 @@ const CRM: FC = () => {
                   style={{display:'flex'}}
                 >
                   {dataColumn.map((column, index) => 
-                       <DraggablesCategories deletable={dataColumn.filter((x:any)=>x.type===column.type).length >1} column={column} index={index} hanldeDeleteColumn={hanldeDeleteColumn} handleDelete={handleDelete} handleCloseLead={handleCloseLead}/>
+                       <DraggablesCategories isIncremental={isIncremental} deletable={dataColumn.filter((x:any)=>x.type===column.type).length >1} column={column} index={index} hanldeDeleteColumn={hanldeDeleteColumn} handleDelete={handleDelete} handleCloseLead={handleCloseLead}/>
                   )}
                 </div>
               )}
@@ -1061,35 +1067,37 @@ const CRM: FC = () => {
             <div style={{ display: 'flex', gap: 8 }}>
               
             </div>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <Button
-                  variant="contained"
-                  color="primary"
-                  disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                  startIcon={<WhatsappIcon width={24} style={{ fill: '#FFF' }} />}
-                  onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'HSM' }}) }
-              >
-                  <Trans i18nKey={langKeys.send_hsm} />
-              </Button>
-              <Button
-                  variant="contained"
-                  color="primary"
-                  disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                  startIcon={<MailIcon width={24} style={{ fill: '#FFF' }} />}
-                  onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'MAIL' }}) }
-              >
-                  <Trans i18nKey={langKeys.send_mail} />
-              </Button>
-              <Button
-                  variant="contained"
-                  color="primary"
-                  disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                  startIcon={<SmsIcon width={24} style={{ fill: '#FFF' }} />}
-                  onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'SMS' }}) }
-              >
-                  <Trans i18nKey={langKeys.send_sms} />
-              </Button>
-            </div>
+            {!isIncremental &&
+              <div style={{ display: 'flex', gap: 8 }}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                    startIcon={<WhatsappIcon width={24} style={{ fill: '#FFF' }} />}
+                    onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'HSM' }}) }
+                >
+                    <Trans i18nKey={langKeys.send_hsm} />
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                    startIcon={<MailIcon width={24} style={{ fill: '#FFF' }} />}
+                    onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'MAIL' }}) }
+                >
+                    <Trans i18nKey={langKeys.send_mail} />
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                    startIcon={<SmsIcon width={24} style={{ fill: '#FFF' }} />}
+                    onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'SMS' }}) }
+                >
+                    <Trans i18nKey={langKeys.send_sms} />
+                </Button>
+              </div>
+            }
           </div>
             <TablePaginated
               columns={columns}

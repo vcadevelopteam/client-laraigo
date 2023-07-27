@@ -7,6 +7,7 @@ const APIS_URL = {
         WS: 'https://socket.laraigo.com',
         CHATFLOW: 'https://zyxmelinux2.zyxmeapp.com/zyxme/chatflow',
         FACEBOOKAPP: '235008923608113',
+        FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
         INSTAGRAMAPP: '467230660781510',
         CATALOGAPP: '2131127810437236',
@@ -19,12 +20,14 @@ const APIS_URL = {
         NIUBIZSCRIPT: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true',
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/test-FormWebClient.min.js',
         USELARAIGO: false,
+        BODEGAACME: false,
     },
     TESTING: {
         API: 'https://testapix.laraigo.com/api',
         WS: 'https://testsocket.laraigo.com',
         CHATFLOW: 'https://zyxmelinux2.zyxmeapp.com/zyxmetest/chatflow',
         FACEBOOKAPP: '1094526090706564',
+        FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
         INSTAGRAMAPP: '1872023336244866',
         CATALOGAPP: '2131127810437236',
@@ -37,11 +40,32 @@ const APIS_URL = {
         NIUBIZSCRIPT: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true',
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/testing-form.min.js',
         USELARAIGO: false,
+        BODEGAACME: true,
     },
     PRODUCTION: {
         API: 'https://apiprd.laraigo.com/api',
         WS: 'https://broker.laraigo.com',
         CHATFLOW: 'https://chatflow.s3-web.us-east.cloud-object-storage.appdomain.cloud',
+        FACEBOOKAPP: '1980305408682607',
+        FACEBOOKAPPLEAD: '278694331357045',
+        APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
+        INSTAGRAMAPP: '1924971937716955',
+        CATALOGAPP: '2131127810437236',
+        CULQIKEY: 'pk_test_041501e753dcb2f9',
+        GOOGLECLIENTID_LOGIN: '792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com',
+        GOOGLECLIENTID_CHANNEL: '129996056340-5spevp6sdv32c8dpbf9vhbfjjpvfqrth.apps.googleusercontent.com',
+        FACEBOOKVERSION: 'v15.0',
+        DIALOG360PARTNERID: 'nPJXndPA',
+        GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
+        NIUBIZSCRIPT: 'https://static-content.vnforapps.com/v2/js/checkout.js',
+        WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
+        USELARAIGO: true,
+        BODEGAACME: false,
+    },
+    MARKETING: {
+        API: 'https://apimarketing.laraigo.com/api',
+        WS: 'https://brokermarketing.laraigo.com',
+        CHATFLOW: 'https://chatflow-marketing.s3-web.us-east.cloud-object-storage.appdomain.cloud',
         FACEBOOKAPP: '1980305408682607',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
         INSTAGRAMAPP: '1924971937716955',
@@ -61,6 +85,7 @@ const APIS_URL = {
         WS: 'https://socket.laraigo.com',
         CHATFLOW: 'https://chatflow.s3-web.us-east.cloud-object-storage.appdomain.cloud',
         FACEBOOKAPP: '1980305408682607',
+        FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
@@ -73,12 +98,14 @@ const APIS_URL = {
         NIUBIZSCRIPT: 'https://static-content.vnforapps.com/v2/js/checkout.js',
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
         USELARAIGO: true,
+        BODEGAACME: false,
     },
     INCREMENTAL_CLARO: {
         API: 'https://api-historical-claro.laraigo.com/api',
         WS: 'https://socket.laraigo.com',
         CHATFLOW: 'https://chatflow.s3-web.us-east.cloud-object-storage.appdomain.cloud',
         FACEBOOKAPP: '1980305408682607',
+        FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
@@ -91,12 +118,14 @@ const APIS_URL = {
         NIUBIZSCRIPT: 'https://static-content.vnforapps.com/v2/js/checkout.js',
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
         USELARAIGO: true,
+        BODEGAACME: false,
     },
     CLARO: {
         API: 'https://claroapi.laraigo.com/api',
         WS: 'https://clarobroker.laraigo.com',
         CHATFLOW: 'https://chatflow-claro.s3-web.us-east.cloud-object-storage.appdomain.cloud',
         FACEBOOKAPP: '1980305408682607',
+        FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyCDfPhg86YSt25QynLajl7GA5Ux6YEphoA",
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
@@ -109,12 +138,14 @@ const APIS_URL = {
         NIUBIZSCRIPT: 'https://static-content.vnforapps.com/v2/js/checkout.js',
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
         USELARAIGO: true,
+        BODEGAACME: false,
     },
     CLAROHISTORICAL: {
         API: 'http://10.240.65.10:6066/api',
         WS: 'https://clarobroker.laraigo.com',
         CHATFLOW: 'https://chatflow-claro.s3-web.us-east.cloud-object-storage.appdomain.cloud',
         FACEBOOKAPP: '1980305408682607',
+        FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
@@ -125,12 +156,14 @@ const APIS_URL = {
         DIALOG360PARTNERID: 'nPJXndPA',
         GOOGLECLIENTID_CALENDAR: '283248303891-7kttlq9tn5f43bk821fg7lnbhj5hvf6b.apps.googleusercontent.com',
         USELARAIGO: false,
+        BODEGAACME: false,
     },
     CLOUD: {
         API: 'https://cloudapi.laraigo.com/api',
         WS: 'https://cloudbroker.laraigo.com',
         CHATFLOW: 'https://zyxmelinux2.zyxmeapp.com/zyxmedemo/chatflowcloud',
         FACEBOOKAPP: '235008923608113',
+        FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
         INSTAGRAMAPP: '467230660781510',
         CATALOGAPP: '2131127810437236',
@@ -143,12 +176,14 @@ const APIS_URL = {
         NIUBIZSCRIPT: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true',
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
         USELARAIGO: false,
+        BODEGAACME: false,
     },
     DEMO: {
         API: 'https://demoapix.laraigo.com/api',
         WS: 'https://demosocket.laraigo.com',
         CHATFLOW: 'https://zyxmelinux2.zyxmeapp.com/zyxmedemo/chatflow',
         FACEBOOKAPP: '235008923608113',
+        FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
         INSTAGRAMAPP: '467230660781510',
         CATALOGAPP: '2131127810437236',
@@ -161,6 +196,7 @@ const APIS_URL = {
         NIUBIZSCRIPT: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true',
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
         USELARAIGO: false,
+        BODEGAACME: false,
     },
     LOCAL: {
         API: 'http://localhost:6065/api',
@@ -169,6 +205,7 @@ const APIS_URL = {
         WS: 'https://socket.laraigo.com',
         CHATFLOW: 'https://zyxmelinux2.zyxmeapp.com/zyxme/chatflow',
         FACEBOOKAPP: '235008923608113',
+        FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
         INSTAGRAMAPP: '467230660781510',
         CATALOGAPP: '2131127810437236',
@@ -181,6 +218,7 @@ const APIS_URL = {
         NIUBIZSCRIPT: 'https://static-content-qas.vnforapps.com/v2/js/checkout.js?qa=true',
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/test-FormWebClient.min.js',
         USELARAIGO: false,
+        BODEGAACME: false,
     }
 }
 
@@ -188,6 +226,7 @@ const BASE_URL = APIS_URL[ENV].API
 const WS_URL = APIS_URL[ENV].WS
 const CHATFLOW_URL = APIS_URL[ENV].CHATFLOW
 const FACEBOOKAPP = APIS_URL[ENV].FACEBOOKAPP
+const FACEBOOKAPPLEAD = APIS_URL[ENV].FACEBOOKAPPLEAD
 const INSTAGRAMAPP = APIS_URL[ENV].INSTAGRAMAPP
 const CATALOGAPP = APIS_URL[ENV].CATALOGAPP
 const CULQIKEY = APIS_URL[ENV].CULQIKEY
@@ -200,10 +239,12 @@ const NIUBIZSCRIPT = APIS_URL[ENV].NIUBIZSCRIPT
 const WEBFORMCHANNEL_FORM = APIS_URL[ENV].WEBFORMCHANNEL_FORM
 const APIKEY_GMAPS = APIS_URL[ENV].APIKEY_GMAPS
 const USELARAIGO = APIS_URL[ENV].USELARAIGO
+const BODEGAACME = APIS_URL[ENV].BODEGAACME
 
 export const apiUrls = {
     WS_URL,
     FACEBOOKAPP,
+    FACEBOOKAPPLEAD,
     INSTAGRAMAPP,
     CATALOGAPP,
     CULQIKEY,
@@ -216,6 +257,7 @@ export const apiUrls = {
     WEBFORMCHANNEL_FORM,
     APIKEY_GMAPS,
     USELARAIGO,
+    BODEGAACME,
 
     LOGIN_URL: `${BASE_URL}/auth`,
     CONNECT_INBOX: `${BASE_URL}/auth/connect`,
@@ -227,6 +269,7 @@ export const apiUrls = {
     MAIN_URL_PUBLIC: `${BASE_URL}/main/public/domainvalues`,
     MAIN_URL_PAYMENTORDER: `${BASE_URL}/main/public/paymentorder`,
     MAIN_URL_PAYMENTORDERNIUBIZ: `${BASE_URL}/main/public/paymentorderniubiz`,
+    MAIN_URL_PAYMENTORDEROPENPAY: `${BASE_URL}/main/public/paymentorderopenpay`,
     MAIN_MULTI: `${BASE_URL}/main/multi`,
     MAIN_MULTI_PUBLIC: `${BASE_URL}/main/public/multi/domainvalues`,
     EXECUTE_TRANSACTION: `${BASE_URL}/main/executetransaction`,
@@ -262,6 +305,11 @@ export const apiUrls = {
     GETLOCATION: `${BASE_URL}/flow/location`,
     GETVERSION: `${BASE_URL}/check/version`,
     TRIGGERBLOCK: `${BASE_URL}/flow/triggerblock`,
+    RASATESTINT: `${BASE_URL}/rasa/test`,
+    RASATRAININT: `${BASE_URL}/rasa/train`,
+    RASADOWNLOADINT: `${BASE_URL}/rasa/download`,
+    RASAUPLOADINT: `${BASE_URL}/rasa/upload`,
+    RASAMODELLIST: `${BASE_URL}/rasa/list`,
 
     INTEGRATION_URL: `${BASE_URL}/load`,
     CHANNELS: `${BASE_URL}/channel`,
@@ -343,4 +391,7 @@ export const apiUrls = {
 
     PAYMENTORDER_NIUBIZ_CREATESESSIONTOKEN: `${BASE_URL}/paymentniubiz/createsessiontoken`,
     PAYMENTORDER_NIUBIZ_AUTHORIZETRANSACTION: `${BASE_URL}/paymentniubiz/authorizetransaction`,
+
+    PAYMENTORDER_OPENPAY_GETPAYMENTORDER: `${BASE_URL}/paymentopenpay/getpaymentorder`,
+    PAYMENTORDER_OPENPAY_PROCESSTRANSACTION: `${BASE_URL}/paymentopenpay/processtransaction`,
 };
