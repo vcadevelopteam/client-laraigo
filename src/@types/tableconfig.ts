@@ -64,6 +64,7 @@ export interface TableConfig {
   onFilterChange?: (filter: ITablePaginatedFilter) => void;
   checkHistoryCenter?: boolean;
   helperText?: string;
+  acceptTypeLoad?: string;
   initialStateFilter?: {
     id: string;
     value: {
