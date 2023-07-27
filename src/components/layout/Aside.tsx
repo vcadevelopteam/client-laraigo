@@ -101,7 +101,7 @@ const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig 
                 numColumns = 2;
             } else if (screenWidth < 900) {
                 // For screens between 600px and 900px, show 3 columns
-                console.log(numElements);
+                // console.log(numElements);
                 if (numElements === 1) { return numColumns = 1 };
                 if (numElements === 3) { return numColumns = 3 };
                 if (numElements <= 6 || numElements === 2) { return numColumns = 2 };
