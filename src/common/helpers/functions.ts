@@ -3,6 +3,11 @@
 import { Dictionary } from "@types";
 // import * as XLSX from 'xlsx';
 
+export const contactModeList = [
+    { value: "PER_CHANNEL", description: "per_channel" },
+    { value: "UNIQUE", description: "unique" },
+];
+
 export const agentModeList = [
     { value: "PER_DAY", description: "per_day" },
     { value: "PER_MONTH", description: "per_month" },

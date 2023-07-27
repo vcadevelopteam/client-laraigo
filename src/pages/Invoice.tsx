@@ -34,6 +34,7 @@ import {
     billingReportConversationWhatsApp,
     billingReportHsmHistory,
     billinguserreportsel,
+    contactModeList,
     convertLocalDate,
     currencyList,
     dataCurrency,
@@ -891,6 +892,55 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
             planinfrastructure: row?.planinfrastructure || 0,
             agentcurrency: row?.agentcurrency || "",
             agentmode: row?.agentmode || "",
+            conversationuserquantity: row?.conversationuserquantity || "",
+            conversationuserfreequantity: row?.conversationuserfreequantity || "",
+            conversationusercurrency: row?.conversationusercurrency || "",
+            conversationusergeneralvcacomission: row?.conversationusergeneralvcacomission || "",
+            conversationusergeneralvcafee: row?.conversationusergeneralvcafee || "",
+            conversationusermetacurrency: row?.conversationusermetacurrency || "",
+            conversationusergeneralfee: row?.conversationusergeneralfee || "",
+            conversationusergeneraltotalfee: row?.conversationusergeneraltotalfee || "",
+            conversationbusinessutilityquantity: row?.conversationbusinessutilityquantity || "",
+            conversationbusinessauthenticationquantity: row?.conversationbusinessauthenticationquantity || "",
+            conversationbusinessmarketingquantity: row?.conversationbusinessmarketingquantity || "",
+            conversationbusinesscurrency: row?.conversationbusinesscurrency || "",
+            conversationbusinessutilityvcacomission: row?.conversationbusinessutilityvcacomission || "",
+            conversationbusinessauthenticationvcacomission: row?.conversationbusinessauthenticationvcacomission || "",
+            conversationbusinessmarketingvcacomission: row?.conversationbusinessmarketingvcacomission || "",
+            conversationbusinessutilityvcafee: row?.conversationbusinessutilityvcafee || "",
+            conversationbusinessauthenticationvcafee: row?.conversationbusinessauthenticationvcafee || "",
+            conversationbusinessmarketingvcafee: row?.conversationbusinessmarketingvcafee || "",
+            conversationbusinessmetacurrency: row?.conversationbusinessmetacurrency || "",
+            conversationbusinessauthenticationfee: row?.conversationbusinessauthenticationfee || "",
+            conversationbusinessutilityfee: row?.conversationbusinessutilityfee || "",
+            conversationbusinessutilitytotalfee: row?.conversationbusinessutilitytotalfee || "",
+            conversationbusinessmarketingfee: row?.conversationbusinessmarketingfee || "",
+            conversationbusinessmarketingtotalfee: row?.conversationbusinessmarketingtotalfee || "",
+            conversationbusinessauthenticationtotalfee: row?.conversationbusinessauthenticationtotalfee || "",
+            conversationcurrency: row?.conversationcurrency || "",
+            conversationvcacomission: row?.conversationvcacomission || "",
+            conversationtotalfee: row?.conversationtotalfee || "",
+            conversationfee: row?.conversationfee || "",
+            contactmode: row?.contactmode || "",
+            contactcount: row?.contactcount || "",
+            contactquantity: row?.contactquantity || "",
+            contactcurrency: row?.contactcurrency || "",
+            contactwhatsappquantity: row?.contactwhatsappquantity || "",
+            contactotherquantity: row?.contactotherquantity || "",
+            contactwhatsappfee: row?.contactwhatsappfee || "",
+            contactotherfee: row?.contactotherfee || "",
+            contactwhatsapptotalfee: row?.contactwhatsapptotalfee || "",
+            contactothertotalfee: row?.contactothertotalfee || "",
+            contacttotalfee: row?.contacttotalfee || "",
+            messagingcurrency: row?.messagingcurrency || "",
+            consultingcurrency: row?.consultingcurrency || "",
+            consultingconsultingfee: row?.consultingconsultingfee || "",
+            consultingcontractquantity: row?.consultingcontractquantity || "",
+            consultingcontractedfee: row?.consultingcontractedfee || "",
+            consultingadditionalfee: row?.consultingadditionalfee || "",
+            consultingtotalfee: row?.consultingtotalfee || "",
+            consultingregisterprofile: row?.consultingregisterprofile || "",
+            consultingunitfee: row?.consultingunitfee || "",
         },
     });
 
@@ -1203,6 +1253,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                     <AntTab label={t(langKeys.messaging)} />
                     <AntTab label={t(langKeys.billingperiodvoice)} />
                     <AntTab label={t(langKeys.billingsetup_ai)} />
+                    <AntTab label={t(langKeys.billingperiod_consulting)} />
                     <AntTab label="Extras" />
                 </Tabs>
                 {pageSelected === 0 && (
@@ -1640,21 +1691,38 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                             <b>{t(langKeys.billingperiod_conversationbusinesssection)}</b>
                         </h3>
                         <div className="row-zyx">
-                        <FieldView
+                            <FieldView
                                 className="col-6"
                                 label={t(langKeys.billingperiod_conversationbusinessutilityquantity)}
                                 value={getValues("conversationbusinessutilityquantity").toString()}
                             />
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.billingperiod_conversationbusinessauthenticationquantity)}
+                                value={getValues("conversationbusinessauthenticationquantity").toString()}
+                            />
                         </div>
                         <div className="row-zyx">
-                        <FieldView
+                            <FieldView
                                 className="col-6"
                                 label={t(langKeys.billingperiod_conversationbusinessmarketingquantity)}
                                 value={getValues("conversationbusinessmarketingquantity").toString()}
                             />
+                            <FieldSelect
+                                className="col-6"
+                                data={currencyList}
+                                disabled={!canEdit}
+                                error={errors?.conversationbusinesscurrency?.message}
+                                label={t(langKeys.billingperiod_conversationbusinesscurrency)}
+                                onChange={(value) => setValue("conversationbusinesscurrency", value?.value)}
+                                optionDesc="description"
+                                optionValue="value"
+                                orderbylabel={true}
+                                valueDefault={getValues("conversationbusinesscurrency")}
+                            />
                         </div>
                         <div className="row-zyx">
-                        <FieldEdit
+                            <FieldEdit
                                 className="col-6"
                                 disabled={!canEdit}
                                 error={errors?.conversationbusinessutilityvcacomission?.message}
@@ -1664,9 +1732,19 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                                 type="number"
                                 valueDefault={getValues("conversationbusinessutilityvcacomission")}
                             />
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.conversationbusinessauthenticationvcacomission?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.billingperiod_conversationbusinessauthenticationvcacomission)}
+                                onChange={(value) => setValue("conversationbusinessauthenticationvcacomission", value)}
+                                type="number"
+                                valueDefault={getValues("conversationbusinessauthenticationvcacomission")}
+                            />
                         </div>
                         <div className="row-zyx">
-                        <FieldEdit
+                            <FieldEdit
                                 className="col-6"
                                 disabled={!canEdit}
                                 error={errors?.conversationbusinessmarketingvcacomission?.message}
@@ -1676,16 +1754,36 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                                 type="number"
                                 valueDefault={getValues("conversationbusinessmarketingvcacomission")}
                             />
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.conversationbusinessutilityvcafee?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.billingperiod_conversationbusinessutilityvcafee)}
+                                onChange={(value) => setValue("conversationbusinessutilityvcafee", value)}
+                                type="number"
+                                valueDefault={getValues("conversationbusinessutilityvcafee")}
+                            />
                         </div>
                         <div className="row-zyx">
-                        <FieldView
+                            <FieldView
                                 className="col-6"
                                 label={t(langKeys.billingperiod_conversationbusinessauthenticationvcafee)}
                                 value={formatNumber(getValues("conversationbusinessauthenticationvcafee") || 0)}
                             />
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.conversationbusinessmarketingvcafee?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.billingperiod_conversationbusinessmarketingvcafee)}
+                                onChange={(value) => setValue("conversationbusinessmarketingvcafee", value)}
+                                type="number"
+                                valueDefault={getValues("conversationbusinessmarketingvcafee")}
+                            />
                         </div>
                         <div className="row-zyx">
-                        <FieldSelect
+                            <FieldSelect
                                 className="col-6"
                                 data={currencyList}
                                 disabled={!canEdit}
@@ -1697,14 +1795,131 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                                 orderbylabel={true}
                                 valueDefault={getValues("conversationbusinessmetacurrency")}
                             />
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.conversationbusinessutilityfee?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.billingperiod_conversationbusinessutilityfee)}
+                                onChange={(value) => setValue("conversationbusinessutilityfee", value)}
+                                type="number"
+                                valueDefault={getValues("conversationbusinessutilityfee")}
+                            />
                         </div>
-                        <div className="row-zyx"></div>
-                        <div className="row-zyx"></div>
-                        <div className="row-zyx"></div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.conversationbusinessauthenticationfee?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.billingperiod_conversationbusinessauthenticationfee)}
+                                onChange={(value) => setValue("conversationbusinessauthenticationfee", value)}
+                                type="number"
+                                valueDefault={getValues("conversationbusinessauthenticationfee")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.conversationbusinessmarketingfee?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.billingperiod_conversationbusinessmarketingfee)}
+                                onChange={(value) => setValue("conversationbusinessmarketingfee", value)}
+                                type="number"
+                                valueDefault={getValues("conversationbusinessmarketingfee")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.conversationbusinessutilitytotalfee?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.billingperiod_conversationbusinessutilitytotalfee)}
+                                onChange={(value) => setValue("conversationbusinessutilitytotalfee", value)}
+                                type="number"
+                                valueDefault={getValues("conversationbusinessutilitytotalfee")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.conversationbusinessauthenticationtotalfee?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.billingperiod_conversationbusinessauthenticationtotalfee)}
+                                onChange={(value) => setValue("conversationbusinessauthenticationtotalfee", value)}
+                                type="number"
+                                valueDefault={getValues("conversationbusinessauthenticationtotalfee")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.conversationbusinessmarketingtotalfee?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.billingperiod_conversationbusinessmarketingtotalfee)}
+                                onChange={(value) => setValue("conversationbusinessmarketingtotalfee", value)}
+                                type="number"
+                                valueDefault={getValues("conversationbusinessmarketingtotalfee")}
+                            />
+                        </div>
+                        <h3>
+                            <b>{t(langKeys.billingperiod_conversationsection)}</b>
+                        </h3>
+                        <div className="row-zyx">
+                            <FieldSelect
+                                className="col-6"
+                                data={currencyList}
+                                disabled={!canEdit}
+                                error={errors?.conversationcurrency?.message}
+                                label={t(langKeys.billingperiod_conversationcurrency)}
+                                onChange={(value) => setValue("conversationcurrency", value?.value)}
+                                optionDesc="description"
+                                optionValue="value"
+                                orderbylabel={true}
+                                valueDefault={getValues("conversationcurrency")}
+                            />
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.billingperiod_conversationvcacomission)}
+                                value={formatNumber(getValues("conversationvcacomission") || 0)}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.billingperiod_conversationtotalfee)}
+                                value={formatNumber(getValues("conversationtotalfee") || 0)}
+                            />
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.billingperiod_conversationfee)}
+                                value={formatNumber(getValues("conversationfee") || 0)}
+                            />
+                        </div>
                     </div>
                 )}
                 {pageSelected === 4 && (
                     <div className={classes.containerDetail}>
+                        <div className="row-zyx">
+                            <FieldSelect
+                                className="col-6"
+                                data={contactModeList}
+                                disabled={!canEdit}
+                                error={errors?.contactmode?.message}
+                                label={t(langKeys.billingperiod_contactmode)}
+                                onChange={(value) => setValue("contactmode", value?.value)}
+                                optionDesc="description"
+                                optionValue="value"
+                                orderbylabel={true}
+                                valueDefault={getValues("contactmode")}
+                                uset={true}
+                            />
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.billingperiod_contactcount)}
+                                value={formatNumber(getValues("contactcount") || 0)}
+                            />
+                        </div>
                         <div className="row-zyx">
                             <FieldEdit
                                 className="col-6"
@@ -1717,11 +1932,23 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                             />
                             <FieldView
                                 className="col-6"
-                                label={t(langKeys.clientquantity)}
-                                value={getValues("clientquantity").toString()}
+                                label={t(langKeys.billingperiod_contactquantity)}
+                                value={formatNumber(getValues("contactquantity") || 0)}
                             />
                         </div>
                         <div className="row-zyx">
+                            <FieldSelect
+                                className="col-6"
+                                data={currencyList}
+                                disabled={!canEdit}
+                                error={errors?.contactcurrency?.message}
+                                label={t(langKeys.billingperiod_contactcurrency)}
+                                onChange={(value) => setValue("contactcurrency", value?.value)}
+                                optionDesc="description"
+                                optionValue="value"
+                                orderbylabel={true}
+                                valueDefault={getValues("contactcurrency")}
+                            />
                             <FieldEdit
                                 className="col-6"
                                 disabled={!canEdit}
@@ -1732,10 +1959,63 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                                 type="number"
                                 valueDefault={getValues("clientadditionalfee")}
                             />
+                        </div>
+                        <div className="row-zyx">
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.clientadditionalcharge)}
                                 value={formatNumber(getValues("clientadditionalcharge") || 0)}
+                            />
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.billingperiod_contactwhatsappquantity)}
+                                value={formatNumber(getValues("contactwhatsappquantity") || 0)}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.billingperiod_contactotherquantity)}
+                                value={formatNumber(getValues("contactotherquantity") || 0)}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.contactwhatsappfee?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.billingperiod_contactwhatsappfee)}
+                                onChange={(value) => setValue("contactwhatsappfee", value)}
+                                type="number"
+                                valueDefault={getValues("contactwhatsappfee")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.contactotherfee?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.billingperiod_contactotherfee)}
+                                onChange={(value) => setValue("contactotherfee", value)}
+                                type="number"
+                                valueDefault={getValues("contactotherfee")}
+                            />
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.billingperiod_contactwhatsapptotalfee)}
+                                value={formatNumber(getValues("contactwhatsapptotalfee") || 0)}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.billingperiod_contactothertotalfee)}
+                                value={formatNumber(getValues("contactothertotalfee") || 0)}
+                            />
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.billingperiod_contacttotalfee)}
+                                value={formatNumber(getValues("contacttotalfee") || 0)}
                             />
                         </div>
                     </div>
@@ -1743,6 +2023,18 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                 {pageSelected === 5 && (
                     <div className={classes.containerDetail}>
                         <div className="row-zyx">
+                            <FieldSelect
+                                className="col-6"
+                                data={currencyList}
+                                disabled={!canEdit}
+                                error={errors?.messagingcurrency?.message}
+                                label={t(langKeys.billingperiod_messagingcurrency)}
+                                onChange={(value) => setValue("messagingcurrency", value?.value)}
+                                optionDesc="description"
+                                optionValue="value"
+                                orderbylabel={true}
+                                valueDefault={getValues("messagingcurrency")}
+                            />
                             <FieldEdit
                                 className="col-6"
                                 disabled={!canEdit}
@@ -1753,6 +2045,8 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                                 type="number"
                                 valueDefault={getValues("unitpricepersms")}
                             />
+                        </div>
+                        <div className="row-zyx">
                             <FieldEdit
                                 className="col-6"
                                 disabled={!canEdit}
@@ -1763,13 +2057,13 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                                 type="number"
                                 valueDefault={getValues("vcacomissionpersms")}
                             />
-                        </div>
-                        <div className="row-zyx">
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.smsquantity)}
                                 value={formatNumberNoDecimals(getValues("smsquantity") || 0)}
                             />
+                        </div>
+                        <div className="row-zyx">
                             <FieldEdit
                                 className="col-6"
                                 disabled={!canEdit}
@@ -1779,8 +2073,6 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                                 type="number"
                                 valueDefault={getValues("minimumsmsquantity")}
                             />
-                        </div>
-                        <div className="row-zyx">
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.smscost)}
@@ -1993,6 +2285,98 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                     </div>
                 )}
                 {pageSelected === 8 && (
+                    <div className={classes.containerDetail}>
+                        <div className="row-zyx">
+                            <FieldSelect
+                                className="col-6"
+                                data={currencyList}
+                                disabled={!canEdit}
+                                error={errors?.consultingcurrency?.message}
+                                label={t(langKeys.billingperiod_consultingcurrency)}
+                                onChange={(value) => setValue("consultingcurrency", value?.value)}
+                                optionDesc="description"
+                                optionValue="value"
+                                orderbylabel={true}
+                                valueDefault={getValues("consultingcurrency")}
+                            />
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.billingperiod_consultingconsultingfee)}
+                                value={String(getValues("consultingconsultingfee"))}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.consultingcontractquantity?.message}
+                                label={t(langKeys.billingperiod_consultingcontractquantity)}
+                                onChange={(value) => setValue("consultingcontractquantity", value)}
+                                type="number"
+                                valueDefault={getValues("consultingcontractquantity")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.consultingcontractedfee?.message}
+                                label={t(langKeys.billingperiod_consultingcontractedfee)}
+                                onChange={(value) => setValue("consultingcontractedfee", value)}
+                                type="number"
+                                valueDefault={getValues("consultingcontractedfee")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.billingperiod_consultingadditionalfee)}
+                                value={String(getValues("consultingadditionalfee"))}
+                            />
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.billingperiod_consultingtotalfee)}
+                                value={String(getValues("consultingtotalfee"))}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldSelect
+                                className="col-6"
+                                data={[]}
+                                disabled={!canEdit}
+                                error={errors?.consultingregisterprofile?.message}
+                                label={t(langKeys.billingperiod_consultingregisterprofile)}
+                                onChange={(value) => setValue("consultingregisterprofile", value?.value)}
+                                optionDesc="description"
+                                optionValue="value"
+                                orderbylabel={true}
+                                valueDefault={getValues("consultingregisterprofile")}
+                            />
+                            <FieldSelect
+                                className="col-6"
+                                data={currencyList}
+                                disabled={!canEdit}
+                                error={errors?.consultingcurrency?.message}
+                                label={t(langKeys.billingperiod_consultingcurrency)}
+                                onChange={(value) => setValue("consultingcurrency", value?.value)}
+                                optionDesc="description"
+                                optionValue="value"
+                                orderbylabel={true}
+                                valueDefault={getValues("consultingcurrency")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                disabled={!canEdit}
+                                error={errors?.consultingunitfee?.message}
+                                label={t(langKeys.billingperiod_consultingunitfee)}
+                                onChange={(value) => setValue("consultingunitfee", value)}
+                                type="number"
+                                valueDefault={getValues("consultingunitfee")}
+                            />
+                        </div>
+                    </div>
+                )}
+                {pageSelected === 9 && (
                     <div className={classes.containerDetail}>
                         <div className="row-zyx">
                             <FieldEdit
@@ -8400,7 +8784,7 @@ const MessagingPackages: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp
     const memoryTable = useSelector((state) => state.main.memoryTable);
     const user = useSelector((state) => state.login.validateToken.user);
 
-    const [canRegister, setCanRegister] = useState(false);
+    const [canRegister, setCanRegister] = useState(true);
     const [dataBalance, setDataBalance] = useState<Dictionary[]>([]);
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
     const [viewSelected, setViewSelected] = useState("view-1");
