@@ -5314,6 +5314,16 @@ export const langKeys = {
   monthly: 'monthly',
   per_day: 'per_day',
   per_month: 'per_month',
+  projectmanager: 'projectmanager',
+  strategicconsultor: 'strategicconsultor',
+  processconsultor: 'processconsultor',
+  aiconsultor: 'aiconsultor',
+  uxconsultor: 'uxconsultor',
+  informationconsultor: 'informationconsultor',
+  per_channel: 'per_channel',
+  unique: 'unique',
+  sent_hsm: 'sent_hsm',
+  delivered_hsm: 'delivered_hsm',
 };
 
 export type LangKeys = typeof langKeys;

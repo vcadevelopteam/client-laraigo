@@ -3,9 +3,14 @@
 import { Dictionary } from "@types";
 // import * as XLSX from 'xlsx';
 
-export const contactModeList = [
+export const contactCalculateList = [
     { value: "PER_CHANNEL", description: "per_channel" },
     { value: "UNIQUE", description: "unique" },
+];
+
+export const contactCountList = [
+    { value: "SENT_HSM", description: "sent_hsm" },
+    { value: "DELIVERED_HSM", description: "delivered_hsm" },
 ];
 
 export const agentModeList = [

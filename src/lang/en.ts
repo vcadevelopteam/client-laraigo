@@ -5397,6 +5397,16 @@ const translation: LangKeys = {
   monthly: 'Monthly',
   per_day: 'Per Day',
   per_month: 'Per Month',
+  projectmanager: 'Project Manager',
+  strategicconsultor: 'Strategic Consultor',
+  processconsultor: 'Process Consultor',
+  aiconsultor: 'Artificial Intelligence Consultor',
+  uxconsultor: 'UX Consultor',
+  informationconsultor: 'Information Analysis Consultor',
+  per_channel: 'Per Channel',
+  unique: 'Unique',
+  sent_hsm: 'Sent HSM',
+  delivered_hsm: 'Delivered HSM',
 };
 
 const enResource: ResourceLanguage = {

@@ -3060,19 +3060,6 @@ export const updateAppsettingInvoice = ({ ruc, businessname, tradename, fiscalad
     parameters: { ruc, businessname, tradename, fiscaladdress, ubigeo, country, emittertype, currency, invoiceserie, invoicecorrelative, annexcode, igv, printingformat, xmlversion, ublversion, returnpdf, returnxmlsunat, returnxml, invoiceprovider, sunaturl, token, sunatusername, paymentprovider, publickey, privatekey, ticketserie, ticketcorrelative, invoicecreditserie, invoicecreditcorrelative, ticketcreditserie, ticketcreditcorrelative, detraction, detractioncode, detractionaccount, operationcodeperu, operationcodeother, culqiurl, detractionminimum, culqiurlcardcreate, culqiurlclient, culqiurltoken, culqiurlcharge, culqiurlcardget, culqiurlcarddelete }
 });
 
-export const getBillingNotificationSel = ({ year, month, countrycode = "" }: Dictionary): IRequestBody => ({
-    method: "UFN_BILLINGNOTIFICATION_SEL",
-    key: "UFN_BILLINGNOTIFICATION_SEL",
-    parameters: { year, month, countrycode: countrycode ? countrycode : "" }
-})
-
-
-export const billingNotificationIns = ({ year, month, countrycode, id, vcacomission, c250000, c750000, c2000000, c3000000, c4000000, c5000000, c10000000, c25000000, description, status, type, operation }: Dictionary): IRequestBody => ({
-    method: "UFN_BILLINGNOTIFICATION_INS",
-    key: "UFN_BILLINGNOTIFICATION_INS",
-    parameters: { year, month, countrycode, id, vcacomission, c250000, c750000, c2000000, c3000000, c4000000, c5000000, c10000000, c25000000, description, status, type, operation }
-})
-
 /**bloquear o desbloquear personas de forma masiva */
 export const personcommunicationchannelUpdateLockedArrayIns = (table: { personid: number, locked: boolean }[]) => ({
     method: "UFN_PERSONCOMMUNICATIONCHANNEL_UPDATE_LOCKED_ARRAY",
@@ -3913,11 +3900,6 @@ export const getChatflowVariableSel = (): IRequestBody => ({
     method: "UFN_CHATFLOW_VARIABLE_SEL",
     parameters: {}
 });
-export const billingConfigurationNewMonth = ({ year, month }: Dictionary): IRequestBody => ({
-    method: "UFN_BILLINGCONFIGURATION_NEWMONTH",
-    key: "UFN_BILLINGCONFIGURATION_NEWMONTH",
-    parameters: { year, month }
-})
 
 export const artificialIntelligencePlanIns = ({ freeinteractions, basicfee, additionalfee, description, operation }: Dictionary): IRequestBody => ({
     method: "UFN_ARTIFICIALINTELLIGENCEPLAN_INS",

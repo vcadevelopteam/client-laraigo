@@ -22,6 +22,7 @@ import {
 import {
     dateToLocalDate,
     getOrgSelList,
+    getValuesFromDomainCorp,
     localesLaraigo,
     timeSheetIns,
     timeSheetSel,
@@ -45,6 +46,7 @@ interface DetailProps {
     fetchData: () => void;
     multiData: MultiData[];
     organizationList: any[];
+    profileList: any[];
     setViewSelected: (view: string) => void;
     userList: any[];
 }
@@ -116,6 +118,7 @@ const TimeSheet: FC = () => {
 
     const [getInformation, setGetInformation] = useState(false);
     const [organizationList, setOrganizationList] = useState<any>([]);
+    const [profileList, setProfileList] = useState<any>([]);
     const [userList, setUserList] = useState<any>([]);
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitDelete, setWaitDelete] = useState(false);
@@ -139,7 +142,13 @@ const TimeSheet: FC = () => {
 
         if (!getInformation) {
             setGetInformation(true);
-            dispatch(getMultiCollection([getOrgSelList(0), timeSheetUserSel({ corpid: 0, orgid: 0 })]));
+            dispatch(
+                getMultiCollection([
+                    getOrgSelList(0),
+                    getValuesFromDomainCorp("CONSULTINGPROFILE", null, 1, 0),
+                    timeSheetUserSel({ corpid: 0, orgid: 0 }),
+                ])
+            );
         }
 
         return () => {
@@ -152,7 +161,8 @@ const TimeSheet: FC = () => {
         if (!multiResult.loading && getInformation) {
             setGetInformation(false);
             setOrganizationList(multiResult.data[0] && multiResult.data[0].success ? multiResult.data[0].data : []);
-            setUserList(multiResult.data[1] && multiResult.data[1].success ? multiResult.data[1].data : []);
+            setProfileList(multiResult.data[1] && multiResult.data[1].success ? multiResult.data[1].data : []);
+            setUserList(multiResult.data[2] && multiResult.data[2].success ? multiResult.data[2].data : []);
         }
     }, [multiResult, getInformation]);
 
@@ -169,7 +179,7 @@ const TimeSheet: FC = () => {
                         severity: "error",
                         show: true,
                         message: t(executeResult.code ?? "error_unexpected_error", {
-                            module: t(langKeys.domain).toLocaleLowerCase(),
+                            module: t(langKeys.timesheet).toLocaleLowerCase(),
                         }),
                     })
                 );
@@ -233,6 +243,10 @@ const TimeSheet: FC = () => {
                 accessor: "registerprofile",
                 Header: t(langKeys.timesheet_registerprofile),
                 NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (t(`${row.registerprofile}`.toLowerCase()) || "").toUpperCase();
+                },
             },
             {
                 accessor: "timeduration",
@@ -376,6 +390,7 @@ const TimeSheet: FC = () => {
                 fetchData={() => fetchData()}
                 multiData={mainResult.multiData.data}
                 organizationList={organizationList}
+                profileList={profileList}
                 setViewSelected={setViewSelected}
                 userList={userList}
             />
@@ -386,6 +401,7 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
     data: { row, edit },
     fetchData,
     organizationList,
+    profileList,
     setViewSelected,
     userList,
 }) => {
@@ -628,25 +644,24 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
                             optionValue="orgid"
                             orderbylabel={true}
                             valueDefault={getValues("orgid")}
-                            variant="outlined"
                             onChange={(value: any) => {
                                 setValue("corpid", value?.corpid || 0);
                                 setValue("orgid", value?.orgid || 0);
                                 setHasChange(true);
                             }}
                         />
-                        <FieldEdit
+                        <FieldSelect
                             className="col-6"
+                            data={profileList}
                             disabled={!edit}
                             error={errors?.registerprofile?.message}
                             label={t(langKeys.timesheet_registerprofile)}
-                            onChange={(value) => {
-                                setValue("registerprofile", value);
-                                setHasChange(true);
-                            }}
-                            size="small"
+                            onChange={(value) => setValue("registerprofile", value?.domainvalue)}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                            orderbylabel={true}
+                            uset={true}
                             valueDefault={getValues("registerprofile")}
-                            variant="outlined"
                         />
                     </div>
                     <div className="row-zyx">
@@ -674,7 +689,6 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
                             }}
                             size="small"
                             valueDefault={getValues("registerdetail")}
-                            variant="outlined"
                         />
                     </div>
                 </div>
