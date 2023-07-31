@@ -553,7 +553,8 @@ const FIRSTNAME_FIELD = "FIRSTNAME_FIELD";
 const LASTNAME_FIELD = "LASTNAME_FIELD";
 const PHONE_FIELD = "PHONE_FIELD";
 const EMAIL_FIELD = "EMAIL_FIELD";
-const DOCUMENT_FIELD = "DOCUMENT_FIELD";
+const DNI_FIELD = "DNI_FIELD";
+const RUC_FIELD = "RUC_FIELD";
 const BUSINESSNAME_FIELD = "BUSINESSNAME_FIELD";
 const SUPPLYNUMBER_FIELD = "SUPPLYNUMBER_FIELD";
 const CONTACT = "CONTACT_FIELD";
@@ -660,22 +661,47 @@ const templates: { [x: string]: FieldTemplate } = {
             keyvalidation: "",
         },
     },
-    [DOCUMENT_FIELD]: {
-        text: <Trans i18nKey={langKeys.document} />,
+    [DNI_FIELD]: {
+        text: "DNI",
         node: (onClose, data, form, index) => {
             return (
                 <NameTemplate
                     form={form}
                     index={index}
                     data={data}
-                    onClose={() => onClose(DOCUMENT_FIELD)}
-                    key={DOCUMENT_FIELD}
-                    title={<Trans i18nKey={langKeys.document} />}
+                    onClose={() => onClose(DNI_FIELD)}
+                    key={DNI_FIELD}
+                    title={"DNI"}
                 />
             );
         },
         data: {
-            field: "DOCUMENT",
+            field: "DNI",
+            type: "text",
+            required: true,
+            label: "",
+            placeholder: "",
+            validationtext: "",
+            inputvalidation: "",
+            keyvalidation: "",
+        },
+    },
+    [RUC_FIELD]: {
+        text: "RUC",
+        node: (onClose, data, form, index) => {
+            return (
+                <NameTemplate
+                    form={form}
+                    index={index}
+                    data={data}
+                    onClose={() => onClose(RUC_FIELD)}
+                    key={RUC_FIELD}
+                    title={"RUC"}
+                />
+            );
+        },
+        data: {
+            field: "RUC",
             type: "text",
             required: true,
             label: "",
@@ -810,7 +836,6 @@ const TabPanelForm: FC<{ form: UseFormReturn<IFormWebAdd> }> = ({ form }) => {
 
     const handleAddTemplate = () => {
         if (fieldTemplate === "") return;
-
         setFields([...fields, templates[fieldTemplate]]);
         setFieldTemplate("");
     }
