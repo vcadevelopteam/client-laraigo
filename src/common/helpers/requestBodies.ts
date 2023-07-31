@@ -3005,6 +3005,14 @@ export const getHistoryStatusConversation = (personid: number, conversationid: n
     },
 });
 
+export const getAnalyticsIA = (conversationid: number) => ({
+    method: "UFN_CONVERSATION_SEL_ANALYTICS_V2",
+    key: "UFN_CONVERSATION_SEL_ANALYTICS_V2",
+    parameters: {
+        conversationid,
+    },
+});
+
 export const selKPIManager = (kpiid: number = 0) => ({
     method: "UFN_KPI_SEL",
     key: "UFN_KPI_SEL",

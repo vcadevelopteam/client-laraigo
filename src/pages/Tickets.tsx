@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback } from 'react'
-import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomainLight, insConversationClassificationMassive, reassignMassiveTicket, getUserSel, getHistoryStatusConversation, getCampaignLst, getPropertySelByName, exportExcel, templateMaker } from 'common/helpers';
+import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomainLight, insConversationClassificationMassive, reassignMassiveTicket, getUserSel, getHistoryStatusConversation, getCampaignLst, getPropertySelByName, exportExcel, templateMaker, getAnalyticsIA } from 'common/helpers';
 import { getCollectionPaginated, exportData, getMultiCollection, resetAllMain, execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
@@ -11,7 +11,7 @@ import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Box from '@material-ui/core/Box/Box';
-import { DialogZyx, FieldMultiSelect, FieldSelect, FieldEditMulti, FieldMultiSelectVirtualized } from 'components';
+import { DialogZyx, FieldMultiSelect, FieldSelect, FieldEditMulti, FieldMultiSelectVirtualized, AntTab, AntTabPanel } from 'components';
 import TableZyx from 'components/fields/table-simple';
 import { useForm } from 'react-hook-form';
 import IconButton from '@material-ui/core/IconButton';
@@ -20,7 +20,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { CloseTicketIcon, HistoryIcon, TipifyIcon, ReassignIcon, CallRecordIcon } from 'icons';
 import { massiveCloseTicket, getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, emitEvent, importTicket } from 'store/inbox/actions';
-import { Button, ListItemIcon, Tooltip } from '@material-ui/core';
+import { Button, ListItemIcon, Tabs, Tooltip } from '@material-ui/core';
 import PublishIcon from '@material-ui/icons/Publish';
 import { VoximplantService } from 'network';
 import DialogInteractions from 'components/inbox/DialogInteractions';
@@ -76,7 +76,15 @@ const useStyles = makeStyles((theme) => ({
     },
     flex_1: {
         flex: 1
-    }
+    },
+    tabs: {
+        color: '#989898',
+        backgroundColor: 'white',
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        width: 'inherit',
+    },
 }));
 
 const DialogCloseticket: React.FC<{ fetchData: () => void, setOpenModal: (param: any) => void, openModal: boolean, rowWithDataSelected: Dictionary[] }> = ({ setOpenModal, openModal, rowWithDataSelected, fetchData }) => {
@@ -457,7 +465,8 @@ const IconOptions: React.FC<{
     onHandlerClose?: (e?: any) => void;
     onHandlerShowHistory?: (e?: any) => void;
     onHandlerCallRecord?: (e?: any) => void;
-}> = ({ onHandlerReassign, onHandlerClassify, onHandlerClose, onHandlerShowHistory, onHandlerCallRecord, disabled }) => {
+    onHandlerAnalyticsIA?: (e?: any) => void;
+}> = ({ onHandlerReassign, onHandlerClassify, onHandlerClose, onHandlerShowHistory, onHandlerCallRecord, onHandlerAnalyticsIA, disabled }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const { t } = useTranslation();
 
@@ -533,6 +542,17 @@ const IconOptions: React.FC<{
                         {t(langKeys.status_history)}
                     </MenuItem>
                 }
+                {onHandlerAnalyticsIA &&
+                    <MenuItem onClick={() => {
+                        setAnchorEl(null);
+                        onHandlerAnalyticsIA();
+                    }}>
+                        <ListItemIcon>
+                            <HistoryIcon width={22} style={{ fill: '#7721AD' }} />
+                        </ListItemIcon>
+                        {"Analytics IA"}
+                    </MenuItem>
+                }
             </Menu>
         </>
     )
@@ -586,13 +606,328 @@ const DialogHistoryStatus: React.FC<{ ticket: Dictionary | null, openModal: bool
         >
             <TableZyx
                 columns={columns}
-                // titlemodule={t(langKeys.hi, { count: 2 })}
                 data={resultHistory.data}
                 filterGeneral={false}
                 download={false}
                 loading={resultHistory.loading}
                 register={false}
             />
+        </DialogZyx>
+    )
+}
+const DialogAnalyticsIA: React.FC<{ ticket: Dictionary | null, openModal: boolean, setOpenModal: (param: any) => void }> = ({ ticket, openModal, setOpenModal }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const [tabIndex, setTabIndex] = useState(0);
+    
+    const classes = useStyles();
+
+    const resultAnalyticsIA = useSelector(state => state.main.mainAux);
+
+    useEffect(() => {
+        if (openModal) {
+            if (ticket) {
+                dispatch(getCollectionAux(getAnalyticsIA(ticket.conversationid)))
+            }
+        }
+    }, [ticket, openModal])
+
+    const columnsWNLC = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.report_interaction_interactiontext),
+                accessor: 'interactiontext',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.type),
+                accessor: 'oustype',
+                NoFilter: true,
+            },
+            {
+                Header: `${t(langKeys.class)} 1`,
+                accessor: 'wnlcclass1',
+                NoFilter: true,
+            },
+            {
+                Header: `${t(langKeys.class)} 2`,
+                accessor: 'wnlcclass2',
+                NoFilter: true,
+            },
+        ],
+        []
+    );
+
+    const columnsWNLU = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.report_interaction_interactiontext),
+                accessor: 'interactiontext',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.type),
+                accessor: 'oustype',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.anger),
+                accessor: 'wnluanger',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.dislike),
+                accessor: 'wnludisgust',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.fear),
+                accessor: 'wnlufear',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.happiness),
+                accessor: 'wnlujoy',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.sadness),
+                accessor: 'wnlusadness',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.feeling),
+                accessor: 'wnlusentiment',
+                NoFilter: true,
+            },
+        ],
+        []
+    );
+
+    const columnsWTA = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.report_interaction_interactiontext),
+                accessor: 'interactiontext',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.type),
+                accessor: 'oustype',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.excited),
+                accessor: 'wtaexcited',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.satisfied),
+                accessor: 'wtasatisfied',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.frustrated),
+                accessor: 'wtafrustrated',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.sad),
+                accessor: 'wtasad',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.courteous),
+                accessor: 'wtapolite',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.blunt),
+                accessor: 'wtaimpolite',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.empathic),
+                accessor: 'wtasympathetic',
+                NoFilter: true,
+            },
+        ],
+        []
+    );
+
+    const columnsWTAG = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.report_interaction_interactiontext),
+                accessor: 'interactiontext',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.type),
+                accessor: 'oustype',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.happiness),
+                accessor: 'wtajoy',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.sadness),
+                accessor: 'wtasadness',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.anger),
+                accessor: 'wtaanger',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.fear),
+                accessor: 'wtafear',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.analytical),
+                accessor: 'wtaanalytical',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.confident),
+                accessor: 'wtaconfident',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.tentative),
+                accessor: 'wtatentative',
+                NoFilter: true,
+            },
+        ],
+        []
+    );
+    const columnsWA = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.report_interaction_interactiontext),
+                accessor: 'interactiontext',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.type),
+                accessor: 'oustype',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.intention),
+                accessor: 'waintent',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.entityname),
+                accessor: 'waentityname',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.entityvalue),
+                accessor: 'waentityvalue',
+                NoFilter: true,
+            },
+        ],
+        []
+    );
+
+    return (
+        <DialogZyx
+            open={openModal}
+            maxWidth="md"
+            title={`Analytics IA`}
+            buttonText1={t(langKeys.cancel)}
+            handleClickButton1={() => setOpenModal(false)}
+        >            
+            <Tabs
+                value={tabIndex}
+                onChange={(_, i) => setTabIndex(i)}
+                className={classes.tabs}
+                textColor="primary"
+                indicatorColor="primary"
+                variant="fullWidth"
+            >
+                <AntTab
+                    label={(
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>{t(langKeys.natural_language_classifier)}</div>
+                    )}
+                />
+                <AntTab
+                    label={(
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>{t(langKeys.natural_language_understanding)}</div>
+                    )}
+                />
+                <AntTab
+                    label={(
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>{t(langKeys.tone_analyzer_customer)}</div>
+                    )}
+                />
+                <AntTab
+                    label={(
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>{t(langKeys.tone_analyzer_general)}</div>
+                    )}
+                />
+                <AntTab
+                    label={(
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>{t(langKeys.watson_assistant)}</div>
+                    )}
+                />
+            </Tabs>
+            <AntTabPanel index={0} currentIndex={tabIndex}>
+                <TableZyx
+                    columns={columnsWNLC}
+                    data={resultAnalyticsIA.data}
+                    filterGeneral={false}
+                    download={false}
+                    loading={resultAnalyticsIA.loading}
+                    register={false}
+                />
+            </AntTabPanel>
+            <AntTabPanel index={1} currentIndex={tabIndex}>
+                <TableZyx
+                    columns={columnsWNLU}
+                    data={resultAnalyticsIA.data}
+                    filterGeneral={false}
+                    download={false}
+                    loading={resultAnalyticsIA.loading}
+                    register={false}
+                />
+            </AntTabPanel>
+            <AntTabPanel index={2} currentIndex={tabIndex}>
+                <TableZyx
+                    columns={columnsWTA}
+                    data={resultAnalyticsIA.data}
+                    filterGeneral={false}
+                    download={false}
+                    loading={resultAnalyticsIA.loading}
+                    register={false}
+                />
+            </AntTabPanel>
+            <AntTabPanel index={3} currentIndex={tabIndex}>
+                <TableZyx
+                    columns={columnsWTAG}
+                    data={resultAnalyticsIA.data}
+                    filterGeneral={false}
+                    download={false}
+                    loading={resultAnalyticsIA.loading}
+                    register={false}
+                />
+            </AntTabPanel>
+            <AntTabPanel index={4} currentIndex={tabIndex}>
+                <TableZyx
+                    columns={columnsWA}
+                    data={resultAnalyticsIA.data}
+                    filterGeneral={false}
+                    download={false}
+                    loading={resultAnalyticsIA.loading}
+                    register={false}
+                />
+            </AntTabPanel>
         </DialogZyx>
     )
 }
@@ -763,6 +1098,7 @@ const Tickets = () => {
     const [openDialogClose, setOpenDialogClose] = useState(false);
     const [openDialogReassign, setOpenDialogReassign] = useState(false);
     const [openDialogShowHistory, setOpenDialogShowHistory] = useState(false);
+    const [openDialogShowAnalyticsIA, setOpenDialogShowAnalyticsIA] = useState(false);
 
     const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
     const [selectedRows, setSelectedRows] = useState<any>({});
@@ -867,6 +1203,11 @@ const Tickets = () => {
                 }
                 onHandlerShowHistory={() => {
                   setOpenDialogShowHistory(true);
+                  setRowSelected(ticket);
+                  setRowToSend([ticket]);
+                }}
+                onHandlerAnalyticsIA={() => {
+                  setOpenDialogShowAnalyticsIA(true);
                   setRowSelected(ticket);
                   setRowToSend([ticket]);
                 }}
@@ -1384,6 +1725,11 @@ const Tickets = () => {
             <DialogHistoryStatus
                 openModal={openDialogShowHistory}
                 setOpenModal={setOpenDialogShowHistory}
+                ticket={rowSelected}
+            />
+            <DialogAnalyticsIA
+                openModal={openDialogShowAnalyticsIA}
+                setOpenModal={setOpenDialogShowAnalyticsIA}
                 ticket={rowSelected}
             />
             <DialogTipifications
