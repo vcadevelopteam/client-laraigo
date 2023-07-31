@@ -37,10 +37,10 @@ import {
     Corporation2Icon,
     ChannelsIcon,
     WhitelistIcon,
-    IAServicesIcon,
     ConfiguratuinIARouteIcon,
     ConectivityIARouteIcon,
     EntrenamientoIALogo,
+    IAEntrenamientoIcon,
 } from 'icons';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import InputIcon from '@material-ui/icons/Input';
@@ -525,7 +525,7 @@ export const routes: RouteConfig[] = [
         subroute: true,
         path: paths.IATRAINING,
         initialSubroute: paths.IATRAINING,
-        icon: (className) => <EntrenamientoIALogo style={{ width: 22, height: 22 }} className={className} />,
+        icon: (className) => <IAEntrenamientoIcon style={{ width: 22, height: 22 }} className={className} />,
     },
 ];
 

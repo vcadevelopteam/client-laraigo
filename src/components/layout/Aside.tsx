@@ -7,7 +7,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
-import { IconButton, Paper, Tooltip, Typography, Box } from '@material-ui/core';
+import { IconButton, Tooltip, Typography, Box } from '@material-ui/core';
 import Drawer from '@material-ui/core/Drawer';
 import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
