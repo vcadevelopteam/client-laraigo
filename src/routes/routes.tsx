@@ -37,6 +37,10 @@ import {
     Corporation2Icon,
     ChannelsIcon,
     WhitelistIcon,
+    ConfiguratuinIARouteIcon,
+    ConectivityIARouteIcon,
+    EntrenamientoIALogo,
+    IAEntrenamientoIcon,
 } from 'icons';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import InputIcon from '@material-ui/icons/Input';
@@ -86,7 +90,7 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
         description: <Trans i18nKey={langKeys.ia} />, // prop:count for plural purposes
         tooltip: <Trans i18nKey={langKeys.ia} />,
         icon: (className) => <IARouteIcon style={{ width: 22, height: 22 }} className={className} />,
-        options: [paths.IACONECTORS, paths.IATRAINING, paths.IACONFIGURATION]
+        options: [paths.IACONECTORS, paths.IACONFIGURATION,  paths.IATRAINING]
     },
     {
         key: "configuration",
@@ -503,7 +507,7 @@ export const routes: RouteConfig[] = [
         subroute: true,
         path: paths.IACONECTORS,
         initialSubroute: paths.IACONECTORS,
-        icon: (className) => <Corporation2Icon style={{ width: 22, height: 22 }} className={className} />,
+        icon: (className) => <ConectivityIARouteIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
         key: paths.IACONFIGURATION,
@@ -512,7 +516,7 @@ export const routes: RouteConfig[] = [
         subroute: true,
         path: paths.IACONFIGURATION,
         initialSubroute: paths.IACONFIGURATION,
-        icon: (className) => <Corporation2Icon style={{ width: 22, height: 22 }} className={className} />,
+        icon: (className) => <ConfiguratuinIARouteIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
         key: paths.IATRAINING,
@@ -521,7 +525,7 @@ export const routes: RouteConfig[] = [
         subroute: true,
         path: paths.IATRAINING,
         initialSubroute: paths.IATRAINING,
-        icon: (className) => <Corporation2Icon style={{ width: 22, height: 22 }} className={className} />,
+        icon: (className) => <IAEntrenamientoIcon style={{ width: 22, height: 22 }} className={className} />,
     },
 ];
 

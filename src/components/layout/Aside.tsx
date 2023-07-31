@@ -7,7 +7,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
-import { IconButton, Paper, Tooltip, Typography, Box } from '@material-ui/core';
+import { IconButton, Tooltip, Typography, Box } from '@material-ui/core';
 import Drawer from '@material-ui/core/Drawer';
 import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
@@ -67,7 +67,7 @@ const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig 
             //         console.assert(config.initialSubroute != null || config.initialSubroute !== undefined, message);
             //     }
             // }
-            console.log(path);
+            // console.log(path);
         }
         const navigationRoutes = config.options.map(
             (option: string) =>
@@ -80,17 +80,47 @@ const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig 
         // const getColumnCount = () => {
         //     return Math.min(4, Math.max(2, numElements));
         // };
+        // const getColumnCount = () => {
+        //     if (numElements === 1) {
+        //       return 1; // 1 column for 1 element
+        //     } else if (numElements === 2) {
+        //       return 2; // 2 columns for 2 elements
+        //     } else if (numElements <= 6) {
+        //       return 3; // 3 columns for 3, 4, 5, or 6 elements
+        //     } else {
+        //       return 4; // 4 columns for 7 or more elements
+        //     }
+        //   };
+
         const getColumnCount = () => {
-            if (numElements === 1) {
-              return 1; // 1 column for 1 element
+            const screenWidth = window.innerWidth;
+            let numColumns = 4; // Default number of columns for larger screens
+
+            if (screenWidth < 600) {
+                // For screens smaller than 600px (mobile devices), show 2 columns
+                numColumns = 2;
+            } else if (screenWidth < 900) {
+                // For screens between 600px and 900px, show 3 columns
+                // console.log(numElements);
+                if (numElements === 1) { return numColumns = 1 };
+                if (numElements === 3) { return numColumns = 3 };
+                if (numElements <= 6 || numElements === 2) { return numColumns = 2 };
+                numColumns = 3;
+            } else if (numElements === 1) {
+                numColumns = 1;
             } else if (numElements === 2) {
-              return 2; // 2 columns for 2 elements
-            } else if (numElements <= 6) {
-              return 3; // 3 columns for 3, 4, 5, or 6 elements
-            } else {
-              return 4; // 4 columns for 7 or more elements
+                numColumns = 2;
             }
-          };
+            else if (numElements <= 6) {
+                // For screens larger than 900px, show 3 columns for 1-6 elements
+                numColumns = 3;
+            } else {
+                // For screens larger than 900px and more than 6 elements, show 4 columns
+                numColumns = 4;
+            }
+
+            return numColumns;
+        };
         const columnCount = getColumnCount();
         const gridTemplateColumns = `repeat(${columnCount}, 1fr)`;
         // console.log(filteredNavigationRoutes);
@@ -121,7 +151,7 @@ const LinkList: FC<{ config: ViewsClassificationConfig, classes: any, open: bool
     // if (!config.path) {
     //     return <Typography className={open ? classes.drawerLabel : classes.drawerCloseLabel}>{config.description}</Typography>;
     // }
-    console.log(popupState);
+    // console.log(popupState);
     // const isSelected = config.options?.some((option: string) => option === history.location.pathname);
 
     let className = "";

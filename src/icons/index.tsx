@@ -298,3 +298,4 @@ export { ReactComponent as ConfiguratuinIARouteIcon } from './configuracion-IA_r
 export { ReactComponent as IARouteIcon } from './IA_route.svg';
 export { ReactComponent as SalesRouteIcon } from './sales_route.svg'
 export { ReactComponent as ServiceDeskRouteIcon } from './service desk 1_route.svg'
+export { ReactComponent as IAEntrenamientoIcon } from './IA_Laraigo_Entrenamiento.svg'
