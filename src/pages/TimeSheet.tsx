@@ -412,6 +412,7 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
     const classes = useStyles();
     const executeResult = useSelector((state) => state.main.execute);
     const user = useSelector((state) => state.login.validateToken.user);
+
     const userAvailable = (userList || []).filter((data) => data.userid === (user?.userid ?? 0))
         ? user?.userid ?? 0
         : 0;

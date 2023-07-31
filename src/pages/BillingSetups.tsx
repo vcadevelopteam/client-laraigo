@@ -183,13 +183,13 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
         culqiurlclient: "",
         culqiurltoken: "",
         currency: "",
-        detraction: 0.0,
+        detraction: 0,
         detractionaccount: "",
         detractioncode: "",
-        detractionminimum: 0.0,
+        detractionminimum: 0,
         emittertype: "",
         fiscaladdress: "",
-        igv: 0.0,
+        igv: 0,
         invoicecorrelative: 0,
         invoicecreditcorrelative: 0,
         invoicecreditserie: "",
@@ -1533,7 +1533,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const executeRes = useSelector((state) => state.main.execute);
+    const executeResult = useSelector((state) => state.main.execute);
 
     const [checkedaux, setCheckedaux] = useState(row?.allowhsm || false);
     const [checkedchannel, setCheckedchannel] = useState(row?.channelcreateoverride || false);
@@ -1562,13 +1562,13 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
     } = useForm({
         defaultValues: {
             allowhsm: row?.allowhsm || false,
-            basicanualfee: row?.basicanualfee || 0.0,
-            basicfee: row?.basicfee || 0.0,
+            basicanualfee: row?.basicanualfee || 0,
+            basicfee: row?.basicfee || 0,
             channelcreateoverride: row?.channelcreateoverride || false,
             channelfreequantity: row?.channelfreequantity || 0,
-            channelotherfee: row?.channelotherfee || 0.0,
-            channelwhatsappfee: row?.channelwhatsappfee || 0.0,
-            clientadditionalfee: row?.clientadditionalfee || 0.0,
+            channelotherfee: row?.channelotherfee || 0,
+            channelwhatsappfee: row?.channelwhatsappfee || 0,
+            clientadditionalfee: row?.clientadditionalfee || 0,
             clientfreequantity: row?.clientfreequantity || 0,
             description: row ? row.description : "",
             freewhatsappchannel: row?.freewhatsappchannel || 0,
@@ -1691,7 +1691,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
 
     useEffect(() => {
         if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
+            if (!executeResult.loading && !executeResult.error) {
                 dispatch(
                     showSnackbar({
                         message: t(row ? langKeys.successful_edit : langKeys.successful_register),
@@ -1702,12 +1702,12 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1");
                 fetchData && fetchData();
-            } else if (executeRes.error) {
+            } else if (executeResult.error) {
                 dispatch(
                     showSnackbar({
                         severity: "error",
                         show: true,
-                        message: t(executeRes.code ?? "error_unexpected_error", {
+                        message: t(executeResult.code ?? "error_unexpected_error", {
                             module: t(langKeys.billingplan).toLocaleLowerCase(),
                         }),
                     })
@@ -1716,7 +1716,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
                 setWaitSave(false);
             }
         }
-    }, [executeRes, waitSave]);
+    }, [executeResult, waitSave]);
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
@@ -1746,7 +1746,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
                     <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                         <Button
                             color="primary"
-                            disabled={executeRes.loading}
+                            disabled={executeResult.loading}
                             onClick={() => setViewSelected("view-1")}
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
@@ -1759,7 +1759,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
                             <Button
                                 className={classes.button}
                                 color="primary"
-                                disabled={executeRes.loading}
+                                disabled={executeResult.loading}
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
                                 type="submit"
@@ -2337,7 +2337,7 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const executeRes = useSelector((state) => state.main.execute);
+    const executeResult = useSelector((state) => state.main.execute);
 
     const [waitSave, setWaitSave] = useState(false);
 
@@ -2362,9 +2362,9 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({
         setValue,
     } = useForm({
         defaultValues: {
-            businessauthenticationfee: row?.businessauthenticationfee || 0.0,
-            businessmarketingfee: row?.businessmarketingfee || 0.0,
-            businessutilityfee: row?.businessutilityfee || 0.0,
+            businessauthenticationfee: row?.businessauthenticationfee || 0,
+            businessmarketingfee: row?.businessmarketingfee || 0,
+            businessutilityfee: row?.businessutilityfee || 0,
             countrycode: row?.countrycode || "",
             description: row?.description || "",
             freequantity: row?.freequantity || 0,
@@ -2374,8 +2374,8 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({
             plancurrency: row ? row.plancurrency : "",
             status: row ? row.status : "ACTIVO",
             type: row ? row.type : "",
-            usergeneralfee: row?.usergeneralfee || 0.0,
-            vcacomission: row?.vcacomission || 0.0,
+            usergeneralfee: row?.usergeneralfee || 0,
+            vcacomission: row?.vcacomission || 0,
             year: row?.year || new Date().getFullYear(),
         },
     });
@@ -2436,7 +2436,7 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({
 
     useEffect(() => {
         if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
+            if (!executeResult.loading && !executeResult.error) {
                 dispatch(
                     showSnackbar({
                         message: t(row ? langKeys.successful_edit : langKeys.successful_register),
@@ -2447,12 +2447,12 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1");
                 fetchData && fetchData();
-            } else if (executeRes.error) {
+            } else if (executeResult.error) {
                 dispatch(
                     showSnackbar({
                         severity: "error",
                         show: true,
-                        message: t(executeRes.code ?? "error_unexpected_error", {
+                        message: t(executeResult.code ?? "error_unexpected_error", {
                             module: t(langKeys.conversationcost).toLocaleLowerCase(),
                         }),
                     })
@@ -2461,7 +2461,7 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({
                 setWaitSave(false);
             }
         }
-    }, [executeRes, waitSave]);
+    }, [executeResult, waitSave]);
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
@@ -2491,7 +2491,7 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({
                     <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                         <Button
                             color="primary"
-                            disabled={executeRes.loading}
+                            disabled={executeResult.loading}
                             onClick={() => setViewSelected("view-1")}
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
@@ -2504,7 +2504,7 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({
                             <Button
                                 className={classes.button}
                                 color="primary"
-                                disabled={executeRes.loading}
+                                disabled={executeResult.loading}
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
                                 type="submit"
@@ -2982,7 +2982,7 @@ const DetailArtificialIntelligence: React.FC<DetailArtificialIntelligenceProps> 
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const executeRes = useSelector((state) => state.main.execute);
+    const executeResult = useSelector((state) => state.main.execute);
 
     const [waitSave, setWaitSave] = useState(false);
 
@@ -3008,8 +3008,8 @@ const DetailArtificialIntelligence: React.FC<DetailArtificialIntelligenceProps> 
         trigger,
     } = useForm({
         defaultValues: {
-            additionalfee: row?.additionalfee || 0.0,
-            basicfee: row?.basicfee || 0.0,
+            additionalfee: row?.additionalfee || 0,
+            basicfee: row?.basicfee || 0,
             charlimit: row?.charlimit || 0,
             description: row ? row.description : "",
             freeinteractions: row?.freeinteractions || 0,
@@ -3068,7 +3068,7 @@ const DetailArtificialIntelligence: React.FC<DetailArtificialIntelligenceProps> 
 
     useEffect(() => {
         if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
+            if (!executeResult.loading && !executeResult.error) {
                 dispatch(
                     showSnackbar({
                         message: t(row ? langKeys.successful_edit : langKeys.successful_register),
@@ -3079,12 +3079,12 @@ const DetailArtificialIntelligence: React.FC<DetailArtificialIntelligenceProps> 
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1");
                 fetchData && fetchData();
-            } else if (executeRes.error) {
+            } else if (executeResult.error) {
                 dispatch(
                     showSnackbar({
                         severity: "error",
                         show: true,
-                        message: t(executeRes.code ?? "error_unexpected_error", {
+                        message: t(executeResult.code ?? "error_unexpected_error", {
                             module: t(langKeys.billingsetup_artificialintelligence).toLocaleLowerCase(),
                         }),
                     })
@@ -3093,7 +3093,7 @@ const DetailArtificialIntelligence: React.FC<DetailArtificialIntelligenceProps> 
                 setWaitSave(false);
             }
         }
-    }, [executeRes, waitSave]);
+    }, [executeResult, waitSave]);
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
@@ -3131,13 +3131,13 @@ const DetailArtificialIntelligence: React.FC<DetailArtificialIntelligenceProps> 
 
     function handlePlanChange(data: any) {
         if (data) {
-            setValue("additionalfee", data.additionalfee || 0.0);
-            setValue("basicfee", data.basicfee || 0.0);
+            setValue("additionalfee", data.additionalfee || 0);
+            setValue("basicfee", data.basicfee || 0);
             setValue("freeinteractions", data.freeinteractions || 0);
             setValue("plan", data.description || "");
         } else {
-            setValue("additionalfee", 0.0);
-            setValue("basicfee", 0.0);
+            setValue("additionalfee", 0);
+            setValue("basicfee", 0);
             setValue("freeinteractions", 0);
             setValue("plan", "");
         }
@@ -3160,7 +3160,7 @@ const DetailArtificialIntelligence: React.FC<DetailArtificialIntelligenceProps> 
                     <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                         <Button
                             color="primary"
-                            disabled={executeRes.loading}
+                            disabled={executeResult.loading}
                             onClick={() => setViewSelected("view-1")}
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
@@ -3173,7 +3173,7 @@ const DetailArtificialIntelligence: React.FC<DetailArtificialIntelligenceProps> 
                             <Button
                                 className={classes.button}
                                 color="primary"
-                                disabled={executeRes.loading}
+                                disabled={executeResult.loading}
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
                                 type="submit"
@@ -3577,7 +3577,7 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const executeRes = useSelector((state) => state.main.execute);
+    const executeResult = useSelector((state) => state.main.execute);
 
     const [waitSave, setWaitSave] = useState(false);
 
@@ -3656,7 +3656,7 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({
 
     useEffect(() => {
         if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
+            if (!executeResult.loading && !executeResult.error) {
                 dispatch(
                     showSnackbar({
                         message: t(row ? langKeys.successful_edit : langKeys.successful_register),
@@ -3667,12 +3667,12 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1");
                 fetchData && fetchData();
-            } else if (executeRes.error) {
+            } else if (executeResult.error) {
                 dispatch(
                     showSnackbar({
                         severity: "error",
                         show: true,
-                        message: t(executeRes.code ?? "error_unexpected_error", {
+                        message: t(executeResult.code ?? "error_unexpected_error", {
                             module: t(langKeys.supportplan).toLocaleLowerCase(),
                         }),
                     })
@@ -3681,7 +3681,7 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({
                 setWaitSave(false);
             }
         }
-    }, [executeRes, waitSave]);
+    }, [executeResult, waitSave]);
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
@@ -3711,7 +3711,7 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({
                     <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                         <Button
                             color="primary"
-                            disabled={executeRes.loading}
+                            disabled={executeResult.loading}
                             onClick={() => setViewSelected("view-1")}
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
@@ -3724,7 +3724,7 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({
                             <Button
                                 className={classes.button}
                                 color="primary"
-                                disabled={executeRes.loading}
+                                disabled={executeResult.loading}
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
                                 type="submit"
@@ -4090,7 +4090,7 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const executeRes = useSelector((state) => state.main.execute);
+    const executeResult = useSelector((state) => state.main.execute);
 
     const [waitSave, setWaitSave] = useState(false);
 
@@ -4119,12 +4119,12 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
             id: row ? row.billingmessagingid : 0,
             month: row?.month || new Date().getMonth() + 1,
             operation: row ? "UPDATE" : "INSERT",
-            pricepermail: row?.pricepermail || 0.0,
-            pricepersms: row?.pricepersms || 0.0,
+            pricepermail: row?.pricepermail || 0,
+            pricepersms: row?.pricepersms || 0,
             status: row ? row.status : "ACTIVO",
             type: row ? row.type : "",
-            vcacomissionpermail: row?.vcacomissionpermail || 0.0,
-            vcacomissionpersms: row?.vcacomissionpersms || 0.0,
+            vcacomissionpermail: row?.vcacomissionpermail || 0,
+            vcacomissionpersms: row?.vcacomissionpersms || 0,
             year: row?.year || new Date().getFullYear(),
         },
     });
@@ -4173,7 +4173,7 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
 
     useEffect(() => {
         if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
+            if (!executeResult.loading && !executeResult.error) {
                 dispatch(
                     showSnackbar({
                         message: t(row ? langKeys.successful_edit : langKeys.successful_register),
@@ -4184,12 +4184,12 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1");
                 fetchData && fetchData();
-            } else if (executeRes.error) {
+            } else if (executeResult.error) {
                 dispatch(
                     showSnackbar({
                         severity: "error",
                         show: true,
-                        message: t(executeRes.code ?? "error_unexpected_error", {
+                        message: t(executeResult.code ?? "error_unexpected_error", {
                             module: t(langKeys.messagingcost).toLocaleLowerCase(),
                         }),
                     })
@@ -4198,7 +4198,7 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                 setWaitSave(false);
             }
         }
-    }, [executeRes, waitSave]);
+    }, [executeResult, waitSave]);
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
@@ -4228,7 +4228,7 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                     <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                         <Button
                             color="primary"
-                            disabled={executeRes.loading}
+                            disabled={executeResult.loading}
                             onClick={() => setViewSelected("view-1")}
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
@@ -4241,7 +4241,7 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                             <Button
                                 className={classes.button}
                                 color="primary"
-                                disabled={executeRes.loading}
+                                disabled={executeResult.loading}
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
                                 type="submit"
@@ -4343,7 +4343,7 @@ const BillingSetup: FC = () => {
     const [countryList, setCountryList] = useState<any>([]);
     const [dataPaymentPlan, setDataPaymentPlan] = useState<any>([]);
     const [dataPlan, setDataPlan] = useState<any>([]);
-    const [exchangeData, setExchangeData] = useState(0.0);
+    const [exchangeData, setExchangeData] = useState(0);
     const [pageSelected, setPageSelected] = useState(user?.roledesc === "SUPERADMIN" ? 0 : 6);
     const [planList, setPlanList] = useState<any>([]);
     const [providerList, setProviderList] = useState<any>([]);
