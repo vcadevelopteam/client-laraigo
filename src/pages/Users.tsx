@@ -285,20 +285,20 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     }
 
     const onChangeRole = (value: Dictionary) => {
-        setValue('rolegroups', value.map((o: Dictionary) => o.rolegroups).join());
+        setValue('rolegroups', value.map((o: Dictionary) => o.roleid).join());
         setValue('roledesc', value.map((o: Dictionary) => o.roledesc).join());
 
         setValue('redirect', ''); 
         updatefield('redirect', '');
 
         updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
-            p[index] = { ...p[index], rolegroups: value.map((o: Dictionary) => o.rolegroups).join(), roledesc: value.map((o: Dictionary) => o.roledesc).join() }
+            p[index] = { ...p[index], rolegroups: value.map((o: Dictionary) => o.roleid).join(), roledesc: value.map((o: Dictionary) => o.roledesc).join() }
             return p;
         })
         if (!!value.length) {
             setDataApplications({ loading: true, data: [] });
             dispatch(getMultiCollectionAux([
-                getApplicationsByRole(value.map((o: Dictionary) => o.rolegroups).join(), index + 1),
+                getApplicationsByRole(value.map((o: Dictionary) => o.roleid).join(), index + 1),
             ]))
         } else {
             setDataApplications({ loading: false, data: [] })
