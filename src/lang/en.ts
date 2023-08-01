@@ -593,6 +593,7 @@ const translation: LangKeys = {
   tone_analyzer_customer: "Tone analyzer customer",
   tone_analyzer_general: "Tone analyzer general",
   watson_assistant: "Watson assistant",
+  rasa_assistant: "Rasa assistant",
   class: "Class",
   anger: "Anger",
   dislike: "Dislike",

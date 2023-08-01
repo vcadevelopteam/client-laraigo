@@ -55,6 +55,7 @@ const translation: LangKeys = {
   tone_analyzer_customer: "Cliente analizador de tonos",
   tone_analyzer_general: "Analizador de tonos general",
   watson_assistant: "Asistente de Watson",
+  rasa_assistant: "Asistente de Rasa",
   anger: "Enojo",
   dislike: "Disgusto",
   fear: "Miedo",

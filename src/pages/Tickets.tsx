@@ -835,6 +835,36 @@ const DialogAnalyticsIA: React.FC<{ ticket: Dictionary | null, openModal: boolea
         ],
         []
     );
+    const columnsRasa = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.report_interaction_interactiontext),
+                accessor: 'interactiontext',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.type),
+                accessor: 'oustype',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.intention),
+                accessor: 'rasintent',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.entityname),
+                accessor: 'rasentityname',
+                NoFilter: true,
+            },
+            {
+                Header: t(langKeys.entityvalue),
+                accessor: 'rasentityvalue',
+                NoFilter: true,
+            },
+        ],
+        []
+    );
 
     return (
         <DialogZyx
@@ -875,6 +905,11 @@ const DialogAnalyticsIA: React.FC<{ ticket: Dictionary | null, openModal: boolea
                 <AntTab
                     label={(
                         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>{t(langKeys.watson_assistant)}</div>
+                    )}
+                />
+                <AntTab
+                    label={(
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>{t(langKeys.rasa_assistant)}</div>
                     )}
                 />
             </Tabs>
@@ -921,6 +956,16 @@ const DialogAnalyticsIA: React.FC<{ ticket: Dictionary | null, openModal: boolea
             <AntTabPanel index={4} currentIndex={tabIndex}>
                 <TableZyx
                     columns={columnsWA}
+                    data={resultAnalyticsIA.data}
+                    filterGeneral={false}
+                    download={false}
+                    loading={resultAnalyticsIA.loading}
+                    register={false}
+                />
+            </AntTabPanel>
+            <AntTabPanel index={5} currentIndex={tabIndex}>
+                <TableZyx
+                    columns={columnsRasa}
                     data={resultAnalyticsIA.data}
                     filterGeneral={false}
                     download={false}
