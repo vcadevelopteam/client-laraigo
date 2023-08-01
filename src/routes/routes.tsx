@@ -41,6 +41,7 @@ import {
     ConectivityIARouteIcon,
     EntrenamientoIALogo,
     IAEntrenamientoIcon,
+    SLAIcon,
 } from 'icons';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import InputIcon from '@material-ui/icons/Input';
@@ -83,7 +84,7 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
         // description: <Trans i18nKey={langKeys.servicedesk} />,
         tooltip: <Trans i18nKey={langKeys.servicedesk} />,
         icon: (className) => <ServiceDeskRouteIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
-        options: [paths.SERVICE_DESK,paths.SLA]
+        options: [paths.SERVICE_DESK, paths.SLA]
     },
     {
         key: "ia",
@@ -433,7 +434,7 @@ export const routes: RouteConfig[] = [
         description: <Trans i18nKey={langKeys.sla} count={2} />,
         tooltip: "",
         path: paths.SLA,
-        icon: (className) => <ExtrasIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
+        icon: (className) => <SLAIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
     },
     {
         key: paths.DOMAINS,
