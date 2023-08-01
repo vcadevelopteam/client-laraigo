@@ -115,7 +115,7 @@ export const getSupervisors = (orgid: number, userid: number, keytmp?: any): IRe
     }
 })
 
-export const getApplicationsByRole = (roleid: number, keytmp?: number): IRequestBody => ({
+export const getApplicationsByRole = (roleid: string, keytmp?: number): IRequestBody => ({
     method: "UFN_APPS_DATA_SEL",
     key: "UFN_APPS_DATA_SEL" + (keytmp || ""),
     parameters: {
