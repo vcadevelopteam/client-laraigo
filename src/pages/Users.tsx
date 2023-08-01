@@ -213,7 +213,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         //PARA MODALES SE DEBE RESETEAR EN EL EDITAR
         reset({
             orgid: row ? row.orgid : (dataOrganizationsTmp.length === 1 ? dataOrganizationsTmp[0].orgid : 0),
-            roleid: row ? row.rolegroups : "",
+            rolegroups: row ? row.rolegroups : "",
             roledesc: row ? row.roledesc : '', //for table
             orgdesc: row ? row.orgdesc : '', //for table
             supervisordesc: row ? row.supervisordesc : '', //for table
@@ -229,7 +229,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         })
 
         register('orgid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
-        register('roleid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('rolegroups', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type');
         register('supervisor');
         // register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -287,20 +287,20 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     }
 
     const onChangeRole = (value: Dictionary) => {
-        setValue('roleid', value.map((o: Dictionary) => o.roleid).join());
+        setValue('rolegroups', value.map((o: Dictionary) => o.rolegroups).join());
         setValue('roledesc', value.map((o: Dictionary) => o.roledesc).join());
 
         setValue('redirect', ''); 
         updatefield('redirect', '');
 
         updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
-            p[index] = { ...p[index], roleid: value.map((o: Dictionary) => o.roleid).join(), roledesc: value.map((o: Dictionary) => o.roledesc).join() }
+            p[index] = { ...p[index], rolegroups: value.map((o: Dictionary) => o.rolegroups).join(), roledesc: value.map((o: Dictionary) => o.roledesc).join() }
             return p;
         })
         if (!!value.length) {
             setDataApplications({ loading: true, data: [] });
             dispatch(getMultiCollectionAux([
-                getApplicationsByRole(value.map((o: Dictionary) => o.roleid).join(), index + 1),
+                getApplicationsByRole(value.map((o: Dictionary) => o.rolegroups).join(), index + 1),
             ]))
         } else {
             setDataApplications({ loading: false, data: [] })
@@ -335,9 +335,9 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                             <FieldMultiSelect
                                 label={t(langKeys.role)}
                                 className={classes.mb2}
-                                valueDefault={getValues("roleid")}
+                                valueDefault={row?.rolegroups || ""}
                                 onChange={onChangeRole}
-                                error={errors?.roleid?.message}
+                                error={errors?.rolegroups?.message}
                                 // triggerOnChangeOnFirst={true}
                                 data={dataRoles}
                                 optionDesc="roldesc"
@@ -1206,7 +1206,7 @@ const Users: FC = () => {
             {},
             {},
             { 'true': 'true', 'false': 'false' },
-            domains.value?.roles?.reduce((a, d) => ({ ...a, [d.roleid]: d.roldesc }), {}),
+            domains.value?.roles?.reduce((a, d) => ({ ...a, [d.rolegroups]: d.roldesc }), {}),
             dataChannelsTemp.reduce((a, d) => ({ ...a, [d.communicationchannelid]: d.description }), {}),
             domains.value?.usergroup?.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
         ];
@@ -1365,7 +1365,7 @@ const Users: FC = () => {
                     && (f.twofactorauthentication === undefined || Object.keys(domains.value?.genericstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.twofactorauthentication))
                     && (f.status === undefined || Object.keys(domains.value?.userstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.status))
                     && (f.pwdchangefirstlogin === undefined || ["true", "false"].includes('' + f.pwdchangefirstlogin))
-                    && (f.role === undefined || Object.keys(domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.roleid]: `${d.roleid}` }), {})).includes('' + f.role))
+                    && (f.role === undefined || Object.keys(domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.rolegroups]: `${d.rolegroups}` }), {})).includes('' + f.role))
             });
 
             const messageerrors = datainit.filter((f: any) => {
@@ -1375,7 +1375,7 @@ const Users: FC = () => {
                     || !(f.twofactorauthentication === undefined || Object.keys(domains.value?.genericstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.twofactorauthentication))
                     || !(f.status === undefined || Object.keys(domains.value?.userstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.status))
                     || !(f.pwdchangefirstlogin === undefined || ["true", "false"].includes('' + f.pwdchangefirstlogin))
-                    || !(f.role === undefined || Object.keys(domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.roleid]: `${d.roleid}` }), {})).includes('' + f.role))
+                    || !(f.role === undefined || Object.keys(domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.rolegroups]: `${d.rolegroups}` }), {})).includes('' + f.role))
             }).reduce((acc, x) => acc + t(langKeys.error_estructure_user, { email: x.email }) + `\n`, '');
 
             setMessageError(messageerrors)
@@ -1408,14 +1408,14 @@ const Users: FC = () => {
                             billinggroupid: d.billinggroup,
                             image: d?.image || "",
                             detail: {
-                                roleid: d.role,
+                                rolegroups: d.role,
                                 orgid: user?.orgid,
                                 bydefault: true,
                                 labels: "",
                                 groups: d.groups || "",
                                 channels: d.channels || "",
                                 status: "DESCONECTADO",
-                                type: (domains?.value?.roles?.filter(x=>x.roleid===d.role)?.[0]?.roldesc||"").slice(0,6) === 'ASESOR' ? 'ASESOR' : 'SUPERVISOR',
+                                type: (domains?.value?.roles?.filter(x=>x.rolegroups===d.role)?.[0]?.roldesc||"").slice(0,6) === 'ASESOR' ? 'ASESOR' : 'SUPERVISOR',
                                 supervisor: "",
                                 operation: "INSERT",
                                 redirect: "/usersettings"
