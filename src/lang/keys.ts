@@ -1666,6 +1666,7 @@ export const langKeys = {
   tone_analyzer_customer: "tone_analyzer_customer",
   tone_analyzer_general: "tone_analyzer_general",
   watson_assistant: "watson_assistant",
+  rasa_assistant: "rasa_assistant",
 
   typepg_bigint: 'typepg_bigint',
   typepg_boolean: 'typepg_boolean',
