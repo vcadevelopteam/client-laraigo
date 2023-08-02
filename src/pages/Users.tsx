@@ -1198,7 +1198,7 @@ const Users: FC = () => {
             {},
             {},
             { 'true': 'true', 'false': 'false' },
-            domains.value?.roles?.reduce((a, d) => ({ ...a, [d.rolegroups]: d.roldesc }), {}),
+            domains.value?.roles?.reduce((a, d) => ({ ...a, [d.roleid]: d.roldesc }), {}),
             dataChannelsTemp.reduce((a, d) => ({ ...a, [d.communicationchannelid]: d.description }), {}),
             domains.value?.usergroup?.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
         ];
