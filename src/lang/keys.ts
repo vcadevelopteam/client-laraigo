@@ -2656,6 +2656,8 @@ export const langKeys = {
   report_sentmessages_failedp: 'report_sentmessages_failedp',
 
   report_conversationwhatsapp: 'report_conversationwhatsapp',
+
+  "personalizedreport_hsmcampaign": "personalizedreport_hsmcampaign",
   "personalizedreport_conversation.userjoy": "personalizedreport_conversation.userjoy",
   "personalizedreport_conversation.userfear": "personalizedreport_conversation.userfear",
   "personalizedreport_conversation.userdisgust": "personalizedreport_conversation.userdisgust",
