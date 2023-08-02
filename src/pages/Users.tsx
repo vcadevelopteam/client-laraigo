@@ -1366,9 +1366,8 @@ const Users: FC = () => {
                     && (f.twofactorauthentication === undefined || Object.keys(domains.value?.genericstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.twofactorauthentication))
                     && (f.status === undefined || Object.keys(domains.value?.userstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.status))
                     && (f.pwdchangefirstlogin === undefined || ["true", "false"].includes('' + f.pwdchangefirstlogin))
-                    && (f.role === undefined || Object.keys(domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.rolegroups]: `${d.rolegroups}` }), {})).includes('' + f.role))
+                    && (f.role === undefined)
             });
-
             const messageerrors = datainit.filter((f: any) => {
                 return !(f.company === undefined || Object.keys(domains.value?.company?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.company))
                     || !(f.doctype === undefined || Object.keys(domains.value?.docTypes?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.doctype))
@@ -1376,7 +1375,7 @@ const Users: FC = () => {
                     || !(f.twofactorauthentication === undefined || Object.keys(domains.value?.genericstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.twofactorauthentication))
                     || !(f.status === undefined || Object.keys(domains.value?.userstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.status))
                     || !(f.pwdchangefirstlogin === undefined || ["true", "false"].includes('' + f.pwdchangefirstlogin))
-                    || !(f.role === undefined || Object.keys(domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.rolegroups]: `${d.rolegroups}` }), {})).includes('' + f.role))
+                    || !(f.role === undefined)
             }).reduce((acc, x) => acc + t(langKeys.error_estructure_user, { email: x.email }) + `\n`, '');
 
             setMessageError(messageerrors)
@@ -1416,7 +1415,7 @@ const Users: FC = () => {
                                 groups: d.groups || "",
                                 channels: d.channels || "",
                                 status: "DESCONECTADO",
-                                type: (domains?.value?.roles?.filter(x=>x.rolegroups===d.role)?.[0]?.roldesc||"").slice(0,6) === 'ASESOR' ? 'ASESOR' : 'SUPERVISOR',
+                                type: 'SUPERVISOR',
                                 supervisor: "",
                                 operation: "INSERT",
                                 redirect: "/usersettings"
