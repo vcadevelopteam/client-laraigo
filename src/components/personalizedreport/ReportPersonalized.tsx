@@ -315,7 +315,11 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, item: { co
                             x[columnclean] = secondsToTime(x[columnclean], y.format)
                         } 
                         if (["boolean"].includes(y.type)) {
-                            x[columnclean] = x[columnclean] ? t("yes") : t("no")
+                            if (columnclean === "hsmcampaignsuccess") {
+                                x[columnclean] = t(`status_${x[columnclean]}`)
+                            } else {
+                                x[columnclean] = x[columnclean] ? t("yes") : t("no")
+                            }
                         }
                         if (["conversation.tags"].includes(y.columnname)) {
                             const tagsCleaned = x[columnclean]?.split(',').reduce((accx: Dictionary, itemx: string) => ({
