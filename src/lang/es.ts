@@ -2360,7 +2360,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   report_voicecall_closetype: "Tipo de cierre",
   report_voicecall_holdingtime: "Tiempo en espera",
 
-  "personalizedreport_hsmcampaign.success": "Satisfactorio de mensaje proactivo",
+  "personalizedreport_hsmcampaign": "Satisfactorio de mensaje proactivo",
   "personalizedreport_conversation.context": "contexto de la conversación",
   "personalizedreport_conversation.personaveragereplytime": "tiempo promedio de respuesta de la persona de la conversación",
   "personalizedreport_conversation.closetype": "tipo de cierre de la conversación",
