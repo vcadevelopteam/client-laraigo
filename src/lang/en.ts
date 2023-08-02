@@ -2470,6 +2470,7 @@ const translation: LangKeys = {
 
   report_conversationwhatsapp: 'Whatsapp conversations',
 
+  "personalizedreport_hsmcampaign.success": "Successful proactive message",
   "personalizedreport_conversation.userjoy": "conversation user joy",
   "personalizedreport_conversation.userfear": "conversation user fear",
   "personalizedreport_conversation.userdisgust": "conversation user disgust",
