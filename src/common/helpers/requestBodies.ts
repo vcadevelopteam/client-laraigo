@@ -3937,12 +3937,6 @@ export const billingArtificialIntelligenceSel = ({ year, month, provider, type, 
     parameters: { year, month, provider, type, plan }
 })
 
-export const billingPeriodArtificialIntelligenceIns = ({ id, corpid, orgid, year, month, provider, measureunit, charlimit, plan, freeinteractions, basicfee, additionalfee, description, aiquantity, aicost, status, type, username, operation }: Dictionary): IRequestBody => ({
-    method: "UFN_BILLINGPERIODARTIFICIALINTELLIGENCE_INS",
-    key: "UFN_BILLINGPERIODARTIFICIALINTELLIGENCE_INS",
-    parameters: { id, corpid, orgid, year, month, provider, measureunit, charlimit, plan, freeinteractions, basicfee, additionalfee, description, aiquantity, aicost, status, type, username, operation }
-})
-
 export const billingPeriodArtificialIntelligenceSel = ({ corpid, orgid, year, month, provider, type, plan, userid }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGPERIODARTIFICIALINTELLIGENCE_SEL",
     key: "UFN_BILLINGPERIODARTIFICIALINTELLIGENCE_SEL",

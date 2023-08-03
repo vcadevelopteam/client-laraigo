@@ -4295,13 +4295,6 @@ const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                         />
                     </div>
                     <div className="row-zyx">
-                        <FieldView
-                            className={classes.commentary}
-                            label=""
-                            value={"*" + t(langKeys.messagingcostsmsnote)}
-                        />
-                    </div>
-                    <div className="row-zyx">
                         <FieldView label="" value={t(langKeys.mailsection)} className={classes.section} />
                     </div>
                     <div className="row-zyx">

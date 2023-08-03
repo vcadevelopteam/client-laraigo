@@ -2095,15 +2095,10 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                             />
                         </div>
                         <div className="row-zyx">
-                            <FieldEdit
+                            <FieldView
                                 className="col-6"
-                                disabled={!canEdit}
-                                error={errors?.conversationuserservicefee?.message}
-                                inputProps={{ step: "any" }}
                                 label={t(langKeys.billingperiod_conversationusergeneralfee)}
-                                onChange={(value) => setValue("conversationuserservicefee", value)}
-                                type="number"
-                                valueDefault={getValues("conversationuserservicefee")}
+                                value={formatNumber(getValues("conversationuserservicefee") || 0)}
                             />
                             <FieldView
                                 className="col-6"
@@ -2211,37 +2206,22 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                                 orderbylabel={true}
                                 valueDefault={getValues("conversationbusinessmetacurrency")}
                             />
-                            <FieldEdit
+                            <FieldView
                                 className="col-6"
-                                disabled={!canEdit}
-                                error={errors?.conversationbusinessutilitymetafee?.message}
-                                inputProps={{ step: "any" }}
                                 label={t(langKeys.billingperiod_conversationbusinessutilityfee)}
-                                onChange={(value) => setValue("conversationbusinessutilitymetafee", value)}
-                                type="number"
-                                valueDefault={getValues("conversationbusinessutilitymetafee")}
+                                value={formatNumber(getValues("conversationbusinessutilitymetafee") || 0)}
                             />
                         </div>
                         <div className="row-zyx">
-                            <FieldEdit
+                            <FieldView
                                 className="col-6"
-                                disabled={!canEdit}
-                                error={errors?.conversationbusinessauthenticationmetafee?.message}
-                                inputProps={{ step: "any" }}
                                 label={t(langKeys.billingperiod_conversationbusinessauthenticationfee)}
-                                onChange={(value) => setValue("conversationbusinessauthenticationmetafee", value)}
-                                type="number"
-                                valueDefault={getValues("conversationbusinessauthenticationmetafee")}
+                                value={formatNumber(getValues("conversationbusinessauthenticationmetafee") || 0)}
                             />
-                            <FieldEdit
+                            <FieldView
                                 className="col-6"
-                                disabled={!canEdit}
-                                error={errors?.conversationbusinessmarketingmetafee?.message}
-                                inputProps={{ step: "any" }}
                                 label={t(langKeys.billingperiod_conversationbusinessmarketingfee)}
-                                onChange={(value) => setValue("conversationbusinessmarketingmetafee", value)}
-                                type="number"
-                                valueDefault={getValues("conversationbusinessmarketingmetafee")}
+                                value={formatNumber(getValues("conversationbusinessmarketingmetafee") || 0)}
                             />
                         </div>
                         <div className="row-zyx">
@@ -8624,7 +8604,9 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
     const [paymentDisabled, setPaymentDisabled] = useState(false);
     const [paymentTax, setPaymentTax] = useState(0);
     const [paymentType, setPaymentType] = useState("FAVORITE");
-    const [priceHsm, setPriceHsm] = useState(0);
+    const [priceHsmUtility, setPriceHsmUtility] = useState(0);
+    const [priceHsmAuthentication, setPriceHsmAuthentication] = useState(0);
+    const [priceHsmMarketing, setPriceHsmMarketing] = useState(0);
     const [priceMail, setPriceMail] = useState(0);
     const [priceSms, setPriceSms] = useState(0);
     const [publicKey, setPublicKey] = useState("");
@@ -8855,7 +8837,16 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
     useEffect(() => {
         if (!messagingList.loading) {
             if (messagingList.data) {
-                setPriceHsm((messagingList.data[0].companystartfee || 0) + (messagingList.data[0].vcacomission || 0));
+                setPriceHsmUtility(
+                    (messagingList.data[0].companystartutilityfee || 0) + (messagingList.data[0].vcacomission || 0)
+                );
+                setPriceHsmAuthentication(
+                    (messagingList.data[0].companystartauthenticationfee || 0) +
+                    (messagingList.data[0].vcacomission || 0)
+                );
+                setPriceHsmMarketing(
+                    (messagingList.data[0].companystartmarketingfee || 0) + (messagingList.data[0].vcacomission || 0)
+                );
                 setPriceSms((messagingList.data[0].pricepersms || 0) + (messagingList.data[0].vcacomissionpersms || 0));
                 setPriceMail(
                     (messagingList.data[0].pricepermail || 0) + (messagingList.data[0].vcacomissionpermail || 0)
@@ -9545,7 +9536,19 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
                                 <FieldView
                                     className="col-4"
                                     label={t(langKeys.pricemessagehsm)}
-                                    value={"$" + formatNumberFourDecimals(priceHsm || 0)}
+                                    value={"$" + formatNumberFourDecimals(priceHsmUtility || 0)}
+                                />
+                            </div>
+                            <div className="row-zyx">
+                                <FieldView
+                                    className="col-4"
+                                    label={t(langKeys.pricemessagehsm)}
+                                    value={"$" + formatNumberFourDecimals(priceHsmAuthentication || 0)}
+                                />
+                                <FieldView
+                                    className="col-4"
+                                    label={t(langKeys.pricemessagehsm)}
+                                    value={"$" + formatNumberFourDecimals(priceHsmMarketing || 0)}
                                 />
                             </div>
                             <div className="row-zyx">
