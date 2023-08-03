@@ -287,7 +287,6 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     const onChangeRole = (value: Dictionary) => {
         setValue('rolegroups', value.map((o: Dictionary) => o.roleid).join());
         setValue('roledesc', value.map((o: Dictionary) => o.roledesc).join());
-
         setValue('redirect', ''); 
         updatefield('redirect', '');
 
@@ -304,7 +303,6 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
             setDataApplications({ loading: false, data: [] })
         }
     }
-
     return (
         <Accordion defaultExpanded={row?.id === 0} style={{ marginBottom: '8px' }}>
 
@@ -337,7 +335,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 helperText={t(langKeys.default_organization_tooltip)}
                                 onChange={(value) => { setValue('bydefault', value); updatefield('bydefault', value) }} />
                             <FieldMultiSelect
-                                label={t(langKeys.role)}
+                                label={ getValues('rolegroups')?.length > 2 ? 'Roles' : t(langKeys.role)}
                                 className={classes.mb2}
                                 valueDefault={row?.rolegroups || ""}
                                 onChange={onChangeRole}
