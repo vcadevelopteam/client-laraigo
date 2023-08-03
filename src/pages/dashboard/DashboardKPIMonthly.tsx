@@ -416,6 +416,7 @@ const DashboardKPIMonthly: FC = () => {
                         open={openDateRangeCreateDateModal}
                         setOpen={setOpenDateRangeCreateDateModal}
                         range={dateRangeCreateDate}
+                        limitMonth={12}
                         onSelect={setDateRangeCreateDate}
                     //months={1}
                     >
