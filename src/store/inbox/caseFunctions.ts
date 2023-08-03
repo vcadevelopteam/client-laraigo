@@ -483,10 +483,10 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
                 newticketList = [
                     {
                         ...conversation,
-                        lastconversationdate: data.usertype === "client" ? (conversation.lastconversationdate || new Date().toISOString()) : null,
+                        lastconversationdate: (data.usertype === "client" || (data.usertype === "agent" && data.typeinteraction === "CRON")) ? (conversation.lastconversationdate || new Date().toISOString()) : null,
                         personlastreplydate: data.usertype === "client" ? (new Date().toISOString()) : conversation.personlastreplydate,
                         lastreplyuser: data.usertype === "agent" ? new Date().toISOString() : conversation.lastreplyuser,
-                        countnewmessages: data.usertype === "agent" ? 0 : conversation.countnewmessages + 1,
+                        countnewmessages: data.usertype === "agent" ? (data.typeinteraction === "CRON" ? conversation.countnewmessages : 0) : conversation.countnewmessages + 1,
                         lastmessage: data.typemessage === "text" ? data.lastmessage : data.typemessage.toUpperCase(),
                     },
                     ...newticketList.filter(x => x.conversationid !== data.conversationid)

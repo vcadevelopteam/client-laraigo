@@ -991,6 +991,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                         margin="normal"
                                         size="small"
                                         disableAreaCodes={true}
+                                        countryCodeEditable={false}
                                         value={fields.service.phone}
                                         error={!!errors.phone}
                                         helperText={errors.phone}

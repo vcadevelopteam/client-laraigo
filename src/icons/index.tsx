@@ -285,3 +285,14 @@ export { ReactComponent as ChannelWhatsApp03 } from './channel/channel-whatsapp0
 export { ReactComponent as ChannelWhatsApp04 } from './channel/channel-whatsapp04.svg';
 export { ReactComponent as ChannelWorkplace } from './channel/channel-workplace.svg';
 export { ReactComponent as ChannelYouTube } from './channel/channel-youtube.svg';
+
+// route icons
+
+export { ReactComponent as DashboardRouteIcon } from './dashboard_route.svg';
+export { ReactComponent as AnalyticRouteIcon } from './analytics_route.svg';
+export { ReactComponent as AutomatizationRouteIcon } from './automatizacion_route.svg';
+export { ReactComponent as ConectivityIARouteIcon } from './conectividadIA_route.svg';
+export { ReactComponent as ConfiguratuinIARouteIcon } from './configuracion-IA_route.svg';
+export { ReactComponent as IARouteIcon } from './IA_route.svg';
+export { ReactComponent as SalesRouteIcon } from './sales_route.svg'
+export { ReactComponent as ServiceDeskRouteIcon } from './service desk 1_route.svg'

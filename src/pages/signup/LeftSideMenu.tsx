@@ -311,6 +311,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                             variant="outlined"
                             margin="normal"
                             fullWidth
+                            countryCodeEditable={false}
                             size="small"
                             defaultCountry={'pe'}
                             label={t(langKeys.phone)}

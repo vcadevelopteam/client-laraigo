@@ -184,6 +184,7 @@ const SecondStep: FC<{ setOpenWarning: (param: any) => void }> = ({ setOpenWarni
                             margin="normal"
                             fullWidth
                             size="small"
+                            countryCodeEditable={false}
                             defaultCountry={phoneCountry.toLowerCase()}
                             label={t(langKeys.mobilephoneoptional)}
                             error={!!errors.mobilephone}

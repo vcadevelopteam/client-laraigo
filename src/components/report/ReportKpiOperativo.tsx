@@ -200,7 +200,7 @@ const ReportKpiOperativo: FC = () => {
                     return <>{props.rows.filter((r: any) => r.values["tmoasesor_tickets"]).length !== 0 ? secondsToHourTime(total / props.rows.filter((r: any) => r.values["tmoasesor_tickets"]).length) : ''}</>
                 },
             },
-            {
+            /*{
                 Header: t(langKeys.report_kpioperativo_tickets_eqtmoasesor),
                 accessor: 'tickets_eqtmoasesor',
                 helpText: t(`report_${origin}_tickets_eqtmoasesor_help`),
@@ -214,7 +214,7 @@ const ReportKpiOperativo: FC = () => {
                     )
                     return <>{props.rows.filter((r: any) => r.values["tickets_eqtmoasesor"]).length !== 0 ? (total / props.rows.filter((r: any) => r.values["tickets_eqtmoasesor"]).length).toFixed(0) : ''}</>
                 },
-            },
+            },*/
             {
                 Header: t(langKeys.report_kpioperativo_abandoned_tickets),
                 accessor: 'abandoned_tickets',

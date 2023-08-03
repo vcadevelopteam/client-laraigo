@@ -16,8 +16,6 @@ import { getCollection, resetAllMain, getMultiCollection, execute } from 'store/
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import { DuplicateIcon } from 'icons';
-import { useHistory } from 'react-router-dom';
-import paths from 'common/constants/paths';
 import { Tabs } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 
@@ -902,7 +900,6 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row }, setViewSelected, m
 }
 
 const SLA: FC = () => {
-    const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
@@ -912,14 +909,9 @@ const SLA: FC = () => {
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null });
     const [waitSave, setWaitSave] = useState(false);
     const arrayBread = [
-        { id: "view-0", name: t(langKeys.configuration_plural) },
         { id: "view-1", name: t(langKeys.app_sla) },
     ];
     function redirectFunc(view:string){
-        if(view ==="view-0"){
-            history.push(paths.CONFIGURATION)
-            return;
-        }
         setViewSelected(view)
     }
 
@@ -1085,12 +1077,6 @@ const SLA: FC = () => {
 
         return (
             <div style={{ width: "100%", display: 'flex', flexDirection: 'column', flex: 1 }}>
-                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
-                    <TemplateBreadcrumbs
-                        breadcrumbs={arrayBread}
-                        handleClick={redirectFunc}
-                    />
-                </div>
                 <TableZyx
                     columns={columns}
                     titlemodule={t(langKeys.app_sla, { count: 2 })}
@@ -1099,17 +1085,6 @@ const SLA: FC = () => {
                     loading={mainResult.mainData.loading}
                     register={true}
                     onClickRow={handleEdit}
-                    ButtonsElement={() => (
-                        <Button
-                            disabled={mainResult.mainData.loading}
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            startIcon={<ClearIcon color="secondary" />}
-                            style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => history.push(paths.CONFIGURATION)}
-                        >{t(langKeys.back)}</Button>
-                    )}
                     handleRegister={handleRegister}
                 // fetchData={fetchData}
                 />

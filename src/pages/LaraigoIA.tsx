@@ -23,10 +23,6 @@ import TestModelDialog from 'components/inbox/TestModelDialog';
 import { rasaModelSel } from 'common/helpers';
 import { ModelsRasa } from './rasa/ModelsRasa';
 
-interface DetailIaServiceProps {
-    setViewSelected: (view: string) => void;
-}
-
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
@@ -440,7 +436,7 @@ const WitIA: React.FC<{arrayBread: any, setViewSelected: (view: string) => void}
         return null;
 
 }
-const IATraining: React.FC<DetailIaServiceProps> = ({ setViewSelected }) => {
+const IATraining: React.FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
@@ -449,7 +445,6 @@ const IATraining: React.FC<DetailIaServiceProps> = ({ setViewSelected }) => {
     const classes = useStyles();
 
     const arrayBread = [
-        { id: "view-0", name:  t(langKeys.laraigoia) },
         { id: "view-1", name: t(langKeys.training) }
     ];
     // const [mainData, setMainData] = useState<any>([]);
@@ -458,7 +453,6 @@ const IATraining: React.FC<DetailIaServiceProps> = ({ setViewSelected }) => {
     
     const functionChange = (change:string) => {
         if(change==="view-0"){
-            setViewSelected("view-1");
         }else{
             setViewSelectedTraining(change);
         }
@@ -497,12 +491,6 @@ const IATraining: React.FC<DetailIaServiceProps> = ({ setViewSelected }) => {
     if (viewSelectedTraining === "view-1") {
         return (
             <div style={{ width: "100%" }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <TemplateBreadcrumbs
-                        breadcrumbs={arrayBread}
-                        handleClick={functionChange}
-                    />
-                </div>
                 <div className={classes.container}>
                     <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" style={{ marginBottom: 8 }}>
                         <span className={classes.title}>
@@ -704,7 +692,6 @@ const Iaservices: FC = () => {
     }else if (viewSelected === "training") {
         return (
             <IATraining
-                setViewSelected={setViewSelected}
             />
         )
     } else

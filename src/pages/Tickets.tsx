@@ -657,12 +657,12 @@ const DialogLoadTickets: React.FC<{
         else {
             dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.no_channel_selected) }))
         }
-        
+
     });
-    
+
     const handleUpload = async (files: any) => {
         if (Array.from<File>(files).length > 10) {
-            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.max_limit_file_per_upload, {n: 10}) }))
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.max_limit_file_per_upload, { n: 10 }) }))
         }
         else {
             setFileList(Array.from<File>(files));
@@ -675,7 +675,7 @@ const DialogLoadTickets: React.FC<{
             {},
             {},
             {},
-            {'CLIENT': 'CLIENT', 'BOT': 'BOT'}
+            { 'CLIENT': 'CLIENT', 'BOT': 'BOT' }
         ];
         const header = [
             'date',
@@ -744,8 +744,8 @@ const DialogLoadTickets: React.FC<{
                 marginTop: "10px"
             }}>
                 {fileList && fileList?.map((x, i) => (
-                        <div>{i + 1}. {x.name}</div>
-                    )
+                    <div>{i + 1}. {x.name}</div>
+                )
                 )}
             </div>
         </DialogZyx>)
@@ -796,10 +796,10 @@ const Tickets = () => {
         // dispatch(getCallRecord({call_session_history_id: ticket.postexternalid}));
         // setWaitDownloadRecord(true);
         try {
-            const axios_result = await VoximplantService.getCallRecord({call_session_history_id: ticket.postexternalid});
+            const axios_result = await VoximplantService.getCallRecord({ call_session_history_id: ticket.postexternalid });
             if (axios_result.status === 200) {
                 let buff = Buffer.from(axios_result.data, 'base64');
-                const blob = new Blob([buff], {type: axios_result.headers['content-type'].split(';').find((x: string) => x.includes('audio'))});
+                const blob = new Blob([buff], { type: axios_result.headers['content-type'].split(';').find((x: string) => x.includes('audio')) });
                 const objectUrl = window.URL.createObjectURL(blob);
                 let a = document.createElement('a');
                 a.href = objectUrl;
@@ -815,7 +815,7 @@ const Tickets = () => {
 
     useEffect(() => {
         if (waitDownloadRecord) {
-            if (!getCallRecordRes.loading && !getCallRecordRes.error ) {
+            if (!getCallRecordRes.loading && !getCallRecordRes.error) {
                 if (getCallRecordRes.data) {
                     window.open(getCallRecordRes.data)
                 }
@@ -829,285 +829,324 @@ const Tickets = () => {
     }, [getCallRecordRes, waitDownloadRecord])
 
     const columns = React.useMemo(
-        () => [
-            {
-                accessor: 'leadid',
-                isComponent: true,
-                minWidth: 60,
-                width: '1%',
-                Cell: (props: any) => {
-                    const ticket = props.cell.row.original;
+      () => [
+        {
+          accessor: "leadid",
+          isComponent: true,
+          minWidth: 60,
+          width: "1%",
+          Cell: (props: any) => {
+            const ticket = props.cell.row.original;
 
-                    return (
-                        <IconOptions
-                            onHandlerReassign={ticket.estadoconversacion === "CERRADO" ? undefined : () => {
-                                setRowToSend([ticket]);
-                                setOpenDialogReassign(true);
-                            }}
-                            onHandlerClassify={ticket.estadoconversacion === "CERRADO" ? undefined : () => {
-                                setRowToSend([ticket]);
-                                setOpenDialogTipify(true);
-                            }}
-                            onHandlerClose={ticket.estadoconversacion === "CERRADO" ? undefined : () => {
-                                setRowToSend([ticket]);
-                                setOpenDialogClose(true);
-                            }}
-                            onHandlerShowHistory={() => {
-                                setOpenDialogShowHistory(true);
-                                setRowSelected(ticket);
-                                setRowToSend([ticket]);
-                            }}
-                        />
-                    )
+            return (
+              <IconOptions
+                onHandlerReassign={
+                  ticket.estadoconversacion === "CERRADO"
+                    ? undefined
+                    : () => {
+                        setRowToSend([ticket]);
+                        setOpenDialogReassign(true);
+                      }
                 }
-            },
-            {
-                accessor: 'voxiid',
-                isComponent: true,
-                minWidth: 60,
-                width: '1%',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        row.communicationchanneltype === 'VOXI'
-                        && row.postexternalid
-                        && row.callrecording
-                        && row.callanswereddate ?
-                        <Tooltip title={t(langKeys.download_record) || ""}>
-                            <IconButton size="small" onClick={() => downloadCallRecord(row)}
-                            >
-                                <CallRecordIcon style={{ fill: '#7721AD' }} />
-                            </IconButton>
-                        </Tooltip>
-                        : null
-                    )
+                onHandlerClassify={
+                  ticket.estadoconversacion === "CERRADO"
+                    ? undefined
+                    : () => {
+                        setRowToSend([ticket]);
+                        setOpenDialogTipify(true);
+                      }
                 }
-            },
-            {
-                Header: t(langKeys.ticket_numeroticket),
-                accessor: 'numeroticket',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <label
-                            className={classes.labellink}
-                            onClick={() => openDialogInteractions(row)}
-                        >
-                            {row.numeroticket}
-                        </label>
-                    )
+                onHandlerClose={
+                  ticket.estadoconversacion === "CERRADO"
+                    ? undefined
+                    : () => {
+                        setRowToSend([ticket]);
+                        setOpenDialogClose(true);
+                      }
                 }
-            },
-            {
-                Header: t(langKeys.ticket_communicationchanneldescription),
-                accessor: 'communicationchanneldescription'
-            },
-            {
-                Header: t(langKeys.ticket_name),
-                accessor: 'name',
-            },
-            {
-                Header: t(langKeys.origin),
-                accessor: 'origin'
-            },
-            {
-                Header: t(langKeys.ticket_firstusergroup),
-                accessor: 'firstusergroup'
-            },
-            {
-                Header: t(langKeys.ticket_ticketgroup),
-                accessor: 'ticketgroup'
-            },
-            {
-                Header: t(langKeys.ticket_phone),
-                accessor: 'phone'
-            },
-            {
-                Header: t(langKeys.ticket_fechainicio),
-                accessor: 'fechainicio',
-                type: 'date',
-                sortType: 'datetime',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return convertLocalDate(row.fechainicio).toLocaleString()
-                }
-            },
-            {
-                Header: t(langKeys.ticket_fechafin),
-                accessor: 'fechafin',
-                type: 'date',
-                sortType: 'datetime',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return row.fechafin ? convertLocalDate(row.fechafin).toLocaleString() : ''
-                }
-            },
-            {
-                Header: t(langKeys.status),
-                accessor: 'estadoconversacion'
-            },
-            {
-                Header: t(langKeys.ticket_tipocierre),
-                accessor: 'tipocierre',
-                helpText: t(langKeys.report_productivity_closetype_help)
-            },
-            {
-                Header: t(langKeys.ticket_duracionreal),
-                accessor: 'duracionreal',
-                helpText: t(langKeys.ticket_help_duracionreal),
-                type: 'time'
-            },
-            {
-                Header: t(langKeys.ticket_duracionpausa),
-                accessor: 'duracionpausa',
-                helpText: t(langKeys.ticket_duracionpausa_help),
-                type: 'time'
-            },
-            {
-                Header: t(langKeys.ticket_duraciontotal),
-                helpText: t(langKeys.ticket_duraciontotal_help),
-                accessor: 'duraciontotal',
+                onHandlerShowHistory={() => {
+                  setOpenDialogShowHistory(true);
+                  setRowSelected(ticket);
+                  setRowToSend([ticket]);
+                }}
+              />
+            );
+          },
+        },
+        {
+          accessor: "voxiid",
+          isComponent: true,
+          minWidth: 60,
+          width: "1%",
+          Cell: (props: any) => {
+            const row = props.cell.row.original;
+            return row.communicationchanneltype === "VOXI" &&
+              row.postexternalid &&
+              row.callrecording &&
+              row.callanswereddate ? (
+              <Tooltip title={t(langKeys.download_record) || ""}>
+                <IconButton
+                  size="small"
+                  onClick={() => downloadCallRecord(row)}
+                >
+                  <CallRecordIcon style={{ fill: "#7721AD" }} />
+                </IconButton>
+              </Tooltip>
+            ) : null;
+          },
+        },
+        {
+          Header: t(langKeys.ticket_numeroticket),
+          accessor: "numeroticket",
+          Cell: (props: any) => {
+            const row = props.cell.row.original;
+            return (
+              <label
+                className={classes.labellink}
+                onClick={() => openDialogInteractions(row)}
+              >
+                {row.numeroticket}
+              </label>
+            );
+          },
+        },
+        {
+          Header: t(langKeys.ticket_communicationchanneldescription),
+          accessor: "communicationchanneldescription",
+        },
+        {
+          Header: t(langKeys.ticket_name),
+          accessor: "name",
+        },
+        {
+          Header: t(langKeys.origin),
+          accessor: "origin",
+        },
+        {
+          Header: t(langKeys.ticket_firstusergroup),
+          accessor: "firstusergroup",
+        },
+        {
+          Header: t(langKeys.ticket_ticketgroup),
+          accessor: "ticketgroup",
+        },
+        {
+          Header: t(langKeys.ticket_phone),
+          accessor: "phone",
+        },
+        {
+          Header: t(langKeys.ticket_fechainicio),
+          accessor: "fechainicio",
+          type: "date",
+          sortType: "datetime",
+          Cell: (props: any) => {
+            const row = props.cell.row.original;
+            return convertLocalDate(row.fechainicio).toLocaleString();
+          },
+        },
+        {
+          Header: t(langKeys.ticket_fechafin),
+          accessor: "fechafin",
+          type: "date",
+          sortType: "datetime",
+          Cell: (props: any) => {
+            const row = props.cell.row.original;
+            return row.fechafin
+              ? convertLocalDate(row.fechafin).toLocaleString()
+              : "";
+          },
+        },
+        {
+          Header: t(langKeys.status),
+          accessor: "estadoconversacion",
+        },
+        {
+          Header: t(langKeys.ticket_tipocierre),
+          accessor: "tipocierre",
+          helpText: t(langKeys.report_productivity_closetype_help),
+        },
+        {
+          Header: t(langKeys.ticket_duracionreal),
+          accessor: "duracionreal",
+          helpText: t(langKeys.ticket_help_duracionreal),
+          type: "time",
+        },
+        {
+          Header: t(langKeys.ticket_duracionpausa),
+          accessor: "duracionpausa",
+          helpText: t(langKeys.ticket_duracionpausa_help),
+          type: "time",
+        },
+        {
+          Header: t(langKeys.ticket_duraciontotal),
+          helpText: t(langKeys.ticket_duraciontotal_help),
+          accessor: "duraciontotal",
+          type: "time",
+        },
+        {
+          Header: t(langKeys.ticket_fechahandoff),
+          helpText: t(langKeys.ticket_fechahandoff_help),
+          accessor: "fechahandoff",
+          type: "date",
+          sortType: "datetime",
+          Cell: (props: any) => {
+            const row = props.cell.row.original;
+            return row.fechahandoff
+              ? convertLocalDate(row.fechahandoff).toLocaleString()
+              : "";
+          },
+        },
+        {
+          Header: t(langKeys.ticket_fechaultimaconversacion),
+          helpText: t(langKeys.ticket_fechaultimaconversacion_help),
+          accessor: "fechaultimaconversacion",
+          type: "date",
+          sortType: "datetime",
+          Cell: (props: any) => {
+            const row = props.cell.row.original;
+            return row.fechaultimaconversacion
+              ? convertLocalDate(row.fechaultimaconversacion).toLocaleString()
+              : "";
+          },
+        },
+        {
+          Header: t(langKeys.ticket_asesorinicial),
+          accessor: "asesorinicial",
+        },
+        {
+          Header: t(langKeys.ticket_asesorfinal),
+          accessor: "asesorfinal",
+        },
+        {
+          Header: t(langKeys.ticket_supervisor),
+          accessor: "supervisor",
+        },
+        {
+          Header: t(langKeys.ticket_agentrol),
+          accessor: "rolasesor",
+        },
+        {
+          Header: t(langKeys.ticket_empresa),
+          accessor: "empresa",
+        },
+        {
+          Header: t(langKeys.campaign),
+          accessor: "campaign",
+        },
+        {
+          Header: t(langKeys.ticket_tmoasesor),
+          helpText: t(langKeys.ticket_tmoasesor_help),
+          accessor: "tmoasesor",
+          type: "time",
+        },
+        {
+          Header: t(langKeys.ticket_tiempopromediorespuesta),
+          helpText: t(langKeys.ticket_tiempopromediorespuesta_help),
+          accessor: "tiempopromediorespuesta",
+          type: "time",
+        },
+        {
+          Header: t(langKeys.ticket_tiempopromediorespuestaasesor),
+          helpText: t(langKeys.ticket_tiempopromediorespuestaasesor_help),
+          accessor: "tiempopromediorespuestaasesor",
+          type: "time",
+        },
+        {
+          Header: t(langKeys.ticket_tiempoprimerarespuestaasesor),
+          helpText: t(langKeys.ticket_tiempoprimerarespuestaasesor_help),
+          accessor: "tiempoprimerarespuestaasesor",
+          type: "time",
+        },
+        {
+          Header: t(langKeys.ticket_tiempopromediorespuestapersona),
+          helpText: t(langKeys.ticket_tiempopromediorespuestapersona_help),
+          accessor: "tiempopromediorespuestapersona",
+          type: "time",
+        },
+        {
+          Header: t(langKeys.ticket_tiempoprimeraasignacion),
+          helpText: t(langKeys.ticket_tiempoprimeraasignacion_help),
+          accessor: "tiempoprimeraasignacion",
+          type: "time",
+        },
+        {
+          Header: t(langKeys.ticket_tdatime),
+          helpText: t(langKeys.ticket_tdatime_help),
+          accessor: "tdatime",
+          type: "time",
+        },
+        {
+          Header: t(langKeys.ticket_holdingwaitingtime),
+          helpText: t(langKeys.ticket_holdingwaitingtime_help),
+          accessor: "holdingwaitingtime",
+          type: "time",
+        },
+        {
+          Header: t(langKeys.supervisionduration),
+          accessor: "supervisionduration",
+          type: "time",
+        },
+        {
+          Header: t(langKeys.ticket_classification),
+          helpText: t(langKeys.ticket_tipification_help),
+          accessor: "tipification",
+        },
 
-                type: 'time'
+        {
+          Header: t(langKeys.ticket_documenttype),
+          accessor: "documenttype",
+        },
+        {
+          Header: t(langKeys.documentnumber),
+          accessor: "dni",
+        },
+        {
+          Header: t(langKeys.ticket_email),
+          accessor: "email",
+        },
+        {
+          Header: t(langKeys.ticket_balancetimes),
+          accessor: "balancetimes",
+          type: "number",
+          sortType: "number",
+        },
+        {
+          Header: t(langKeys.ticket_abandoned),
+          accessor: "abandoned",
+          Cell: (props: any) => {
+            const row = props.cell.row.original;
+            return row.abandoned
+              ? t(langKeys.affirmative)
+              : t(langKeys.negative);
+          },
+        },
+        {
+          Header: t(langKeys.ticket_labels),
+          helpText: t(langKeys.ticket_labels_help),
+          accessor: "labels",
+        },
+        {
+            Header: t(langKeys.ticket_originalpublicationdate),
+            helpText: t(langKeys.ticket_originalpublicationdate),
+            accessor: "originalpublicationdate",
+            type: "date",
+            sortType: "datetime",
+            Cell: (props: any) => {
+              const row = props.cell.row.original;
+              return row.originalpublicationdate
+                ? convertLocalDate(row.originalpublicationdate).toLocaleString()
+                : "";
             },
-            {
-                Header: t(langKeys.ticket_fechahandoff),
-                helpText: t(langKeys.ticket_fechahandoff_help),
-                accessor: 'fechahandoff',
-                type: 'date',
-                sortType: 'datetime',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return row.fechahandoff ? convertLocalDate(row.fechahandoff).toLocaleString() : ''
-                }
-            },
-            {
-                Header: t(langKeys.ticket_fechaultimaconversacion),
-                helpText: t(langKeys.ticket_fechaultimaconversacion_help),
-                accessor: 'fechaultimaconversacion',
-                type: 'date',
-                sortType: 'datetime',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return row.fechaultimaconversacion ? convertLocalDate(row.fechaultimaconversacion).toLocaleString() : ''
-                }
-            },
-            {
-                Header: t(langKeys.ticket_asesorinicial),
-                accessor: 'asesorinicial'
-            },
-            {
-                Header: t(langKeys.ticket_asesorfinal),
-                accessor: 'asesorfinal'
-            },
-            {
-                Header: t(langKeys.ticket_supervisor),
-                accessor: 'supervisor'
-            },
-            {
-                Header: t(langKeys.ticket_agentrol),
-                accessor: 'rolasesor'
-            },
-            {
-                Header: t(langKeys.ticket_empresa),
-                accessor: 'empresa'
-            },
-            {
-                Header: t(langKeys.campaign),
-                accessor: 'campaign'
-            },
-            {
-                Header: t(langKeys.ticket_tmoasesor),
-                helpText: t(langKeys.ticket_tmoasesor_help),
-                accessor: 'tmoasesor',
-                type: 'time'
-            },
-            {
-                Header: t(langKeys.ticket_tiempopromediorespuesta),
-                helpText: t(langKeys.ticket_tiempopromediorespuesta_help),
-                accessor: 'tiempopromediorespuesta',
-                type: 'time',
-            },
-            {
-                Header: t(langKeys.ticket_tiempopromediorespuestaasesor),
-                helpText: t(langKeys.ticket_tiempopromediorespuestaasesor_help),
-                accessor: 'tiempopromediorespuestaasesor',
-                type: 'time',
-            },
-            {
-                Header: t(langKeys.ticket_tiempoprimerarespuestaasesor),
-                helpText: t(langKeys.ticket_tiempoprimerarespuestaasesor_help),
-                accessor: 'tiempoprimerarespuestaasesor',
-                type: 'time'
-            },
-            {
-                Header: t(langKeys.ticket_tiempopromediorespuestapersona),
-                helpText: t(langKeys.ticket_tiempopromediorespuestapersona_help),
-                accessor: 'tiempopromediorespuestapersona',
-                type: 'time'
-            },
-            {
-                Header: t(langKeys.ticket_tiempoprimeraasignacion),
-                helpText: t(langKeys.ticket_tiempoprimeraasignacion_help),
-                accessor: 'tiempoprimeraasignacion',
-                type: 'time'
-            },
-            {
-                Header: t(langKeys.ticket_tdatime),
-                helpText: t(langKeys.ticket_tdatime_help),
-                accessor: 'tdatime',
-                type: 'time'
-            },
-            {
-                Header: t(langKeys.ticket_holdingwaitingtime),
-                helpText: t(langKeys.ticket_holdingwaitingtime_help),
-                accessor: 'holdingwaitingtime',
-                type: 'time'
-            },
-            {
-                Header: t(langKeys.supervisionduration ),
-                accessor: 'supervisionduration',
-                type: 'time'
-            },
-            {
-                Header: t(langKeys.ticket_classification),
-                helpText: t(langKeys.ticket_tipification_help),
-                accessor: 'tipification'
-            },
-
-            {
-                Header: t(langKeys.ticket_documenttype),
-                accessor: 'documenttype'
-            },
-            {
-                Header: t(langKeys.documentnumber),
-                accessor: 'dni'
-            },
-            {
-                Header: t(langKeys.ticket_email),
-                accessor: 'email'
-            },
-            {
-                Header: t(langKeys.ticket_balancetimes),
-                accessor: 'balancetimes',
-                type: 'number',
-                sortType: 'number',
-            },
-            {
-                Header: t(langKeys.ticket_abandoned),
-                accessor: 'abandoned',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return row.abandoned ? t(langKeys.affirmative) : t(langKeys.negative)
-                }
-            },
-            {
-                Header: t(langKeys.ticket_labels),
-                helpText: t(langKeys.ticket_labels_help),
-                accessor: 'labels'
-            },
-        ],
-        []
+          },
+          {
+            Header: t(langKeys.ticket_numberfollowers),
+            helpText: t(langKeys.ticket_numberfollowers),
+            accessor: "numberfollowers",
+            type: "number",
+            sortType: "number",
+          },
+      ],
+      []
     );
 
     const openDialogInteractions = useCallback((row: any) => {
@@ -1259,7 +1298,7 @@ const Tickets = () => {
                 ButtonsElement={() => (
                     <>
                         {
-                            ['SUPERADMIN','ADMINISTRADOR','ADMINISTRADOR P'].includes(user?.roledesc || '')
+                            ['SUPERADMIN', 'ADMINISTRADOR', 'ADMINISTRADOR P'].includes(user?.roledesc || '')
                             && mainResult?.multiData?.data?.[8]?.data?.[0]?.propertyvalue === '1'
                             && <Button
                                 className={classes.button}

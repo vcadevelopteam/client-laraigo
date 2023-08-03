@@ -16,6 +16,7 @@ import paths from 'common/constants/paths';
 import Button from '@material-ui/core/Button';
 import ClearIcon from '@material-ui/icons/Clear';
 import { Avatar } from '@material-ui/core';
+import MapFixedLocation from './MapFixedLocation';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -55,7 +56,7 @@ const Orders: FC = () => {
     const columns = React.useMemo(
         () => [
             {
-                accessor: 'orderid',
+                accessor: 'ordernumber',
                 NoFilter: true,
                 isComponent: true,
                 minWidth: 60,
@@ -72,12 +73,8 @@ const Orders: FC = () => {
             },
             {
                 Header: t(langKeys.ordernumber),
-                accessor: 'ordernumber',
-                NoFilter: true,                
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return row.orderid
-                }
+                accessor: 'orderid',
+                NoFilter: true,          
             },
             {
                 Header: t(langKeys.date),
@@ -320,6 +317,16 @@ const DetailOrders: React.FC<DetailOrdersProps> = ({ data: { row, edit }, multiD
                 <div style={{fontSize: "1.2em"}}>{t(langKeys.channel)}: {row?.channel}</div>
                 <div style={{fontSize: "1.2em"}}>{t(langKeys.ticket_numeroticket)}: {row?.ticketnum}</div>
             </div>
+            <div style={{width: "100%", display: "flex", justifyContent: "space-between", padding: 10}}>
+                <div style={{fontSize: "1.2em"}}>{t(langKeys.address)}: {row?.address}</div>
+            </div>
+            <div className="row-zyx">
+                <div>
+                    <div style={{ width: "100%" }}>
+                        <MapFixedLocation height={"200px"} longitude={parseFloat(row?.longitude||0)} latitude={parseFloat(row?.latitude||0)}/>
+                    </div>
+                </div>
+            </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             </div>
             <div className={classes.containerDetail}>
@@ -339,6 +346,7 @@ const DetailOrders: React.FC<DetailOrdersProps> = ({ data: { row, edit }, multiD
                 <div style={{fontSize: "1.2em"}}></div>
                 <div style={{fontSize: "1.2em", fontWeight: "bold"}}>{t(langKeys.total)}: {row?.currency === "PEN"? "S/ ": "$ "}{formatNumber(dataorders.reduce((acc,x)=>acc + x.amount,0))}</div>
             </div>
+            
         </div>
     );
 }
