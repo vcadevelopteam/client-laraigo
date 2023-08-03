@@ -12,7 +12,7 @@ import { langKeys } from 'lang/keys';
 import { getCollectionAux, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import {Box, Card, Grid } from '@material-ui/core';
-import { ConectoresIALogo, ConfiguracionIALogo, EntrenamientoIALogo, IntencionesIALogo, EntidadesIALogo } from 'icons';
+import { ConectoresIALogo, ConfiguracionIALogo, EntrenamientoIALogo, IntencionesIALogo, EntidadesIALogo, SynonimsRasaLogo, ModelsRasaLogo, TestModelRasa } from 'icons';
 import { Intentions } from './assistant/Intentions';
 import { Entities } from './assistant/Entities';
 import IAConfiguration from './Iaservices';
@@ -209,7 +209,7 @@ const RasaIA: React.FC<{arrayBread: any, setViewSelected: (view: string) => void
                                         </div>
                                         
                                         <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                            <EntidadesIALogo style={{ height: 220, width:"100%" }} />
+                                            <SynonimsRasaLogo style={{ height: 220, width:"100%" }} />
                                         </div>
                                     </div>
                                 </Card>
@@ -233,7 +233,7 @@ const RasaIA: React.FC<{arrayBread: any, setViewSelected: (view: string) => void
                                         </div>
                                         
                                         <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                            <EntidadesIALogo style={{ height: 220, width:"100%" }} />
+                                            <ModelsRasaLogo style={{ height: 220, width:"100%" }} />
                                         </div>
                                     </div>
                                 </Card>
@@ -261,7 +261,7 @@ const RasaIA: React.FC<{arrayBread: any, setViewSelected: (view: string) => void
                                         />
                                         
                                         <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                            <EntidadesIALogo style={{ height: 220, width:"100%" }} />
+                                            <TestModelRasa style={{ height: 220, width:"100%" }} />
                                         </div>
                                     </div>
                                 </Card>

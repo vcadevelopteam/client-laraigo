@@ -254,6 +254,9 @@ export { ReactComponent as ConfiguracionIALogo } from './ConfiguracionIALogo.svg
 export { ReactComponent as EntrenamientoIALogo } from './EntrenamientoIALogo.svg';
 export { ReactComponent as IntencionesIALogo } from './IntencionesIALogo.svg';
 export { ReactComponent as EntidadesIALogo } from './EntidadesIALogo.svg';
+export { ReactComponent as SynonimsRasaLogo } from './sinonimosRasa.svg';
+export { ReactComponent as ModelsRasaLogo } from './modelosRasa.svg';
+export { ReactComponent as TestModelRasa } from './pruebaModeloRasa.svg';
 
 export { ReactComponent as ChannelAndroid } from './channel/channel-android.svg';
 export { ReactComponent as ChannelAppStore } from './channel/channel-appstore.svg';
