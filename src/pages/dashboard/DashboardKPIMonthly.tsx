@@ -169,8 +169,8 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const initialRange = {
-    startDate: new Date(new Date().getFullYear(), new Date().getMonth() - 11, 1),
-    endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+    startDate: new Date(new Date().getFullYear(), 0, 1),
+    endDate: new Date(new Date().getFullYear(), 11, 31),
     key: 'selection'
 }
 
