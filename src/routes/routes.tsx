@@ -39,7 +39,6 @@ import {
     WhitelistIcon,
     ConfiguratuinIARouteIcon,
     ConectivityIARouteIcon,
-    EntrenamientoIALogo,
     IAEntrenamientoIcon,
     SLAIcon,
 } from 'icons';
@@ -50,6 +49,7 @@ import { Trans } from "react-i18next";
 
 export const viewsClassifications: ViewsClassificationConfig[] = [
     {
+        id: 1,
         key: "analytics",
         description: <Trans i18nKey={langKeys.analytics} />,
         tooltip: <Trans i18nKey={langKeys.analytics} />,
@@ -57,6 +57,7 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
         options: [paths.DASHBOARD,paths.REPORTS,paths.KPIMANAGER]
     },
     {
+        id: 2,
         key: "CRM",
         description: <span>CRM</span>, 
         // description: <Trans i18nKey={langKeys.crm} />,
@@ -65,6 +66,7 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
         options: [paths.MESSAGE_INBOX,paths.SUPERVISOR,paths.PERSON, paths.CRM, paths.CAMPAIGN, paths.MESSAGETEMPLATE, paths.POSTCREATOR, paths.TICKETS]
     },
     {
+        id: 3,
         key: "automatization",
         description: <Trans i18nKey={langKeys.automatization}/>,
         tooltip: <Trans i18nKey={langKeys.automatization}/>,
@@ -72,6 +74,7 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
         options:[paths.BOTDESIGNER, paths.VARIABLECONFIGURATION,  paths.INTEGRATIONMANAGER, paths.CALENDAR, paths.AUTOMATIZATIONRULES, paths.REPORTSCHEDULER]
     },
     {
+        id: 4,
         key: "sales",
         description: <Trans i18nKey={langKeys.reason_sales} />,
         tooltip: <Trans i18nKey={langKeys.reason_sales} />,
@@ -79,6 +82,7 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
         options: [paths.ORDERS,paths.PRODUCTCATALOG,paths.CATALOGMASTER]
     },
     {
+        id: 5,
         key: "servicedesk",
         description: <span>Service Desk</span>, 
         // description: <Trans i18nKey={langKeys.servicedesk} />,
@@ -87,6 +91,7 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
         options: [paths.SERVICE_DESK, paths.SLA]
     },
     {
+        id: 6,
         key: "ia",
         description: <Trans i18nKey={langKeys.ia} />, // prop:count for plural purposes
         tooltip: <Trans i18nKey={langKeys.ia} />,
@@ -94,11 +99,12 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
         options: [paths.IACONECTORS, paths.IACONFIGURATION,  paths.IATRAINING]
     },
     {
+        id: 7,
         key: "configuration",
         description: <Trans i18nKey={langKeys.configuration} />,
         tooltip: <Trans i18nKey={langKeys.configuration} />,
         icon: (className) => <ConfigurationIcon style={{ width: 22, height: 22 }} className={className} />,
-        options: [paths.CORPORATIONS, paths.DOMAINS, paths.ORGANIZATIONS, paths.EMOJIS, paths.CHANNELS, paths.INAPPROPRIATEWORDS, paths.USERS, paths.QUICKREPLIES,
+        options: [paths.CORPORATIONS, paths.ORGANIZATIONS, paths.DOMAINS,  paths.EMOJIS, paths.CHANNELS, paths.INAPPROPRIATEWORDS, paths.USERS, paths.QUICKREPLIES,
         paths.TIPIFICATIONS, paths.INPUTVALIDATION,paths.WHITELIST, paths.EXTRASLOCATION, paths.SECURITYRULES,paths.PROPERTIES, paths.BILLING_SETUPS, paths.INVOICE]
     },
 ];
@@ -265,8 +271,8 @@ export const routes: RouteConfig[] = [
     // },
     {
         key: paths.CORPORATIONS,
-        description: <Trans i18nKey={langKeys.corporation} />,
-        tooltip: <Trans i18nKey={langKeys.corporation} />,
+        description: <Trans i18nKey={langKeys.corporation_plural} />,
+        tooltip: <Trans i18nKey={langKeys.corporation_plural} />,
         subroute: true,
         path: paths.CORPORATIONS,
         initialSubroute: paths.CORPORATIONS,
@@ -274,8 +280,8 @@ export const routes: RouteConfig[] = [
     },
     {
         key: paths.ORGANIZATIONS,
-        description: <Trans i18nKey={langKeys.organization} />,
-        tooltip: <Trans i18nKey={langKeys.organization} />,
+        description: <Trans i18nKey={langKeys.organization_plural} />,
+        tooltip: <Trans i18nKey={langKeys.organization_plural} />,
         subroute: true,
         path: paths.ORGANIZATIONS,
         initialSubroute: paths.ORGANIZATIONS,
@@ -283,7 +289,7 @@ export const routes: RouteConfig[] = [
     },
     {
         key: '/channels',
-        description: <Trans i18nKey={langKeys.channel} />,
+        description: <Trans i18nKey={langKeys.channel_plural} />,
         tooltip: <Trans i18nKey={langKeys.channel} />,
         subroute: true,
         path: paths.CHANNELS,
@@ -387,7 +393,7 @@ export const routes: RouteConfig[] = [
     },
     {
         key: paths.USERS,
-        description: <Trans i18nKey={langKeys.user} />,
+        description: <Trans i18nKey={langKeys.user_plural} />,
         tooltip: "",
         path: paths.USERS,
         icon: (className) => <UserGroupIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
