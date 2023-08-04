@@ -14,6 +14,7 @@ export interface RouteConfig {
 }
 
 export interface ViewsClassificationConfig {
+    id?: number;
     key: string;
     description: React.ReactNode;
     tooltip: React.ReactChild;

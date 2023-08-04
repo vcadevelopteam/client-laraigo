@@ -175,15 +175,15 @@ const LinkList: FC<{ config: ViewsClassificationConfig, classes: any, open: bool
                 style={{ position: 'relative' }}
             // href={config.path}
             >
-                <Tooltip title={config.tooltip}>
-                    <ListItemIcon>{config.icon?.(className)}</ListItemIcon>
-                </Tooltip>
+
+                <ListItemIcon>{config.icon?.(className)}</ListItemIcon>
+
                 <ListItemText primary={config.description} style={{ visibility: open ? 'visible' : 'hidden' }} />
-                <Typography variant='h5' style={{ position: 'absolute', right: open ? 25 : 5, backgroundColor: '', fontWeight: open ? 'normal' : 'bold' }}>{">"}</Typography>
+                <Typography variant='h5' style={{ position: 'absolute', right: open ? 25 : 5, color: open ? '' : 'white', fontWeight: open ? 'normal' : 'bold' }}>{">"}</Typography>
             </ListItem>
             <HoverPopover
                 {...bindPopover(popupState)}
-                className={classes.drawerItemActive}
+                // className={classes.drawerItemActive}
                 anchorOrigin={{
                     vertical: 'top',
                     horizontal: 'right',
@@ -213,6 +213,10 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
     const voxiConnection = useSelector(state => state.voximplant.connection);
     const location = useLocation();
     const userConnected = useSelector(state => state.inbox.userConnected);
+
+
+
+
     const showableViews = viewsClassifications.reduce((acc: any, x: any) => {
         let findPermit = x.options.find((key: any) => applications?.[key] && (applications?.[key]?.[0]))
         if (findPermit) {
@@ -221,6 +225,8 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
             return acc;
         }
     }, [])
+
+    // console.log(showableViews)
     // console.log(applications);
     return (
         <Drawer
@@ -241,7 +247,9 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
         >
             <div style={{ overflowX: 'hidden', borderRight: '1px solid #EBEAED', marginTop: headerHeight }}>
                 {/* {routes.map((ele) => (applications && applications[ele.key] && applications[ele.key][0]) ? <LinkList classes={classes} config={ele} key={ele.key} open={openDrawer} /> : null)} */}
-                {showableViews.map((route: any) => (applications) ? <LinkList classes={classes} config={route} key={route.key + '_upper'} open={openDrawer} /> : null)}
+                {showableViews.map((route: any) =>
+                    (applications) ?
+                        <LinkList classes={classes} config={route} key={route.key + '_upper'} open={openDrawer} /> : null)}
                 {(!voxiConnection.error && !voxiConnection.loading && !openDrawer && location.pathname === "/message_inbox" && userConnected) && (
                     <ListItem
                         button
