@@ -5384,7 +5384,7 @@ const translation: LangKeys = {
   billingperiod_consultingadditionalfee: 'Additional Consulting Fee',
   billingperiod_consultingregisterprofile: 'Profile',
   billingperiod_consultingunitfee: 'Unit Price',
-  billingperiod_consultingconsultingfee: 'Consulting Total',
+  billingperiod_consultingconsultinghourtotal: 'Consulting Total',
   billingperiod_consultingcontractedfee: 'Contracted Consulting Fee',
   billingperiod_consultingtotalfee: 'Consulting Total Fee',
   billingreport_conversationfree: 'Free WhatsApp Conversations',

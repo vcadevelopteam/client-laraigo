@@ -853,8 +853,8 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
             consultingadditionalfee: row?.consultingadditionalfee || 0,
             consultingcontractedfee: row?.consultingcontractedfee || 0,
             consultingextrafee: row?.consultingextrafee || 0,
-            consultingfee: row?.consultingfee || 0,
             consultinghourquantity: row?.consultinghourquantity || 0,
+            consultinghourtotal: row?.consultinghourtotal || 0,
             consultingplancurrency: row?.consultingplancurrency || "",
             consultingprofile: row?.consultingprofile || "",
             consultingtotalfee: row?.consultingtotalfee || 0,
@@ -905,6 +905,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
             conversationvcafee: row?.conversationvcafee || 0,
             corpdescription: row?.corpdescription || "",
             corpid: row?.corpid || 0,
+            force: true,
             invoiceid: row?.invoiceid || 0,
             messagingmailadditionalfee: row?.messagingmailadditionalfee || 0,
             messagingmailquantity: row?.messagingmailquantity || 0,
@@ -920,6 +921,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
             month: row?.month || new Date().getMonth() + 1,
             orgdescription: row?.orgdescription || "",
             orgid: row?.orgid || 0,
+            status: row?.status || "ACTIVO",
             voicefee: row?.voicefee || 0,
             voiceotherfee: row?.voiceotherfee || 0,
             voiceothervcafee: row?.voiceothervcafee || 0,
@@ -937,6 +939,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
             voicevoipfee: row?.voicevoipfee || 0,
             voicevoipvcafee: row?.voicevoipvcafee || 0,
             voicevoipvoxfee: row?.voicevoipvoxfee || 0,
+            whatsappprovider: row?.whatsappprovider || "DIALOG",
             year: row?.year || new Date().getFullYear(),
         },
     });
@@ -957,6 +960,9 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
         register("consultingprofile", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register("contactcountmode", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register("contactplancurrency", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register("force");
+        register("status");
+        register("whatsappprovider");
 
         register("billinginvoicecurrency", {
             validate: (value) => (value && value.length) || t(langKeys.field_required),
@@ -1129,7 +1135,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                 ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
         });
 
-        register("consultingfee", {
+        register("consultinghourtotal", {
             validate: (value) =>
                 ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
         });
@@ -2696,8 +2702,8 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                             />
                             <FieldView
                                 className="col-6"
-                                label={t(langKeys.billingperiod_consultingconsultingfee)}
-                                value={formatNumber(getValues("consultingfee") || 0)}
+                                label={t(langKeys.billingperiod_consultingconsultinghourtotal)}
+                                value={formatNumber(getValues("consultinghourtotal") || 0)}
                             />
                         </div>
                         <div className="row-zyx">

@@ -5301,7 +5301,7 @@ export const langKeys = {
   billingperiod_consultingadditionalfee: 'billingperiod_consultingadditionalfee',
   billingperiod_consultingregisterprofile: 'billingperiod_consultingregisterprofile',
   billingperiod_consultingunitfee: 'billingperiod_consultingunitfee',
-  billingperiod_consultingconsultingfee: 'billingperiod_consultingconsultingfee',
+  billingperiod_consultingconsultinghourtotal: 'billingperiod_consultingconsultinghourtotal',
   billingperiod_consultingcontractedfee: 'billingperiod_consultingcontractedfee',
   billingperiod_consultingtotalfee: 'billingperiod_consultingtotalfee',
   billingreport_conversationfree: 'billingreport_conversationfree',
