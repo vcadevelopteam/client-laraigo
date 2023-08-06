@@ -449,7 +449,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     };
 
     const checkUrl = (url: string) => {
-        return (RegExp(/\.(jpeg|jpg|gif|png)$/).exec(url) != null);
+        return (RegExp(/\.(jpeg|jpg|gif|png|webp)$/).exec(url) != null);
     }
 
     const checkFile = (url: string) => {
