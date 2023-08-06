@@ -20,7 +20,7 @@ import {
     billingConversationIns,
     billingMessagingIns,
     billingSupportIns,
-    currencyList,
+    currencySel,
     dataMonths,
     dataYears,
     formatNumber,
@@ -77,7 +77,7 @@ interface RowSelected {
 interface DetailSupportPlanProps {
     data: RowSelected;
     dataPlan: any[];
-    exchangeData?: any;
+    currencyList?: any[];
     fetchData: () => void;
     setViewSelected: (view: string) => void;
 }
@@ -1093,7 +1093,7 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
 };
 
 const IDCONTRACTEDPLAN = "IDCONTRACTEDPLAN";
-const ContractedPlanByPeriod: React.FC<{ dataPlan: any; exchangeData: any }> = ({ dataPlan, exchangeData }) => {
+const ContractedPlanByPeriod: React.FC<{ dataPlan: any; currencyList: any }> = ({ dataPlan, currencyList }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -1513,7 +1513,7 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any; exchangeData: any }> = (
             <DetailContractedPlanByPeriod
                 data={rowSelected}
                 dataPlan={dataPlan}
-                exchangeData={exchangeData}
+                currencyList={currencyList}
                 fetchData={fetchData}
                 setViewSelected={setViewSelected}
             />
@@ -1524,7 +1524,7 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any; exchangeData: any }> = (
 const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
     data: { row, edit },
     dataPlan,
-    exchangeData,
+    currencyList,
     fetchData,
     setViewSelected,
 }) => {
@@ -1538,6 +1538,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
     const [checkedaux, setCheckedaux] = useState(row?.allowhsm || false);
     const [checkedchannel, setCheckedchannel] = useState(row?.channelcreateoverride || false);
     const [checkeduser, setCheckeduser] = useState(row?.usercreateoverride || false);
+    const [exchangeRate, setExchangeRate] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
 
     const [datetoshow, setdatetoshow] = useState(
@@ -1602,6 +1603,14 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
             setValue("month", mes);
         }
     }
+
+    useEffect(() => {
+        setExchangeRate(
+            (currencyList ?? []).find((item) => {
+                return item.code === (row?.plancurrency || "");
+            })?.exchangerate || 0
+        );
+    }, [row]);
 
     React.useEffect(() => {
         register("allowhsm");
@@ -1796,12 +1805,15 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
                         />
                         <FieldSelect
                             className="col-6"
-                            data={currencyList}
+                            data={currencyList ?? []}
                             error={errors?.plancurrency?.message}
                             label={t(langKeys.billingconfiguration_plancurrency)}
-                            onChange={(value) => setValue("plancurrency", value?.value)}
+                            onChange={(value) => {
+                                setValue("plancurrency", value?.code);
+                                setExchangeRate(value?.exchangerate || 0);
+                            }}
                             optionDesc="description"
-                            optionValue="value"
+                            optionValue="code"
                             orderbylabel={true}
                             valueDefault={getValues("plancurrency")}
                         />
@@ -2001,7 +2013,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
                         <FieldView
                             className="col-6"
                             label={t(langKeys.billingconfiguration_exchangerate)}
-                            value={formatNumber(exchangeData || 0)}
+                            value={formatNumber(exchangeRate || 0)}
                         />
                     </div>
                 </div>
@@ -2011,7 +2023,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
 };
 
 const IDCONVERSATIONCOST = "IDCONVERSATIONCOST";
-const ConversationCost: React.FC<{ dataPlan: any; exchangeData: any }> = ({ dataPlan, exchangeData }) => {
+const ConversationCost: React.FC<{ dataPlan: any; currencyList: any }> = ({ dataPlan, currencyList }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -2317,7 +2329,7 @@ const ConversationCost: React.FC<{ dataPlan: any; exchangeData: any }> = ({ data
             <DetailConversationCost
                 data={rowSelected}
                 dataPlan={dataPlan}
-                exchangeData={exchangeData}
+                currencyList={currencyList}
                 fetchData={fetchData}
                 setViewSelected={setViewSelected}
             />
@@ -2328,7 +2340,7 @@ const ConversationCost: React.FC<{ dataPlan: any; exchangeData: any }> = ({ data
 const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({
     data: { row, edit },
     dataPlan,
-    exchangeData,
+    currencyList,
     fetchData,
     setViewSelected,
 }) => {
@@ -2339,6 +2351,7 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({
     const classes = useStyles();
     const executeResult = useSelector((state) => state.main.execute);
 
+    const [exchangeRate, setExchangeRate] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
 
     const [datetoshow, setdatetoshow] = useState(
@@ -2391,6 +2404,14 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({
             setValue("month", mes);
         }
     }
+
+    useEffect(() => {
+        setExchangeRate(
+            (currencyList ?? []).find((item) => {
+                return item.code === (row?.plancurrency || "");
+            })?.exchangerate || 0
+        );
+    }, [row]);
 
     React.useEffect(() => {
         register("countrycode", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -2552,12 +2573,15 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({
                     <div className="row-zyx">
                         <FieldSelect
                             className="col-6"
-                            data={currencyList}
+                            data={currencyList ?? []}
                             error={errors?.plancurrency?.message}
                             label={t(langKeys.billingconversation_plancurrency)}
-                            onChange={(value) => setValue("plancurrency", value?.value)}
+                            onChange={(value) => {
+                                setValue("plancurrency", value?.code);
+                                setExchangeRate(value?.exchangerate || 0);
+                            }}
                             optionDesc="description"
-                            optionValue="value"
+                            optionValue="code"
                             orderbylabel={true}
                             valueDefault={getValues("plancurrency")}
                         />
@@ -2622,7 +2646,7 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({
                         <FieldView
                             className="col-6"
                             label={t(langKeys.billingconfiguration_exchangerate)}
-                            value={formatNumber(exchangeData || 0)}
+                            value={formatNumber(exchangeRate || 0)}
                         />
                     </div>
                 </div>
@@ -3303,7 +3327,7 @@ const DetailArtificialIntelligence: React.FC<DetailArtificialIntelligenceProps> 
 };
 
 const IDSUPPORTPLAN = "IDSUPPORTPLAN";
-const SupportPlan: React.FC<{ dataPlan: any; exchangeData: any }> = ({ dataPlan, exchangeData }) => {
+const SupportPlan: React.FC<{ dataPlan: any; currencyList: any }> = ({ dataPlan, currencyList }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -3557,7 +3581,7 @@ const SupportPlan: React.FC<{ dataPlan: any; exchangeData: any }> = ({ dataPlan,
             <DetailSupportPlan
                 data={rowSelected}
                 dataPlan={dataPlan}
-                exchangeData={exchangeData}
+                currencyList={currencyList}
                 fetchData={fetchData}
                 setViewSelected={setViewSelected}
             />
@@ -3568,7 +3592,7 @@ const SupportPlan: React.FC<{ dataPlan: any; exchangeData: any }> = ({ dataPlan,
 const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({
     data: { row, edit },
     dataPlan,
-    exchangeData,
+    currencyList,
     fetchData,
     setViewSelected,
 }) => {
@@ -3579,6 +3603,7 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({
     const classes = useStyles();
     const executeResult = useSelector((state) => state.main.execute);
 
+    const [exchangeRate, setExchangeRate] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
 
     const [datetoshow, setdatetoshow] = useState(
@@ -3634,6 +3659,14 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({
             setValue("month", mes);
         }
     }
+
+    useEffect(() => {
+        setExchangeRate(
+            (currencyList ?? []).find((item) => {
+                return item.code === (row?.plancurrency || "");
+            })?.exchangerate || 0
+        );
+    }, [row]);
 
     React.useEffect(() => {
         register("description", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -3768,12 +3801,15 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({
                         />
                         <FieldSelect
                             className="col-6"
-                            data={currencyList}
+                            data={currencyList ?? []}
                             error={errors?.plancurrency?.message}
                             label={t(langKeys.billingsupport_plancurrency)}
-                            onChange={(value) => setValue("plancurrency", value?.value)}
+                            onChange={(value) => {
+                                setValue("plancurrency", value?.code);
+                                setExchangeRate(value?.exchangerate || 0);
+                            }}
                             optionDesc="description"
-                            optionValue="value"
+                            optionValue="code"
                             orderbylabel={true}
                             valueDefault={getValues("plancurrency")}
                         />
@@ -3809,7 +3845,7 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({
                         <FieldView
                             className="col-6"
                             label={t(langKeys.billingconfiguration_exchangerate)}
-                            value={formatNumber(exchangeData || 0)}
+                            value={formatNumber(exchangeRate || 0)}
                         />
                     </div>
                 </div>
@@ -4329,14 +4365,13 @@ const BillingSetup: FC = () => {
     const { t } = useTranslation();
 
     const countryResult = useSelector((state) => state.signup.countryList);
-    const exchangeResult = useSelector((state) => state.culqi.requestGetExchangeRate);
     const multiResult = useSelector((state) => state.main.multiData);
     const user = useSelector((state) => state.login.validateToken.user);
 
     const [countryList, setCountryList] = useState<any>([]);
+    const [currencyList, setCurrencyList] = useState<any>([]);
     const [dataPaymentPlan, setDataPaymentPlan] = useState<any>([]);
     const [dataPlan, setDataPlan] = useState<any>([]);
-    const [exchangeData, setExchangeData] = useState(0);
     const [pageSelected, setPageSelected] = useState(user?.roledesc === "SUPERADMIN" ? 0 : 6);
     const [planList, setPlanList] = useState<any>([]);
     const [providerList, setProviderList] = useState<any>([]);
@@ -4345,6 +4380,7 @@ const BillingSetup: FC = () => {
     useEffect(() => {
         if (!multiResult.loading && sentFirstInfo) {
             setSentFirstInfo(false);
+            setCurrencyList(multiResult.data[6] && multiResult.data[6].success ? multiResult.data[6].data : []);
             setDataPaymentPlan(multiResult.data[3] && multiResult.data[3].success ? multiResult.data[3].data : []);
             setDataPlan(multiResult.data[0] && multiResult.data[0].success ? multiResult.data[0].data : []);
             setPlanList(multiResult.data[4] && multiResult.data[4].success ? multiResult.data[4].data : []);
@@ -4359,12 +4395,6 @@ const BillingSetup: FC = () => {
     }, [countryResult]);
 
     useEffect(() => {
-        if (!exchangeResult.loading && exchangeResult.exchangerate) {
-            setExchangeData(exchangeResult.exchangerate);
-        }
-    }, [exchangeResult]);
-
-    useEffect(() => {
         setSentFirstInfo(true);
         dispatch(getCountryList());
         dispatch(getExchangeRate(null));
@@ -4376,6 +4406,7 @@ const BillingSetup: FC = () => {
                 getPaymentPlanSel(),
                 artificialIntelligencePlanSel({ description: "" }),
                 artificialIntelligenceServiceSel({ provider: "", service: "" }),
+                currencySel(),
             ])
         );
     }, []);
@@ -4404,12 +4435,12 @@ const BillingSetup: FC = () => {
             )}
             {pageSelected === 1 && (
                 <div style={{ marginTop: 16 }}>
-                    <ContractedPlanByPeriod dataPlan={dataPaymentPlan} exchangeData={exchangeData} />
+                    <ContractedPlanByPeriod dataPlan={dataPaymentPlan} currencyList={currencyList} />
                 </div>
             )}
             {pageSelected === 2 && (
                 <div style={{ marginTop: 16 }}>
-                    <ConversationCost dataPlan={countryList} exchangeData={exchangeData} />
+                    <ConversationCost dataPlan={countryList} currencyList={currencyList} />
                 </div>
             )}
             {pageSelected === 3 && (
@@ -4424,7 +4455,7 @@ const BillingSetup: FC = () => {
             )}
             {pageSelected === 5 && (
                 <div style={{ marginTop: 16 }}>
-                    <SupportPlan dataPlan={dataPlan} exchangeData={exchangeData} />
+                    <SupportPlan dataPlan={dataPlan} currencyList={currencyList} />
                 </div>
             )}
         </div>

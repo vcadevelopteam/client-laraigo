@@ -4022,6 +4022,24 @@ export const timeSheetUserSel = ({ corpid, orgid }: Dictionary) => ({
     parameters: { corpid, orgid },
 });
 
+export const timeSheetProfileSel = ({ corpid, orgid, startdate }: Dictionary) => ({
+    method: "UFN_TIMESHEET_PROFILE_SEL",
+    key: "UFN_TIMESHEET_PROFILE_SEL",
+    parameters: { corpid, orgid, startdate },
+});
+
+export const timeSheetPeriodSel = ({ corpid, orgid, year, month }: Dictionary) => ({
+    method: "UFN_TIMESHEET_PERIOD_SEL",
+    key: "UFN_TIMESHEET_PERIOD_SEL",
+    parameters: { corpid, orgid, year, month },
+});
+
+export const currencySel = () => ({
+    method: "UFN_CURRENCY_SEL",
+    key: "UFN_CURRENCY_SEL",
+    parameters: {},
+});
+
 export const rasaIntentSel = (rasaid: number) => ({
     method: "UFN_RASA_INTENT_SEL",
     key: "UFN_RASA_INTENT_SEL",

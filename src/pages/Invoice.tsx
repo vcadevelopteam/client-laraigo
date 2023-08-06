@@ -76,6 +76,7 @@ import {
     selInvoiceClient,
     selInvoiceComment,
     templateMaker,
+    timeSheetPeriodSel,
     uploadExcel,
 } from "common/helpers";
 
@@ -717,6 +718,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
     const [dataArtificialBilling, setDataArtificialBilling] = useState<Dictionary[]>([]);
     const [dataArtificialIntelligence, setDataArtificialIntelligence] = useState<Dictionary[]>([]);
     const [dataArtificialIntelligenceDelete, setDataArtificialIntelligenceDelete] = useState<Dictionary[]>([]);
+    const [dataTimeSheet, setDataTimeSheet] = useState<Dictionary[]>([]);
     const [pageSelected, setPageSelected] = useState(0);
     const [profileList, setProfileList] = useState<any>([]);
     const [triggerSave, setTriggerSave] = useState(false);
@@ -727,6 +729,75 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
         { id: "view-1", name: t(langKeys.costperperiod) },
         { id: "view-2", name: t(langKeys.costperperioddetail) },
     ];
+
+    const columns = React.useMemo(
+        () => [
+            {
+                accessor: "startdate",
+                Header: t(langKeys.timesheet_startdate),
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return <div>{dateToLocalDate(row.startdate)}</div>;
+                },
+            },
+            {
+                accessor: "startuser",
+                Header: t(langKeys.timesheet_startuser),
+                NoFilter: true,
+            },
+            {
+                accessor: "registerdate",
+                Header: t(langKeys.timesheet_registerdate),
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return <div>{dateToLocalDate(row.registerdate)}</div>;
+                },
+            },
+            {
+                accessor: "registeruser",
+                Header: t(langKeys.timesheet_registeruser),
+                NoFilter: true,
+            },
+            {
+                accessor: "orgdescription",
+                Header: t(langKeys.timesheet_organization),
+                NoFilter: true,
+            },
+            {
+                accessor: "registerprofile",
+                Header: t(langKeys.timesheet_registerprofile),
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (t(`${row.registerprofile}`.toLowerCase()) || "").toUpperCase();
+                },
+            },
+            {
+                accessor: "timeduration",
+                Header: t(langKeys.timesheet_timeduration),
+                type: "time",
+                NoFilter: true,
+            },
+            {
+                accessor: "registerdetail",
+                Header: t(langKeys.timesheet_registerdetail),
+                NoFilter: true,
+            },
+            {
+                accessor: "status",
+                Header: t(langKeys.status),
+                NoFilter: true,
+                prefixTranslation: "status_",
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (t(`status_${row.status}`.toLowerCase()) || "").toUpperCase();
+                },
+            },
+        ],
+        []
+    );
 
     useEffect(() => {
         if (!auxResult.loading && !auxResult.error) {
@@ -757,6 +828,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
             }
 
             setProfileList(multiResult.data[1] && multiResult.data[1].success ? multiResult.data[1].data : []);
+            setDataTimeSheet(multiResult.data[2] && multiResult.data[2].success ? multiResult.data[2].data : []);
         }
     }, [multiResult.data, waitAiBilling]);
 
@@ -787,6 +859,12 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                         year: row?.year,
                     }),
                     getValuesFromDomainCorp("CONSULTINGPROFILE", null, 1, 0),
+                    timeSheetPeriodSel({
+                        corpid: row?.corpid,
+                        month: row?.month,
+                        orgid: row?.orgid || 0,
+                        year: row?.year,
+                    }),
                 ])
             );
 
@@ -828,6 +906,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
             agentplancurrency: row?.agentplancurrency || "",
             agentsupervisoractivequantity: row?.agentsupervisoractivequantity || 0,
             agenttotalfee: row?.agenttotalfee || 0,
+            billingexchangerate: row?.billingexchangerate || 0,
             billinginfrastructurefee: row?.billinginfrastructurefee || 0,
             billinginvoicecurrency: row?.billinginvoicecurrency || "",
             billingmode: row?.billingmode || "",
@@ -951,6 +1030,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
         register("agentaddlimit");
         register("agentmode", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register("agentplancurrency", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register("billingexchangerate");
         register("billingmode", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register("billingplan", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register("billingplancurrency", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -1643,7 +1723,9 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                                 fetchData();
                             }}
                         />
-                        <TitleDetail title={row ? `${row.corpdesc} - ${row.orgdesc}` : t(langKeys.neworganization)} />
+                        <TitleDetail
+                            title={row ? `${row.corpdescription} / ${row.orgdescription}` : t(langKeys.costperperiod)}
+                        />
                     </div>
                     <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                         <Button
@@ -1751,7 +1833,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                             <FieldSelect
                                 className="col-6"
                                 data={currencyList}
-                                disabled={!canEdit}
+                                disabled={!canEdit || true}
                                 error={errors?.billingplancurrency?.message}
                                 label={t(langKeys.billingperiod_plancurrency)}
                                 onChange={(value) => setValue("billingplancurrency", value?.value)}
@@ -1779,7 +1861,10 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                                         style={{ width: "100%" }}
                                         value={getValues("billingstartdate")}
                                         onChange={(value: any) => {
-                                            setValue("billingstartdate", value || null);
+                                            setValue(
+                                                "billingstartdate",
+                                                value ? new Date(value.getTime()).toDateString() : null
+                                            );
                                             trigger("billingstartdate");
                                         }}
                                     />
@@ -1835,7 +1920,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                             <FieldView
                                 className="col-6"
                                 label={t(langKeys.totalcharge)}
-                                value={formatNumber(getValues("billingtotalfee") || 0)}
+                                value={formatNumber(getValues("billingtotalfeenet") || 0)}
                             />
                         </div>
                     </div>
@@ -1874,7 +1959,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                             <FieldSelect
                                 className="col-6"
                                 data={currencyList}
-                                disabled={!canEdit}
+                                disabled={!canEdit || true}
                                 error={errors?.agentplancurrency?.message}
                                 label={t(langKeys.billingperiod_agentcurrency)}
                                 onChange={(value) => setValue("agentplancurrency", value?.value)}
@@ -2061,7 +2146,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                             <FieldSelect
                                 className="col-6"
                                 data={currencyList}
-                                disabled={!canEdit}
+                                disabled={!canEdit || true}
                                 error={errors?.conversationuserplancurrency?.message}
                                 label={t(langKeys.billingperiod_conversationusercurrency)}
                                 onChange={(value) => setValue("conversationuserplancurrency", value?.value)}
@@ -2090,7 +2175,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                             <FieldSelect
                                 className="col-6"
                                 data={currencyList}
-                                disabled={!canEdit}
+                                disabled={!canEdit || true}
                                 error={errors?.conversationusermetacurrency?.message}
                                 label={t(langKeys.billingperiod_conversationusermetacurrency)}
                                 onChange={(value) => setValue("conversationusermetacurrency", value?.value)}
@@ -2138,7 +2223,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                             <FieldSelect
                                 className="col-6"
                                 data={currencyList}
-                                disabled={!canEdit}
+                                disabled={!canEdit || true}
                                 error={errors?.conversationbusinessplancurrency?.message}
                                 label={t(langKeys.billingperiod_conversationbusinesscurrency)}
                                 onChange={(value) => setValue("conversationbusinessplancurrency", value?.value)}
@@ -2203,7 +2288,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                             <FieldSelect
                                 className="col-6"
                                 data={currencyList}
-                                disabled={!canEdit}
+                                disabled={!canEdit || true}
                                 error={errors?.conversationbusinessmetacurrency?.message}
                                 label={t(langKeys.billingperiod_conversationbusinessmetacurrency)}
                                 onChange={(value) => setValue("conversationbusinessmetacurrency", value?.value)}
@@ -2256,7 +2341,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                             <FieldSelect
                                 className="col-6"
                                 data={currencyList}
-                                disabled={!canEdit}
+                                disabled={!canEdit || true}
                                 error={errors?.conversationplancurrency?.message}
                                 label={t(langKeys.billingperiod_conversationcurrency)}
                                 onChange={(value) => setValue("conversationplancurrency", value?.value)}
@@ -2335,7 +2420,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                             <FieldSelect
                                 className="col-6"
                                 data={currencyList}
-                                disabled={!canEdit}
+                                disabled={!canEdit || true}
                                 error={errors?.contactplancurrency?.message}
                                 label={t(langKeys.billingperiod_contactcurrency)}
                                 onChange={(value) => setValue("contactplancurrency", value?.value)}
@@ -2421,7 +2506,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                             <FieldSelect
                                 className="col-12"
                                 data={currencyList}
-                                disabled={!canEdit}
+                                disabled={!canEdit || true}
                                 error={errors?.messagingplancurrency?.message}
                                 label={t(langKeys.billingperiod_messagingcurrency)}
                                 onChange={(value) => setValue("messagingplancurrency", value?.value)}
@@ -2691,7 +2776,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                             <FieldSelect
                                 className="col-6"
                                 data={currencyList}
-                                disabled={!canEdit}
+                                disabled={!canEdit || true}
                                 error={errors?.consultingplancurrency?.message}
                                 label={t(langKeys.billingperiod_consultingcurrency)}
                                 onChange={(value) => setValue("consultingplancurrency", value?.value)}
@@ -2739,16 +2824,17 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                             />
                         </div>
                         <div className="row-zyx">
-                            <FieldSelect
+                            <FieldMultiSelect
                                 className="col-6"
                                 data={profileList}
                                 disabled={!canEdit}
                                 error={errors?.consultingprofile?.message}
                                 label={t(langKeys.billingperiod_consultingregisterprofile)}
-                                onChange={(value) => setValue("consultingprofile", value?.value)}
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
-                                orderbylabel={true}
+                                onChange={(value) =>
+                                    setValue("consultingprofile", value.map((o: Dictionary) => o.domainvalue).join())
+                                }
                                 uset={true}
                                 valueDefault={getValues("consultingprofile")}
                             />
@@ -2760,6 +2846,16 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                                 onChange={(value) => setValue("consultingadditionalfee", value)}
                                 type="number"
                                 valueDefault={getValues("consultingadditionalfee")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <TableZyx
+                                columns={columns}
+                                data={dataTimeSheet}
+                                download={true}
+                                filterGeneral={false}
+                                hoverShadow={true}
+                                loading={multiResult.loading}
                             />
                         </div>
                     </div>

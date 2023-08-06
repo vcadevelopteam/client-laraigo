@@ -25,6 +25,7 @@ import {
     getValuesFromDomainCorp,
     localesLaraigo,
     timeSheetIns,
+    timeSheetProfileSel,
     timeSheetSel,
     timeSheetUserSel,
 } from "common/helpers";
@@ -411,6 +412,7 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
 
     const classes = useStyles();
     const executeResult = useSelector((state) => state.main.execute);
+    const multiResult = useSelector((state) => state.main.multiData);
     const user = useSelector((state) => state.login.validateToken.user);
 
     const userAvailable = (userList || []).filter((data) => data.userid === (user?.userid ?? 0))
@@ -419,6 +421,7 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
 
     const [hasChange, setHasChange] = useState(false);
     const [openModal, setOpenModal] = useState(false);
+    const [profileAllowed, setProfileAllowed] = useState<any>([]);
     const [waitSave, setWaitSave] = useState(false);
 
     const {
@@ -447,6 +450,21 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
         },
     });
 
+    useEffect(() => {
+        getProfileAllowed(
+            row?.corpid || (user?.corpid ?? 0),
+            row?.orgid || (user?.orgid ?? 0),
+            row?.startdate || new Date()
+        );
+    }, [row]);
+
+    useEffect(() => {
+        if (!multiResult.loading) {
+            setProfileAllowed(multiResult.data[0] && multiResult.data[0].success ? multiResult.data[0].data : []);
+            console.log(multiResult.data[0] && multiResult.data[0].success ? multiResult.data[0].data : []);
+        }
+    }, [multiResult]);
+
     React.useEffect(() => {
         register("corpid");
         register("description");
@@ -463,6 +481,18 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
         register("timeduration", { validate: (value) => (value && value != null) || t(langKeys.field_required) });
         register("type");
     }, [edit, register]);
+
+    const getProfileAllowed = (corpid: any, orgid: any, startdate: any) => {
+        dispatch(
+            getMultiCollection([
+                timeSheetProfileSel({
+                    corpid: corpid,
+                    orgid: orgid,
+                    startdate: startdate,
+                }),
+            ])
+        );
+    };
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
@@ -576,6 +606,8 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
                                     setValue("startdate", value || null);
                                     trigger("startdate");
                                     setHasChange(true);
+                                    getProfileAllowed(getValues("corpid"), getValues("orgid"), value);
+                                    setValue("registerprofile", "");
                                 }}
                             />
                         </MuiPickersUtilsProvider>
@@ -649,15 +681,22 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
                                 setValue("corpid", value?.corpid || 0);
                                 setValue("orgid", value?.orgid || 0);
                                 setHasChange(true);
+                                getProfileAllowed(value?.corpid || 0, value?.orgid || 0, getValues("startdate"));
+                                setValue("registerprofile", "");
                             }}
                         />
                         <FieldSelect
                             className="col-6"
-                            data={profileList}
+                            data={profileList.filter(function (item) {
+                                return ((profileAllowed || [])[0]?.consultingprofile || "").includes(
+                                    item?.domainvalue || ""
+                                );
+                            })}
                             disabled={!edit}
                             error={errors?.registerprofile?.message}
                             label={t(langKeys.timesheet_registerprofile)}
-                            onChange={(value) => setValue("registerprofile", value?.domainvalue)}
+                            loading={multiResult.loading}
+                            onChange={(value) => setValue("registerprofile", value?.domainvalue || "")}
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
                             orderbylabel={true}
