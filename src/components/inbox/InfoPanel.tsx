@@ -448,7 +448,7 @@ const InfoTab: React.FC = () => {
                         <div>{person?.lastname}</div>
                     </div>
                 </div>}
-                {person?.lastname && <div className={classes.containerName}>
+                {person?.persontype && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.personType)}</div>
                         <div>{person?.persontype}</div>
