@@ -3762,6 +3762,7 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                     generalinteractionquantity: `${formatNumberNoDecimals(dataReport.conversationinteractionquantity)}`,
                     generalsupervisorquantity: `${formatNumberNoDecimals(dataReport.agentsupervisoractivequantity)}`,
                     generaladviserquantity: `${formatNumberNoDecimals(dataReport.agentadviseractivequantity)}`,
+                    intelligencedetail: intelligenceDetail || [],
                 },
             };
 
