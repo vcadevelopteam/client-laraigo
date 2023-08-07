@@ -5325,6 +5325,12 @@ export const langKeys = {
   unique: 'unique',
   sent_hsm: 'sent_hsm',
   delivered_hsm: 'delivered_hsm',
+  billingreport_agentcontracted: 'billingreport_agentcontracted',
+  billingreport_channelother: 'billingreport_channelother',
+  billingreport_channelotheradditional: 'billingreport_channelotheradditional',
+  billingreport_channelwhatsapp: 'billingreport_channelwhatsapp',
+  billingreport_channelwhatsappadditional: 'billingreport_channelwhatsappadditional',
+  billingreport_channeltotal: 'billingreport_channeltotal',
 };
 
 export type LangKeys = typeof langKeys;

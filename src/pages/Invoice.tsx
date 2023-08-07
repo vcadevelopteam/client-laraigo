@@ -3274,9 +3274,8 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
     });
 
     const [canSearch, setCanSearch] = useState(false);
-    const [datareport, setdatareport] = useState<any>([]);
+    const [dataReport, setDataReport] = useState<any>([]);
     const [disableOrg, setDisableOrg] = useState(false);
-    const [requestType, setRequestType] = useState(2);
     const [waitCalculate, setWaitCalculate] = useState(false);
     const [waitExport, setWaitExport] = useState(false);
     const [waitPdf, setWaitPdf] = useState(false);
@@ -3299,7 +3298,6 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
 
     function search() {
         dispatch(showBackdrop(true));
-        setRequestType(dataMain.totalize);
         if (dataMain.totalize === 2) {
             dispatch(getCollection(getBillingPeriodSummarySel(dataMain)));
         } else {
@@ -3359,9 +3357,9 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
     useEffect(() => {
         if (!mainResult.mainData.loading) {
             if (mainResult.mainData.data.length) {
-                setdatareport(mainResult.mainData.data[0]);
+                setDataReport(mainResult.mainData.data[0]);
             } else {
-                setdatareport(null);
+                setDataReport(null);
             }
             dispatch(showBackdrop(false));
         }
@@ -3452,12 +3450,11 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
     };
 
     const handleReportPdf = () => {
-        if (datareport) {
+        if (dataReport) {
             let intelligenceDetail: {}[] = [];
 
-            if (datareport.artificialintelligencedata) {
-                let datareportTax = datareport.taxrate;
-                let datareportIgv = datareport.igv;
+            if (dataReport.artificialintelligencedata) {
+
             }
 
             let reportbody = {
@@ -3583,7 +3580,7 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                     >
                         {t(langKeys.search)}
                     </Button>
-                    {!mainResult.mainData.loading && datareport && (
+                    {!mainResult.mainData.loading && dataReport && (
                         <Fragment>
                             <Button
                                 className={classes.button}
@@ -3672,16 +3669,16 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
             </div>
             {!mainResult.mainData.loading && (
                 <div style={{ width: "100%" }} ref={el}>
-                    {datareport && (
+                    {dataReport && (
                         <div className={classes.containerDetail}>
                             <div className="row-zyx">
-                                <FieldView className="col-6" label={t(langKeys.client)} value="0.00" />
+                                <FieldView className="col-6" label={t(langKeys.client)} value={dataReport.orgdescription || dataReport.corpdescription} />
                             </div>
                             <div className="row-zyx">
-                                <FieldView className="col-6" label={"Plan"} value="0.00" />
+                                <FieldView className="col-6" label={"Plan"} value={dataReport.billingplan} />
                             </div>
                             <div className="row-zyx">
-                                <FieldView className="col-6" label={t(langKeys.period)} value="0.00" />
+                                <FieldView className="col-6" label={t(langKeys.period)} value={`${dataReport.year} - ${String(dataReport.month).padStart(2, '0')}`} />
                             </div>
                             <TableContainer component={Paper} style={{ overflow: "hidden" }}>
                                 <Table aria-label="customized table">
@@ -3714,42 +3711,42 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                             </StyledTableCell>
                                             <StyledTableCell></StyledTableCell>
                                             <StyledTableCell></StyledTableCell>
-                                            <StyledTableCell align="right">0.00</StyledTableCell>
-                                            <StyledTableCell align="right">0.00</StyledTableCell>
-                                            <StyledTableCell align="right">0.00</StyledTableCell>
+                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.billingplanfee / dataReport.exchangetax)}`}</StyledTableCell>
+                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.billingplanfee - (dataReport.billingplanfee / dataReport.exchangetax))}`}</StyledTableCell>
+                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.billingplanfee)}`}</StyledTableCell>
                                         </StyledTableRow>
                                         <StyledTableRow>
                                             <StyledTableCell>
                                                 <div>
                                                     <b>{t(langKeys.agents_plural)}</b>
                                                 </div>
-                                                <div>{t(langKeys.contracted)}</div>
+                                                <div>{t(langKeys.billingreport_agentcontracted)}</div>
                                                 <div>{t(langKeys.additional)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
+                                                <div>{formatNumberNoDecimals(dataReport.agentcontractedquantity)}</div>
+                                                <div>{formatNumberNoDecimals(dataReport.agentadditionalquantity)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumberFourDecimals(dataReport.agentadditionalfee)}`}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.agenttotalfee / dataReport.exchangetax)}`}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.agenttotalfee - (dataReport.agenttotalfee / dataReport.exchangetax))}`}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.agenttotalfee)}`}</div>
                                             </StyledTableCell>
                                         </StyledTableRow>
                                         <StyledTableRow>
@@ -3757,51 +3754,51 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                 <div>
                                                     <b>{t(langKeys.channel_plural)}</b>
                                                 </div>
-                                                <div>{t(langKeys.contracted)}</div>
-                                                <div>{t(langKeys.whatsappfreechannel)}</div>
-                                                <div>{t(langKeys.whatsappchannel)}</div>
-                                                <div>{t(langKeys.whatsappadditionalchannel)}</div>
-                                                <div>{t(langKeys.otherchannels)}</div>
+                                                <div>{t(langKeys.billingreport_channelother)}</div>
+                                                <div>{t(langKeys.billingreport_channelotheradditional)}</div>
+                                                <div>{t(langKeys.billingreport_channelwhatsapp)}</div>
+                                                <div>{t(langKeys.billingreport_channelwhatsappadditional)}</div>
+                                                <div>{t(langKeys.billingreport_channeltotal)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
-                                            </StyledTableCell>
-                                            <StyledTableCell align="right">
-                                                <div style={{ color: "transparent" }}>.</div>
-                                                <div style={{ color: "transparent" }}>.</div>
-                                                <div style={{ color: "transparent" }}>.</div>
-                                                <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
+                                                <div>{formatNumberNoDecimals(dataReport.channelothercontractedquantity)}</div>
+                                                <div>{formatNumberNoDecimals(dataReport.channelotherquantity - dataReport.channelothercontractedquantity)}</div>
+                                                <div>{formatNumberNoDecimals(dataReport.channelwhatsappcontractedquantity)}</div>
+                                                <div>{formatNumberNoDecimals(dataReport.channelwhatsappquantity - dataReport.channelwhatsappcontractedquantity)}</div>
+                                                <div>{formatNumberNoDecimals((dataReport.channelotherquantity - dataReport.channelothercontractedquantity) + (dataReport.channelwhatsappquantity - dataReport.channelwhatsappcontractedquantity))}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumberFourDecimals(dataReport.channelotheradditionalfee)}`}</div>
                                                 <div style={{ color: "transparent" }}>.</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumberFourDecimals(dataReport.channelwhatsappadditionalfee)}`}</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.channeltotalfee / dataReport.exchangetax)}`}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.channeltotalfee - (dataReport.channeltotalfee / dataReport.exchangetax))}`}</div>
+                                            </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div style={{ color: "transparent" }}>.</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.channeltotalfee)}`}</div>
                                             </StyledTableCell>
                                         </StyledTableRow>
                                         <StyledTableRow>
@@ -4084,7 +4081,7 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                             </TableContainer>
                         </div>
                     )}
-                    {!datareport && (
+                    {!dataReport && (
                         <div className={classes.containerDetail}>
                             <div className="row-zyx">
                                 <FieldView className="col-6" label={""} value={t(langKeys.billingperiodnotfound)} />
