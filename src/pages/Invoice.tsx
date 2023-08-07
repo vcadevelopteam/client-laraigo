@@ -3510,16 +3510,19 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                     agentcost: `${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.agenttotalfee)}`,
                     channelotherquantity: `${formatNumberNoDecimals(dataReport.channelothercontractedquantity)}`,
                     channelotheradditional: `${formatNumberNoDecimals(
-                        dataReport.channelotherquantity - dataReport.channelothercontractedquantity
+                        Math.max(dataReport.channelotherquantity - dataReport.channelothercontractedquantity, 0)
                     )}`,
                     channelwhatsappquantity: `${formatNumberNoDecimals(dataReport.channelwhatsappcontractedquantity)}`,
                     channelwhatsappadditional: `${formatNumberNoDecimals(
-                        dataReport.channelwhatsappquantity - dataReport.channelwhatsappcontractedquantity
+                        Math.max(dataReport.channelwhatsappquantity - dataReport.channelwhatsappcontractedquantity, 0)
                     )}`,
                     channeladditional: `${formatNumberNoDecimals(
-                        dataReport.channelotherquantity -
-                        dataReport.channelothercontractedquantity +
-                        (dataReport.channelwhatsappquantity - dataReport.channelwhatsappcontractedquantity)
+                        Math.max(
+                            dataReport.channelotherquantity -
+                            dataReport.channelothercontractedquantity +
+                            (dataReport.channelwhatsappquantity - dataReport.channelwhatsappcontractedquantity),
+                            0
+                        )
                     )}`,
                     channelotherfee: `${dataReport.invoicecurrencysymbol}${formatNumberFourDecimals(
                         dataReport.channelotheradditionalfee
@@ -3656,7 +3659,7 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                     contactuniquelimit: `${formatNumberNoDecimals(dataReport.contactuniquelimit)}`,
                     contactuniquequantity: `${formatNumberNoDecimals(dataReport.contactuniquequantity)}`,
                     contactuniquequantityadditional: `${formatNumberNoDecimals(
-                        dataReport.contactuniquequantity - dataReport.contactuniquelimit
+                        Math.max(dataReport.contactuniquequantity - dataReport.contactuniquelimit, 0)
                     )}`,
                     contactuniqueadditional: `${dataReport.invoicecurrencysymbol}${formatNumberFourDecimals(
                         dataReport.contactuniqueadditionalfee
@@ -4092,8 +4095,11 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                 </div>
                                                 <div>
                                                     {formatNumberNoDecimals(
-                                                        dataReport.channelotherquantity -
-                                                        dataReport.channelothercontractedquantity
+                                                        Math.max(
+                                                            dataReport.channelotherquantity -
+                                                            dataReport.channelothercontractedquantity,
+                                                            0
+                                                        )
                                                     )}
                                                 </div>
                                                 <div>
@@ -4103,16 +4109,22 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                 </div>
                                                 <div>
                                                     {formatNumberNoDecimals(
-                                                        dataReport.channelwhatsappquantity -
-                                                        dataReport.channelwhatsappcontractedquantity
+                                                        Math.max(
+                                                            dataReport.channelwhatsappquantity -
+                                                            dataReport.channelwhatsappcontractedquantity,
+                                                            0
+                                                        )
                                                     )}
                                                 </div>
                                                 <div>
                                                     {formatNumberNoDecimals(
-                                                        dataReport.channelotherquantity -
-                                                        dataReport.channelothercontractedquantity +
-                                                        (dataReport.channelwhatsappquantity -
-                                                            dataReport.channelwhatsappcontractedquantity)
+                                                        Math.max(
+                                                            dataReport.channelotherquantity -
+                                                            dataReport.channelothercontractedquantity +
+                                                            (dataReport.channelwhatsappquantity -
+                                                                dataReport.channelwhatsappcontractedquantity),
+                                                            0
+                                                        )
                                                     )}
                                                 </div>
                                             </StyledTableCell>
@@ -4438,8 +4450,11 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                     </div>
                                                     <div>
                                                         {formatNumberNoDecimals(
-                                                            dataReport.contactuniquequantity -
-                                                            dataReport.contactuniquelimit
+                                                            Math.max(
+                                                                dataReport.contactuniquequantity -
+                                                                dataReport.contactuniquelimit,
+                                                                0
+                                                            )
                                                         )}
                                                     </div>
                                                 </StyledTableCell>
