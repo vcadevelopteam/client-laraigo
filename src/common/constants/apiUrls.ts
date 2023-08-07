@@ -67,6 +67,7 @@ const APIS_URL = {
         WS: 'https://brokermarketing.laraigo.com',
         CHATFLOW: 'https://chatflow-marketing.s3-web.us-east.cloud-object-storage.appdomain.cloud',
         FACEBOOKAPP: '1980305408682607',
+        FACEBOOKAPPLEAD: '278694331357045',
         APIKEY_GMAPS: "AIzaSyAqrFCH95Tbqwo6opvVPcdtrVd-1fnBLr4",
         INSTAGRAMAPP: '1924971937716955',
         CATALOGAPP: '2131127810437236',
@@ -79,6 +80,7 @@ const APIS_URL = {
         NIUBIZSCRIPT: 'https://static-content.vnforapps.com/v2/js/checkout.js',
         WEBFORMCHANNEL_FORM: 'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/anonymous/static/production-form.min.js',
         USELARAIGO: true,
+        BODEGAACME: false,
     },
     INCREMENTAL_PROD: {
         API: 'https://api-historical-publico.laraigo.com/api',
@@ -310,8 +312,12 @@ export const apiUrls = {
     RASADOWNLOADINT: `${BASE_URL}/rasa/download`,
     RASAUPLOADINT: `${BASE_URL}/rasa/upload`,
     RASAMODELLIST: `${BASE_URL}/rasa/list`,
+    RASAMODELDOWNLOAD: `${BASE_URL}/rasa/download-model`,
 
+
+    GENERATE_APIKEY: `${BASE_URL}/user/generatetoken`,
     INTEGRATION_URL: `${BASE_URL}/load`,
+    REPORT_DATA: `${BASE_URL}/report-data/`,
     CHANNELS: `${BASE_URL}/channel`,
     GET_PAGELIST: `${BASE_URL}/channel/getpagelist`,
     GET_PHONELIST: `${BASE_URL}/channel/getphonelist`,

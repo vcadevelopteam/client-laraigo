@@ -174,6 +174,7 @@ export { ReactComponent as BloggerColor } from './blogger.svg';
 export { ReactComponent as ChatWebColor } from './web-messenger-color.svg';
 export { ReactComponent as EmailColor } from './email-color.svg';
 export { ReactComponent as FacebookColor } from './facebook-color.svg';
+export { ReactComponent as MetaColor } from './meta-icon.svg';
 export { ReactComponent as FacebookColor2 } from './facebook-color2.svg';
 export { ReactComponent as FacebookMessengerColor } from './facebook-messenger-color.svg';
 export { ReactComponent as FacebookMessengerColor2 } from './facebook-messenger-color2.svg';
@@ -255,6 +256,9 @@ export { ReactComponent as ConfiguracionIALogo } from './ConfiguracionIALogo.svg
 export { ReactComponent as EntrenamientoIALogo } from './EntrenamientoIALogo.svg';
 export { ReactComponent as IntencionesIALogo } from './IntencionesIALogo.svg';
 export { ReactComponent as EntidadesIALogo } from './EntidadesIALogo.svg';
+export { ReactComponent as SynonimsRasaLogo } from './sinonimosRasa.svg';
+export { ReactComponent as ModelsRasaLogo } from './modelosRasa.svg';
+export { ReactComponent as TestModelRasa } from './pruebaModeloRasa.svg';
 
 export { ReactComponent as ChannelAndroid } from './channel/channel-android.svg';
 export { ReactComponent as ChannelAppStore } from './channel/channel-appstore.svg';
@@ -286,3 +290,15 @@ export { ReactComponent as ChannelWhatsApp03 } from './channel/channel-whatsapp0
 export { ReactComponent as ChannelWhatsApp04 } from './channel/channel-whatsapp04.svg';
 export { ReactComponent as ChannelWorkplace } from './channel/channel-workplace.svg';
 export { ReactComponent as ChannelYouTube } from './channel/channel-youtube.svg';
+
+// route icons
+
+export { ReactComponent as DashboardRouteIcon } from './dashboard_route.svg';
+export { ReactComponent as AnalyticRouteIcon } from './analytics_route.svg';
+export { ReactComponent as AutomatizationRouteIcon } from './automatizacion_route.svg';
+export { ReactComponent as ConectivityIARouteIcon } from './conectividadIA_route.svg';
+export { ReactComponent as ConfiguratuinIARouteIcon } from './configuracion-IA_route.svg';
+export { ReactComponent as IARouteIcon } from './IA_route.svg';
+export { ReactComponent as SalesRouteIcon } from './sales_route.svg'
+export { ReactComponent as ServiceDeskRouteIcon } from './service desk 1_route.svg'
+export { ReactComponent as IAEntrenamientoIcon } from './IA_Laraigo_Entrenamiento.svg'

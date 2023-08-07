@@ -622,12 +622,13 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
         } catch (error) {
             return null
         }
-    } else if (interactiontype === "LOG") {
+    } else if (interactiontype === "LOG" || interactiontype === "waiting") {
+        const innt = interactiontype === "waiting" ? t(langKeys.waitinginteractions, { time: interactiontext.replace("000", "") }) : interactiontext
         return (
             <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
                 [classes.interactionTextAgent]: userType !== 'client',
             })} style={{ backgroundColor: '#84818A', color: 'white' }}>
-                {showfulltext ? interactiontext : interactiontext.substring(0, 450) + "... "}
+                {showfulltext ? innt : innt.substring(0, 450) + "... "}
                 {!showfulltext && (
                     <div style={{ color: "#53bdeb", display: "contents", cursor: "pointer" }} onClick={() => setshowfulltext(true)}>{t(langKeys.showmore)}</div>
                 )
@@ -825,7 +826,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             [classes.interactionTextAgent]: userType !== 'client',
         })}>
             {interactiontext}
-            <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
+            <PickerInteraction userType={userType} fill={userType === "client" ? "#FFF" : "#eeffde"} />
             <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
         </div>
     );

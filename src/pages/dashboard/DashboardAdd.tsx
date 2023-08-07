@@ -815,8 +815,6 @@ export const LayoutItem: FC<LayoutItemProps> = ({
                         optionValue="value"
                         valueDefault={!!getValues(`${key}.funnelType`)?getValues(`${key}.funnelType`):"bycount"}
                         onChange={(v: any) => {
-                            debugger
-                            console.log(showLevel)
                             const value = v?.value || "byway";
                             setValue(`${key}.funnelType`, value);
                             if(value==="bycount") setShowLevel(false)

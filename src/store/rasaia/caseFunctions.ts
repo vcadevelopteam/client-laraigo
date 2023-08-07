@@ -160,3 +160,43 @@ export const rasaiaModelListReset = (state: IState): IState => ({
     ...state,
     rasaiamodellistresult: initialState.rasaiamodellistresult,
 });
+
+export const rasaiaModelDownload = (state: IState): IState => ({
+    ...state,
+    downloadModel: { 
+        ...state.downloadModel, 
+        loading: true, 
+        error: false, 
+        success: undefined 
+    }
+});
+
+export const rasaiaModelDownloadSuccess = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        downloadModel: {
+            ...action.payload,
+            data: action.payload.data || [],
+            loading: false,
+            error: false,
+            success: true,
+        }
+    }
+};
+
+export const rasaiaModelDownloadFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    downloadModel: {
+        ...state.downloadModel,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+        success: false,
+    }
+});
+
+export const rasaiaModelDownloadReset = (state: IState): IState => ({
+    ...state,
+    downloadModel: initialState.downloadModel,
+});

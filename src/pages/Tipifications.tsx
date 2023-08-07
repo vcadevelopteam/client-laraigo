@@ -22,8 +22,6 @@ import { IconButton } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import { TreeItem, TreeView } from '@material-ui/lab';
-import { useHistory } from 'react-router-dom';
-import paths from 'common/constants/paths';
 import { EmojiPickerZyx } from 'components'
 
 interface RowSelected {
@@ -157,7 +155,6 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataParent = multiData[3] && multiData[3].success ? multiData[3].data.filter(x=>x.type===type) : [];
-    console.log(dataParent)
 
     const datachannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const datamastercatalog = multiData[4] && multiData[4].success ? multiData[4].data : [];
@@ -533,7 +530,6 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
 }
 
 const Tipifications: FC = () => {
-    const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
@@ -545,14 +541,9 @@ const Tipifications: FC = () => {
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
     const arrayBread = [
-        { id: "view-0", name: t(langKeys.configuration_plural) },
         { id: "view-1", name: t(langKeys.classification_plural) },
     ];
     function redirectFunc(view:string){
-        if(view ==="view-0"){
-            history.push(paths.CONFIGURATION)
-            return;
-        }
         setViewSelected(view)
     }
 
@@ -753,12 +744,6 @@ const Tipifications: FC = () => {
         return (
             
             <div style={{ width: "100%", display: 'flex', flexDirection: 'column', flex: 1 }}>
-                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
-                    <TemplateBreadcrumbs
-                        breadcrumbs={arrayBread}
-                        handleClick={redirectFunc}
-                    />
-                </div>
                 <Fragment>
                     <TableZyx
                         columns={columns}
@@ -773,14 +758,6 @@ const Tipifications: FC = () => {
                         handleRegister={handleRegister}
                         ButtonsElement={()=>
                             <>
-                                <Button
-                                    variant="contained"
-                                    type="button"
-                                    color="primary"
-                                    startIcon={<ClearIcon color="secondary" />}
-                                    style={{ backgroundColor: "#FB5F5F" }}
-                                    onClick={() => history.push(paths.CONFIGURATION)}
-                                >{t(langKeys.back)}</Button>
                                 <Button
                                     variant="contained"
                                     type="button"

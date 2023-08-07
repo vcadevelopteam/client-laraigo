@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { FieldEdit, TemplateBreadcrumbs, TitleDetail } from 'components';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { Box, Button, makeStyles, TextField } from '@material-ui/core';
+import { Box, Button, makeStyles, TextField, Tooltip } from '@material-ui/core';
 import TableZyx from 'components/fields/table-simple';
 import ClearIcon from '@material-ui/icons/Clear';
 import { Dictionary, IRequestBody } from '@types';
@@ -90,11 +90,11 @@ const DetailSynonims: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
         if (waitSave) {
             if (!operationRes.loading && !operationRes.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
-                fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
+                setTimeout(()=>{fetchData && fetchData()},500);
             } else if (operationRes.error) {
-                const errormessage = t(operationRes.code || "error_unexpected_error", { module: t(langKeys.whitelist).toLocaleLowerCase() })
+                const errormessage = t(operationRes.code || "error_unexpected_error", { module: t(langKeys.sinonim).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
@@ -173,7 +173,6 @@ const DetailSynonims: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                             <TextField
                                 color="primary"
                                 fullWidth
-                                disabled={!disableSave}
                                 value={description}
                                 error={!!errors?.description?.message}
                                 helperText={errors?.description?.message || null}
@@ -304,6 +303,7 @@ export const SynonimsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected
             if(!trainResult.loading && !trainResult.error){
                 let message=t(langKeys.bot_training_scheduled)
                 dispatch(showSnackbar({ show: true, severity: "success", message:  message}))
+                fetchData();
                 setSendTrainCall(false);
                 dispatch(showBackdrop(false));
             }else if(trainResult.error){
@@ -503,14 +503,18 @@ export const SynonimsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected
                                         style={{ backgroundColor: Object.keys(selectedRows).length===0?"#dbdbdc":"#FB5F5F" }}
                                         onClick={handleDelete}
                                     >{t(langKeys.delete)}</Button>
-                                    <Button
-                                        variant="contained"
-                                        type="button"
-                                        color="primary"
-                                        disabled={dataModelAi.loading|| trainResult.loading}
-                                        style={{ backgroundColor: "#7721ad" }}
-                                        onClick={()=>{dispatch(trainrasaia({model_uuid: dataModelAi?.data?.[0]?.model_uuid||""}));setSendTrainCall(true);}}
-                                    >{t(langKeys.train)}</Button>
+                                    <Tooltip title={(dataModelAi.loading || mainResult.mainData.data.some(x=>x.model_trained) || trainResult.loading)?"El modelo ya se encuentra entrenado con la configuración actual": ""} placement="top">
+                                        <div>
+                                        <Button
+                                            variant="contained"
+                                            type="button"
+                                            color="primary"
+                                            disabled={dataModelAi.loading|| trainResult.loading || mainResult.mainData.data.some(x=>x.model_trained)}
+                                            style={{ backgroundColor: (dataModelAi.loading || mainResult.mainData.data.some(x=>x.model_trained) || trainResult.loading)?"#dbdbdc":"#7721ad" }}
+                                            onClick={()=>{dispatch(trainrasaia({model_uuid: dataModelAi?.data?.[0]?.model_uuid||""}));setSendTrainCall(true);}}
+                                        >{t(langKeys.train)}</Button>
+                                        </div>
+                                    </Tooltip>
                                 </div>
                             </div>
                         )}

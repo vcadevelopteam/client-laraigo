@@ -3436,7 +3436,7 @@ const BillingSetup: FC = () => {
     const [countryList, setcountryList] = useState<any>([]);
     const [dataPaymentPlan, setdataPaymentPlan] = useState<any>([]);
     const [dataPlan, setdataPlan] = useState<any>([]);
-    const [pageSelected, setPageSelected] = useState(user?.roledesc === "SUPERADMIN" ? 0 : 6);
+    const [pageSelected, setPageSelected] = useState(user?.roledesc?.includes("SUPERADMIN") ? 0 : 6);
     const [sentfirstinfo, setsentfirstinfo] = useState(false);
 
     useEffect(() => {
@@ -3478,22 +3478,22 @@ const BillingSetup: FC = () => {
                 textColor="primary"
                 onChange={(_, value) => setPageSelected(value)}
             >
-                {user?.roledesc === "SUPERADMIN" &&
+                {user?.roledesc?.includes("SUPERADMIN") &&
                     <AntTab label={t(langKeys.billingsetupgeneralconfiguration)} />
                 }
-                {user?.roledesc === "SUPERADMIN" &&
+                {user?.roledesc?.includes("SUPERADMIN") &&
                     <AntTab label={t(langKeys.contractedplanbyperiod)} />
                 }
-                {user?.roledesc === "SUPERADMIN" &&
+                {user?.roledesc?.includes("SUPERADMIN") &&
                     <AntTab label={t(langKeys.conversationcost)} />
                 }
-                {user?.roledesc === "SUPERADMIN" &&
+                {user?.roledesc?.includes("SUPERADMIN") &&
                     <AntTab label={t(langKeys.billingsetup_artificialintelligence)} />
                 }
-                {user?.roledesc === "SUPERADMIN" &&
+                {user?.roledesc?.includes("SUPERADMIN") &&
                     <AntTab label={t(langKeys.messagingcost)} />
                 }
-                {user?.roledesc === "SUPERADMIN" &&
+                {user?.roledesc?.includes("SUPERADMIN") &&
                     <AntTab label={t(langKeys.supportplan)} />
                 }
             </Tabs>

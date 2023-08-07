@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { apiUrls } from "common/constants";
 import { ColorInput, FieldEdit, FieldSelect } from "components";
 import { ConnectButton } from "360dialog-connect-button";

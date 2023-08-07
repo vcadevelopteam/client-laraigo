@@ -16,4 +16,7 @@ export function rasaupload(data: any) {
 export function rasamodellist(requestBody: any) {
     return APIManager.post(apiUrls.RASAMODELLIST, { data: requestBody }, true);
 }
+export function rasamodedownload(requestBody: any) {
+    return APIManager.post(apiUrls.RASAMODELDOWNLOAD, { data: requestBody }, true);
+}
 

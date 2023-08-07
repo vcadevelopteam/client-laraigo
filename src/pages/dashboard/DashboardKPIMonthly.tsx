@@ -1,6 +1,6 @@
 import React, { FC, Fragment, useEffect, useState } from "react";
 import { Box, Button, createStyles, makeStyles, Theme } from "@material-ui/core";
-import { timetoseconds, formattime, getUserGroupsSel, dashboardKPIMonthSummaryGraphSel, dashboardKPIMonthSummarySel, varpercTime, varpercnumber, getDateCleaned, getUserAsesorByOrgID } from "common/helpers";
+import { timetoseconds, formattime, getUserGroupsSel, dashboardKPIMonthSummaryGraphSel, dashboardKPIMonthSummarySel, varpercTime, varpercnumber, getDateCleaned, getUserAsesorByOrgID, formattimeMinutes } from "common/helpers";
 import { DateRangePicker, DialogZyx, FieldMultiSelect } from "components";
 import { useSelector } from "hooks";
 import { DownloadIcon, CalendarIcon } from "icons";
@@ -170,7 +170,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const initialRange = {
     startDate: new Date(new Date().getFullYear(), 0, 1),
-    endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+    endDate: new Date(new Date().getFullYear(), 11, 31),
     key: 'selection'
 }
 
@@ -416,6 +416,7 @@ const DashboardKPIMonthly: FC = () => {
                         open={openDateRangeCreateDateModal}
                         setOpen={setOpenDateRangeCreateDateModal}
                         range={dateRangeCreateDate}
+                        limitMonth={12}
                         onSelect={setDateRangeCreateDate}
                     //months={1}
                     >
@@ -565,7 +566,7 @@ const DashboardKPIMonthly: FC = () => {
                                 <LineChart data={dataSummary?.graphdata || []} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                                     <CartesianGrid stroke="#f5f5f5" />
                                     <XAxis dataKey="date" />
-                                    <YAxis tickFormatter={v => formattime(v)} width={100} domain={[0, (dataMax: any) => (Math.floor(dataMax * 1.1) + 5)]} />
+                                    <YAxis tickFormatter={v => formattimeMinutes(v)} width={100} domain={[0, (dataMax: any) => (Math.floor(dataMax * 1.1) + 5)]} />
                                     <RechartsTooltip formatter={(value: any, name: any) => [formattime(value), t(name)]} />
                                     <Legend verticalAlign="top" height={70} />
                                     <Line type="monotone" name="TME" dataKey="tme" stroke="#c0504d" strokeWidth={2}>
@@ -590,16 +591,16 @@ const DashboardKPIMonthly: FC = () => {
                                     <CartesianGrid stroke="#f5f5f5" />
                                     <Legend verticalAlign="top" />
                                     <XAxis dataKey="date" />
-                                    <YAxis tickFormatter={v => (v)} width={50} domain={[0, (dataMax: any) => (Math.floor(dataMax * 1.1) + 5)]} />
-                                    <RechartsTooltip formatter={(value: any, name: any) => [(value), t(name)]} />
+                                    <YAxis tickFormatter={v => (v.toLocaleString("en-US"))} width={50} domain={[0, (dataMax: any) => (Math.floor(dataMax * 1.1) + 5)]} />
+                                    <RechartsTooltip formatter={(value: any, name: any) => [(value.toLocaleString("en-US")), t(name)]} />
                                     <Line type="monotone" name={t(langKeys.report_kpioperativo_tickets)} dataKey="tickets_count" stroke="#c0504d" strokeWidth={2}>
-                                        <LabelList dataKey="tickets_count" position="top" fill="#c0504d" />
+                                        <LabelList dataKey="tickets_count" position="top" fill="#c0504d" formatter={(v: any) => v.toLocaleString("en-US")} />
                                     </Line>
                                     <Line type="monotone" name={t(langKeys.agent_plural)} dataKey="agents" stroke="#4f81bd" strokeWidth={2}>
-                                        <LabelList dataKey="agents" position="top" fill="#4f81bd" />
+                                        <LabelList dataKey="agents" position="top" fill="#4f81bd" formatter={(v: any) => v.toLocaleString("en-US")} />
                                     </Line>
                                     <Line type="monotone" name={t(langKeys.ticket_balancetimes)} dataKey="balancetimes_avg" stroke="#9bbb59" strokeWidth={2}>
-                                        <LabelList dataKey="balancetimes_avg" position="top" fill="#9bbb59" />
+                                        <LabelList dataKey="balancetimes_avg" position="top" fill="#9bbb59" formatter={(v: any) => v.toLocaleString("en-US")} />
                                     </Line>
                                 </LineChart>
                             </ResponsiveContainer>
@@ -616,14 +617,14 @@ const DashboardKPIMonthly: FC = () => {
                                     <CartesianGrid stroke="#f5f5f5" />
                                     <XAxis dataKey="date" />
                                     <YAxis yAxisId="right" orientation="right" tickFormatter={v => v + " %"} domain={[0, 200]} />
-                                    <YAxis yAxisId="left" width={100} domain={[0, (dataMax: any) => (Math.floor(dataMax * 1.1) + 5)]} />
-                                    <RechartsTooltip formatter={(value: any, name: any, props: any) => [props.dataKey === "participacion" ? value + "%" : value, t(name)]} />
+                                    <YAxis yAxisId="left" tickFormatter={v => (v.toLocaleString("en-US"))} width={100} domain={[0, (dataMax: any) => (Math.floor(dataMax * 1.1) + 5)]} />
+                                    <RechartsTooltip formatter={(value: any, name: any, props: any) => [props.dataKey === "participacion" ? value + "%" : value.toLocaleString("en-US"), t(name)]} />
                                     <Legend verticalAlign="top" height={50} />
                                     <Line yAxisId="left" type="monotone" name={t(langKeys.report_kpioperativo_tickets)} dataKey="tickets_count" stroke="#c0504d" strokeWidth={2}>
-                                        <LabelList dataKey="tickets_count" position="top" fill="#c0504d" />
+                                        <LabelList dataKey="tickets_count" position="top" fill="#c0504d" formatter={(v: any) => v.toLocaleString("en-US")} />
                                     </Line>
                                     <Line yAxisId="left" type="monotone" name={t(langKeys.report_kpioperativo_abandoned_tickets)} dataKey="abandoned_tickets" stroke="#4f81bd" strokeWidth={2}>
-                                        <LabelList dataKey="abandoned_tickets" position="top" fill="#4f81bd" />
+                                        <LabelList dataKey="abandoned_tickets" position="top" fill="#4f81bd" formatter={(v: any) => v.toLocaleString("en-US")} />
                                     </Line>
                                     <Line yAxisId="right" type="monotone" name={t(langKeys.percparticipation)} dataKey="participacion" stroke="#9bbb59" strokeWidth={2}>
                                         <LabelList dataKey="participacion" position="top" fill="#9bbb59" formatter={(value: any, name: any) => [value + "%", t(name)]} />
@@ -642,8 +643,8 @@ const DashboardKPIMonthly: FC = () => {
                                 <LineChart width={730} height={250} data={dataSummary?.graphdata || []} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                                     <CartesianGrid stroke="#f5f5f5" />
                                     <XAxis dataKey="date" />
-                                    <YAxis yAxisId="right" orientation="right" tickFormatter={v => formattime(v)} width={50} domain={[0, (dataMax: any) => (Math.floor(dataMax * 3) + 5)]} />
-                                    <YAxis yAxisId="left" tickFormatter={v => formattime(v)} width={50} domain={[0, (dataMax: any) => (Math.floor(dataMax * 1.05) + 5)]} />
+                                    <YAxis yAxisId="right" orientation="right" tickFormatter={v => formattimeMinutes(v)} width={50} domain={[0, (dataMax: any) => (Math.floor(dataMax * 3) + 5)]} />
+                                    <YAxis yAxisId="left" tickFormatter={v => formattimeMinutes(v)} width={50} domain={[0, (dataMax: any) => (Math.floor(dataMax * 1.05) + 5)]} />
                                     <RechartsTooltip formatter={(value: any, name: any) => [formattime(value), t(name)]} />
                                     <Legend verticalAlign="top" height={50} />
                                     <Line yAxisId="right" type="monotone" name={t(langKeys.report_voicecall_holdingtime)} dataKey="holdingwaitingtime_avg" stroke="#c0504d" strokeWidth={2}>

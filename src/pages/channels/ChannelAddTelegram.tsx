@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { ChannelTelegram } from "icons";
 import { ColorInput, FieldEdit } from "components";
 import { FC, useEffect, useState } from "react";

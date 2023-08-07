@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, SyntheticEvent, useEffect, useMemo, useState } from "react"; // we need this to make JSX compile
+import React, { FC, useEffect, useMemo, useState } from "react"; // we need this to make JSX compile
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import IconButton from "@material-ui/core/IconButton";
@@ -54,17 +54,11 @@ import {
 } from "store/popus/actions";
 import ClearIcon from "@material-ui/icons/Clear";
 import { apiUrls } from "common/constants";
-import { request_send, resetRequest } from "store/integrationmanager/actions";
+import { resetRequest } from "store/integrationmanager/actions";
 import { dictToArrayKV, extractVariables, isJson } from "common/helpers";
-import BackupIcon from "@material-ui/icons/Backup";
 import ListAltIcon from "@material-ui/icons/ListAlt";
 import GetAppIcon from '@material-ui/icons/GetApp';
-import { useHistory } from "react-router-dom";
-import paths from "common/constants/paths";
-import { RadioGroupProps, TextField } from "@material-ui/core";
-import axios from "axios";
-import { set } from "date-fns";
-import { main } from "network/service/common";
+import { TextField } from "@material-ui/core";
 
 interface RowSelected {
    row: Dictionary | null;
@@ -173,11 +167,9 @@ const levelFields: Record<string,string> = {
 // let tailFields: any[] = [];
 
 const IntegrationManager: FC = () => {
-   const history = useHistory();
    const dispatch = useDispatch();
    const { t } = useTranslation();
    const mainResult = useSelector((state) => state.main);
-   // console.log(mainResult);
    const executeResult = useSelector((state) => state.main.execute);
 
    const [viewSelected, setViewSelected] = useState("view-1");
@@ -188,14 +180,9 @@ const IntegrationManager: FC = () => {
    const [waitSave, setWaitSave] = useState(false);
    const [mainData, setMainData] = useState<any>([]);
    const arrayBread = [
-      { id: "view-0", name: t(langKeys.configuration_plural) },
       { id: "view-1", name: t(langKeys.integrationmanager_plural) },
    ];
    function redirectFunc(view: string) {
-      if (view === "view-0") {
-         history.push(paths.CONFIGURATION);
-         return;
-      }
       setViewSelected(view);
    }
 
@@ -348,37 +335,12 @@ const IntegrationManager: FC = () => {
                flex: 1,
             }}
          >
-            <div
-               style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-               }}
-            >
-               <TemplateBreadcrumbs
-                  breadcrumbs={arrayBread}
-                  handleClick={redirectFunc}
-               />
-            </div>
             <TableZyx
                columns={columns}
                titlemodule={t(langKeys.integrationmanager_plural, {
                   count: 2,
                })}
                data={mainData}
-               ButtonsElement={() => (
-                  <Button
-                     disabled={mainResult.mainData.loading}
-                     variant="contained"
-                     type="button"
-                     color="primary"
-                     startIcon={<ClearIcon color="secondary" />}
-                     style={{ backgroundColor: "#FB5F5F" }}
-                     onClick={() => history.push(paths.CONFIGURATION)}
-                  >
-                     {t(langKeys.back)}
-                  </Button>
-               )}
                onClickRow={handleEdit}
                download={true}
                loading={mainResult.mainData.loading}
@@ -442,7 +404,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
    fetchData,
    arrayBread,
 }) => {
-   // console.log(row);
    const classes = useStyles();
    const [waitSave, setWaitSave] = useState(false);
    const executeRes = useSelector((state) => state.main.execute);
@@ -464,9 +425,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
    const [openResponseModal, setOpenResponseModal] = useState(false);
    const [responseData, setResponseData] = useState<any>();
 
-   // const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-
-   // console.log(edit);
    const dataKeys = new Set([
       ...dataLevelKeys,
       ...(row?.fields
@@ -476,13 +434,12 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
 
    const {
       control,
-      watch,
       register,
       handleSubmit,
       setValue,
       getValues,
       trigger,
-      formState: { errors, isValid },
+      formState: { errors },
    } = useForm<FormFields>({
       defaultValues: {
          isnew: row ? false : true,
@@ -526,7 +483,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
       fields: urlParams,
       append: urlParamsAppend,
       remove: urlParamsRemove,
-      update: urlParamsUpdate,
    } = useFieldArray({
       control,
       name: "url_params",
@@ -724,31 +680,8 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
       setValue("bodytype", data?.key || "");
       await trigger("bodytype");
    };
-
-   const onChangeUrlParams = async (
-      index: number,
-      param: string,
-      value: string
-   ) => {
-      console.log("Cambiando Un Param", param, value);
-      // const updatedParams = [...urlParams];
-      // updatedParams[index] = { ...updatedParams[index], [param]: value };
-      // const urlParamsString = updatedParams
-      //    .map((param) => `${param.key}=${param.value}`)
-      //    .join("&");
-      // const url = urlParamsString ? "?" + urlParamsString : "";
-      // setValue("url", url);
-      updateUrl();
-      // setValue("url_params", { ...urlParams[index], [param]: value });
-      await trigger("url_params");
-   };
-   const onBlurUrlParam = (index: any, param: string, value: any) => {
-      urlParamsUpdate(index, { ...urlParams[index], [param]: value });
-   };
-
+   
    const onClickAddUrlParam = async () => {
-      console.log("Añadiending Un Param");
-
       urlParamsAppend({ key: "", value: "" });
       updateUrl();
    };
@@ -761,27 +694,10 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
 
       setValue("url", queryParams ? `${baseUrl}?${queryParams}` : baseUrl);
    };
-   // updateUrl(card: any) {
-   //    let baseUrl = card.config.url.split('?')[0];
-   //    let queryParams = card.config.url_params
-   //      .map(
-   //        (p: any) =>
-   //          `${p.key.includes('{') ? p.key : encodeURIComponent(p.key)}=${
-   //            p.value.includes('{') ? p.value : encodeURIComponent(p.value)
-   //          }`
-   //      )
-   //      .join('&');
-   //    card.config.url = queryParams ? `${baseUrl}?${queryParams}` : baseUrl;
-   //  }
 
    const onClickDeleteUrlParam = async (index: number) => {
       urlParamsRemove(index);
       updateUrl();
-   };
-
-   const onChangeResult = async (data: Dictionary) => {
-      setValue("results", data?.key || "");
-      await trigger("results");
    };
 
    const onClickAddResult = async () => {
@@ -910,13 +826,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
       return rex.test(value);
    };
 
-   const testRequestRes = useSelector(
-      (state) => state.integrationmanager.request
-   );
-   const onClickTest = () => {
-      dispatch(request_send(getValues()));
-   };
-
    const onClickTestButton = async () => {
       const allOk = await trigger();
       if (!allOk) {
@@ -924,13 +833,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
       }
       setOpenTestModal(true);
    };
-   const [openDialogDomain, setOpenDialogDomain] = useState(false);
-
-   useEffect(() => {
-      if (testRequestRes?.data !== null) {
-         setOpenDialogDomain(true);
-      }
-   }, [testRequestRes]);
 
    const cleanRequestData = () => {
       dispatch(resetRequest());
@@ -1060,7 +962,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
       const file = files?.item(0);
       if (file) {
          const data: any = await uploadExcel(file, undefined);
-         console.log(data);
          if (data.length > 0) {
             dispatch(showBackdrop(true));
             dispatch(
@@ -1073,7 +974,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
 
    useEffect(() => {
       if (waitImport) {
-         console.log('Esperando la importación')
          if (!executeRes.loading && !executeRes.error) {
             dispatch(
                showSnackbar({
@@ -1083,8 +983,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                })
             );
             dispatch(showBackdrop(false));
-            console.log(mainAuxRes.data)
-            console.log('Importación terminada')
             setWaitImport(false);
          } else if (executeRes.error) {
             const errormessage = t(executeRes.code || "error_unexpected_error", { module: `${t(langKeys.key).toLocaleLowerCase()}` })
@@ -1096,7 +994,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                })
             );
             dispatch(showBackdrop(false));
-            console.log('Importación terminada con error')
             setWaitImport(false);
          }
       }
@@ -1151,7 +1048,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
    }, [executeRes, waitDelete]);
 
    const handleViewTable = () => {
-      // console.log('LLegando a este handleViewTable')
       dispatch(showBackdrop(true));
       dispatch(getCollectionAux(getdataIntegrationManager(getValues("id"))));
       setWaitView(true);
@@ -1159,7 +1055,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
 
    useEffect(() => {
       if (waitView) {
-         // console.log('LLegando a este useEffect')
          if (!mainAuxRes.loading && !mainAuxRes.error) {
             dispatch(showBackdrop(false));
             setWaitView(false);
@@ -1174,7 +1069,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                      accessor: c,
                   }))
                   );
-               console.log('LLegando a este if')
             }
             setOpenViewTableModal(true);
          } else if (mainAuxRes.error) {
@@ -1198,7 +1092,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
    }, [mainAuxRes, waitView]);
 
    const onChangeURL = (value: string) => {
-      console.log(value);
       const params = new URLSearchParams(value.split("?")[1]);
       const urlParams: { key: string; value: string }[] = [];
 
@@ -1210,36 +1103,18 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
          urlParams.push({ key, value });
          result = iterator.next();
       }
-      console.log("Mi urlParams", urlParams);
       setValue("url_params", urlParams);
       setValue("url", value);
    };
 
    const [headFields, tailFields] = useMemo(() => {
-      // console.log('Actualizando los headFields y tailFields');
       if(!fields) return [[],[]];
       const headLenght = levelFields[getValues("level")] === 'corpid' ? 1 : 2;
-      // console.log(fields);
       const head = fields.slice(0, headLenght) as FieldArrayWithId<FormFields, "fields", "id">[];
       const tail = fields.slice(headLenght) as FieldArrayWithId<FormFields, "fields", "id">[];
-      // console.log('headFields', headFields)
-      // console.log('tailFields', tailFields)
-      // console.log('head', head)
-      // console.log('tail', tail)
       return [head, tail];
    }, [fields]);
 
-   // if(fields){
-   //    console.log(getValues("level"));
-   //    console.log(levelFields[getValues("level")]);
-   //    const headLenght = levelFields[getValues("level")] === 'corpid' ? 1 : 2;
-   //    console.log(headLenght);
-   //    headFields = fields.slice(0, headLenght) as FieldArrayWithId<FormFields, "fields", "id">[];
-   //    tailFields = fields.slice(headLenght) as FieldArrayWithId<FormFields, "fields", "id">[];
-   //    // console.log('headFields', headFields)
-   //    // console.log('tailFields', tailFields)
-   
-   // }
    return (
       <div style={{ width: "100%" }}>
          {/* <pre>{JSON.stringify(watch(), null, 2)}</pre> */}
@@ -2087,7 +1962,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({
                                             `results.${i}.path` as const,
                                             {
                                                validate: (value: string) => {
-                                                  console.log(value !== "");
                                                   return (
                                                      value !== "" ||
                                                      (t(
@@ -2536,10 +2410,8 @@ const ModalIntegrationManager: React.FC<ModalProps> = ({
    const [selectedKeys, setSelectedKeys] = useState<
       { variable: string; path: string }[]
    >([]);
-   // console.log(data);
    useEffect(() => {
       return () => {
-         console.log("cleaning component");
          setResponseData({});
          setSelectedKeys([]);
       };
@@ -2557,7 +2429,6 @@ const ModalIntegrationManager: React.FC<ModalProps> = ({
    };
 
    const getHtml: any = (data: any, param: string, path: string) => {
-      // console.log(data);
       if (Array.isArray(data)) {
          return (
             <div
@@ -2663,7 +2534,6 @@ const ModalIntegrationManager: React.FC<ModalProps> = ({
          }}
       >
          <div className="row-zyx">
-            {console.log(data.data)}
             {Object.keys(data.data || {}).map((param) => {
                return <>{getHtml(data.data[param], param, param)}</>;
             })}
@@ -2712,7 +2582,6 @@ const ModalTestIntegrationManager: React.FC<
             },
             []
          );
-         console.log(missinParamsObject);
          if (hasMissingParams) {
             setParamsCompleted(false);
             setMissingParams(missinParamsObject);
@@ -2780,8 +2649,6 @@ const ModalTestIntegrationManager: React.FC<
    };
    const compareParams = (urlParams: Dictionary[], params: string[]) => {
       //
-      console.log(urlParams);
-      console.log(params);
       debugger;
       const urlParamsCleaned = urlParams?.reduce(
          (acc: any, x: any) => [...acc, "...-1-1-11"],
@@ -2808,12 +2675,11 @@ const ModalTestIntegrationManager: React.FC<
       // debugger
       const cleanedParams = cleanParams(formData?.url);
 
-      const { hasMissingParams, missingParams } = compareParams(
+      const { hasMissingParams } = compareParams(
          formData?.url_params,
          cleanedParams
       );
       if (hasMissingParams) {
-         console.log(missingParams);
       }
 
       dispatch(
@@ -2982,12 +2848,9 @@ const ModalViewTable: React.FC<ViewTableModalProps> = ({
    const mainAuxRes = useSelector((state) => state.main.mainAux);
    const executeRes = useSelector((state) => state.main.execute);
    
-   // console.log(mainAuxRes.data)
 
    useEffect(() => {
-      console.log("Se montó el modal");
       if(data.length < 0){
-         console.log("Se montó el modal");
          
       }
       return () => {
@@ -2996,17 +2859,12 @@ const ModalViewTable: React.FC<ViewTableModalProps> = ({
    }, []);
 
    useEffect(() => {
-      console.log("Waitimport Value: ", waitImport)
       if(waitImport){
          if (!executeRes.loading && !executeRes.error) {
-            console.log('Llamando al getCollectionAux')
             dispatch(getCollectionAux(getdataIntegrationManager(formId)));
          }
       }
       // if (data.length > 0) {
-      //    console.log("Hay data");
-      //    console.log(data);
-      //    console.log(columns)
       // }
       return () => {
          dispatch(resetMainAux());
@@ -3015,19 +2873,15 @@ const ModalViewTable: React.FC<ViewTableModalProps> = ({
 
    const tableData = useMemo(() => {
       if (mainAuxRes.data.length === 0 || mainAuxRes.data[0]?.data === null) {
-      //   console.log('Array vacío');
         return [];
       }
-      // console.log('Actualizando los rows');
       return mainAuxRes.data[0]?.data ?? [];
     }, [mainAuxRes.data]);
     
     const columnsData = useMemo(() => {
       if (mainAuxRes.data.length === 0 || mainAuxRes.data[0]?.data === null || mainAuxRes.data[0]?.data.length === 0) {
-      //   console.log('Array vacío');
         return [];
       }
-      // console.log('Actualizando las columnas');
       return Object.keys(mainAuxRes.data[0]?.data[0]).map((c) => ({
         Header: c,
         accessor: c,
@@ -3036,8 +2890,6 @@ const ModalViewTable: React.FC<ViewTableModalProps> = ({
     
 
   
-   // console.log(tableData)
-   // console.log(columnsData)
  
 
    return (

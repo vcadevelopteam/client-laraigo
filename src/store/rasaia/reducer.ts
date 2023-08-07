@@ -13,6 +13,7 @@ export interface IState {
     rasaiadownloadresult: any,
     rasaiauploadresult: IRequest,
     rasaiamodellistresult: IRequest,
+    downloadModel: any,
 }
 
 export const initialState: IState = {
@@ -20,6 +21,7 @@ export const initialState: IState = {
     rasaiadownloadresult: { ...initialCommon, data: null, loading: false, error: false, success: undefined },
     rasaiauploadresult: { ...initialCommon, data: null, loading: false, error: false, success: undefined },
     rasaiamodellistresult: { ...initialCommon, data: null, loading: false, error: false, success: undefined },
+    downloadModel: { ...initialCommon, data: null, loading: false, error: false, success: undefined },
 };
 
 export default createReducer<IState>(initialState, {
@@ -42,4 +44,9 @@ export default createReducer<IState>(initialState, {
     [actionTypes.MODELLIST_FAILURE]: caseFunctions.rasaiaModelListFailure,
     [actionTypes.MODELLIST_SUCCESS]: caseFunctions.rasaiaModelListSuccess,
     [actionTypes.MODELLIST_RESET]: caseFunctions.rasaiaModelListReset,
+
+    [actionTypes.MODELDOWNLOAD_SEND]: caseFunctions.rasaiaModelDownload,
+    [actionTypes.MODELDOWNLOAD_FAILURE]: caseFunctions.rasaiaModelDownloadFailure,
+    [actionTypes.MODELDOWNLOAD_SUCCESS]: caseFunctions.rasaiaModelDownloadSuccess,
+    [actionTypes.MODELDOWNLOAD_RESET]: caseFunctions.rasaiaModelDownloadReset,
 });

@@ -199,6 +199,7 @@ const InfoTab: React.FC = () => {
     useEffect(() => {
         register('firstname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('lastname');
+        register('persontype');
         register('email');
         register('observation');
         register('phone');
@@ -223,6 +224,7 @@ const InfoTab: React.FC = () => {
             getValuesFromDomain("ESTADOCIVIL"),
             getValuesFromDomain("NIVELEDUCATIVO"),
             getPropertySelByName("OCUPACION"),
+            getValuesFromDomain("TIPOPERSONA"),
         ]));
         return () => {
             dispatch(resetMultiMainAux());
@@ -272,6 +274,18 @@ const InfoTab: React.FC = () => {
                             valueDefault={getValues('lastname')}
                             error={errors?.lastname?.message}
                             maxLength={50}
+                        />
+                        <FieldSelect
+                            onChange={(value) => setValue('persontype', value?.domainvalue)}
+                            label={t(langKeys.personType)}
+                            loading={multiData.loading}
+                            data={multiData.data[6]?.data || []}
+                            valueDefault={getValues('persontype')}
+                            error={errors?.persontype?.message}
+                            uset={true}
+                            prefixTranslation="type_persontype_"
+                            optionValue="domainvalue"
+                            optionDesc="domainvalue"
                         />
                         <FieldSelect
                             onChange={(value) => setValue('documenttype', value?.domainvalue)}
@@ -432,6 +446,12 @@ const InfoTab: React.FC = () => {
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.lastname)}</div>
                         <div>{person?.lastname}</div>
+                    </div>
+                </div>}
+                {person?.lastname && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.personType)}</div>
+                        <div>{person?.persontype}</div>
                     </div>
                 </div>}
                 {person?.email && <div className={classes.containerName}>
