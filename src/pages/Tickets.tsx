@@ -632,32 +632,6 @@ const DialogAnalyticsIA: React.FC<{ ticket: Dictionary | null, openModal: boolea
         }
     }, [ticket, openModal])
 
-    const columnsWNLC = React.useMemo(
-        () => [
-            {
-                Header: t(langKeys.report_interaction_interactiontext),
-                accessor: 'interactiontext',
-                NoFilter: true,
-            },
-            {
-                Header: t(langKeys.type),
-                accessor: 'oustype',
-                NoFilter: true,
-            },
-            {
-                Header: `${t(langKeys.class)} 1`,
-                accessor: 'wnlcclass1',
-                NoFilter: true,
-            },
-            {
-                Header: `${t(langKeys.class)} 2`,
-                accessor: 'wnlcclass2',
-                NoFilter: true,
-            },
-        ],
-        []
-    );
-
     const columnsWNLU = React.useMemo(
         () => [
             {
@@ -704,107 +678,6 @@ const DialogAnalyticsIA: React.FC<{ ticket: Dictionary | null, openModal: boolea
         []
     );
 
-    const columnsWTA = React.useMemo(
-        () => [
-            {
-                Header: t(langKeys.report_interaction_interactiontext),
-                accessor: 'interactiontext',
-                NoFilter: true,
-            },
-            {
-                Header: t(langKeys.type),
-                accessor: 'oustype',
-                NoFilter: true,
-            },
-            {
-                Header: t(langKeys.excited),
-                accessor: 'wtaexcited',
-                NoFilter: true,
-            },
-            {
-                Header: t(langKeys.satisfied),
-                accessor: 'wtasatisfied',
-                NoFilter: true,
-            },
-            {
-                Header: t(langKeys.frustrated),
-                accessor: 'wtafrustrated',
-                NoFilter: true,
-            },
-            {
-                Header: t(langKeys.sad),
-                accessor: 'wtasad',
-                NoFilter: true,
-            },
-            {
-                Header: t(langKeys.courteous),
-                accessor: 'wtapolite',
-                NoFilter: true,
-            },
-            {
-                Header: t(langKeys.blunt),
-                accessor: 'wtaimpolite',
-                NoFilter: true,
-            },
-            {
-                Header: t(langKeys.empathic),
-                accessor: 'wtasympathetic',
-                NoFilter: true,
-            },
-        ],
-        []
-    );
-
-    const columnsWTAG = React.useMemo(
-        () => [
-            {
-                Header: t(langKeys.report_interaction_interactiontext),
-                accessor: 'interactiontext',
-                NoFilter: true,
-            },
-            {
-                Header: t(langKeys.type),
-                accessor: 'oustype',
-                NoFilter: true,
-            },
-            {
-                Header: t(langKeys.happiness),
-                accessor: 'wtajoy',
-                NoFilter: true,
-            },
-            {
-                Header: t(langKeys.sadness),
-                accessor: 'wtasadness',
-                NoFilter: true,
-            },
-            {
-                Header: t(langKeys.anger),
-                accessor: 'wtaanger',
-                NoFilter: true,
-            },
-            {
-                Header: t(langKeys.fear),
-                accessor: 'wtafear',
-                NoFilter: true,
-            },
-            {
-                Header: t(langKeys.analytical),
-                accessor: 'wtaanalytical',
-                NoFilter: true,
-            },
-            {
-                Header: t(langKeys.confident),
-                accessor: 'wtaconfident',
-                NoFilter: true,
-            },
-            {
-                Header: t(langKeys.tentative),
-                accessor: 'wtatentative',
-                NoFilter: true,
-            },
-        ],
-        []
-    );
     const columnsWA = React.useMemo(
         () => [
             {
@@ -884,46 +757,21 @@ const DialogAnalyticsIA: React.FC<{ ticket: Dictionary | null, openModal: boolea
             >
                 <AntTab
                     label={(
-                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>{t(langKeys.natural_language_classifier)}</div>
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>Natural Language Understanding (NLU)</div>
                     )}
                 />
                 <AntTab
                     label={(
-                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>{t(langKeys.natural_language_understanding)}</div>
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>Watson Assistant</div>
                     )}
                 />
                 <AntTab
                     label={(
-                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>{t(langKeys.tone_analyzer_customer)}</div>
-                    )}
-                />
-                <AntTab
-                    label={(
-                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>{t(langKeys.tone_analyzer_general)}</div>
-                    )}
-                />
-                <AntTab
-                    label={(
-                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>{t(langKeys.watson_assistant)}</div>
-                    )}
-                />
-                <AntTab
-                    label={(
-                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>{t(langKeys.rasa_assistant)}</div>
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>Rasa IA</div>
                     )}
                 />
             </Tabs>
             <AntTabPanel index={0} currentIndex={tabIndex}>
-                <TableZyx
-                    columns={columnsWNLC}
-                    data={resultAnalyticsIA.data}
-                    filterGeneral={false}
-                    download={false}
-                    loading={resultAnalyticsIA.loading}
-                    register={false}
-                />
-            </AntTabPanel>
-            <AntTabPanel index={1} currentIndex={tabIndex}>
                 <TableZyx
                     columns={columnsWNLU}
                     data={resultAnalyticsIA.data}
@@ -933,27 +781,7 @@ const DialogAnalyticsIA: React.FC<{ ticket: Dictionary | null, openModal: boolea
                     register={false}
                 />
             </AntTabPanel>
-            <AntTabPanel index={2} currentIndex={tabIndex}>
-                <TableZyx
-                    columns={columnsWTA}
-                    data={resultAnalyticsIA.data}
-                    filterGeneral={false}
-                    download={false}
-                    loading={resultAnalyticsIA.loading}
-                    register={false}
-                />
-            </AntTabPanel>
-            <AntTabPanel index={3} currentIndex={tabIndex}>
-                <TableZyx
-                    columns={columnsWTAG}
-                    data={resultAnalyticsIA.data}
-                    filterGeneral={false}
-                    download={false}
-                    loading={resultAnalyticsIA.loading}
-                    register={false}
-                />
-            </AntTabPanel>
-            <AntTabPanel index={4} currentIndex={tabIndex}>
+            <AntTabPanel index={1} currentIndex={tabIndex}>
                 <TableZyx
                     columns={columnsWA}
                     data={resultAnalyticsIA.data}
@@ -963,7 +791,7 @@ const DialogAnalyticsIA: React.FC<{ ticket: Dictionary | null, openModal: boolea
                     register={false}
                 />
             </AntTabPanel>
-            <AntTabPanel index={5} currentIndex={tabIndex}>
+            <AntTabPanel index={2} currentIndex={tabIndex}>
                 <TableZyx
                     columns={columnsRasa}
                     data={resultAnalyticsIA.data}
