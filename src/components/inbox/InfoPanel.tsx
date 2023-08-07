@@ -276,7 +276,7 @@ const InfoTab: React.FC = () => {
                             maxLength={50}
                         />
                         <FieldSelect
-                            onChange={(value) => setValue('persontype', value?.domainvalue)}
+                            onChange={(value) => setValue('persontype', value?.domainvalue||"")}
                             label={t(langKeys.personType)}
                             loading={multiData.loading}
                             data={multiData.data[6]?.data || []}
