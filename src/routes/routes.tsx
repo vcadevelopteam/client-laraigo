@@ -2,7 +2,7 @@ import { ViewsClassificationConfig, RouteConfig } from "@types";
 import paths from "common/constants/paths";
 import {
     DashboardIcon, TicketIcon, ReportsIcon, MessageInboxIcon, SupervisorIcon, ConfigurationIcon, ExtrasIcon,
-    BotDesignerIcon, BillingSetupIcon, InvoiceIcon,
+    BotDesignerIcon, BillingSetupIcon, TimeSheetIcon, InvoiceIcon,
     //IAServicesIcon,
     OutboundIcon,
     MessageTemplateIcon,
@@ -249,6 +249,13 @@ export const routes: RouteConfig[] = [
         icon: (className) => <BillingSetupIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
+        key: paths.TIMESHEET,
+        description: <Trans i18nKey={langKeys.timesheet} />,
+        tooltip: <Trans i18nKey={langKeys.timesheet} />,
+        path: paths.TIMESHEET,
+        icon: (className) => <TimeSheetIcon style={{ width: 22, height: 22 }} className={className} />,
+    },
+    {
         key: paths.INVOICE,
         description: <Trans i18nKey={langKeys.invoice} />,
         tooltip: <Trans i18nKey={langKeys.invoice} />,
@@ -346,7 +353,7 @@ export const routes: RouteConfig[] = [
         tooltip: <Trans i18nKey={langKeys.laraigoia} />,
         path: paths.IASERVICES,
         //icon: (className) => <IAServicesIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
-        icon: (className) => <IALaraigoLogo style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
+        icon: (className) => <IALaraigoLogo style={{ width: 22, height: 22, opacity: 0.8 }} className={className} />,
     },
     // {
     //     key: paths.EXTRAS,
@@ -538,4 +545,3 @@ export const routes: RouteConfig[] = [
 
 export const subroutes: RouteConfig[] = [
 ];
-
