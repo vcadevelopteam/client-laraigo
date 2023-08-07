@@ -31,6 +31,7 @@ import {
     billingPeriodArtificialIntelligenceSel,
     billingPeriodUpd,
     billingpersonreportsel,
+    billingReportConsulting,
     billingReportConversationWhatsApp,
     billingReportHsmHistory,
     billinguserreportsel,
@@ -3389,25 +3390,25 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
     }, [executeResult, waitCalculate]);
 
     const triggerExportDataPerson = () => {
-        dispatch(exportData(billingpersonreportsel(dataMain), "BillingPersonReport", "excel", true));
+        dispatch(exportData(billingpersonreportsel(dataMain), "BillingPerson", "excel", true));
         dispatch(showBackdrop(true));
         setWaitExport(true);
     };
 
     const triggerExportDataUser = () => {
-        dispatch(exportData(billinguserreportsel(dataMain), "BillingUserReport", "excel", true));
-        dispatch(showBackdrop(true));
-        setWaitExport(true);
-    };
-
-    const triggerExportDataConversation = () => {
-        dispatch(exportData(billingReportConversationWhatsApp(dataMain), "BillingUserConversation", "excel", true));
+        dispatch(exportData(billinguserreportsel(dataMain), "BillingUser", "excel", true));
         dispatch(showBackdrop(true));
         setWaitExport(true);
     };
 
     const triggerExportDataConsulting = () => {
-        window.alert("MISSING QUERY");
+        dispatch(exportData(billingReportConsulting(dataMain), "BillingConsulting", "excel", true));
+        dispatch(showBackdrop(true));
+        setWaitExport(true);
+    };
+
+    const triggerExportDataConversation = () => {
+        dispatch(exportData(billingReportConversationWhatsApp(dataMain), "BillingConversation", "excel", true));
         dispatch(showBackdrop(true));
         setWaitExport(true);
     };
@@ -3454,19 +3455,317 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
             let intelligenceDetail: {}[] = [];
 
             if (dataReport.artificialintelligencedata) {
-
+                dataReport.artificialintelligencedata.forEach((element: any) => {
+                    intelligenceDetail.push({
+                        intelligenceadditionalfee:
+                            element.aiquantity <= element.freeinteractions
+                                ? ""
+                                : `${dataReport.invoicecurrencysymbol}${formatNumberFourDecimals(
+                                    element.additionalfee
+                                )}`,
+                        intelligenceaicost: `${dataReport.invoicecurrencysymbol}${formatNumber(element.additionalfee)}`,
+                        intelligenceaiquantity: `${formatNumberNoDecimals(element.aiquantity)}`,
+                        intelligencefreeinteractions: `${formatNumberNoDecimals(element.freeinteractions)}`,
+                        intelligenceigv: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                            element.additionalfee - element.additionalfee / dataReport.exchangetax
+                        )}`,
+                        intelligenceplan: element.plan,
+                        intelligenceprovider: element.provider,
+                        intelligenceservice: element.type,
+                        intelligencetaxableamount: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                            element.additionalfee / dataReport.exchangetax
+                        )}`,
+                    });
+                });
             }
 
-            let reportbody = {
-                parameters: {},
+            let reportBody = {
                 dataonparameters: true,
                 key: "period-report",
                 method: "",
                 reportname: "period-report",
                 template: t(langKeys.billingreport_template),
+                parameters: {
+                    reporttitle: `${dataReport.orgdescription || dataReport.corpdescription}`,
+                    reportplan: `${dataReport.billingplan}`,
+                    reportperiod: `${dataReport.year} - ${String(dataReport.month).padStart(2, "0")}`,
+                    basecostnet: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.billingplanfee / dataReport.exchangetax
+                    )}`,
+                    basecosttax: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.billingplanfee - dataReport.billingplanfee / dataReport.exchangetax
+                    )}`,
+                    basecost: `${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.billingplanfee)}`,
+                    agentcontractedquantity: `${formatNumberNoDecimals(dataReport.agentcontractedquantity)}`,
+                    agentadditionalquantity: `${formatNumberNoDecimals(dataReport.agentadditionalquantity)}`,
+                    agentfee: `${dataReport.invoicecurrencysymbol}${formatNumberFourDecimals(
+                        dataReport.agentadditionalfee
+                    )}`,
+                    agentcostnet: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.agenttotalfee / dataReport.exchangetax
+                    )}`,
+                    agentcosttax: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.agenttotalfee - dataReport.agenttotalfee / dataReport.exchangetax
+                    )}`,
+                    agentcost: `${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.agenttotalfee)}`,
+                    channelotherquantity: `${formatNumberNoDecimals(dataReport.channelothercontractedquantity)}`,
+                    channelotheradditional: `${formatNumberNoDecimals(
+                        dataReport.channelotherquantity - dataReport.channelothercontractedquantity
+                    )}`,
+                    channelwhatsappquantity: `${formatNumberNoDecimals(dataReport.channelwhatsappcontractedquantity)}`,
+                    channelwhatsappadditional: `${formatNumberNoDecimals(
+                        dataReport.channelwhatsappquantity - dataReport.channelwhatsappcontractedquantity
+                    )}`,
+                    channeladditional: `${formatNumberNoDecimals(
+                        dataReport.channelotherquantity -
+                        dataReport.channelothercontractedquantity +
+                        (dataReport.channelwhatsappquantity - dataReport.channelwhatsappcontractedquantity)
+                    )}`,
+                    channelotherfee: `${dataReport.invoicecurrencysymbol}${formatNumberFourDecimals(
+                        dataReport.channelotheradditionalfee
+                    )}`,
+                    channelwhatsappfee: `${dataReport.invoicecurrencysymbol}${formatNumberFourDecimals(
+                        dataReport.channelwhatsappadditionalfee
+                    )}`,
+                    channelcostnet: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.channeltotalfee / dataReport.exchangetax
+                    )}`,
+                    channelcosttax: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.channeltotalfee - dataReport.channeltotalfee / dataReport.exchangetax
+                    )}`,
+                    channelcost: `${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.channeltotalfee)}`,
+                    conversationfreequantity: `${formatNumberNoDecimals(dataReport.channelwhatsappfreequantity)}`,
+                    conversationuserservicequantity: `${formatNumberNoDecimals(
+                        dataReport.conversationuserservicequantity
+                    )}`,
+                    conversationbusinessutilityquantity: `${formatNumberNoDecimals(
+                        dataReport.conversationbusinessutilityquantity
+                    )}`,
+                    conversationbusinessauthenticationquantity: `${formatNumberNoDecimals(
+                        dataReport.conversationbusinessauthenticationquantity
+                    )}`,
+                    conversationbusinessmarketingquantity: `${formatNumberNoDecimals(
+                        dataReport.conversationbusinessmarketingquantity
+                    )}`,
+                    conversationuserfeenet: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.conversationuserservicetotalfee / dataReport.exchangetax
+                    )}`,
+                    conversationbusinessutilityfeenet: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.conversationbusinessutilitytotalfee / dataReport.exchangetax
+                    )}`,
+                    conversationbusinessauthenticationfeenet: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.conversationbusinessauthenticationtotalfee / dataReport.exchangetax
+                    )}`,
+                    conversationbusinessmarketingfeenet: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.conversationbusinessmarketingtotalfee / dataReport.exchangetax
+                    )}`,
+                    conversationuserfeetax: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.conversationuserservicetotalfee -
+                        dataReport.conversationuserservicetotalfee / dataReport.exchangetax
+                    )}`,
+                    conversationbusinessutilityfeetax: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.conversationbusinessutilitytotalfee -
+                        dataReport.conversationbusinessutilitytotalfee / dataReport.exchangetax
+                    )}`,
+                    conversationbusinessauthenticationfeetax: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.conversationbusinessauthenticationtotalfee -
+                        dataReport.conversationbusinessauthenticationtotalfee / dataReport.exchangetax
+                    )}`,
+                    conversationbusinessmarketingfeetax: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.conversationbusinessmarketingtotalfee -
+                        dataReport.conversationbusinessmarketingtotalfee / dataReport.exchangetax
+                    )}`,
+                    conversationuserfee: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.conversationuserservicetotalfee
+                    )}`,
+                    conversationbusinessutilityfee: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.conversationbusinessutilitytotalfee
+                    )}`,
+                    conversationbusinessauthenticationfee: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.conversationbusinessauthenticationtotalfee
+                    )}`,
+                    conversationbusinessmarketingfee: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.conversationbusinessmarketingtotalfee
+                    )}`,
+                    messagingsmslimit: `${formatNumberNoDecimals(dataReport.messagingsmsquantitylimit)}`,
+                    messagingsmsquantity: `${formatNumberNoDecimals(dataReport.messagingsmsquantity)}`,
+                    messagingmaillimit: `${formatNumberNoDecimals(dataReport.messagingmailquantitylimit)}`,
+                    messagingmailquantity: `${formatNumberNoDecimals(dataReport.messagingmailquantity)}`,
+                    messagingsmsadditional: `${dataReport.invoicecurrencysymbol}${formatNumberFourDecimals(
+                        dataReport.messagingsmsadditionalfee
+                    )}`,
+                    messagingmailadditional: `${dataReport.invoicecurrencysymbol}${formatNumberFourDecimals(
+                        dataReport.messagingmailadditionalfee
+                    )}`,
+                    messagingsmsfeenet: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.messagingsmstotalfee / dataReport.exchangetax
+                    )}`,
+                    messagingmailfeenet: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.messagingmailtotalfee / dataReport.exchangetax
+                    )}`,
+                    messagingsmsfeetax: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.messagingsmstotalfee - dataReport.messagingsmstotalfee / dataReport.exchangetax
+                    )}`,
+                    messagingmailfeetax: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.messagingmailtotalfee - dataReport.messagingmailtotalfee / dataReport.exchangetax
+                    )}`,
+                    messagingsmsfee: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.messagingsmstotalfee
+                    )}`,
+                    messagingmailfee: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.messagingmailtotalfee
+                    )}`,
+                    voicephonefeenet: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.voicetelephonefee / dataReport.exchangetax
+                    )}`,
+                    voicepstnfeenet: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.voicepstnfee / dataReport.exchangetax
+                    )}`,
+                    voicevoipfeenet: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.voicevoipfee / dataReport.exchangetax
+                    )}`,
+                    voicerecordingfeenet: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.voicerecordingfee / dataReport.exchangetax
+                    )}`,
+                    voiceotherfeenet: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.voiceotherfee / dataReport.exchangetax
+                    )}`,
+                    voicephonefeetax: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.voicetelephonefee - dataReport.voicetelephonefee / dataReport.exchangetax
+                    )}`,
+                    voicepstnfeetax: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.voicepstnfee - dataReport.voicepstnfee / dataReport.exchangetax
+                    )}`,
+                    voicevoipfeetax: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.voicevoipfee - dataReport.voicevoipfee / dataReport.exchangetax
+                    )}`,
+                    voicerecordingfeetax: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.voicerecordingfee - dataReport.voicerecordingfee / dataReport.exchangetax
+                    )}`,
+                    voiceotherfeetax: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.voiceotherfee - dataReport.voiceotherfee / dataReport.exchangetax
+                    )}`,
+                    voicephonefee: `${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.voicetelephonefee)}`,
+                    voicepstnfee: `${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.voicepstnfee)}`,
+                    voicevoipfee: `${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.voicevoipfee)}`,
+                    voicerecordingfee: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.voicerecordingfee
+                    )}`,
+                    voiceotherfee: `${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.voiceotherfee)}`,
+                    contactcalculateunique: (dataReport?.contactcalculatemode || "").includes("UNIQUE"),
+                    contactuniquelimit: `${formatNumberNoDecimals(dataReport.contactuniquelimit)}`,
+                    contactuniquequantity: `${formatNumberNoDecimals(dataReport.contactuniquequantity)}`,
+                    contactuniquequantityadditional: `${formatNumberNoDecimals(
+                        dataReport.contactuniquequantity - dataReport.contactuniquelimit
+                    )}`,
+                    contactuniqueadditional: `${dataReport.invoicecurrencysymbol}${formatNumberFourDecimals(
+                        dataReport.contactuniqueadditionalfee
+                    )}`,
+                    contactuniquefeenet: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.contactuniquefee / dataReport.exchangetax
+                    )}`,
+                    contactuniquefeetax: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.contactuniquefee - dataReport.contactuniquefee / dataReport.exchangetax
+                    )}`,
+                    contactuniquefee: `${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.contactuniquefee)}`,
+                    contactotherquantity: `${formatNumberNoDecimals(dataReport.contactotherquantity)}`,
+                    contactwhatsappquantity: `${formatNumberNoDecimals(dataReport.contactwhatsappquantity)}`,
+                    contactotheradditional: `${dataReport.invoicecurrencysymbol}${formatNumberFourDecimals(
+                        dataReport.contactotheradditionalfee
+                    )}`,
+                    contactwhatsappadditional: `${dataReport.invoicecurrencysymbol}${formatNumberFourDecimals(
+                        dataReport.contactwhatsappadditionalfee
+                    )}`,
+                    contactotherfeenet: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.contactotherfee / dataReport.exchangetax
+                    )}`,
+                    contactwhatsappfeenet: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.contactwhatsappfee / dataReport.exchangetax
+                    )}`,
+                    contactotherfeetax: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.contactotherfee - dataReport.contactotherfee / dataReport.exchangetax
+                    )}`,
+                    contactwhatsappfeetax: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.contactwhatsappfee - dataReport.contactwhatsappfee / dataReport.exchangetax
+                    )}`,
+                    contactotherfee: `${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.contactotherfee)}`,
+                    contactwhatsappfee: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.contactwhatsappfee
+                    )}`,
+                    infrastructureenabled: (dataReport?.billinginfrastructurefee || 0) > 0,
+                    infrastructurefeenet: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.billinginfrastructurefee / dataReport.exchangetax
+                    )}`,
+                    infrastructurefeetax: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.billinginfrastructurefee -
+                        dataReport.billinginfrastructurefee / dataReport.exchangetax
+                    )}`,
+                    infrastructurefee: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.billinginfrastructurefee
+                    )}`,
+                    supportplan: `${t(langKeys.supportplan)}: ${dataReport.billingsupportplan}`,
+                    supportfeenet: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.billingsupportfee / dataReport.exchangetax
+                    )}`,
+                    supportfeetax: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.billingsupportfee - dataReport.billingsupportfee / dataReport.exchangetax
+                    )}`,
+                    supportfee: `${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.billingsupportfee)}`,
+                    consultingquantity: `${formatNumberNoDecimals(dataReport.consultinghourquantity)}`,
+                    consultingfeenet: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.consultingtotalfee / dataReport.exchangetax
+                    )}`,
+                    consultingfeetax: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.consultingtotalfee - dataReport.consultingtotalfee / dataReport.exchangetax
+                    )}`,
+                    consultingfee: `${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.consultingtotalfee)}`,
+                    additionalservice01: `${dataReport.additionalservice01}`,
+                    additionalservice01feenet: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.additionalservice01fee / dataReport.exchangetax
+                    )}`,
+                    additionalservice01feetax: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.additionalservice01fee - dataReport.additionalservice01fee / dataReport.exchangetax
+                    )}`,
+                    additionalservice01fee: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.additionalservice01fee
+                    )}`,
+                    additionalservice02: `${dataReport.additionalservice02}`,
+                    additionalservice02feenet: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.additionalservice02fee / dataReport.exchangetax
+                    )}`,
+                    additionalservice02feetax: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.additionalservice02fee - dataReport.additionalservice02fee / dataReport.exchangetax
+                    )}`,
+                    additionalservice02fee: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.additionalservice02fee
+                    )}`,
+                    additionalservice03: `${dataReport.additionalservice03}`,
+                    additionalservice03feenet: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.additionalservice03fee / dataReport.exchangetax
+                    )}`,
+                    additionalservice03feetax: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.additionalservice03fee - dataReport.additionalservice03fee / dataReport.exchangetax
+                    )}`,
+                    additionalservice03fee: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.additionalservice03fee
+                    )}`,
+                    billingtotalnet: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.billingtotalfeenet
+                    )}`,
+                    billingtotaltax: `${dataReport.invoicecurrencysymbol}${formatNumber(
+                        dataReport.billingtotalfeetax
+                    )}`,
+                    billingtotal: `${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.billingtotalfee)}`,
+                    generalwhatsappquantity: `${formatNumberNoDecimals(dataReport.contactwhatsappquantity)}`,
+                    generalotherquantity: `${formatNumberNoDecimals(dataReport.contactotherquantity)}`,
+                    generalconversationquantity: `${formatNumberNoDecimals(dataReport.conversationquantity)}`,
+                    generalinteractionquantity: `${formatNumberNoDecimals(dataReport.conversationinteractionquantity)}`,
+                    generalsupervisorquantity: `${formatNumberNoDecimals(dataReport.agentsupervisoractivequantity)}`,
+                    generaladviserquantity: `${formatNumberNoDecimals(dataReport.agentadviseractivequantity)}`,
+                },
             };
 
-            dispatch(reportPdf(reportbody));
+            dispatch(reportPdf(reportBody));
             dispatch(showBackdrop(true));
             setWaitPdf(true);
         }
@@ -3672,13 +3971,21 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                     {dataReport && (
                         <div className={classes.containerDetail}>
                             <div className="row-zyx">
-                                <FieldView className="col-6" label={t(langKeys.client)} value={dataReport.orgdescription || dataReport.corpdescription} />
+                                <FieldView
+                                    className="col-6"
+                                    label={t(langKeys.client)}
+                                    value={dataReport.orgdescription || dataReport.corpdescription}
+                                />
                             </div>
                             <div className="row-zyx">
                                 <FieldView className="col-6" label={"Plan"} value={dataReport.billingplan} />
                             </div>
                             <div className="row-zyx">
-                                <FieldView className="col-6" label={t(langKeys.period)} value={`${dataReport.year} - ${String(dataReport.month).padStart(2, '0')}`} />
+                                <FieldView
+                                    className="col-6"
+                                    label={t(langKeys.period)}
+                                    value={`${dataReport.year} - ${String(dataReport.month).padStart(2, "0")}`}
+                                />
                             </div>
                             <TableContainer component={Paper} style={{ overflow: "hidden" }}>
                                 <Table aria-label="customized table">
@@ -3711,9 +4018,17 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                             </StyledTableCell>
                                             <StyledTableCell></StyledTableCell>
                                             <StyledTableCell></StyledTableCell>
-                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.billingplanfee / dataReport.exchangetax)}`}</StyledTableCell>
-                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.billingplanfee - (dataReport.billingplanfee / dataReport.exchangetax))}`}</StyledTableCell>
-                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.billingplanfee)}`}</StyledTableCell>
+                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
+                                                }${formatNumber(
+                                                    dataReport.billingplanfee / dataReport.exchangetax
+                                                )}`}</StyledTableCell>
+                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
+                                                }${formatNumber(
+                                                    dataReport.billingplanfee -
+                                                    dataReport.billingplanfee / dataReport.exchangetax
+                                                )}`}</StyledTableCell>
+                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
+                                                }${formatNumber(dataReport.billingplanfee)}`}</StyledTableCell>
                                         </StyledTableRow>
                                         <StyledTableRow>
                                             <StyledTableCell>
@@ -3731,22 +4046,31 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumberFourDecimals(dataReport.agentadditionalfee)}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumberFourDecimals(
+                                                    dataReport.agentadditionalfee
+                                                )}`}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.agenttotalfee / dataReport.exchangetax)}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.agenttotalfee / dataReport.exchangetax
+                                                )}`}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.agenttotalfee - (dataReport.agenttotalfee / dataReport.exchangetax))}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.agenttotalfee -
+                                                    dataReport.agenttotalfee / dataReport.exchangetax
+                                                )}`}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.agenttotalfee)}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.agenttotalfee
+                                                )}`}</div>
                                             </StyledTableCell>
                                         </StyledTableRow>
                                         <StyledTableRow>
@@ -3762,18 +4086,45 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>{formatNumberNoDecimals(dataReport.channelothercontractedquantity)}</div>
-                                                <div>{formatNumberNoDecimals(dataReport.channelotherquantity - dataReport.channelothercontractedquantity)}</div>
-                                                <div>{formatNumberNoDecimals(dataReport.channelwhatsappcontractedquantity)}</div>
-                                                <div>{formatNumberNoDecimals(dataReport.channelwhatsappquantity - dataReport.channelwhatsappcontractedquantity)}</div>
-                                                <div>{formatNumberNoDecimals((dataReport.channelotherquantity - dataReport.channelothercontractedquantity) + (dataReport.channelwhatsappquantity - dataReport.channelwhatsappcontractedquantity))}</div>
+                                                <div>
+                                                    {formatNumberNoDecimals(dataReport.channelothercontractedquantity)}
+                                                </div>
+                                                <div>
+                                                    {formatNumberNoDecimals(
+                                                        dataReport.channelotherquantity -
+                                                        dataReport.channelothercontractedquantity
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    {formatNumberNoDecimals(
+                                                        dataReport.channelwhatsappcontractedquantity
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    {formatNumberNoDecimals(
+                                                        dataReport.channelwhatsappquantity -
+                                                        dataReport.channelwhatsappcontractedquantity
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    {formatNumberNoDecimals(
+                                                        dataReport.channelotherquantity -
+                                                        dataReport.channelothercontractedquantity +
+                                                        (dataReport.channelwhatsappquantity -
+                                                            dataReport.channelwhatsappcontractedquantity)
+                                                    )}
+                                                </div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumberFourDecimals(dataReport.channelotheradditionalfee)}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumberFourDecimals(
+                                                    dataReport.channelotheradditionalfee
+                                                )}`}</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumberFourDecimals(dataReport.channelwhatsappadditionalfee)}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumberFourDecimals(
+                                                    dataReport.channelwhatsappadditionalfee
+                                                )}`}</div>
                                                 <div style={{ color: "transparent" }}>.</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
@@ -3782,7 +4133,9 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.channeltotalfee / dataReport.exchangetax)}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.channeltotalfee / dataReport.exchangetax
+                                                )}`}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
@@ -3790,7 +4143,10 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.channeltotalfee - (dataReport.channeltotalfee / dataReport.exchangetax))}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.channeltotalfee -
+                                                    dataReport.channeltotalfee / dataReport.exchangetax
+                                                )}`}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
@@ -3798,7 +4154,9 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(dataReport.channeltotalfee)}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.channeltotalfee
+                                                )}`}</div>
                                             </StyledTableCell>
                                         </StyledTableRow>
                                         <StyledTableRow>
@@ -3816,11 +4174,27 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
+                                                <div>
+                                                    {formatNumberNoDecimals(dataReport.channelwhatsappfreequantity)}
+                                                </div>
+                                                <div>
+                                                    {formatNumberNoDecimals(dataReport.conversationuserservicequantity)}
+                                                </div>
+                                                <div>
+                                                    {formatNumberNoDecimals(
+                                                        dataReport.conversationbusinessutilityquantity
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    {formatNumberNoDecimals(
+                                                        dataReport.conversationbusinessauthenticationquantity
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    {formatNumberNoDecimals(
+                                                        dataReport.conversationbusinessmarketingquantity
+                                                    )}
+                                                </div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
@@ -3833,26 +4207,61 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.conversationuserservicetotalfee / dataReport.exchangetax
+                                                )}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.conversationbusinessutilitytotalfee /
+                                                    dataReport.exchangetax
+                                                )}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.conversationbusinessauthenticationtotalfee /
+                                                    dataReport.exchangetax
+                                                )}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.conversationbusinessmarketingtotalfee /
+                                                    dataReport.exchangetax
+                                                )}`}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.conversationuserservicetotalfee -
+                                                    dataReport.conversationuserservicetotalfee /
+                                                    dataReport.exchangetax
+                                                )}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.conversationbusinessutilitytotalfee -
+                                                    dataReport.conversationbusinessutilitytotalfee /
+                                                    dataReport.exchangetax
+                                                )}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.conversationbusinessauthenticationtotalfee -
+                                                    dataReport.conversationbusinessauthenticationtotalfee /
+                                                    dataReport.exchangetax
+                                                )}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.conversationbusinessmarketingtotalfee -
+                                                    dataReport.conversationbusinessmarketingtotalfee /
+                                                    dataReport.exchangetax
+                                                )}`}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.conversationuserservicetotalfee
+                                                )}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.conversationbusinessutilitytotalfee
+                                                )}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.conversationbusinessauthenticationtotalfee
+                                                )}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.conversationbusinessmarketingtotalfee
+                                                )}`}</div>
                                             </StyledTableCell>
                                         </StyledTableRow>
                                         <StyledTableRow>
@@ -3867,38 +4276,60 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
+                                                <div>
+                                                    {formatNumberNoDecimals(dataReport.messagingsmsquantitylimit)}
+                                                </div>
+                                                <div>{formatNumberNoDecimals(dataReport.messagingsmsquantity)}</div>
+                                                <div>
+                                                    {formatNumberNoDecimals(dataReport.messagingmailquantitylimit)}
+                                                </div>
+                                                <div>{formatNumberNoDecimals(dataReport.messagingmailquantity)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumberFourDecimals(
+                                                    dataReport.messagingsmsadditionalfee
+                                                )}`}</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumberFourDecimals(
+                                                    dataReport.messagingmailadditionalfee
+                                                )}`}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.messagingsmstotalfee / dataReport.exchangetax
+                                                )}`}</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.messagingmailtotalfee / dataReport.exchangetax
+                                                )}`}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.messagingsmstotalfee -
+                                                    dataReport.messagingsmstotalfee / dataReport.exchangetax
+                                                )}`}</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.messagingmailtotalfee -
+                                                    dataReport.messagingmailtotalfee / dataReport.exchangetax
+                                                )}`}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.messagingsmstotalfee
+                                                )}`}</div>
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.messagingmailtotalfee
+                                                )}`}</div>
                                             </StyledTableCell>
                                         </StyledTableRow>
                                         <StyledTableRow>
@@ -3930,116 +4361,348 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.voicetelephonefee / dataReport.exchangetax
+                                                )}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.voicepstnfee / dataReport.exchangetax
+                                                )}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.voicevoipfee / dataReport.exchangetax
+                                                )}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.voicerecordingfee / dataReport.exchangetax
+                                                )}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.voiceotherfee / dataReport.exchangetax
+                                                )}`}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.voicetelephonefee -
+                                                    dataReport.voicetelephonefee / dataReport.exchangetax
+                                                )}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.voicepstnfee -
+                                                    dataReport.voicepstnfee / dataReport.exchangetax
+                                                )}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.voicevoipfee -
+                                                    dataReport.voicevoipfee / dataReport.exchangetax
+                                                )}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.voicerecordingfee -
+                                                    dataReport.voicerecordingfee / dataReport.exchangetax
+                                                )}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.voiceotherfee -
+                                                    dataReport.voiceotherfee / dataReport.exchangetax
+                                                )}`}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="right">
                                                 <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.voicetelephonefee
+                                                )}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.voicepstnfee
+                                                )}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.voicevoipfee
+                                                )}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.voicerecordingfee
+                                                )}`}</div>
+                                                <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                    dataReport.voiceotherfee
+                                                )}`}</div>
                                             </StyledTableCell>
                                         </StyledTableRow>
+                                        {(dataReport?.contactcalculatemode || "").includes("UNIQUE") && (
+                                            <StyledTableRow>
+                                                <StyledTableCell>
+                                                    <div>
+                                                        <b>{t(langKeys.billingreportcontacts)}</b>
+                                                    </div>
+                                                    <div>{t(langKeys.freecontacts)}</div>
+                                                    <div>{t(langKeys.billingreporttotalcontacts)}</div>
+                                                    <div>{t(langKeys.billingreportadditionalcontacts)}</div>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="right">
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div>{formatNumberNoDecimals(dataReport.contactuniquelimit)}</div>
+                                                    <div>
+                                                        {formatNumberNoDecimals(dataReport.contactuniquequantity)}
+                                                    </div>
+                                                    <div>
+                                                        {formatNumberNoDecimals(
+                                                            dataReport.contactuniquequantity -
+                                                            dataReport.contactuniquelimit
+                                                        )}
+                                                    </div>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="right">
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div>{`${dataReport.invoicecurrencysymbol
+                                                        }${formatNumberFourDecimals(
+                                                            dataReport.contactuniqueadditionalfee
+                                                        )}`}</div>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="right">
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                        dataReport.contactuniquefee / dataReport.exchangetax
+                                                    )}`}</div>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="right">
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                        dataReport.contactuniquefee -
+                                                        dataReport.contactuniquefee / dataReport.exchangetax
+                                                    )}`}</div>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="right">
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                        dataReport.contactuniquefee
+                                                    )}`}</div>
+                                                </StyledTableCell>
+                                            </StyledTableRow>
+                                        )}
+                                        {!(dataReport?.contactcalculatemode || "").includes("UNIQUE") && (
+                                            <StyledTableRow>
+                                                <StyledTableCell>
+                                                    <div>
+                                                        <b>{t(langKeys.billingreportcontacts)}</b>
+                                                    </div>
+                                                    <div>{t(langKeys.billingreport_contactother)}</div>
+                                                    <div>{t(langKeys.billingreport_contactwhatsapp)}</div>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="right">
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div>{formatNumberNoDecimals(dataReport.contactotherquantity)}</div>
+                                                    <div>
+                                                        {formatNumberNoDecimals(dataReport.contactwhatsappquantity)}
+                                                    </div>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="right">
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div>{`${dataReport.invoicecurrencysymbol
+                                                        }${formatNumberFourDecimals(
+                                                            dataReport.contactotheradditionalfee
+                                                        )}`}</div>
+                                                    <div>{`${dataReport.invoicecurrencysymbol
+                                                        }${formatNumberFourDecimals(
+                                                            dataReport.contactwhatsappadditionalfee
+                                                        )}`}</div>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="right">
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                        dataReport.contactotherfee / dataReport.exchangetax
+                                                    )}`}</div>
+                                                    <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                        dataReport.contactwhatsappfee / dataReport.exchangetax
+                                                    )}`}</div>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="right">
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                        dataReport.contactotherfee -
+                                                        dataReport.contactotherfee / dataReport.exchangetax
+                                                    )}`}</div>
+                                                    <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                        dataReport.contactwhatsappfee -
+                                                        dataReport.contactwhatsappfee / dataReport.exchangetax
+                                                    )}`}</div>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="right">
+                                                    <div style={{ color: "transparent" }}>.</div>
+                                                    <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                        dataReport.contactotherfee
+                                                    )}`}</div>
+                                                    <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                        dataReport.contactwhatsappfee
+                                                    )}`}</div>
+                                                </StyledTableCell>
+                                            </StyledTableRow>
+                                        )}
+                                        {dataReport?.artificialintelligencedata?.map((dataIntelligence: any) => (
+                                            <StyledTableRow>
+                                                <StyledTableCell>
+                                                    <div>
+                                                        <b>{`${dataIntelligence.provider} ${dataIntelligence.type}: ${dataIntelligence.plan}`}</b>
+                                                    </div>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="right">
+                                                    <div>{formatNumberNoDecimals(dataIntelligence.aiquantity)}</div>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="right">
+                                                    {dataIntelligence.aiquantity >
+                                                        dataIntelligence.freeinteractions && (
+                                                            <div>{`${dataReport.invoicecurrencysymbol
+                                                                }${formatNumberFourDecimals(
+                                                                    dataIntelligence.additionalfee
+                                                                )}`}</div>
+                                                        )}
+                                                    {dataIntelligence.aiquantity <=
+                                                        dataIntelligence.freeinteractions && (
+                                                            <div style={{ color: "transparent" }}>.</div>
+                                                        )}
+                                                </StyledTableCell>
+                                                <StyledTableCell align="right">
+                                                    <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                        dataIntelligence.aicost / dataReport.exchangetax
+                                                    )}`}</div>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="right">
+                                                    <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                        dataIntelligence.aicost -
+                                                        dataIntelligence.aicost / dataReport.exchangetax
+                                                    )}`}</div>
+                                                </StyledTableCell>
+                                                <StyledTableCell align="right">
+                                                    <div>{`${dataReport.invoicecurrencysymbol}${formatNumber(
+                                                        dataIntelligence.aicost
+                                                    )}`}</div>
+                                                </StyledTableCell>
+                                            </StyledTableRow>
+                                        ))}
+                                        {(dataReport?.billinginfrastructurefee || 0) > 0 && (
+                                            <StyledTableRow>
+                                                <StyledTableCell>
+                                                    <b>{t(langKeys.billingreport_infrastructure)}</b>
+                                                </StyledTableCell>
+                                                <StyledTableCell></StyledTableCell>
+                                                <StyledTableCell></StyledTableCell>
+                                                <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
+                                                    }${formatNumber(
+                                                        dataReport.billinginfrastructurefee / dataReport.exchangetax
+                                                    )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
+                                                    }${formatNumber(
+                                                        dataReport.billinginfrastructurefee -
+                                                        dataReport.billinginfrastructurefee / dataReport.exchangetax
+                                                    )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
+                                                    }${formatNumber(
+                                                        dataReport.billinginfrastructurefee
+                                                    )}`}</StyledTableCell>
+                                            </StyledTableRow>
+                                        )}
                                         <StyledTableRow>
                                             <StyledTableCell>
-                                                <div>
-                                                    <b>{t(langKeys.billingreportcontacts)}</b>
-                                                </div>
-                                                <div>{t(langKeys.freecontacts)}</div>
-                                                <div>{t(langKeys.billingreporttotalcontacts)}</div>
-                                                <div>{t(langKeys.billingreportadditionalcontacts)}</div>
-                                            </StyledTableCell>
-                                            <StyledTableCell align="right">
-                                                <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
-                                                <div>0.00</div>
-                                            </StyledTableCell>
-                                            <StyledTableCell align="right">
-                                                <div style={{ color: "transparent" }}>.</div>
-                                                <div style={{ color: "transparent" }}>.</div>
-                                                <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
-                                            </StyledTableCell>
-                                            <StyledTableCell align="right">
-                                                <div style={{ color: "transparent" }}>.</div>
-                                                <div style={{ color: "transparent" }}>.</div>
-                                                <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
-                                            </StyledTableCell>
-                                            <StyledTableCell align="right">
-                                                <div style={{ color: "transparent" }}>.</div>
-                                                <div style={{ color: "transparent" }}>.</div>
-                                                <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
-                                            </StyledTableCell>
-                                            <StyledTableCell align="right">
-                                                <div style={{ color: "transparent" }}>.</div>
-                                                <div style={{ color: "transparent" }}>.</div>
-                                                <div style={{ color: "transparent" }}>.</div>
-                                                <div>0.00</div>
-                                            </StyledTableCell>
-                                        </StyledTableRow>
-                                        <StyledTableRow>
-                                            <StyledTableCell>
-                                                <b>{t(langKeys.billingreport_infrastructure)}</b>
+                                                <b>{`${t(langKeys.supportplan)}: ${dataReport.billingsupportplan}`}</b>
                                             </StyledTableCell>
                                             <StyledTableCell></StyledTableCell>
                                             <StyledTableCell></StyledTableCell>
-                                            <StyledTableCell align="right">0.00</StyledTableCell>
-                                            <StyledTableCell align="right">0.00</StyledTableCell>
-                                            <StyledTableCell align="right">0.00</StyledTableCell>
-                                        </StyledTableRow>
-                                        <StyledTableRow>
-                                            <StyledTableCell>
-                                                <b>0.00</b>
-                                            </StyledTableCell>
-                                            <StyledTableCell></StyledTableCell>
-                                            <StyledTableCell></StyledTableCell>
-                                            <StyledTableCell align="right">0.00</StyledTableCell>
-                                            <StyledTableCell align="right">0.00</StyledTableCell>
-                                            <StyledTableCell align="right">0.00</StyledTableCell>
+                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
+                                                }${formatNumber(
+                                                    dataReport.billingsupportfee / dataReport.exchangetax
+                                                )}`}</StyledTableCell>
+                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
+                                                }${formatNumber(
+                                                    dataReport.billingsupportfee -
+                                                    dataReport.billingsupportfee / dataReport.exchangetax
+                                                )}`}</StyledTableCell>
+                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
+                                                }${formatNumber(dataReport.billingsupportfee)}`}</StyledTableCell>
                                         </StyledTableRow>
                                         <StyledTableRow>
                                             <StyledTableCell>
                                                 <b>{t(langKeys.billingreport_consulting)}</b>
                                             </StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                {formatNumberNoDecimals(dataReport.consultinghourquantity)}
+                                            </StyledTableCell>
                                             <StyledTableCell></StyledTableCell>
-                                            <StyledTableCell></StyledTableCell>
-                                            <StyledTableCell align="right">0.00</StyledTableCell>
-                                            <StyledTableCell align="right">0.00</StyledTableCell>
-                                            <StyledTableCell align="right">0.00</StyledTableCell>
+                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
+                                                }${formatNumber(
+                                                    dataReport.consultingtotalfee / dataReport.exchangetax
+                                                )}`}</StyledTableCell>
+                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
+                                                }${formatNumber(
+                                                    dataReport.consultingtotalfee -
+                                                    dataReport.consultingtotalfee / dataReport.exchangetax
+                                                )}`}</StyledTableCell>
+                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
+                                                }${formatNumber(dataReport.consultingtotalfee)}`}</StyledTableCell>
                                         </StyledTableRow>
-                                        <StyledTableRow>
-                                            <StyledTableCell></StyledTableCell>
-                                            <StyledTableCell></StyledTableCell>
-                                            <StyledTableCell></StyledTableCell>
-                                            <StyledTableCell align="right"></StyledTableCell>
-                                            <StyledTableCell align="right"></StyledTableCell>
-                                            <StyledTableCell align="right"></StyledTableCell>
-                                        </StyledTableRow>
+                                        {dataReport.additionalservice01 && (
+                                            <StyledTableRow>
+                                                <StyledTableCell></StyledTableCell>
+                                                <StyledTableCell></StyledTableCell>
+                                                <StyledTableCell></StyledTableCell>
+                                                <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
+                                                    }${formatNumber(
+                                                        dataReport.additionalservice01fee / dataReport.exchangetax
+                                                    )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
+                                                    }${formatNumber(
+                                                        dataReport.additionalservice01fee -
+                                                        dataReport.additionalservice01fee / dataReport.exchangetax
+                                                    )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
+                                                    }${formatNumber(dataReport.additionalservice01fee)}`}</StyledTableCell>
+                                            </StyledTableRow>
+                                        )}
+                                        {dataReport.additionalservice02 && (
+                                            <StyledTableRow>
+                                                <StyledTableCell></StyledTableCell>
+                                                <StyledTableCell></StyledTableCell>
+                                                <StyledTableCell></StyledTableCell>
+                                                <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
+                                                    }${formatNumber(
+                                                        dataReport.additionalservice02fee / dataReport.exchangetax
+                                                    )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
+                                                    }${formatNumber(
+                                                        dataReport.additionalservice02fee -
+                                                        dataReport.additionalservice02fee / dataReport.exchangetax
+                                                    )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
+                                                    }${formatNumber(dataReport.additionalservice02fee)}`}</StyledTableCell>
+                                            </StyledTableRow>
+                                        )}
+                                        {dataReport.additionalservice03 && (
+                                            <StyledTableRow>
+                                                <StyledTableCell></StyledTableCell>
+                                                <StyledTableCell></StyledTableCell>
+                                                <StyledTableCell></StyledTableCell>
+                                                <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
+                                                    }${formatNumber(
+                                                        dataReport.additionalservice03fee / dataReport.exchangetax
+                                                    )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
+                                                    }${formatNumber(
+                                                        dataReport.additionalservice03fee -
+                                                        dataReport.additionalservice03fee / dataReport.exchangetax
+                                                    )}`}</StyledTableCell>
+                                                <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
+                                                    }${formatNumber(dataReport.additionalservice03fee)}`}</StyledTableCell>
+                                            </StyledTableRow>
+                                        )}
                                         <StyledTableRow>
                                             <StyledTableCell>
                                                 <b>{t(langKeys.periodamount)}</b>
                                             </StyledTableCell>
                                             <StyledTableCell></StyledTableCell>
                                             <StyledTableCell></StyledTableCell>
-                                            <StyledTableCell align="right">0.00</StyledTableCell>
-                                            <StyledTableCell align="right">0.00</StyledTableCell>
-                                            <StyledTableCell align="right">0.00</StyledTableCell>
+                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
+                                                }${formatNumber(dataReport.billingtotalfeenet)}`}</StyledTableCell>
+                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
+                                                }${formatNumber(dataReport.billingtotalfeetax)}`}</StyledTableCell>
+                                            <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
+                                                }${formatNumber(dataReport.billingtotalfee)}`}</StyledTableCell>
                                         </StyledTableRow>
                                     </TableBody>
                                 </Table>
@@ -4052,27 +4715,33 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                     <TableHead>
                                         <TableRow>
                                             <StyledTableCell align="center">
-                                                <div>0.00</div>
+                                                <div>{formatNumberNoDecimals(dataReport.contactwhatsappquantity)}</div>
                                                 <div>{t(langKeys.billingreport_unique)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="center">
-                                                <div>0.00</div>
+                                                <div>{formatNumberNoDecimals(dataReport.contactotherquantity)}</div>
                                                 <div>{t(langKeys.billingreport_other)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="center">
-                                                <div>0.00</div>
+                                                <div>{formatNumberNoDecimals(dataReport.conversationquantity)}</div>
                                                 <div>{t(langKeys.billingreport_conversation)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="center">
-                                                <div>0.00</div>
+                                                <div>
+                                                    {formatNumberNoDecimals(dataReport.conversationinteractionquantity)}
+                                                </div>
                                                 <div>{t(langKeys.billingreport_interaction)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="center">
-                                                <div>0.00</div>
+                                                <div>
+                                                    {formatNumberNoDecimals(dataReport.agentsupervisoractivequantity)}
+                                                </div>
                                                 <div>{t(langKeys.billingreport_supervisor)}</div>
                                             </StyledTableCell>
                                             <StyledTableCell align="center">
-                                                <div>0.00</div>
+                                                <div>
+                                                    {formatNumberNoDecimals(dataReport.agentadviseractivequantity)}
+                                                </div>
                                                 <div>{t(langKeys.billingreport_agent)}</div>
                                             </StyledTableCell>
                                         </TableRow>

@@ -3237,6 +3237,12 @@ export const billingReportHsmHistory = ({ corpid, orgid, year, month, type }: Di
     parameters: { corpid, orgid, year, month, type }
 })
 
+export const billingReportConsulting = ({ corpid, orgid, year, month }: Dictionary): IRequestBody => ({
+    method: "UFN_BILLING_REPORT_CONSULTING",
+    key: "UFN_BILLING_REPORT_CONSULTING",
+    parameters: { corpid, orgid, year, month }
+})
+
 export const selCalendar = (id: number = 0) => ({
     method: "UFN_CALENDAREVENT_SEL",
     key: "UFN_CALENDAREVENT_SEL",

@@ -5414,6 +5414,8 @@ const translation: LangKeys = {
   billingreport_channelwhatsapp: 'Contracted WhatsApp Channels',
   billingreport_channelwhatsappadditional: 'Additional WhatsApp Channels',
   billingreport_channeltotal: 'Additional Channels',
+  billingreport_contactwhatsapp: 'WhatsApp Channels Contacts',
+  billingreport_contactother: 'Other Channels Contacts',
 };
 
 const enResource: ResourceLanguage = {
