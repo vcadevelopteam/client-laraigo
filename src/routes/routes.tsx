@@ -105,7 +105,7 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
         tooltip: <Trans i18nKey={langKeys.configuration} />,
         icon: (className) => <ConfigurationIcon style={{ width: 22, height: 22 }} className={className} />,
         options: [paths.CORPORATIONS, paths.ORGANIZATIONS, paths.DOMAINS,  paths.EMOJIS, paths.CHANNELS, paths.INAPPROPRIATEWORDS, paths.USERS, paths.QUICKREPLIES,
-        paths.TIPIFICATIONS, paths.INPUTVALIDATION,paths.WHITELIST, paths.EXTRASLOCATION, paths.SECURITYRULES,paths.PROPERTIES, paths.BILLING_SETUPS, paths.INVOICE]
+        paths.TIPIFICATIONS, paths.INPUTVALIDATION,paths.WHITELIST, paths.EXTRASLOCATION, paths.SECURITYRULES,paths.PROPERTIES, paths.BILLING_SETUPS, paths.TIMESHEET, paths.INVOICE]
     },
 ];
 
