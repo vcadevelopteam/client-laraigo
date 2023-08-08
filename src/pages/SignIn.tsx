@@ -162,16 +162,13 @@ const SignIn = () => {
     const location = useLocation();
     const resLogin = useSelector(state => state.login.login);
 
-    const [isCaptchaVerified, setIsCaptchaVerified] = useState(false);
-    const recaptchaRef = useRef();
     const [dataAuth, setDataAuth] = useState<IAuth>({ username: '', password: '' });
     const [openModal, setOpenModal] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const recaptchaRef = useRef<ReCAPTCHA | null>(null);
     
     const handleCaptchaChange = (value:any) => {
-        // This function is called when the user successfully completes the reCAPTCHA challenge
-        setIsCaptchaVerified(true);
-        debugger
+        console.log("validacion captcha")
     };
 
 
@@ -192,9 +189,10 @@ const SignIn = () => {
 
     const handleMouseDownPassword = (event: any) => event.preventDefault();
 
-    const onSubmitLogin = (e: any) => {
+    const onSubmitLogin = async (e: any) => {
         e.preventDefault();
-        dispatch(login(dataAuth.username, dataAuth.password));
+        const token = await recaptchaRef?.current?.executeAsync();
+        dispatch(login(dataAuth.username, dataAuth.password, "", "", token));
     }
 
     const onAuthWithFacebook = (r: any) => {
@@ -268,6 +266,7 @@ const SignIn = () => {
     return (
         <>
             <meta name="google-signin-client_id" content={apiUrls.GOOGLECLIENTID_LOGIN} />
+            <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeOA44nAAAAAMsIQ5QyEg-gx6_4CUP3lekPbT0n"></script>
             <script src="https://apis.google.com/js/platform.js" async defer></script>
             <Container component="main" maxWidth="xs" className={classes.containerLogin}>
                 <div className={classes.childContainer}>
@@ -290,10 +289,10 @@ const SignIn = () => {
                             onSubmit={onSubmitLogin}
                         >
                             <ReCAPTCHA
+                                ref={recaptchaRef}
                                 sitekey="6LeOA44nAAAAAMsIQ5QyEg-gx6_4CUP3lekPbT0n"
                                 onChange={handleCaptchaChange}
                                 size="invisible" // Set reCAPTCHA size to invisible
-                                ref={recaptchaRef} // Store the reCAPTCHA reference
                             />
                             <TextField
                                 variant="outlined"

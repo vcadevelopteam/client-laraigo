@@ -297,6 +297,7 @@ export const langKeys = {
   error_alternativephone_exists: "error_alternativephone_exists",
   error_email_exists: "error_email_exists",
   error_phone_exists: "error_phone_exists",
+  error_recaptcha_error: "error_recaptcha_error",
   newintention: "newintention",
   healthprofessional: "healthprofessional",
   referralchannel: "referralchannel",
