@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useState, useEffect, Fragment } from 'react'; // we need this to make JSX compile
+import React, { FC, useState, useEffect, Fragment, useRef } from 'react'; // we need this to make JSX compile
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -33,6 +33,7 @@ import { LaraigoLogo } from 'icons';
 import { useForm } from 'react-hook-form';
 import { FieldEdit, DialogZyx } from 'components';
 import { recoverPassword } from 'store/subscription/actions';
+import ReCAPTCHA from 'react-google-recaptcha';
 const isIncremental = apiUrls.LOGIN_URL.includes("historical")
 
 export const useStyles = makeStyles((theme) => ({
@@ -161,9 +162,18 @@ const SignIn = () => {
     const location = useLocation();
     const resLogin = useSelector(state => state.login.login);
 
+    const [isCaptchaVerified, setIsCaptchaVerified] = useState(false);
+    const recaptchaRef = useRef();
     const [dataAuth, setDataAuth] = useState<IAuth>({ username: '', password: '' });
     const [openModal, setOpenModal] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    
+    const handleCaptchaChange = (value:any) => {
+        // This function is called when the user successfully completes the reCAPTCHA challenge
+        setIsCaptchaVerified(true);
+        debugger
+    };
+
 
     const handleClickShowPassword = () => setShowPassword(!showPassword);
 
@@ -279,6 +289,12 @@ const SignIn = () => {
                             className={classes.form}
                             onSubmit={onSubmitLogin}
                         >
+                            <ReCAPTCHA
+                                sitekey="6LeOA44nAAAAAMsIQ5QyEg-gx6_4CUP3lekPbT0n"
+                                onChange={handleCaptchaChange}
+                                size="invisible" // Set reCAPTCHA size to invisible
+                                ref={recaptchaRef} // Store the reCAPTCHA reference
+                            />
                             <TextField
                                 variant="outlined"
                                 margin="normal"
