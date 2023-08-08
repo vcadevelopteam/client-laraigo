@@ -1,9 +1,6 @@
 import clsx from 'clsx';
 import { FC, useState } from 'react';
-import {
-    // useHistory, 
-    useLocation
-} from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
@@ -16,13 +13,13 @@ import ListItemText from '@material-ui/core/ListItemText';
 import PhoneInTalkIcon from '@material-ui/icons/PhoneInTalk';
 import HoverPopover from 'material-ui-popup-state/HoverPopover';
 import { usePopupState, bindHover, bindPopover } from 'material-ui-popup-state/hooks'
-
 import { RouteConfig, ViewsClassificationConfig } from '@types';
 import { setModalCall } from 'store/voximplant/actions';
 import { langKeys } from 'lang/keys';
 import { WifiCalling } from 'icons';
 import { showSnackbar } from 'store/popus/actions';
 import { viewsClassifications, routes, subroutes } from 'routes/routes';
+import { History } from 'history';
 
 type IProps = {
     classes: any;
@@ -31,159 +28,123 @@ type IProps = {
     headerHeight: number;
 }
 
-const ListViewItem: React.FC<{ navRoute: any, clickToNavigate: any, classes: any }> =
-    ({ navRoute, clickToNavigate, classes }) => {
+const ListViewItem: React.FC<{ navRoute: RouteConfig, classes: any, history: History }> = ({ navRoute, classes, history }) => {
+    const [classname, setClassname] = useState<string>(classes.drawerItemInactive);
 
-        const [classname, setClassname] = useState<String>(classes.drawerItemInactive);
-        return <ListItem
-            button
-            key={navRoute?.key}
-            onClick={() => clickToNavigate(navRoute?.path || navRoute?.key)}
-            component="a"
-            onMouseOver={() => { setClassname(classes.drawerItemActive) }}
-            onMouseOut={() => { setClassname(classes.drawerItemInactive) }}
-            href={navRoute?.path}
-        >
-            <Tooltip title={navRoute?.tooltip}>
-                <ListItemIcon>{navRoute?.icon?.(classname)}</ListItemIcon>
-            </Tooltip>
-            <ListItemText primary={navRoute?.description} />
-        </ListItem>
-    }
-const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig }> =
-    ({ classes, config }) => {
-        const applications = useSelector(state => state.login?.validateToken?.user?.menu);
-
-
-
-        const clickToNavigate = (path: string) => {
-            // if (!config.subroute) {
-            //     history.push(config.path!)
-            // } else {
-            //     if (config.initialSubroute) {
-            //         history.push(config.initialSubroute);
-            //     } else {
-            //         const message = `initialSubroute debe tener valor para la subruta key:${config.key} path:${config.path}`;
-            //         console.assert(config.initialSubroute != null || config.initialSubroute !== undefined, message);
-            //     }
-            // }
-            // console.log(path);
-        }
-        const navigationRoutes = config.options.map(
-            (option: string) =>
-                routes.find(route => route?.path === option)
-                || subroutes.find(route => route?.path === option));
-        // console.log(navigationRoutes);
-        const filteredNavigationRoutes = navigationRoutes.filter((route: any) => (route !== undefined && applications?.[route.key]?.[0]));
-        const numElements = filteredNavigationRoutes.length;
-
-        // const getColumnCount = () => {
-        //     return Math.min(4, Math.max(2, numElements));
-        // };
-        // const getColumnCount = () => {
-        //     if (numElements === 1) {
-        //       return 1; // 1 column for 1 element
-        //     } else if (numElements === 2) {
-        //       return 2; // 2 columns for 2 elements
-        //     } else if (numElements <= 6) {
-        //       return 3; // 3 columns for 3, 4, 5, or 6 elements
-        //     } else {
-        //       return 4; // 4 columns for 7 or more elements
-        //     }
-        //   };
-
-        const getColumnCount = () => {
-            const screenWidth = window.innerWidth;
-            let numColumns = 4; // Default number of columns for larger screens
-
-            if (screenWidth < 600) {
-                // For screens smaller than 600px (mobile devices), show 2 columns
-                numColumns = 2;
-            } else if (screenWidth < 900) {
-                // For screens between 600px and 900px, show 3 columns
-                // console.log(numElements);
-                if (numElements === 1) { return numColumns = 1 };
-                if (numElements === 3) { return numColumns = 3 };
-                if (numElements <= 6 || numElements === 2) { return numColumns = 2 };
-                numColumns = 3;
-            } else if (numElements === 1) {
-                numColumns = 1;
-            } else if (numElements === 2) {
-                numColumns = 2;
-            }
-            else if (numElements <= 6) {
-                // For screens larger than 900px, show 3 columns for 1-6 elements
-                numColumns = 3;
+    const onClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.preventDefault();
+        if (!navRoute.subroute) {
+            history.push(navRoute.path!)
+        } else {
+            if (navRoute.initialSubroute) {
+                history.push(navRoute.initialSubroute);
             } else {
-                // For screens larger than 900px and more than 6 elements, show 4 columns
-                numColumns = 4;
+                const message = `initialSubroute debe tener valor para la subruta key:${navRoute.key} path:${navRoute.path}`;
+                console.assert(navRoute.initialSubroute != null || navRoute.initialSubroute !== undefined, message);
             }
+        }
+    }
 
-            return numColumns;
-        };
-        const columnCount = getColumnCount();
-        const gridTemplateColumns = `repeat(${columnCount}, 1fr)`;
-        // console.log(filteredNavigationRoutes);
-        return (
-            <div title={config.key}>
-                <Typography variant="h6" className={classes.drawerItemActive} style={{ paddingTop: 10, textAlign: 'start', paddingLeft: 23, backgroundColor: '#F9F9FA' }}>
-                    {config.description}
-                </Typography>
-                <Box display="grid" gridTemplateColumns={gridTemplateColumns} bgcolor={'#F9F9FA'} paddingBottom={1} >
-                    {
-                        filteredNavigationRoutes.map((navRoute: RouteConfig) =>
-                            <ListViewItem
-                                key={navRoute.key + '_lower'}
-                                navRoute={navRoute}
-                                clickToNavigate={clickToNavigate}
-                                classes={classes}
-                            />)
-                    }
-                </Box>
-            </div>
+    return <ListItem
+        button
+        key={navRoute?.key}
+        onClick={onClick}
+        component="a"
+        onMouseOver={() => { setClassname(classes.drawerItemActive) }}
+        onMouseOut={() => { setClassname(classes.drawerItemInactive) }}
+        href={navRoute?.path}
+    >
+        <Tooltip title={navRoute?.tooltip}>
+            <ListItemIcon>{navRoute?.icon?.(classname)}</ListItemIcon>
+        </Tooltip>
+        <ListItemText primary={navRoute?.description} />
+    </ListItem>
+}
 
-        );
+const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig, history: History }> = ({ classes, config, history }) => {
+    const applications = useSelector(state => state.login?.validateToken?.user?.menu);
+
+    const navigationRoutes = config.options.map(
+        (option: string) =>
+            routes.find(route => route?.path === option)
+            || subroutes.find(route => route?.path === option));
+    const filteredNavigationRoutes = navigationRoutes.filter((route: any) => (route !== undefined && applications?.[route.key]?.[0]));
+    const numElements = filteredNavigationRoutes.length;
+
+    const getColumnCount = () => {
+        const screenWidth = window.innerWidth;
+        let numColumns = 4; // Default number of columns for larger screens
+
+        if (screenWidth < 600) {
+            // For screens smaller than 600px (mobile devices), show 2 columns
+            numColumns = 2;
+        } else if (screenWidth < 900) {
+            if (numElements === 1) { return numColumns = 1 };
+            if (numElements === 3) { return numColumns = 3 };
+            if (numElements <= 6 || numElements === 2) { return numColumns = 2 };
+            numColumns = 3;
+        } else if (numElements === 1) {
+            numColumns = 1;
+        } else if (numElements === 2) {
+            numColumns = 2;
+        }
+        else if (numElements <= 6) {
+            // For screens larger than 900px, show 3 columns for 1-6 elements
+            numColumns = 3;
+        } else {
+            // For screens larger than 900px and more than 6 elements, show 4 columns
+            numColumns = 4;
+        }
+
+        return numColumns;
     };
 
-const LinkList: FC<{ config: ViewsClassificationConfig, classes: any, open: boolean }> = ({ config, classes, open }) => {
-    // const history = useHistory();
-    const popupState = usePopupState({ variant: 'popover', popupId: 'demoPopper' });
-    // if (!config.path) {
-    //     return <Typography className={open ? classes.drawerLabel : classes.drawerCloseLabel}>{config.description}</Typography>;
-    // }
-    // console.log(popupState);
-    // const isSelected = config.options?.some((option: string) => option === history.location.pathname);
+    const columnCount = getColumnCount();
+    const gridTemplateColumns = `repeat(${columnCount}, 1fr)`;
+    return (
+        <div title={config.key}>
+            <Typography variant="h6" className={classes.drawerItemActive} style={{ paddingTop: 10, textAlign: 'start', paddingLeft: 23, backgroundColor: '#F9F9FA' }}>
+                {config.description}
+            </Typography>
+            <Box display="grid" gridTemplateColumns={gridTemplateColumns} bgcolor={'#F9F9FA'} paddingBottom={1} >
+                {filteredNavigationRoutes.map((navRoute: RouteConfig) =>
+                    <ListViewItem
+                        key={navRoute.key + '_lower'}
+                        navRoute={navRoute}
+                        history={history}
+                        classes={classes}
+                    />)
+                }
+            </Box>
+        </div>
 
+    );
+};
+
+const LinkList: FC<{ config: ViewsClassificationConfig, classes: any, open: boolean, history: History }> = ({ config, classes, open, history }) => {
+    const popupState = usePopupState({ variant: 'popover', popupId: 'demoPopper' });
     let className = "";
     if (popupState.isOpen) {
-
         className = open ? classes.drawerItemActive : classes.drawerCloseItemActive;
     } else {
         className = open ? classes.drawerItemInactive : classes.drawerCloseItemInactive;
     }
-
 
     return (
         <div {...bindHover(popupState)}>
             <ListItem
                 button
                 key={config.key}
-                // onClick={onClick}
-
                 className={clsx(className)}
                 component="a"
                 style={{ position: 'relative' }}
-            // href={config.path}
             >
-
                 <ListItemIcon>{config.icon?.(className)}</ListItemIcon>
-
                 <ListItemText primary={config.description} style={{ visibility: open ? 'visible' : 'hidden' }} />
                 <Typography variant='h5' style={{ position: 'absolute', right: open ? 25 : 5, color: open ? '' : 'white', fontWeight: open ? 'normal' : 'bold' }}>{">"}</Typography>
             </ListItem>
             <HoverPopover
                 {...bindPopover(popupState)}
-                // className={classes.drawerItemActive}
                 anchorOrigin={{
                     vertical: 'top',
                     horizontal: 'right',
@@ -195,6 +156,7 @@ const LinkList: FC<{ config: ViewsClassificationConfig, classes: any, open: bool
             >
                 <PopperContent
                     classes={classes}
+                    history={history}
                     config={config} />
             </HoverPopover>
 
@@ -206,16 +168,13 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
     const { t } = useTranslation();
     const openDrawer = useSelector(state => state.popus.openDrawer);
     const applications = useSelector(state => state.login?.validateToken?.user?.menu);
-    console.log(applications)
     const dispatch = useDispatch();
     const showcall = useSelector(state => state.voximplant.showcall);
     const calls = useSelector(state => state.voximplant.calls);
     const voxiConnection = useSelector(state => state.voximplant.connection);
     const location = useLocation();
     const userConnected = useSelector(state => state.inbox.userConnected);
-
-
-
+    const history = useHistory();
 
     const showableViews = viewsClassifications.reduce((acc: any, x: any) => {
         let findPermit = x.options.find((key: any) => applications?.[key] && (applications?.[key]?.[0]))
@@ -226,8 +185,6 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
         }
     }, [])
 
-    // console.log(showableViews)
-    // console.log(applications);
     return (
         <Drawer
             className={clsx(classes.drawer, {
@@ -246,10 +203,15 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
             }}
         >
             <div style={{ overflowX: 'hidden', borderRight: '1px solid #EBEAED', marginTop: headerHeight }}>
-                {/* {routes.map((ele) => (applications && applications[ele.key] && applications[ele.key][0]) ? <LinkList classes={classes} config={ele} key={ele.key} open={openDrawer} /> : null)} */}
                 {showableViews.map((route: any) =>
                     (applications) ?
-                        <LinkList classes={classes} config={route} key={route.key + '_upper'} open={openDrawer} /> : null)}
+                        <LinkList
+                            classes={classes}
+                            config={route}
+                            history={history}
+                            key={route.key + '_upper'}
+                            open={openDrawer}
+                        /> : null)}
                 {(!voxiConnection.error && !voxiConnection.loading && !openDrawer && location.pathname === "/message_inbox" && userConnected) && (
                     <ListItem
                         button
