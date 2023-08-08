@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useState, useEffect, Fragment } from 'react'; // we need this to make JSX compile
+import React, { FC, useState, useEffect, Fragment, useRef } from 'react'; // we need this to make JSX compile
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -33,6 +33,7 @@ import { LaraigoLogo } from 'icons';
 import { useForm } from 'react-hook-form';
 import { FieldEdit, DialogZyx } from 'components';
 import { recoverPassword } from 'store/subscription/actions';
+import ReCAPTCHA from 'react-google-recaptcha';
 const isIncremental = apiUrls.LOGIN_URL.includes("historical")
 
 export const useStyles = makeStyles((theme) => ({
@@ -164,6 +165,12 @@ const SignIn = () => {
     const [dataAuth, setDataAuth] = useState<IAuth>({ username: '', password: '' });
     const [openModal, setOpenModal] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const recaptchaRef = useRef<ReCAPTCHA | null>(null);
+    
+    const handleCaptchaChange = (value:any) => {
+        console.log("validacion captcha")
+    };
+
 
     const handleClickShowPassword = () => setShowPassword(!showPassword);
 
@@ -182,9 +189,10 @@ const SignIn = () => {
 
     const handleMouseDownPassword = (event: any) => event.preventDefault();
 
-    const onSubmitLogin = (e: any) => {
+    const onSubmitLogin = async (e: any) => {
         e.preventDefault();
-        dispatch(login(dataAuth.username, dataAuth.password));
+        const token = await recaptchaRef?.current?.executeAsync();
+        dispatch(login(dataAuth.username, dataAuth.password, "", "", token));
     }
 
     const onAuthWithFacebook = (r: any) => {
@@ -258,6 +266,7 @@ const SignIn = () => {
     return (
         <>
             <meta name="google-signin-client_id" content={apiUrls.GOOGLECLIENTID_LOGIN} />
+            <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeOA44nAAAAAMsIQ5QyEg-gx6_4CUP3lekPbT0n"></script>
             <script src="https://apis.google.com/js/platform.js" async defer></script>
             <Container component="main" maxWidth="xs" className={classes.containerLogin}>
                 <div className={classes.childContainer}>
@@ -279,6 +288,12 @@ const SignIn = () => {
                             className={classes.form}
                             onSubmit={onSubmitLogin}
                         >
+                            <ReCAPTCHA
+                                ref={recaptchaRef}
+                                sitekey="6LeOA44nAAAAAMsIQ5QyEg-gx6_4CUP3lekPbT0n"
+                                onChange={handleCaptchaChange}
+                                size="invisible" // Set reCAPTCHA size to invisible
+                            />
                             <TextField
                                 variant="outlined"
                                 margin="normal"

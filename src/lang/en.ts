@@ -4245,6 +4245,7 @@ const translation: LangKeys = {
   error_alternativephone_exists: "The alternative phone has already been registered",
   error_email_exists: "The email has already been registered",
   error_phone_exists: "The phone has already been registered",
+  error_recaptcha_error: "ReCAPTCHA validation error",
   billingperiodnotfound: 'No period information was found.',
   confirmation_emit: 'Are you sure you want to emit the document?',
   scheduled_events: 'Scheduled events',
