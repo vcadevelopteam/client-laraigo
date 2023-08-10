@@ -1909,6 +1909,9 @@ export const langKeys = {
   tablePageOf: 'tablePageOf',
   tableShowingRecordOf: 'tableShowingRecordOf',
   tableShowingRecordOfMore: 'tableShowingRecordOfMore',
+  integration_intro: 'integration_intro',
+  integration_apikey_intro: 'integration_apikey_intro',
+  integration_json_intro: 'integration_json_intro',
 
   recordPerPage: 'recordPerPage',
   recordPerPage_plural: 'recordPerPage_plural',
