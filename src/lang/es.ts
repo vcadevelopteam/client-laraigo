@@ -1542,7 +1542,7 @@ const translation: LangKeys = {
   successful_update: "Se actualizo satisfactoriamente",
   countrycode: "Código de País",
   userstatus_tooltip: "Indica el estado de actividad del usuario, de estar ACTIVO significa que se encuentra laborando, de estar como INACTIVO indica que se encuentra fuera de labores (vacaciones o por algún motivo está fuera momentáneamente), y BLOQUEADO indica que su cuenta ha sido bloqueada por intentar ingresar con una contraseña inválida en varios intentos (se bloquea automáticamente).",
-  quickreplies: 'Repuestas rapidas',
+  quickreplies: 'Respuestas rápidas',
   company_tooltip: "Las compañías que aparezcan en este apartado son los clientes que trabajan con Laraigo y dependiendo del usuario, se le asigna una compañía a la que pertenezca.",
   twofactorauthentication: 'Doble factor autentificación',
   twofactorauthentication_tooltip: 'Si se tiene ACTIVO, se enviará un HSM al correo del usuario cada vez que quiera iniciar sesión, de esa forma se tendrá una doble validación de códigos de seguridad para acceder (teniendo un acceso a la plataforma más segura).',
