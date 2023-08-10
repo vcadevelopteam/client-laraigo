@@ -1,3 +1,4 @@
+import { Box } from "@material-ui/core";
 import { Dictionary, MultiData } from "@types";
 import { DialogZyx, FieldEdit, FieldSelect, TemplateBreadcrumbs, TemplateIcons, TitleDetail } from "components";
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
@@ -33,7 +34,7 @@ import {
 import Button from "@material-ui/core/Button";
 import ClearIcon from "@material-ui/icons/Clear";
 import DateFnsUtils from "@date-io/date-fns";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, Fragment, useEffect, useState } from "react";
 import SaveIcon from "@material-ui/icons/Save";
 import TableZyx from "components/fields/table-simple";
 
@@ -259,6 +260,14 @@ const TimeSheet: FC = () => {
                 accessor: "registerdetail",
                 Header: t(langKeys.timesheet_registerdetail),
                 NoFilter: true,
+                Cell: (props: any) => {
+                    const { registerdetail } = props.cell.row.original;
+                    return (
+                        <Fragment>
+                            <div style={{ display: "inline-block" }}>{(registerdetail || "").substring(0, 50)}... </div>
+                        </Fragment>
+                    );
+                },
             },
             {
                 accessor: "status",
@@ -593,6 +602,9 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
                             locale={localesLaraigo()[navigator.language.split("-")[0]]}
                             utils={DateFnsUtils}
                         >
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                {t(langKeys.timesheet_startdate)}
+                            </Box>
                             <KeyboardDatePicker
                                 className="col-6"
                                 defaultValue={row?.startdate}
@@ -621,7 +633,6 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
                             optionValue="userid"
                             orderbylabel={true}
                             valueDefault={getValues("startuserid")}
-                            variant="outlined"
                             onChange={(value: any) => {
                                 setValue("startuserid", value?.userid || 0);
                                 setHasChange(true);
@@ -633,6 +644,9 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
                             locale={localesLaraigo()[navigator.language.split("-")[0]]}
                             utils={DateFnsUtils}
                         >
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                {t(langKeys.timesheet_registerdate)}
+                            </Box>
                             <KeyboardDatePicker
                                 className="col-6"
                                 defaultValue={row?.registerdate}
@@ -654,7 +668,6 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
                             data={userList || []}
                             disabled={!edit}
                             error={errors?.registeruserid?.message}
-                            label={t(langKeys.timesheet_registeruser)}
                             optionDesc="usr"
                             optionValue="userid"
                             orderbylabel={true}
