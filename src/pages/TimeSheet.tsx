@@ -598,31 +598,34 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        <MuiPickersUtilsProvider
-                            locale={localesLaraigo()[navigator.language.split("-")[0]]}
-                            utils={DateFnsUtils}
-                        >
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                                {t(langKeys.timesheet_startdate)}
-                            </Box>
-                            <KeyboardDatePicker
-                                className="col-6"
-                                defaultValue={row?.startdate}
-                                disabled={!edit}
-                                error={errors?.startdate?.message}
-                                format="dd-MM-yyyy"
-                                invalidDateMessage={t(langKeys.invalid_date_format)}
-                                placeholder={t(langKeys.timesheet_startdate)}
-                                value={getValues("startdate")}
-                                onChange={(value: any) => {
-                                    setValue("startdate", value || null);
-                                    trigger("startdate");
-                                    setHasChange(true);
-                                    getProfileAllowed(getValues("corpid"), getValues("orgid"), value);
-                                    setValue("registerprofile", "");
-                                }}
-                            />
-                        </MuiPickersUtilsProvider>
+                        <div className="col-6">
+                            <MuiPickersUtilsProvider
+                                locale={localesLaraigo()[navigator.language.split("-")[0]]}
+                                utils={DateFnsUtils}
+                            >
+                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                    {t(langKeys.timesheet_startdate)}
+                                </Box>
+                                <KeyboardDatePicker
+                                    className="col-6"
+                                    defaultValue={row?.startdate}
+                                    disabled={!edit}
+                                    error={errors?.startdate?.message}
+                                    format="dd-MM-yyyy"
+                                    invalidDateMessage={t(langKeys.invalid_date_format)}
+                                    placeholder={t(langKeys.timesheet_startdate)}
+                                    style={{ width: "100%" }}
+                                    value={getValues("startdate")}
+                                    onChange={(value: any) => {
+                                        setValue("startdate", value || null);
+                                        trigger("startdate");
+                                        setHasChange(true);
+                                        getProfileAllowed(getValues("corpid"), getValues("orgid"), value);
+                                        setValue("registerprofile", "");
+                                    }}
+                                />
+                            </MuiPickersUtilsProvider>
+                        </div>
                         <FieldSelect
                             className="col-6"
                             data={userList || []}
@@ -640,39 +643,42 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
                         />
                     </div>
                     <div className="row-zyx">
-                        <MuiPickersUtilsProvider
-                            locale={localesLaraigo()[navigator.language.split("-")[0]]}
-                            utils={DateFnsUtils}
-                        >
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                                {t(langKeys.timesheet_registerdate)}
-                            </Box>
-                            <KeyboardDatePicker
-                                className="col-6"
-                                defaultValue={row?.registerdate}
-                                disabled={!edit}
-                                error={errors?.registerdate?.message}
-                                format="dd-MM-yyyy"
-                                invalidDateMessage={t(langKeys.invalid_date_format)}
-                                placeholder={t(langKeys.timesheet_registerdate)}
-                                value={getValues("registerdate")}
-                                onChange={(value: any) => {
-                                    setValue("registerdate", value || null);
-                                    trigger("registerdate");
-                                    setHasChange(true);
-                                }}
-                            />
-                        </MuiPickersUtilsProvider>
+                        <div className="col-6">
+                            <MuiPickersUtilsProvider
+                                locale={localesLaraigo()[navigator.language.split("-")[0]]}
+                                utils={DateFnsUtils}
+                            >
+                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                    {t(langKeys.timesheet_registerdate)}
+                                </Box>
+                                <KeyboardDatePicker
+                                    className="col-6"
+                                    defaultValue={row?.registerdate}
+                                    disabled={!edit}
+                                    error={errors?.registerdate?.message}
+                                    format="dd-MM-yyyy"
+                                    invalidDateMessage={t(langKeys.invalid_date_format)}
+                                    placeholder={t(langKeys.timesheet_registerdate)}
+                                    style={{ width: "100%" }}
+                                    value={getValues("registerdate")}
+                                    onChange={(value: any) => {
+                                        setValue("registerdate", value || null);
+                                        trigger("registerdate");
+                                        setHasChange(true);
+                                    }}
+                                />
+                            </MuiPickersUtilsProvider>
+                        </div>
                         <FieldSelect
                             className="col-6"
                             data={userList || []}
                             disabled={!edit}
                             error={errors?.registeruserid?.message}
+                            label={t(langKeys.timesheet_registeruser)}
                             optionDesc="usr"
                             optionValue="userid"
                             orderbylabel={true}
                             valueDefault={getValues("registeruserid")}
-                            variant="outlined"
                             onChange={(value: any) => {
                                 setValue("registeruserid", value?.userid || 0);
                                 setHasChange(true);
