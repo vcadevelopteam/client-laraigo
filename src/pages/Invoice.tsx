@@ -131,7 +131,6 @@ import AttachFileIcon from "@material-ui/icons/AttachFile";
 import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
 import Button from "@material-ui/core/Button";
 import ClearIcon from "@material-ui/icons/Clear";
-import clsx from "clsx";
 import CulqiModal from "components/fields/CulqiModal";
 import DateFnsUtils from "@date-io/date-fns";
 import DeleteIcon from "@material-ui/icons/Delete";
