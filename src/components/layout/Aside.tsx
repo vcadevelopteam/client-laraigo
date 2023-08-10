@@ -18,7 +18,7 @@ import { setModalCall } from 'store/voximplant/actions';
 import { langKeys } from 'lang/keys';
 import { WifiCalling } from 'icons';
 import { showSnackbar } from 'store/popus/actions';
-import { viewsClassifications, routes, subroutes } from 'routes/routes';
+import { viewsClassifications, routes } from 'routes/routes';
 import { History } from 'history';
 
 type IProps = {
@@ -62,14 +62,21 @@ const ListViewItem: React.FC<{ navRoute: RouteConfig, classes: any, history: His
 }
 
 const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig, history: History }> = ({ classes, config, history }) => {
-    const applications = useSelector(state => state.login?.validateToken?.user?.menu);
+    // const applications = useSelector(state => state.login?.validateToken?.user?.menu);
 
+    // console.log(config.options);
     const navigationRoutes = config.options.map(
-        (option: string) =>
-            routes.find(route => route?.path === option)
-            || subroutes.find(route => route?.path === option));
-    const filteredNavigationRoutes = navigationRoutes.filter((route: any) => (route !== undefined && applications?.[route.key]?.[0]));
-    const numElements = filteredNavigationRoutes.length;
+        (option: string) => {
+            // console.log(option);
+            if (option === '/channels') return routes.find(route => route?.key === option);
+            return routes.find(route => route?.path === option);
+    });
+
+
+
+    // || subroutes.find(route => route?.path === option));
+    // const filteredNavigationRoutes = navigationRoutes.filter((route: any) => (route !== undefined && applications?.[route.key]?.[0]));
+    const numElements = navigationRoutes.length;
 
     const getColumnCount = () => {
         const screenWidth = window.innerWidth;
@@ -98,7 +105,7 @@ const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig,
 
         return numColumns;
     };
-
+    // console.log(navigationRoutes);
     const columnCount = getColumnCount();
     const gridTemplateColumns = `repeat(${columnCount}, 1fr)`;
     return (
@@ -107,9 +114,9 @@ const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig,
                 {config.description}
             </Typography>
             <Box display="grid" gridTemplateColumns={gridTemplateColumns} bgcolor={'#F9F9FA'} paddingBottom={1} >
-                {filteredNavigationRoutes.map((navRoute: RouteConfig) =>
+                {navigationRoutes.map((navRoute: RouteConfig) =>
                     <ListViewItem
-                        key={navRoute.key + '_lower'}
+                        key={navRoute?.key + '_lower'}
                         navRoute={navRoute}
                         history={history}
                         classes={classes}
@@ -177,14 +184,37 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
     const userConnected = useSelector(state => state.inbox.userConnected);
     const history = useHistory();
 
-    const showableViews = viewsClassifications.reduce((acc: any, x: any) => {
-        let findPermit = x.options.find((key: any) => applications?.[key] && (applications?.[key]?.[0]))
-        if (findPermit) {
-            return [...acc, x]
-        } else {
-            return acc;
+
+    // console.log(applications);
+
+    // Filtrar módulos padres
+
+
+
+    //Conseguir todas las subrutas y asignarlas a los modulos padres
+    const showableViews = viewsClassifications.reduce((acc: any[], view) => {
+        const subroutes = Object.entries(applications as Object)
+            .filter(([_, values]) => values[4] === view.id) // Obtenemos los 
+            .map(([route, values]) => ({ route, menuorder: values[6] })) // access 7th element using index 6
+            .sort((a, b) => a.menuorder - b.menuorder)
+            .map(entry => entry.route);
+        if(subroutes.length > 0){
+            acc.push({ ...view, options: subroutes });
         }
-    }, [])
+        return acc;
+    }, []);
+
+
+
+    // const showableViews = viewsClassifications.reduce((acc: any, x: any) => {
+    //     let findPermit = x.options.find((key: any) => applications?.[key] && (applications?.[key]?.[0]))
+    //     if (findPermit) {
+    //         return [...acc, x]
+    //     } else {
+    //         return acc;
+    //     }
+    // }, [])
+    // console.log(showableViews);
 
     return (
         <Drawer
