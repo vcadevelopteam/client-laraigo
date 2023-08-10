@@ -153,6 +153,7 @@ const LinkList: FC<{ config: ViewsClassificationConfig, classes: any, open: bool
                     vertical: 'top',
                     horizontal: 'left',
                 }}
+                transitionDuration={0.0}
             >
                 <PopperContent
                     classes={classes}

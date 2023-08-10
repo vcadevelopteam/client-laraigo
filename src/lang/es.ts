@@ -1501,7 +1501,7 @@ const translation: LangKeys = {
   successful_duplicate: 'Se duplico satisfactoriamente',
   successful_update: "Se actualizo satisfactoriamente",
   countrycode: "Código de país",
-  quickreplies: 'Repuestas rápidas',
+  quickreplies: 'Respuestas rápidas',
   twofactorauthentication: 'Doble factor autentificación',
   save: 'Guardar',
   setpassword: 'Ingresar contraseña',
