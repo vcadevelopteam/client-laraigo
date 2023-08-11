@@ -217,7 +217,7 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
     //     }
     // }, [])
     // console.log(showableViews);
-    console.log(openDrawer);
+    // console.log(openDrawer);
     return (
         <Drawer
             className={clsx(classes.drawer, {
