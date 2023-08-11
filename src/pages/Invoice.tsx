@@ -1712,6 +1712,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
             {
                 aicost: 0,
                 aiquantity: 0,
+                apikey: "",
                 corpid: row?.corpid || 0,
                 id: 0,
                 month: row?.month || 0,
@@ -3006,6 +3007,7 @@ const DetailArtificialIntelligence: React.FC<ModalProps> = ({
             additionalfee: row ? row.additionalfee : 0,
             aicost: row ? row.aicost : 0,
             aiquantity: row ? row.aiquantity : 0,
+            apikey: row ? row.apikey : 0,
             basicfee: row ? row.basicfee : 0,
             charlimit: row ? row.charlimit : 0,
             corpid: row ? row.corpid : 0,
@@ -3025,6 +3027,7 @@ const DetailArtificialIntelligence: React.FC<ModalProps> = ({
 
         register("aicost");
         register("aiquantity");
+        register("apikey");
         register("corpid");
         register("description");
         register("id");
@@ -3216,6 +3219,18 @@ const DetailArtificialIntelligence: React.FC<ModalProps> = ({
                             label={t(langKeys.aicost)}
                             type="number"
                             valueDefault={formatNumber(getValues("aicost") || 0)}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            className="col-6"
+                            disabled={!edit}
+                            error={errors?.apikey?.message}
+                            label={t(langKeys.apikey)}
+                            valueDefault={getValues("apikey")}
+                            onChange={(value) => {
+                                setValue("apikey", value || "");
+                            }}
                         />
                     </div>
                     <div style={{ textAlign: "right" }}>
