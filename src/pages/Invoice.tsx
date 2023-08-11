@@ -396,6 +396,10 @@ const CostPerPeriod: React.FC<{ dataCorp: any; dataOrg: any; dataPaymentPlan: an
                 Header: t(langKeys.supportplan),
             },
             {
+                accessor: "billinginvoicecurrency",
+                Header: t(langKeys.billingperiod_billingcurrency),
+            },
+            {
                 accessor: "billingplancurrency",
                 Header: t(langKeys.billingperiod_plancurrency),
             },
@@ -713,8 +717,8 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
 
     const [allIndex, setAllIndex] = useState<any[]>([]);
     const [canEdit, setCanEdit] = useState(false);
-    const [checkedChannel, setCheckedChannel] = useState(row?.channelcreateoverride || false);
-    const [checkedUser, setCheckedUser] = useState(row?.usercreateoverride || false);
+    const [checkedChannel, setCheckedChannel] = useState(row?.channeladdlimit || false);
+    const [checkedUser, setCheckedUser] = useState(row?.agentaddlimit || false);
     const [dataArtificialBilling, setDataArtificialBilling] = useState<Dictionary[]>([]);
     const [dataArtificialIntelligence, setDataArtificialIntelligence] = useState<Dictionary[]>([]);
     const [dataArtificialIntelligenceDelete, setDataArtificialIntelligenceDelete] = useState<Dictionary[]>([]);
@@ -784,6 +788,14 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                 accessor: "registerdetail",
                 Header: t(langKeys.timesheet_registerdetail),
                 NoFilter: true,
+                Cell: (props: any) => {
+                    const { registerdetail } = props.cell.row.original;
+                    return (
+                        <Fragment>
+                            <div style={{ display: "inline-block" }}>{(registerdetail || "").substring(0, 50)}... </div>
+                        </Fragment>
+                    );
+                },
             },
             {
                 accessor: "status",
