@@ -52,7 +52,7 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
         id: 1,
         key: "analytics",
         description: <Trans i18nKey={langKeys.analytics} />,
-        tooltip: <Trans i18nKey={langKeys.analytics} />,
+        // tooltip: <Trans i18nKey={langKeys.analytics} />,
         icon: (className) => <AnalyticRouteIcon style={{ width: 22, height: 22 }} className={className} />,
         // options: [paths.DASHBOARD,paths.REPORTS,paths.KPIMANAGER]
     },
@@ -61,7 +61,7 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
         key: "CRM",
         description: <span>CRM</span>, 
         // description: <Trans i18nKey={langKeys.crm} />,
-        tooltip: <Trans i18nKey={langKeys.crm} />,
+        // tooltip: <Trans i18nKey={langKeys.crm} />,
         icon: (className) => <DashboardRouteIcon style={{ width: 22, height: 22 }} className={className} />,
         // options: [paths.MESSAGE_INBOX,paths.SUPERVISOR,paths.PERSON, paths.CRM, paths.CAMPAIGN, paths.MESSAGETEMPLATE, paths.POSTCREATOR, paths.TICKETS]
     },
@@ -69,7 +69,7 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
         id: 3,
         key: "automatization",
         description: <Trans i18nKey={langKeys.automatization}/>,
-        tooltip: <Trans i18nKey={langKeys.automatization}/>,
+        // tooltip: <Trans i18nKey={langKeys.automatization}/>,
         icon: (className) => <AutomatizationRouteIcon style={{ width: 22, height: 22 }} className={className} />,
         // options:[paths.BOTDESIGNER, paths.VARIABLECONFIGURATION,  paths.INTEGRATIONMANAGER, paths.CALENDAR, paths.AUTOMATIZATIONRULES, paths.REPORTSCHEDULER]
     },
@@ -77,7 +77,7 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
         id: 4,
         key: "sales",
         description: <Trans i18nKey={langKeys.reason_sales} />,
-        tooltip: <Trans i18nKey={langKeys.reason_sales} />,
+        // tooltip: <Trans i18nKey={langKeys.reason_sales} />,
         icon: (className) => <SalesRouteIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
         // options: [paths.ORDERS,paths.PRODUCTCATALOG,paths.CATALOGMASTER]
     },
@@ -86,7 +86,7 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
         key: "servicedesk",
         description: <span>Service Desk</span>, 
         // description: <Trans i18nKey={langKeys.servicedesk} />,
-        tooltip: <Trans i18nKey={langKeys.servicedesk} />,
+        // tooltip: <Trans i18nKey={langKeys.servicedesk} />,
         icon: (className) => <ServiceDeskRouteIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
         // options: [paths.SERVICE_DESK, paths.SLA]
     },
@@ -94,7 +94,7 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
         id: 6,
         key: "ia",
         description: <Trans i18nKey={langKeys.ia} />, // prop:count for plural purposes
-        tooltip: <Trans i18nKey={langKeys.ia} />,
+        // tooltip: <Trans i18nKey={langKeys.ia} />,
         icon: (className) => <IARouteIcon style={{ width: 22, height: 22 }} className={className} />,
         // options: [paths.IACONECTORS, paths.IACONFIGURATION,  paths.IATRAINING]
     },
@@ -102,7 +102,7 @@ export const viewsClassifications: ViewsClassificationConfig[] = [
         id: 7,
         key: "configuration",
         description: <Trans i18nKey={langKeys.configuration} />,
-        tooltip: <Trans i18nKey={langKeys.configuration} />,
+        // tooltip: <Trans i18nKey={langKeys.configuration} />,
         icon: (className) => <ConfigurationIcon style={{ width: 22, height: 22 }} className={className} />,
         // options: [paths.CORPORATIONS, paths.ORGANIZATIONS, paths.DOMAINS,  paths.EMOJIS, paths.CHANNELS, paths.INAPPROPRIATEWORDS, paths.USERS, paths.QUICKREPLIES,
         // paths.TIPIFICATIONS, paths.INPUTVALIDATION,paths.WHITELIST, paths.EXTRASLOCATION, paths.SECURITYRULES,paths.PROPERTIES, paths.BILLING_SETUPS, paths.INVOICE]

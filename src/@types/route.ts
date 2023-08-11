@@ -17,7 +17,7 @@ export interface ViewsClassificationConfig {
     id?: number;
     key: string;
     description: React.ReactNode;
-    tooltip: React.ReactChild;
+    tooltip?: React.ReactChild;
     /** default false */
     subroute?: boolean;
     /** used when subroute prop is true */

@@ -54,10 +54,10 @@ const ListViewItem: React.FC<{ navRoute: RouteConfig, classes: any, history: His
         onMouseOut={() => { setClassname(classes.drawerItemInactive) }}
         href={navRoute?.path}
     >
-        <Tooltip title={navRoute?.tooltip}>
+        {/* <Tooltip title={navRoute?.tooltip}> */}
             <ListItemIcon>{navRoute?.icon?.(classname)}</ListItemIcon>
-        </Tooltip>
-        <ListItemText primary={navRoute?.description} />
+        {/* </Tooltip> */}
+        <ListItemText className={classname} primary={navRoute?.description} />
     </ListItem>
 }
 
@@ -109,7 +109,7 @@ const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig,
     const columnCount = getColumnCount();
     const gridTemplateColumns = `repeat(${columnCount}, 1fr)`;
     return (
-        <div title={config.key}>
+        <div>
             <Typography variant="h6" className={classes.drawerItemActive} style={{ paddingTop: 10, textAlign: 'start', paddingLeft: 23, backgroundColor: '#F9F9FA' }}>
                 {config.description}
             </Typography>
@@ -124,7 +124,6 @@ const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig,
                 }
             </Box>
         </div>
-
     );
 };
 
@@ -140,7 +139,7 @@ const LinkList: FC<{ config: ViewsClassificationConfig, classes: any, open: bool
     }
 
     return (
-        <div {...bindHover(popupState)}>
+        <div {...bindHover(popupState)} >
             <ListItem
                 button
                 key={config.key}
@@ -163,6 +162,7 @@ const LinkList: FC<{ config: ViewsClassificationConfig, classes: any, open: bool
                     horizontal: 'left',
                 }}
                 transitionDuration={0.0}
+                
             >
                 <PopperContent
                     classes={classes}
