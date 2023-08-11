@@ -54,10 +54,10 @@ const ListViewItem: React.FC<{ navRoute: RouteConfig, classes: any, history: His
         onMouseOut={() => { setClassname(classes.drawerItemInactive) }}
         href={navRoute?.path}
     >
-        <Tooltip title={navRoute?.tooltip}>
+        {/* <Tooltip title={navRoute?.tooltip}> */}
             <ListItemIcon>{navRoute?.icon?.(classname)}</ListItemIcon>
-        </Tooltip>
-        <ListItemText primary={navRoute?.description} />
+        {/* </Tooltip> */}
+        <ListItemText className={classname} primary={navRoute?.description} />
     </ListItem>
 }
 
@@ -109,7 +109,7 @@ const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig,
     const columnCount = getColumnCount();
     const gridTemplateColumns = `repeat(${columnCount}, 1fr)`;
     return (
-        <div title={config.key}>
+        <div>
             <Typography variant="h6" className={classes.drawerItemActive} style={{ paddingTop: 10, textAlign: 'start', paddingLeft: 23, backgroundColor: '#F9F9FA' }}>
                 {config.description}
             </Typography>
@@ -124,13 +124,14 @@ const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig,
                 }
             </Box>
         </div>
-
     );
 };
 
 const LinkList: FC<{ config: ViewsClassificationConfig, classes: any, open: boolean, history: History }> = ({ config, classes, open, history }) => {
     const popupState = usePopupState({ variant: 'popover', popupId: 'demoPopper' });
     let className = "";
+    // console.log(popupState.isOpen);
+    // console.log(open);
     if (popupState.isOpen) {
         className = open ? classes.drawerItemActive : classes.drawerCloseItemActive;
     } else {
@@ -138,7 +139,7 @@ const LinkList: FC<{ config: ViewsClassificationConfig, classes: any, open: bool
     }
 
     return (
-        <div {...bindHover(popupState)}>
+        <div {...bindHover(popupState)} >
             <ListItem
                 button
                 key={config.key}
@@ -161,6 +162,7 @@ const LinkList: FC<{ config: ViewsClassificationConfig, classes: any, open: bool
                     horizontal: 'left',
                 }}
                 transitionDuration={0.0}
+                
             >
                 <PopperContent
                     classes={classes}
@@ -174,15 +176,15 @@ const LinkList: FC<{ config: ViewsClassificationConfig, classes: any, open: bool
 
 const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
     const { t } = useTranslation();
+    const location = useLocation();
+    const dispatch = useDispatch();
+    const history = useHistory();
     const openDrawer = useSelector(state => state.popus.openDrawer);
     const applications = useSelector(state => state.login?.validateToken?.user?.menu);
-    const dispatch = useDispatch();
     const showcall = useSelector(state => state.voximplant.showcall);
     const calls = useSelector(state => state.voximplant.calls);
     const voxiConnection = useSelector(state => state.voximplant.connection);
-    const location = useLocation();
     const userConnected = useSelector(state => state.inbox.userConnected);
-    const history = useHistory();
 
 
     // console.log(applications);
@@ -215,7 +217,7 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
     //     }
     // }, [])
     // console.log(showableViews);
-
+    // console.log(openDrawer);
     return (
         <Drawer
             className={clsx(classes.drawer, {
