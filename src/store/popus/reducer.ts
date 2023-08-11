@@ -51,7 +51,7 @@ export const initialState: IState = {
         images: []
     },
     showBackDrop: false,
-    openDrawer: true,
+    openDrawer: false,
 }
 
 export default createReducer<IState>(initialState, {
