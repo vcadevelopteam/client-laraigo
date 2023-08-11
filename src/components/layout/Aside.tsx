@@ -131,6 +131,8 @@ const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig,
 const LinkList: FC<{ config: ViewsClassificationConfig, classes: any, open: boolean, history: History }> = ({ config, classes, open, history }) => {
     const popupState = usePopupState({ variant: 'popover', popupId: 'demoPopper' });
     let className = "";
+    // console.log(popupState.isOpen);
+    // console.log(open);
     if (popupState.isOpen) {
         className = open ? classes.drawerItemActive : classes.drawerCloseItemActive;
     } else {
@@ -174,15 +176,15 @@ const LinkList: FC<{ config: ViewsClassificationConfig, classes: any, open: bool
 
 const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
     const { t } = useTranslation();
+    const location = useLocation();
+    const dispatch = useDispatch();
+    const history = useHistory();
     const openDrawer = useSelector(state => state.popus.openDrawer);
     const applications = useSelector(state => state.login?.validateToken?.user?.menu);
-    const dispatch = useDispatch();
     const showcall = useSelector(state => state.voximplant.showcall);
     const calls = useSelector(state => state.voximplant.calls);
     const voxiConnection = useSelector(state => state.voximplant.connection);
-    const location = useLocation();
     const userConnected = useSelector(state => state.inbox.userConnected);
-    const history = useHistory();
 
 
     // console.log(applications);
@@ -215,7 +217,7 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
     //     }
     // }, [])
     // console.log(showableViews);
-
+    console.log(openDrawer);
     return (
         <Drawer
             className={clsx(classes.drawer, {
