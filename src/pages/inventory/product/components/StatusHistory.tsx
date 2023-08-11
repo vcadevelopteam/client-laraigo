@@ -1,25 +1,13 @@
 import { Button, makeStyles } from "@material-ui/core";
 import {
   DialogZyx,
-  FieldCheckbox,
-  FieldEdit,
-  FieldSelect,
-  FieldView,
 } from "components";
 import { langKeys } from "lang/keys";
-import { useState } from "react";
 import { UseFormGetValues } from "react-hook-form";
 import ClearIcon from "@material-ui/icons/Clear";
 import { useTranslation } from "react-i18next";
-import SaveIcon from "@material-ui/icons/Save";
 import React from "react";
 import TableZyx from "components/fields/table-simple";
-
-const useStyles = makeStyles((theme) => ({
-  button: {
-    marginRight: theme.spacing(2),
-  },
-}));
 
 export const StatusHistory: React.FC<{
   openModal: any;
