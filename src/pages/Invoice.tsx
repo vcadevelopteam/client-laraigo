@@ -1049,7 +1049,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
         register("billingstartdate", { validate: (value) => (value && value !== null) || t(langKeys.field_required) });
         register("billingsupportplan", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register("channeladdlimit");
-        register("consultingprofile", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register("consultingprofile");
         register("contactcountmode", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register("contactplancurrency", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register("force");
