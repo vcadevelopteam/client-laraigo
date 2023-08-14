@@ -38,7 +38,7 @@ import {
     contactCalculateList,
     contactCountList,
     convertLocalDate,
-    currencyList,
+    currencySel,
     dataCurrency,
     dataMonths,
     dateToLocalDate,
@@ -171,6 +171,7 @@ interface DetailProps {
 
 interface DetailSupportPlanProps2 {
     data: RowSelected;
+    dataAllCurrency: any;
     dataCorp: any;
     dataOrg: any;
     dataPaymentPlan: any;
@@ -309,12 +310,13 @@ const CssPhonemui = styled(MuiPhoneNumber)({
 });
 
 const IDCOSTPERPERIOD = "IDCOSTPERPERIOD";
-const CostPerPeriod: React.FC<{ dataCorp: any; dataOrg: any; dataPaymentPlan: any; dataPlan: any }> = ({
-    dataCorp,
-    dataOrg,
-    dataPaymentPlan,
-    dataPlan,
-}) => {
+const CostPerPeriod: React.FC<{
+    dataAllCurrency: any;
+    dataCorp: any;
+    dataOrg: any;
+    dataPaymentPlan: any;
+    dataPlan: any;
+}> = ({ dataAllCurrency, dataCorp, dataOrg, dataPaymentPlan, dataPlan }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -688,6 +690,7 @@ const CostPerPeriod: React.FC<{ dataCorp: any; dataOrg: any; dataPaymentPlan: an
         return (
             <DetailCostPerPeriod
                 data={rowSelected}
+                dataAllCurrency={dataAllCurrency}
                 dataCorp={dataCorp}
                 dataOrg={dataOrg}
                 dataPaymentPlan={dataPaymentPlan}
@@ -701,6 +704,7 @@ const CostPerPeriod: React.FC<{ dataCorp: any; dataOrg: any; dataPaymentPlan: an
 
 const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
     data: { row, edit },
+    dataAllCurrency,
     dataPaymentPlan,
     dataPlan,
     fetchData,
@@ -1833,25 +1837,25 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                         <div className="row-zyx">
                             <FieldSelect
                                 className="col-6"
-                                data={currencyList}
+                                data={dataAllCurrency ?? []}
                                 disabled={!canEdit}
                                 error={errors?.billinginvoicecurrency?.message}
                                 label={t(langKeys.billingperiod_billingcurrency)}
-                                onChange={(value) => setValue("billinginvoicecurrency", value?.value)}
+                                onChange={(value) => setValue("billinginvoicecurrency", value?.code)}
                                 optionDesc="description"
-                                optionValue="value"
+                                optionValue="code"
                                 orderbylabel={true}
                                 valueDefault={getValues("billinginvoicecurrency")}
                             />
                             <FieldSelect
                                 className="col-6"
-                                data={currencyList}
+                                data={dataAllCurrency ?? []}
                                 disabled={!canEdit || true}
                                 error={errors?.billingplancurrency?.message}
                                 label={t(langKeys.billingperiod_plancurrency)}
-                                onChange={(value) => setValue("billingplancurrency", value?.value)}
+                                onChange={(value) => setValue("billingplancurrency", value?.code)}
                                 optionDesc="description"
-                                optionValue="value"
+                                optionValue="code"
                                 orderbylabel={true}
                                 valueDefault={getValues("billingplancurrency")}
                             />
@@ -1971,13 +1975,13 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                         <div className="row-zyx">
                             <FieldSelect
                                 className="col-6"
-                                data={currencyList}
+                                data={dataAllCurrency ?? []}
                                 disabled={!canEdit || true}
                                 error={errors?.agentplancurrency?.message}
                                 label={t(langKeys.billingperiod_agentcurrency)}
-                                onChange={(value) => setValue("agentplancurrency", value?.value)}
+                                onChange={(value) => setValue("agentplancurrency", value?.code)}
                                 optionDesc="description"
-                                optionValue="value"
+                                optionValue="code"
                                 orderbylabel={true}
                                 valueDefault={getValues("agentplancurrency")}
                             />
@@ -2158,13 +2162,13 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                         <div className="row-zyx">
                             <FieldSelect
                                 className="col-6"
-                                data={currencyList}
+                                data={dataAllCurrency ?? []}
                                 disabled={!canEdit || true}
                                 error={errors?.conversationuserplancurrency?.message}
                                 label={t(langKeys.billingperiod_conversationusercurrency)}
-                                onChange={(value) => setValue("conversationuserplancurrency", value?.value)}
+                                onChange={(value) => setValue("conversationuserplancurrency", value?.code)}
                                 optionDesc="description"
-                                optionValue="value"
+                                optionValue="code"
                                 orderbylabel={true}
                                 valueDefault={getValues("conversationuserplancurrency")}
                             />
@@ -2187,13 +2191,13 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                             />
                             <FieldSelect
                                 className="col-6"
-                                data={currencyList}
+                                data={dataAllCurrency ?? []}
                                 disabled={!canEdit || true}
                                 error={errors?.conversationusermetacurrency?.message}
                                 label={t(langKeys.billingperiod_conversationusermetacurrency)}
-                                onChange={(value) => setValue("conversationusermetacurrency", value?.value)}
+                                onChange={(value) => setValue("conversationusermetacurrency", value?.code)}
                                 optionDesc="description"
-                                optionValue="value"
+                                optionValue="code"
                                 orderbylabel={true}
                                 valueDefault={getValues("conversationusermetacurrency")}
                             />
@@ -2235,13 +2239,13 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                             />
                             <FieldSelect
                                 className="col-6"
-                                data={currencyList}
+                                data={dataAllCurrency ?? []}
                                 disabled={!canEdit || true}
                                 error={errors?.conversationbusinessplancurrency?.message}
                                 label={t(langKeys.billingperiod_conversationbusinesscurrency)}
-                                onChange={(value) => setValue("conversationbusinessplancurrency", value?.value)}
+                                onChange={(value) => setValue("conversationbusinessplancurrency", value?.code)}
                                 optionDesc="description"
-                                optionValue="value"
+                                optionValue="code"
                                 orderbylabel={true}
                                 valueDefault={getValues("conversationbusinessplancurrency")}
                             />
@@ -2300,13 +2304,13 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                         <div className="row-zyx">
                             <FieldSelect
                                 className="col-6"
-                                data={currencyList}
+                                data={dataAllCurrency ?? []}
                                 disabled={!canEdit || true}
                                 error={errors?.conversationbusinessmetacurrency?.message}
                                 label={t(langKeys.billingperiod_conversationbusinessmetacurrency)}
-                                onChange={(value) => setValue("conversationbusinessmetacurrency", value?.value)}
+                                onChange={(value) => setValue("conversationbusinessmetacurrency", value?.code)}
                                 optionDesc="description"
-                                optionValue="value"
+                                optionValue="code"
                                 orderbylabel={true}
                                 valueDefault={getValues("conversationbusinessmetacurrency")}
                             />
@@ -2353,13 +2357,13 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                         <div className="row-zyx">
                             <FieldSelect
                                 className="col-6"
-                                data={currencyList}
+                                data={dataAllCurrency ?? []}
                                 disabled={!canEdit || true}
                                 error={errors?.conversationplancurrency?.message}
                                 label={t(langKeys.billingperiod_conversationcurrency)}
-                                onChange={(value) => setValue("conversationplancurrency", value?.value)}
+                                onChange={(value) => setValue("conversationplancurrency", value?.code)}
                                 optionDesc="description"
-                                optionValue="value"
+                                optionValue="code"
                                 orderbylabel={true}
                                 valueDefault={getValues("conversationplancurrency")}
                             />
@@ -2432,13 +2436,13 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                         <div className="row-zyx">
                             <FieldSelect
                                 className="col-6"
-                                data={currencyList}
+                                data={dataAllCurrency ?? []}
                                 disabled={!canEdit || true}
                                 error={errors?.contactplancurrency?.message}
                                 label={t(langKeys.billingperiod_contactcurrency)}
-                                onChange={(value) => setValue("contactplancurrency", value?.value)}
+                                onChange={(value) => setValue("contactplancurrency", value?.code)}
                                 optionDesc="description"
-                                optionValue="value"
+                                optionValue="code"
                                 orderbylabel={true}
                                 valueDefault={getValues("contactplancurrency")}
                             />
@@ -2518,13 +2522,13 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                         <div className="row-zyx">
                             <FieldSelect
                                 className="col-12"
-                                data={currencyList}
+                                data={dataAllCurrency ?? []}
                                 disabled={!canEdit || true}
                                 error={errors?.messagingplancurrency?.message}
                                 label={t(langKeys.billingperiod_messagingcurrency)}
-                                onChange={(value) => setValue("messagingplancurrency", value?.value)}
+                                onChange={(value) => setValue("messagingplancurrency", value?.code)}
                                 optionDesc="description"
-                                optionValue="value"
+                                optionValue="code"
                                 orderbylabel={true}
                                 valueDefault={getValues("messagingplancurrency")}
                             />
@@ -2788,13 +2792,13 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({
                         <div className="row-zyx">
                             <FieldSelect
                                 className="col-6"
-                                data={currencyList}
+                                data={dataAllCurrency ?? []}
                                 disabled={!canEdit || true}
                                 error={errors?.consultingplancurrency?.message}
                                 label={t(langKeys.billingperiod_consultingcurrency)}
-                                onChange={(value) => setValue("consultingplancurrency", value?.value)}
+                                onChange={(value) => setValue("consultingplancurrency", value?.code)}
                                 optionDesc="description"
-                                optionValue="value"
+                                optionValue="code"
                                 orderbylabel={true}
                                 valueDefault={getValues("consultingplancurrency")}
                             />
@@ -11212,6 +11216,7 @@ const Invoice: FC = () => {
     const multiResult = useSelector((state) => state.main.multiData);
     const user = useSelector((state) => state.login.validateToken.user);
 
+    const [dataAllCurrency, setDataAllCurrency] = useState<any>([]);
     const [dataCorp, setDataCorp] = useState<any>([]);
     const [dataOrg, setDataOrg] = useState<any>([]);
     const [dataPaymentPlan, setDataPaymentPlan] = useState<any>([]);
@@ -11235,6 +11240,8 @@ const Invoice: FC = () => {
 
     useEffect(() => {
         if (!multiResult.loading && sentFirstInfo) {
+            console.log(multiResult.data[4]);
+            setDataAllCurrency(multiResult.data[4] && multiResult.data[4].success ? multiResult.data[4].data : []);
             setDataCorp(multiResult.data[2] && multiResult.data[2].success ? multiResult.data[2].data : []);
             setDataOrg(multiResult.data[1] && multiResult.data[1].success ? multiResult.data[1].data : []);
             setDataPaymentPlan(multiResult.data[3] && multiResult.data[3].success ? multiResult.data[3].data : []);
@@ -11247,7 +11254,9 @@ const Invoice: FC = () => {
         setSentFirstInfo(true);
         dispatch(getCountryList());
         if (user?.roledesc === "SUPERADMIN") {
-            dispatch(getMultiCollection([getPlanSel(), getOrgSelList(0), getCorpSel(0), getPaymentPlanSel()]));
+            dispatch(
+                getMultiCollection([getPlanSel(), getOrgSelList(0), getCorpSel(0), getPaymentPlanSel(), currencySel()])
+            );
         } else {
             dispatch(
                 getMultiCollection([
@@ -11255,6 +11264,7 @@ const Invoice: FC = () => {
                     getOrgSelList(user?.corpid ?? 0),
                     getCorpSelVariant(user?.corpid ?? 0, user?.orgid ?? 0, user?.usr ?? ""),
                     getPaymentPlanSel(),
+                    currencySel(),
                 ])
             );
         }
@@ -11282,6 +11292,7 @@ const Invoice: FC = () => {
                     {pageSelected === 0 && (
                         <div style={{ marginTop: 16 }}>
                             <CostPerPeriod
+                                dataAllCurrency={dataAllCurrency}
                                 dataCorp={dataCorp}
                                 dataOrg={dataOrg}
                                 dataPaymentPlan={dataPaymentPlan}
