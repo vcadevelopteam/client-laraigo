@@ -23,11 +23,6 @@ export const planModeList = [
     { value: "MONTHLY", description: "monthly" },
 ];
 
-export const currencyList = [
-    { value: "PEN", description: "PEN" },
-    { value: "USD", description: "USD" },
-];
-
 export const dataCurrency = [
     { value: "PEN", description: "PEN" },
     { value: "USD", description: "USD" },
