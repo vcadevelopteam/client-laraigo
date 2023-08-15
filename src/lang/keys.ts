@@ -5209,6 +5209,7 @@ export const langKeys = {
   openpay_message06: 'openpay_message06',
   openpay_message07: 'openpay_message07',
   openpay_message08: 'openpay_message08',
+  dialog_iscloud: 'dialog_iscloud',
 };
 
 export type LangKeys = typeof langKeys;
