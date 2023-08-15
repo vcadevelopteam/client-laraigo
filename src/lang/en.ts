@@ -5469,6 +5469,7 @@ const translation: LangKeys = {
   billingreport_channeltotal: 'Additional Channels',
   billingreport_contactwhatsapp: 'WhatsApp Channels Contacts',
   billingreport_contactother: 'Other Channels Contacts',
+  dialog_iscloud: 'Is Cloud',
 };
 
 const enResource: ResourceLanguage = {
