@@ -3229,6 +3229,7 @@ const DetailArtificialIntelligence: React.FC<ModalProps> = ({
                         <FieldEdit
                             className="col-6"
                             disabled={!edit}
+                            type="password"
                             error={errors?.apikey?.message}
                             label={t(langKeys.apikey)}
                             valueDefault={getValues("apikey")}
