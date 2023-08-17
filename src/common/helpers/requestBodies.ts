@@ -1156,6 +1156,11 @@ export const getVariableConfigurationLst = (): IRequestBody => ({
     parameters: {}
 });
 
+export const updateGroupOnHSM = (conversationid: number): IRequestBody => ({
+    method: "UFN_CONVERSATION_REASSIGNTICKET_HSM",
+    parameters: { conversationid }
+});
+
 export const getTicketsByFilter = (lastmessage: string, start_createticket: string, end_createticket: string, channels: string, conversationstatus: string, displayname: string, phone: string): IRequestBody => ({
     method: "UFN_CONVERSATION_SEL_TICKETSBYUSER_FILTER",
     parameters: {

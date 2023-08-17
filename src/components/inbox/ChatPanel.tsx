@@ -11,7 +11,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM, updatePerson, hideLogInteractions, updateClassificationPerson } from 'store/inbox/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { changeStatus, getConversationClassification2, insertClassificationConversation, insLeadPerson } from 'common/helpers';
+import { changeStatus, getConversationClassification2, insertClassificationConversation, insLeadPerson, updateGroupOnHSM } from 'common/helpers';
 import { execute, getCollectionAux2 } from 'store/main/actions';
 import { DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView, FieldMultiSelectFreeSolo, FieldMultiSelectVirtualized, PhoneFieldEdit } from 'components'
 import { langKeys } from 'lang/keys';
@@ -82,22 +82,6 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_send_hsm) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
-                //already dont need this, because services send in real time
-                // const newInteractionSocket = {
-                //     ...ticketSelected!!,
-                //     interactionid: 0,
-                //     typemessage: "text",
-                //     typeinteraction: null,
-                //     lastmessage: bodyCleaned,
-                //     createdate: new Date().toISOString(),
-                //     userid: 0,
-                //     usertype: "agent",
-                //     ticketWasAnswered: !ticketSelected!!.isAnswered,
-                // }
-                // dispatch(emitEvent({
-                //     event: 'newMessageFromAgent',
-                //     data: newInteractionSocket
-                // }));
 
                 setWaitClose(false);
             } else if (sendingRes.error) {
@@ -161,13 +145,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
     }
 
     const onSubmit = handleSubmit((data) => {
-        // setBodyCleaned(body => {
-        //     data.variables.forEach((x: Dictionary) => {
-        //         body = body.replace(`{{${x.name}}}`, x.variable !== 'custom' ? (person.data as Dictionary)[x.variable] : x.text)
-        //     })
-        //     return body
-        // })
-        const bb = {
+        const hsmData = {
             hsmtemplateid: data.hsmtemplateid,
             hsmtemplatename: data.hsmtemplatename,
             communicationchannelid: data.communicationchannelid,
@@ -187,7 +165,8 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
                 }))
             }]
         }
-        dispatch(sendHSM(bb))
+        dispatch(execute(updateGroupOnHSM(ticketSelected?.conversationid ?? 0)))
+        dispatch(sendHSM(hsmData))
         dispatch(showBackdrop(true));
         setWaitClose(true)
     });
