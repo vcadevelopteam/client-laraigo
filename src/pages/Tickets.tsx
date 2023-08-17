@@ -18,7 +18,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import { CloseTicketIcon, HistoryIcon, TipifyIcon, ReassignIcon, CallRecordIcon } from 'icons';
+import { CloseTicketIcon, HistoryIcon, TipifyIcon, ReassignIcon, CallRecordIcon, DashboardIAIcon } from 'icons';
 import { massiveCloseTicket, getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, emitEvent, importTicket } from 'store/inbox/actions';
 import { Button, ListItemIcon, Tabs, Tooltip } from '@material-ui/core';
 import PublishIcon from '@material-ui/icons/Publish';
@@ -548,7 +548,7 @@ const IconOptions: React.FC<{
                         onHandlerAnalyticsIA();
                     }}>
                         <ListItemIcon>
-                            <HistoryIcon width={22} style={{ fill: '#7721AD' }} />
+                            <DashboardIAIcon width={22} style={{ fill: '#7721AD' }} />
                         </ListItemIcon>
                         {"Analytics IA"}
                     </MenuItem>
@@ -631,6 +631,19 @@ const DialogAnalyticsIA: React.FC<{ ticket: Dictionary | null, openModal: boolea
             }
         }
     }, [ticket, openModal])
+    const trimmedData = React.useMemo(() => {
+        if (resultAnalyticsIA.data) {
+            return resultAnalyticsIA.data.map((row: any) => {
+                return {
+                    ...row,
+                    interactiontext: row.interactiontext.length > 65 
+                    ? row.interactiontext.substring(0, 65) + "..." 
+                    : row.interactiontext
+                }
+            })
+        }
+        return []
+    }, [resultAnalyticsIA.data])
 
     const columnsWNLU = React.useMemo(
         () => [
@@ -774,7 +787,7 @@ const DialogAnalyticsIA: React.FC<{ ticket: Dictionary | null, openModal: boolea
             <AntTabPanel index={0} currentIndex={tabIndex}>
                 <TableZyx
                     columns={columnsWNLU}
-                    data={resultAnalyticsIA.data}
+                    data={trimmedData}
                     filterGeneral={false}
                     download={false}
                     loading={resultAnalyticsIA.loading}
@@ -784,7 +797,7 @@ const DialogAnalyticsIA: React.FC<{ ticket: Dictionary | null, openModal: boolea
             <AntTabPanel index={1} currentIndex={tabIndex}>
                 <TableZyx
                     columns={columnsWA}
-                    data={resultAnalyticsIA.data}
+                    data={trimmedData}
                     filterGeneral={false}
                     download={false}
                     loading={resultAnalyticsIA.loading}
@@ -794,7 +807,7 @@ const DialogAnalyticsIA: React.FC<{ ticket: Dictionary | null, openModal: boolea
             <AntTabPanel index={2} currentIndex={tabIndex}>
                 <TableZyx
                     columns={columnsRasa}
-                    data={resultAnalyticsIA.data}
+                    data={trimmedData}
                     filterGeneral={false}
                     download={false}
                     loading={resultAnalyticsIA.loading}
