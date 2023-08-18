@@ -126,6 +126,21 @@ interface PrivateRouteProps extends Omit<RouteProps, "component"> {
 	component: React.ElementType;
 }
 
+const cleanPath = (pathx: string) => {
+	if (pathx.includes('channels')) {
+		return "/channels";
+	} else if (pathx.includes('person')) {
+		return "/person";
+	} else if (pathx.includes('crm')) {
+		return "/crm";
+	} else if (pathx.includes('dashboard')) {
+		return "/dashboard";
+	} else if (pathx.includes('servicedesk')) {
+		return "/servicedesk";
+	}
+	return pathx
+}
+
 // view: 0
 // modify: 1
 // insert: 2
