@@ -1243,7 +1243,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                                 </div>                                                
                                                 {(!!lead?.value?.personid) && <IconButton size="small" disabled={isIncremental} onClick={(e) => {
                                                     e.preventDefault();
-                                                    history.push(`/extras/person/${lead?.value?.personid}`)
+                                                    history.push(`/person/${lead?.value?.personid}`)
                                                 }}>
                                                     <PersonIcon />
                                                 </IconButton>}
