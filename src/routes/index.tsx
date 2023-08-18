@@ -124,6 +124,21 @@ interface PrivateRouteProps extends Omit<RouteProps, "component"> {
 	component: React.ElementType;
 }
 
+const cleanPath = (pathx: string) => {
+	if (pathx.includes('channels')) {
+		return "/channels";
+	} else if (pathx.includes('person')) {
+		return "/person";
+	} else if (pathx.includes('crm')) {
+		return "/crm";
+	} else if (pathx.includes('dashboard')) {
+		return "/dashboard";
+	} else if (pathx.includes('servicedesk')) {
+		return "/servicedesk";
+	}
+	return pathx
+}
+
 // view: 0
 // modify: 1
 // insert: 2
@@ -186,7 +201,7 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 		return <Redirect to={{ pathname: paths.SIGNIN }} />;
 	} else if (!ignorePwdchangefirstloginValidation && resValidateToken.user!.pwdchangefirstlogin === true) {
 		return <Redirect to={{ pathname: paths.CHNAGE_PWD_FIRST_LOGIN }} />;
-	} else if (location.pathname !== "/" && !applications?.[location.pathname]?.[0] && !location.pathname.includes('channels') && !location.pathname.includes('person') && !location.pathname.includes('crm') && !location.pathname.includes('dashboard') && !location.pathname.includes('servicedesk')) {
+	} else if (location.pathname !== "/" && !applications?.[cleanPath(location.pathname)]?.[0]) {
 		return <Redirect to={{ pathname: "/403" }} />;
 	} else if (location.pathname === "/") {
 		return <Redirect to={{ pathname: resValidateToken.user?.redirect }} />

@@ -221,7 +221,7 @@ export const ChannelAddWhatsAppOnboarding: FC = () => {
                         style={{ margin: "auto", backgroundColor: "#7721ad", color: "#fff", border: "1px solid #7721ad", borderRadius: "4px", padding: "10px", textTransform: "none", display: "flex", textAlign: "center", justifyItems: "center", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
                         label={t(langKeys.connect_whatsappnumber)}
                         queryParameters={{
-                            redirect_url: `${window.location.origin}/configuration/channels/:id/add/ChannelAddWhatsAppOnboarding`
+                            redirect_url: `${window.location.origin}/channels/:id/add/ChannelAddWhatsAppOnboarding`
                         }}
                     />
                 </div>
