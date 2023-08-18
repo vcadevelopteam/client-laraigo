@@ -205,10 +205,10 @@ const paths = {
     INTELLIGENTMODELS: '/extras/intelligentmodels',
     SLA: '/extras/sla',
     DOMAINS: '/extras/domains',
-    PERSON: '/extras/person',
+    PERSON: '/person',
     PERSON_DETAIL: {
-        path: '/extras/person/:id',
-        resolve: (personId: string | number) => `/extras/person/${personId}`,
+        path: '/person/:id',
+        resolve: (personId: string | number) => `/person/${personId}`,
     },
     MESSAGETEMPLATE: '/extras/messagetemplate',
     TIPIFICATIONS: '/extras/tipifications',
