@@ -623,7 +623,7 @@ const DialogAnalyticsIA: React.FC<{ ticket: Dictionary | null, openModal: boolea
     const classes = useStyles();
 
     const resultAnalyticsIA = useSelector(state => state.main.mainAux);
-
+    // console.log(resultAnalyticsIA.data);
     useEffect(() => {
         if (openModal) {
             if (ticket) {
@@ -632,8 +632,9 @@ const DialogAnalyticsIA: React.FC<{ ticket: Dictionary | null, openModal: boolea
         }
     }, [ticket, openModal])
     const trimmedData = React.useMemo(() => {
-        if (resultAnalyticsIA.data) {
+        if (resultAnalyticsIA.data && resultAnalyticsIA.data[0]?.interactiontext ) {
             return resultAnalyticsIA.data.map((row: any) => {
+                // console.log(row);
                 return {
                     ...row,
                     interactiontext: row.interactiontext.length > 65 
