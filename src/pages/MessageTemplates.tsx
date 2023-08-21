@@ -632,7 +632,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     );
 
     const dataNewCategory = [
-        { value: "AUNTHENTICATION", description: t(langKeys.TEMPLATE_AUNTHENTICATION) },
+        { value: "AUTHENTICATION", description: t(langKeys.TEMPLATE_AUTHENTICATION) },
         { value: "MARKETING", description: t(langKeys.TEMPLATE_MARKETING) },
         { value: "UTILITY", description: t(langKeys.TEMPLATE_UTILITY) },
     ];
