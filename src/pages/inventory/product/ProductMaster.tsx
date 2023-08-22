@@ -53,7 +53,7 @@ const ProductMaster: FC = () => {
     const dispatch = useDispatch();
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
-    const [viewSelected, setViewSelected] = useState("view-1");
+    const [viewSelected, setViewSelected] = useState("main-view");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
@@ -167,16 +167,16 @@ const ProductMaster: FC = () => {
     }, [executeResult, waitSave])
 
     const handleRegister = () => {
-        setViewSelected("view-2");
+        setViewSelected("detail-view");
         setRowSelected({ row: null, edit: false });
     }
 
     const handleEdit = (row: Dictionary) => {
-        setViewSelected("view-2");
+        setViewSelected("detail-view");
         setRowSelected({ row, edit: true });
     }
     const handleDuplicate = (row: Dictionary) => {
-        setViewSelected("view-2");
+        setViewSelected("detail-view");
         setRowSelected({ row, edit: false });
     }
 
@@ -197,7 +197,7 @@ const ProductMaster: FC = () => {
         setOpenModal(false)        
     }
 
-    if (viewSelected === "view-1") {
+    if (viewSelected === "main-view") {
 
         if (mainResult.mainData.error) {
             return <h1>ERROR</h1>;

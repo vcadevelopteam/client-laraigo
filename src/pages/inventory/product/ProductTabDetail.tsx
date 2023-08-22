@@ -56,7 +56,7 @@ interface ProductDetailProps {
     errors: FieldErrors<any>;
 }
 
-const ProductDetail: React.FC<ProductDetailProps> = ({
+const ProductTabDetail: React.FC<ProductDetailProps> = ({
     row,
     setValue,
     getValues,
@@ -239,4 +239,4 @@ const ProductDetail: React.FC<ProductDetailProps> = ({
     )
 }
 
-export default ProductDetail;
+export default ProductTabDetail;

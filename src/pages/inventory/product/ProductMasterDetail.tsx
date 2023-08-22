@@ -15,10 +15,11 @@ import { useForm } from 'react-hook-form';
 import { execute, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { Tabs } from '@material-ui/core';
-import ProductDetail from './ProductDetail';
+import ProductTabDetail from './ProductTabDetail';
 import { ExtrasMenu } from './components/components';
 import { ChangeStatusModal } from './components/ChangeStatusModal';
 import { StatusHistory } from './components/StatusHistory';
+import AlternativeProductTab from './AlternativeProductTabDetail';
 
 
 
@@ -225,10 +226,17 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                         </div>
                     )}
                 />
+                <AntTab
+                    label={(
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                            <Trans i18nKey={langKeys.alternativephone} count={2} />
+                        </div>
+                    )}
+                />
             </Tabs>
 
             <AntTabPanel index={0} currentIndex={tabIndex}>
-                <ProductDetail
+                <ProductTabDetail
                     row={row}
                     setValue={setValue}
                     getValues={getValues}
@@ -240,6 +248,14 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
             </AntTabPanel>
             <AntTabPanel index={2} currentIndex={tabIndex}>
                 <div>test</div>
+            </AntTabPanel>
+            <AntTabPanel index={3} currentIndex={tabIndex}>
+                <AlternativeProductTab
+                    row={row}
+                    setValue={setValue}
+                    getValues={getValues}
+                    errors={errors}
+                />
             </AntTabPanel>
             <ChangeStatusModal 
                 openModal={openModalChangeStatus}
