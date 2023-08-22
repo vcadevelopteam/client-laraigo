@@ -265,6 +265,7 @@ export const langKeys = {
   canceleventtext: "canceleventtext",
   cancelenventerror: "cancelenventerror",
   sendreminders: 'sendreminders',
+  alternativeproducts: 'alternativeproducts',
   remindertype: 'remindertype',
   reminderperiod: 'reminderperiod',
   passwordCond8: "passwordCond8",

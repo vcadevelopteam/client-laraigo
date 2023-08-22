@@ -80,8 +80,8 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
     const classes = useStyles();
 
     const arrayBread = [
-        { id: "view-1", name: t(langKeys.productMaster) },
-        { id: "view-2", name: `${t(langKeys.productMaster)} ${t(langKeys.detail)}` },
+        { id: "main-view", name: t(langKeys.productMaster) },
+        { id: "detail-view", name: `${t(langKeys.productMaster)} ${t(langKeys.detail)}` },
     ];
 
     useEffect(() => {
@@ -113,7 +113,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
-                setViewSelected("view-1");
+                setViewSelected("main-view");
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
@@ -177,7 +177,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                         startIcon={<ClearIcon color="secondary" />}
                         style={{ backgroundColor: "#FB5F5F" }}
                         onClick={() => {
-                            setViewSelected("view-1")
+                            setViewSelected("main-view")
                         }}
                     >{t(langKeys.back)}</Button>
                     <Button
@@ -215,7 +215,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                 <AntTab
                     label={(
                         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                            <Trans i18nKey={langKeys.schedule} count={2} />
+                            <Trans i18nKey={langKeys.alternativeproducts}/>
                         </div>
                     )}
                 />
@@ -244,18 +244,17 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                 />
             </AntTabPanel>
             <AntTabPanel index={1} currentIndex={tabIndex}>
-                <div>test</div>
-            </AntTabPanel>
-            <AntTabPanel index={2} currentIndex={tabIndex}>
-                <div>test</div>
-            </AntTabPanel>
-            <AntTabPanel index={3} currentIndex={tabIndex}>
                 <AlternativeProductTab
                     row={row}
                     setValue={setValue}
                     getValues={getValues}
                     errors={errors}
                 />
+            </AntTabPanel>
+            <AntTabPanel index={2} currentIndex={tabIndex}>
+                <div>test</div>
+            </AntTabPanel>
+            <AntTabPanel index={3} currentIndex={tabIndex}>
             </AntTabPanel>
             <ChangeStatusModal 
                 openModal={openModalChangeStatus}

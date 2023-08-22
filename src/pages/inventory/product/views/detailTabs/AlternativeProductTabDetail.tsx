@@ -1,123 +1,126 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
-import { Dictionary, IFile } from "@types";
-import { makeStyles } from '@material-ui/core/styles';
-import { useTranslation } from 'react-i18next';
-import { langKeys } from 'lang/keys';
-import { FieldErrors, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
-import { Avatar, Button } from '@material-ui/core';
-import CameraAltIcon from '@material-ui/icons/CameraAlt';
-import { FieldEdit, FieldSelect } from 'components';
-import { useSelector } from 'hooks';
-import { uploadFile } from 'store/main/actions';
-import { useDispatch } from 'react-redux';
-import Box from '@material-ui/core/Box';
-import { ItemFile, UploaderIcon } from '../../components/components';
-import TableZyx from 'components/fields/table-simple';
+import React, { useState } from "react"; // we need this to make JSX compile
+import { Dictionary } from "@types";
+import { makeStyles } from "@material-ui/core/styles";
+import { useTranslation } from "react-i18next";
+import { langKeys } from "lang/keys";
+import {
+  FieldErrors,
+  UseFormGetValues,
+  UseFormSetValue,
+} from "react-hook-form";
+import { Button } from "@material-ui/core";
+import TableZyx from "components/fields/table-simple";
+import { Search as SearchIcon } from "@material-ui/icons";
+import SearchProductModal from "./TabComponents/SearchProductModal";
+import ClearIcon from "@material-ui/icons/Clear";
+
+const selectionKey = "domainname";
 
 const useStyles = makeStyles((theme) => ({
-    containerDetail: {
-        marginTop: theme.spacing(2),
-        padding: theme.spacing(2),
-        background: '#fff',
-    },
-    containerDescription: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        paddingBottom: '10px',
-    },
-    containerDescriptionTitle: {
-        fontSize: 24
-    },
-    containerDescriptionSubtitle: {
-        fontSize: 14,
-        fontWeight: 500
-    },
-    iconResponse: {
-        cursor: 'pointer',
-        poisition: 'relative',
-        color: '#2E2C34',
-        '&:hover': {
-            // color: theme.palette.primary.main,
-            backgroundColor: '#EBEAED',
-            borderRadius: 4
-        }
-    },
-    iconSendDisabled: {
-        backgroundColor: "#EBEAED",
-        cursor: 'not-allowed',
-    },
+  containerDetail: {
+    marginTop: theme.spacing(2),
+    padding: theme.spacing(2),
+    background: "#fff",
+  },
+  button: {
+    marginRight: theme.spacing(2),
+  },
 }));
 
 interface AlternativeProductDetailProps {
-    row: Dictionary | null;
-    setValue: UseFormSetValue<any>;
-    getValues: UseFormGetValues<any>;
-    errors: FieldErrors<any>;
+  row: Dictionary | null;
+  setValue: UseFormSetValue<any>;
+  getValues: UseFormGetValues<any>;
+  errors: FieldErrors<any>;
 }
 
 const AlternativeProductTab: React.FC<AlternativeProductDetailProps> = ({
-    row,
-    setValue,
-    getValues,
-    errors,
+  row,
+  setValue,
+  getValues,
+  errors,
 }) => {
-    const { t } = useTranslation();
-    const classes = useStyles();
-    const [files, setFiles] = useState<IFile[]>([]);
-    const [waitUploadFile, setWaitUploadFile] = useState(false);
-    const uploadResult = useSelector(state => state.main.uploadFile);
-    const dispatch = useDispatch();
+  const { t } = useTranslation();
+  const classes = useStyles();
+  const [openModalSearch, setOpenModalSearch] = useState(false);
+  const [selectedRows, setSelectedRows] = useState<Dictionary>({});
+  const [cleanSelected, setCleanSelected] = useState(false);
 
-    useEffect(() => {
-        if (waitUploadFile) {
-            if (!uploadResult.loading && !uploadResult.error) {
-                setValue('image', uploadResult.url)
-                setWaitUploadFile(false);
-            } else if (uploadResult.error) {
-
-                setWaitUploadFile(false);
-            }
-        }
-    }, [waitUploadFile, uploadResult])
-
-
-    const columns = React.useMemo(
-        () => [
-
-            {
-                Header: t(langKeys.product),
-                accessor: 'product',
-                width: "auto",
-            },
-            {
-                Header: t(langKeys.description),
-                accessor: 'description',
-                width: "auto",
-            },
-            {
-                Header: t(langKeys.family),
-                accessor: 'family',
-                width: "auto",
-            },
-            {
-                Header: t(langKeys.subfamily),
-                accessor: 'subfamily',
-                width: "auto",
-            },
-        ],
-        []
-    );
-    return (
-        <div className={classes.containerDetail}>
-            <div className="row-zyx">
-                <Button variant="contained" color="primary" className="btn-zyx">
-                    {t(langKeys.alternativePhone)}
-                </Button>
-            </div>
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: t(langKeys.product),
+        accessor: "product",
+        width: "auto",
+      },
+      {
+        Header: t(langKeys.description),
+        accessor: "description",
+        width: "auto",
+      },
+      {
+        Header: t(langKeys.family),
+        accessor: "family",
+        width: "auto",
+      },
+      {
+        Header: t(langKeys.subfamily),
+        accessor: "subfamily",
+        width: "auto",
+      },
+    ],
+    []
+  );
+  return (
+    <div className={classes.containerDetail}>
+      <div className="row-zyx">
+        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+          <Button
+            variant="contained"
+            type="button"
+            color="primary"
+            disabled={!selectedRows.length}
+            startIcon={<ClearIcon color="secondary" />}
+            style={{ backgroundColor: "#FB5F5F" }}
+            onClick={() => {}}
+          >
+            {t(langKeys.delete)}
+          </Button>
+          <Button
+            className={classes.button}
+            variant="contained"
+            color="primary"
+            type="submit"
+            startIcon={<SearchIcon style={{ color: "white" }} />}
+            style={{ backgroundColor: "#55BD84" }}
+            onClick={() => setOpenModalSearch(true)}
+          >
+            {t(langKeys.search)} {t(langKeys.product)}
+          </Button>
         </div>
-    )
-}
+      </div>
+      <div className="row-zyx">
+        <TableZyx
+          columns={columns}
+          data={[]}
+          download={false}
+          filterGeneral={false}
+          useSelection={true}
+          setSelectedRows={setSelectedRows}
+          initialSelectedRows={selectedRows}
+          cleanSelection={cleanSelected}
+          setCleanSelection={setCleanSelected}
+          register={false}
+          selectionKey={selectionKey}
+        />
+      </div>
+      <SearchProductModal
+        openModal={openModalSearch}
+        setOpenModal={setOpenModalSearch}
+      />
+    </div>
+  );
+};
 
 export default AlternativeProductTab;

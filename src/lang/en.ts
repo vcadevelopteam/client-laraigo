@@ -1105,6 +1105,7 @@ const translation: LangKeys = {
   color: 'Color',
   rescheduleappointment: "Reschedule appointment",
   sendreminders: 'Send reminders',
+  alternativeproducts: 'Alternative products',
   remindertype: 'Reminder type',
   reminderperiod: 'Reminder range',
   suspend_ticket: 'Suspend ticket',

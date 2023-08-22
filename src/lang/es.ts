@@ -1870,6 +1870,7 @@ const translation: LangKeys = {
   more_times: "Mas veces",
   select_date_time: " Selecciona un fecha y hora",
   sendreminders: 'Envío de recordatorios',
+  alternativeproducts: 'Productos alternativos',
   remindertype: 'Tipo de recordatorio',
   prepare_meeting: "Comparta algo adicional que ayude a prepararse para nuestra reunión.",
   no_event_found: "Ningún evento encontrado",
