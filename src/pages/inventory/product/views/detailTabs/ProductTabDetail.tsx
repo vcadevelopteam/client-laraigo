@@ -12,7 +12,7 @@ import { useSelector } from 'hooks';
 import { uploadFile } from 'store/main/actions';
 import { useDispatch } from 'react-redux';
 import Box from '@material-ui/core/Box';
-import { ItemFile, UploaderIcon } from './components/components';
+import { ItemFile, UploaderIcon } from '../../components/components';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {

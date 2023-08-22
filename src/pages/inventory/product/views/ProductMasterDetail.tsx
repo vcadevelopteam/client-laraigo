@@ -15,11 +15,11 @@ import { useForm } from 'react-hook-form';
 import { execute, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { Tabs } from '@material-ui/core';
-import ProductTabDetail from './ProductTabDetail';
-import { ExtrasMenu } from './components/components';
-import { ChangeStatusModal } from './components/ChangeStatusModal';
-import { StatusHistory } from './components/StatusHistory';
-import AlternativeProductTab from './AlternativeProductTabDetail';
+import ProductTabDetail from './detailTabs/ProductTabDetail';
+import { ExtrasMenu } from '../components/components';
+import { ChangeStatusModal } from '../components/ChangeStatusModal';
+import { StatusHistory } from '../components/StatusHistory';
+import AlternativeProductTab from './detailTabs/AlternativeProductTabDetail';
 
 
 
