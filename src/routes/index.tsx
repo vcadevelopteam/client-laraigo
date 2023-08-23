@@ -130,6 +130,21 @@ interface PrivateRouteProps extends Omit<RouteProps, "component"> {
 // insert: 2
 // delete: 3
 
+const cleanPath = (pathx: string) => {
+	if (pathx.includes('channels')) {
+		return pathx = "/channels";
+	} else if (pathx.includes('person')) {
+		return pathx = "/person";
+	} else if (pathx.includes('crm')) {
+		return pathx = "/crm";
+	} else if (pathx.includes('dashboard')) {
+		return pathx = "/dashboard";
+	} else if (pathx.includes('servicedesk')) {
+		return pathx = "/servicedesk";
+	}
+	return pathx
+}
+
 const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, ...rest }) => {
 	const resValidateToken = useSelector(state => state.login.validateToken);
 	const ignorePwdchangefirstloginValidation = useSelector(state => state.login.ignorePwdchangefirstloginValidation);
@@ -187,7 +202,7 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 		return <Redirect to={{ pathname: paths.SIGNIN }} />;
 	} else if (!ignorePwdchangefirstloginValidation && resValidateToken.user!.pwdchangefirstlogin === true) {
 		return <Redirect to={{ pathname: paths.CHNAGE_PWD_FIRST_LOGIN }} />;
-	} else if (location.pathname !== "/" && !applications?.[location.pathname]?.[0] && !location.pathname.includes('channels') && !location.pathname.includes('person') && !location.pathname.includes('crm') && !location.pathname.includes('dashboard') && !location.pathname.includes('servicedesk')) {
+	} else if (location.pathname !== "/" && !applications?.[cleanPath(location.pathname)]?.[0]) {
 		return <Redirect to={{ pathname: "/403" }} />;
 	} else if (location.pathname === "/") {
 		return <Redirect to={{ pathname: resValidateToken.user?.redirect }} />
