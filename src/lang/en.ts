@@ -5339,7 +5339,7 @@ const translation: LangKeys = {
   subscription_noselectedchannel: 'You must select at least one channel',
   ticket_originalpublishdate: 'Original publication date',
   ticket_followercount: 'Follower amount',
-  timesheet: 'Time Sheet',
+  timesheet: 'Consulting Hours',
   timesheet_new: 'New Time Sheet',
   timesheet_detail: 'Time Sheet Detail',
   timesheet_startdate: 'Date',

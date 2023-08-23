@@ -300,6 +300,8 @@ export { ReactComponent as AutomatizationRouteIcon } from './automatizacion_rout
 export { ReactComponent as ConectivityIARouteIcon } from './conectividadIA_route.svg';
 export { ReactComponent as ConfiguratuinIARouteIcon } from './configuracion-IA_route.svg';
 export { ReactComponent as IARouteIcon } from './IA_route.svg';
-export { ReactComponent as SalesRouteIcon } from './sales_route.svg'
-export { ReactComponent as ServiceDeskRouteIcon } from './service desk 1_route.svg'
-export { ReactComponent as IAEntrenamientoIcon } from './IA_Laraigo_Entrenamiento.svg'
+export { ReactComponent as SalesRouteIcon } from './sales_route.svg';
+export { ReactComponent as ServiceDeskRouteIcon } from './service desk 1_route.svg';
+export { ReactComponent as IAEntrenamientoIcon } from './IA_Laraigo_Entrenamiento.svg';
+
+export {ReactComponent as TimeSheetIcon} from './timesheet_24dp 1.svg';

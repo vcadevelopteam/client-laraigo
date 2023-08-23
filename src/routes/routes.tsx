@@ -41,6 +41,7 @@ import {
     ConectivityIARouteIcon,
     IAEntrenamientoIcon,
     SLAIcon,
+    TimeSheetIcon,
 } from 'icons';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import InputIcon from '@material-ui/icons/Input';
@@ -472,7 +473,7 @@ export const routes: RouteConfig[] = [
     },
     
     {
-        key: paths.PERSON,
+        key: '/person',
         description: <Trans i18nKey={langKeys.person_plural} count={2} />,
         tooltip: "",
         path: paths.PERSON,
