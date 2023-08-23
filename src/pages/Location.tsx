@@ -23,7 +23,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import { useHistory } from 'react-router-dom';
 import paths from 'common/constants/paths';
 import TablePaginated from 'components/fields/table-paginated';
-import Map from './MapLocation.js'
+import Map from './MapLocation.jsx'
 
 interface RowSelected {
     row: Dictionary | null,
