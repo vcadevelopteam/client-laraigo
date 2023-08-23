@@ -41,7 +41,6 @@ import {
     ConectivityIARouteIcon,
     IAEntrenamientoIcon,
     SLAIcon,
-    TimeSheetIcon,
 } from 'icons';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import InputIcon from '@material-ui/icons/Input';

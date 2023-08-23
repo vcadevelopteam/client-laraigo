@@ -74,7 +74,7 @@ export { ReactComponent as SupervisorIcon } from 'icons/single-user-setting.svg'
 export { ReactComponent as OrganizationIcon } from 'icons/high-rise-building.svg';
 export { ReactComponent as ChannelIcon } from 'icons/chart-bar-bargraph.svg';
 export { ReactComponent as BillingSetupIcon } from 'icons/billingsetup.svg';
-export { ReactComponent as TimeSheetIcon } from 'icons/billingsetup.svg';
+// export { ReactComponent as TimeSheetIcon } from 'icons/billingsetup.svg';
 export { ReactComponent as InvoiceIcon } from 'icons/credit-Card.svg';
 export { ReactComponent as ConfigurationIcon } from 'icons/settings.svg';
 export { ReactComponent as ExtrasIcon } from 'icons/grid-layout-menu-more.svg';
