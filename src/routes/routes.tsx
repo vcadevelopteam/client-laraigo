@@ -41,6 +41,7 @@ import {
     ConectivityIARouteIcon,
     IAEntrenamientoIcon,
     SLAIcon,
+    TimeSheetIcon,
 } from 'icons';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import InputIcon from '@material-ui/icons/Input';
@@ -247,6 +248,13 @@ export const routes: RouteConfig[] = [
         tooltip: <Trans i18nKey={langKeys.billingSetup} />,
         path: paths.BILLING_SETUPS,
         icon: (className) => <BillingSetupIcon style={{ width: 22, height: 22 }} className={className} />,
+    },
+    {
+        key: paths.TIMESHEET,
+        description: <Trans i18nKey={langKeys.timesheet} />,
+        tooltip: <Trans i18nKey={langKeys.timesheet} />,
+        path: paths.TIMESHEET,
+        icon: (className) => <TimeSheetIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
         key: paths.INVOICE,
@@ -465,7 +473,7 @@ export const routes: RouteConfig[] = [
     },
     
     {
-        key: paths.PERSON,
+        key: '/person',
         description: <Trans i18nKey={langKeys.person_plural} count={2} />,
         tooltip: "",
         path: paths.PERSON,

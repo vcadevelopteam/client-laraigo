@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { FC, useState } from 'react';
+import { FC, useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
@@ -16,7 +16,7 @@ import { usePopupState, bindHover, bindPopover } from 'material-ui-popup-state/h
 import { RouteConfig, ViewsClassificationConfig } from '@types';
 import { setModalCall } from 'store/voximplant/actions';
 import { langKeys } from 'lang/keys';
-import { WifiCalling } from 'icons';
+import { InvoiceIcon, WifiCalling } from 'icons';
 import { showSnackbar } from 'store/popus/actions';
 import { viewsClassifications, routes } from 'routes/routes';
 import { History } from 'history';
@@ -30,7 +30,7 @@ type IProps = {
 
 const ListViewItem: React.FC<{ navRoute: RouteConfig, classes: any, history: History }> = ({ navRoute, classes, history }) => {
     const [classname, setClassname] = useState<string>(classes.drawerItemInactive);
-
+    // console.log(navRoute);
     const onClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
         e.preventDefault();
         if (!navRoute.subroute) {
@@ -55,7 +55,7 @@ const ListViewItem: React.FC<{ navRoute: RouteConfig, classes: any, history: His
         href={navRoute?.path}
     >
         {/* <Tooltip title={navRoute?.tooltip}> */}
-            <ListItemIcon>{navRoute?.icon?.(classname)}</ListItemIcon>
+        <ListItemIcon>{navRoute?.icon?.(classname)}</ListItemIcon>
         {/* </Tooltip> */}
         <ListItemText className={classname} primary={navRoute?.description} />
     </ListItem>
@@ -70,7 +70,7 @@ const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig,
             // console.log(option);
             if (option === '/channels') return routes.find(route => route?.key === option);
             return routes.find(route => route?.path === option);
-    });
+        });
 
 
 
@@ -128,49 +128,92 @@ const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig,
 };
 
 const LinkList: FC<{ config: ViewsClassificationConfig, classes: any, open: boolean, history: History }> = ({ config, classes, open, history }) => {
+    const [linkListStyle, setlinkListStyle] = useState<string>(classes.drawerItemInactive);
     const popupState = usePopupState({ variant: 'popover', popupId: 'demoPopper' });
+    const userRole = useSelector(state => state.login?.validateToken?.user)?.roledesc;
     let className = "";
-    // console.log(popupState.isOpen);
-    // console.log(open);
+    useEffect(() => {
+        if (open) {
+            setlinkListStyle(classes.drawerItemInactive)
+        } else {
+            setlinkListStyle(classes.drawerCloseItemInactive)
+        }
+    }, [classes.drawerCloseItemInactive, classes.drawerItemInactive, open])
+    
+    const onClick = (e: React.MouseEvent<HTMLAnchorElement>, invoiceRoute: string) => {
+        e.preventDefault();
+        const navRoute = routes.find(route => route?.path === invoiceRoute) as RouteConfig;
+        if (!navRoute.subroute) {
+            history.push(navRoute.path!)
+        } else {
+            if (navRoute.initialSubroute) {
+                history.push(navRoute.initialSubroute);
+            } else {
+                const message = `initialSubroute debe tener valor para la subruta key:${navRoute.key} path:${navRoute.path}`;
+                console.assert(navRoute.initialSubroute != null || navRoute.initialSubroute !== undefined, message);
+            }
+        }
+    }
     if (popupState.isOpen) {
         className = open ? classes.drawerItemActive : classes.drawerCloseItemActive;
     } else {
         className = open ? classes.drawerItemInactive : classes.drawerCloseItemInactive;
     }
+    // console.log(config);
 
     return (
-        <div {...bindHover(popupState)} >
-            <ListItem
-                button
-                key={config.key}
-                className={clsx(className)}
-                component="a"
-                style={{ position: 'relative' }}
-            >
-                <ListItemIcon>{config.icon?.(className)}</ListItemIcon>
-                <ListItemText primary={config.description} style={{ visibility: open ? 'visible' : 'hidden' }} />
-                <Typography variant='h5' style={{ position: 'absolute', right: open ? 25 : 5, color: open ? '' : 'white', fontWeight: open ? 'normal' : 'bold' }}>{">"}</Typography>
-            </ListItem>
-            <HoverPopover
-                {...bindPopover(popupState)}
-                anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                }}
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'left',
-                }}
-                transitionDuration={0.0}
-                
-            >
-                <PopperContent
-                    classes={classes}
-                    history={history}
-                    config={config} />
-            </HoverPopover>
+        <>
+            {
+                userRole?.includes('ADMINISTRADOR') && config.key === 'invoice'
+                    ?
+                    <ListItem
+                        button
+                        key={config.key}
+                        className={clsx(linkListStyle)}
+                        component="a"
+                        onClick={(e: React.MouseEvent<HTMLAnchorElement>) => onClick(e, config.options[0])}
+                        style={{ position: 'relative' }}
+                        onMouseEnter={() => { setlinkListStyle(open ? classes.drawerItemActive : classes.drawerCloseItemActive) }}
+                        onMouseLeave={() => { setlinkListStyle(open ? classes.drawerItemInactive : classes.drawerCloseItemInactive) }}
+                    >
+                        <ListItemIcon>{config.icon?.(linkListStyle)}</ListItemIcon>
+                        <ListItemText primary={config.description} style={{ visibility: open ? 'visible' : 'hidden' }} />
+                        {/* <Typography variant='h5' style={{ position: 'absolute', right: open ? 25 : 5, color: open ? '' : 'white', fontWeight: open ? 'normal' : 'bold' }}>{">"}</Typography> */}
+                    </ListItem>
+                    :
+                    <div {...bindHover(popupState)} >
+                        <ListItem
+                            button
+                            key={config.key}
+                            className={clsx(className)}
+                            // component="a"
+                            style={{ position: 'relative' }}
+                        >
+                            <ListItemIcon>{config.icon?.(className)}</ListItemIcon>
+                            <ListItemText primary={config.description} style={{ visibility: open ? 'visible' : 'hidden' }} />
+                            <Typography variant='h5' style={{ position: 'absolute', right: open ? 25 : 5, color: open ? '' : 'white', fontWeight: open ? 'normal' : 'bold' }}>{">"}</Typography>
+                        </ListItem>
+                        <HoverPopover
+                            {...bindPopover(popupState)}
+                            anchorOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'left',
+                            }}
+                            transitionDuration={0.0}
 
-        </div >
+                        >
+                            <PopperContent
+                                classes={classes}
+                                history={history}
+                                config={config} />
+                        </HoverPopover>
+                    </div>
+            }
+        </ >
     );
 };
 
@@ -185,39 +228,39 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
     const calls = useSelector(state => state.voximplant.calls);
     const voxiConnection = useSelector(state => state.voximplant.connection);
     const userConnected = useSelector(state => state.inbox.userConnected);
+    const userData = useSelector(state => state.login?.validateToken?.user);
 
 
     // console.log(applications);
-
-    // Filtrar módulos padres
-
-
-
     //Conseguir todas las subrutas y asignarlas a los modulos padres
+    // debugger;
     const showableViews = viewsClassifications.reduce((acc: any[], view) => {
         const subroutes = Object.entries(applications as Object)
-            .filter(([_, values]) => values[4] === view.id) // Obtenemos los 
-            .map(([route, values]) => ({ route, menuorder: values[6] })) // access 7th element using index 6
+            .filter(([_, values]) => values[4] === view.id) //  
+            .map(([route, values]) => ({ route, menuorder: values[6] }))
             .sort((a, b) => a.menuorder - b.menuorder)
             .map(entry => entry.route);
-        if(subroutes.length > 0){
+        if (subroutes.length > 0) {
             acc.push({ ...view, options: subroutes });
+            if (subroutes.includes('/invoice')) {
+                if (userData?.roledesc.includes('SUPERADMIN')) {
+                    const filteredSubroutes = ['/invoice', '/billing_setups', '/timesheet'];
+                    acc.push({ ...view, id: 8, key: 'invoice', options: filteredSubroutes, description: t(langKeys.invoice), icon: (className: string) => <InvoiceIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />, });
+
+                    acc[acc.length - 2].options.splice(acc[acc.length - 2].options.indexOf('/invoice'), 1);
+                    acc[acc.length - 2].options.splice(acc[acc.length - 2].options.indexOf('/billing_setups'), 1);
+                    acc[acc.length - 2].options.splice(acc[acc.length - 2].options.indexOf('/timesheet'), 1);
+                } else if (userData?.roledesc.includes('ADMINISTRADOR')) {
+                    const filteredSubroutes = ['/invoice']
+                    acc.push({ ...view, id: 8, key: 'invoice', options: filteredSubroutes, description: t(langKeys.invoice), icon: (className: string) => <InvoiceIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />, });
+                    acc[acc.length - 2].options.splice(acc[acc.length - 2].options.indexOf('/invoice'), 1);
+                }
+            }
         }
         return acc;
     }, []);
-
-
-
-    // const showableViews = viewsClassifications.reduce((acc: any, x: any) => {
-    //     let findPermit = x.options.find((key: any) => applications?.[key] && (applications?.[key]?.[0]))
-    //     if (findPermit) {
-    //         return [...acc, x]
-    //     } else {
-    //         return acc;
-    //     }
-    // }, [])
+    // debugger;
     // console.log(showableViews);
-    // console.log(openDrawer);
     return (
         <Drawer
             className={clsx(classes.drawer, {

@@ -5199,6 +5199,7 @@ export const langKeys = {
   openpay_message06: 'openpay_message06',
   openpay_message07: 'openpay_message07',
   openpay_message08: 'openpay_message08',
+  timesheet: 'timesheet',
 };
 
 export type LangKeys = typeof langKeys;
