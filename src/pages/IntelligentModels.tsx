@@ -420,7 +420,7 @@ const IntelligentModels: React.FC<IAConnectors> = ({ setExternalViewSelected, ar
                                 >{t(langKeys.back)}</Button>
                             )
                         }}}
-                    titlemodule={!!window.location.href.includes("iaconectors")?t(langKeys.iaconnectors):t(langKeys.intelligentmodels, { count: 2 })}
+                    titlemodule={!!window.location.href.includes("iaconectors")?t(langKeys.connectors):t(langKeys.intelligentmodels, { count: 2 })}
                     data={mainResult.mainData.data}
                     download={!setExternalViewSelected}
                     loading={mainResult.mainData.loading}

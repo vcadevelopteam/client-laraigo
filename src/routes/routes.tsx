@@ -516,7 +516,7 @@ export const routes: RouteConfig[] = [
     },
     {
         key: paths.IACONECTORS,
-        description: <Trans i18nKey={langKeys.iaconnectors} />,
+        description: <Trans i18nKey={langKeys.connectors} />,
         tooltip: <Trans i18nKey={langKeys.iaconnectors} />,
         subroute: true,
         path: paths.IACONECTORS,
@@ -534,7 +534,7 @@ export const routes: RouteConfig[] = [
     },
     {
         key: paths.IATRAINING,
-        description: <Trans i18nKey={langKeys.trainingwithai} />,
+        description: <Trans i18nKey={langKeys.training} />,
         tooltip: <Trans i18nKey={langKeys.trainingwithai} />,
         subroute: true,
         path: paths.IATRAINING,
