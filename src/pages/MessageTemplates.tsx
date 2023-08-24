@@ -1,25 +1,26 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import AddIcon from "@material-ui/icons/Add";
-import AttachFileIcon from "@material-ui/icons/AttachFile";
-import Button from "@material-ui/core/Button";
-import CheckIcon from "@material-ui/icons/Check";
-import ClearIcon from "@material-ui/icons/Clear";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import MenuItem from "@material-ui/core/MenuItem";
-import React, { Suspense, FC, useCallback, useEffect, useState, useMemo } from "react";
-import RefreshIcon from "@material-ui/icons/Refresh";
-import RemoveIcon from "@material-ui/icons/Remove";
-import SaveIcon from "@material-ui/icons/Save";
-import TablePaginated, { useQueryParams } from "components/fields/table-paginated";
+import { addTemplate, deleteTemplate, synchronizeTemplate } from "store/channel/actions";
+import { Box, CircularProgress, IconButton, Paper } from "@material-ui/core";
+import { Close, Delete, FileCopy, GetApp, Search } from "@material-ui/icons";
+import { Descendant } from "slate";
+import { Dictionary, IFetchData, MultiData } from "@types";
+import { langKeys } from "lang/keys";
+import { makeStyles } from "@material-ui/core/styles";
+import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
+import { RichText, renderToString, toElement } from "components/fields/RichText";
+import { useDispatch } from "react-redux";
+import { useForm } from "react-hook-form";
+import { useLocation } from "react-router";
+import { useSelector } from "hooks";
+import { useTranslation } from "react-i18next";
 
 import {
     execute,
+    exportData,
+    getCollectionPaginated,
     getMultiCollection,
     resetAllMain,
-    uploadFile,
-    getCollectionPaginated,
     resetCollectionPaginated,
-    exportData,
+    uploadFile,
 } from "store/main/actions";
 
 import {
@@ -42,20 +43,18 @@ import {
     selCommunicationChannelWhatsApp,
 } from "common/helpers";
 
-import { Box, CircularProgress, IconButton, Paper } from "@material-ui/core";
-import { Close, FileCopy, GetApp, Delete, Search as SearchIcon } from "@material-ui/icons";
-import { Descendant } from "slate";
-import { Dictionary, MultiData, IFetchData } from "@types";
-import { langKeys } from "lang/keys";
-import { makeStyles } from "@material-ui/core/styles";
-import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
-import { RichText, renderToString, toElement } from "components/fields/RichText";
-import { synchronizeTemplate, deleteTemplate, addTemplate } from "store/channel/actions";
-import { useDispatch } from "react-redux";
-import { useForm } from "react-hook-form";
-import { useLocation } from "react-router";
-import { useSelector } from "hooks";
-import { useTranslation } from "react-i18next";
+import AddIcon from "@material-ui/icons/Add";
+import AttachFileIcon from "@material-ui/icons/AttachFile";
+import Button from "@material-ui/core/Button";
+import CheckIcon from "@material-ui/icons/Check";
+import ClearIcon from "@material-ui/icons/Clear";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import MenuItem from "@material-ui/core/MenuItem";
+import React, { FC, Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import RefreshIcon from "@material-ui/icons/Refresh";
+import RemoveIcon from "@material-ui/icons/Remove";
+import SaveIcon from "@material-ui/icons/Save";
+import TablePaginated, { useQueryParams } from "components/fields/table-paginated";
 
 const CodeMirror = React.lazy(() => import("@uiw/react-codemirror"));
 
@@ -135,9 +134,8 @@ const MessageTemplates: FC = () => {
     const mainSynchronize = useSelector((state) => state.channel.requestSynchronizeTemplate);
     const query = useMemo(() => new URLSearchParams(location.search), [location]);
     const params = useQueryParams(query, { ignore: ["channelTypes"] });
-    const [waitSaveExport, setWaitSaveExport] = useState(false);
+    const resExportData = useSelector((state) => state.main.exportData);
     const selectionKey = "id";
-    const resExportData = useSelector(state => state.main.exportData);
 
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({
         daterange: null,
@@ -161,6 +159,7 @@ const MessageTemplates: FC = () => {
     const [totalRow, setTotalRow] = useState(0);
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitDelete, setWaitDelete] = useState(false);
+    const [waitSaveExport, setWaitSaveExport] = useState(false);
     const [waitSynchronize, setWaitSynchronize] = useState(false);
 
     const columns = React.useMemo(
@@ -214,48 +213,32 @@ const MessageTemplates: FC = () => {
                 prefixTranslation: "messagetemplate_",
             },
             {
+                accessor: "name",
+                Header: t(langKeys.name),
+            },
+            {
+                accessor: "category",
+                Header: t(langKeys.category),
+                Cell: (props: any) => {
+                    const { category, type } = props.cell.row.original;
+                    return (type === "HSM" ? t(`TEMPLATE_${category}`) : category).toUpperCase();
+                },
+            },
+            {
+                accessor: "language",
+                Header: t(langKeys.language),
+            },
+            {
                 accessor: "templatetype",
                 Header: t(langKeys.templatetype),
                 prefixTranslation: "messagetemplate_",
             },
             {
-                accessor: "name",
-                Header: t(langKeys.name),
-            },
-            {
-                accessor: "namespace",
-                Header: t(langKeys.namespace),
-            },
-            {
-                accessor: "status",
-                Header: t(langKeys.status),
-                NoFilter: true,
-                prefixTranslation: "status_",
+                accessor: "body",
+                Header: t(langKeys.body),
                 Cell: (props: any) => {
-                    const { status } = props.cell.row.original;
-                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
-                },
-            },
-            {
-                accessor: "fromprovider",
-                Header: t(langKeys.messagetemplate_fromprovider),
-                NoFilter: true,
-                Cell: (props: any) => {
-                    const { fromprovider } = props.cell.row.original;
-                    return (fromprovider ? t(langKeys.yes) : t(langKeys.no)).toUpperCase();
-                },
-            },
-            {
-                accessor: "communicationchanneldesc",
-                Header: t(langKeys.communicationchanneldesc),
-            },
-            {
-                accessor: "externalstatus",
-                Header: t(langKeys.messagetemplate_externalstatus),
-                NoFilter: true,
-                Cell: (props: any) => {
-                    const { externalstatus } = props.cell.row.original;
-                    return (externalstatus ? t(`TEMPLATE_${externalstatus}`) : t(langKeys.none)).toUpperCase();
+                    const { body } = props.cell.row.original;
+                    return body && body.length > 40 ? `${body.substring(0, 40)}...` : body;
                 },
             },
         ],
@@ -307,25 +290,27 @@ const MessageTemplates: FC = () => {
     useEffect(() => {
         if (waitSaveExport) {
             if (!resExportData.loading && !resExportData.error) {
+                resExportData.url?.split(",").forEach((x) => window.open(x, "_blank"));
                 dispatch(showBackdrop(false));
-                resExportData.url?.split(",").forEach(x => window.open(x, '_blank'))
                 setWaitSaveExport(false);
             } else if (resExportData.error) {
-                const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                const errormessage = t(resExportData.code ?? "error_unexpected_error", {
+                    module: t(langKeys.property).toLocaleLowerCase(),
+                });
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }));
                 dispatch(showBackdrop(false));
                 setWaitSaveExport(false);
             }
         }
-    }, [resExportData, waitSaveExport])
+    }, [resExportData, waitSaveExport]);
 
     useEffect(() => {
         if (!(Object.keys(selectedRows).length === 0 && rowWithDataSelected.length === 0)) {
             setRowWithDataSelected((p) =>
                 Object.keys(selectedRows).map(
                     (x) =>
-                        mainPaginated?.data.find((y) => y.id === parseInt(x)) ||
-                        p.find((y) => y.id === parseInt(x)) ||
+                        mainPaginated?.data.find((y) => y.id === parseInt(x)) ??
+                        p.find((y) => y.id === parseInt(x)) ??
                         {}
                 )
             );
@@ -348,7 +333,7 @@ const MessageTemplates: FC = () => {
             } else if (mainDelete.error) {
                 dispatch(
                     showSnackbar({
-                        message: t(mainDelete.code || "error_unexpected_error", {
+                        message: t(mainDelete.code ?? "error_unexpected_error", {
                             module: t(langKeys.messagetemplate).toLocaleLowerCase(),
                         }),
                         severity: "error",
@@ -366,7 +351,7 @@ const MessageTemplates: FC = () => {
             if (!mainSynchronize.loading && !mainSynchronize.error) {
                 dispatch(
                     showSnackbar({
-                        message: t(mainSynchronize.code || "success"),
+                        message: t(mainSynchronize.code ?? "success"),
                         severity: "success",
                         show: true,
                     })
@@ -377,7 +362,7 @@ const MessageTemplates: FC = () => {
             } else if (mainSynchronize.error) {
                 dispatch(
                     showSnackbar({
-                        message: t(mainSynchronize.code || "error_unexpected_error"),
+                        message: t(mainSynchronize.code ?? "error_unexpected_error"),
                         severity: "error",
                         show: true,
                     })
@@ -489,17 +474,27 @@ const MessageTemplates: FC = () => {
     };
 
     const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
-        const columnsExport = columns.filter(x => !x.isComponent).map(x => ({
-            key: x.accessor,
-            alias: x.Header
-        }))
-        dispatch(exportData(getMessageTemplateExport({
-            communicationchannelid: communicationChannel?.communicationchannelid || 0,
-            filters: {
-                ...filters,
-            },
-            sorts,
-        }), "", "excel", false, columnsExport));
+        const columnsExport = columns
+            .filter((x) => !x.isComponent)
+            .map((x) => ({
+                key: x.accessor,
+                alias: x.Header,
+            }));
+        dispatch(
+            exportData(
+                getMessageTemplateExport({
+                    communicationchannelid: communicationChannel?.communicationchannelid || 0,
+                    filters: {
+                        ...filters,
+                    },
+                    sorts,
+                }),
+                "",
+                "excel",
+                false,
+                columnsExport
+            )
+        );
         dispatch(showBackdrop(true));
         setWaitSaveExport(true);
     };
@@ -513,32 +508,29 @@ const MessageTemplates: FC = () => {
                 ButtonsElement={() => (
                     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                         <Button
-                            onClick={() => {
-                                handleBulkDelete(rowWithDataSelected);
-                            }}
                             color="primary"
                             disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
                             startIcon={<Delete style={{ color: "white" }} />}
                             variant="contained"
+                            onClick={() => {
+                                handleBulkDelete(rowWithDataSelected);
+                            }}
                         >
                             {t(langKeys.delete)}
                         </Button>
                         <Button
+                            color="primary"
+                            disabled={mainPaginated.loading}
+                            startIcon={<Search style={{ color: "white" }} />}
+                            style={{ width: 120, backgroundColor: "#55BD84" }}
+                            variant="contained"
                             onClick={() => {
                                 fetchData(fetchDataAux);
                             }}
-                            color="primary"
-                            disabled={mainPaginated.loading}
-                            startIcon={<SearchIcon style={{ color: "white" }} />}
-                            style={{ width: 120, backgroundColor: "#55BD84" }}
-                            variant="contained"
                         >
                             {t(langKeys.search)}
                         </Button>
                         <FieldSelect
-                            onChange={(value) => {
-                                setCommunicationChannel(value);
-                            }}
                             data={communicationChannelList}
                             label={t(langKeys.communicationchanneldesc)}
                             optionDesc="communicationchanneldesc"
@@ -546,19 +538,22 @@ const MessageTemplates: FC = () => {
                             style={{ width: 300 }}
                             valueDefault={communicationChannel?.communicationchannelid}
                             variant="outlined"
+                            onChange={(value) => {
+                                setCommunicationChannel(value);
+                            }}
                         />
                         <Button
-                            onClick={() => {
-                                handleSynchronize(communicationChannel, rowWithDataSelected);
-                            }}
                             color="primary"
+                            startIcon={<RefreshIcon style={{ color: "white" }} />}
+                            style={{ width: 140, backgroundColor: "#55BD84" }}
+                            variant="contained"
                             disabled={
                                 mainPaginated.loading ||
                                 (!communicationChannel && Object.keys(selectedRows).length === 0)
                             }
-                            startIcon={<RefreshIcon style={{ color: "white" }} />}
-                            style={{ width: 140, backgroundColor: "#55BD84" }}
-                            variant="contained"
+                            onClick={() => {
+                                handleSynchronize(communicationChannel, rowWithDataSelected);
+                            }}
                         >
                             {t(langKeys.messagetemplate_synchronize)}
                         </Button>
@@ -568,9 +563,9 @@ const MessageTemplates: FC = () => {
                 columns={columns}
                 data={mainPaginated.data}
                 download={true}
+                exportPersonalized={triggerExportData}
                 fetchData={fetchData}
                 filterGeneral={true}
-                exportPersonalized={triggerExportData}
                 handleRegister={handleRegister}
                 initialFilters={params.filters}
                 initialPageIndex={params.page}
@@ -609,14 +604,14 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const addRequest = useSelector((state) => state.channel.requestAddTemplate);
     const classes = useStyles();
     const dataCategory = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataChannel = multiData[2] && multiData[2].success ? multiData[2].data.filter((x) => x.type !== "WHAG" && x.type !== "WHAM") : [];
     const dataLanguage = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const executeRes = useSelector((state) => state.main.execute);
     const uploadResult = useSelector((state) => state.main.uploadFile);
 
-    const [bodyObject, setBodyObject] = useState<Descendant[]>(
-        row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }]
-    );
+    const dataChannel =
+        multiData[2] && multiData[2].success
+            ? multiData[2].data.filter((x) => x.type !== "WHAG" && x.type !== "WHAM")
+            : [];
 
     const [bodyAlert, setBodyAlert] = useState("");
     const [bodyAttachment, setBodyAttachment] = useState(row?.body || "");
@@ -625,61 +620,21 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [fileAttachment, setFileAttachment] = useState<File | null>(null);
     const [fileAttachmentTemplate, setFileAttachmentTemplate] = useState<File | null>(null);
     const [htmlEdit, setHtmlEdit] = useState(false);
-    const [htmlLoad, setHtmlLoad] = useState<any | undefined>(undefined);
+    const [htmlLoad, setHtmlLoad] = useState<any>(undefined);
     const [isNew] = useState(row?.id ? false : true);
     const [isProvider, setIsProvider] = useState(row?.fromprovider ? true : false);
     const [waitAdd, setWaitAdd] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
 
-    const dataExternalCategory = [
-        {
-            value: "ACCOUNT_UPDATE",
-            description: t(langKeys.TEMPLATE_ACCOUNT_UPDATE),
-        },
-        {
-            value: "ALERT_UPDATE",
-            description: t(langKeys.TEMPLATE_ALERT_UPDATE),
-        },
-        {
-            value: "APPOINTMENT_UPDATE",
-            description: t(langKeys.TEMPLATE_APPOINTMENT_UPDATE),
-        },
-        { value: "AUTO_REPLY", description: t(langKeys.TEMPLATE_AUTO_REPLY) },
-        {
-            value: "ISSUE_RESOLUTION",
-            description: t(langKeys.TEMPLATE_ISSUE_RESOLUTION),
-        },
+    const [bodyObject, setBodyObject] = useState<Descendant[]>(
+        row?.bodyobject || [{ type: "paragraph", children: [{ text: row?.body || "" }] }]
+    );
+
+    const dataNewCategory = [
+        { value: "AUTHENTICATION", description: t(langKeys.TEMPLATE_AUTHENTICATION) },
         { value: "MARKETING", description: t(langKeys.TEMPLATE_MARKETING) },
-        { value: "OTP", description: t(langKeys.TEMPLATE_OTP) },
-        {
-            value: "PAYMENT_UPDATE",
-            description: t(langKeys.TEMPLATE_PAYMENT_UPDATE),
-        },
-        {
-            value: "PERSONAL_FINANCE_UPDATE",
-            description: t(langKeys.TEMPLATE_PERSONAL_FINANCE_UPDATE),
-        },
-        {
-            value: "RESERVATION_UPDATE",
-            description: t(langKeys.TEMPLATE_RESERVATION_UPDATE),
-        },
-        {
-            value: "SHIPPING_UPDATE",
-            description: t(langKeys.TEMPLATE_SHIPPING_UPDATE),
-        },
-        {
-            value: "TICKET_UPDATE",
-            description: t(langKeys.TEMPLATE_TICKET_UPDATE),
-        },
-        {
-            value: "TRANSACTIONAL",
-            description: t(langKeys.TEMPLATE_TRANSACTIONAL),
-        },
-        {
-            value: "TRANSPORTATION_UPDATE",
-            description: t(langKeys.TEMPLATE_TRANSPORTATION_UPDATE),
-        },
+        { value: "UTILITY", description: t(langKeys.TEMPLATE_UTILITY) },
     ];
 
     const dataExternalStatus = [
@@ -691,10 +646,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         { value: "NONE", description: (t(langKeys.NONE) || "").toUpperCase() },
         { value: "PAUSED", description: t(langKeys.TEMPLATE_PAUSED) },
         { value: "PENDING", description: t(langKeys.TEMPLATE_PENDING) },
-        {
-            value: "PENDING_DELETION",
-            description: t(langKeys.TEMPLATE_PENDING_DELETION),
-        },
+        { value: "PENDING_DELETION", description: t(langKeys.TEMPLATE_PENDING_DELETION) },
         { value: "REJECTED", description: t(langKeys.TEMPLATE_REJECTED) },
         { value: "SUBMITTED", description: t(langKeys.TEMPLATE_SUBMITTED) },
     ];
@@ -793,10 +745,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     ];
 
     const dataButtonType = [
-        {
-            value: "phone_number",
-            text: t(langKeys.messagetemplate_phonenumber),
-        },
+        { value: "phone_number", text: t(langKeys.messagetemplate_phonenumber) },
         { value: "quick_reply", text: t(langKeys.messagetemplate_quickreply) },
         { value: "url", text: t(langKeys.messagetemplate_url) },
     ];
@@ -808,13 +757,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     ];
 
     const {
-        register,
-        handleSubmit,
-        setValue,
-        getValues,
-        unregister,
-        trigger,
         formState: { errors },
+        getValues,
+        handleSubmit,
+        register,
+        setValue,
+        trigger,
+        unregister,
     } = useForm({
         defaultValues: {
             attachment: row?.attachment || "",
@@ -852,12 +801,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
     const [templateTypeDisabled, setTemplateTypeDisabled] = useState(["SMS", "MAIL"].includes(getValues("type")));
 
     React.useEffect(() => {
-        register("body", {
-            validate: (value) => (value && value.length) || t(langKeys.field_required),
-        });
-        register("category", {
-            validate: (value) => (value && value.length) || t(langKeys.field_required),
-        });
         register("communicationchannelid");
         register("communicationchanneltype");
         register("exampleparameters");
@@ -865,24 +808,37 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         register("externalstatus");
         register("fromprovider");
         register("integrationid");
+        register("servicecredentials");
+        register("typeattachment");
+
+        register("body", {
+            validate: (value) => (value && value.length) || t(langKeys.field_required),
+        });
+
+        register("category", {
+            validate: (value) => (value && value.length) || t(langKeys.field_required),
+        });
+
         register("language", {
             validate: (value) => (value && value.length) || t(langKeys.field_required),
         });
+
         register("name", {
             validate: (value) =>
                 (value && (value || "").match("^[a-z0-9_]+$") !== null) || t(langKeys.nametemplate_validation),
         });
+
         register("namespace", {
             validate: (value) => (value && value.length) || t(langKeys.field_required),
         });
-        register("servicecredentials");
+
         register("templatetype", {
             validate: (value) => (value && value.length) || t(langKeys.field_required),
         });
+
         register("type", {
             validate: (value) => (value && value.length) || t(langKeys.field_required),
         });
-        register("typeattachment");
     }, [edit, register]);
 
     useEffect(() => {
@@ -902,21 +858,21 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             if (!addRequest.loading && !addRequest.error) {
                 dispatch(
                     showSnackbar({
-                        show: true,
-                        severity: "success",
                         message: t(row ? langKeys.successful_edit : langKeys.successful_register),
+                        severity: "success",
+                        show: true,
                     })
                 );
                 dispatch(showBackdrop(false));
-                setWaitAdd(false);
-                fetchData();
                 setViewSelected("view-1");
+                fetchData && fetchData();
+                setWaitAdd(false);
             } else if (addRequest.error) {
                 dispatch(
                     showSnackbar({
-                        show: true,
                         severity: "error",
-                        message: t(addRequest.code || "error_unexpected_error", {
+                        show: true,
+                        message: t(addRequest.code ?? "error_unexpected_error", {
                             module: t(langKeys.messagetemplate).toLocaleLowerCase(),
                         }),
                     })
@@ -938,15 +894,15 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     })
                 );
                 dispatch(showBackdrop(false));
-                setWaitSave(false);
-                fetchData();
                 setViewSelected("view-1");
+                fetchData && fetchData();
+                setWaitSave(false);
             } else if (executeRes.error) {
                 dispatch(
                     showSnackbar({
                         show: true,
                         severity: "error",
-                        message: t(executeRes.code || "error_unexpected_error", {
+                        message: t(executeRes.code ?? "error_unexpected_error", {
                             module: t(langKeys.messagetemplate).toLocaleLowerCase(),
                         }),
                     })
@@ -962,9 +918,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
             if (!uploadResult.loading && !uploadResult.error) {
                 setValue(
                     "attachment",
-                    (!!getValues("attachment")
-                        ? [getValues("attachment"), uploadResult?.url || ""]
-                        : [uploadResult?.url || ""]
+                    (getValues("attachment")
+                        ? [getValues("attachment"), uploadResult?.url ?? ""]
+                        : [uploadResult?.url ?? ""]
                     ).join(",")
                 );
                 setWaitUploadFile(false);
@@ -1077,12 +1033,15 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 register("body", {
                     validate: (value) => (value && (value || "").length <= 1024) || "" + t(langKeys.validationchar),
                 });
+
                 register("footer", { validate: (value) => value || true });
                 register("header", { validate: (value) => value || true });
+
                 register("name", {
                     validate: (value) =>
                         (value && (value || "").match("^[a-z0-9_]+$") !== null) || t(langKeys.nametemplate_validation),
                 });
+
                 register("namespace", {
                     validate: (value) => (value && value.length) || t(langKeys.field_required),
                 });
@@ -1104,18 +1063,21 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 register("name", {
                     validate: (value) => (value && value.length) || t(langKeys.field_required),
                 });
+
                 register("namespace", { validate: (value) => value || true });
 
                 if (type === "SMS") {
                     register("body", {
                         validate: (value) => (value && (value || "").length <= 160) || "" + t(langKeys.validationchar),
                     });
+
                     register("footer", { validate: (value) => value || true });
                     register("header", { validate: (value) => value || true });
                 } else {
                     register("body", {
                         validate: (value) => (value && value.length) || t(langKeys.field_required),
                     });
+
                     register("footer", { validate: (value) => value || true });
                     register("header", {
                         validate: (value) => (value && value.length) || t(langKeys.field_required),
@@ -1153,6 +1115,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
         trigger("servicecredentials");
 
         setValue("type", data?.value || "");
+
         trigger("type");
 
         switch (data?.value || "HSM") {
@@ -1162,12 +1125,15 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 register("body", {
                     validate: (value) => (value && (value || "").length <= 1024) || "" + t(langKeys.validationchar),
                 });
+
                 register("footer", { validate: (value) => value || true });
                 register("header", { validate: (value) => value || true });
+
                 register("name", {
                     validate: (value) =>
                         (value && (value || "").match("^[a-z0-9_]+$") !== null) || t(langKeys.nametemplate_validation),
                 });
+
                 register("namespace", {
                     validate: (value) => (value && value.length) || t(langKeys.field_required),
                 });
@@ -1195,12 +1161,15 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
 
                 register("body", { validate: (value) => value || true });
                 register("footer", { validate: (value) => value || true });
+
                 register("header", {
                     validate: (value) => (value && value.length) || t(langKeys.field_required),
                 });
+
                 register("name", {
                     validate: (value) => (value && value.length) || t(langKeys.field_required),
                 });
+
                 register("namespace", { validate: (value) => value || true });
 
                 onChangeTemplateType({ value: "STANDARD" });
@@ -1214,11 +1183,14 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                 register("body", {
                     validate: (value) => (value && (value || "").length <= 160) || "" + t(langKeys.validationchar),
                 });
+
                 register("footer", { validate: (value) => value || true });
                 register("header", { validate: (value) => value || true });
+
                 register("name", {
                     validate: (value) => (value && value.length) || t(langKeys.field_required),
                 });
+
                 register("namespace", { validate: (value) => value || true });
 
                 onChangeTemplateType({ value: "STANDARD" });
@@ -1439,9 +1411,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                     </div>
                     <div
                         style={{
+                            alignItems: "center",
                             display: "flex",
                             gap: "10px",
-                            alignItems: "center",
                         }}
                     >
                         <Button
@@ -1499,12 +1471,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                         />
                     </div>
                     <div className="row-zyx">
-                        {isProvider && (
+                        {getValues("type") === "HSM" && (
                             <>
                                 {isNew && (
                                     <FieldSelect
                                         className="col-6"
-                                        data={dataExternalCategory}
+                                        data={dataNewCategory}
                                         disabled={disableInput}
                                         error={errors?.category?.message}
                                         label={t(langKeys.category)}
@@ -1523,7 +1495,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                 )}
                             </>
                         )}
-                        {!isProvider && (
+                        {getValues("type") !== "HSM" && (
                             <FieldSelect
                                 className="col-6"
                                 data={dataCategory}
@@ -1622,12 +1594,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     disabled={disableInput}
                                     onClick={() => onClickHeaderToogle()}
                                     startIcon={<CheckIcon htmlColor="#FFFFFF" />}
+                                    type="button"
+                                    variant="contained"
                                     style={{
                                         backgroundColor: getValues("headerenabled") ? "#000000" : "#AAAAAA",
                                         color: "#FFFFFF",
                                     }}
-                                    type="button"
-                                    variant="contained"
                                 >
                                     {t(langKeys.header)}
                                 </Button>
@@ -1635,12 +1607,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     className={classes.mediabutton}
                                     disabled={disableInput}
                                     startIcon={<CheckIcon htmlColor="#FFFFFF" />}
+                                    type="button"
+                                    variant="contained"
                                     style={{
                                         backgroundColor: "#000000",
                                         color: "#FFFFFF",
                                     }}
-                                    type="button"
-                                    variant="contained"
                                 >
                                     {t(langKeys.body)}
                                 </Button>
@@ -1649,12 +1621,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     disabled={disableInput}
                                     onClick={() => onClickFooterToogle()}
                                     startIcon={<CheckIcon htmlColor="#FFFFFF" />}
+                                    type="button"
+                                    variant="contained"
                                     style={{
                                         backgroundColor: getValues("footerenabled") ? "#000000" : "#AAAAAA",
                                         color: "#FFFFFF",
                                     }}
-                                    type="button"
-                                    variant="contained"
                                 >
                                     {t(langKeys.footer)}
                                 </Button>
@@ -1663,12 +1635,12 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     disabled={disableInput}
                                     onClick={() => onClickButtonsToogle()}
                                     startIcon={<CheckIcon htmlColor="#FFFFFF" />}
+                                    type="button"
+                                    variant="contained"
                                     style={{
                                         backgroundColor: getValues("buttonsenabled") ? "#000000" : "#AAAAAA",
                                         color: "#FFFFFF",
                                     }}
-                                    type="button"
-                                    variant="contained"
                                 >
                                     {t(langKeys.buttons)}
                                 </Button>
@@ -1774,26 +1746,20 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                         return (
                                             <div key={`btn-${i}`} className="col-4">
                                                 <FieldEdit
-                                                    fregister={{
-                                                        ...register(`buttons.${i}.title`, {
-                                                            validate: (value) =>
-                                                                (value && value.length) || t(langKeys.field_required),
-                                                        }),
-                                                    }}
                                                     className={classes.mb1}
                                                     disabled={disableInput}
                                                     error={errors?.buttons?.[i]?.title?.message}
                                                     label={t(langKeys.title)}
                                                     onChange={(value) => onChangeButton(i, "title", value)}
                                                     valueDefault={btn?.title || ""}
-                                                />
-                                                <FieldSelect
                                                     fregister={{
-                                                        ...register(`buttons.${i}.type`, {
+                                                        ...register(`buttons.${i}.title`, {
                                                             validate: (value) =>
                                                                 (value && value.length) || t(langKeys.field_required),
                                                         }),
                                                     }}
+                                                />
+                                                <FieldSelect
                                                     className={classes.mb1}
                                                     data={dataButtonType}
                                                     disabled={disableInput}
@@ -1803,20 +1769,26 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                                     optionDesc="text"
                                                     optionValue="value"
                                                     valueDefault={btn?.type || ""}
-                                                />
-                                                <FieldEdit
                                                     fregister={{
-                                                        ...register(`buttons.${i}.payload`, {
+                                                        ...register(`buttons.${i}.type`, {
                                                             validate: (value) =>
                                                                 (value && value.length) || t(langKeys.field_required),
                                                         }),
                                                     }}
+                                                />
+                                                <FieldEdit
                                                     className={classes.mb1}
                                                     disabled={disableInput}
                                                     error={errors?.buttons?.[i]?.payload?.message}
                                                     label={t(langKeys.payload)}
                                                     onChange={(value) => onChangeButton(i, "payload", value)}
                                                     valueDefault={btn?.payload || ""}
+                                                    fregister={{
+                                                        ...register(`buttons.${i}.payload`, {
+                                                            validate: (value) =>
+                                                                (value && value.length) || t(langKeys.field_required),
+                                                        }),
+                                                    }}
                                                 />
                                             </div>
                                         );
@@ -1854,18 +1826,18 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     {t(langKeys.body)}
                                 </Box>
                                 <RichText
+                                    spellCheck
+                                    value={bodyObject}
                                     onChange={(value) => {
                                         setBodyObject(value);
                                     }}
-                                    spellCheck
                                     style={{
-                                        borderStyle: "solid",
-                                        borderWidth: "1px",
                                         borderColor: "#762AA9",
                                         borderRadius: "4px",
+                                        borderStyle: "solid",
+                                        borderWidth: "1px",
                                         padding: "10px",
                                     }}
-                                    value={bodyObject}
                                 />
                                 <FieldEdit
                                     className={classes.headerText}
@@ -1895,11 +1867,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     <MenuItem onClick={() => setHtmlEdit(!htmlEdit)} disabled={disableInput}>
                                         <ListItemIcon color="inherit">
                                             <RefreshIcon
-                                                style={{
-                                                    width: 16,
-                                                    color: "#7721AD",
-                                                }}
                                                 fontSize="small"
+                                                style={{
+                                                    color: "#7721AD",
+                                                    width: 16,
+                                                }}
                                             />
                                         </ListItemIcon>
                                         <div style={{ fontSize: 16 }}>
@@ -1910,15 +1882,15 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                     </MenuItem>
                                     {!htmlEdit ? (
                                         <div
-                                            style={{
-                                                borderStyle: "solid",
-                                                borderWidth: "1px",
-                                                borderColor: "#762AA9",
-                                                borderRadius: "4px",
-                                                padding: "20px",
-                                            }}
                                             dangerouslySetInnerHTML={{
                                                 __html: bodyAttachment,
+                                            }}
+                                            style={{
+                                                borderColor: "#762AA9",
+                                                borderRadius: "4px",
+                                                borderStyle: "solid",
+                                                borderWidth: "1px",
+                                                padding: "20px",
                                             }}
                                         />
                                     ) : (
@@ -1926,11 +1898,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({
                                             <CodeMirror
                                                 extensions={htmlLoad}
                                                 height={"600px"}
+                                                value={getValues("body")}
                                                 onChange={(value) => {
                                                     setValue("body", value || "");
                                                     setBodyAttachment(value || "");
                                                 }}
-                                                value={getValues("body")}
                                             />
                                         </Suspense>
                                     )}
@@ -2020,7 +1992,7 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
 
     const getFileName = useCallback(() => {
         if (isUrl()) {
-            const m = (src as string).match(/.*\/(.+?)\./);
+            const m = RegExp(/.*\/(.+?)\./).exec(src as string);
             return m && m.length > 1 ? m[1] : "";
         }
         return (src as File).name;
@@ -2028,9 +2000,9 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
 
     const getFileExt = useCallback(() => {
         if (isUrl()) {
-            return (src as string).split(".").pop()?.toUpperCase() || "-";
+            return (src as string).split(".").pop()?.toUpperCase() ?? "-";
         }
-        return (src as File).name?.split(".").pop()?.toUpperCase() || "-";
+        return (src as File).name?.split(".").pop()?.toUpperCase() ?? "-";
     }, [isUrl, src]);
 
     return (
@@ -2042,9 +2014,9 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
                     <div
                         style={{
                             fontWeight: "bold",
-                            textOverflow: "ellipsis",
-                            overflow: "hidden",
                             maxWidth: 190,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
                             whiteSpace: "nowrap",
                         }}
                     >
@@ -2064,10 +2036,10 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
                 {isUrl() && <div style={{ height: "10%" }} />}
                 {isUrl() && (
                     <a
-                        href={src as string}
-                        target="_blank"
-                        rel="noreferrer"
                         download={`${getFileName()}.${getFileExt()}`}
+                        href={src as string}
+                        rel="noreferrer"
+                        target="_blank"
                     >
                         <IconButton size="small">
                             <GetApp />

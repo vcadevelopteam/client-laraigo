@@ -1,72 +1,117 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, Fragment, useEffect, useState } from 'react'; // we need this to make JSX compile
-import { useSelector } from 'hooks';
-import { useDispatch } from 'react-redux';
-import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateSwitch, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, IOSSwitch } from 'components';
-import { billingSupportIns, getBillingConfigurationSel, getBillingSupportSel, getPlanSel, getPaymentPlanSel, billingConfigurationIns, getBillingConversationSel, billingConversationIns, getOrgSelList, getCorpSel, getAppsettingInvoiceSel, updateAppsettingInvoice, getValuesFromDomainCorp, getBillingMessagingSel, billingMessagingIns, artificialIntelligencePlanSel, artificialIntelligenceServiceSel, billingArtificialIntelligenceSel, billingArtificialIntelligenceIns } from 'common/helpers';
-import { cleanMemoryTable, setMemoryTable } from 'store/main/actions';
+import { Box, FormControlLabel, Tabs, TextField } from "@material-ui/core";
 import { Dictionary, MultiData } from "@types";
-import TableZyx from '../components/fields/table-simple';
-import { makeStyles } from '@material-ui/core/styles';
-import SaveIcon from '@material-ui/icons/Save';
-import { useTranslation } from 'react-i18next';
-import { langKeys } from 'lang/keys';
-import { useForm } from 'react-hook-form';
-import { getCollection, getMultiCollection, execute, getMultiCollectionAux } from 'store/main/actions';
-import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import ClearIcon from '@material-ui/icons/Clear';
-import { Box, FormControlLabel, Tabs, TextField } from '@material-ui/core';
-import { getCountryList } from 'store/signup/actions';
-import { dataYears, dataMonths } from 'common/helpers';
+import { getCountryList } from "store/signup/actions";
+import { getExchangeRate } from "store/culqi/actions";
+import { langKeys } from "lang/keys";
+import { makeStyles } from "@material-ui/core/styles";
+import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
+import { Search } from "@material-ui/icons";
+import { useDispatch } from "react-redux";
+import { useForm } from "react-hook-form";
+import { useSelector } from "hooks";
+import { useTranslation } from "react-i18next";
+
 import {
-    Search as SearchIcon,
-} from '@material-ui/icons';
-import Typography from '@material-ui/core/Typography';
-import { formatNumber, formatNumberFourDecimals, formatNumberNoDecimals } from 'common/helpers';
+    artificialIntelligencePlanSel,
+    artificialIntelligenceServiceSel,
+    billingArtificialIntelligenceIns,
+    billingArtificialIntelligenceSel,
+    billingConfigurationIns,
+    billingConversationIns,
+    billingMessagingIns,
+    billingSupportIns,
+    currencySel,
+    dataMonths,
+    dataYears,
+    formatNumber,
+    formatNumberFourDecimals,
+    formatNumberNoDecimals,
+    getAppsettingInvoiceSel,
+    getBillingConfigurationSel,
+    getBillingConversationSel,
+    getBillingMessagingSel,
+    getBillingSupportSel,
+    getCorpSel,
+    getOrgSelList,
+    getPaymentPlanSel,
+    getPlanSel,
+    getValuesFromDomainCorp,
+    updateAppsettingInvoice,
+} from "common/helpers";
+
+import {
+    AntTab,
+    FieldEdit,
+    FieldMultiSelect,
+    FieldSelect,
+    FieldView,
+    IOSSwitch,
+    TemplateBreadcrumbs,
+    TemplateIcons,
+    TemplateSwitch,
+    TitleDetail,
+} from "components";
+
+import {
+    cleanMemoryTable,
+    execute,
+    getCollection,
+    getMultiCollection,
+    getMultiCollectionAux,
+    setMemoryTable,
+} from "store/main/actions";
+
+import Button from "@material-ui/core/Button";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import TableZyx from "../components/fields/table-simple";
+import SaveIcon from "@material-ui/icons/Save";
+import ClearIcon from "@material-ui/icons/Clear";
+import Typography from "@material-ui/core/Typography";
+import React, { FC, Fragment, useEffect, useState } from "react";
 
 interface RowSelected {
-    row: Dictionary | null,
-    edit: boolean
+    edit: boolean;
+    row: Dictionary | null;
 }
 
 interface DetailSupportPlanProps {
     data: RowSelected;
-    setViewSelected: (view: string) => void;
-    fetchData: () => void,
     dataPlan: any[];
+    currencyList?: any[];
+    fetchData: () => void;
+    setViewSelected: (view: string) => void;
 }
 
 interface DetailArtificialIntelligenceProps {
     data: RowSelected;
-    setViewSelected: (view: string) => void;
-    fetchData: () => void,
-    providerData: any[];
+    fetchData: () => void;
     planData: any[];
+    providerData: any[];
+    setViewSelected: (view: string) => void;
 }
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
+        background: "#fff",
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
-        background: '#fff',
     },
     button: {
-        padding: 12,
+        fontSize: "14px",
         fontWeight: 500,
-        fontSize: '14px',
-        textTransform: 'initial'
+        padding: 12,
+        textTransform: "initial",
     },
     mb2: {
         marginBottom: theme.spacing(4),
     },
     itemDate: {
-        minHeight: 40,
-        height: 40,
-        border: '1px solid #bfbfc0',
+        border: "1px solid #bfbfc0",
         borderRadius: 4,
+        color: "rgb(143, 146, 161)",
+        height: 40,
+        minHeight: 40,
         width: "100%",
-        color: 'rgb(143, 146, 161)'
     },
     fieldsfilter: {
         width: 220,
@@ -75,11 +120,11 @@ const useStyles = makeStyles((theme) => ({
         color: "transparent",
     },
     commentary: {
-        fontStyle: "italic"
+        fontStyle: "italic",
     },
     section: {
-        fontWeight: "bold"
-    }
+        fontWeight: "bold",
+    },
 }));
 
 const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
@@ -88,70 +133,90 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const executeResult = useSelector(state => state.main.execute);
-    const mainResult = useSelector(state => state.main);
-    const multiResult = useSelector(state => state.main.multiDataAux);
+    const executeResult = useSelector((state) => state.main.execute);
+    const mainResult = useSelector((state) => state.main);
+    const multiResult = useSelector((state) => state.main.multiDataAux);
 
     const [showCountry, setShowCountry] = useState(false);
     const [blockUbigee, setBlockUbigee] = useState(false);
-    const [domainCurrency, setDomainCurrency] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
-    const [domainDocument, setDomainDocument] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
-    const [domainInvoiceProvider, setDomainInvoiceProvider] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
-    const [domainPaymentProvider, setDomainPaymentProvider] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
-    const [domainPrinting, setDomainPrinting] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
     const [waitSave, setWaitSave] = useState(false);
+
+    const [domainCurrency, setDomainCurrency] = useState<{ loading: boolean; data: Dictionary[] }>({
+        data: [],
+        loading: false,
+    });
+
+    const [domainDocument, setDomainDocument] = useState<{ loading: boolean; data: Dictionary[] }>({
+        data: [],
+        loading: false,
+    });
+
+    const [domainInvoiceProvider, setDomainInvoiceProvider] = useState<{ loading: boolean; data: Dictionary[] }>({
+        data: [],
+        loading: false,
+    });
+
+    const [domainPaymentProvider, setDomainPaymentProvider] = useState<{ loading: boolean; data: Dictionary[] }>({
+        data: [],
+        loading: false,
+    });
+
+    const [domainPrinting, setDomainPrinting] = useState<{ loading: boolean; data: Dictionary[] }>({
+        data: [],
+        loading: false,
+    });
 
     const fetchData = () => {
         setShowCountry(false);
         dispatch(getCollection(getAppsettingInvoiceSel()));
-    }
+    };
 
     const [fields, setFields] = useState({
-        "ruc": "",
-        "businessname": "",
-        "tradename": "",
-        "fiscaladdress": "",
-        "ubigeo": "",
-        "country": "",
-        "emittertype": "",
-        "currency": "",
-        "invoiceserie": "",
-        "invoicecorrelative": 0,
-        "annexcode": "",
-        "igv": 0.00,
-        "printingformat": "",
-        "xmlversion": "",
-        "ublversion": "",
-        "returnpdf": false,
-        "returnxmlsunat": false,
-        "returnxml": false,
-        "invoiceprovider": "",
-        "sunaturl": "",
-        "token": "",
-        "sunatusername": "",
-        "paymentprovider": "",
-        "publickey": "",
-        "privatekey": "",
-        "ticketserie": "",
-        "ticketcorrelative": 0,
-        "invoicecreditserie": "",
-        "invoicecreditcorrelative": 0,
-        "ticketcreditserie": "",
-        "ticketcreditcorrelative": 0,
-        "detraction": 0.00,
-        "detractioncode": "",
-        "detractionaccount": "",
-        "detractionminimum": 0.00,
-        "operationcodeperu": "",
-        "operationcodeother": "",
-        "culqiurl": "",
-        "culqiurlcardcreate": "",
-        "culqiurlclient": "",
-        "culqiurltoken": "",
-        "culqiurlcharge": "",
-        "culqiurlcardget": "",
-        "culqiurlcarddelete": "",
-    })
+        annexcode: "",
+        businessname: "",
+        country: "",
+        culqiurl: "",
+        culqiurlcardcreate: "",
+        culqiurlcarddelete: "",
+        culqiurlcardget: "",
+        culqiurlcharge: "",
+        culqiurlclient: "",
+        culqiurltoken: "",
+        currency: "",
+        detraction: 0,
+        detractionaccount: "",
+        detractioncode: "",
+        detractionminimum: 0,
+        emittertype: "",
+        fiscaladdress: "",
+        igv: 0,
+        invoicecorrelative: 0,
+        invoicecreditcorrelative: 0,
+        invoicecreditserie: "",
+        invoiceprovider: "",
+        invoiceserie: "",
+        operationcodeother: "",
+        operationcodeperu: "",
+        paymentprovider: "",
+        printingformat: "",
+        privatekey: "",
+        publickey: "",
+        returnpdf: false,
+        returnxml: false,
+        returnxmlsunat: false,
+        ruc: "",
+        sunaturl: "",
+        sunatusername: "",
+        ticketcorrelative: 0,
+        ticketcreditcorrelative: 0,
+        ticketcreditserie: "",
+        ticketserie: "",
+        token: "",
+        tradename: "",
+        ubigeo: "",
+        ublversion: "",
+        xmlversion: "",
+    });
 
     useEffect(() => {
         fetchData();
@@ -162,267 +227,382 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
         setDomainPaymentProvider({ loading: true, data: [] });
         setDomainPrinting({ loading: true, data: [] });
 
-        dispatch(getMultiCollectionAux([
-            getValuesFromDomainCorp('BILLINGCURRENCY', '_CURRENCY', 1, 0),
-            getValuesFromDomainCorp('BILLINGDOCUMENTTYPE', '_DOCUMENT', 1, 0),
-            getValuesFromDomainCorp('BILLINGINVOICEPROVIDER', '_INVOICEPROVIDER', 1, 0),
-            getValuesFromDomainCorp('BILLINGPAYMENTPROVIDER', '_PAYMENTPROVIDER', 1, 0),
-            getValuesFromDomainCorp('BILLINGPRINTING', '_PRINTING', 1, 0),
-        ]));
-    }, [])
+        dispatch(
+            getMultiCollectionAux([
+                getValuesFromDomainCorp("BILLINGCURRENCY", "_CURRENCY", 1, 0),
+                getValuesFromDomainCorp("BILLINGDOCUMENTTYPE", "_DOCUMENT", 1, 0),
+                getValuesFromDomainCorp("BILLINGINVOICEPROVIDER", "_INVOICEPROVIDER", 1, 0),
+                getValuesFromDomainCorp("BILLINGPAYMENTPROVIDER", "_PAYMENTPROVIDER", 1, 0),
+                getValuesFromDomainCorp("BILLINGPRINTING", "_PRINTING", 1, 0),
+            ])
+        );
+    }, []);
 
     useEffect(() => {
         if (!mainResult.mainData.loading) {
             dispatch(showBackdrop(false));
             if (mainResult.mainData.data) {
                 if (mainResult.mainData.data[0]) {
-                    setValue("ruc", mainResult.mainData.data[0].ruc);
-                    setValue("businessname", mainResult.mainData.data[0].businessname);
-                    setValue("tradename", mainResult.mainData.data[0].tradename);
-                    setValue("fiscaladdress", mainResult.mainData.data[0].fiscaladdress);
-                    setValue("ubigeo", mainResult.mainData.data[0].ubigeo);
-                    setValue("country", mainResult.mainData.data[0].country);
-                    setValue("emittertype", mainResult.mainData.data[0].emittertype);
-                    setValue("currency", mainResult.mainData.data[0].currency);
-                    setValue("invoiceserie", mainResult.mainData.data[0].invoiceserie);
-                    setValue("invoicecorrelative", mainResult.mainData.data[0].invoicecorrelative);
                     setValue("annexcode", mainResult.mainData.data[0].annexcode);
-                    setValue("igv", mainResult.mainData.data[0].igv);
-                    setValue("printingformat", mainResult.mainData.data[0].printingformat);
-                    setValue("xmlversion", mainResult.mainData.data[0].xmlversion);
-                    setValue("ublversion", mainResult.mainData.data[0].ublversion);
-                    setValue("returnpdf", mainResult.mainData.data[0].returnpdf);
-                    setValue("returnxmlsunat", mainResult.mainData.data[0].returnxmlsunat);
-                    setValue("returnxml", mainResult.mainData.data[0].returnxml);
-                    setValue("invoiceprovider", mainResult.mainData.data[0].invoiceprovider);
-                    setValue("sunaturl", mainResult.mainData.data[0].sunaturl);
-                    setValue("token", mainResult.mainData.data[0].token);
-                    setValue("sunatusername", mainResult.mainData.data[0].sunatusername);
-                    setValue("paymentprovider", mainResult.mainData.data[0].paymentprovider);
-                    setValue("publickey", mainResult.mainData.data[0].publickey);
-                    setValue("privatekey", mainResult.mainData.data[0].privatekey);
-                    setValue("ticketserie", mainResult.mainData.data[0].ticketserie);
-                    setValue("ticketcorrelative", mainResult.mainData.data[0].ticketcorrelative);
-                    setValue("invoicecreditserie", mainResult.mainData.data[0].invoicecreditserie);
-                    setValue("invoicecreditcorrelative", mainResult.mainData.data[0].invoicecreditcorrelative);
-                    setValue("ticketcreditserie", mainResult.mainData.data[0].ticketcreditserie);
-                    setValue("ticketcreditcorrelative", mainResult.mainData.data[0].ticketcreditcorrelative);
-                    setValue("detraction", mainResult.mainData.data[0].detraction);
-                    setValue("detractioncode", mainResult.mainData.data[0].detractioncode);
-                    setValue("detractionaccount", mainResult.mainData.data[0].detractionaccount);
-                    setValue("detractionminimum", mainResult.mainData.data[0].detractionminimum);
-                    setValue("operationcodeperu", mainResult.mainData.data[0].operationcodeperu);
-                    setValue("operationcodeother", mainResult.mainData.data[0].operationcodeother);
+                    setValue("businessname", mainResult.mainData.data[0].businessname);
+                    setValue("country", mainResult.mainData.data[0].country);
                     setValue("culqiurl", mainResult.mainData.data[0].culqiurl);
                     setValue("culqiurlcardcreate", mainResult.mainData.data[0].culqiurlcardcreate);
+                    setValue("culqiurlcarddelete", mainResult.mainData.data[0].culqiurlcarddelete);
+                    setValue("culqiurlcardget", mainResult.mainData.data[0].culqiurlcardget);
+                    setValue("culqiurlcharge", mainResult.mainData.data[0].culqiurlcharge);
                     setValue("culqiurlclient", mainResult.mainData.data[0].culqiurlclient);
                     setValue("culqiurltoken", mainResult.mainData.data[0].culqiurltoken);
-                    setValue("culqiurlcharge", mainResult.mainData.data[0].culqiurlcharge);
-                    setValue("culqiurlcardget", mainResult.mainData.data[0].culqiurlcardget);
-                    setValue("culqiurlcarddelete", mainResult.mainData.data[0].culqiurlcarddelete);
+                    setValue("currency", mainResult.mainData.data[0].currency);
+                    setValue("detraction", mainResult.mainData.data[0].detraction);
+                    setValue("detractionaccount", mainResult.mainData.data[0].detractionaccount);
+                    setValue("detractioncode", mainResult.mainData.data[0].detractioncode);
+                    setValue("detractionminimum", mainResult.mainData.data[0].detractionminimum);
+                    setValue("emittertype", mainResult.mainData.data[0].emittertype);
+                    setValue("fiscaladdress", mainResult.mainData.data[0].fiscaladdress);
+                    setValue("igv", mainResult.mainData.data[0].igv);
+                    setValue("invoicecorrelative", mainResult.mainData.data[0].invoicecorrelative);
+                    setValue("invoicecreditcorrelative", mainResult.mainData.data[0].invoicecreditcorrelative);
+                    setValue("invoicecreditserie", mainResult.mainData.data[0].invoicecreditserie);
+                    setValue("invoiceprovider", mainResult.mainData.data[0].invoiceprovider);
+                    setValue("invoiceserie", mainResult.mainData.data[0].invoiceserie);
+                    setValue("operationcodeother", mainResult.mainData.data[0].operationcodeother);
+                    setValue("operationcodeperu", mainResult.mainData.data[0].operationcodeperu);
+                    setValue("paymentprovider", mainResult.mainData.data[0].paymentprovider);
+                    setValue("printingformat", mainResult.mainData.data[0].printingformat);
+                    setValue("privatekey", mainResult.mainData.data[0].privatekey);
+                    setValue("publickey", mainResult.mainData.data[0].publickey);
+                    setValue("returnpdf", mainResult.mainData.data[0].returnpdf);
+                    setValue("returnxml", mainResult.mainData.data[0].returnxml);
+                    setValue("returnxmlsunat", mainResult.mainData.data[0].returnxmlsunat);
+                    setValue("ruc", mainResult.mainData.data[0].ruc);
+                    setValue("sunaturl", mainResult.mainData.data[0].sunaturl);
+                    setValue("sunatusername", mainResult.mainData.data[0].sunatusername);
+                    setValue("ticketcorrelative", mainResult.mainData.data[0].ticketcorrelative);
+                    setValue("ticketcreditcorrelative", mainResult.mainData.data[0].ticketcreditcorrelative);
+                    setValue("ticketcreditserie", mainResult.mainData.data[0].ticketcreditserie);
+                    setValue("ticketserie", mainResult.mainData.data[0].ticketserie);
+                    setValue("token", mainResult.mainData.data[0].token);
+                    setValue("tradename", mainResult.mainData.data[0].tradename);
+                    setValue("ubigeo", mainResult.mainData.data[0].ubigeo);
+                    setValue("ublversion", mainResult.mainData.data[0].ublversion);
+                    setValue("xmlversion", mainResult.mainData.data[0].xmlversion);
 
                     setFields({
-                        "ruc": mainResult.mainData.data[0].ruc,
-                        "businessname": mainResult.mainData.data[0].businessname,
-                        "tradename": mainResult.mainData.data[0].tradename,
-                        "fiscaladdress": mainResult.mainData.data[0].fiscaladdress,
-                        "ubigeo": mainResult.mainData.data[0].ubigeo,
-                        "country": mainResult.mainData.data[0].country,
-                        "emittertype": mainResult.mainData.data[0].emittertype,
-                        "currency": mainResult.mainData.data[0].currency,
-                        "invoiceserie": mainResult.mainData.data[0].invoiceserie,
-                        "invoicecorrelative": mainResult.mainData.data[0].invoicecorrelative,
-                        "annexcode": mainResult.mainData.data[0].annexcode,
-                        "igv": mainResult.mainData.data[0].igv,
-                        "printingformat": mainResult.mainData.data[0].printingformat,
-                        "xmlversion": mainResult.mainData.data[0].xmlversion,
-                        "ublversion": mainResult.mainData.data[0].ublversion,
-                        "returnpdf": mainResult.mainData.data[0].returnpdf,
-                        "returnxmlsunat": mainResult.mainData.data[0].returnxmlsunat,
-                        "returnxml": mainResult.mainData.data[0].returnxml,
-                        "invoiceprovider": mainResult.mainData.data[0].invoiceprovider,
-                        "sunaturl": mainResult.mainData.data[0].sunaturl,
-                        "token": mainResult.mainData.data[0].token,
-                        "sunatusername": mainResult.mainData.data[0].sunatusername,
-                        "paymentprovider": mainResult.mainData.data[0].paymentprovider,
-                        "publickey": mainResult.mainData.data[0].publickey,
-                        "privatekey": mainResult.mainData.data[0].privatekey,
-                        "ticketserie": mainResult.mainData.data[0].ticketserie,
-                        "ticketcorrelative": mainResult.mainData.data[0].ticketcorrelative,
-                        "invoicecreditserie": mainResult.mainData.data[0].invoicecreditserie,
-                        "invoicecreditcorrelative": mainResult.mainData.data[0].invoicecreditcorrelative,
-                        "ticketcreditserie": mainResult.mainData.data[0].ticketcreditserie,
-                        "ticketcreditcorrelative": mainResult.mainData.data[0].ticketcreditcorrelative,
-                        "detraction": mainResult.mainData.data[0].detraction,
-                        "detractioncode": mainResult.mainData.data[0].detractioncode,
-                        "detractionaccount": mainResult.mainData.data[0].detractionaccount,
-                        "detractionminimum": mainResult.mainData.data[0].detractionminimum,
-                        "operationcodeperu": mainResult.mainData.data[0].operationcodeperu,
-                        "operationcodeother": mainResult.mainData.data[0].operationcodeother,
-                        "culqiurl": mainResult.mainData.data[0].culqiurl,
-                        "culqiurlcardcreate": mainResult.mainData.data[0].culqiurlcardcreate,
-                        "culqiurlclient": mainResult.mainData.data[0].culqiurlclient,
-                        "culqiurltoken": mainResult.mainData.data[0].culqiurltoken,
-                        "culqiurlcharge": mainResult.mainData.data[0].culqiurlcharge,
-                        "culqiurlcardget": mainResult.mainData.data[0].culqiurlcardget,
-                        "culqiurlcarddelete": mainResult.mainData.data[0].culqiurlcarddelete,
+                        annexcode: mainResult.mainData.data[0].annexcode,
+                        businessname: mainResult.mainData.data[0].businessname,
+                        country: mainResult.mainData.data[0].country,
+                        culqiurl: mainResult.mainData.data[0].culqiurl,
+                        culqiurlcardcreate: mainResult.mainData.data[0].culqiurlcardcreate,
+                        culqiurlcarddelete: mainResult.mainData.data[0].culqiurlcarddelete,
+                        culqiurlcardget: mainResult.mainData.data[0].culqiurlcardget,
+                        culqiurlcharge: mainResult.mainData.data[0].culqiurlcharge,
+                        culqiurlclient: mainResult.mainData.data[0].culqiurlclient,
+                        culqiurltoken: mainResult.mainData.data[0].culqiurltoken,
+                        currency: mainResult.mainData.data[0].currency,
+                        detraction: mainResult.mainData.data[0].detraction,
+                        detractionaccount: mainResult.mainData.data[0].detractionaccount,
+                        detractioncode: mainResult.mainData.data[0].detractioncode,
+                        detractionminimum: mainResult.mainData.data[0].detractionminimum,
+                        emittertype: mainResult.mainData.data[0].emittertype,
+                        fiscaladdress: mainResult.mainData.data[0].fiscaladdress,
+                        igv: mainResult.mainData.data[0].igv,
+                        invoicecorrelative: mainResult.mainData.data[0].invoicecorrelative,
+                        invoicecreditcorrelative: mainResult.mainData.data[0].invoicecreditcorrelative,
+                        invoicecreditserie: mainResult.mainData.data[0].invoicecreditserie,
+                        invoiceprovider: mainResult.mainData.data[0].invoiceprovider,
+                        invoiceserie: mainResult.mainData.data[0].invoiceserie,
+                        operationcodeother: mainResult.mainData.data[0].operationcodeother,
+                        operationcodeperu: mainResult.mainData.data[0].operationcodeperu,
+                        paymentprovider: mainResult.mainData.data[0].paymentprovider,
+                        printingformat: mainResult.mainData.data[0].printingformat,
+                        privatekey: mainResult.mainData.data[0].privatekey,
+                        publickey: mainResult.mainData.data[0].publickey,
+                        returnpdf: mainResult.mainData.data[0].returnpdf,
+                        returnxml: mainResult.mainData.data[0].returnxml,
+                        returnxmlsunat: mainResult.mainData.data[0].returnxmlsunat,
+                        ruc: mainResult.mainData.data[0].ruc,
+                        sunaturl: mainResult.mainData.data[0].sunaturl,
+                        sunatusername: mainResult.mainData.data[0].sunatusername,
+                        ticketcorrelative: mainResult.mainData.data[0].ticketcorrelative,
+                        ticketcreditcorrelative: mainResult.mainData.data[0].ticketcreditcorrelative,
+                        ticketcreditserie: mainResult.mainData.data[0].ticketcreditserie,
+                        ticketserie: mainResult.mainData.data[0].ticketserie,
+                        token: mainResult.mainData.data[0].token,
+                        tradename: mainResult.mainData.data[0].tradename,
+                        ubigeo: mainResult.mainData.data[0].ubigeo,
+                        ublversion: mainResult.mainData.data[0].ublversion,
+                        xmlversion: mainResult.mainData.data[0].xmlversion,
                     });
 
                     setShowCountry(true);
-                }
-                else {
+                } else {
                     setShowCountry(false);
                 }
-            }
-            else {
+            } else {
                 setShowCountry(false);
             }
-        }
-        else {
+        } else {
             setShowCountry(false);
         }
-    }, [mainResult])
+    }, [mainResult]);
 
     useEffect(() => {
-        const indexDomainCurrency = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES_CURRENCY'));
+        const indexDomainCurrency = multiResult.data.findIndex(
+            (x: MultiData) => x.key === "UFN_DOMAIN_LST_VALORES_CURRENCY"
+        );
 
         if (indexDomainCurrency > -1) {
-            setDomainCurrency({ loading: false, data: multiResult.data[indexDomainCurrency] && multiResult.data[indexDomainCurrency].success ? multiResult.data[indexDomainCurrency].data : [] });
+            setDomainCurrency({
+                loading: false,
+                data:
+                    multiResult.data[indexDomainCurrency] && multiResult.data[indexDomainCurrency].success
+                        ? multiResult.data[indexDomainCurrency].data
+                        : [],
+            });
         }
 
-        const indexDomainDocument = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES_DOCUMENT'));
+        const indexDomainDocument = multiResult.data.findIndex(
+            (x: MultiData) => x.key === "UFN_DOMAIN_LST_VALORES_DOCUMENT"
+        );
 
         if (indexDomainDocument > -1) {
-            setDomainDocument({ loading: false, data: multiResult.data[indexDomainDocument] && multiResult.data[indexDomainDocument].success ? multiResult.data[indexDomainDocument].data : [] });
+            setDomainDocument({
+                loading: false,
+                data:
+                    multiResult.data[indexDomainDocument] && multiResult.data[indexDomainDocument].success
+                        ? multiResult.data[indexDomainDocument].data
+                        : [],
+            });
         }
 
-        const indexDomainInvoiceProvider = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES_INVOICEPROVIDER'));
+        const indexDomainInvoiceProvider = multiResult.data.findIndex(
+            (x: MultiData) => x.key === "UFN_DOMAIN_LST_VALORES_INVOICEPROVIDER"
+        );
 
         if (indexDomainInvoiceProvider > -1) {
-            setDomainInvoiceProvider({ loading: false, data: multiResult.data[indexDomainInvoiceProvider] && multiResult.data[indexDomainInvoiceProvider].success ? multiResult.data[indexDomainInvoiceProvider].data : [] });
+            setDomainInvoiceProvider({
+                loading: false,
+                data:
+                    multiResult.data[indexDomainInvoiceProvider] && multiResult.data[indexDomainInvoiceProvider].success
+                        ? multiResult.data[indexDomainInvoiceProvider].data
+                        : [],
+            });
         }
 
-        const indexDomainPaymentProvider = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES_PAYMENTPROVIDER'));
+        const indexDomainPaymentProvider = multiResult.data.findIndex(
+            (x: MultiData) => x.key === "UFN_DOMAIN_LST_VALORES_PAYMENTPROVIDER"
+        );
 
         if (indexDomainPaymentProvider > -1) {
-            setDomainPaymentProvider({ loading: false, data: multiResult.data[indexDomainPaymentProvider] && multiResult.data[indexDomainPaymentProvider].success ? multiResult.data[indexDomainPaymentProvider].data : [] });
+            setDomainPaymentProvider({
+                loading: false,
+                data:
+                    multiResult.data[indexDomainPaymentProvider] && multiResult.data[indexDomainPaymentProvider].success
+                        ? multiResult.data[indexDomainPaymentProvider].data
+                        : [],
+            });
         }
 
-        const indexDomainPrinting = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES_PRINTING'));
+        const indexDomainPrinting = multiResult.data.findIndex(
+            (x: MultiData) => x.key === "UFN_DOMAIN_LST_VALORES_PRINTING"
+        );
 
         if (indexDomainPrinting > -1) {
-            setDomainPrinting({ loading: false, data: multiResult.data[indexDomainPrinting] && multiResult.data[indexDomainPrinting].success ? multiResult.data[indexDomainPrinting].data : [] });
+            setDomainPrinting({
+                loading: false,
+                data:
+                    multiResult.data[indexDomainPrinting] && multiResult.data[indexDomainPrinting].success
+                        ? multiResult.data[indexDomainPrinting].data
+                        : [],
+            });
         }
     }, [multiResult]);
 
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_edit) }))
-                fetchData();
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_edit) }));
                 dispatch(showBackdrop(false));
-            }
-            else if (executeResult.error) {
-                dispatch(showSnackbar({ show: true, severity: "error", message: t(executeResult.code || "error_unexpected_db_error") }))
+                fetchData && fetchData();
+            } else if (executeResult.error) {
+                dispatch(
+                    showSnackbar({
+                        severity: "error",
+                        show: true,
+                        message: t(executeResult.code ?? "error_unexpected_db_error"),
+                    })
+                );
+                dispatch(showBackdrop(false));
                 setWaitSave(false);
-                dispatch(showBackdrop(false));
             }
         }
-    }, [executeResult, waitSave])
+    }, [executeResult, waitSave]);
 
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+    const {
+        formState: { errors },
+        getValues,
+        handleSubmit,
+        register,
+        setValue,
+    } = useForm({
         defaultValues: {
-            ruc: fields.ruc,
-            businessname: fields.businessname,
-            tradename: fields.tradename,
-            fiscaladdress: fields.fiscaladdress,
-            ubigeo: fields.ubigeo,
-            country: fields.country,
-            emittertype: fields.emittertype,
-            currency: fields.currency,
-            invoiceserie: fields.invoiceserie,
-            invoicecorrelative: fields.invoicecorrelative,
             annexcode: fields.annexcode,
-            igv: fields.igv,
-            printingformat: fields.printingformat,
-            xmlversion: fields.xmlversion,
-            ublversion: fields.ublversion,
-            returnpdf: fields.returnpdf,
-            returnxmlsunat: fields.returnxmlsunat,
-            returnxml: fields.returnxml,
-            invoiceprovider: fields.invoiceprovider,
-            sunaturl: fields.sunaturl,
-            token: fields.token,
-            sunatusername: fields.sunatusername,
-            paymentprovider: fields.paymentprovider,
-            publickey: fields.publickey,
-            privatekey: fields.privatekey,
-            ticketserie: fields.ticketserie,
-            ticketcorrelative: fields.ticketcorrelative,
-            invoicecreditserie: fields.invoicecreditserie,
-            invoicecreditcorrelative: fields.invoicecreditcorrelative,
-            ticketcreditserie: fields.ticketcreditserie,
-            ticketcreditcorrelative: fields.ticketcreditcorrelative,
-            detraction: fields.detraction,
-            detractioncode: fields.detractioncode,
-            detractionaccount: fields.detractionaccount,
-            detractionminimum: fields.detractionminimum,
-            operationcodeperu: fields.operationcodeperu,
-            operationcodeother: fields.operationcodeother,
+            businessname: fields.businessname,
+            country: fields.country,
             culqiurl: fields.culqiurl,
             culqiurlcardcreate: fields.culqiurlcardcreate,
+            culqiurlcarddelete: fields.culqiurlcarddelete,
+            culqiurlcardget: fields.culqiurlcardget,
+            culqiurlcharge: fields.culqiurlcharge,
             culqiurlclient: fields.culqiurlclient,
             culqiurltoken: fields.culqiurltoken,
-            culqiurlcharge: fields.culqiurlcharge,
-            culqiurlcardget: fields.culqiurlcardget,
-            culqiurlcarddelete: fields.culqiurlcarddelete,
-        }
+            currency: fields.currency,
+            detraction: fields.detraction,
+            detractionaccount: fields.detractionaccount,
+            detractioncode: fields.detractioncode,
+            detractionminimum: fields.detractionminimum,
+            emittertype: fields.emittertype,
+            fiscaladdress: fields.fiscaladdress,
+            igv: fields.igv,
+            invoicecorrelative: fields.invoicecorrelative,
+            invoicecreditcorrelative: fields.invoicecreditcorrelative,
+            invoicecreditserie: fields.invoicecreditserie,
+            invoiceprovider: fields.invoiceprovider,
+            invoiceserie: fields.invoiceserie,
+            operationcodeother: fields.operationcodeother,
+            operationcodeperu: fields.operationcodeperu,
+            paymentprovider: fields.paymentprovider,
+            printingformat: fields.printingformat,
+            privatekey: fields.privatekey,
+            publickey: fields.publickey,
+            returnpdf: fields.returnpdf,
+            returnxml: fields.returnxml,
+            returnxmlsunat: fields.returnxmlsunat,
+            ruc: fields.ruc,
+            sunaturl: fields.sunaturl,
+            sunatusername: fields.sunatusername,
+            ticketcorrelative: fields.ticketcorrelative,
+            ticketcreditcorrelative: fields.ticketcreditcorrelative,
+            ticketcreditserie: fields.ticketcreditserie,
+            ticketserie: fields.ticketserie,
+            token: fields.token,
+            tradename: fields.tradename,
+            ubigeo: fields.ubigeo,
+            ublversion: fields.ublversion,
+            xmlversion: fields.xmlversion,
+        },
     });
+
     React.useEffect(() => {
-        register('ruc', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('businessname', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('tradename', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('fiscaladdress', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('ubigeo', { validate: (value) => getValues('country') === 'PE' ? (((value && value.length > 0)) || "" + t(langKeys.field_required)) : true })
-        register('country', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('emittertype', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('currency', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('invoiceserie', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('invoicecorrelative');
-        register('annexcode', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('igv');
-        register('returnpdf');
-        register('returnxmlsunat');
-        register('returnxml');
-        register('printingformat', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('xmlversion', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('ublversion', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('invoiceprovider', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('sunaturl', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('token', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('sunatusername');
-        register('paymentprovider', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('publickey', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('privatekey', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('ticketserie', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('ticketcorrelative');
-        register('invoicecreditserie', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('invoicecreditcorrelative');
-        register('ticketcreditserie', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('ticketcreditcorrelative');
-        register('detraction');
-        register('detractioncode', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('detractionaccount', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('detractionminimum');
-        register('operationcodeperu', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('operationcodeother', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('culqiurl', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('culqiurlcardcreate', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('culqiurlclient', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('culqiurltoken', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('culqiurlcharge', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('culqiurlcardget', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
-        register('culqiurlcarddelete', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register("annexcode", { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register("country", { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register("culqiurl", { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register("currency", { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register("detraction");
+        register("detractionminimum");
+        register("igv");
+        register("invoicecorrelative");
+        register("invoicecreditcorrelative");
+        register("privatekey", { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register("publickey", { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register("returnpdf");
+        register("returnxml");
+        register("returnxmlsunat");
+        register("ruc", { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register("sunaturl", { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register("sunatusername");
+        register("ticketcorrelative");
+        register("ticketcreditcorrelative");
+        register("token", { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register("tradename", { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register("ublversion", { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+        register("xmlversion", { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
+
+        register("businessname", {
+            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+        });
+
+        register("culqiurlcardcreate", {
+            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+        });
+
+        register("culqiurlcarddelete", {
+            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+        });
+
+        register("culqiurlcardget", {
+            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+        });
+
+        register("culqiurlcharge", {
+            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+        });
+
+        register("culqiurlclient", {
+            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+        });
+
+        register("culqiurltoken", {
+            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+        });
+
+        register("detractionaccount", {
+            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+        });
+
+        register("detractioncode", {
+            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+        });
+
+        register("emittertype", {
+            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+        });
+
+        register("fiscaladdress", {
+            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+        });
+
+        register("invoicecreditserie", {
+            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+        });
+
+        register("invoiceprovider", {
+            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+        });
+
+        register("invoiceserie", {
+            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+        });
+
+        register("operationcodeother", {
+            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+        });
+
+        register("operationcodeperu", {
+            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+        });
+
+        register("paymentprovider", {
+            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+        });
+
+        register("printingformat", {
+            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+        });
+
+        register("ticketcreditserie", {
+            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+        });
+
+        register("ticketserie", {
+            validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required),
+        });
+
+        register("ubigeo", {
+            validate: (value) =>
+                getValues("country") === "PE" ? (value && value.length > 0) || "" + t(langKeys.field_required) : true,
+        });
     }, [register]);
 
     const onSubmit = handleSubmit((data) => {
@@ -430,475 +610,503 @@ const GeneralConfiguration: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
             dispatch(execute(updateAppsettingInvoice(data)));
             dispatch(showBackdrop(true));
             setWaitSave(true);
-        }
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
+        };
+
+        dispatch(
+            manageConfirmation({
+                callback,
+                question: t(langKeys.confirmation_save),
+                visible: true,
+            })
+        );
     });
 
-    return (
-        <div style={{ width: '100%' }}>
-            <form onSubmit={onSubmit}>
-                <div style={{ display: 'flex', justifyContent: 'end' }}>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            type="submit"
-                            startIcon={<SaveIcon color="secondary" />}
-                            style={{ backgroundColor: "#55BD84" }}
-                        >{t(langKeys.save)}
-                        </Button>
+    if (executeResult.loading || mainResult.mainData.loading || multiResult.loading) {
+        return (
+            <div style={{ width: "100%" }}>
+                <CircularProgress />
+            </div>
+        );
+    } else {
+        return (
+            <div style={{ width: "100%" }}>
+                <form onSubmit={onSubmit}>
+                    <div style={{ display: "flex", justifyContent: "end" }}>
+                        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                            <Button
+                                className={classes.button}
+                                color="primary"
+                                startIcon={<SaveIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                                type="submit"
+                                variant="contained"
+                            >
+                                {t(langKeys.save)}
+                            </Button>
+                        </div>
                     </div>
-                </div>
-                <div className={classes.containerDetail}>
-                    <Typography style={{ fontSize: 20, paddingBottom: "10px" }} color="textPrimary">{t(langKeys.billingsetupgeneralinformation)}</Typography>
-
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.billingsetupruc)}
-                            className="col-6"
-                            valueDefault={getValues('ruc')}
-                            onChange={(value) => setValue('ruc', value)}
-                            error={errors?.ruc?.message}
-                        />
-                        <FieldEdit
-                            label={t(langKeys.billingcompanyname)}
-                            className="col-6"
-                            valueDefault={getValues('businessname')}
-                            onChange={(value) => setValue('businessname', value)}
-                            error={errors?.businessname?.message}
-                        />
+                    <div className={classes.containerDetail}>
+                        <Typography style={{ fontSize: 20, paddingBottom: "10px" }} color="textPrimary">
+                            {t(langKeys.billingsetupgeneralinformation)}
+                        </Typography>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.ruc?.message}
+                                label={t(langKeys.billingsetupruc)}
+                                onChange={(value) => setValue("ruc", value)}
+                                valueDefault={getValues("ruc")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.businessname?.message}
+                                label={t(langKeys.billingcompanyname)}
+                                onChange={(value) => setValue("businessname", value)}
+                                valueDefault={getValues("businessname")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.tradename?.message}
+                                label={t(langKeys.billingcommercialname)}
+                                onChange={(value) => setValue("tradename", value)}
+                                valueDefault={getValues("tradename")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.fiscaladdress?.message}
+                                label={t(langKeys.billingfiscaladdress)}
+                                onChange={(value) => setValue("fiscaladdress", value)}
+                                valueDefault={getValues("fiscaladdress")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                disabled={blockUbigee}
+                                error={errors?.ubigeo?.message}
+                                label={t(langKeys.billingubigeocode)}
+                                onChange={(value) => setValue("ubigeo", value)}
+                                valueDefault={getValues("ubigeo")}
+                            />
+                            {showCountry ? (
+                                <FieldSelect
+                                    className="col-6"
+                                    data={dataPlan}
+                                    error={errors?.country?.message}
+                                    label={t(langKeys.billingcountry)}
+                                    optionDesc="description"
+                                    optionValue="code"
+                                    orderbylabel={true}
+                                    valueDefault={getValues("country")}
+                                    onChange={(value) => {
+                                        setValue("country", value?.code);
+                                        if (value?.code !== "PE") {
+                                            setValue("ubigeo", "");
+                                            setBlockUbigee(true);
+                                        } else {
+                                            setBlockUbigee(false);
+                                        }
+                                    }}
+                                />
+                            ) : (
+                                <FieldEdit
+                                    className="col-6"
+                                    disabled={true}
+                                    error={errors?.country?.message}
+                                    label={t(langKeys.billingcountry)}
+                                    valueDefault={""}
+                                />
+                            )}
+                        </div>
                     </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.billingcommercialname)}
-                            className="col-6"
-                            valueDefault={getValues('tradename')}
-                            onChange={(value) => setValue('tradename', value)}
-                            error={errors?.tradename?.message}
-                        />
-                        <FieldEdit
-                            label={t(langKeys.billingfiscaladdress)}
-                            className="col-6"
-                            valueDefault={getValues('fiscaladdress')}
-                            onChange={(value) => setValue('fiscaladdress', value)}
-                            error={errors?.fiscaladdress?.message}
-                        />
+                    <div className={classes.containerDetail}>
+                        <Typography style={{ fontSize: 20, paddingBottom: "10px" }} color="textPrimary">
+                            {t(langKeys.billingsetupbillinginformation)}
+                        </Typography>
+                        <div className="row-zyx">
+                            <FieldSelect
+                                className="col-6"
+                                data={domainDocument.data}
+                                error={errors?.emittertype?.message}
+                                label={t(langKeys.billingemittertype)}
+                                loading={domainDocument.loading}
+                                onChange={(value) => setValue("emittertype", value?.domainvalue)}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                                orderbylabel={true}
+                                prefixTranslation="billingfield_"
+                                uset={true}
+                                valueDefault={getValues("emittertype")}
+                            />
+                            <FieldSelect
+                                className="col-6"
+                                data={domainCurrency.data}
+                                error={errors?.currency?.message}
+                                label={t(langKeys.billingcurrency)}
+                                loading={domainCurrency.loading}
+                                onChange={(value) => setValue("currency", value?.domainvalue)}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                                orderbylabel={true}
+                                prefixTranslation="billingfield_"
+                                uset={true}
+                                valueDefault={getValues("currency")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.invoiceserie?.message}
+                                label={t(langKeys.billingserial)}
+                                onChange={(value) => setValue("invoiceserie", value)}
+                                valueDefault={getValues("invoiceserie")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.invoicecorrelative?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.billingcorrelative)}
+                                onChange={(value) => setValue("invoicecorrelative", value)}
+                                type="number"
+                                valueDefault={getValues("invoicecorrelative")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.ticketserie?.message}
+                                label={t(langKeys.ticketserial)}
+                                onChange={(value) => setValue("ticketserie", value)}
+                                valueDefault={getValues("ticketserie")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.ticketcorrelative?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.ticketcorrelative)}
+                                onChange={(value) => setValue("ticketcorrelative", value)}
+                                type="number"
+                                valueDefault={getValues("ticketcorrelative")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.invoicecreditserie?.message}
+                                label={t(langKeys.invoicecreditserial)}
+                                onChange={(value) => setValue("invoicecreditserie", value)}
+                                valueDefault={getValues("invoicecreditserie")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.invoicecreditcorrelative?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.invoicecreditcorrelative)}
+                                onChange={(value) => setValue("invoicecreditcorrelative", value)}
+                                type="number"
+                                valueDefault={getValues("invoicecreditcorrelative")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.ticketcreditserie?.message}
+                                label={t(langKeys.ticketcreditserial)}
+                                onChange={(value) => setValue("ticketcreditserie", value)}
+                                valueDefault={getValues("ticketcreditserie")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.ticketcreditcorrelative?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.ticketcreditcorrelative)}
+                                onChange={(value) => setValue("ticketcreditcorrelative", value)}
+                                type="number"
+                                valueDefault={getValues("ticketcreditcorrelative")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.annexcode?.message}
+                                label={t(langKeys.billingannexcode)}
+                                onChange={(value) => setValue("annexcode", value)}
+                                valueDefault={getValues("annexcode")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.igv?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.billingtax)}
+                                onChange={(value) => setValue("igv", value)}
+                                type="number"
+                                valueDefault={getValues("igv")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.detractioncode?.message}
+                                label={t(langKeys.detractioncode)}
+                                onChange={(value) => setValue("detractioncode", value)}
+                                valueDefault={getValues("detractioncode")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.detraction?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.detraction)}
+                                onChange={(value) => setValue("detraction", value)}
+                                type="number"
+                                valueDefault={getValues("detraction")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.detractionaccount?.message}
+                                label={t(langKeys.detractionaccount)}
+                                onChange={(value) => setValue("detractionaccount", value)}
+                                valueDefault={getValues("detractionaccount")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.detractionminimum?.message}
+                                inputProps={{ step: "any" }}
+                                label={t(langKeys.detractionminimum)}
+                                onChange={(value) => setValue("detractionminimum", value)}
+                                type="number"
+                                valueDefault={getValues("detractionminimum")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.operationcodeperu?.message}
+                                label={t(langKeys.operationcodeperu)}
+                                onChange={(value) => setValue("operationcodeperu", value)}
+                                valueDefault={getValues("operationcodeperu")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.operationcodeother?.message}
+                                label={t(langKeys.operationcodeother)}
+                                onChange={(value) => setValue("operationcodeother", value)}
+                                valueDefault={getValues("operationcodeother")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldSelect
+                                className="col-6"
+                                data={domainPrinting.data}
+                                error={errors?.printingformat?.message}
+                                label={t(langKeys.billingprintingformat)}
+                                loading={domainPrinting.loading}
+                                onChange={(value) => setValue("printingformat", value?.domainvalue)}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                                orderbylabel={true}
+                                prefixTranslation="billingfield_"
+                                uset={true}
+                                valueDefault={getValues("printingformat")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.xmlversion?.message}
+                                label={t(langKeys.billingxmlversion)}
+                                onChange={(value) => setValue("xmlversion", value)}
+                                valueDefault={getValues("xmlversion")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.ublversion?.message}
+                                label={t(langKeys.billingublversion)}
+                                onChange={(value) => setValue("ublversion", value)}
+                                valueDefault={getValues("ublversion")}
+                            />
+                            <TemplateSwitch
+                                className="col-6"
+                                label={t(langKeys.billingreturnpdf)}
+                                onChange={(value) => setValue("returnpdf", value)}
+                                valueDefault={getValues("returnpdf")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <TemplateSwitch
+                                className="col-6"
+                                label={t(langKeys.billingreturncsv)}
+                                onChange={(value) => setValue("returnxmlsunat", value)}
+                                valueDefault={getValues("returnxmlsunat")}
+                            />
+                            <TemplateSwitch
+                                className="col-6"
+                                label={t(langKeys.billingreturnxml)}
+                                onChange={(value) => setValue("returnxml", value)}
+                                valueDefault={getValues("returnxml")}
+                            />
+                        </div>
                     </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.billingubigeocode)}
-                            className="col-6"
-                            valueDefault={getValues('ubigeo')}
-                            onChange={(value) => setValue('ubigeo', value)}
-                            error={errors?.ubigeo?.message}
-                            disabled={blockUbigee}
-                        />
-                        {showCountry ? <FieldSelect
-                            label={t(langKeys.billingcountry)}
-                            className="col-6"
-                            valueDefault={getValues('country')}
-                            onChange={(value) => { setValue('country', value?.code); if (value?.code !== 'PE') { setValue('ubigeo', ''); setBlockUbigee(true); } else { setBlockUbigee(false); } }}
-                            error={errors?.country?.message}
-                            data={dataPlan}
-                            optionDesc="description"
-                            optionValue="code"
-                            orderbylabel={true}
-                        /> : <FieldEdit
-                            label={t(langKeys.billingcountry)}
-                            className="col-6"
-                            valueDefault={''}
-                            error={errors?.country?.message}
-                            disabled={true}
-                        />}
+                    <div className={classes.containerDetail}>
+                        <Typography style={{ fontSize: 20, paddingBottom: "10px" }} color="textPrimary">
+                            {t(langKeys.billingsetupsunatinformation)}
+                        </Typography>
+                        <div className="row-zyx">
+                            <FieldSelect
+                                className="col-6"
+                                data={domainInvoiceProvider.data}
+                                error={errors?.invoiceprovider?.message}
+                                label={t(langKeys.billinginvoiceprovider)}
+                                loading={domainInvoiceProvider.loading}
+                                onChange={(value) => setValue("invoiceprovider", value?.domainvalue)}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                                orderbylabel={true}
+                                prefixTranslation="billingfield_"
+                                uset={true}
+                                valueDefault={getValues("invoiceprovider")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.sunaturl?.message}
+                                label={t(langKeys.billingapiendpoint)}
+                                onChange={(value) => setValue("sunaturl", value)}
+                                valueDefault={getValues("sunaturl")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.token?.message}
+                                label={t(langKeys.billingtoken)}
+                                onChange={(value) => setValue("token", value)}
+                                valueDefault={getValues("token")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.sunatusername?.message}
+                                label={t(langKeys.billingusername)}
+                                onChange={(value) => setValue("sunatusername", value)}
+                                valueDefault={getValues("sunatusername")}
+                            />
+                        </div>
                     </div>
-                </div>
-                <div className={classes.containerDetail}>
-                    <Typography style={{ fontSize: 20, paddingBottom: "10px" }} color="textPrimary">{t(langKeys.billingsetupbillinginformation)}</Typography>
-
-                    <div className="row-zyx">
-                        <FieldSelect
-                            label={t(langKeys.billingemittertype)}
-                            loading={domainDocument.loading}
-                            className="col-6"
-                            valueDefault={getValues('emittertype')}
-                            onChange={(value) => setValue('emittertype', value?.domainvalue)}
-                            error={errors?.emittertype?.message}
-                            data={domainDocument.data}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                            uset={true}
-                            prefixTranslation='billingfield_'
-                            orderbylabel={true}
-                        />
-                        <FieldSelect
-                            label={t(langKeys.billingcurrency)}
-                            loading={domainCurrency.loading}
-                            className="col-6"
-                            valueDefault={getValues('currency')}
-                            onChange={(value) => setValue('currency', value?.domainvalue)}
-                            error={errors?.currency?.message}
-                            data={domainCurrency.data}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                            uset={true}
-                            prefixTranslation='billingfield_'
-                            orderbylabel={true}
-                        />
+                    <div className={classes.containerDetail}>
+                        <Typography style={{ fontSize: 20, paddingBottom: "10px" }} color="textPrimary">
+                            {t(langKeys.billingsetuppaymentinformation)}
+                        </Typography>
+                        <div className="row-zyx">
+                            <FieldSelect
+                                className="col-6"
+                                data={domainPaymentProvider.data}
+                                error={errors?.paymentprovider?.message}
+                                label={t(langKeys.billingpaymentprovider)}
+                                loading={domainPaymentProvider.loading}
+                                onChange={(value) => setValue("paymentprovider", value?.domainvalue)}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                                orderbylabel={true}
+                                prefixTranslation="billingfield_"
+                                uset={true}
+                                valueDefault={getValues("paymentprovider")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.culqiurl?.message}
+                                label={t(langKeys.billingpaymentendpoint)}
+                                onChange={(value) => setValue("culqiurl", value)}
+                                valueDefault={getValues("culqiurl")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.publickey?.message}
+                                label={t(langKeys.billingpublickey)}
+                                onChange={(value) => setValue("publickey", value)}
+                                valueDefault={getValues("publickey")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.privatekey?.message}
+                                label={t(langKeys.billingprivatekey)}
+                                onChange={(value) => setValue("privatekey", value)}
+                                valueDefault={getValues("privatekey")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.culqiurlcardcreate?.message}
+                                label={t(langKeys.culqiurlcardcreate)}
+                                onChange={(value) => setValue("culqiurlcardcreate", value)}
+                                valueDefault={getValues("culqiurlcardcreate")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.culqiurlclient?.message}
+                                label={t(langKeys.culqiurlclient)}
+                                onChange={(value) => setValue("culqiurlclient", value)}
+                                valueDefault={getValues("culqiurlclient")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.culqiurltoken?.message}
+                                label={t(langKeys.culqiurltoken)}
+                                onChange={(value) => setValue("culqiurltoken", value)}
+                                valueDefault={getValues("culqiurltoken")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.culqiurlcharge?.message}
+                                label={t(langKeys.culqiurlcharge)}
+                                onChange={(value) => setValue("culqiurlcharge", value)}
+                                valueDefault={getValues("culqiurlcharge")}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.culqiurlcardget?.message}
+                                label={t(langKeys.culqiurlcardget)}
+                                onChange={(value) => setValue("culqiurlcardget", value)}
+                                valueDefault={getValues("culqiurlcardget")}
+                            />
+                            <FieldEdit
+                                className="col-6"
+                                error={errors?.culqiurlcarddelete?.message}
+                                label={t(langKeys.culqiurlcarddelete)}
+                                onChange={(value) => setValue("culqiurlcarddelete", value)}
+                                valueDefault={getValues("culqiurlcarddelete")}
+                            />
+                        </div>
                     </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.billingserial)}
-                            className="col-6"
-                            valueDefault={getValues('invoiceserie')}
-                            onChange={(value) => setValue('invoiceserie', value)}
-                            error={errors?.invoiceserie?.message}
-                        />
-                        <FieldEdit
-                            label={t(langKeys.billingcorrelative)}
-                            className="col-6"
-                            valueDefault={getValues('invoicecorrelative')}
-                            onChange={(value) => setValue('invoicecorrelative', value)}
-                            error={errors?.invoicecorrelative?.message}
-                            type="number"
-                            inputProps={{ step: "any" }}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.ticketserial)}
-                            className="col-6"
-                            valueDefault={getValues('ticketserie')}
-                            onChange={(value) => setValue('ticketserie', value)}
-                            error={errors?.ticketserie?.message}
-                        />
-                        <FieldEdit
-                            label={t(langKeys.ticketcorrelative)}
-                            className="col-6"
-                            valueDefault={getValues('ticketcorrelative')}
-                            onChange={(value) => setValue('ticketcorrelative', value)}
-                            error={errors?.ticketcorrelative?.message}
-                            type="number"
-                            inputProps={{ step: "any" }}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.invoicecreditserial)}
-                            className="col-6"
-                            valueDefault={getValues('invoicecreditserie')}
-                            onChange={(value) => setValue('invoicecreditserie', value)}
-                            error={errors?.invoicecreditserie?.message}
-                        />
-                        <FieldEdit
-                            label={t(langKeys.invoicecreditcorrelative)}
-                            className="col-6"
-                            valueDefault={getValues('invoicecreditcorrelative')}
-                            onChange={(value) => setValue('invoicecreditcorrelative', value)}
-                            error={errors?.invoicecreditcorrelative?.message}
-                            type="number"
-                            inputProps={{ step: "any" }}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.ticketcreditserial)}
-                            className="col-6"
-                            valueDefault={getValues('ticketcreditserie')}
-                            onChange={(value) => setValue('ticketcreditserie', value)}
-                            error={errors?.ticketcreditserie?.message}
-                        />
-                        <FieldEdit
-                            label={t(langKeys.ticketcreditcorrelative)}
-                            className="col-6"
-                            valueDefault={getValues('ticketcreditcorrelative')}
-                            onChange={(value) => setValue('ticketcreditcorrelative', value)}
-                            error={errors?.ticketcreditcorrelative?.message}
-                            type="number"
-                            inputProps={{ step: "any" }}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.billingannexcode)}
-                            className="col-6"
-                            valueDefault={getValues('annexcode')}
-                            onChange={(value) => setValue('annexcode', value)}
-                            error={errors?.annexcode?.message}
-                        />
-                        <FieldEdit
-                            label={t(langKeys.billingtax)}
-                            className="col-6"
-                            valueDefault={getValues('igv')}
-                            onChange={(value) => setValue('igv', value)}
-                            error={errors?.igv?.message}
-                            type="number"
-                            inputProps={{ step: "any" }}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.detractioncode)}
-                            className="col-6"
-                            valueDefault={getValues('detractioncode')}
-                            onChange={(value) => setValue('detractioncode', value)}
-                            error={errors?.detractioncode?.message}
-                        />
-                        <FieldEdit
-                            label={t(langKeys.detraction)}
-                            className="col-6"
-                            valueDefault={getValues('detraction')}
-                            onChange={(value) => setValue('detraction', value)}
-                            error={errors?.detraction?.message}
-                            type="number"
-                            inputProps={{ step: "any" }}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.detractionaccount)}
-                            className="col-6"
-                            valueDefault={getValues('detractionaccount')}
-                            onChange={(value) => setValue('detractionaccount', value)}
-                            error={errors?.detractionaccount?.message}
-                        />
-                        <FieldEdit
-                            label={t(langKeys.detractionminimum)}
-                            className="col-6"
-                            valueDefault={getValues('detractionminimum')}
-                            onChange={(value) => setValue('detractionminimum', value)}
-                            error={errors?.detractionminimum?.message}
-                            type="number"
-                            inputProps={{ step: "any" }}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.operationcodeperu)}
-                            className="col-6"
-                            valueDefault={getValues('operationcodeperu')}
-                            onChange={(value) => setValue('operationcodeperu', value)}
-                            error={errors?.operationcodeperu?.message}
-                        />
-                        <FieldEdit
-                            label={t(langKeys.operationcodeother)}
-                            className="col-6"
-                            valueDefault={getValues('operationcodeother')}
-                            onChange={(value) => setValue('operationcodeother', value)}
-                            error={errors?.operationcodeother?.message}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldSelect
-                            label={t(langKeys.billingprintingformat)}
-                            loading={domainPrinting.loading}
-                            className="col-6"
-                            valueDefault={getValues('printingformat')}
-                            onChange={(value) => setValue('printingformat', value?.domainvalue)}
-                            error={errors?.printingformat?.message}
-                            data={domainPrinting.data}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                            uset={true}
-                            prefixTranslation='billingfield_'
-                            orderbylabel={true}
-                        />
-                        <FieldEdit
-                            label={t(langKeys.billingxmlversion)}
-                            className="col-6"
-                            valueDefault={getValues('xmlversion')}
-                            onChange={(value) => setValue('xmlversion', value)}
-                            error={errors?.xmlversion?.message}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.billingublversion)}
-                            className="col-6"
-                            valueDefault={getValues('ublversion')}
-                            onChange={(value) => setValue('ublversion', value)}
-                            error={errors?.ublversion?.message}
-                        />
-                        <TemplateSwitch
-                            label={t(langKeys.billingreturnpdf)}
-                            className="col-6"
-                            valueDefault={getValues('returnpdf')}
-                            onChange={(value) => setValue('returnpdf', value)}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <TemplateSwitch
-                            label={t(langKeys.billingreturncsv)}
-                            className="col-6"
-                            valueDefault={getValues('returnxmlsunat')}
-                            onChange={(value) => setValue('returnxmlsunat', value)}
-                        />
-                        <TemplateSwitch
-                            label={t(langKeys.billingreturnxml)}
-                            className="col-6"
-                            valueDefault={getValues('returnxml')}
-                            onChange={(value) => setValue('returnxml', value)}
-                        />
-                    </div>
-                </div>
-                <div className={classes.containerDetail}>
-                    <Typography style={{ fontSize: 20, paddingBottom: "10px" }} color="textPrimary">{t(langKeys.billingsetupsunatinformation)}</Typography>
-
-                    <div className="row-zyx">
-                        <FieldSelect
-                            label={t(langKeys.billinginvoiceprovider)}
-                            loading={domainInvoiceProvider.loading}
-                            className="col-6"
-                            valueDefault={getValues('invoiceprovider')}
-                            onChange={(value) => setValue('invoiceprovider', value?.domainvalue)}
-                            error={errors?.invoiceprovider?.message}
-                            data={domainInvoiceProvider.data}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                            uset={true}
-                            prefixTranslation='billingfield_'
-                            orderbylabel={true}
-                        />
-                        <FieldEdit
-                            label={t(langKeys.billingapiendpoint)}
-                            className="col-6"
-                            valueDefault={getValues('sunaturl')}
-                            onChange={(value) => setValue('sunaturl', value)}
-                            error={errors?.sunaturl?.message}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.billingtoken)}
-                            className="col-6"
-                            valueDefault={getValues('token')}
-                            onChange={(value) => setValue('token', value)}
-                            error={errors?.token?.message}
-                        />
-                        <FieldEdit
-                            label={t(langKeys.billingusername)}
-                            className="col-6"
-                            valueDefault={getValues('sunatusername')}
-                            onChange={(value) => setValue('sunatusername', value)}
-                            error={errors?.sunatusername?.message}
-                        />
-                    </div>
-                </div>
-                <div className={classes.containerDetail}>
-                    <Typography style={{ fontSize: 20, paddingBottom: "10px" }} color="textPrimary">{t(langKeys.billingsetuppaymentinformation)}</Typography>
-
-                    <div className="row-zyx">
-                        <FieldSelect
-                            label={t(langKeys.billingpaymentprovider)}
-                            loading={domainPaymentProvider.loading}
-                            className="col-6"
-                            valueDefault={getValues('paymentprovider')}
-                            onChange={(value) => setValue('paymentprovider', value?.domainvalue)}
-                            error={errors?.paymentprovider?.message}
-                            data={domainPaymentProvider.data}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                            uset={true}
-                            prefixTranslation='billingfield_'
-                            orderbylabel={true}
-                        />
-                        <FieldEdit
-                            label={t(langKeys.billingpaymentendpoint)}
-                            className="col-6"
-                            valueDefault={getValues('culqiurl')}
-                            onChange={(value) => setValue('culqiurl', value)}
-                            error={errors?.culqiurl?.message}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.billingpublickey)}
-                            className="col-6"
-                            valueDefault={getValues('publickey')}
-                            onChange={(value) => setValue('publickey', value)}
-                            error={errors?.publickey?.message}
-                        />
-                        <FieldEdit
-                            label={t(langKeys.billingprivatekey)}
-                            className="col-6"
-                            valueDefault={getValues('privatekey')}
-                            onChange={(value) => setValue('privatekey', value)}
-                            error={errors?.privatekey?.message}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.culqiurlcardcreate)}
-                            className="col-6"
-                            valueDefault={getValues('culqiurlcardcreate')}
-                            onChange={(value) => setValue('culqiurlcardcreate', value)}
-                            error={errors?.culqiurlcardcreate?.message}
-                        />
-                        <FieldEdit
-                            label={t(langKeys.culqiurlclient)}
-                            className="col-6"
-                            valueDefault={getValues('culqiurlclient')}
-                            onChange={(value) => setValue('culqiurlclient', value)}
-                            error={errors?.culqiurlclient?.message}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.culqiurltoken)}
-                            className="col-6"
-                            valueDefault={getValues('culqiurltoken')}
-                            onChange={(value) => setValue('culqiurltoken', value)}
-                            error={errors?.culqiurltoken?.message}
-                        />
-                        <FieldEdit
-                            label={t(langKeys.culqiurlcharge)}
-                            className="col-6"
-                            valueDefault={getValues('culqiurlcharge')}
-                            onChange={(value) => setValue('culqiurlcharge', value)}
-                            error={errors?.culqiurlcharge?.message}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.culqiurlcardget)}
-                            className="col-6"
-                            valueDefault={getValues('culqiurlcardget')}
-                            onChange={(value) => setValue('culqiurlcardget', value)}
-                            error={errors?.culqiurlcardget?.message}
-                        />
-                        <FieldEdit
-                            label={t(langKeys.culqiurlcarddelete)}
-                            className="col-6"
-                            valueDefault={getValues('culqiurlcarddelete')}
-                            onChange={(value) => setValue('culqiurlcarddelete', value)}
-                            error={errors?.culqiurlcarddelete?.message}
-                        />
-                    </div>
-                </div>
-            </form>
-        </div>
-    );
-}
+                </form>
+            </div>
+        );
+    }
+};
 
 const IDCONTRACTEDPLAN = "IDCONTRACTEDPLAN";
-const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
+const ContractedPlanByPeriod: React.FC<{ dataPlan: any; currencyList: any }> = ({ dataPlan, currencyList }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const executeResult = useSelector(state => state.main.execute);
-    const mainResult = useSelector(state => state.main);
-    const memoryTable = useSelector(state => state.main.memoryTable);
+    const executeResult = useSelector((state) => state.main.execute);
+    const mainResult = useSelector((state) => state.main);
+    const memoryTable = useSelector((state) => state.main.memoryTable);
 
     const [dataMain, setdataMain] = useState({
+        month: (new Date().getMonth() + 1).toString().padStart(2, "0"),
         plan: "",
         year: String(new Date().getFullYear()),
-        month: (new Date().getMonth() + 1).toString().padStart(2, "0")
     });
 
     const [disableSearch, setdisableSearch] = useState(false);
@@ -908,222 +1116,245 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const [waitSave, setWaitSave] = useState(false);
 
     function search() {
-        dispatch(showBackdrop(true))
-        dispatch(getCollection(getBillingConfigurationSel(dataMain)))
+        dispatch(showBackdrop(true));
+        dispatch(getCollection(getBillingConfigurationSel(dataMain)));
     }
 
     useEffect(() => {
-        setdisableSearch(dataMain.year === "")
-    }, [dataMain])
+        setdisableSearch(dataMain.year === "");
+    }, [dataMain]);
 
     useEffect(() => {
-        search()
-        dispatch(setMemoryTable({
-            id: IDCONTRACTEDPLAN
-        }))
+        search();
+
+        dispatch(
+            setMemoryTable({
+                id: IDCONTRACTEDPLAN,
+            })
+        );
+
         return () => {
             dispatch(cleanMemoryTable());
-        }
-    }, [])
+        };
+    }, []);
 
     useEffect(() => {
         if (!mainResult.mainData.loading) {
-            dispatch(showBackdrop(false))
+            dispatch(showBackdrop(false));
         }
-    }, [mainResult])
+    }, [mainResult]);
 
     const columns = React.useMemo(
         () => [
             {
-                accessor: 'billingconfigurationid',
+                accessor: "billingconfigurationid",
                 isComponent: true,
                 minWidth: 60,
-                width: '1%',
+                width: "1%",
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
-                        <TemplateIcons
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                        //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
-                        //extraOption={t(langKeys.duplicate)}
-                        />
-                    )
-                }
+                        <TemplateIcons deleteFunction={() => handleDelete(row)} editFunction={() => handleEdit(row)} />
+                    );
+                },
             },
             {
+                accessor: "year",
                 Header: t(langKeys.year),
-                accessor: 'year',
             },
             {
+                accessor: "month",
                 Header: t(langKeys.month),
-                accessor: 'month',
             },
             {
-                Header: "Plan",
-                accessor: 'plan',
+                accessor: "plan",
+                Header: t(langKeys.billingconfiguration_plan),
             },
             {
-                Header: t(langKeys.costbasedonthecontractedplan),
-                accessor: 'basicfee',
-                type: 'number',
-                sortType: 'number',
+                accessor: "plancurrency",
+                Header: t(langKeys.billingconfiguration_plancurrency),
+            },
+            {
+                accessor: "vcacomission",
+                Header: t(langKeys.billingconfiguration_vcacomission),
+                sortType: "number",
+                type: "number",
+                Cell: (props: any) => {
+                    const { vcacomission } = props.cell.row.original;
+                    return formatNumberFourDecimals(vcacomission || 0);
+                },
+            },
+            {
+                accessor: "basicanualfee",
+                Header: t(langKeys.billingconfiguration_basicanualfee),
+                sortType: "number",
+                type: "number",
+                Cell: (props: any) => {
+                    const { basicanualfee } = props.cell.row.original;
+                    return formatNumber(basicanualfee || 0);
+                },
+            },
+            {
+                accessor: "basicfee",
+                Header: t(langKeys.billingconfiguration_basicfee),
+                sortType: "number",
+                type: "number",
                 Cell: (props: any) => {
                     const { basicfee } = props.cell.row.original;
                     return formatNumber(basicfee || 0);
-                }
+                },
             },
             {
+                accessor: "userfreequantity",
                 Header: t(langKeys.numberofagentshired),
-                accessor: 'userfreequantity',
-                type: 'number',
-                sortType: 'number',
+                sortType: "number",
+                type: "number",
                 Cell: (props: any) => {
                     const { userfreequantity } = props.cell.row.original;
                     return formatNumberNoDecimals(userfreequantity || 0);
-                }
+                },
             },
             {
+                accessor: "useradditionalfee",
                 Header: t(langKeys.useradditionalfee),
-                accessor: 'useradditionalfee',
-                type: 'number',
-                sortType: 'number',
+                sortType: "number",
+                type: "number",
                 Cell: (props: any) => {
                     const { useradditionalfee } = props.cell.row.original;
                     return formatNumberFourDecimals(useradditionalfee || 0);
-                }
+                },
             },
             {
-                Header: t(langKeys.allowuseroverride),
-                accessor: 'usercreateoverride',
-                NoFilter: false,
-                type: 'boolean',
-                sortType: 'basic',
+                accessor: "usercreateoverride",
                 editable: true,
-                width: 180,
+                Header: t(langKeys.allowuseroverride),
                 maxWidth: 180,
+                NoFilter: false,
+                sortType: "basic",
+                type: "boolean",
+                width: 180,
                 Cell: (props: any) => {
                     const { usercreateoverride } = props.cell.row.original;
-                    return usercreateoverride ? t(langKeys.yes) : "No"
-                }
+                    return usercreateoverride ? t(langKeys.yes) : "No";
+                },
             },
             {
+                accessor: "channelfreequantity",
                 Header: t(langKeys.channelfreequantity),
-                accessor: 'channelfreequantity',
-                type: 'number',
-                sortType: 'number',
+                sortType: "number",
+                type: "number",
                 Cell: (props: any) => {
                     const { channelfreequantity } = props.cell.row.original;
                     return formatNumberNoDecimals(channelfreequantity || 0);
-                }
+                },
             },
             {
+                accessor: "channelotherfee",
                 Header: t(langKeys.contractedplanchannelotherfee),
-                accessor: 'channelotherfee',
-                type: 'number',
-                sortType: 'number',
+                sortType: "number",
+                type: "number",
                 Cell: (props: any) => {
                     const { channelotherfee } = props.cell.row.original;
                     return formatNumberFourDecimals(channelotherfee || 0);
-                }
+                },
             },
             {
-                Header: t(langKeys.channelwhatsappfee),
-                accessor: 'channelwhatsappfee',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { channelwhatsappfee } = props.cell.row.original;
-                    return formatNumberFourDecimals(channelwhatsappfee || 0);
-                }
-            },
-            {
+                accessor: "freewhatsappchannel",
                 Header: t(langKeys.contractedplanfreewhatsappchannel),
-                accessor: 'freewhatsappchannel',
-                type: 'number',
-                sortType: 'number',
+                sortType: "number",
+                type: "number",
                 Cell: (props: any) => {
                     const { freewhatsappchannel } = props.cell.row.original;
                     return formatNumberNoDecimals(freewhatsappchannel || 0);
-                }
+                },
             },
             {
+                accessor: "channelwhatsappfee",
+                Header: t(langKeys.channelwhatsappfee),
+                sortType: "number",
+                type: "number",
+                Cell: (props: any) => {
+                    const { channelwhatsappfee } = props.cell.row.original;
+                    return formatNumberFourDecimals(channelwhatsappfee || 0);
+                },
+            },
+            {
+                accessor: "whatsappconversationfreequantity",
                 Header: t(langKeys.contractedplanfreewhatsappconversation),
-                accessor: 'whatsappconversationfreequantity',
-                type: 'number',
-                sortType: 'number',
+                sortType: "number",
+                type: "number",
                 Cell: (props: any) => {
                     const { whatsappconversationfreequantity } = props.cell.row.original;
                     return formatNumberNoDecimals(whatsappconversationfreequantity || 0);
-                }
+                },
             },
             {
-                Header: t(langKeys.allowchanneloverride),
-                accessor: 'channelcreateoverride',
-                NoFilter: false,
-                type: 'boolean',
-                sortType: 'basic',
+                accessor: "channelcreateoverride",
                 editable: true,
-                width: 180,
+                Header: t(langKeys.allowchanneloverride),
                 maxWidth: 180,
+                NoFilter: false,
+                sortType: "basic",
+                type: "boolean",
+                width: 180,
                 Cell: (props: any) => {
                     const { channelcreateoverride } = props.cell.row.original;
-                    return channelcreateoverride ? t(langKeys.yes) : "No"
-                }
+                    return channelcreateoverride ? t(langKeys.yes) : "No";
+                },
             },
             {
+                accessor: "clientfreequantity",
                 Header: t(langKeys.clientfreequantity),
-                accessor: 'clientfreequantity',
-                type: 'number',
-                sortType: 'number',
+                sortType: "number",
+                type: "number",
                 Cell: (props: any) => {
                     const { clientfreequantity } = props.cell.row.original;
                     return formatNumberNoDecimals(clientfreequantity || 0);
-                }
+                },
             },
             {
+                accessor: "clientadditionalfee",
                 Header: t(langKeys.clientadditionalfee),
-                accessor: 'clientadditionalfee',
-                type: 'number',
-                sortType: 'number',
+                sortType: "number",
+                type: "number",
                 Cell: (props: any) => {
                     const { clientadditionalfee } = props.cell.row.original;
                     return formatNumberFourDecimals(clientadditionalfee || 0);
-                }
+                },
             },
             {
-                Header: t(langKeys.allowhsm),
-                accessor: 'allowhsm',
-                NoFilter: false,
-                type: 'boolean',
-                sortType: 'basic',
+                accessor: "allowhsm",
                 editable: true,
-                width: 180,
+                Header: t(langKeys.allowhsm),
                 maxWidth: 180,
+                NoFilter: false,
+                sortType: "basic",
+                type: "boolean",
+                width: 180,
                 Cell: (props: any) => {
                     const { allowhsm } = props.cell.row.original;
-                    return allowhsm ? t(langKeys.yes) : "No"
-                }
+                    return allowhsm ? t(langKeys.yes) : "No";
+                },
             },
             {
+                accessor: "vcacomissionperhsm",
                 Header: t(langKeys.vcacomissionperhsm),
-                accessor: 'vcacomissionperhsm',
-                type: 'number',
-                sortType: 'number',
+                sortType: "number",
+                type: "number",
                 Cell: (props: any) => {
                     const { vcacomissionperhsm } = props.cell.row.original;
                     return formatNumberFourDecimals(vcacomissionperhsm || 0);
-                }
+                },
             },
             {
+                accessor: "vcacomissionpervoicechannel",
                 Header: t(langKeys.vcacomissionpervoicechannel),
-                accessor: 'vcacomissionpervoicechannel',
-                type: 'number',
-                sortType: 'number',
+                sortType: "number",
+                type: "number",
                 Cell: (props: any) => {
                     const { vcacomissionpervoicechannel } = props.cell.row.original;
                     return formatNumber(vcacomissionpervoicechannel || 0);
-                }
+                },
             },
         ],
         []
@@ -1135,468 +1366,677 @@ const ContractedPlanByPeriod: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
                 if (duplicateop) {
-                    setduplicateop(false)
-                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_duplicate) }))
+                    setduplicateop(false);
+                    dispatch(
+                        showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_duplicate) })
+                    );
                 } else {
-
-                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }));
                 }
-                fetchData();
                 dispatch(showBackdrop(false));
-                setWaitSave(false);
+                fetchData && fetchData();
             } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(
+                    showSnackbar({
+                        severity: "error",
+                        show: true,
+                        message: t(executeResult.code ?? "error_unexpected_error", {
+                            module: t(langKeys.billingplan).toLocaleLowerCase(),
+                        }),
+                    })
+                );
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
         }
-    }, [executeResult, waitSave])
+    }, [executeResult, waitSave]);
 
     const handleRegister = () => {
         setViewSelected("view-2");
         setRowSelected({ row: null, edit: true });
-    }
+    };
 
     const handleEdit = (row: Dictionary) => {
         setViewSelected("view-2");
         setRowSelected({ row, edit: true });
-    }
+    };
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(billingConfigurationIns({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.billingconfigurationid })));
+            dispatch(
+                execute(
+                    billingConfigurationIns({
+                        ...row,
+                        id: row.billingconfigurationid,
+                        operation: "DELETE",
+                        status: "ELIMINADO",
+                    })
+                )
+            );
             dispatch(showBackdrop(true));
             setWaitSave(true);
-        }
+        };
 
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_delete),
-            callback
-        }))
-    }
+        dispatch(
+            manageConfirmation({
+                callback,
+                question: t(langKeys.confirmation_delete),
+                visible: true,
+            })
+        );
+    };
 
     if (viewSelected === "view-1") {
         return (
             <Fragment>
                 <TableZyx
-                    onClickRow={handleEdit}
-                    columns={columns}
                     ButtonsElement={() => (
-                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                             <FieldSelect
+                                data={dataYears}
                                 label={t(langKeys.year)}
+                                onChange={(value) => setdataMain((prev) => ({ ...prev, year: value?.value || 0 }))}
+                                optionDesc="value"
+                                optionValue="value"
                                 style={{ width: 150 }}
                                 valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.value || 0 }))}
-                                data={dataYears}
-                                optionDesc="value"
-                                optionValue="value"
                             />
                             <FieldMultiSelect
-                                label={t(langKeys.month)}
-                                style={{ width: 300 }}
-                                valueDefault={dataMain.month}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev => ({ ...prev, month: value.map((o: Dictionary) => o.val).join() }))}
                                 data={dataMonths}
-                                uset={true}
-                                prefixTranslation="month_"
+                                label={t(langKeys.month)}
                                 optionDesc="val"
                                 optionValue="val"
+                                prefixTranslation="month_"
+                                style={{ width: 300 }}
+                                uset={true}
+                                valueDefault={dataMain.month}
+                                variant="outlined"
+                                onChange={(value) =>
+                                    setdataMain((prev) => ({
+                                        ...prev,
+                                        month: value.map((o: Dictionary) => o.val).join(),
+                                    }))
+                                }
                             />
                             <FieldSelect
-                                label="Plan"
                                 className={classes.fieldsfilter}
-                                valueDefault={dataMain.plan}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev => ({ ...prev, plan: value?.plan || "" }))}
                                 data={dataPlan}
+                                label={t(langKeys.billingconfiguration_plan)}
+                                onChange={(value) => setdataMain((prev) => ({ ...prev, plan: value?.plan || "" }))}
                                 optionDesc="plan"
                                 optionValue="plan"
                                 orderbylabel={true}
+                                valueDefault={dataMain.plan}
+                                variant="outlined"
                             />
                             <Button
-                                disabled={mainResult.mainData.loading || disableSearch}
-                                variant="contained"
                                 color="primary"
-                                style={{ width: 120, backgroundColor: "#55BD84" }}
-                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                disabled={mainResult.mainData.loading || disableSearch}
                                 onClick={() => search()}
-                            >{t(langKeys.search)}
+                                startIcon={<Search style={{ color: "white" }} />}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                variant="contained"
+                            >
+                                {t(langKeys.search)}
                             </Button>
                         </div>
                     )}
+                    columns={columns}
                     data={mainResult.mainData.data}
-                    filterGeneral={false}
                     download={true}
-                    loading={mainResult.mainData.loading}
-                    register={true}
+                    filterGeneral={false}
                     handleRegister={handleRegister}
-                    pageSizeDefault={IDCONTRACTEDPLAN === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
-                    initialPageIndex={IDCONTRACTEDPLAN === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
-                    initialStateFilter={IDCONTRACTEDPLAN === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
+                    loading={mainResult.mainData.loading}
+                    onClickRow={handleEdit}
+                    register={true}
+                    initialPageIndex={
+                        IDCONTRACTEDPLAN === memoryTable.id ? (memoryTable.page === -1 ? 0 : memoryTable.page) : 0
+                    }
+                    initialStateFilter={
+                        IDCONTRACTEDPLAN === memoryTable.id
+                            ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value }))
+                            : undefined
+                    }
+                    pageSizeDefault={
+                        IDCONTRACTEDPLAN === memoryTable.id
+                            ? memoryTable.pageSize === -1
+                                ? 20
+                                : memoryTable.pageSize
+                            : 20
+                    }
                 />
             </Fragment>
-        )
-    }
-    else if (viewSelected === "view-2") {
+        );
+    } else if (viewSelected === "view-2") {
         return (
             <DetailContractedPlanByPeriod
                 data={rowSelected}
-                setViewSelected={setViewSelected}
-                fetchData={fetchData}
                 dataPlan={dataPlan}
+                currencyList={currencyList}
+                fetchData={fetchData}
+                setViewSelected={setViewSelected}
             />
-        )
-    } else
-        return null;
-}
+        );
+    } else return null;
+};
 
-const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData, dataPlan }) => {
+const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({
+    data: { row, edit },
+    dataPlan,
+    currencyList,
+    fetchData,
+    setViewSelected,
+}) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const executeRes = useSelector(state => state.main.execute);
+    const executeResult = useSelector((state) => state.main.execute);
+
+    const [checkedaux, setCheckedaux] = useState(row?.allowhsm || false);
+    const [checkedchannel, setCheckedchannel] = useState(row?.channelcreateoverride || false);
+    const [checkeduser, setCheckeduser] = useState(row?.usercreateoverride || false);
+    const [exchangeRate, setExchangeRate] = useState(0);
+    const [waitSave, setWaitSave] = useState(false);
 
     const [datetoshow, setdatetoshow] = useState(
-        row ? `${row.year}-${String(row.month).padStart(2, '0')}` : `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth() + 1).padStart(2, '0')}`
-    )
-    const [checkedaux, setCheckedaux] = useState(row?.allowhsm || false);
-    const [checkeduser, setCheckeduser] = useState(row?.usercreateoverride || false);
-    const [checkedchannel, setCheckedchannel] = useState(row?.channelcreateoverride || false);
-    const [waitSave, setWaitSave] = useState(false);
+        row
+            ? `${row.year}-${String(row.month).padStart(2, "0")}`
+            : `${new Date(new Date().setDate(1)).getFullYear()}-${String(
+                new Date(new Date().setDate(1)).getMonth() + 1
+            ).padStart(2, "0")}`
+    );
 
     const arrayBreadContractedPlan = [
         { id: "view-1", name: t(langKeys.contractedplan) },
-        { id: "view-2", name: t(langKeys.contractedplandetail) }
+        { id: "view-2", name: t(langKeys.contractedplandetail) },
     ];
 
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+    const {
+        formState: { errors },
+        getValues,
+        handleSubmit,
+        register,
+        setValue,
+    } = useForm({
         defaultValues: {
-            id: row?.billingconfigurationid || 0,
-            year: row?.year || new Date().getFullYear(),
-            month: row?.month || new Date().getMonth() + 1,
-            plan: row?.plan || "",
+            allowhsm: row?.allowhsm || false,
+            basicanualfee: row?.basicanualfee || 0,
             basicfee: row?.basicfee || 0,
-            userfreequantity: row?.userfreequantity || 0,
+            channelcreateoverride: row?.channelcreateoverride || false,
             channelfreequantity: row?.channelfreequantity || 0,
-            clientfreequantity: row?.clientfreequantity || 0,
-            useradditionalfee: row?.useradditionalfee || 0,
+            channelotherfee: row?.channelotherfee || 0,
             channelwhatsappfee: row?.channelwhatsappfee || 0,
             clientadditionalfee: row?.clientadditionalfee || 0,
-            channelotherfee: row?.channelotherfee || 0,
+            clientfreequantity: row?.clientfreequantity || 0,
+            description: row ? row.description : "",
+            freewhatsappchannel: row?.freewhatsappchannel || 0,
             hsmfee: row?.hsmfee || 0,
+            id: row?.billingconfigurationid || 0,
+            month: row?.month || new Date().getMonth() + 1,
+            operation: row ? "UPDATE" : "INSERT",
+            plan: row?.plan || "",
+            plancurrency: row ? row.plancurrency : "",
+            status: row ? row.status : "ACTIVO",
+            type: row ? row.type : "",
+            useradditionalfee: row?.useradditionalfee || 0,
+            usercreateoverride: row?.usercreateoverride || false,
+            userfreequantity: row?.userfreequantity || 0,
+            vcacomission: row?.vcacomission || 0,
             vcacomissionperhsm: row?.vcacomissionperhsm || 0,
             vcacomissionpervoicechannel: row?.vcacomissionpervoicechannel || 0,
-            freewhatsappchannel: row?.freewhatsappchannel || 0,
             whatsappconversationfreequantity: row?.whatsappconversationfreequantity || 0,
-            allowhsm: row?.allowhsm || false,
-            usercreateoverride: row?.usercreateoverride || false,
-            channelcreateoverride: row?.channelcreateoverride || false,
-            status: row ? row.status : 'ACTIVO',
-            type: row ? row.type : '',
-            description: row ? row.description : '',
-            operation: row ? "UPDATE" : "INSERT",
-        }
+            year: row?.year || new Date().getFullYear(),
+        },
     });
 
     function handleDateChange(e: any) {
         if (e !== "") {
-            let datetochange = new Date(e + "-02")
-            let mes = datetochange?.getMonth() + 1
-            let year = datetochange?.getFullYear()
-            setdatetoshow(`${year}-${String(mes).padStart(2, '0')}`)
-            setValue('year', year)
-            setValue('month', mes)
+            let datetochange = new Date(e + "-02");
+            let mes = datetochange?.getMonth() + 1;
+            let year = datetochange?.getFullYear();
+
+            setdatetoshow(`${year}-${String(mes).padStart(2, "0")}`);
+            setValue("year", year);
+            setValue("month", mes);
         }
     }
 
+    useEffect(() => {
+        setExchangeRate(
+            (currencyList ?? []).find((item) => {
+                return item.code === (row?.plancurrency || "");
+            })?.exchangerate || 0
+        );
+    }, [row]);
+
     React.useEffect(() => {
-        register('id');
-        register('type');
-        register('status');
-        register('year');
-        register('month');
-        register('operation');
-        register('allowhsm');
-        register('usercreateoverride');
-        register('channelcreateoverride');
-        register('channelotherfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('description');
-        register('plan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('basicfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('userfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('channelfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('clientfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('useradditionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('channelwhatsappfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('clientadditionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('hsmfee');
-        register('vcacomissionperhsm', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('vcacomissionpervoicechannel', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('whatsappconversationfreequantity', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('freewhatsappchannel', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
+        register("allowhsm");
+        register("channelcreateoverride");
+        register("description");
+        register("hsmfee");
+        register("id");
+        register("month");
+        register("operation");
+        register("plan", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register("plancurrency", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register("status");
+        register("type");
+        register("usercreateoverride");
+        register("year");
+
+        register("basicanualfee", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
+
+        register("basicfee", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
+
+        register("channelfreequantity", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
+
+        register("channelotherfee", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
+
+        register("channelwhatsappfee", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
+
+        register("clientadditionalfee", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
+
+        register("clientfreequantity", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
+
+        register("freewhatsappchannel", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
+
+        register("useradditionalfee", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
+
+        register("userfreequantity", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
+
+        register("vcacomission", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
+
+        register("vcacomissionperhsm", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
+
+        register("vcacomissionpervoicechannel", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
+
+        register("whatsappconversationfreequantity", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
     }, [edit, register]);
 
     useEffect(() => {
         if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(
+                    showSnackbar({
+                        message: t(row ? langKeys.successful_edit : langKeys.successful_register),
+                        severity: "success",
+                        show: true,
+                    })
+                );
+                dispatch(showBackdrop(false));
+                setViewSelected("view-1");
                 fetchData && fetchData();
+            } else if (executeResult.error) {
+                dispatch(
+                    showSnackbar({
+                        severity: "error",
+                        show: true,
+                        message: t(executeResult.code ?? "error_unexpected_error", {
+                            module: t(langKeys.billingplan).toLocaleLowerCase(),
+                        }),
+                    })
+                );
                 dispatch(showBackdrop(false));
-                setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
-                dispatch(showBackdrop(false));
             }
         }
-    }, [executeRes, waitSave])
+    }, [executeResult, waitSave]);
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(execute(billingConfigurationIns(data)));
             dispatch(showBackdrop(true));
-            setWaitSave(true)
-        }
+            setWaitSave(true);
+        };
 
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
+        dispatch(
+            manageConfirmation({
+                callback,
+                question: t(langKeys.confirmation_save),
+                visible: true,
+            })
+        );
     });
 
     return (
-        <div style={{ width: '100%' }}>
+        <div style={{ width: "100%" }}>
             <form onSubmit={onSubmit}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <div>
-                        <TemplateBreadcrumbs
-                            breadcrumbs={arrayBreadContractedPlan}
-                            handleClick={setViewSelected}
-                        />
-                        <TitleDetail
-                            title={row ? `${row.description}` : t(langKeys.newcontractedplanbyperiod)}
-                        />
+                        <TemplateBreadcrumbs breadcrumbs={arrayBreadContractedPlan} handleClick={setViewSelected} />
+                        {row && <TitleDetail title={t(langKeys.contractedplan)} />}
+                        {!row && <TitleDetail title={t(langKeys.newcontractedplanbyperiod)} />}
                     </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                         <Button
-                            variant="contained"
-                            type="button"
                             color="primary"
+                            disabled={executeResult.loading}
+                            onClick={() => setViewSelected("view-1")}
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("view-1")}
-                        >{t(langKeys.back)}</Button>
-                        {edit &&
+                            type="button"
+                            variant="contained"
+                        >
+                            {t(langKeys.back)}
+                        </Button>
+                        {edit && (
                             <Button
                                 className={classes.button}
-                                variant="contained"
                                 color="primary"
-                                type="submit"
+                                disabled={executeResult.loading}
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
-                            >{t(langKeys.save)}
+                                type="submit"
+                                variant="contained"
+                            >
+                                {t(langKeys.save)}
                             </Button>
-                        }
+                        )}
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         <TextField
-                            id="date"
                             className="col-12"
-                            type="month"
-                            variant="outlined"
+                            id="date"
                             onChange={(e) => handleDateChange(e.target.value)}
-                            value={datetoshow}
                             size="small"
+                            type="month"
+                            value={datetoshow}
+                            variant="outlined"
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldSelect
-                            label="Plan"
                             className="col-6"
-                            valueDefault={getValues("plan")}
-                            onChange={(value) => setValue('plan', value?.plan)}
                             data={dataPlan}
+                            error={errors?.plan?.message}
+                            label={t(langKeys.billingconfiguration_plan)}
+                            onChange={(value) => setValue("plan", value?.plan)}
                             optionDesc="plan"
                             optionValue="plan"
-                            error={errors?.plan?.message}
                             orderbylabel={true}
+                            valueDefault={getValues("plan")}
+                        />
+                        <FieldSelect
+                            className="col-6"
+                            data={currencyList ?? []}
+                            error={errors?.plancurrency?.message}
+                            label={t(langKeys.billingconfiguration_plancurrency)}
+                            onChange={(value) => {
+                                setValue("plancurrency", value?.code);
+                                setExchangeRate(value?.exchangerate || 0);
+                            }}
+                            optionDesc="description"
+                            optionValue="code"
+                            orderbylabel={true}
+                            valueDefault={getValues("plancurrency")}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            className="col-6"
+                            error={errors?.vcacomission?.message}
+                            inputProps={{ step: "any" }}
+                            label={t(langKeys.billingconfiguration_vcacomission)}
+                            onChange={(value) => setValue("vcacomission", value)}
+                            type="number"
+                            valueDefault={getValues("vcacomission")}
                         />
                         <FieldEdit
-                            label={t(langKeys.costbasedonthecontractedplan)}
-                            onChange={(value) => setValue('basicfee', value)}
-                            valueDefault={getValues('basicfee')}
+                            className="col-6"
+                            error={errors?.basicanualfee?.message}
+                            inputProps={{ step: "any" }}
+                            label={t(langKeys.billingconfiguration_basicanualfee)}
+                            onChange={(value) => setValue("basicanualfee", value)}
+                            type="number"
+                            valueDefault={getValues("basicanualfee")}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            className="col-6"
                             error={errors?.basicfee?.message}
-                            type="number"
-                            className="col-6"
                             inputProps={{ step: "any" }}
+                            label={t(langKeys.billingconfiguration_basicfee)}
+                            onChange={(value) => setValue("basicfee", value)}
+                            type="number"
+                            valueDefault={getValues("basicfee")}
                         />
-                    </div>
-                    <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.numberofagentshired)}
-                            onChange={(value) => setValue('userfreequantity', value)}
-                            valueDefault={getValues('userfreequantity')}
+                            className="col-6"
                             error={errors?.userfreequantity?.message}
+                            label={t(langKeys.numberofagentshired)}
+                            onChange={(value) => setValue("userfreequantity", value)}
                             type="number"
-                            className="col-6"
+                            valueDefault={getValues("userfreequantity")}
                         />
+                    </div>
+                    <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.useradditionalfee)}
-                            onChange={(value) => setValue('useradditionalfee', value)}
-                            valueDefault={getValues('useradditionalfee')}
+                            className="col-6"
                             error={errors?.useradditionalfee?.message}
-                            type="number"
-                            className="col-6"
                             inputProps={{ step: "any" }}
+                            label={t(langKeys.useradditionalfee)}
+                            onChange={(value) => setValue("useradditionalfee", value)}
+                            type="number"
+                            valueDefault={getValues("useradditionalfee")}
                         />
-                    </div>
-                    <div className="row-zyx">
-                        <div className={"col-6"} style={{ paddingBottom: '3px' }}>
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.allowuseroverride)}</Box>
+                        <div className={"col-6"} style={{ paddingBottom: "3px" }}>
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">
+                                {t(langKeys.allowuseroverride)}
+                            </Box>
                             <FormControlLabel
-                                style={{ paddingLeft: 10 }}
-                                control={<IOSSwitch checked={checkeduser} onChange={(e) => { setCheckeduser(e.target.checked); setValue('usercreateoverride', e.target.checked) }} />}
                                 label={""}
+                                style={{ paddingLeft: 10 }}
+                                control={
+                                    <IOSSwitch
+                                        checked={checkeduser}
+                                        onChange={(e) => {
+                                            setCheckeduser(e.target.checked);
+                                            setValue("usercreateoverride", e.target.checked);
+                                        }}
+                                    />
+                                }
                             />
                         </div>
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.channelfreequantity)}
-                            onChange={(value) => setValue('channelfreequantity', value)}
-                            valueDefault={getValues('channelfreequantity')}
+                            className="col-6"
                             error={errors?.channelfreequantity?.message}
+                            label={t(langKeys.channelfreequantity)}
+                            onChange={(value) => setValue("channelfreequantity", value)}
                             type="number"
-                            className="col-6"
+                            valueDefault={getValues("channelfreequantity")}
                         />
                         <FieldEdit
-                            label={t(langKeys.contractedplanchannelotherfee)}
-                            onChange={(value) => setValue('channelotherfee', value)}
-                            valueDefault={getValues('channelotherfee')}
+                            className="col-6"
                             error={errors?.channelotherfee?.message}
-                            type="number"
-                            className="col-6"
                             inputProps={{ step: "any" }}
+                            label={t(langKeys.contractedplanchannelotherfee)}
+                            onChange={(value) => setValue("channelotherfee", value)}
+                            type="number"
+                            valueDefault={getValues("channelotherfee")}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.contractedplanfreewhatsappchannel)}
-                            onChange={(value) => setValue('freewhatsappchannel', value)}
-                            valueDefault={getValues('freewhatsappchannel')}
+                            className="col-6"
                             error={errors?.freewhatsappchannel?.message}
+                            label={t(langKeys.contractedplanfreewhatsappchannel)}
+                            onChange={(value) => setValue("freewhatsappchannel", value)}
                             type="number"
-                            className="col-6"
+                            valueDefault={getValues("freewhatsappchannel")}
                         />
                         <FieldEdit
-                            label={t(langKeys.channelwhatsappfee)}
-                            onChange={(value) => setValue('channelwhatsappfee', value)}
-                            valueDefault={getValues('channelwhatsappfee')}
+                            className="col-6"
                             error={errors?.channelwhatsappfee?.message}
-                            type="number"
-                            className="col-6"
                             inputProps={{ step: "any" }}
+                            label={t(langKeys.channelwhatsappfee)}
+                            onChange={(value) => setValue("channelwhatsappfee", value)}
+                            type="number"
+                            valueDefault={getValues("channelwhatsappfee")}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.contractedplanfreewhatsappconversation)}
-                            onChange={(value) => setValue('whatsappconversationfreequantity', value)}
-                            valueDefault={getValues('whatsappconversationfreequantity')}
+                            className="col-6"
                             error={errors?.whatsappconversationfreequantity?.message}
+                            label={t(langKeys.contractedplanfreewhatsappconversation)}
+                            onChange={(value) => setValue("whatsappconversationfreequantity", value)}
                             type="number"
-                            className="col-6"
+                            valueDefault={getValues("whatsappconversationfreequantity")}
                         />
-                        <div className={"col-6"} style={{ paddingBottom: '3px' }}>
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.allowchanneloverride)}</Box>
+                        <div className={"col-6"} style={{ paddingBottom: "3px" }}>
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">
+                                {t(langKeys.allowchanneloverride)}
+                            </Box>
                             <FormControlLabel
-                                style={{ paddingLeft: 10 }}
-                                control={<IOSSwitch checked={checkedchannel} onChange={(e) => { setCheckedchannel(e.target.checked); setValue('channelcreateoverride', e.target.checked) }} />}
                                 label={""}
+                                style={{ paddingLeft: 10 }}
+                                control={
+                                    <IOSSwitch
+                                        checked={checkedchannel}
+                                        onChange={(e) => {
+                                            setCheckedchannel(e.target.checked);
+                                            setValue("channelcreateoverride", e.target.checked);
+                                        }}
+                                    />
+                                }
                             />
                         </div>
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.clientfreequantity)}
-                            onChange={(value) => setValue('clientfreequantity', value)}
-                            valueDefault={getValues('clientfreequantity')}
+                            className="col-6"
                             error={errors?.clientfreequantity?.message}
+                            label={t(langKeys.clientfreequantity)}
+                            onChange={(value) => setValue("clientfreequantity", value)}
                             type="number"
-                            className="col-6"
+                            valueDefault={getValues("clientfreequantity")}
                         />
                         <FieldEdit
-                            label={t(langKeys.clientadditionalfee)}
-                            onChange={(value) => setValue('clientadditionalfee', value)}
-                            valueDefault={getValues('clientadditionalfee')}
-                            error={errors?.clientadditionalfee?.message}
-                            type="number"
                             className="col-6"
+                            error={errors?.clientadditionalfee?.message}
                             inputProps={{ step: "any" }}
+                            label={t(langKeys.clientadditionalfee)}
+                            onChange={(value) => setValue("clientadditionalfee", value)}
+                            type="number"
+                            valueDefault={getValues("clientadditionalfee")}
                         />
                     </div>
                     <div className="row-zyx">
-                        <div className={"col-6"} style={{ paddingBottom: '3px' }}>
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.allowhsm)}</Box>
+                        <div className={"col-6"} style={{ paddingBottom: "3px" }}>
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">
+                                {t(langKeys.allowhsm)}
+                            </Box>
                             <FormControlLabel
-                                style={{ paddingLeft: 10 }}
-                                control={<IOSSwitch checked={checkedaux} onChange={(e) => { setCheckedaux(e.target.checked); setValue('allowhsm', e.target.checked) }} />}
                                 label={""}
+                                style={{ paddingLeft: 10 }}
+                                control={
+                                    <IOSSwitch
+                                        checked={checkedaux}
+                                        onChange={(e) => {
+                                            setCheckedaux(e.target.checked);
+                                            setValue("allowhsm", e.target.checked);
+                                        }}
+                                    />
+                                }
                             />
                         </div>
                         <FieldEdit
-                            label={t(langKeys.vcacomissionperhsm)}
-                            onChange={(value) => setValue('vcacomissionperhsm', value)}
-                            valueDefault={getValues('vcacomissionperhsm')}
-                            error={errors?.vcacomissionperhsm?.message}
-                            type="number"
                             className="col-6"
+                            error={errors?.vcacomissionperhsm?.message}
                             inputProps={{ step: "any" }}
+                            label={t(langKeys.vcacomissionperhsm)}
+                            onChange={(value) => setValue("vcacomissionperhsm", value)}
+                            type="number"
+                            valueDefault={getValues("vcacomissionperhsm")}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.vcacomissionpervoicechannel)}
-                            onChange={(value) => setValue('vcacomissionpervoicechannel', value)}
-                            valueDefault={getValues('vcacomissionpervoicechannel')}
-                            error={errors?.vcacomissionpervoicechannel?.message}
-                            type="number"
                             className="col-6"
+                            error={errors?.vcacomissionpervoicechannel?.message}
                             inputProps={{ step: "any" }}
+                            label={t(langKeys.vcacomissionpervoicechannel)}
+                            onChange={(value) => setValue("vcacomissionpervoicechannel", value)}
+                            type="number"
+                            valueDefault={getValues("vcacomissionpervoicechannel")}
+                        />
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.billingconfiguration_exchangerate)}
+                            value={formatNumber(exchangeRate || 0)}
                         />
                     </div>
                 </div>
             </form>
         </div>
     );
-}
+};
 
-const IDCONVERSATIONCOST = 'IDCONVERSATIONCOST';
-const ConversationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
+const IDCONVERSATIONCOST = "IDCONVERSATIONCOST";
+const ConversationCost: React.FC<{ dataPlan: any; currencyList: any }> = ({ dataPlan, currencyList }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const executeResult = useSelector(state => state.main.execute);
-    const mainResult = useSelector(state => state.main);
-    const memoryTable = useSelector(state => state.main.memoryTable);
+    const executeResult = useSelector((state) => state.main.execute);
+    const mainResult = useSelector((state) => state.main);
+    const memoryTable = useSelector((state) => state.main.memoryTable);
 
     const [dataMain, setdataMain] = useState({
         countrycode: "",
+        month: (new Date().getMonth() + 1).toString().padStart(2, "0"),
         year: String(new Date().getFullYear()),
-        month: (new Date().getMonth() + 1).toString().padStart(2, "0")
     });
 
     const [disableSearch, setdisableSearch] = useState(false);
@@ -1606,84 +2046,127 @@ const ConversationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const [waitSave, setWaitSave] = useState(false);
 
     function search() {
-        dispatch(showBackdrop(true))
-        dispatch(getCollection(getBillingConversationSel(dataMain)))
+        dispatch(showBackdrop(true));
+        dispatch(getCollection(getBillingConversationSel(dataMain)));
     }
 
     useEffect(() => {
-        setdisableSearch(dataMain.year === "")
-    }, [dataMain])
+        setdisableSearch(dataMain.year === "");
+    }, [dataMain]);
 
     useEffect(() => {
-        search()
-        dispatch(setMemoryTable({
-            id: IDCONVERSATIONCOST
-        }))
+        search();
+
+        dispatch(
+            setMemoryTable({
+                id: IDCONVERSATIONCOST,
+            })
+        );
+
         return () => {
             dispatch(cleanMemoryTable());
-        }
-    }, [])
+        };
+    }, []);
 
     useEffect(() => {
         if (!mainResult.mainData.loading) {
-            dispatch(showBackdrop(false))
+            dispatch(showBackdrop(false));
         }
-    }, [mainResult])
+    }, [mainResult]);
 
     const columns = React.useMemo(
         () => [
             {
-                accessor: 'billingconversationid',
+                accessor: "billingconversationid",
                 isComponent: true,
                 minWidth: 60,
-                width: '1%',
+                width: "1%",
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
-                        <TemplateIcons
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                        //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
-                        //extraOption={t(langKeys.duplicate)}
-                        />
-                    )
-                }
+                        <TemplateIcons deleteFunction={() => handleDelete(row)} editFunction={() => handleEdit(row)} />
+                    );
+                },
             },
             {
+                accessor: "year",
                 Header: t(langKeys.year),
-                accessor: 'year',
             },
             {
+                accessor: "month",
                 Header: t(langKeys.month),
-                accessor: 'month',
             },
             {
+                accessor: "countrycode",
                 Header: t(langKeys.countrycode),
-                accessor: 'countrycode',
             },
             {
+                accessor: "country",
                 Header: t(langKeys.country),
-                accessor: 'country',
             },
             {
-                Header: t(langKeys.coststartedbycompany),
-                accessor: 'companystartfee',
-                type: 'number',
-                sortType: 'number',
+                accessor: "vcacomission",
+                Header: t(langKeys.billingconversation_vcacomission),
+                sortType: "number",
+                type: "number",
                 Cell: (props: any) => {
-                    const { companystartfee } = props.cell.row.original;
-                    return formatNumberFourDecimals(companystartfee || 0);
-                }
+                    const { vcacomission } = props.cell.row.original;
+                    return formatNumberFourDecimals(vcacomission || 0);
+                },
             },
             {
-                Header: t(langKeys.customerinitiatedcost),
-                accessor: 'clientstartfee',
-                type: 'number',
-                sortType: 'number',
+                accessor: "plancurrency",
+                Header: t(langKeys.billingconversation_plancurrency),
+            },
+            {
+                accessor: "businessutilityfee",
+                Header: t(langKeys.billingconversation_businessutilityfee),
+                sortType: "number",
+                type: "number",
                 Cell: (props: any) => {
-                    const { clientstartfee } = props.cell.row.original;
-                    return formatNumberFourDecimals(clientstartfee || 0);
-                }
+                    const { businessutilityfee } = props.cell.row.original;
+                    return formatNumberFourDecimals(businessutilityfee || 0);
+                },
+            },
+            {
+                accessor: "businessauthenticationfee",
+                Header: t(langKeys.billingconversation_businessauthenticationfee),
+                sortType: "number",
+                type: "number",
+                Cell: (props: any) => {
+                    const { businessauthenticationfee } = props.cell.row.original;
+                    return formatNumberFourDecimals(businessauthenticationfee || 0);
+                },
+            },
+            {
+                accessor: "businessmarketingfee",
+                Header: t(langKeys.billingconversation_businessmarketingfee),
+                sortType: "number",
+                type: "number",
+                Cell: (props: any) => {
+                    const { businessmarketingfee } = props.cell.row.original;
+                    return formatNumberFourDecimals(businessmarketingfee || 0);
+                },
+            },
+            {
+                accessor: "usergeneralfee",
+                Header: t(langKeys.billingconversation_usergeneralfee),
+                sortType: "number",
+                type: "number",
+                Cell: (props: any) => {
+                    const { usergeneralfee } = props.cell.row.original;
+                    return formatNumberFourDecimals(usergeneralfee || 0);
+                },
+            },
+            {
+                accessor: "freequantity",
+                Header: t(langKeys.billingconversation_freequantity),
+                sortType: "number",
+                type: "number",
+                Cell: (props: any) => {
+                    const { freequantity } = props.cell.row.original;
+                    return formatNumberNoDecimals(freequantity || 0);
+                },
             },
         ],
         []
@@ -1695,443 +2178,632 @@ const ConversationCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
                 if (duplicateop) {
-                    setduplicateop(false)
-                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_duplicate) }))
+                    setduplicateop(false);
+                    dispatch(
+                        showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_duplicate) })
+                    );
                 } else {
-
-                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }));
                 }
-                fetchData();
                 dispatch(showBackdrop(false));
-                setWaitSave(false);
+                fetchData && fetchData();
             } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.conversationcost).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(
+                    showSnackbar({
+                        severity: "error",
+                        show: true,
+                        message: t(executeResult.code ?? "error_unexpected_error", {
+                            module: t(langKeys.conversationcost).toLocaleLowerCase(),
+                        }),
+                    })
+                );
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
         }
-    }, [executeResult, waitSave])
+    }, [executeResult, waitSave]);
 
     const handleRegister = () => {
         setViewSelected("view-2");
         setRowSelected({ row: null, edit: true });
-    }
+    };
 
     const handleEdit = (row: Dictionary) => {
         setViewSelected("view-2");
         setRowSelected({ row, edit: true });
-    }
+    };
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(billingConversationIns({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.billingconversationid })));
+            dispatch(
+                execute(
+                    billingConversationIns({
+                        ...row,
+                        id: row.billingconversationid,
+                        operation: "DELETE",
+                        status: "ELIMINADO",
+                    })
+                )
+            );
             dispatch(showBackdrop(true));
             setWaitSave(true);
-        }
+        };
 
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_delete),
-            callback
-        }))
-    }
+        dispatch(
+            manageConfirmation({
+                callback,
+                question: t(langKeys.confirmation_delete),
+                visible: true,
+            })
+        );
+    };
 
     if (viewSelected === "view-1") {
         return (
             <Fragment>
                 <TableZyx
-                    onClickRow={handleEdit}
-                    columns={columns}
                     ButtonsElement={() => (
-                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                             <FieldSelect
+                                data={dataYears}
                                 label={t(langKeys.year)}
+                                onChange={(value) => setdataMain((prev) => ({ ...prev, year: value?.value || 0 }))}
+                                optionDesc="value"
+                                optionValue="value"
                                 style={{ width: 150 }}
                                 valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.value || 0 }))}
-                                data={dataYears}
-                                optionDesc="value"
-                                optionValue="value"
                             />
                             <FieldMultiSelect
-                                label={t(langKeys.month)}
-                                style={{ width: 300 }}
-                                valueDefault={dataMain.month}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev => ({ ...prev, month: value.map((o: Dictionary) => o.val).join() }))}
                                 data={dataMonths}
-                                uset={true}
-                                prefixTranslation="month_"
+                                label={t(langKeys.month)}
                                 optionDesc="val"
                                 optionValue="val"
+                                prefixTranslation="month_"
+                                style={{ width: 300 }}
+                                uset={true}
+                                valueDefault={dataMain.month}
+                                variant="outlined"
+                                onChange={(value) =>
+                                    setdataMain((prev) => ({
+                                        ...prev,
+                                        month: value.map((o: Dictionary) => o.val).join(),
+                                    }))
+                                }
                             />
                             <FieldMultiSelect
-                                label={t(langKeys.country)}
                                 className={classes.fieldsfilter}
-                                valueDefault={dataMain.countrycode}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev => ({ ...prev, countrycode: value.map((o: Dictionary) => o.code).join() }))}
                                 data={dataPlan}
+                                label={t(langKeys.country)}
                                 optionDesc="description"
                                 optionValue="code"
+                                valueDefault={dataMain.countrycode}
+                                variant="outlined"
+                                onChange={(value) =>
+                                    setdataMain((prev) => ({
+                                        ...prev,
+                                        countrycode: value.map((o: Dictionary) => o.code).join(),
+                                    }))
+                                }
                             />
                             <Button
-                                disabled={mainResult.mainData.loading || disableSearch}
-                                variant="contained"
                                 color="primary"
-                                style={{ width: 120, backgroundColor: "#55BD84" }}
-                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                disabled={mainResult.mainData.loading || disableSearch}
                                 onClick={() => search()}
-                            >{t(langKeys.search)}
+                                startIcon={<Search style={{ color: "white" }} />}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                variant="contained"
+                            >
+                                {t(langKeys.search)}
                             </Button>
                         </div>
                     )}
+                    columns={columns}
                     data={mainResult.mainData.data}
-                    filterGeneral={false}
                     download={true}
-                    loading={mainResult.mainData.loading}
-                    register={true}
+                    filterGeneral={false}
                     handleRegister={handleRegister}
-                    pageSizeDefault={IDCONVERSATIONCOST === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
-                    initialPageIndex={IDCONVERSATIONCOST === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
-                    initialStateFilter={IDCONVERSATIONCOST === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
+                    loading={mainResult.mainData.loading}
+                    onClickRow={handleEdit}
+                    register={true}
+                    initialPageIndex={
+                        IDCONVERSATIONCOST === memoryTable.id ? (memoryTable.page === -1 ? 0 : memoryTable.page) : 0
+                    }
+                    initialStateFilter={
+                        IDCONVERSATIONCOST === memoryTable.id
+                            ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value }))
+                            : undefined
+                    }
+                    pageSizeDefault={
+                        IDCONVERSATIONCOST === memoryTable.id
+                            ? memoryTable.pageSize === -1
+                                ? 20
+                                : memoryTable.pageSize
+                            : 20
+                    }
                 />
             </Fragment>
-        )
-    }
-    else if (viewSelected === "view-2") {
+        );
+    } else if (viewSelected === "view-2") {
         return (
             <DetailConversationCost
                 data={rowSelected}
-                setViewSelected={setViewSelected}
-                fetchData={fetchData}
                 dataPlan={dataPlan}
+                currencyList={currencyList}
+                fetchData={fetchData}
+                setViewSelected={setViewSelected}
             />
-        )
-    } else
-        return null;
-}
+        );
+    } else return null;
+};
 
-const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData, dataPlan }) => {
+const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({
+    data: { row, edit },
+    dataPlan,
+    currencyList,
+    fetchData,
+    setViewSelected,
+}) => {
     const dispatch = useDispatch();
+
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const executeRes = useSelector(state => state.main.execute);
-    const [datetoshow, setdatetoshow] = useState(
-        row ? `${row.year}-${String(row.month).padStart(2, '0')}` : `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth() + 1).padStart(2, '0')}`
-    )
+    const executeResult = useSelector((state) => state.main.execute);
+
+    const [exchangeRate, setExchangeRate] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
+
+    const [datetoshow, setdatetoshow] = useState(
+        row
+            ? `${row.year}-${String(row.month).padStart(2, "0")}`
+            : `${new Date(new Date().setDate(1)).getFullYear()}-${String(
+                new Date(new Date().setDate(1)).getMonth() + 1
+            ).padStart(2, "0")}`
+    );
 
     const arrayBreadConversationCost = [
         { id: "view-1", name: t(langKeys.conversationcost) },
-        { id: "view-2", name: t(langKeys.conversationcostdetail) }
+        { id: "view-2", name: t(langKeys.conversationcostdetail) },
     ];
 
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+    const {
+        formState: { errors },
+        getValues,
+        handleSubmit,
+        register,
+        setValue,
+    } = useForm({
         defaultValues: {
-            id: row ? row.billingconversationid : 0,
-            year: row?.year || new Date().getFullYear(),
-            month: row?.month || new Date().getMonth() + 1,
-            countrycode: row?.countrycode || 'PE',
-            companystartfee: row?.companystartfee || 0.0,
-            clientstartfee: row?.clientstartfee || 0.0,
-            vcacomission: row?.vcacomission || 0.0,
-            freeconversations: row?.freeconversations || 0,
+            businessauthenticationfee: row?.businessauthenticationfee || 0,
+            businessmarketingfee: row?.businessmarketingfee || 0,
+            businessutilityfee: row?.businessutilityfee || 0,
+            countrycode: row?.countrycode || "",
             description: row?.description || "",
-            status: row ? row.status : 'ACTIVO',
-            type: row ? row.type : '',
+            freequantity: row?.freequantity || 0,
+            id: row ? row.billingconversationid : 0,
+            month: row?.month || new Date().getMonth() + 1,
             operation: row ? "UPDATE" : "INSERT",
-        }
+            plancurrency: row ? row.plancurrency : "",
+            status: row ? row.status : "ACTIVO",
+            type: row ? row.type : "",
+            usergeneralfee: row?.usergeneralfee || 0,
+            vcacomission: row?.vcacomission || 0,
+            year: row?.year || new Date().getFullYear(),
+        },
     });
 
     function handleDateChange(e: any) {
         if (e !== "") {
-            let datetochange = new Date(e + "-02")
-            let mes = datetochange?.getMonth() + 1
-            let year = datetochange?.getFullYear()
-            setdatetoshow(`${year}-${String(mes).padStart(2, '0')}`)
-            setValue('year', year)
-            setValue('month', mes)
+            let datetochange = new Date(e + "-02");
+            let mes = datetochange?.getMonth() + 1;
+            let year = datetochange?.getFullYear();
+
+            setdatetoshow(`${year}-${String(mes).padStart(2, "0")}`);
+            setValue("year", year);
+            setValue("month", mes);
         }
     }
 
+    useEffect(() => {
+        setExchangeRate(
+            (currencyList ?? []).find((item) => {
+                return item.code === (row?.plancurrency || "");
+            })?.exchangerate || 0
+        );
+    }, [row]);
+
     React.useEffect(() => {
-        register('id');
-        register('type');
-        register('status');
-        register('year');
-        register('month');
-        register('operation');
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('countrycode', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('companystartfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('clientstartfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('freeconversations', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('vcacomission');
+        register("countrycode", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register("description");
+        register("id");
+        register("month");
+        register("operation");
+        register("plancurrency", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register("status");
+        register("type");
+        register("year");
+
+        register("businessauthenticationfee", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
+
+        register("businessmarketingfee", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
+
+        register("businessutilityfee", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
+
+        register("freequantity", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
+
+        register("usergeneralfee", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
+
+        register("vcacomission", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
     }, [edit, register]);
 
     useEffect(() => {
         if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(
+                    showSnackbar({
+                        message: t(row ? langKeys.successful_edit : langKeys.successful_register),
+                        severity: "success",
+                        show: true,
+                    })
+                );
+                dispatch(showBackdrop(false));
+                setViewSelected("view-1");
                 fetchData && fetchData();
+            } else if (executeResult.error) {
+                dispatch(
+                    showSnackbar({
+                        severity: "error",
+                        show: true,
+                        message: t(executeResult.code ?? "error_unexpected_error", {
+                            module: t(langKeys.conversationcost).toLocaleLowerCase(),
+                        }),
+                    })
+                );
                 dispatch(showBackdrop(false));
-                setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.conversationcost).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
-                dispatch(showBackdrop(false));
             }
         }
-    }, [executeRes, waitSave])
+    }, [executeResult, waitSave]);
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(execute(billingConversationIns(data)));
             dispatch(showBackdrop(true));
-            setWaitSave(true)
-        }
+            setWaitSave(true);
+        };
 
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
+        dispatch(
+            manageConfirmation({
+                callback,
+                question: t(langKeys.confirmation_save),
+                visible: true,
+            })
+        );
     });
 
     return (
-        <div style={{ width: '100%' }}>
+        <div style={{ width: "100%" }}>
             <form onSubmit={onSubmit}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <div>
-                        <TemplateBreadcrumbs
-                            breadcrumbs={arrayBreadConversationCost}
-                            handleClick={setViewSelected}
-                        />
-                        <TitleDetail
-                            title={row ? `${row.description}` : t(langKeys.newconversationplan)}
-                        />
+                        <TemplateBreadcrumbs breadcrumbs={arrayBreadConversationCost} handleClick={setViewSelected} />
+                        {row && <TitleDetail title={t(langKeys.conversationcost)} />}
+                        {!row && <TitleDetail title={t(langKeys.newconversationplan)} />}
                     </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                         <Button
-                            variant="contained"
-                            type="button"
                             color="primary"
+                            disabled={executeResult.loading}
+                            onClick={() => setViewSelected("view-1")}
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("view-1")}
-                        >{t(langKeys.back)}</Button>
-                        {edit &&
+                            type="button"
+                            variant="contained"
+                        >
+                            {t(langKeys.back)}
+                        </Button>
+                        {edit && (
                             <Button
                                 className={classes.button}
-                                variant="contained"
                                 color="primary"
-                                type="submit"
+                                disabled={executeResult.loading}
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
-                            >{t(langKeys.save)}
+                                type="submit"
+                                variant="contained"
+                            >
+                                {t(langKeys.save)}
                             </Button>
-                        }
+                        )}
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         <TextField
-                            id="date"
                             className="col-12"
-                            type="month"
-                            variant="outlined"
+                            id="date"
                             onChange={(e) => handleDateChange(e.target.value)}
-                            value={datetoshow}
                             size="small"
+                            type="month"
+                            value={datetoshow}
+                            variant="outlined"
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldSelect
-                            label={t(langKeys.country)}
-                            className="col-12"
-                            valueDefault={getValues("countrycode")}
-                            variant="outlined"
-                            onChange={(value) => setValue("countrycode", value?.code)}
-                            error={errors?.countrycode?.message}
+                            className="col-6"
                             data={dataPlan}
+                            error={errors?.countrycode?.message}
+                            label={t(langKeys.country)}
+                            onChange={(value) => setValue("countrycode", value?.code)}
                             optionDesc="description"
                             optionValue="code"
                             orderbylabel={true}
+                            valueDefault={getValues("countrycode")}
+                        />
+                        <FieldEdit
+                            className="col-6"
+                            error={errors?.vcacomission?.message}
+                            inputProps={{ step: "any" }}
+                            label={t(langKeys.billingconversation_vcacomission)}
+                            onChange={(value) => setValue("vcacomission", value)}
+                            type="number"
+                            valueDefault={getValues("vcacomission")}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldSelect
+                            className="col-6"
+                            data={currencyList ?? []}
+                            error={errors?.plancurrency?.message}
+                            label={t(langKeys.billingconversation_plancurrency)}
+                            onChange={(value) => {
+                                setValue("plancurrency", value?.code);
+                                setExchangeRate(value?.exchangerate || 0);
+                            }}
+                            optionDesc="description"
+                            optionValue="code"
+                            orderbylabel={true}
+                            valueDefault={getValues("plancurrency")}
+                        />
+                        <FieldEdit
+                            className="col-6"
+                            error={errors?.businessutilityfee?.message}
+                            inputProps={{ step: "any" }}
+                            label={t(langKeys.billingconversation_businessutilityfee)}
+                            onChange={(value) => setValue("businessutilityfee", value)}
+                            type="number"
+                            valueDefault={getValues("businessutilityfee")}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.coststartedbycompany)}
-                            onChange={(value) => setValue('companystartfee', value)}
-                            valueDefault={getValues('companystartfee')}
-                            error={errors?.companystartfee?.message}
-                            type="number"
                             className="col-6"
+                            error={errors?.businessauthenticationfee?.message}
                             inputProps={{ step: "any" }}
+                            label={t(langKeys.billingconversation_businessauthenticationfee)}
+                            onChange={(value) => setValue("businessauthenticationfee", value)}
+                            type="number"
+                            valueDefault={getValues("businessauthenticationfee")}
                         />
                         <FieldEdit
-                            label={t(langKeys.customerinitiatedcost)}
-                            onChange={(value) => setValue('clientstartfee', value)}
-                            valueDefault={getValues('clientstartfee')}
-                            error={errors?.clientstartfee?.message}
-                            type="number"
                             className="col-6"
+                            error={errors?.businessmarketingfee?.message}
                             inputProps={{ step: "any" }}
+                            label={t(langKeys.billingconversation_businessmarketingfee)}
+                            onChange={(value) => setValue("businessmarketingfee", value)}
+                            type="number"
+                            valueDefault={getValues("businessmarketingfee")}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.description)}
-                            onChange={(value) => setValue('description', value)}
-                            valueDefault={getValues('description')}
+                            className="col-6"
+                            error={errors?.usergeneralfee?.message}
+                            inputProps={{ step: "any" }}
+                            label={t(langKeys.billingconversation_usergeneralfee)}
+                            onChange={(value) => setValue("usergeneralfee", value)}
+                            type="number"
+                            valueDefault={getValues("usergeneralfee")}
+                        />
+                        <FieldEdit
+                            className="col-6"
+                            error={errors?.freequantity?.message}
+                            label={t(langKeys.billingconversation_freequantity)}
+                            onChange={(value) => setValue("freequantity", value)}
+                            type="number"
+                            valueDefault={getValues("freequantity")}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            className="col-6"
                             error={errors?.description?.message}
+                            inputProps={{ step: "any" }}
+                            label={t(langKeys.description)}
+                            onChange={(value) => setValue("description", value)}
+                            valueDefault={getValues("description")}
                         />
-                    </div>
-                    <div className="row-zyx">
                         <FieldView
-                            label=''
-                            value={t(langKeys.costcommentary)}
-                            className={classes.commentary}
+                            className="col-6"
+                            label={t(langKeys.billingconfiguration_exchangerate)}
+                            value={formatNumber(exchangeRate || 0)}
                         />
                     </div>
                 </div>
             </form>
         </div>
     );
-}
+};
 
-const IDARTIFICIALINTELLIGENCE = 'IDARTIFICIALINTELLIGENCE';
-const ArtificialIntelligence: React.FC<{ providerData: any, planData: any }> = ({ providerData, planData }) => {
+const IDARTIFICIALINTELLIGENCE = "IDARTIFICIALINTELLIGENCE";
+const ArtificialIntelligence: React.FC<{ providerData: any; planData: any }> = ({ providerData, planData }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
-    const executeResult = useSelector(state => state.main.execute);
-    const mainResult = useSelector(state => state.main);
-    const memoryTable = useSelector(state => state.main.memoryTable);
+    const executeResult = useSelector((state) => state.main.execute);
+    const mainResult = useSelector((state) => state.main);
+    const memoryTable = useSelector((state) => state.main.memoryTable);
 
     const [dataMain, setdataMain] = useState({
+        month: (new Date().getMonth() + 1).toString().padStart(2, "0"),
+        plan: "",
         provider: "",
         type: "",
-        plan: "",
         year: String(new Date().getFullYear()),
-        month: (new Date().getMonth() + 1).toString().padStart(2, "0")
     });
 
-    const [providerCombo, setProviderCombo] = useState([]);
-    const [typeCombo, setTypeCombo] = useState([]);
-    const [planCombo, setPlanCombo] = useState([]);
     const [disableSearch, setdisableSearch] = useState(false);
+    const [planCombo, setPlanCombo] = useState([]);
+    const [providerCombo, setProviderCombo] = useState([]);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
+    const [typeCombo, setTypeCombo] = useState([]);
     const [viewSelected, setViewSelected] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
 
     function search() {
-        dispatch(showBackdrop(true))
-        dispatch(getCollection(billingArtificialIntelligenceSel(dataMain)))
+        dispatch(showBackdrop(true));
+        dispatch(getCollection(billingArtificialIntelligenceSel(dataMain)));
     }
 
     useEffect(() => {
         if (providerData) {
-            setProviderCombo(providerData.filter((elem: { provider: any; }, index: any, self: any[]) => self.findIndex((t) => { return (t.provider === elem.provider) }) === index));
-            setTypeCombo(providerData.filter((elem: { type: any; }, index: any, self: any[]) => self.findIndex((t) => { return (t.type === elem.type) }) === index));
+            setProviderCombo(
+                providerData.filter(
+                    (elem: { provider: any }, index: any, self: any[]) =>
+                        self.findIndex((t) => {
+                            return t.provider === elem.provider;
+                        }) === index
+                )
+            );
+            setTypeCombo(
+                providerData.filter(
+                    (elem: { type: any }, index: any, self: any[]) =>
+                        self.findIndex((t) => {
+                            return t.type === elem.type;
+                        }) === index
+                )
+            );
         }
         if (planData) {
-            setPlanCombo(planData.filter((elem: { description: any; }, index: any, self: any[]) => self.findIndex((t) => { return (t.description === elem.description) }) === index));
+            setPlanCombo(
+                planData.filter(
+                    (elem: { description: any }, index: any, self: any[]) =>
+                        self.findIndex((t) => {
+                            return t.description === elem.description;
+                        }) === index
+                )
+            );
         }
-    }, [providerData, planData])
+    }, [providerData, planData]);
 
     useEffect(() => {
-        search()
-        dispatch(setMemoryTable({
-            id: IDARTIFICIALINTELLIGENCE
-        }))
+        search();
+
+        dispatch(
+            setMemoryTable({
+                id: IDARTIFICIALINTELLIGENCE,
+            })
+        );
+
         return () => {
             dispatch(cleanMemoryTable());
-        }
-    }, [])
+        };
+    }, []);
 
     useEffect(() => {
         if (!mainResult.mainData.loading) {
             dispatch(showBackdrop(false));
         }
-    }, [mainResult])
+    }, [mainResult]);
 
     const columns = React.useMemo(
         () => [
             {
-                accessor: 'billingartificialintelligenceid',
+                accessor: "billingartificialintelligenceid",
                 isComponent: true,
                 minWidth: 60,
-                width: '1%',
+                width: "1%",
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
-                        <TemplateIcons
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                        />
-                    )
-                }
+                        <TemplateIcons deleteFunction={() => handleDelete(row)} editFunction={() => handleEdit(row)} />
+                    );
+                },
             },
             {
+                accessor: "year",
                 Header: t(langKeys.year),
-                accessor: 'year',
             },
             {
+                accessor: "month",
                 Header: t(langKeys.month),
-                accessor: 'month',
             },
             {
+                accessor: "provider",
                 Header: t(langKeys.billingsetup_provider),
-                accessor: 'provider',
             },
             {
+                accessor: "type",
                 Header: t(langKeys.billingsetup_service),
-                accessor: 'type',
             },
             {
+                accessor: "measureunit",
                 Header: t(langKeys.billingsetup_measureunit),
-                accessor: 'measureunit',
             },
             {
+                accessor: "plan",
                 Header: t(langKeys.billingsetup_plan),
-                accessor: 'plan',
             },
             {
+                accessor: "freeinteractions",
                 Header: t(langKeys.billingsetup_minimuminteractions),
-                accessor: 'freeinteractions',
-                type: 'number',
-                sortType: 'number',
+                sortType: "number",
+                type: "number",
                 Cell: (props: any) => {
                     const { freeinteractions } = props.cell.row.original;
                     return formatNumberNoDecimals(freeinteractions || 0);
-                }
+                },
             },
             {
+                accessor: "basicfee",
                 Header: t(langKeys.billingsetup_baseprice),
-                accessor: 'basicfee',
-                type: 'number',
-                sortType: 'number',
+                sortType: "number",
+                type: "number",
                 Cell: (props: any) => {
                     const { basicfee } = props.cell.row.original;
                     return formatNumber(basicfee || 0);
-                }
+                },
             },
             {
+                accessor: "additionalfee",
                 Header: t(langKeys.billingsetup_additionalprice),
-                accessor: 'additionalfee',
-                type: 'number',
-                sortType: 'number',
+                sortType: "number",
+                type: "number",
                 Cell: (props: any) => {
                     const { additionalfee } = props.cell.row.original;
                     return formatNumber(additionalfee || 0);
-                }
+                },
             },
         ],
         []
@@ -2144,176 +2816,237 @@ const ArtificialIntelligence: React.FC<{ providerData: any, planData: any }> = (
             if (!executeResult.loading && !executeResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }));
                 dispatch(showBackdrop(false));
-                setWaitSave(false);
-                fetchData();
+                fetchData && fetchData();
             } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.supportplan).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(
+                    showSnackbar({
+                        severity: "error",
+                        show: true,
+                        message: t(executeResult.code ?? "error_unexpected_error", {
+                            module: t(langKeys.supportplan).toLocaleLowerCase(),
+                        }),
+                    })
+                );
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
         }
-    }, [executeResult, waitSave])
+    }, [executeResult, waitSave]);
 
     useEffect(() => {
-        setdisableSearch(dataMain.year === "")
-    }, [dataMain])
+        setdisableSearch(dataMain.year === "");
+    }, [dataMain]);
 
     const handleRegister = () => {
         setViewSelected("view-2");
         setRowSelected({ row: null, edit: true });
-    }
+    };
 
     const handleEdit = (row: Dictionary) => {
         setViewSelected("view-2");
         setRowSelected({ row, edit: true });
-    }
+    };
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(billingArtificialIntelligenceIns({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.billingartificialintelligenceid })));
+            dispatch(
+                execute(
+                    billingArtificialIntelligenceIns({
+                        ...row,
+                        id: row.billingartificialintelligenceid,
+                        operation: "DELETE",
+                        status: "ELIMINADO",
+                    })
+                )
+            );
             dispatch(showBackdrop(true));
             setWaitSave(true);
-        }
+        };
 
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_delete),
-            callback
-        }))
-    }
+        dispatch(
+            manageConfirmation({
+                callback,
+                question: t(langKeys.confirmation_delete),
+                visible: true,
+            })
+        );
+    };
 
     if (viewSelected === "view-1") {
         return (
             <Fragment>
                 <TableZyx
-                    onClickRow={handleEdit}
-                    columns={columns}
                     ButtonsElement={() => (
-                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                             <FieldSelect
+                                data={dataYears}
                                 label={t(langKeys.year)}
+                                onChange={(value) => setdataMain((prev) => ({ ...prev, year: value?.value || 0 }))}
+                                optionDesc="value"
+                                optionValue="value"
                                 style={{ width: 150 }}
                                 valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.value || 0 }))}
-                                data={dataYears}
-                                optionDesc="value"
-                                optionValue="value"
                             />
                             <FieldMultiSelect
-                                label={t(langKeys.month)}
-                                style={{ width: 300 }}
-                                valueDefault={dataMain.month}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev => ({ ...prev, month: value.map((o: Dictionary) => o.val).join() }))}
                                 data={dataMonths}
-                                uset={true}
-                                prefixTranslation="month_"
+                                label={t(langKeys.month)}
                                 optionDesc="val"
                                 optionValue="val"
+                                prefixTranslation="month_"
+                                style={{ width: 300 }}
+                                uset={true}
+                                valueDefault={dataMain.month}
+                                variant="outlined"
+                                onChange={(value) =>
+                                    setdataMain((prev) => ({
+                                        ...prev,
+                                        month: value.map((o: Dictionary) => o.val).join(),
+                                    }))
+                                }
                             />
                             <FieldSelect
+                                data={providerCombo}
                                 label={t(langKeys.billingsetup_provider)}
+                                optionDesc="provider"
+                                optionValue="provider"
                                 style={{ width: 200 }}
                                 valueDefault={dataMain.provider}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev => ({ ...prev, provider: value?.provider || '' }))}
-                                data={providerCombo}
-                                optionDesc="provider"
-                                optionValue="provider"
+                                onChange={(value) =>
+                                    setdataMain((prev) => ({ ...prev, provider: value?.provider || "" }))
+                                }
                             />
                             <FieldSelect
+                                data={typeCombo}
                                 label={t(langKeys.billingsetup_service)}
+                                onChange={(value) => setdataMain((prev) => ({ ...prev, type: value?.type || "" }))}
+                                optionDesc="type"
+                                optionValue="type"
                                 style={{ width: 200 }}
                                 valueDefault={dataMain.type}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev => ({ ...prev, type: value?.type || '' }))}
-                                data={typeCombo}
-                                optionDesc="type"
-                                optionValue="type"
                             />
                             <FieldSelect
+                                data={planCombo}
                                 label={t(langKeys.billingsetup_plan)}
+                                optionDesc="description"
+                                optionValue="description"
                                 style={{ width: 200 }}
                                 valueDefault={dataMain.plan}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev => ({ ...prev, plan: value?.description || '' }))}
-                                data={planCombo}
-                                optionDesc="description"
-                                optionValue="description"
+                                onChange={(value) =>
+                                    setdataMain((prev) => ({ ...prev, plan: value?.description || "" }))
+                                }
                             />
                             <Button
-                                disabled={mainResult.mainData.loading || disableSearch}
-                                variant="contained"
                                 color="primary"
-                                startIcon={<SearchIcon style={{ color: 'white' }} />}
-                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                disabled={mainResult.mainData.loading || disableSearch}
                                 onClick={() => search()}
-                            >{t(langKeys.search)}
+                                startIcon={<Search style={{ color: "white" }} />}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                variant="contained"
+                            >
+                                {t(langKeys.search)}
                             </Button>
                         </div>
                     )}
+                    columns={columns}
                     data={mainResult.mainData.data}
-                    filterGeneral={false}
                     download={true}
-                    loading={mainResult.mainData.loading}
-                    register={true}
+                    filterGeneral={false}
                     handleRegister={handleRegister}
-                    pageSizeDefault={IDARTIFICIALINTELLIGENCE === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
-                    initialPageIndex={IDARTIFICIALINTELLIGENCE === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
-                    initialStateFilter={IDARTIFICIALINTELLIGENCE === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
+                    loading={mainResult.mainData.loading}
+                    onClickRow={handleEdit}
+                    register={true}
+                    initialPageIndex={
+                        IDARTIFICIALINTELLIGENCE === memoryTable.id
+                            ? memoryTable.page === -1
+                                ? 0
+                                : memoryTable.page
+                            : 0
+                    }
+                    initialStateFilter={
+                        IDARTIFICIALINTELLIGENCE === memoryTable.id
+                            ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value }))
+                            : undefined
+                    }
+                    pageSizeDefault={
+                        IDARTIFICIALINTELLIGENCE === memoryTable.id
+                            ? memoryTable.pageSize === -1
+                                ? 20
+                                : memoryTable.pageSize
+                            : 20
+                    }
                 />
             </Fragment>
-        )
-    }
-    else if (viewSelected === "view-2") {
+        );
+    } else if (viewSelected === "view-2") {
         return (
             <DetailArtificialIntelligence
                 data={rowSelected}
-                setViewSelected={setViewSelected}
                 fetchData={fetchData}
-                providerData={providerData}
                 planData={planData}
+                providerData={providerData}
+                setViewSelected={setViewSelected}
             />
-        )
-    } else
-        return null;
-}
+        );
+    } else return null;
+};
 
-const DetailArtificialIntelligence: React.FC<DetailArtificialIntelligenceProps> = ({ data: { row, edit }, setViewSelected, fetchData, providerData, planData }) => {
+const DetailArtificialIntelligence: React.FC<DetailArtificialIntelligenceProps> = ({
+    data: { row, edit },
+    fetchData,
+    planData,
+    providerData,
+    setViewSelected,
+}) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const executeRes = useSelector(state => state.main.execute);
+    const executeResult = useSelector((state) => state.main.execute);
 
-    const [datetoshow, setdatetoshow] = useState(row ? `${row.year}-${String(row.month).padStart(2, '0')}` : `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth() + 1).padStart(2, '0')}`)
     const [waitSave, setWaitSave] = useState(false);
+
+    const [datetoshow, setdatetoshow] = useState(
+        row
+            ? `${row.year}-${String(row.month).padStart(2, "0")}`
+            : `${new Date(new Date().setDate(1)).getFullYear()}-${String(
+                new Date(new Date().setDate(1)).getMonth() + 1
+            ).padStart(2, "0")}`
+    );
 
     const arrayBread = [
         { id: "view-1", name: t(langKeys.billingsetup_artificialintelligence) },
-        { id: "view-2", name: t(langKeys.billingsetup_artificialintelligencedetail) }
+        { id: "view-2", name: t(langKeys.billingsetup_artificialintelligencedetail) },
     ];
 
-    const { register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm({
+    const {
+        formState: { errors },
+        getValues,
+        handleSubmit,
+        register,
+        setValue,
+        trigger,
+    } = useForm({
         defaultValues: {
-            id: row ? row.billingartificialintelligenceid : 0,
-            year: row?.year || new Date().getFullYear(),
-            month: row?.month || new Date().getMonth() + 1,
-            provider: row?.provider || "",
-            measureunit: row?.measureunit || "",
+            additionalfee: row?.additionalfee || 0,
+            basicfee: row?.basicfee || 0,
             charlimit: row?.charlimit || 0,
-            plan: row?.plan || "",
+            description: row ? row.description : "",
             freeinteractions: row?.freeinteractions || 0,
-            basicfee: row?.basicfee || 0.00,
-            additionalfee: row?.additionalfee || 0.00,
-            status: row ? row.status : 'ACTIVO',
-            type: row ? row.type : '',
-            description: row ? row.description : '',
+            id: row ? row.billingartificialintelligenceid : 0,
+            measureunit: row?.measureunit || "",
+            month: row?.month || new Date().getMonth() + 1,
             operation: row ? "UPDATE" : "INSERT",
-        }
+            plan: row?.plan || "",
+            provider: row?.provider || "",
+            status: row ? row.status : "ACTIVO",
+            type: row ? row.type : "",
+            year: row?.year || new Date().getFullYear(),
+        },
     });
 
     function handleDateChange(e: any) {
@@ -2321,256 +3054,293 @@ const DetailArtificialIntelligence: React.FC<DetailArtificialIntelligenceProps> 
             let datetochange = new Date(e + "-02");
             let mes = datetochange?.getMonth() + 1;
             let year = datetochange?.getFullYear();
-            setdatetoshow(`${year}-${String(mes).padStart(2, '0')}`);
-            setValue('year', year);
-            setValue('month', mes);
+
+            setdatetoshow(`${year}-${String(mes).padStart(2, "0")}`);
+            setValue("year", year);
+            setValue("month", mes);
         }
     }
 
     React.useEffect(() => {
-        register('id');
-        register('year');
-        register('month');
-        register('provider', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('measureunit', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('charlimit');
-        register('plan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('freeinteractions', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('basicfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('additionalfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('status');
-        register('type');
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('operation');
+        register("charlimit");
+        register("description", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register("id");
+        register("measureunit", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register("month");
+        register("operation");
+        register("plan", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register("provider", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register("status");
+        register("type");
+        register("year");
+
+        register("additionalfee", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
+
+        register("basicfee", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
+
+        register("freeinteractions", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
     }, [edit, register]);
 
     useEffect(() => {
         if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(
+                    showSnackbar({
+                        message: t(row ? langKeys.successful_edit : langKeys.successful_register),
+                        severity: "success",
+                        show: true,
+                    })
+                );
+                dispatch(showBackdrop(false));
+                setViewSelected("view-1");
                 fetchData && fetchData();
+            } else if (executeResult.error) {
+                dispatch(
+                    showSnackbar({
+                        severity: "error",
+                        show: true,
+                        message: t(executeResult.code ?? "error_unexpected_error", {
+                            module: t(langKeys.billingsetup_artificialintelligence).toLocaleLowerCase(),
+                        }),
+                    })
+                );
                 dispatch(showBackdrop(false));
-                setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.billingsetup_artificialintelligence).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
-                dispatch(showBackdrop(false));
             }
         }
-    }, [executeRes, waitSave])
+    }, [executeResult, waitSave]);
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(execute(billingArtificialIntelligenceIns(data)));
             dispatch(showBackdrop(true));
-            setWaitSave(true)
-        }
+            setWaitSave(true);
+        };
 
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
+        dispatch(
+            manageConfirmation({
+                callback,
+                question: t(langKeys.confirmation_save),
+                visible: true,
+            })
+        );
     });
 
     function handleServiceChange(data: any) {
         if (data) {
-            setValue("provider", data.provider || '');
-            setValue("type", data.type || '');
             setValue("charlimit", data.charlimit || 0);
-            setValue("measureunit", data.measureunit || '');
-        }
-        else {
-            setValue("provider", '');
-            setValue("type", '');
+            setValue("measureunit", data.measureunit || "");
+            setValue("provider", data.provider || "");
+            setValue("type", data.type || "");
+        } else {
             setValue("charlimit", 0);
-            setValue("measureunit", '');
+            setValue("measureunit", "");
+            setValue("provider", "");
+            setValue("type", "");
         }
 
+        trigger("measureunit");
         trigger("provider");
         trigger("type");
-        trigger("measureunit");
     }
 
     function handlePlanChange(data: any) {
         if (data) {
-            setValue("plan", data.description || '');
+            setValue("additionalfee", data.additionalfee || 0);
+            setValue("basicfee", data.basicfee || 0);
             setValue("freeinteractions", data.freeinteractions || 0);
-            setValue("basicfee", data.basicfee || 0.00);
-            setValue("additionalfee", data.additionalfee || 0.00);
-        }
-        else {
-            setValue("plan", '');
+            setValue("plan", data.description || "");
+        } else {
+            setValue("additionalfee", 0);
+            setValue("basicfee", 0);
             setValue("freeinteractions", 0);
-            setValue("basicfee", 0.00);
-            setValue("additionalfee", 0.00);
+            setValue("plan", "");
         }
 
-        trigger("plan");
-        trigger("freeinteractions");
-        trigger("basicfee");
         trigger("additionalfee");
+        trigger("basicfee");
+        trigger("freeinteractions");
+        trigger("plan");
     }
 
     return (
-        <div style={{ width: '100%' }}>
+        <div style={{ width: "100%" }}>
             <form onSubmit={onSubmit}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <div>
-                        <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
-                            handleClick={setViewSelected}
-                        />
-                        <TitleDetail
-                            title={row ? `${row.provider} - ${row.type}` : t(langKeys.billingsetup_artificialintelligencenew)}
-                        />
+                        <TemplateBreadcrumbs breadcrumbs={arrayBread} handleClick={setViewSelected} />
+                        {row && <TitleDetail title={t(langKeys.billingsetup_artificialintelligence)} />}
+                        {!row && <TitleDetail title={t(langKeys.billingsetup_artificialintelligencenew)} />}
                     </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                         <Button
-                            variant="contained"
-                            type="button"
                             color="primary"
+                            disabled={executeResult.loading}
+                            onClick={() => setViewSelected("view-1")}
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("view-1")}
-                        >{t(langKeys.back)}</Button>
-                        {edit &&
+                            type="button"
+                            variant="contained"
+                        >
+                            {t(langKeys.back)}
+                        </Button>
+                        {edit && (
                             <Button
                                 className={classes.button}
-                                variant="contained"
                                 color="primary"
-                                type="submit"
+                                disabled={executeResult.loading}
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
-                            >{t(langKeys.save)}
+                                type="submit"
+                                variant="contained"
+                            >
+                                {t(langKeys.save)}
                             </Button>
-                        }
+                        )}
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.description)}
-                            onChange={(value) => setValue('description', value)}
-                            valueDefault={getValues('description')}
-                            error={errors?.description?.message}
-                            className="col-6"
-                        />
                         <TextField
-                            id="date"
                             className="col-6"
-                            type="month"
-                            variant="outlined"
+                            id="date"
                             onChange={(e) => handleDateChange(e.target.value)}
-                            value={datetoshow}
                             size="small"
+                            type="month"
+                            value={datetoshow}
+                            variant="outlined"
+                        />
+                        <FieldEdit
+                            className="col-6"
+                            error={errors?.description?.message}
+                            label={t(langKeys.description)}
+                            onChange={(value) => setValue("description", value)}
+                            valueDefault={getValues("description")}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldSelect
-                            label={t(langKeys.billingsetup_ai)}
                             className="col-6"
-                            valueDefault={`${getValues('type')} - ${getValues('provider')}`}
-                            onChange={(value) => { handleServiceChange(value) }}
                             error={errors?.type?.message}
-                            data={providerData?.filter((v: { type: any; provider: any; }, i: any, a: any[]) => a.findIndex((v2: { type: any; provider: any; }) => (v.type === v2.type && v.provider === v2.provider)) === i)}
+                            label={t(langKeys.billingsetup_ai)}
                             optionDesc="typeprovider"
                             optionValue="typeprovider"
                             orderbylabel={true}
+                            valueDefault={`${getValues("type")} - ${getValues("provider")}`}
+                            data={providerData?.filter(
+                                (v: { type: any; provider: any }, i: any, a: any[]) =>
+                                    a.findIndex(
+                                        (v2: { type: any; provider: any }) =>
+                                            v.type === v2.type && v.provider === v2.provider
+                                    ) === i
+                            )}
+                            onChange={(value) => {
+                                handleServiceChange(value);
+                            }}
                         />
                         <FieldEdit
-                            label={t(langKeys.billingsetup_provider)}
                             className="col-6"
-                            valueDefault={getValues('provider')}
+                            disabled={true}
                             error={errors?.provider?.message}
-                            disabled={true}
+                            label={t(langKeys.billingsetup_provider)}
+                            valueDefault={getValues("provider")}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
+                            className="col-6"
+                            disabled={true}
+                            error={errors?.type?.message}
                             label={t(langKeys.billingsetup_service)}
-                            className="col-6"
-                            valueDefault={getValues('type')}
-                            error={errors?.type?.message}
-                            disabled={true}
+                            valueDefault={getValues("type")}
                         />
                         <FieldEdit
-                            label={t(langKeys.type)}
                             className="col-6"
-                            valueDefault={getValues('type')}
-                            error={errors?.type?.message}
                             disabled={true}
+                            error={errors?.type?.message}
+                            label={t(langKeys.type)}
+                            valueDefault={getValues("type")}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.billingsetup_measureunit)}
                             className="col-6"
-                            valueDefault={getValues('measureunit')}
-                            error={errors?.measureunit?.message}
                             disabled={true}
+                            error={errors?.measureunit?.message}
+                            label={t(langKeys.billingsetup_measureunit)}
+                            valueDefault={getValues("measureunit")}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldSelect
-                            label={t(langKeys.billingsetup_plan)}
                             className="col-6"
-                            valueDefault={getValues('plan')}
-                            onChange={(value) => { handlePlanChange(value) }}
-                            error={errors?.plan?.message}
                             data={planData}
+                            error={errors?.plan?.message}
+                            label={t(langKeys.billingsetup_plan)}
                             optionDesc="description"
                             optionValue="description"
+                            valueDefault={getValues("plan")}
+                            onChange={(value) => {
+                                handlePlanChange(value);
+                            }}
                         />
                         <FieldEdit
-                            label={t(langKeys.billingsetup_minimuminteractions)}
                             className="col-6"
-                            valueDefault={getValues('freeinteractions')}
-                            onChange={(value) => setValue('freeinteractions', value)}
                             error={errors?.freeinteractions?.message}
+                            label={t(langKeys.billingsetup_minimuminteractions)}
+                            onChange={(value) => setValue("freeinteractions", value)}
                             type="number"
+                            valueDefault={getValues("freeinteractions")}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.billingsetup_baseprice)}
                             className="col-6"
-                            valueDefault={getValues('basicfee')}
-                            onChange={(value) => setValue('basicfee', value)}
                             error={errors?.basicfee?.message}
+                            label={t(langKeys.billingsetup_baseprice)}
+                            onChange={(value) => setValue("basicfee", value)}
                             type="number"
+                            valueDefault={getValues("basicfee")}
                         />
                         <FieldEdit
-                            label={t(langKeys.billingsetup_additionalprice)}
                             className="col-6"
-                            valueDefault={getValues('additionalfee')}
-                            onChange={(value) => setValue('additionalfee', value)}
                             error={errors?.additionalfee?.message}
+                            label={t(langKeys.billingsetup_additionalprice)}
+                            onChange={(value) => setValue("additionalfee", value)}
                             type="number"
+                            valueDefault={getValues("additionalfee")}
                         />
                     </div>
                 </div>
             </form>
         </div>
     );
-}
+};
 
-const IDSUPPORTPLAN = 'IDSUPPORTPLAN';
-const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
+const IDSUPPORTPLAN = "IDSUPPORTPLAN";
+const SupportPlan: React.FC<{ dataPlan: any; currencyList: any }> = ({ dataPlan, currencyList }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const executeResult = useSelector(state => state.main.execute);
-    const mainResult = useSelector(state => state.main);
-    const memoryTable = useSelector(state => state.main.memoryTable);
+    const executeResult = useSelector((state) => state.main.execute);
+    const mainResult = useSelector((state) => state.main);
+    const memoryTable = useSelector((state) => state.main.memoryTable);
 
     const [dataMain, setdataMain] = useState({
+        month: (new Date().getMonth() + 1).toString().padStart(2, "0"),
         plan: "",
         year: String(new Date().getFullYear()),
-        month: (new Date().getMonth() + 1).toString().padStart(2, "0")
     });
 
     const [disableSearch, setdisableSearch] = useState(false);
@@ -2580,74 +3350,77 @@ const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const [waitSave, setWaitSave] = useState(false);
 
     function search() {
-        dispatch(showBackdrop(true))
-        dispatch(getCollection(getBillingSupportSel(dataMain)))
+        dispatch(showBackdrop(true));
+        dispatch(getCollection(getBillingSupportSel(dataMain)));
     }
 
     useEffect(() => {
-        search()
-        dispatch(setMemoryTable({
-            id: IDSUPPORTPLAN
-        }))
+        search();
+
+        dispatch(
+            setMemoryTable({
+                id: IDSUPPORTPLAN,
+            })
+        );
+
         return () => {
             dispatch(cleanMemoryTable());
-        }
-    }, [])
+        };
+    }, []);
 
     useEffect(() => {
         if (!mainResult.mainData.loading) {
-            dispatch(showBackdrop(false))
+            dispatch(showBackdrop(false));
         }
-    }, [mainResult])
+    }, [mainResult]);
 
     const columns = React.useMemo(
         () => [
             {
-                accessor: 'billingsupportid',
+                accessor: "billingsupportid",
                 isComponent: true,
                 minWidth: 60,
-                width: '1%',
+                width: "1%",
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
-                        <TemplateIcons
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                        //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
-                        //extraOption={t(langKeys.duplicate)}
-                        />
-                    )
-                }
+                        <TemplateIcons deleteFunction={() => handleDelete(row)} editFunction={() => handleEdit(row)} />
+                    );
+                },
             },
             {
+                accessor: "year",
                 Header: t(langKeys.year),
-                accessor: 'year',
             },
             {
+                accessor: "month",
                 Header: t(langKeys.month),
-                accessor: 'month',
             },
             {
+                accessor: "plan",
                 Header: t(langKeys.supportplan),
-                accessor: 'plan',
             },
             {
+                accessor: "plancurrency",
+                Header: t(langKeys.billingsupport_plancurrency),
+            },
+            {
+                accessor: "basicfee",
                 Header: t(langKeys.supportprice),
-                accessor: 'basicfee',
-                type: 'number',
-                sortType: 'number',
+                sortType: "number",
+                type: "number",
                 Cell: (props: any) => {
                     const { basicfee } = props.cell.row.original;
                     return formatNumber(basicfee || 0);
-                }
+                },
             },
             {
+                accessor: "starttime",
                 Header: t(langKeys.starttime),
-                accessor: 'starttime',
             },
             {
+                accessor: "finishtime",
                 Header: t(langKeys.finishtime),
-                accessor: 'finishtime',
             },
         ],
         []
@@ -2659,340 +3432,442 @@ const SupportPlan: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
                 if (duplicateop) {
-                    setduplicateop(false)
-                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_duplicate) }))
+                    setduplicateop(false);
+                    dispatch(
+                        showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_duplicate) })
+                    );
                 } else {
-
-                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }));
                 }
-                fetchData();
                 dispatch(showBackdrop(false));
-                setWaitSave(false);
+                fetchData && fetchData();
             } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.supportplan).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(
+                    showSnackbar({
+                        severity: "error",
+                        show: true,
+                        message: t(executeResult.code ?? "error_unexpected_error", {
+                            module: t(langKeys.supportplan).toLocaleLowerCase(),
+                        }),
+                    })
+                );
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
         }
-    }, [executeResult, waitSave])
+    }, [executeResult, waitSave]);
 
     useEffect(() => {
-        setdisableSearch(dataMain.year === "")
-    }, [dataMain])
+        setdisableSearch(dataMain.year === "");
+    }, [dataMain]);
 
     const handleRegister = () => {
         setViewSelected("view-2");
         setRowSelected({ row: null, edit: true });
-    }
+    };
 
     const handleEdit = (row: Dictionary) => {
         setViewSelected("view-2");
         setRowSelected({ row, edit: true });
-    }
+    };
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(billingSupportIns({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.billingsupportid })));
+            dispatch(
+                execute(
+                    billingSupportIns({ ...row, operation: "DELETE", status: "ELIMINADO", id: row.billingsupportid })
+                )
+            );
             dispatch(showBackdrop(true));
             setWaitSave(true);
-        }
+        };
 
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_delete),
-            callback
-        }))
-    }
+        dispatch(
+            manageConfirmation({
+                callback,
+                question: t(langKeys.confirmation_delete),
+                visible: true,
+            })
+        );
+    };
 
     if (viewSelected === "view-1") {
         return (
             <Fragment>
                 <TableZyx
-                    onClickRow={handleEdit}
-                    columns={columns}
                     ButtonsElement={() => (
-                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                             <FieldSelect
+                                data={dataYears}
                                 label={t(langKeys.year)}
+                                onChange={(value) => setdataMain((prev) => ({ ...prev, year: value?.value || 0 }))}
+                                optionDesc="value"
+                                optionValue="value"
                                 style={{ width: 150 }}
                                 valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.value || 0 }))}
-                                data={dataYears}
-                                optionDesc="value"
-                                optionValue="value"
                             />
                             <FieldMultiSelect
-                                label={t(langKeys.month)}
-                                style={{ width: 300 }}
-                                valueDefault={dataMain.month}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev => ({ ...prev, month: value.map((o: Dictionary) => o.val).join() }))}
                                 data={dataMonths}
-                                uset={true}
-                                prefixTranslation="month_"
+                                label={t(langKeys.month)}
                                 optionDesc="val"
                                 optionValue="val"
+                                prefixTranslation="month_"
+                                style={{ width: 300 }}
+                                uset={true}
+                                valueDefault={dataMain.month}
+                                variant="outlined"
+                                onChange={(value) =>
+                                    setdataMain((prev) => ({
+                                        ...prev,
+                                        month: value.map((o: Dictionary) => o.val).join(),
+                                    }))
+                                }
                             />
                             <FieldSelect
-                                label={t(langKeys.supportplan)}
                                 className={classes.fieldsfilter}
-                                valueDefault={dataMain.plan}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev => ({ ...prev, plan: value?.description || "" }))}
                                 data={dataPlan}
+                                label={t(langKeys.supportplan)}
                                 optionDesc="description"
                                 optionValue="description"
                                 orderbylabel={true}
+                                valueDefault={dataMain.plan}
+                                variant="outlined"
+                                onChange={(value) =>
+                                    setdataMain((prev) => ({ ...prev, plan: value?.description || "" }))
+                                }
                             />
 
                             <Button
-                                disabled={mainResult.mainData.loading || disableSearch}
-                                variant="contained"
                                 color="primary"
-                                startIcon={<SearchIcon style={{ color: 'white' }} />}
-                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                disabled={mainResult.mainData.loading || disableSearch}
                                 onClick={() => search()}
-                            >{t(langKeys.search)}
+                                startIcon={<Search style={{ color: "white" }} />}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                variant="contained"
+                            >
+                                {t(langKeys.search)}
                             </Button>
                         </div>
                     )}
+                    columns={columns}
                     data={mainResult.mainData.data}
-                    filterGeneral={false}
                     download={true}
-                    loading={mainResult.mainData.loading}
-                    register={true}
+                    filterGeneral={false}
                     handleRegister={handleRegister}
-                    pageSizeDefault={IDSUPPORTPLAN === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
-                    initialPageIndex={IDSUPPORTPLAN === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
-                    initialStateFilter={IDSUPPORTPLAN === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
+                    loading={mainResult.mainData.loading}
+                    onClickRow={handleEdit}
+                    register={true}
+                    initialPageIndex={
+                        IDSUPPORTPLAN === memoryTable.id ? (memoryTable.page === -1 ? 0 : memoryTable.page) : 0
+                    }
+                    initialStateFilter={
+                        IDSUPPORTPLAN === memoryTable.id
+                            ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value }))
+                            : undefined
+                    }
+                    pageSizeDefault={
+                        IDSUPPORTPLAN === memoryTable.id
+                            ? memoryTable.pageSize === -1
+                                ? 20
+                                : memoryTable.pageSize
+                            : 20
+                    }
                 />
             </Fragment>
-        )
-    }
-    else if (viewSelected === "view-2") {
+        );
+    } else if (viewSelected === "view-2") {
         return (
             <DetailSupportPlan
                 data={rowSelected}
-                setViewSelected={setViewSelected}
-                fetchData={fetchData}
                 dataPlan={dataPlan}
+                currencyList={currencyList}
+                fetchData={fetchData}
+                setViewSelected={setViewSelected}
             />
-        )
-    } else
-        return null;
-}
+        );
+    } else return null;
+};
 
-const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData, dataPlan }) => {
+const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({
+    data: { row, edit },
+    dataPlan,
+    currencyList,
+    fetchData,
+    setViewSelected,
+}) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const executeRes = useSelector(state => state.main.execute);
+    const executeResult = useSelector((state) => state.main.execute);
+
+    const [exchangeRate, setExchangeRate] = useState(0);
+    const [waitSave, setWaitSave] = useState(false);
 
     const [datetoshow, setdatetoshow] = useState(
-        row ? `${row.year}-${String(row.month).padStart(2, '0')}` : `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth() + 1).padStart(2, '0')}`
-    )
-    const [waitSave, setWaitSave] = useState(false);
+        row
+            ? `${row.year}-${String(row.month).padStart(2, "0")}`
+            : `${new Date(new Date().setDate(1)).getFullYear()}-${String(
+                new Date(new Date().setDate(1)).getMonth() + 1
+            ).padStart(2, "0")}`
+    );
 
     const arrayBread = [
         { id: "view-1", name: t(langKeys.supportplan) },
-        { id: "view-2", name: t(langKeys.supportplandetail) }
+        { id: "view-2", name: t(langKeys.supportplandetail) },
     ];
 
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+    const {
+        formState: { errors },
+        getValues,
+        handleSubmit,
+        register,
+        setValue,
+    } = useForm({
         defaultValues: {
-            id: row ? row.billingsupportid : 0,
-            startdate: row?.startdate || new Date(new Date().setDate(1)),
-            enddate: row?.enddate || new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
-            year: row?.year || new Date().getFullYear(),
-            month: row?.month || new Date().getMonth() + 1,
-            plan: row?.plan || "",
             basicfee: row?.basicfee || 0,
-            starttime: row?.starttime || new Date().getTime(),
+            description: row ? row.description : "",
+            enddate: row?.enddate || new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
             finishtime: row?.finishtime || new Date().getTime(),
-            status: row ? row.status : 'ACTIVO',
-            type: row ? row.type : '',
-            description: row ? row.description : '',
+            id: row ? row.billingsupportid : 0,
+            month: row?.month || new Date().getMonth() + 1,
             operation: row ? "UPDATE" : "INSERT",
-        }
+            plan: row?.plan || "",
+            plancurrency: row?.plancurrency || "",
+            startdate: row?.startdate || new Date(new Date().setDate(1)),
+            starttime: row?.starttime || new Date().getTime(),
+            status: row ? row.status : "ACTIVO",
+            type: row ? row.type : "",
+            year: row?.year || new Date().getFullYear(),
+        },
     });
 
     function handleDateChange(e: any) {
         if (e !== "") {
-            let datetochange = new Date(e + "-02")
-            let mes = datetochange?.getMonth() + 1
-            let year = datetochange?.getFullYear()
-            let startdate = new Date(year, mes - 1, 1)
-            let enddate = new Date(year, mes, 0)
-            setValue('startdate', startdate)
-            setValue('enddate', enddate)
-            setdatetoshow(`${year}-${String(mes).padStart(2, '0')}`)
-            setValue('year', year)
-            setValue('month', mes)
+            let datetochange = new Date(e + "-02");
+            let mes = datetochange?.getMonth() + 1;
+            let year = datetochange?.getFullYear();
+            let startdate = new Date(year, mes - 1, 1);
+            let enddate = new Date(year, mes, 0);
+
+            setValue("startdate", startdate);
+            setValue("enddate", enddate);
+            setdatetoshow(`${year}-${String(mes).padStart(2, "0")}`);
+            setValue("year", year);
+            setValue("month", mes);
         }
     }
 
+    useEffect(() => {
+        setExchangeRate(
+            (currencyList ?? []).find((item) => {
+                return item.code === (row?.plancurrency || "");
+            })?.exchangerate || 0
+        );
+    }, [row]);
+
     React.useEffect(() => {
-        register('id');
-        register('type');
-        register('status');
-        register('year');
-        register('month');
-        register('operation');
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('plan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('basicfee', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('starttime', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('finishtime', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register("description", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register("finishtime", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register("id");
+        register("month");
+        register("operation");
+        register("plan", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register("plancurrency", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register("starttime", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register("status");
+        register("type");
+        register("year");
+
+        register("basicfee", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
     }, [edit, register]);
 
     useEffect(() => {
         if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(
+                    showSnackbar({
+                        message: t(row ? langKeys.successful_edit : langKeys.successful_register),
+                        severity: "success",
+                        show: true,
+                    })
+                );
+                dispatch(showBackdrop(false));
+                setViewSelected("view-1");
                 fetchData && fetchData();
+            } else if (executeResult.error) {
+                dispatch(
+                    showSnackbar({
+                        severity: "error",
+                        show: true,
+                        message: t(executeResult.code ?? "error_unexpected_error", {
+                            module: t(langKeys.supportplan).toLocaleLowerCase(),
+                        }),
+                    })
+                );
                 dispatch(showBackdrop(false));
-                setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.supportplan).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
-                dispatch(showBackdrop(false));
             }
         }
-    }, [executeRes, waitSave])
+    }, [executeResult, waitSave]);
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(execute(billingSupportIns(data)));
             dispatch(showBackdrop(true));
-            setWaitSave(true)
-        }
+            setWaitSave(true);
+        };
 
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
+        dispatch(
+            manageConfirmation({
+                callback,
+                question: t(langKeys.confirmation_save),
+                visible: true,
+            })
+        );
     });
 
     return (
-        <div style={{ width: '100%' }}>
+        <div style={{ width: "100%" }}>
             <form onSubmit={onSubmit}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <div>
-                        <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
-                            handleClick={setViewSelected}
-                        />
-                        <TitleDetail
-                            title={row ? `${row.description}` : t(langKeys.newsupportplan)}
-                        />
+                        <TemplateBreadcrumbs breadcrumbs={arrayBread} handleClick={setViewSelected} />
+                        {row && <TitleDetail title={t(langKeys.supportplan)} />}
+                        {!row && <TitleDetail title={t(langKeys.newsupportplan)} />}
                     </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                         <Button
-                            variant="contained"
-                            type="button"
                             color="primary"
+                            disabled={executeResult.loading}
+                            onClick={() => setViewSelected("view-1")}
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("view-1")}
-                        >{t(langKeys.back)}</Button>
-                        {edit &&
+                            type="button"
+                            variant="contained"
+                        >
+                            {t(langKeys.back)}
+                        </Button>
+                        {edit && (
                             <Button
                                 className={classes.button}
-                                variant="contained"
                                 color="primary"
-                                type="submit"
+                                disabled={executeResult.loading}
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
-                            >{t(langKeys.save)}
+                                type="submit"
+                                variant="contained"
+                            >
+                                {t(langKeys.save)}
                             </Button>
-                        }
+                        )}
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.description)}
-                            onChange={(value) => setValue('description', value)}
-                            valueDefault={getValues('description')}
-                            error={errors?.description?.message}
-                            className="col-6"
-                        />
                         <TextField
-                            id="date"
                             className="col-6"
-                            type="month"
-                            variant="outlined"
+                            id="date"
                             onChange={(e) => handleDateChange(e.target.value)}
-                            value={datetoshow}
                             size="small"
+                            type="month"
+                            value={datetoshow}
+                            variant="outlined"
+                        />
+                        <FieldEdit
+                            className="col-6"
+                            error={errors?.description?.message}
+                            label={t(langKeys.description)}
+                            onChange={(value) => setValue("description", value)}
+                            valueDefault={getValues("description")}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldSelect
-                            label="Plan"
                             className="col-6"
-                            valueDefault={getValues("plan")}
-                            onChange={(value) => setValue('plan', value?.description)}
                             data={dataPlan}
+                            error={errors?.plan?.message}
+                            label={t(langKeys.supportplan)}
+                            onChange={(value) => setValue("plan", value?.description)}
                             optionDesc="description"
                             optionValue="description"
-                            error={errors?.plan?.message}
                             orderbylabel={true}
+                            valueDefault={getValues("plan")}
                         />
-                        <FieldEdit
-                            label={t(langKeys.supportprice)}
-                            onChange={(value) => setValue('basicfee', value)}
-                            valueDefault={getValues('basicfee')}
-                            error={errors?.basicfee?.message}
-                            type="number"
+                        <FieldSelect
                             className="col-6"
-                            inputProps={{ step: "any" }}
+                            data={currencyList ?? []}
+                            error={errors?.plancurrency?.message}
+                            label={t(langKeys.billingsupport_plancurrency)}
+                            onChange={(value) => {
+                                setValue("plancurrency", value?.code);
+                                setExchangeRate(value?.exchangerate || 0);
+                            }}
+                            optionDesc="description"
+                            optionValue="code"
+                            orderbylabel={true}
+                            valueDefault={getValues("plancurrency")}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            type="time"
-                            label={t(langKeys.starttime)}
-                            error={errors?.starttime?.message}
                             className="col-6"
-                            onChange={(value) => setValue('starttime', value)}
+                            error={errors?.starttime?.message}
+                            label={t(langKeys.starttime)}
+                            onChange={(value) => setValue("starttime", value)}
+                            type="time"
                             valueDefault={getValues("starttime")}
                         />
                         <FieldEdit
-                            type="time"
-                            label={t(langKeys.finishtime)}
-                            error={errors?.finishtime?.message}
+                            label={t(langKeys.supportprice)}
                             className="col-6"
-                            onChange={(value) => setValue('finishtime', value)}
+                            error={errors?.basicfee?.message}
+                            inputProps={{ step: "any" }}
+                            onChange={(value) => setValue("basicfee", value)}
+                            type="number"
+                            valueDefault={getValues("basicfee")}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            className="col-6"
+                            error={errors?.finishtime?.message}
+                            label={t(langKeys.finishtime)}
+                            onChange={(value) => setValue("finishtime", value)}
+                            type="time"
                             valueDefault={getValues("finishtime")}
+                        />
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.billingconfiguration_exchangerate)}
+                            value={formatNumber(exchangeRate || 0)}
                         />
                     </div>
                 </div>
             </form>
         </div>
     );
-}
+};
 
-const IDMESSAGINGCOST = 'IDMESSAGINGCOST';
+const IDMESSAGINGCOST = "IDMESSAGINGCOST";
 const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
-    const executeResult = useSelector(state => state.main.execute);
-    const mainResult = useSelector(state => state.main);
-    const memoryTable = useSelector(state => state.main.memoryTable);
+    const executeResult = useSelector((state) => state.main.execute);
+    const mainResult = useSelector((state) => state.main);
+    const memoryTable = useSelector((state) => state.main.memoryTable);
 
     const [dataMain, setdataMain] = useState({
         countrycode: "",
+        month: (new Date().getMonth() + 1).toString().padStart(2, "0"),
         year: String(new Date().getFullYear()),
-        month: (new Date().getMonth() + 1).toString().padStart(2, "0")
     });
 
     const [disableSearch, setdisableSearch] = useState(false);
@@ -3002,97 +3877,96 @@ const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
     const [waitSave, setWaitSave] = useState(false);
 
     function search() {
-        dispatch(showBackdrop(true))
-        dispatch(getCollection(getBillingMessagingSel(dataMain)))
+        dispatch(showBackdrop(true));
+        dispatch(getCollection(getBillingMessagingSel(dataMain)));
     }
 
     useEffect(() => {
-        setdisableSearch(dataMain.year === "")
-    }, [dataMain])
+        setdisableSearch(dataMain.year === "");
+    }, [dataMain]);
 
     useEffect(() => {
-        search()
-        dispatch(setMemoryTable({
-            id: IDMESSAGINGCOST
-        }))
+        search();
+
+        dispatch(
+            setMemoryTable({
+                id: IDMESSAGINGCOST,
+            })
+        );
+
         return () => {
             dispatch(cleanMemoryTable());
-        }
-    }, [])
+        };
+    }, []);
 
     useEffect(() => {
         if (!mainResult.mainData.loading) {
-            dispatch(showBackdrop(false))
+            dispatch(showBackdrop(false));
         }
-    }, [mainResult])
+    }, [mainResult]);
 
     const columns = React.useMemo(
         () => [
             {
-                accessor: 'billingmessagingid',
+                accessor: "billingmessagingid",
                 isComponent: true,
                 minWidth: 60,
-                width: '1%',
+                width: "1%",
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
-                        <TemplateIcons
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                        //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
-                        //extraOption={t(langKeys.duplicate)}
-                        />
-                    )
-                }
+                        <TemplateIcons deleteFunction={() => handleDelete(row)} editFunction={() => handleEdit(row)} />
+                    );
+                },
             },
             {
+                accessor: "year",
                 Header: t(langKeys.year),
-                accessor: 'year',
             },
             {
+                accessor: "month",
                 Header: t(langKeys.month),
-                accessor: 'month',
             },
             {
+                accessor: "pricepersms",
                 Header: t(langKeys.pricepersms),
-                accessor: 'pricepersms',
-                type: 'number',
-                sortType: 'number',
+                sortType: "number",
+                type: "number",
                 Cell: (props: any) => {
                     const { pricepersms } = props.cell.row.original;
                     return formatNumberFourDecimals(pricepersms || 0);
-                }
+                },
             },
             {
+                accessor: "vcacomissionpersms",
                 Header: t(langKeys.vcacomissionpersms),
-                accessor: 'vcacomissionpersms',
-                type: 'number',
-                sortType: 'number',
+                sortType: "number",
+                type: "number",
                 Cell: (props: any) => {
                     const { vcacomissionpersms } = props.cell.row.original;
                     return formatNumberFourDecimals(vcacomissionpersms || 0);
-                }
+                },
             },
             {
+                accessor: "pricepermail",
                 Header: t(langKeys.pricepermail),
-                accessor: 'pricepermail',
-                type: 'number',
-                sortType: 'number',
+                sortType: "number",
+                type: "number",
                 Cell: (props: any) => {
                     const { pricepermail } = props.cell.row.original;
                     return formatNumberFourDecimals(pricepermail || 0);
-                }
+                },
             },
             {
+                accessor: "vcacomissionpermail",
                 Header: t(langKeys.vcacomissionpermail),
-                accessor: 'vcacomissionpermail',
-                type: 'number',
-                sortType: 'number',
+                sortType: "number",
+                type: "number",
                 Cell: (props: any) => {
                     const { vcacomissionpermail } = props.cell.row.original;
                     return formatNumberFourDecimals(vcacomissionpermail || 0);
-                }
-            }
+                },
+            },
         ],
         []
     );
@@ -3103,432 +3977,489 @@ const MessagingCost: React.FC<{ dataPlan: any }> = ({ dataPlan }) => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
                 if (duplicateop) {
-                    setduplicateop(false)
-                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_duplicate) }))
+                    setduplicateop(false);
+                    dispatch(
+                        showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_duplicate) })
+                    );
                 } else {
-
-                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
+                    dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }));
                 }
-                fetchData();
                 dispatch(showBackdrop(false));
-                setWaitSave(false);
+                fetchData && fetchData();
             } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.messagingcost).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(
+                    showSnackbar({
+                        severity: "error",
+                        show: true,
+                        message: t(executeResult.code ?? "error_unexpected_error", {
+                            module: t(langKeys.messagingcost).toLocaleLowerCase(),
+                        }),
+                    })
+                );
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
         }
-    }, [executeResult, waitSave])
+    }, [executeResult, waitSave]);
 
     const handleRegister = () => {
         setViewSelected("view-2");
         setRowSelected({ row: null, edit: true });
-    }
+    };
 
     const handleEdit = (row: Dictionary) => {
         setViewSelected("view-2");
         setRowSelected({ row, edit: true });
-    }
+    };
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(billingMessagingIns({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.billingmessagingid })));
+            dispatch(
+                execute(
+                    billingMessagingIns({
+                        ...row,
+                        id: row.billingmessagingid,
+                        operation: "DELETE",
+                        status: "ELIMINADO",
+                    })
+                )
+            );
             dispatch(showBackdrop(true));
             setWaitSave(true);
-        }
+        };
 
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_delete),
-            callback
-        }))
-    }
+        dispatch(
+            manageConfirmation({
+                visible: true,
+                callback,
+                question: t(langKeys.confirmation_delete),
+            })
+        );
+    };
 
     if (viewSelected === "view-1") {
         return (
             <Fragment>
                 <TableZyx
-                    onClickRow={handleEdit}
-                    columns={columns}
                     ButtonsElement={() => (
-                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                             <FieldSelect
+                                data={dataYears}
                                 label={t(langKeys.year)}
+                                onChange={(value) => setdataMain((prev) => ({ ...prev, year: value?.value || 0 }))}
+                                optionDesc="value"
+                                optionValue="value"
                                 style={{ width: 150 }}
                                 valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev => ({ ...prev, year: value?.value || 0 }))}
-                                data={dataYears}
-                                optionDesc="value"
-                                optionValue="value"
                             />
                             <FieldMultiSelect
-                                label={t(langKeys.month)}
-                                style={{ width: 300 }}
-                                valueDefault={dataMain.month}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev => ({ ...prev, month: value.map((o: Dictionary) => o.val).join() }))}
                                 data={dataMonths}
-                                uset={true}
-                                prefixTranslation="month_"
+                                label={t(langKeys.month)}
                                 optionDesc="val"
                                 optionValue="val"
+                                prefixTranslation="month_"
+                                style={{ width: 300 }}
+                                uset={true}
+                                valueDefault={dataMain.month}
+                                variant="outlined"
+                                onChange={(value) =>
+                                    setdataMain((prev) => ({
+                                        ...prev,
+                                        month: value.map((o: Dictionary) => o.val).join(),
+                                    }))
+                                }
                             />
                             <Button
-                                disabled={mainResult.mainData.loading || disableSearch}
-                                variant="contained"
                                 color="primary"
-                                style={{ width: 120, backgroundColor: "#55BD84" }}
-                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                disabled={mainResult.mainData.loading || disableSearch}
                                 onClick={() => search()}
-                            >{t(langKeys.search)}
+                                startIcon={<Search style={{ color: "white" }} />}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                variant="contained"
+                            >
+                                {t(langKeys.search)}
                             </Button>
                         </div>
                     )}
+                    columns={columns}
                     data={mainResult.mainData.data}
-                    filterGeneral={false}
                     download={true}
-                    loading={mainResult.mainData.loading}
-                    register={true}
+                    filterGeneral={false}
                     handleRegister={handleRegister}
-                    pageSizeDefault={IDMESSAGINGCOST === memoryTable.id ? memoryTable.pageSize === -1 ? 20 : memoryTable.pageSize : 20}
-                    initialPageIndex={IDMESSAGINGCOST === memoryTable.id ? memoryTable.page === -1 ? 0 : memoryTable.page : 0}
-                    initialStateFilter={IDMESSAGINGCOST === memoryTable.id ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value })) : undefined}
+                    loading={mainResult.mainData.loading}
+                    onClickRow={handleEdit}
+                    register={true}
+                    initialPageIndex={
+                        IDMESSAGINGCOST === memoryTable.id ? (memoryTable.page === -1 ? 0 : memoryTable.page) : 0
+                    }
+                    initialStateFilter={
+                        IDMESSAGINGCOST === memoryTable.id
+                            ? Object.entries(memoryTable.filters).map(([key, value]) => ({ id: key, value }))
+                            : undefined
+                    }
+                    pageSizeDefault={
+                        IDMESSAGINGCOST === memoryTable.id
+                            ? memoryTable.pageSize === -1
+                                ? 20
+                                : memoryTable.pageSize
+                            : 20
+                    }
                 />
             </Fragment>
-        )
-    }
-    else if (viewSelected === "view-2") {
+        );
+    } else if (viewSelected === "view-2") {
         return (
             <DetailMessagingCost
                 data={rowSelected}
-                setViewSelected={setViewSelected}
-                fetchData={fetchData}
                 dataPlan={dataPlan}
+                fetchData={fetchData}
+                setViewSelected={setViewSelected}
             />
-        )
-    } else
-        return null;
-}
+        );
+    } else return null;
+};
 
-const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData, dataPlan }) => {
+const DetailMessagingCost: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, fetchData, setViewSelected }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
     const classes = useStyles();
-    const executeRes = useSelector(state => state.main.execute);
+    const executeResult = useSelector((state) => state.main.execute);
+
+    const [waitSave, setWaitSave] = useState(false);
 
     const [datetoshow, setdatetoshow] = useState(
-        row ? `${row.year}-${String(row.month).padStart(2, '0')}` : `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth() + 1).padStart(2, '0')}`
-    )
-    const [waitSave, setWaitSave] = useState(false);
+        row
+            ? `${row.year}-${String(row.month).padStart(2, "0")}`
+            : `${new Date(new Date().setDate(1)).getFullYear()}-${String(
+                new Date(new Date().setDate(1)).getMonth() + 1
+            ).padStart(2, "0")}`
+    );
 
     const arrayBreadConversationCost = [
         { id: "view-1", name: t(langKeys.messagingcost) },
-        { id: "view-2", name: t(langKeys.messagingcostdetail) }
+        { id: "view-2", name: t(langKeys.messagingcostdetail) },
     ];
 
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+    const {
+        formState: { errors },
+        getValues,
+        handleSubmit,
+        register,
+        setValue,
+    } = useForm({
         defaultValues: {
-            id: row ? row.billingmessagingid : 0,
-            year: row?.year || new Date().getFullYear(),
-            month: row?.month || new Date().getMonth() + 1,
-            pricepersms: row?.pricepersms || 0.0,
-            vcacomissionpersms: row?.vcacomissionpersms || 0.0,
-            pricepermail: row?.pricepermail || 0.0,
-            vcacomissionpermail: row?.vcacomissionpermail || 0.0,
             description: row?.description || "",
-            status: row ? row.status : 'ACTIVO',
-            type: row ? row.type : '',
+            id: row ? row.billingmessagingid : 0,
+            month: row?.month || new Date().getMonth() + 1,
             operation: row ? "UPDATE" : "INSERT",
-        }
+            pricepermail: row?.pricepermail || 0,
+            pricepersms: row?.pricepersms || 0,
+            status: row ? row.status : "ACTIVO",
+            type: row ? row.type : "",
+            vcacomissionpermail: row?.vcacomissionpermail || 0,
+            vcacomissionpersms: row?.vcacomissionpersms || 0,
+            year: row?.year || new Date().getFullYear(),
+        },
     });
 
     function handleDateChange(e: any) {
         if (e !== "") {
-            let datetochange = new Date(e + "-02")
-            let mes = datetochange?.getMonth() + 1
-            let year = datetochange?.getFullYear()
-            setdatetoshow(`${year}-${String(mes).padStart(2, '0')}`)
-            setValue('year', year)
-            setValue('month', mes)
+            let datetochange = new Date(e + "-02");
+            let mes = datetochange?.getMonth() + 1;
+            let year = datetochange?.getFullYear();
+
+            setdatetoshow(`${year}-${String(mes).padStart(2, "0")}`);
+            setValue("year", year);
+            setValue("month", mes);
         }
     }
 
     React.useEffect(() => {
-        register('id');
-        register('year');
-        register('month');
-        register('pricepersms', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('vcacomissionpersms', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('pricepermail', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('vcacomissionpermail', { validate: (value) => ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required) });
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('status');
-        register('type');
-        register('operation');
+        register("description", { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register("id");
+        register("month");
+        register("operation");
+        register("status");
+        register("type");
+        register("year");
+
+        register("pricepermail", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
+
+        register("pricepersms", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
+
+        register("vcacomissionpermail", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
+
+        register("vcacomissionpersms", {
+            validate: (value) =>
+                ((value || String(value)) && parseFloat(String(value)) >= 0) || t(langKeys.field_required),
+        });
     }, [edit, register]);
 
     useEffect(() => {
         if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, severity: "success", message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(
+                    showSnackbar({
+                        message: t(row ? langKeys.successful_edit : langKeys.successful_register),
+                        severity: "success",
+                        show: true,
+                    })
+                );
+                dispatch(showBackdrop(false));
+                setViewSelected("view-1");
                 fetchData && fetchData();
+            } else if (executeResult.error) {
+                dispatch(
+                    showSnackbar({
+                        severity: "error",
+                        show: true,
+                        message: t(executeResult.code ?? "error_unexpected_error", {
+                            module: t(langKeys.messagingcost).toLocaleLowerCase(),
+                        }),
+                    })
+                );
                 dispatch(showBackdrop(false));
-                setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.messagingcost).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
                 setWaitSave(false);
-                dispatch(showBackdrop(false));
             }
         }
-    }, [executeRes, waitSave])
+    }, [executeResult, waitSave]);
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(execute(billingMessagingIns(data)));
             dispatch(showBackdrop(true));
-            setWaitSave(true)
-        }
+            setWaitSave(true);
+        };
 
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
+        dispatch(
+            manageConfirmation({
+                callback,
+                question: t(langKeys.confirmation_save),
+                visible: true,
+            })
+        );
     });
 
     return (
-        <div style={{ width: '100%' }}>
+        <div style={{ width: "100%" }}>
             <form onSubmit={onSubmit}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <div>
-                        <TemplateBreadcrumbs
-                            breadcrumbs={arrayBreadConversationCost}
-                            handleClick={setViewSelected}
-                        />
-                        <TitleDetail
-                            title={row ? `${row.description}` : t(langKeys.newmessagingplan)}
-                        />
+                        <TemplateBreadcrumbs breadcrumbs={arrayBreadConversationCost} handleClick={setViewSelected} />
+                        {row && <TitleDetail title={t(langKeys.messagingcost)} />}
+                        {!row && <TitleDetail title={t(langKeys.newmessagingplan)} />}
                     </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                         <Button
-                            variant="contained"
-                            type="button"
                             color="primary"
+                            disabled={executeResult.loading}
+                            onClick={() => setViewSelected("view-1")}
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("view-1")}
-                        >{t(langKeys.back)}</Button>
-                        {edit &&
+                            type="button"
+                            variant="contained"
+                        >
+                            {t(langKeys.back)}
+                        </Button>
+                        {edit && (
                             <Button
                                 className={classes.button}
-                                variant="contained"
                                 color="primary"
-                                type="submit"
+                                disabled={executeResult.loading}
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
-                            >{t(langKeys.save)}
+                                type="submit"
+                                variant="contained"
+                            >
+                                {t(langKeys.save)}
                             </Button>
-                        }
+                        )}
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         <TextField
+                            className="col-6"
                             id="date"
-                            className="col-6"
-                            type="month"
-                            variant="outlined"
                             onChange={(e) => handleDateChange(e.target.value)}
-                            value={datetoshow}
                             size="small"
+                            type="month"
+                            value={datetoshow}
+                            variant="outlined"
                         />
                         <FieldEdit
                             className="col-6"
-                            label={t(langKeys.description)}
-                            onChange={(value) => setValue('description', value)}
-                            valueDefault={getValues('description')}
                             error={errors?.description?.message}
+                            label={t(langKeys.description)}
+                            onChange={(value) => setValue("description", value)}
+                            valueDefault={getValues("description")}
                         />
                     </div>
                     <div className="row-zyx">
-                        <FieldView
-                            label=''
-                            value={t(langKeys.smssection)}
-                            className={classes.section}
-                        />
+                        <FieldView label="" value={t(langKeys.smssection)} className={classes.section} />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.pricepersms)}
-                            onChange={(value) => setValue('pricepersms', value)}
-                            valueDefault={getValues('pricepersms')}
+                            className="col-6"
                             error={errors?.pricepersms?.message}
-                            type="number"
-                            className="col-6"
                             inputProps={{ step: "any" }}
+                            label={t(langKeys.pricepersms)}
+                            onChange={(value) => setValue("pricepersms", value)}
+                            type="number"
+                            valueDefault={getValues("pricepersms")}
                         />
                         <FieldEdit
-                            label={t(langKeys.vcacomissionpersms)}
-                            onChange={(value) => setValue('vcacomissionpersms', value)}
-                            valueDefault={getValues('vcacomissionpersms')}
+                            className="col-6"
                             error={errors?.vcacomissionpersms?.message}
-                            type="number"
-                            className="col-6"
                             inputProps={{ step: "any" }}
+                            label={t(langKeys.vcacomissionpersms)}
+                            onChange={(value) => setValue("vcacomissionpersms", value)}
+                            type="number"
+                            valueDefault={getValues("vcacomissionpersms")}
                         />
                     </div>
                     <div className="row-zyx">
-                        <FieldView
-                            label=''
-                            value={'*' + t(langKeys.messagingcostsmsnote)}
-                            className={classes.commentary}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldView
-                            label=''
-                            value={t(langKeys.mailsection)}
-                            className={classes.section}
-                        />
+                        <FieldView label="" value={t(langKeys.mailsection)} className={classes.section} />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.pricepermail)}
-                            onChange={(value) => setValue('pricepermail', value)}
-                            valueDefault={getValues('pricepermail')}
+                            className="col-6"
                             error={errors?.pricepermail?.message}
-                            type="number"
-                            className="col-6"
                             inputProps={{ step: "any" }}
+                            label={t(langKeys.pricepermail)}
+                            onChange={(value) => setValue("pricepermail", value)}
+                            type="number"
+                            valueDefault={getValues("pricepermail")}
                         />
                         <FieldEdit
-                            label={t(langKeys.vcacomissionpermail)}
-                            onChange={(value) => setValue('vcacomissionpermail', value)}
-                            valueDefault={getValues('vcacomissionpermail')}
-                            error={errors?.vcacomissionpermail?.message}
-                            type="number"
                             className="col-6"
+                            error={errors?.vcacomissionpermail?.message}
                             inputProps={{ step: "any" }}
+                            label={t(langKeys.vcacomissionpermail)}
+                            onChange={(value) => setValue("vcacomissionpermail", value)}
+                            type="number"
+                            valueDefault={getValues("vcacomissionpermail")}
                         />
                     </div>
                 </div>
             </form>
         </div>
     );
-}
+};
 
 const BillingSetup: FC = () => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
-    const countryListreq = useSelector(state => state.signup.countryList);
-    const multiData = useSelector(state => state.main.multiData);
-    const user = useSelector(state => state.login.validateToken.user);
+    const countryResult = useSelector((state) => state.signup.countryList);
+    const multiResult = useSelector((state) => state.main.multiData);
+    const user = useSelector((state) => state.login.validateToken.user);
 
-    const [providerList, setProviderList] = useState<any>([]);
-    const [planList, setPlanList] = useState<any>([]);
-    const [countryList, setcountryList] = useState<any>([]);
-    const [dataPaymentPlan, setdataPaymentPlan] = useState<any>([]);
-    const [dataPlan, setdataPlan] = useState<any>([]);
+    const [countryList, setCountryList] = useState<any>([]);
+    const [currencyList, setCurrencyList] = useState<any>([]);
+    const [dataPaymentPlan, setDataPaymentPlan] = useState<any>([]);
+    const [dataPlan, setDataPlan] = useState<any>([]);
     const [pageSelected, setPageSelected] = useState(user?.roledesc === "SUPERADMIN" ? 0 : 6);
-    const [sentfirstinfo, setsentfirstinfo] = useState(false);
+    const [planList, setPlanList] = useState<any>([]);
+    const [providerList, setProviderList] = useState<any>([]);
+    const [sentFirstInfo, setSentFirstInfo] = useState(false);
 
     useEffect(() => {
-        if (!multiData.loading && sentfirstinfo) {
-            setsentfirstinfo(false);
-            setdataPlan(multiData.data[0] && multiData.data[0].success ? multiData.data[0].data : []);
-            setdataPaymentPlan(multiData.data[3] && multiData.data[3].success ? multiData.data[3].data : []);
-            setPlanList(multiData.data[4] && multiData.data[4].success ? multiData.data[4].data : []);
-            setProviderList(multiData.data[5] && multiData.data[5].success ? multiData.data[5].data : []);
+        if (!multiResult.loading && sentFirstInfo) {
+            setSentFirstInfo(false);
+            setCurrencyList(multiResult.data[6] && multiResult.data[6].success ? multiResult.data[6].data : []);
+            setDataPaymentPlan(multiResult.data[3] && multiResult.data[3].success ? multiResult.data[3].data : []);
+            setDataPlan(multiResult.data[0] && multiResult.data[0].success ? multiResult.data[0].data : []);
+            setPlanList(multiResult.data[4] && multiResult.data[4].success ? multiResult.data[4].data : []);
+            setProviderList(multiResult.data[5] && multiResult.data[5].success ? multiResult.data[5].data : []);
         }
-    }, [multiData])
+    }, [multiResult]);
 
     useEffect(() => {
-        if (!countryListreq.loading && countryListreq.data.length) {
-            setcountryList(countryListreq.data);
+        if (!countryResult.loading && countryResult.data.length) {
+            setCountryList(countryResult.data);
         }
-    }, [countryListreq])
+    }, [countryResult]);
 
     useEffect(() => {
-        setsentfirstinfo(true)
-        dispatch(getCountryList())
-        dispatch(getMultiCollection([
-            getPlanSel(),
-            getOrgSelList(0),
-            getCorpSel(0),
-            getPaymentPlanSel(),
-            artificialIntelligencePlanSel({ description: '' }),
-            artificialIntelligenceServiceSel({ provider: '', service: '' }),
-        ]));
-    }, [])
+        setSentFirstInfo(true);
+        dispatch(getCountryList());
+        dispatch(getExchangeRate(null));
+        dispatch(
+            getMultiCollection([
+                getPlanSel(),
+                getOrgSelList(0),
+                getCorpSel(0),
+                getPaymentPlanSel(),
+                artificialIntelligencePlanSel({ description: "" }),
+                artificialIntelligenceServiceSel({ provider: "", service: "" }),
+                currencySel(),
+            ])
+        );
+    }, []);
 
     return (
-        <div style={{ width: '100%' }}>
+        <div style={{ width: "100%" }}>
             <Tabs
                 value={pageSelected}
                 indicatorColor="primary"
                 variant="fullWidth"
-                style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
+                style={{ borderBottom: "1px solid #EBEAED", backgroundColor: "#FFF", marginTop: 8 }}
                 textColor="primary"
                 onChange={(_, value) => setPageSelected(value)}
             >
-                {user?.roledesc === "SUPERADMIN" &&
-                    <AntTab label={t(langKeys.billingsetupgeneralconfiguration)} />
-                }
-                {user?.roledesc === "SUPERADMIN" &&
-                    <AntTab label={t(langKeys.contractedplanbyperiod)} />
-                }
-                {user?.roledesc === "SUPERADMIN" &&
-                    <AntTab label={t(langKeys.conversationcost)} />
-                }
-                {user?.roledesc === "SUPERADMIN" &&
-                    <AntTab label={t(langKeys.billingsetup_artificialintelligence)} />
-                }
-                {user?.roledesc === "SUPERADMIN" &&
-                    <AntTab label={t(langKeys.messagingcost)} />
-                }
-                {user?.roledesc === "SUPERADMIN" &&
-                    <AntTab label={t(langKeys.supportplan)} />
-                }
+                {user?.roledesc === "SUPERADMIN" && <AntTab label={t(langKeys.billingsetupgeneralconfiguration)} />}
+                {user?.roledesc === "SUPERADMIN" && <AntTab label={t(langKeys.contractedplanbyperiod)} />}
+                {user?.roledesc === "SUPERADMIN" && <AntTab label={t(langKeys.conversationcost)} />}
+                {user?.roledesc === "SUPERADMIN" && <AntTab label={t(langKeys.billingsetup_artificialintelligence)} />}
+                {user?.roledesc === "SUPERADMIN" && <AntTab label={t(langKeys.messagingcost)} />}
+                {user?.roledesc === "SUPERADMIN" && <AntTab label={t(langKeys.supportplan)} />}
             </Tabs>
-            {pageSelected === 0 &&
+            {pageSelected === 0 && (
                 <div style={{ marginTop: 16 }}>
                     <GeneralConfiguration dataPlan={countryList} />
                 </div>
-            }
-            {pageSelected === 1 &&
+            )}
+            {pageSelected === 1 && (
                 <div style={{ marginTop: 16 }}>
-                    <ContractedPlanByPeriod dataPlan={dataPaymentPlan} />
+                    <ContractedPlanByPeriod dataPlan={dataPaymentPlan} currencyList={currencyList} />
                 </div>
-            }
-            {pageSelected === 2 &&
+            )}
+            {pageSelected === 2 && (
                 <div style={{ marginTop: 16 }}>
-                    <ConversationCost dataPlan={countryList} />
+                    <ConversationCost dataPlan={countryList} currencyList={currencyList} />
                 </div>
-            }
-            {pageSelected === 3 &&
+            )}
+            {pageSelected === 3 && (
                 <div style={{ marginTop: 16 }}>
                     <ArtificialIntelligence planData={planList} providerData={providerList} />
                 </div>
-            }
-            {pageSelected === 4 &&
+            )}
+            {pageSelected === 4 && (
                 <div style={{ marginTop: 16 }}>
                     <MessagingCost dataPlan={countryList} />
                 </div>
-            }
-            {pageSelected === 5 &&
+            )}
+            {pageSelected === 5 && (
                 <div style={{ marginTop: 16 }}>
-                    <SupportPlan dataPlan={dataPlan} />
+                    <SupportPlan dataPlan={dataPlan} currencyList={currencyList} />
                 </div>
-            }
+            )}
         </div>
     );
-}
+};
 
 export default BillingSetup;
