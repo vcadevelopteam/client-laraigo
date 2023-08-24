@@ -19,6 +19,7 @@ import {
     FormControlLabel,
     Grid,
     IconButton,
+    InputAdornment,
     ListItem,
     Tabs,
     TextField,
@@ -148,7 +149,8 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TableZyx from "../components/fields/table-simple";
 import Typography from "@material-ui/core/Typography";
-
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
 interface RowSelected {
     edit: boolean;
     row: Dictionary | null;
@@ -2970,7 +2972,10 @@ const DetailArtificialIntelligence: React.FC<ModalProps> = ({
     updateRecords,
 }) => {
     const { t } = useTranslation();
+    const [showPassword, setShowPassword] = useState(false);
 
+    const handleClickShowPassword = () => setShowPassword(!showPassword);
+    const handleMouseDownPassword = (event: any) => event.preventDefault();
     const {
         formState: { errors },
         getValues,
@@ -3229,12 +3234,26 @@ const DetailArtificialIntelligence: React.FC<ModalProps> = ({
                         <FieldEdit
                             className="col-6"
                             disabled={!edit}
-                            type="password"
+                            type={showPassword ? 'text' : 'password'}
                             error={errors?.apikey?.message}
                             label={t(langKeys.apikey)}
                             valueDefault={getValues("apikey")}
                             onChange={(value) => {
                                 setValue("apikey", value || "");
+                            }}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label="toggle password visibility"
+                                            onClick={handleClickShowPassword}
+                                            onMouseDown={handleMouseDownPassword}
+                                            edge="end"
+                                        >
+                                            {showPassword ? <Visibility /> : <VisibilityOff />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
                             }}
                         />
                     </div>
