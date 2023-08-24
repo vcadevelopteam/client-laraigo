@@ -28,6 +28,7 @@ const translation: LangKeys = {
 
   show_logs: 'Mostrar logs',
   laraigoia: "Laraigo IA",
+  connectors: 'Conectores',
   iaconnectors: "Conectores IA",
   iaconnectorsdescription: "Registra tus conectores de inteligencia artificial",
   enter: "Ingresar",
