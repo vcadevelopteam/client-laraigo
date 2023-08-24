@@ -5296,6 +5296,7 @@ const translation: LangKeys = {
   openpay_message06: 'Pay',
   openpay_message07: 'Go Back',
   openpay_message08: 'Expiration Year (YY)',
+  dialog_iscloud: 'Is Cloud',
 };
 
 const enResource: ResourceLanguage = {

@@ -5223,6 +5223,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   openpay_message06: 'Pagar',
   openpay_message07: 'Regresar',
   openpay_message08: 'Año de Expiración (AA)',
+  dialog_iscloud: 'Es Cloud',
 };
 
 const esResource: ResourceLanguage = {
