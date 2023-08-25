@@ -1,4 +1,5 @@
-import { Button, makeStyles } from "@material-ui/core";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { Button } from "@material-ui/core";
 import {
   DialogZyx,
 } from "components";
@@ -9,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import React from "react";
 import TableZyx from "components/fields/table-simple";
 
-export const StatusHistory: React.FC<{
+const StatusHistoryDialog: React.FC<{
   openModal: any;
   setOpenModal: (dat: any) => void;
   getValues?: UseFormGetValues<any>;
@@ -74,3 +75,5 @@ export const StatusHistory: React.FC<{
     </DialogZyx>
   );
 };
+
+export default StatusHistoryDialog;

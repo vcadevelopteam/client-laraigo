@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const ChangeStatusModal: React.FC<{
+const ChangeStatusDialog: React.FC<{
   openModal: any;
   setOpenModal: (dat: any) => void;
   getValues?: UseFormGetValues<any>;
@@ -112,3 +112,5 @@ export const ChangeStatusModal: React.FC<{
     </DialogZyx>
   );
 };
+
+export default ChangeStatusDialog;

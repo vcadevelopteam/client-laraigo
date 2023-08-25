@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from "react";
-import { ChangeStatusModal } from "../components/ChangeStatusModal";
+import ChangeStatusDialog from "./detailTabs/DialogComponents/ChangeStatusDialog";
 import { Trans, useTranslation } from "react-i18next";
 import {
   TemplateIcons,
@@ -353,7 +353,7 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
           />
         </div>
       </DialogZyx>
-      <ChangeStatusModal
+      <ChangeStatusDialog
         openModal={openModalChangeStatus}
         setOpenModal={setOpenModalChangeStatus}
         massive={true}

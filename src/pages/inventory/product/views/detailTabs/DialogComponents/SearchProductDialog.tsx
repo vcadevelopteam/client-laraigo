@@ -5,21 +5,23 @@ import { useTranslation } from "react-i18next";
 import TableZyx from "components/fields/table-simple";
 import React, { useState } from "react";
 import { Dictionary } from "@types";
+import SearchDealerDialog from "./SearchDealerDialog";
 
 const selectionKey = "domainname";
 
-interface SearchProductModalProps {
+interface SearchProductDialogProps {
   openModal: boolean;
   setOpenModal: (estado: boolean) => void;
 }
 
-const SearchProductModal: React.FC<SearchProductModalProps> = ({
+const SearchProductDialog: React.FC<SearchProductDialogProps> = ({
   openModal,
   setOpenModal,
 }) => {
   const { t } = useTranslation();
   const [selectedRows, setSelectedRows] = useState<Dictionary>({});
   const [cleanSelected, setCleanSelected] = useState(false);
+  const [openModalSearch, setOpenModalSearch] = useState(false);
   const columns = React.useMemo(
     () => [
       {
@@ -75,8 +77,12 @@ const SearchProductModal: React.FC<SearchProductModalProps> = ({
         register={false}
         selectionKey={selectionKey}
       />
+      <SearchDealerDialog 
+        openModal={openModalSearch}
+        setOpenModal={setOpenModalSearch}
+      />
     </DialogZyx>
   );
 };
 
-export default SearchProductModal;
+export default SearchProductDialog;

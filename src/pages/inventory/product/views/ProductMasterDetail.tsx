@@ -17,9 +17,12 @@ import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/acti
 import { Tabs } from '@material-ui/core';
 import ProductTabDetail from './detailTabs/ProductTabDetail';
 import { ExtrasMenu } from '../components/components';
-import { ChangeStatusModal } from '../components/ChangeStatusModal';
-import { StatusHistory } from '../components/StatusHistory';
+import ChangeStatusDialog from './detailTabs/DialogComponents/ChangeStatusDialog';
+import StatusHistoryDialog from './detailTabs/DialogComponents/StatusHistoryDialog';
 import AlternativeProductTab from './detailTabs/AlternativeProductTabDetail';
+import AddToWarehouseDialog from './detailTabs/DialogComponents/AddToWarehouseDialog';
+import WarehouseTab from './detailTabs/WarehouseTabDetail';
+import DealerTab from './detailTabs/DealerTabDetail';
 
 
 
@@ -77,6 +80,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
     const detailRes = useSelector(state => state.main.mainAux);
     const [openModalChangeStatus, setOpenModalChangeStatus] = useState(false);
     const [openModalStatusHistory, setOpenModalStatusHistory] = useState(false);
+    const [openModalAddToWarehouse, setOpenModalAddToWarehouse] = useState(false);
     const classes = useStyles();
 
     const arrayBread = [
@@ -90,7 +94,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
         }
     }, [detailRes]);
     
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+    const { register, handleSubmit:handleMainSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             id: row?.domainid || 0,
             operation: edit ? "EDIT" : "INSERT",
@@ -138,7 +142,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
         dispatch(resetMainAux());
     }, [register]);
 
-    const onSubmit = handleSubmit((data) => {
+    const onMainSubmit = handleMainSubmit((data) => {
         const callback = () => {
             dispatch(showBackdrop(true));
             dispatch(execute(insDomain(data)));
@@ -156,117 +160,126 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
         }
     });
     return (
-        <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <div>
-                    <TemplateBreadcrumbs
-                        breadcrumbs={arrayBread}
-                        handleClick={(view) => {
-                            setViewSelected(view);
-                        }}
-                    />
-                    <TitleDetail
-                        title={row?.name || `${t(langKeys.new)} ${t(langKeys.product)}`}
-                    />
-                </div>
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                    <Button
-                        variant="contained"
-                        type="button"
-                        color="primary"
-                        startIcon={<ClearIcon color="secondary" />}
-                        style={{ backgroundColor: "#FB5F5F" }}
-                        onClick={() => {
-                            setViewSelected("main-view")
-                        }}
-                    >{t(langKeys.back)}</Button>
-                    <Button
-                        className={classes.button}
-                        variant="contained"
-                        color="primary"
-                        type="submit"
-                        startIcon={<SaveIcon color="secondary" />}
-                        style={{ backgroundColor: "#55BD84" }}>
-                        {t(langKeys.save)}
-                    </Button>
-                    
-                    {!edit && <ExtrasMenu
-                        changeStatus={()=>{setOpenModalChangeStatus(true)}}
-                        statusHistory={()=>setOpenModalStatusHistory(true)}
-                    />}
-                </div>
+        <>
+            <form onSubmit={onMainSubmit} style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={arrayBread}
+                            handleClick={(view) => {
+                                setViewSelected(view);
+                            }}
+                        />
+                        <TitleDetail
+                            title={row?.name || `${t(langKeys.new)} ${t(langKeys.product)}`}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => {
+                                setViewSelected("main-view")
+                            }}
+                        >{t(langKeys.back)}</Button>
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            type="submit"
+                            startIcon={<SaveIcon color="secondary" />}
+                            style={{ backgroundColor: "#55BD84" }}>
+                            {t(langKeys.save)}
+                        </Button>
+                        
+                        {!edit && <ExtrasMenu
+                            changeStatus={()=>{setOpenModalChangeStatus(true)}}
+                            statusHistory={()=>setOpenModalStatusHistory(true)}
+                            addToWarehouse={()=>setOpenModalAddToWarehouse(true)}
+                        />}
+                    </div>
 
-            </div>
-            <Tabs
-                value={tabIndex}
-                onChange={(_, i) => setTabIndex(i)}
-                className={classes.tabs}
-                textColor="primary"
-                indicatorColor="primary"
-                variant="fullWidth"
-            >
-                <AntTab
-                    label={(
-                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                            <Trans i18nKey={langKeys.product} />
-                        </div>
-                    )}
-                />
-                <AntTab
-                    label={(
-                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                            <Trans i18nKey={langKeys.alternativeproducts}/>
-                        </div>
-                    )}
-                />
-                <AntTab
-                    label={(
-                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                            <Trans i18nKey={langKeys.sendreminders} count={2} />
-                        </div>
-                    )}
-                />
-                <AntTab
-                    label={(
-                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                            <Trans i18nKey={langKeys.alternativephone} count={2} />
-                        </div>
-                    )}
-                />
-            </Tabs>
+                </div>
+                <Tabs
+                    value={tabIndex}
+                    onChange={(_, i) => setTabIndex(i)}
+                    className={classes.tabs}
+                    textColor="primary"
+                    indicatorColor="primary"
+                    variant="fullWidth"
+                >
+                    <AntTab
+                        label={(
+                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                <Trans i18nKey={langKeys.product} />
+                            </div>
+                        )}
+                    />
+                    <AntTab
+                        label={(
+                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                <Trans i18nKey={langKeys.warehouses}/>
+                            </div>
+                        )}
+                    />
+                    <AntTab
+                        label={(
+                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                <Trans i18nKey={langKeys.dealers} />
+                            </div>
+                        )}
+                    />
+                    <AntTab
+                        label={(
+                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                <Trans i18nKey={langKeys.alternativephone} />
+                            </div>
+                        )}
+                    />
+                </Tabs>
 
-            <AntTabPanel index={0} currentIndex={tabIndex}>
-                <ProductTabDetail
-                    row={row}
-                    setValue={setValue}
-                    getValues={getValues}
-                    errors={errors}
-                />
-            </AntTabPanel>
-            <AntTabPanel index={1} currentIndex={tabIndex}>
-                <AlternativeProductTab
-                    row={row}
-                    setValue={setValue}
-                    getValues={getValues}
-                    errors={errors}
-                />
-            </AntTabPanel>
-            <AntTabPanel index={2} currentIndex={tabIndex}>
-                <div>test</div>
-            </AntTabPanel>
-            <AntTabPanel index={3} currentIndex={tabIndex}>
-            </AntTabPanel>
-            <ChangeStatusModal 
+                <AntTabPanel index={0} currentIndex={tabIndex}>
+                    <ProductTabDetail
+                        row={row}
+                        setValue={setValue}
+                        getValues={getValues}
+                        errors={errors}
+                    />
+                    <AlternativeProductTab
+                        row={row}
+                        setValue={setValue}
+                        getValues={getValues}
+                        errors={errors}
+                    />
+                </AntTabPanel>
+                <AntTabPanel index={1} currentIndex={tabIndex}>
+                    <WarehouseTab />
+                </AntTabPanel>
+                <AntTabPanel index={2} currentIndex={tabIndex}>
+                    <DealerTab />
+                </AntTabPanel>
+                <AntTabPanel index={3} currentIndex={tabIndex}>
+                </AntTabPanel>
+            </form>
+            <ChangeStatusDialog 
                 openModal={openModalChangeStatus}
                 setOpenModal={setOpenModalChangeStatus}
                 getValues={getValues}
             />
-            <StatusHistory 
+            <StatusHistoryDialog 
                 openModal={openModalStatusHistory}
                 setOpenModal={setOpenModalStatusHistory}
                 getValues={getValues}
             />
-        </form>
+            <AddToWarehouseDialog 
+                openModal={openModalAddToWarehouse}
+                setOpenModal={setOpenModalAddToWarehouse}
+                setTabIndex={setTabIndex}
+            />
+        </>
     );
 }
 

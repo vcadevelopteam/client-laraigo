@@ -18,13 +18,13 @@ import DeleteIcon from '@material-ui/icons/Delete';
 interface TemplateIconsProps {
     changeStatus?: (param: any) => void;
     statusHistory?: (param: any) => void;
-    editFunction?: (param: any) => void;
+    addToWarehouse?: (param: any) => void;
     extraOption?: string;
     ExtraICon?: () => JSX.Element;
     extraFunction?: (param: any) => void;
 }
 
-export const ExtrasMenu: React.FC<TemplateIconsProps> = ({ changeStatus, statusHistory, editFunction, extraFunction, ExtraICon }) => {
+export const ExtrasMenu: React.FC<TemplateIconsProps> = ({ changeStatus, statusHistory, addToWarehouse, extraFunction, ExtraICon }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const handleClose = (e: any) => {
         e.stopPropagation();
@@ -83,6 +83,18 @@ export const ExtrasMenu: React.FC<TemplateIconsProps> = ({ changeStatus, statusH
                             <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
                         </ListItemIcon>
                         <Trans i18nKey={langKeys.status_history} />
+                    </MenuItem>
+                }
+                {addToWarehouse &&
+                    <MenuItem onClick={(e) => {
+                        e.stopPropagation();
+                        setAnchorEl(null);
+                        addToWarehouse?.(e)
+                    }}>
+                        <ListItemIcon color="inherit">
+                            <DeleteIcon width={18} style={{ fill: '#7721AD' }} />
+                        </ListItemIcon>
+                        <Trans i18nKey={langKeys.add_product_to_warehouse} />
                     </MenuItem>
                 }
             </Menu>

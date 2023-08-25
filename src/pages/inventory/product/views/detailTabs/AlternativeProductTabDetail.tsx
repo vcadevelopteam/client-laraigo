@@ -12,7 +12,7 @@ import {
 import { Button } from "@material-ui/core";
 import TableZyx from "components/fields/table-simple";
 import { Search as SearchIcon } from "@material-ui/icons";
-import SearchProductModal from "./TabComponents/SearchProductModal";
+import SearchProductDialog from "./DialogComponents/SearchProductDialog";
 import ClearIcon from "@material-ui/icons/Clear";
 
 const selectionKey = "domainname";
@@ -115,7 +115,7 @@ const AlternativeProductTab: React.FC<AlternativeProductDetailProps> = ({
           selectionKey={selectionKey}
         />
       </div>
-      <SearchProductModal
+      <SearchProductDialog
         openModal={openModalSearch}
         setOpenModal={setOpenModalSearch}
       />
