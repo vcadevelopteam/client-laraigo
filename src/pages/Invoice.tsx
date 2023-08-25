@@ -149,8 +149,9 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TableZyx from "../components/fields/table-simple";
 import Typography from "@material-ui/core/Typography";
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import Visibility from "@material-ui/icons/Visibility";
+import VisibilityOff from "@material-ui/icons/VisibilityOff";
+
 interface RowSelected {
     edit: boolean;
     row: Dictionary | null;
@@ -3234,7 +3235,7 @@ const DetailArtificialIntelligence: React.FC<ModalProps> = ({
                         <FieldEdit
                             className="col-6"
                             disabled={!edit}
-                            type={showPassword ? 'text' : 'password'}
+                            type={showPassword ? "text" : "password"}
                             error={errors?.apikey?.message}
                             label={t(langKeys.apikey)}
                             valueDefault={getValues("apikey")}
@@ -4705,7 +4706,7 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                         </StyledTableRow>
                                         {dataReport.additionalservice01 && (
                                             <StyledTableRow>
-                                                <StyledTableCell></StyledTableCell>
+                                                <StyledTableCell>{dataReport.additionalservice01}</StyledTableCell>
                                                 <StyledTableCell></StyledTableCell>
                                                 <StyledTableCell></StyledTableCell>
                                                 <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
@@ -4723,7 +4724,7 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                         )}
                                         {dataReport.additionalservice02 && (
                                             <StyledTableRow>
-                                                <StyledTableCell></StyledTableCell>
+                                                <StyledTableCell>{dataReport.additionalservice02}</StyledTableCell>
                                                 <StyledTableCell></StyledTableCell>
                                                 <StyledTableCell></StyledTableCell>
                                                 <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
@@ -4741,7 +4742,7 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                                         )}
                                         {dataReport.additionalservice03 && (
                                             <StyledTableRow>
-                                                <StyledTableCell></StyledTableCell>
+                                                <StyledTableCell>{dataReport.additionalservice03}</StyledTableCell>
                                                 <StyledTableCell></StyledTableCell>
                                                 <StyledTableCell></StyledTableCell>
                                                 <StyledTableCell align="right">{`${dataReport.invoicecurrencysymbol
