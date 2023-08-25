@@ -164,7 +164,7 @@ const LinkList: FC<{ config: ViewsClassificationConfig, classes: any, open: bool
     return (
         <>
             {
-                userRole?.includes('ADMINISTRADOR') && config.key === 'invoice'
+                (userRole?.includes('ADMINISTRADOR') || userRole?.includes('SUPERVISOR') ) && config.key === 'invoice'
                     ?
                     <ListItem
                         button
@@ -250,7 +250,7 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
                     acc[acc.length - 2].options.splice(acc[acc.length - 2].options.indexOf('/invoice'), 1);
                     acc[acc.length - 2].options.splice(acc[acc.length - 2].options.indexOf('/billing_setups'), 1);
                     acc[acc.length - 2].options.splice(acc[acc.length - 2].options.indexOf('/timesheet'), 1);
-                } else if (userData?.roledesc.includes('ADMINISTRADOR')) {
+                } else if (userData?.roledesc.includes('ADMINISTRADOR') || userData?.roledesc.includes('SUPERVISOR')) {
                     const filteredSubroutes = ['/invoice']
                     acc.push({ ...view, id: 8, key: 'invoice', options: filteredSubroutes, description: t(langKeys.invoice), icon: (className: string) => <InvoiceIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />, });
                     acc[acc.length - 2].options.splice(acc[acc.length - 2].options.indexOf('/invoice'), 1);
