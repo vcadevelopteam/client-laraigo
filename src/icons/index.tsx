@@ -304,4 +304,4 @@ export { ReactComponent as SalesRouteIcon } from './sales_route.svg';
 export { ReactComponent as ServiceDeskRouteIcon } from './service desk 1_route.svg';
 export { ReactComponent as IAEntrenamientoIcon } from './IA_Laraigo_Entrenamiento.svg';
 
-export {ReactComponent as TimeSheetIcon} from './timesheet_24dp 1.svg';
+export {ReactComponent as TimeSheetIcon} from './newIconTimesheet.svg';

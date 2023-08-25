@@ -71,7 +71,7 @@ const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig,
             if (option === '/channels') return routes.find(route => route?.key === option);
             return routes.find(route => route?.path === option);
         });
-
+    // console.log(navigationRoutes);
 
 
     // || subroutes.find(route => route?.path === option));
@@ -234,6 +234,7 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
     // console.log(applications);
     //Conseguir todas las subrutas y asignarlas a los modulos padres
     // debugger;
+    // console.log(applications);
     const showableViews = viewsClassifications.reduce((acc: any[], view) => {
         const subroutes = Object.entries(applications as Object)
             .filter(([_, values]) => values[4] === view.id) //  
