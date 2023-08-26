@@ -48,6 +48,7 @@ const Forbidden = lazy(() => import('pages/Forbidden'));
 const InternalServererror = lazy(() => import('pages/InternalServerError'));
 const Corporations = lazy(() => import('pages/Corporations'));
 const BillingSetups = lazy(() => import('pages/BillingSetups'));
+const TimeSheet = lazy(() => import('pages/TimeSheet'));
 const Organizations = lazy(() => import('pages/Organizations'));
 const Tickets = lazy(() => import('pages/Tickets'));
 const UserSettings = lazy(() => import('pages/UserSettings'));
@@ -269,6 +270,7 @@ const RouterApp: FC = () => {
 					<ProtectRoute exact path={paths.IASERVICES} component={() => (<Layout mainClasses={classes.main}><Iaservices /></Layout>)} />
 					<ProtectRoute exact path={paths.SUPERVISOR} component={() => (<Layout ><Supervisor /></Layout>)} />
 					<ProtectRoute exact path={paths.BILLING_SETUPS} component={() => (<Layout mainClasses={classes.main}><BillingSetups /></Layout>)} />
+					<ProtectRoute exact path={paths.TIMESHEET} component={() => (<Layout mainClasses={classes.main}><TimeSheet /></Layout>)} />
 					<ProtectRoute exact path={paths.INVOICE} component={() => (<Layout mainClasses={classes.main}><Invoice /></Layout>)} />
 					<ProtectRoute exact path={paths.MESSAGE_INBOX} component={() => (<Layout><MessageInbox /></Layout>)} />
 					<ProtectRoute exact path={paths.PROPERTIES} component={() => <Layout mainClasses={classes.main}><Properties /></Layout>} />
