@@ -66,8 +66,8 @@ export const reportsImage = [
 export { ReactComponent as DashboardIcon } from 'icons/dashboard.svg';
 export { ReactComponent as Reports2Icon } from 'icons/chart-bar-bargraph.svg';
 export { ReactComponent as ReportsIcon } from 'icons/reports.svg';
-export { ReactComponent as PostCreatorIcon } from 'icons/postcreator.svg';
-export { ReactComponent as TicketIcon } from 'icons/ticket.svg';
+export { ReactComponent as PostCreatorIcon } from 'icons/creador-publicaciones-new.svg';
+export { ReactComponent as TicketIcon } from 'icons/tickets_new.svg';
 export { ReactComponent as EMailInboxIcon } from 'icons/email-mail-letter.svg';
 export { ReactComponent as MessageInboxIcon } from 'icons/chat-message-password-input.svg';
 export { ReactComponent as SupervisorIcon } from 'icons/single-user-setting.svg';
@@ -291,11 +291,11 @@ export { ReactComponent as ChannelYouTube } from './channel/channel-youtube.svg'
 export { ReactComponent as DashboardRouteIcon } from './dashboard_route.svg';
 export { ReactComponent as AnalyticRouteIcon } from './analytics_route.svg';
 export { ReactComponent as AutomatizationRouteIcon } from './automatizacion_route.svg';
-export { ReactComponent as ConectivityIARouteIcon } from './conectividadIA_route.svg';
-export { ReactComponent as ConfiguratuinIARouteIcon } from './configuracion-IA_route.svg';
+export { ReactComponent as ConectivityIARouteIcon } from './conectividad-IAnew.svg';
+export { ReactComponent as ConfiguratuinIARouteIcon } from './configuracion-IAnew.svg';
 export { ReactComponent as IARouteIcon } from './IA_route.svg';
 export { ReactComponent as SalesRouteIcon } from './sales_route.svg';
 export { ReactComponent as ServiceDeskRouteIcon } from './service desk 1_route.svg';
-export { ReactComponent as IAEntrenamientoIcon } from './IA_Laraigo_Entrenamiento.svg';
+export { ReactComponent as IAEntrenamientoIcon } from './Ai_laraigo_new.svg';
 
 export {ReactComponent as TimeSheetIcon} from './newIconTimesheet.svg';
