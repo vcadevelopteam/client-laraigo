@@ -34,6 +34,8 @@ const translation: LangKeys = {
   ringing: "ringing",
   connecting: "Connecting...",
   connected_call: "Connected call",
+  averagedeliverytime:"Average delivery time",
+  taxcodes:"Tax codes",
   monitor_call: "Monitor call",
   monitor_call_off: "Cancel call supervision",
 
@@ -45,6 +47,8 @@ const translation: LangKeys = {
 
   noname: "No name",
   disconnections: "Disconnections",
+  specifications:"Specifications",
+  attribute:"Attribute",
   totaltimeduetodisconnectionreasons: "Total time due to disconnection reasons",
   timeconnectedvstimeoff: "Time Connected vs. Time Off",
   timeconnectedvstimeoffperasesor: "Time Connected vs. Time Off per Adviser",

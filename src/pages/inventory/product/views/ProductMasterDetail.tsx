@@ -23,6 +23,7 @@ import AlternativeProductTab from './detailTabs/AlternativeProductTabDetail';
 import AddToWarehouseDialog from './detailTabs/DialogComponents/AddToWarehouseDialog';
 import WarehouseTab from './detailTabs/WarehouseTabDetail';
 import DealerTab from './detailTabs/DealerTabDetail';
+import SpecificationTabDetail from './detailTabs/SpecificationTabDetail';
 
 
 
@@ -235,7 +236,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                     <AntTab
                         label={(
                             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <Trans i18nKey={langKeys.alternativephone} />
+                                <Trans i18nKey={langKeys.specifications} />
                             </div>
                         )}
                     />
@@ -262,6 +263,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                     <DealerTab />
                 </AntTabPanel>
                 <AntTabPanel index={3} currentIndex={tabIndex}>
+                    <SpecificationTabDetail />
                 </AntTabPanel>
             </form>
             <ChangeStatusDialog 

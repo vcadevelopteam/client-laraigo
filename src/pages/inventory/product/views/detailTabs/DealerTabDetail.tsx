@@ -7,6 +7,7 @@ import TableZyx from "components/fields/table-simple";
 import Button from "@material-ui/core/Button";
 import SearchIcon from "@material-ui/icons/Search";
 import SearchDealerDialog from "./DialogComponents/SearchDealerDialog";
+import RegisterDealerDialog from "./DialogComponents/RegisterDealerDialog";
 
 const useStyles = makeStyles((theme) => ({
   containerDetail: {
@@ -25,6 +26,7 @@ const DealerTab: React.FC<DealerTabProps> = () => {
   const { t } = useTranslation();
   const classes = useStyles();
   const [openModalSearch, setOpenModalSearch] = useState(false);
+  const [openModalDealer, setOpenModalDealer] = useState(false);
 
   const columns = React.useMemo(
     () => [
@@ -76,7 +78,9 @@ const DealerTab: React.FC<DealerTabProps> = () => {
     ],
     []
   );
-  function handleRegister() {}
+  function handleRegister() {
+    setOpenModalDealer(true)
+  }
   function search() {
     setOpenModalSearch(true)
   }
@@ -108,6 +112,10 @@ const DealerTab: React.FC<DealerTabProps> = () => {
       <SearchDealerDialog
         openModal={openModalSearch}
         setOpenModal={setOpenModalSearch}
+      />
+      <RegisterDealerDialog
+        openModal={openModalDealer}
+        setOpenModal={setOpenModalDealer}
       />
     </div>
   );
