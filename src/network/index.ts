@@ -14,3 +14,4 @@ export * as CalendarService from './service/calendar';
 export * as PostHistoryService from './service/posthistory';
 export * as CatalogService from './service/catalog';
 export * as PaymentService from './service/payment';
+export * as RasaService from './service/rasa';

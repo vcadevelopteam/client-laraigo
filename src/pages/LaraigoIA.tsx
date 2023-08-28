@@ -9,7 +9,7 @@ import { TemplateBreadcrumbs } from 'components';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { resetAllMain } from 'store/main/actions';
+import { getCollectionAux, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import {Box, Card, Grid } from '@material-ui/core';
 import { ConectoresIALogo, ConfiguracionIALogo, EntrenamientoIALogo, IntencionesIALogo, EntidadesIALogo } from 'icons';
@@ -17,6 +17,11 @@ import { Intentions } from './assistant/Intentions';
 import { Entities } from './assistant/Entities';
 import IAConfiguration from './Iaservices';
 import IntelligentModels from './IntelligentModels';
+import { IntentionsRasa } from './rasa/IntentionsRasa';
+import { SynonimsRasa } from './rasa/SynonimsRasa';
+import TestModelDialog from 'components/inbox/TestModelDialog';
+import { rasaModelSel } from 'common/helpers';
+import { ModelsRasa } from './rasa/ModelsRasa';
 
 interface DetailIaServiceProps {
     setViewSelected: (view: string) => void;
@@ -91,6 +96,350 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const RasaIA: React.FC<{arrayBread: any, setViewSelected: (view: string) => void}> = ({ setViewSelected, arrayBread }) => {
+    const dispatch = useDispatch();
+    const { t } = useTranslation();
+    const mainResult = useSelector(state => state.main);
+    const [viewSelectedTraining, setViewSelectedTraining] = useState("view-1");
+    const executeResult = useSelector(state => state.main.execute);
+    const classes = useStyles();
+    const [openModal, setOpenModal] = useState(false);    
+
+    const newArrayBread = [
+        ...arrayBread,
+        { id: "rasaia", name:  "RASA IA" },
+    ];
+    // const [mainData, setMainData] = useState<any>([]);
+    const [waitSave, setWaitSave] = useState(false);
+
+    const fetchData = () => dispatch(getCollectionAux(rasaModelSel()))
+    const functionChange = (change:string) => {
+        if(change === "rasaia"){
+            setViewSelectedTraining("view-1")
+            fetchData()
+        }else{
+            setViewSelected(change);
+        }
+    }
+    useEffect(() => {
+        fetchData()
+        return () => {
+            dispatch(resetAllMain());
+        };
+    }, []);
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.corporation_plural).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [executeResult, waitSave])
+
+    useEffect(() => {
+        // setMainData(mainResult.mainData.data.map(x => ({
+        //     ...x,
+        //     typedesc: (t(`type_corp_${x.type}`.toLowerCase()) || "").toUpperCase(),
+        //     statusdesc: (t(`status_${x.status}`.toLowerCase()) || "").toUpperCase()
+        // })))
+    }, [mainResult.mainData.data])
+
+
+    if (viewSelectedTraining === "view-1") {
+        return (
+            <div style={{ width: "100%" }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={newArrayBread}
+                        handleClick={functionChange}
+                    />
+                </div>
+                <div className={classes.container}>
+                    <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" style={{ marginBottom: 8 }}>
+                        <span className={classes.title}>
+                            {t(langKeys.training)}
+                        </span>
+                    </Box>
+                    <div className={classes.containerDetails}>
+                        
+                        <Grid container spacing={3} >                            
+                            <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
+                                <Card style={{ position: 'relative', display:"flex" }}>
+                                    <div className={classes.containerInner}>
+
+                                        <div className="col-6" style={{width: "50%"}}>
+                                            <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
+                                            <div className={classes.containerInnertittle2}>{t(langKeys.intentionsandentities)}</div>
+                                            <div className={classes.containerInnertittle3}>{t(langKeys.intentionsandentitiesdescription)}</div>                                            
+                                            <Button
+                                                className={classes.button}
+                                                variant="contained"
+                                                color="primary"
+                                                onClick={()=>setViewSelectedTraining("intentions")}
+                                                style={{ backgroundColor: "#55BD84" }}
+                                            >{t(langKeys.enter)}
+                                            </Button>
+                                        </div>
+                                        
+                                        <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
+                                            <IntencionesIALogo style={{ height: 220, width:"100%" }} />
+                                        </div>
+                                    </div>
+                                </Card>
+                            </Grid>
+                            <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
+                                <Card style={{ position: 'relative', display:"flex" }}>
+                                    <div className={classes.containerInner}>
+
+                                        <div className="col-6" style={{width: "50%"}}>
+                                            <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
+                                            <div className={classes.containerInnertittle2}>{t(langKeys.sinonims)}</div>
+                                            <div className={classes.containerInnertittle3}>{t(langKeys.sinonimsdescription)}</div>                                            
+                                            <Button
+                                                className={classes.button}
+                                                variant="contained"
+                                                color="primary"
+                                                style={{ backgroundColor: "#55BD84" }}
+                                                onClick={()=>setViewSelectedTraining("sinonims")}
+                                            >{t(langKeys.enter)}
+                                            </Button>
+                                        </div>
+                                        
+                                        <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
+                                            <EntidadesIALogo style={{ height: 220, width:"100%" }} />
+                                        </div>
+                                    </div>
+                                </Card>
+                            </Grid>
+                            <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
+                                <Card style={{ position: 'relative', display:"flex" }}>
+                                    <div className={classes.containerInner}>
+
+                                        <div className="col-6" style={{width: "50%"}}>
+                                            <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
+                                            <div className={classes.containerInnertittle2}>{t(langKeys.model_plural)}</div>
+                                            <div className={classes.containerInnertittle3}>{t(langKeys.modeldescription)}</div>                                            
+                                            <Button
+                                                className={classes.button}
+                                                variant="contained"
+                                                color="primary"
+                                                style={{ backgroundColor: "#55BD84" }}
+                                                onClick={()=>setViewSelectedTraining("models")}
+                                            >{t(langKeys.enter)}
+                                            </Button>
+                                        </div>
+                                        
+                                        <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
+                                            <EntidadesIALogo style={{ height: 220, width:"100%" }} />
+                                        </div>
+                                    </div>
+                                </Card>
+                            </Grid>
+                            <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
+                                <Card style={{ position: 'relative', display:"flex" }}>
+                                    <div className={classes.containerInner}>
+
+                                        <div className="col-6" style={{width: "50%"}}>
+                                            <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
+                                            <div className={classes.containerInnertittle2}>{t(langKeys.testmodel)}</div>
+                                            <div className={classes.containerInnertittle3}>{t(langKeys.testmodeldescription)}</div>                                            
+                                            <Button
+                                                className={classes.button}
+                                                variant="contained"
+                                                color="primary"
+                                                style={{ backgroundColor: "#55BD84" }}
+                                                onClick={()=>setOpenModal(true)}
+                                            >{t(langKeys.enter)}
+                                            </Button>
+                                        </div>
+                                        <TestModelDialog
+                                            openModal={openModal}
+                                            setOpenModal={setOpenModal}
+                                        />
+                                        
+                                        <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
+                                            <EntidadesIALogo style={{ height: 220, width:"100%" }} />
+                                        </div>
+                                    </div>
+                                </Card>
+                            </Grid>
+                        </Grid>
+                    </div>
+                </div>
+            </div>
+        )
+    }else if (viewSelectedTraining === "intentions") {
+        return <IntentionsRasa 
+            setExternalViewSelected={functionChange}
+            arrayBread={newArrayBread}
+        />
+    }else if (viewSelectedTraining === "sinonims") {
+        return (
+            <SynonimsRasa 
+            setExternalViewSelected={functionChange}
+            arrayBread={newArrayBread}
+            />
+        )
+    }else if (viewSelectedTraining === "models") {
+        return (
+            <ModelsRasa 
+            setExternalViewSelected={functionChange}
+            arrayBread={newArrayBread}
+            />
+        )
+    } else
+        return null;
+
+}
+const WitIA: React.FC<{arrayBread: any, setViewSelected: (view: string) => void}> = ({ setViewSelected, arrayBread }) => {
+    const dispatch = useDispatch();
+    const { t } = useTranslation();
+    const mainResult = useSelector(state => state.main);
+    const [viewSelectedTraining, setViewSelectedTraining] = useState("view-1");
+    const executeResult = useSelector(state => state.main.execute);
+    const classes = useStyles();
+
+    const newArrayBread = [
+        ...arrayBread,
+        { id: "witia", name:  "WIT IA" },
+    ];
+    // const [mainData, setMainData] = useState<any>([]);
+    const [waitSave, setWaitSave] = useState(false);
+
+    
+    const functionChange = (change:string) => {
+        debugger
+        if(change === "witia"){
+            setViewSelectedTraining("view-1")
+        }else{
+            setViewSelected(change);
+        }
+    }
+
+    useEffect(() => {
+        return () => {
+            dispatch(resetAllMain());
+        };
+    }, []);
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.corporation_plural).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, severity: "error", message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [executeResult, waitSave])
+
+    useEffect(() => {
+        // setMainData(mainResult.mainData.data.map(x => ({
+        //     ...x,
+        //     typedesc: (t(`type_corp_${x.type}`.toLowerCase()) || "").toUpperCase(),
+        //     statusdesc: (t(`status_${x.status}`.toLowerCase()) || "").toUpperCase()
+        // })))
+    }, [mainResult.mainData.data])
+
+
+    if (viewSelectedTraining === "view-1") {
+        return (
+            <div style={{ width: "100%" }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={newArrayBread}
+                        handleClick={functionChange}
+                    />
+                </div>
+                <div className={classes.container}>
+                    <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" style={{ marginBottom: 8 }}>
+                        <span className={classes.title}>
+                            {t(langKeys.training)}
+                        </span>
+                    </Box>
+                    <div className={classes.containerDetails}>
+                        
+                        <Grid container spacing={3} >                            
+                            <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
+                                <Card style={{ position: 'relative', display:"flex" }}>
+                                    <div className={classes.containerInner}>
+
+                                        <div className="col-6" style={{width: "50%"}}>
+                                            <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
+                                            <div className={classes.containerInnertittle2}>{t(langKeys.intentions)}</div>
+                                            <div className={classes.containerInnertittle3}>{t(langKeys.intentionsdescription)}</div>                                            
+                                            <Button
+                                                className={classes.button}
+                                                variant="contained"
+                                                color="primary"
+                                                onClick={()=>setViewSelectedTraining("intentions")}
+                                                style={{ backgroundColor: "#55BD84" }}
+                                            >{t(langKeys.enter)}
+                                            </Button>
+                                        </div>
+                                        
+                                        <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
+                                            <IntencionesIALogo style={{ height: 220, width:"100%" }} />
+                                        </div>
+                                    </div>
+                                </Card>
+                            </Grid>
+                            <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
+                                <Card style={{ position: 'relative', display:"flex" }}>
+                                    <div className={classes.containerInner}>
+
+                                        <div className="col-6" style={{width: "50%"}}>
+                                            <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
+                                            <div className={classes.containerInnertittle2}>{t(langKeys.entities)}</div>
+                                            <div className={classes.containerInnertittle3}>{t(langKeys.entitiesdescription)}</div>                                            
+                                            <Button
+                                                className={classes.button}
+                                                variant="contained"
+                                                color="primary"
+                                                style={{ backgroundColor: "#55BD84" }}
+                                                onClick={()=>setViewSelectedTraining("entities")}
+                                            >{t(langKeys.enter)}
+                                            </Button>
+                                        </div>
+                                        
+                                        <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
+                                            <EntidadesIALogo style={{ height: 220, width:"100%" }} />
+                                        </div>
+                                    </div>
+                                </Card>
+                            </Grid>
+                        </Grid>
+                    </div>
+                </div>
+            </div>
+        )
+    }else if (viewSelectedTraining === "intentions") {
+        return <Intentions 
+            setExternalViewSelected={functionChange}
+            arrayBread={newArrayBread}
+        />
+    }else if (viewSelectedTraining === "entities") {
+        return (
+            <Entities 
+            setExternalViewSelected={functionChange}
+            arrayBread={newArrayBread}
+            />
+        )
+    } else
+        return null;
+
+}
 const IATraining: React.FC<DetailIaServiceProps> = ({ setViewSelected }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -161,28 +510,28 @@ const IATraining: React.FC<DetailIaServiceProps> = ({ setViewSelected }) => {
                         </span>
                     </Box>
                     <div className={classes.containerDetails}>
+                        
                         <Grid container spacing={3} >
-                            
                             <Grid item xs={12} md={6} lg={4} style={{ minWidth: 330 }}>
                                 <Card style={{ position: 'relative', display:"flex" }}>
                                     <div className={classes.containerInner}>
 
                                         <div className="col-6" style={{width: "50%"}}>
                                             <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
-                                            <div className={classes.containerInnertittle2}>{t(langKeys.intentions)}</div>
-                                            <div className={classes.containerInnertittle3}>{t(langKeys.intentionsdescription)}</div>                                            
+                                            <div className={classes.containerInnertittle2}>WIT IA</div>
+                                            <div className={classes.containerInnertittle3}>{t(langKeys.trainingwithaidescription)}</div>                                            
                                             <Button
                                                 className={classes.button}
                                                 variant="contained"
                                                 color="primary"
-                                                onClick={()=>setViewSelectedTraining("intentions")}
                                                 style={{ backgroundColor: "#55BD84" }}
+                                                onClick={()=>setViewSelectedTraining("witia")}
                                             >{t(langKeys.enter)}
                                             </Button>
                                         </div>
                                         
                                         <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                            <IntencionesIALogo style={{ height: 220, width:"100%" }} />
+                                            <EntrenamientoIALogo style={{ height: 220, width:"100%" }} />
                                         </div>
                                     </div>
                                 </Card>
@@ -193,20 +542,20 @@ const IATraining: React.FC<DetailIaServiceProps> = ({ setViewSelected }) => {
 
                                         <div className="col-6" style={{width: "50%"}}>
                                             <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
-                                            <div className={classes.containerInnertittle2}>{t(langKeys.entities)}</div>
-                                            <div className={classes.containerInnertittle3}>{t(langKeys.entitiesdescription)}</div>                                            
+                                            <div className={classes.containerInnertittle2}>RASA IA</div>
+                                            <div className={classes.containerInnertittle3}>{t(langKeys.trainingwithaidescription)}</div>                                            
                                             <Button
                                                 className={classes.button}
                                                 variant="contained"
                                                 color="primary"
                                                 style={{ backgroundColor: "#55BD84" }}
-                                                onClick={()=>setViewSelectedTraining("entities")}
+                                                onClick={()=>setViewSelectedTraining("rasaia")}
                                             >{t(langKeys.enter)}
                                             </Button>
                                         </div>
                                         
                                         <div className='col-6' style={{ display: 'flex', justifyContent: 'center', width: "50%" }}>
-                                            <EntidadesIALogo style={{ height: 220, width:"100%" }} />
+                                            <EntrenamientoIALogo style={{ height: 220, width:"100%" }} />
                                         </div>
                                     </div>
                                 </Card>
@@ -216,15 +565,15 @@ const IATraining: React.FC<DetailIaServiceProps> = ({ setViewSelected }) => {
                 </div>
             </div>
         )
-    }else if (viewSelectedTraining === "intentions") {
-        return <Intentions 
-            setExternalViewSelected={functionChange}
+    }else if (viewSelectedTraining === "witia") {
+        return <WitIA 
+            setViewSelected={functionChange}
             arrayBread={arrayBread}
         />
-    }else if (viewSelectedTraining === "entities") {
+    }else if (viewSelectedTraining === "rasaia") {
         return (
-            <Entities 
-            setExternalViewSelected={functionChange}
+            <RasaIA 
+            setViewSelected={functionChange}
             arrayBread={arrayBread}
             />
         )
@@ -316,8 +665,8 @@ const Iaservices: FC = () => {
 
                                     <div className="col-6" style={{width: "50%"}}>
                                         <div className={classes.containerInnertittle1}>{t(langKeys.ia)}</div>
-                                        <div className={classes.containerInnertittle2}>{t(langKeys.trainingwithai)}</div>
-                                        <div className={classes.containerInnertittle3}>{t(langKeys.trainingwithaidescription)}</div>                                            
+                                        <div className={classes.containerInnertittle2}>{t(langKeys.aitraining)}</div>
+                                        <div className={classes.containerInnertittle3}>{t(langKeys.aitrainingdescription)}</div>                                            
                                         <Button
                                             className={classes.button}
                                             variant="contained"

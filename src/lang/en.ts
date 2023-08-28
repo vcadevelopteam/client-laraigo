@@ -598,6 +598,15 @@ const translation: LangKeys = {
   iaconfiguration: "AI Configuration",
   iaconfigurationdescription: "Configure how and where to use your artificial intelligence services",
   trainingwithai: "Training with AI",
+  aitraining: "Training AI",
+  aitrainingdescription: "Train your AI service",
+  sinonimsdescription: "Train synonyms referring to your created entity.",
+  modeldescription: "Check the models that have previously been trained in RASA",
+  insightsdescription: "Assess the degree of confidence of the training of your intentions",
+  testmodel: "Test your model",
+  testmodeldescription: "Test your model with the created intents and entities.",
+  intentionsandentities: "Intentions and Entities",
+  intentionsandentitiesdescription: "Train your model by providing examples of intentions and entities.",
   trainingwithaidescription: "Train your artificial intelligence service",
   training: "Training",
   intentionsdescription: "The intention is named and associated with the question the customer asks.",
@@ -1571,6 +1580,7 @@ const translation: LangKeys = {
   socialmediachannel: "Social Media Channel",
   businesschannel: "Business Channel",
   hasactionplan: "Has action plan",
+  waitinginteractions: "Waiting {{time}} seconds to send the next messages",
   error_already_exists_record:
     "23505: There is already the same {{module}} registered",
 
@@ -2451,6 +2461,7 @@ const translation: LangKeys = {
   report_sentmessages_CHATFLOW: 'Sent from flow',
   report_sentmessages_BOOKING: 'Sent from booking',
 
+  errorRasaEntity: 'The fields name and value are obligatory.',
   report_sentmessages_name: 'Shipping reason',
   report_sentmessages_shippingdate: 'Shipping Date',
   report_sentmessages_from: 'Sender',
@@ -2462,9 +2473,11 @@ const translation: LangKeys = {
   prepared: "Prepared",
   dispatched: "Dispatched",
   delivered: "Delivered",
+  sinonim: "Sinonim",
 
   report_conversationwhatsapp: 'Whatsapp conversations',
 
+  "personalizedreport_hsmcampaign": "HSM Shipping Status",
   "personalizedreport_conversation.userjoy": "conversation user joy",
   "personalizedreport_conversation.userfear": "conversation user fear",
   "personalizedreport_conversation.userdisgust": "conversation user disgust",
