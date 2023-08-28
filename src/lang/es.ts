@@ -1542,8 +1542,7 @@ const translation: LangKeys = {
   successful_duplicate: 'Se duplico satisfactoriamente',
   successful_update: "Se actualizo satisfactoriamente",
   countrycode: "Código de País",
-  userstatus_tooltip: "Indica el estado de actividad del usuario, de estar ACTIVO significa que se encuentra laborando, de estar como INACTIVO indica que se encuentra fuera de labores (vacaciones o por algún motivo está fuera momentáneamente), y BLOQUEADO indica que su cuenta ha sido bloqueada por intentar ingresar con una contraseña inválida en varios intentos (se bloquea automáticamente).",
-  quickreplies: 'Respuestas rápidas',
+  quickreplies: 'Repuestas rápidas',
   company_tooltip: "Las compañías que aparezcan en este apartado son los clientes que trabajan con Laraigo y dependiendo del usuario, se le asigna una compañía a la que pertenezca.",
   twofactorauthentication: 'Doble factor autentificación',
   twofactorauthentication_tooltip: 'Si se tiene ACTIVO, se enviará un HSM al correo del usuario cada vez que quiera iniciar sesión, de esa forma se tendrá una doble validación de códigos de seguridad para acceder (teniendo un acceso a la plataforma más segura).',
@@ -5290,6 +5289,8 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   openpay_message06: 'Pagar',
   openpay_message07: 'Regresar',
   openpay_message08: 'Año de Expiración (AA)',
+
+  dialog_iscloud: 'Es Cloud',
   billingconfiguration_plancurrency: 'Moneda Plan Laraigo',
   billingconfiguration_vcacomission: 'Comisión VCA',
   billingconfiguration_basicanualfee: 'Costo del Plan Contratado Anual',
@@ -5397,7 +5398,7 @@ Carrousel: Carrusel utilizado por el canal Chatweb/Messenger `,
   billingreport_channeltotal: 'Canales Adicionales',
   billingreport_contactwhatsapp: 'Contactos en Canales WhatsApp',
   billingreport_contactother: 'Contactos en Canales No WhatsApp',
-  dialog_iscloud: 'Es Cloud',
+
 };
 
 const esResource: ResourceLanguage = {

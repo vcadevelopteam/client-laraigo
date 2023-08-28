@@ -5363,6 +5363,7 @@ const translation: LangKeys = {
   openpay_message06: 'Pay',
   openpay_message07: 'Go Back',
   openpay_message08: 'Expiration Year (YY)',
+  dialog_iscloud: 'Is Cloud',
   billingconfiguration_plancurrency: 'Laraigo Plan Currency',
   billingconfiguration_vcacomission: 'VCA Comission',
   billingconfiguration_basicanualfee: 'Annual Contracted Plan Cost',
@@ -5470,7 +5471,6 @@ const translation: LangKeys = {
   billingreport_channeltotal: 'Additional Channels',
   billingreport_contactwhatsapp: 'WhatsApp Channels Contacts',
   billingreport_contactother: 'Other Channels Contacts',
-  dialog_iscloud: 'Is Cloud',
 };
 
 const enResource: ResourceLanguage = {

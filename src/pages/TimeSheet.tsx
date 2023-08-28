@@ -310,7 +310,7 @@ const TimeSheet: FC = () => {
     };
 
     if (viewSelected === "view-1") {
-        if (mainResult.mainData.error || userRole !== "SUPERADMIN") {
+        if (mainResult.mainData.error || !userRole?.includes("SUPERADMIN")) {
             return <h1>ERROR</h1>;
         } else {
             return (

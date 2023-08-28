@@ -604,9 +604,12 @@ const CostPerPeriod: React.FC<{
                                 orderbylabel={true}
                                 valueDefault={dataMain.corpid}
                                 variant="outlined"
-                                disabled={["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(
-                                    user?.roledesc ?? ""
-                                )}
+                                disabled={
+                                    (user?.roledesc ?? "")
+                                        .split(",")
+                                        .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v))
+                                }
+
                                 onChange={(value) =>
                                     setdataMain((prev) => ({ ...prev, corpid: value?.corpid || 0, orgid: 0 }))
                                 }
@@ -3895,9 +3898,10 @@ const PeriodReport: React.FC<{ customSearch: any; dataCorp: any; dataOrg: any }>
                         orderbylabel={true}
                         valueDefault={dataMain.corpid}
                         variant="outlined"
-                        disabled={["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(
-                            user?.roledesc ?? ""
-                        )}
+                        disabled={(user?.roledesc ?? "")
+                            .split(",")
+                            .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v))}
+
                     />
                     <FieldSelect
                         className={classes.fieldsfilter}
@@ -5256,9 +5260,10 @@ const Payments: React.FC<{
                                 orderbylabel={true}
                                 valueDefault={dataMain.corpid}
                                 variant="outlined"
-                                disabled={["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(
-                                    user?.roledesc ?? ""
-                                )}
+                                disabled={(user?.roledesc ?? "")
+                                    .split(",")
+                                    .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v))
+                                }
                                 onChange={(value) =>
                                     setdataMain((prev) => ({ ...prev, corpid: value?.corpid || 0, orgid: 0 }))
                                 }
@@ -6618,9 +6623,10 @@ const Billing: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp, dataOrg 
                                 orderbylabel={true}
                                 valueDefault={dataMain.corpid}
                                 variant="outlined"
-                                disabled={["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(
-                                    user?.roledesc ?? ""
-                                )}
+                                disabled={(user?.roledesc ?? "")
+                                    .split(",")
+                                    .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v))
+                                }
                                 onChange={(value) =>
                                     setdataMain((prev) => ({ ...prev, corpid: value?.corpid || 0, orgid: 0 }))
                                 }
@@ -9309,9 +9315,10 @@ const MessagingPackages: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp
                                 orderbylabel={true}
                                 valueDefault={dataMain.corpid}
                                 variant="outlined"
-                                disabled={["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(
-                                    user?.roledesc ?? ""
-                                )}
+                                disabled={(user?.roledesc ?? "")
+                                    .split(",")
+                                    .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v))
+                                }
                                 onChange={(value) =>
                                     setdataMain((prev) => ({ ...prev, corpid: value?.corpid || 0, orgid: 0 }))
                                 }
@@ -9513,7 +9520,9 @@ const MessagingPackagesDetail: FC<DetailProps> = ({ data, setViewSelected, fetch
         dispatch(
             getMultiCollectionAux([
                 getCorpSel(
-                    ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(user?.roledesc || "")
+                    (user?.roledesc ?? "")
+                        .split(",")
+                        .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v))
                         ? user?.corpid ?? 0
                         : 0
                 ),
@@ -11236,7 +11245,7 @@ const Invoice: FC = () => {
 
     const multiResult = useSelector((state) => state.main.multiData);
     const user = useSelector((state) => state.login.validateToken.user);
-
+    console.log(user?.roledesc);
     const [dataAllCurrency, setDataAllCurrency] = useState<any>([]);
     const [dataCorp, setDataCorp] = useState<any>([]);
     const [dataOrg, setDataOrg] = useState<any>([]);
@@ -11293,7 +11302,7 @@ const Invoice: FC = () => {
 
     return (
         <div style={{ width: "100%" }}>
-            {user?.roledesc?.includes("SUPERADMIN") && (
+            {user?.roledesc.includes("SUPERADMIN") && (
                 <div>
                     <Tabs
                         indicatorColor="primary"
@@ -11348,43 +11357,45 @@ const Invoice: FC = () => {
                     )}
                 </div>
             )}
-            {["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(user?.roledesc ?? "") && (
-                <div>
-                    <Tabs
-                        indicatorColor="primary"
-                        onChange={(_, value) => setPageSelected(value)}
-                        style={{ borderBottom: "1px solid #EBEAED", backgroundColor: "#FFF", marginTop: 8 }}
-                        textColor="primary"
-                        value={pageSelected}
-                        variant="fullWidth"
-                    >
-                        <AntTab label={t(langKeys.periodreport)} />
-                        <AntTab label={t(langKeys.payments)} />
-                        <AntTab label={t(langKeys.messagingpackages)} />
-                        <AntTab label={t(langKeys.paymentmethods)} />
-                    </Tabs>
-                    {pageSelected === 0 && (
-                        <div style={{ marginTop: 16 }}>
-                            <PeriodReport dataCorp={dataCorp} dataOrg={dataOrg} customSearch={customSearch} />
-                        </div>
-                    )}
-                    {pageSelected === 1 && (
-                        <div style={{ marginTop: 16 }}>
-                            <Payments dataCorp={dataCorp} dataOrg={dataOrg} setCustomSearch={setCustomSearch} />
-                        </div>
-                    )}
-                    {pageSelected === 2 && (
-                        <div style={{ marginTop: 16 }}>
-                            <MessagingPackages dataCorp={dataCorp} dataOrg={dataOrg} />
-                        </div>
-                    )}
-                    {pageSelected === 3 && (
-                        <div style={{ marginTop: 16 }}>
-                            <PaymentMethods />
-                        </div>
-                    )}
-                </div>
-            )}
+            {(user?.roledesc ?? "")
+                .split(",")
+                .some(v => ["ADMINISTRADOR", "ADMINISTRADOR P", "ADMINISTRADOR LIMADERMA"].includes(v)) && (
+                    <div>
+                        <Tabs
+                            indicatorColor="primary"
+                            onChange={(_, value) => setPageSelected(value)}
+                            style={{ borderBottom: "1px solid #EBEAED", backgroundColor: "#FFF", marginTop: 8 }}
+                            textColor="primary"
+                            value={pageSelected}
+                            variant="fullWidth"
+                        >
+                            <AntTab label={t(langKeys.periodreport)} />
+                            <AntTab label={t(langKeys.payments)} />
+                            <AntTab label={t(langKeys.messagingpackages)} />
+                            <AntTab label={t(langKeys.paymentmethods)} />
+                        </Tabs>
+                        {pageSelected === 0 && (
+                            <div style={{ marginTop: 16 }}>
+                                <PeriodReport dataCorp={dataCorp} dataOrg={dataOrg} customSearch={customSearch} />
+                            </div>
+                        )}
+                        {pageSelected === 1 && (
+                            <div style={{ marginTop: 16 }}>
+                                <Payments dataCorp={dataCorp} dataOrg={dataOrg} setCustomSearch={setCustomSearch} />
+                            </div>
+                        )}
+                        {pageSelected === 2 && (
+                            <div style={{ marginTop: 16 }}>
+                                <MessagingPackages dataCorp={dataCorp} dataOrg={dataOrg} />
+                            </div>
+                        )}
+                        {pageSelected === 3 && (
+                            <div style={{ marginTop: 16 }}>
+                                <PaymentMethods />
+                            </div>
+                        )}
+                    </div>
+                )}
         </div>
     );
 };

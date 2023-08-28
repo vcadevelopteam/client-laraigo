@@ -5278,6 +5278,7 @@ export const langKeys = {
   openpay_message06: 'openpay_message06',
   openpay_message07: 'openpay_message07',
   openpay_message08: 'openpay_message08',
+  dialog_iscloud: 'dialog_iscloud',
   billingconfiguration_plancurrency: 'billingconfiguration_plancurrency',
   billingconfiguration_vcacomission: 'billingconfiguration_vcacomission',
   billingconfiguration_basicanualfee: 'billingconfiguration_basicanualfee',
@@ -5385,7 +5386,6 @@ export const langKeys = {
   billingreport_channeltotal: 'billingreport_channeltotal',
   billingreport_contactwhatsapp: 'billingreport_contactwhatsapp',
   billingreport_contactother: 'billingreport_contactother',
-  dialog_iscloud: 'dialog_iscloud',
 };
 
 export type LangKeys = typeof langKeys;
