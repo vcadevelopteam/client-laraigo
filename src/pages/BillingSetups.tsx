@@ -4365,6 +4365,9 @@ const BillingSetup: FC = () => {
     const { t } = useTranslation();
 
     const countryResult = useSelector((state) => state.signup.countryList);
+    const multiResult = useSelector((state) => state.main.multiData);
+    const user = useSelector((state) => state.login.validateToken.user);
+
     const [countryList, setCountryList] = useState<any>([]);
     const [currencyList, setCurrencyList] = useState<any>([]);
     const [dataPaymentPlan, setDataPaymentPlan] = useState<any>([]);
@@ -4373,16 +4376,6 @@ const BillingSetup: FC = () => {
     const [planList, setPlanList] = useState<any>([]);
     const [providerList, setProviderList] = useState<any>([]);
     const [sentFirstInfo, setSentFirstInfo] = useState(false);
-    const [providerList, setProviderList] = useState<any>([]);
-    const [planList, setPlanList] = useState<any>([]);
-    const [countryList, setcountryList] = useState<any>([]);
-    const [dataPaymentPlan, setdataPaymentPlan] = useState<any>([]);
-    const [dataPlan, setdataPlan] = useState<any>([]);
-    const [pageSelected, setPageSelected] = useState(user?.roledesc?.includes("SUPERADMIN") ? 0 : 6);
-    const [sentfirstinfo, setsentfirstinfo] = useState(false);
-    const [dataPlan, setdataPlan] = useState<any>([]);
-    const [pageSelected, setPageSelected] = useState(user?.roledesc === "SUPERADMIN" ? 0 : 6);
-    const [sentfirstinfo, setsentfirstinfo] = useState(false);
 
     useEffect(() => {
         if (!multiResult.loading && sentFirstInfo) {
