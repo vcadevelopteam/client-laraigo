@@ -15,15 +15,8 @@ import { useForm } from 'react-hook-form';
 import { execute, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { Tabs } from '@material-ui/core';
+import WarehouseTabDetail from './detailTabs/WarehouseTabDetail';
 import ProductTabDetail from './detailTabs/ProductTabDetail';
-import { ExtrasMenu } from '../components/components';
-import ChangeStatusDialog from '../dialogs/ChangeStatusDialog';
-import StatusHistoryDialog from '../dialogs/StatusHistoryDialog';
-import AlternativeProductTab from './detailTabs/AlternativeProductTabDetail';
-import AddToWarehouseDialog from '../dialogs/AddToWarehouseDialog';
-import WarehouseTab from './detailTabs/WarehouseTabDetail';
-import DealerTab from './detailTabs/DealerTabDetail';
-import SpecificationTabDetail from './detailTabs/SpecificationTabDetail';
 
 
 
@@ -71,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+const WarehouseDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [tabIndex, setTabIndex] = useState(0);
@@ -79,14 +72,11 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
     const [dataDomain, setdataDomain] = useState<Dictionary[]>([]);
     const executeRes = useSelector(state => state.main.execute);
     const detailRes = useSelector(state => state.main.mainAux);
-    const [openModalChangeStatus, setOpenModalChangeStatus] = useState(false);
-    const [openModalStatusHistory, setOpenModalStatusHistory] = useState(false);
-    const [openModalAddToWarehouse, setOpenModalAddToWarehouse] = useState(false);
     const classes = useStyles();
 
     const arrayBread = [
-        { id: "main-view", name: t(langKeys.productMaster) },
-        { id: "detail-view", name: `${t(langKeys.productMaster)} ${t(langKeys.detail)}` },
+        { id: "main-view", name: t(langKeys.warehouse) },
+        { id: "detail-view", name: `${t(langKeys.warehouse)} ${t(langKeys.detail)}` },
     ];
 
     useEffect(() => {
@@ -99,15 +89,12 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
         defaultValues: {
             id: row?.domainid || 0,
             operation: edit ? "EDIT" : "INSERT",
-            code: edit? row?.code : '',
+            warehouse: edit? row?.warehouse : '',
             description: row?.description || '',
-            purchase_unit: row?.purchase_unit || '',
-            dispatch_unit: row?.dispatch_unit || '',
-            longdescription: row?.longdescription || '',
-            type: row?.type || '',
-            family: row?.family || '',
-            subfamily: row?.subfamily || '',
-            batch: row?.batch || '',
+            physicaladdress: row?.physicaladdress || '',
+            phone: row?.phone || '',
+            latitude: row?.latitude || '',
+            longitude: row?.longitude || '',
             status: row?.status || 'ACTIVO'
         }
     });
@@ -130,15 +117,12 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
 
     React.useEffect(() => {
         register('id');
-        register('code', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('longdescription', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('purchase_unit', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('dispatch_unit', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('family', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('subfamily', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('batch', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('warehouse', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('description');
+        register('physicaladdress');
+        register('phone');
+        register('latitude');
+        register('longitude');
 
         dispatch(resetMainAux());
     }, [register]);
@@ -172,7 +156,7 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                             }}
                         />
                         <TitleDetail
-                            title={row?.name || `${t(langKeys.new)} ${t(langKeys.product)}`}
+                            title={row?.name || `${t(langKeys.new)} ${t(langKeys.warehouse)}`}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -196,11 +180,11 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                             {t(langKeys.save)}
                         </Button>
                         
-                        {!edit && <ExtrasMenu
+                        {/*!edit && <ExtrasMenu
                             changeStatus={()=>{setOpenModalChangeStatus(true)}}
                             statusHistory={()=>setOpenModalStatusHistory(true)}
                             addToWarehouse={()=>setOpenModalAddToWarehouse(true)}
-                        />}
+                        />*/}
                     </div>
 
                 </div>
@@ -215,41 +199,20 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                     <AntTab
                         label={(
                             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <Trans i18nKey={langKeys.product} />
+                                <Trans i18nKey={langKeys.warehouses} />
                             </div>
                         )}
                     />
                     <AntTab
                         label={(
                             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <Trans i18nKey={langKeys.warehouses}/>
-                            </div>
-                        )}
-                    />
-                    <AntTab
-                        label={(
-                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <Trans i18nKey={langKeys.dealers} />
-                            </div>
-                        )}
-                    />
-                    <AntTab
-                        label={(
-                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <Trans i18nKey={langKeys.specifications} />
+                                <Trans i18nKey={langKeys.product_plural}/>
                             </div>
                         )}
                     />
                 </Tabs>
-
                 <AntTabPanel index={0} currentIndex={tabIndex}>
-                    <ProductTabDetail
-                        row={row}
-                        setValue={setValue}
-                        getValues={getValues}
-                        errors={errors}
-                    />
-                    <AlternativeProductTab
+                    <WarehouseTabDetail
                         row={row}
                         setValue={setValue}
                         getValues={getValues}
@@ -257,33 +220,12 @@ const ProductMasterDetail: React.FC<DetailProps> = ({ data: { row, edit }, setVi
                     />
                 </AntTabPanel>
                 <AntTabPanel index={1} currentIndex={tabIndex}>
-                    <WarehouseTab />
-                </AntTabPanel>
-                <AntTabPanel index={2} currentIndex={tabIndex}>
-                    <DealerTab />
-                </AntTabPanel>
-                <AntTabPanel index={3} currentIndex={tabIndex}>
-                    <SpecificationTabDetail />
+                    <ProductTabDetail />
                 </AntTabPanel>
             </form>
-            <ChangeStatusDialog 
-                openModal={openModalChangeStatus}
-                setOpenModal={setOpenModalChangeStatus}
-                getValues={getValues}
-            />
-            <StatusHistoryDialog 
-                openModal={openModalStatusHistory}
-                setOpenModal={setOpenModalStatusHistory}
-                getValues={getValues}
-            />
-            <AddToWarehouseDialog 
-                openModal={openModalAddToWarehouse}
-                setOpenModal={setOpenModalAddToWarehouse}
-                setTabIndex={setTabIndex}
-            />
         </>
     );
 }
 
 
-export default ProductMasterDetail;
+export default WarehouseDetail;

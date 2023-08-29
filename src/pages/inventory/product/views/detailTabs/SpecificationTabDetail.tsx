@@ -4,7 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import TableZyx from "components/fields/table-simple";
-import RegisterSpecificationDialog from "./DialogComponents/RegisterSpecificationDialog";
+import RegisterSpecificationDialog from "../../dialogs/RegisterSpecificationDialog";
 
 const useStyles = makeStyles((theme) => ({
   containerDetail: {

@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from "react";
-import ChangeStatusDialog from "../dialogs/ChangeStatusDialog";
 import { Trans, useTranslation } from "react-i18next";
 import {
   TemplateIcons,
@@ -29,7 +28,7 @@ import BackupIcon from "@material-ui/icons/Backup";
 
 const selectionKey = "domainname";
 
-interface ProductMasterMainViewProps {
+interface WarehouseMainViewProps {
   setViewSelected: (view: string) => void;
   setRowSelected: (rowdata: any) => void;
   fetchData: () => void;
@@ -58,7 +57,7 @@ const initialRange = {
   key: "selection",
 };
 
-const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
+const WarehouseMainView: FC<WarehouseMainViewProps> = ({
   setViewSelected,
   setRowSelected,
   fetchData,
@@ -74,7 +73,6 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
   const [cleanSelected, setCleanSelected] = useState(false);
   const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] =
     useState(false);
-  const [openModalChangeStatus, setOpenModalChangeStatus] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [dateRangeCreateDate, setDateRangeCreateDate] =
     useState<Range>(initialRange);
@@ -165,8 +163,8 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
         },
       },
       {
-        Header: t(langKeys.product),
-        accessor: "product",
+        Header: t(langKeys.warehouse),
+        accessor: "warehouse",
         width: "auto",
       },
       {
@@ -175,44 +173,24 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
         width: "auto",
       },
       {
-        Header: t(langKeys.type),
-        accessor: "type",
-        width: "auto",
-        prefixTranslation: "type_domain_",
-        Cell: (props: any) => {
-          const { type } = props.cell.row.original;
-          return (t(`type_domain_${type}`.toLowerCase()) || "").toUpperCase();
-        },
-      },
-      {
-        Header: t(langKeys.family),
-        accessor: "family",
+        Header: t(langKeys.physicaladdress),
+        accessor: "physicaladdress",
         width: "auto",
       },
       {
-        Header: t(langKeys.subfamily),
-        accessor: "subfamily",
+        Header: t(langKeys.phone),
+        accessor: "phone",
         width: "auto",
       },
       {
-        Header: t(langKeys.purchase_unit),
-        accessor: "purchase_unit",
+        Header: t(langKeys.latitude),
+        accessor: "latitude",
         width: "auto",
       },
       {
-        Header: t(langKeys.dispatch_unit),
-        accessor: "dispatch_unit",
+        Header: t(langKeys.longitude),
+        accessor: "longitude",
         width: "auto",
-      },
-      {
-        Header: t(langKeys.status),
-        accessor: "status",
-        width: "auto",
-        prefixTranslation: "status_",
-        Cell: (props: any) => {
-          const { status } = props.cell.row.original;
-          return (t(`status_${status}`.toLowerCase()) || "").toUpperCase();
-        },
       },
     ],
     []
@@ -238,7 +216,7 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
       >
         <div style={{ flexGrow: 1 }}>
           <Title>
-            <Trans i18nKey={langKeys.productMaster} />
+            <Trans i18nKey={langKeys.warehouse} />
           </Title>
         </div>
       </div>
@@ -313,19 +291,6 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
                   <Trans i18nKey={langKeys.import} />
                 </Button>
               </div>
-              <div>
-                <Button
-                  disabled={!!selectedRows}
-                  className={classes.button}
-                  variant="contained"
-                  component="span"
-                  color="primary"
-                  onClick={() => setOpenModalChangeStatus(true)}
-                  style={{ backgroundColor: "#55BD84" }}
-                >
-                  <Trans i18nKey={langKeys.change_status} />
-                </Button>
-              </div>
             </div>
           </div>
         )}
@@ -353,13 +318,8 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
           />
         </div>
       </DialogZyx>
-      <ChangeStatusDialog
-        openModal={openModalChangeStatus}
-        setOpenModal={setOpenModalChangeStatus}
-        massive={true}
-      />
     </div>
   );
 };
 
-export default ProductMasterMainView;
+export default WarehouseMainView;

@@ -1127,6 +1127,7 @@ const translation: LangKeys = {
   current_balance:"Current balance",
   default_shelf:"Default shelf",
   add_product_to_warehouse: "Add_product_to_warehouse",
+  physicaladdress: "Physical address",
   manufacturer:"Manufacturer",
   catalog_nro:"N° Catalog",
   last_price:"Last price",

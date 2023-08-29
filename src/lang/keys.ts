@@ -317,6 +317,7 @@ export const langKeys = {
   error_phone_exists: "error_phone_exists",
   newintention: "newintention",
   productMaster: "productMaster",
+  physicaladdress: "physicaladdress",
   family: "family",
   subfamily: "subfamily",
   purchase_unit: "purchase_unit",

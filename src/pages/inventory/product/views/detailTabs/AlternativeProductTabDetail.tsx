@@ -12,7 +12,7 @@ import {
 import { Button } from "@material-ui/core";
 import TableZyx from "components/fields/table-simple";
 import { Search as SearchIcon } from "@material-ui/icons";
-import SearchProductDialog from "./DialogComponents/SearchProductDialog";
+import SearchProductDialog from "../../dialogs/SearchProductDialog";
 import ClearIcon from "@material-ui/icons/Clear";
 
 const selectionKey = "domainname";

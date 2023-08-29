@@ -6,8 +6,8 @@ import { langKeys } from "lang/keys";
 import TableZyx from "components/fields/table-simple";
 import Button from "@material-ui/core/Button";
 import SearchIcon from "@material-ui/icons/Search";
-import SearchDealerDialog from "./DialogComponents/SearchDealerDialog";
-import RegisterDealerDialog from "./DialogComponents/RegisterDealerDialog";
+import SearchDealerDialog from "../../dialogs/SearchDealerDialog";
+import RegisterDealerDialog from "../../dialogs/RegisterDealerDialog";
 
 const useStyles = makeStyles((theme) => ({
   containerDetail: {

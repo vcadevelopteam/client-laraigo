@@ -1,10 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState } from "react"; 
+import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import TableZyx from "components/fields/table-simple";
-import SearchProductDialog from "../../dialogs/SearchProductDialog";
 
 const useStyles = makeStyles((theme) => ({
   containerDetail: {
@@ -17,24 +16,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-interface WarehouseTabProps {
-}
+interface ProductTabDetailProps {}
 
-const WarehouseTab: React.FC<WarehouseTabProps> = () => {
+const ProductTabDetail: React.FC<ProductTabDetailProps> = () => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const [openModalSearch, setOpenModalSearch] = useState(false);;
 
   const columns = React.useMemo(
     () => [
       {
-        Header: t(langKeys.warehouse),
-        accessor: "warehouse",
+        Header: t(langKeys.product),
+        accessor: "product",
         width: "auto",
       },
       {
-        Header: t(langKeys.default),
-        accessor: "default",
+        Header: t(langKeys.description),
+        accessor: "description",
         width: "auto",
       },
       {
@@ -52,21 +49,6 @@ const WarehouseTab: React.FC<WarehouseTabProps> = () => {
         accessor: "current_balance",
         width: "auto",
       },
-      {
-        Header: t(langKeys.batch),
-        accessor: "batch",
-        width: "auto",
-      },
-      {
-        Header: t(langKeys.default_shelf),
-        accessor: "default_shelf",
-        width: "auto",
-      },
-      {
-        Header: t(langKeys.status),
-        accessor: "status",
-        width: "auto",
-      },
     ],
     []
   );
@@ -81,12 +63,8 @@ const WarehouseTab: React.FC<WarehouseTabProps> = () => {
           register={false}
         />
       </div>
-      <SearchProductDialog
-        openModal={openModalSearch}
-        setOpenModal={setOpenModalSearch}
-      />
     </div>
   );
 };
 
-export default WarehouseTab;
+export default ProductTabDetail;

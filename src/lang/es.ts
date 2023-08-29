@@ -1661,6 +1661,7 @@ const translation: LangKeys = {
   error_zero_records: '5005: Nada a exportar',
   consulthistoricaldata: "Consultar data histórica",
   productMaster: "Maestro de productos",
+  physicaladdress: "Dirección física",
   family: "Familia",
   subfamily: "Subfamilia",
   purchase_unit: "Unidad de compra",
