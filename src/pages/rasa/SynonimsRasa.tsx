@@ -176,12 +176,6 @@ const DetailSynonims: React.FC<DetailProps> = ({ data: { row, edit }, fetchData,
                                 value={description}
                                 error={!!errors?.description?.message}
                                 helperText={errors?.description?.message || null}
-                                onInput={(e: any) => {
-                                    // eslint-disable-next-line no-useless-escape
-                                    if(!((/^[a-zA-Z_]/g).test(e.target.value) && (/[a-zA-Z0-9\_]$/g).test(e.target.value))){
-                                        if(e.target.value!=="") e.target.value = description
-                                    }
-                                }}
                                 onChange={(e) => {
                                     setValue('description', e.target.value)
                                     setDescription(e.target.value)
