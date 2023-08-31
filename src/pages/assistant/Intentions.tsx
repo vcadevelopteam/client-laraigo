@@ -672,7 +672,6 @@ export const Intentions: React.FC<IntentionProps> = ({ setExternalViewSelected, 
                 },[])
                 dispatch(showBackdrop(true));
                 setWaitImport(true)
-                debugger
                 dispatch(intentimport({
                     utterance_datajson: JSON.stringify(datareduced.reduce((acc:any,x:any) => [...acc,...x.utterance_datajson],[])),
                     datajson: JSON.stringify(datareduced.map((x:any) => ({ name:x.name, description:x.description, datajson:x.datajson }))),

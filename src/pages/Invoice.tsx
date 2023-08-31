@@ -11237,7 +11237,6 @@ const Invoice: FC = () => {
 
     const multiResult = useSelector((state) => state.main.multiData);
     const user = useSelector((state) => state.login.validateToken.user);
-    console.log(user?.roledesc);
     const [dataAllCurrency, setDataAllCurrency] = useState<any>([]);
     const [dataCorp, setDataCorp] = useState<any>([]);
     const [dataOrg, setDataOrg] = useState<any>([]);
@@ -11262,7 +11261,6 @@ const Invoice: FC = () => {
 
     useEffect(() => {
         if (!multiResult.loading && sentFirstInfo) {
-            console.log(multiResult.data[4]);
             setDataAllCurrency(multiResult.data[4] && multiResult.data[4].success ? multiResult.data[4].data : []);
             setDataCorp(multiResult.data[2] && multiResult.data[2].success ? multiResult.data[2].data : []);
             setDataOrg(multiResult.data[1] && multiResult.data[1].success ? multiResult.data[1].data : []);

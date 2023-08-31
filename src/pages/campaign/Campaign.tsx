@@ -199,7 +199,6 @@ export const Campaign: FC = () => {
                 prefixTranslation: 'executiontype',
                 Cell: (props: any) => {
                     const { executiontype } = props.cell.row.original;
-                    console.log(`executiontype_${executiontype}`)
                     return t(`executiontype_${executiontype}`).toUpperCase()
                 }
             },

@@ -456,7 +456,6 @@ export const Entities: React.FC<EntityProps> = ({ setExternalViewSelected, array
     }, [operationRes, waitImport]);
 
     const handleUpload = async (files: any[]) => {
-        debugger
         const file = files[0];
         if (file) {
             const data: any = (await uploadExcel(file, undefined) as any[]).filter((d: any) => !['', null, undefined].includes(d.name));

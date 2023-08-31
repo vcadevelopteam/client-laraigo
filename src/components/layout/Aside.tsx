@@ -30,7 +30,6 @@ type IProps = {
 
 const ListViewItem: React.FC<{ navRoute: RouteConfig, classes: any, history: History }> = ({ navRoute, classes, history }) => {
     const [classname, setClassname] = useState<string>(classes.drawerItemInactive);
-    // console.log(navRoute);
     const onClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
         e.preventDefault();
         if (!navRoute.subroute) {
@@ -54,28 +53,18 @@ const ListViewItem: React.FC<{ navRoute: RouteConfig, classes: any, history: His
         onMouseOut={() => { setClassname(classes.drawerItemInactive) }}
         href={navRoute?.path}
     >
-        {/* <Tooltip title={navRoute?.tooltip}> */}
         <ListItemIcon>{navRoute?.icon?.(classname)}</ListItemIcon>
-        {/* </Tooltip> */}
         <ListItemText className={classname} primary={navRoute?.description} />
     </ListItem>
 }
 
 const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig, history: History }> = ({ classes, config, history }) => {
-    // const applications = useSelector(state => state.login?.validateToken?.user?.menu);
-
-    // console.log(config.options);
     const navigationRoutes = config.options.map(
         (option: string) => {
-            // console.log(option);
             if (option === '/channels') return routes.find(route => route?.key === option);
             return routes.find(route => route?.path === option);
         });
-    // console.log(navigationRoutes);
 
-
-    // || subroutes.find(route => route?.path === option));
-    // const filteredNavigationRoutes = navigationRoutes.filter((route: any) => (route !== undefined && applications?.[route.key]?.[0]));
     const numElements = navigationRoutes.length;
 
     const getColumnCount = () => {
@@ -105,7 +94,6 @@ const PopperContent: React.FC<{ classes: any, config: ViewsClassificationConfig,
 
         return numColumns;
     };
-    // console.log(navigationRoutes);
     const columnCount = getColumnCount();
     const gridTemplateColumns = `repeat(${columnCount}, 1fr)`;
     return (
@@ -139,7 +127,7 @@ const LinkList: FC<{ config: ViewsClassificationConfig, classes: any, open: bool
             setlinkListStyle(classes.drawerCloseItemInactive)
         }
     }, [classes.drawerCloseItemInactive, classes.drawerItemInactive, open])
-    
+
     const onClick = (e: React.MouseEvent<HTMLAnchorElement>, invoiceRoute: string) => {
         e.preventDefault();
         const navRoute = routes.find(route => route?.path === invoiceRoute) as RouteConfig;
@@ -159,12 +147,11 @@ const LinkList: FC<{ config: ViewsClassificationConfig, classes: any, open: bool
     } else {
         className = open ? classes.drawerItemInactive : classes.drawerCloseItemInactive;
     }
-    // console.log(config);
 
     return (
         <>
             {
-                (userRole?.includes('ADMINISTRADOR') || userRole?.includes('SUPERVISOR') ) && config.key === 'invoice'
+                (userRole?.includes('ADMINISTRADOR') || userRole?.includes('SUPERVISOR')) && config.key === 'invoice'
                     ?
                     <ListItem
                         button
@@ -178,7 +165,6 @@ const LinkList: FC<{ config: ViewsClassificationConfig, classes: any, open: bool
                     >
                         <ListItemIcon>{config.icon?.(linkListStyle)}</ListItemIcon>
                         <ListItemText primary={config.description} style={{ visibility: open ? 'visible' : 'hidden' }} />
-                        {/* <Typography variant='h5' style={{ position: 'absolute', right: open ? 25 : 5, color: open ? '' : 'white', fontWeight: open ? 'normal' : 'bold' }}>{">"}</Typography> */}
                     </ListItem>
                     :
                     <div {...bindHover(popupState)} >
@@ -186,7 +172,6 @@ const LinkList: FC<{ config: ViewsClassificationConfig, classes: any, open: bool
                             button
                             key={config.key}
                             className={clsx(className)}
-                            // component="a"
                             style={{ position: 'relative' }}
                         >
                             <ListItemIcon>{config.icon?.(className)}</ListItemIcon>
@@ -230,11 +215,7 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
     const userConnected = useSelector(state => state.inbox.userConnected);
     const userData = useSelector(state => state.login?.validateToken?.user);
 
-
-    // console.log(applications);
     //Conseguir todas las subrutas y asignarlas a los modulos padres
-    // debugger;
-    // console.log(applications);
     const showableViews = viewsClassifications.reduce((acc: any[], view) => {
         const subroutes = Object.entries(applications as Object)
             .filter(([_, values]) => values[4] === view.id) //  
@@ -260,8 +241,6 @@ const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
         }
         return acc;
     }, []);
-    // debugger;
-    // console.log(showableViews);
     return (
         <Drawer
             className={clsx(classes.drawer, {

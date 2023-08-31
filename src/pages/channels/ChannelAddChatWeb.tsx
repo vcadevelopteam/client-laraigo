@@ -1800,7 +1800,6 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
 
     const handleSubmit = (name: string, auto: boolean, hexIconColor: string) => {
         const values = form.getValues();
-        debugger
         if (!channel) {
             const body = getInsertChatwebChannel(name, auto, hexIconColor, values);
             dispatch(insertChannel2(body));

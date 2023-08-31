@@ -372,7 +372,6 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                     dispatch(showSnackbar({ show: true, severity: "success", message: t(langKeys.successful_delete) }))                    
                     dispatch(showBackdrop(false));
                 }else{
-                    debugger
                     dispatch(emitEvent({
                         event: 'updateQuickreply',
                         data: {
@@ -797,7 +796,6 @@ const Quickreplies: FC = () => {
             if (!executeResult.loading && !executeResult.error) {
                 dispatch(showSnackbar({ show: true, severity: "success", message: t(insertexcel?langKeys.successful_edit: langKeys.successful_delete) }))
                 if(!insertexcel){       
-                    debugger      
                     dispatch(emitEvent({
                         event: 'updateQuickreply',
                         data: {

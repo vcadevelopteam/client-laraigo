@@ -19,6 +19,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { CloseTicketIcon, HistoryIcon, TipifyIcon, ReassignIcon, CallRecordIcon, DashboardIAIcon } from 'icons';
+import { CloseTicketIcon, HistoryIcon, TipifyIcon, ReassignIcon, CallRecordIcon, DashboardIAIcon } from 'icons';
 import { massiveCloseTicket, getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, emitEvent, importTicket } from 'store/inbox/actions';
 import { Button, ListItemIcon, Tabs, Tooltip } from '@material-ui/core';
 import PublishIcon from '@material-ui/icons/Publish';
@@ -623,7 +624,6 @@ const DialogAnalyticsIA: React.FC<{ ticket: Dictionary | null, openModal: boolea
     const classes = useStyles();
 
     const resultAnalyticsIA = useSelector(state => state.main.mainAux);
-    // console.log(resultAnalyticsIA.data);
     useEffect(() => {
         if (openModal) {
             if (ticket) {
@@ -634,7 +634,6 @@ const DialogAnalyticsIA: React.FC<{ ticket: Dictionary | null, openModal: boolea
     const trimmedData = React.useMemo(() => {
         if (resultAnalyticsIA.data && resultAnalyticsIA.data[0]?.interactiontext ) {
             return resultAnalyticsIA.data.map((row: any) => {
-                // console.log(row);
                 return {
                     ...row,
                     interactiontext: row.interactiontext.length > 65 

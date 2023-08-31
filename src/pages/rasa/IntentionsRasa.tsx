@@ -182,7 +182,6 @@ const DetailIntentions: React.FC<DetailProps> = ({ data: { row, edit }, fetchDat
         });
     }
     const addtoTable = ()=>{
-        console.log(newIntention)
         if(!!newEntity.entity.trim() && !!newEntity.value.trim()){
             let auxExamples = examples
             auxExamples[intentionIndex].entidades=[newEntity]

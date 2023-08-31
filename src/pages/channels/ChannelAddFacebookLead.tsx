@@ -112,7 +112,6 @@ export const ChannelAddFacebookLead: FC = () => {
     }, [mainResult])
 
     const processFacebookCallback = async (r: any) => {
-        debugger
         if (r.status !== "unknown" && !r.error) {
             dispatch(getChannelsList(r.accessToken, apiUrls.FACEBOOKAPPLEAD));
             setViewSelected("view2");
