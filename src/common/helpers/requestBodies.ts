@@ -115,7 +115,7 @@ export const getSupervisors = (orgid: number, userid: number, keytmp?: any): IRe
     }
 })
 
-export const getApplicationsByRole = (roleid: number, keytmp?: number): IRequestBody => ({
+export const getApplicationsByRole = (roleid: string, keytmp?: number): IRequestBody => ({
     method: "UFN_APPS_DATA_SEL",
     key: "UFN_APPS_DATA_SEL" + (keytmp || ""),
     parameters: {
@@ -231,10 +231,10 @@ export const insUser = ({ id, usr, doctype, send_password_by_email, docnum, pass
     parameters: { id, usr, doctype, docnum, password: password, firstname, lastname, email, pwdchangefirstlogin, type, status, description, operation, company, twofactorauthentication, sendMailPassword: send_password_by_email, registercode, billinggroup: billinggroupid || 0, image, language }
 });
 
-export const insOrgUser = ({ roleid, orgid, bydefault, labels, groups, channels, status, type, supervisor = "", operation, redirect }: Dictionary): IRequestBody => ({
+export const insOrgUser = ({ rolegroups, orgid, bydefault, labels, groups, channels, status, type, supervisor = "", operation, redirect }: Dictionary): IRequestBody => ({
     method: "UFN_ORGUSER_INS",
     key: "UFN_ORGUSER_INS",
-    parameters: { orgid, rolegroups: roleid, usersupervisor: supervisor, bydefault, labels, groups, channels, status, type, defaultsort: 1, operation, redirect }
+    parameters: { orgid, rolegroups, usersupervisor: supervisor, bydefault, labels, groups, channels, status, type, defaultsort: 1, operation, redirect }
 });
 export const selOrgSimpleList = (): IRequestBody => ({
     method: "UFN_ORG_LST_SIMPLE",

@@ -4421,24 +4421,12 @@ const BillingSetup: FC = () => {
                 textColor="primary"
                 onChange={(_, value) => setPageSelected(value)}
             >
-                {user?.roledesc?.includes("SUPERADMIN") &&
-                    <AntTab label={t(langKeys.billingsetupgeneralconfiguration)} />
-                }
-                {user?.roledesc?.includes("SUPERADMIN") &&
-                    <AntTab label={t(langKeys.contractedplanbyperiod)} />
-                }
-                {user?.roledesc?.includes("SUPERADMIN") &&
-                    <AntTab label={t(langKeys.conversationcost)} />
-                }
-                {user?.roledesc?.includes("SUPERADMIN") &&
-                    <AntTab label={t(langKeys.billingsetup_artificialintelligence)} />
-                }
-                {user?.roledesc?.includes("SUPERADMIN") &&
-                    <AntTab label={t(langKeys.messagingcost)} />
-                }
-                {user?.roledesc?.includes("SUPERADMIN") &&
-                    <AntTab label={t(langKeys.supportplan)} />
-                }
+                {user?.roledesc?.includes("SUPERADMIN") && <AntTab label={t(langKeys.billingsetupgeneralconfiguration)} />}
+                {user?.roledesc?.includes("SUPERADMIN") && <AntTab label={t(langKeys.contractedplanbyperiod)} />}
+                {user?.roledesc?.includes("SUPERADMIN") && <AntTab label={t(langKeys.conversationcost)} />}
+                {user?.roledesc?.includes("SUPERADMIN") && <AntTab label={t(langKeys.billingsetup_artificialintelligence)} />}
+                {user?.roledesc?.includes("SUPERADMIN") && <AntTab label={t(langKeys.messagingcost)} />}
+                {user?.roledesc?.includes("SUPERADMIN") && <AntTab label={t(langKeys.supportplan)} />}
             </Tabs>
             {pageSelected === 0 && (
                 <div style={{ marginTop: 16 }}>

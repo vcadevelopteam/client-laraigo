@@ -207,10 +207,11 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     }, [resFromOrg])
 
     useEffect(() => {
+        console.log("entro")
         //PARA MODALES SE DEBE RESETEAR EN EL EDITAR
         reset({
             orgid: row ? row.orgid : (dataOrganizationsTmp.length === 1 ? dataOrganizationsTmp[0].orgid : 0),
-            roleid: row ? row.rolegroups : 0,
+            rolegroups: row ? row.rolegroups : "",
             roledesc: row ? row.roledesc : '', //for table
             orgdesc: row ? row.orgdesc : '', //for table
             supervisordesc: row ? row.supervisordesc : '', //for table
@@ -226,8 +227,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         })
 
         register('orgid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
-        register('roleid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('rolegroups', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('type');
         register('supervisor');
         // register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('channels');
@@ -284,14 +285,13 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     }
 
     const onChangeRole = (value: Dictionary) => {
-        setValue('roleid', value.map((o: Dictionary) => o.roleid).join());
+        setValue('rolegroups', value.map((o: Dictionary) => o.roleid).join());
         setValue('roledesc', value.map((o: Dictionary) => o.roledesc).join());
-
         setValue('redirect', ''); 
         updatefield('redirect', '');
 
         updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
-            p[index] = { ...p[index], roleid: value.map((o: Dictionary) => o.roleid).join(), roledesc: value.map((o: Dictionary) => o.roledesc).join() }
+            p[index] = { ...p[index], rolegroups: value.map((o: Dictionary) => o.roleid).join(), roledesc: value.map((o: Dictionary) => o.roledesc).join() }
             return p;
         })
         if (!!value.length) {
@@ -303,7 +303,6 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
             setDataApplications({ loading: false, data: [] })
         }
     }
-
     return (
         <Accordion defaultExpanded={row?.id === 0} style={{ marginBottom: '8px' }}>
 
@@ -329,45 +328,29 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 optionDesc="orgdesc"
                                 optionValue="orgid"
                             />
-                            <FieldMultiSelect
-                                label={t(langKeys.role)}
-                                className={classes.mb2}
-                                valueDefault={row?.rolegroups || ""}
-                                onChange={onChangeRole}
-                                error={errors?.roleid?.message}
-                                // triggerOnChangeOnFirst={true}
-                                data={dataRoles}
-                                optionDesc="roldesc"
-                                optionValue="roleid"
-                            />
-                            <FieldMultiSelect //los multiselect te devuelven un array de objetos en OnChange por eso se le recorre
-                                label={t(langKeys.channel)}
-                                className={classes.mb2}
-                                valueDefault={row?.channels || ""}
-                                onChange={(value) => {
-                                    setValue('channels', value.map((o: Dictionary) => o.communicationchannelid).join())
-                                    setValue('channelsdesc', value.map((o: Dictionary) => o.description).join())
-                                    updatefield('channels', value.map((o: Dictionary) => o.communicationchannelid).join())
-                                    updatefield('channelsdesc', value.map((o: Dictionary) => o.description).join())
-                                }}
-                                error={errors?.channels?.message}
-                                loading={dataChannels.loading}
-                                data={dataChannels.data}
-                                optionDesc="description"
-                                optionValue="communicationchannelid"
-                            />
-                            <TemplateSwitchYesNo
-                                label={"Balanceo"}
-                                className={classes.mb2}
-                                valueDefault={row?.type === "ASESOR"}
-                                onChange={(value) => { setValue('type', value?"ASESOR":"SUPERVISOR"); }} />
-                        </div>
-                        <div className="col-6">
                             <TemplateSwitchYesNo
                                 label={t(langKeys.default_organization)}
                                 className={classes.mb2}
                                 valueDefault={row?.bydefault || false}
+                                helperText={t(langKeys.default_organization_tooltip)}
                                 onChange={(value) => { setValue('bydefault', value); updatefield('bydefault', value) }} />
+                            <FieldMultiSelect
+                                label={ getValues('rolegroups')?.length > 2 ? 'Roles' : t(langKeys.role)}
+                                className={classes.mb2}
+                                valueDefault={row?.rolegroups || ""}
+                                onChange={onChangeRole}
+                                error={errors?.rolegroups?.message}
+                                data={dataRoles}
+                                optionDesc="roldesc"
+                                optionValue="roleid"
+                            />
+                            <TemplateSwitchYesNo
+                                label={"Balanceo"}
+                                className={classes.mb2}
+                                valueDefault={getValues("type") === "ASESOR"}
+                                onChange={(value) => { setValue('type', value?"ASESOR":"SUPERVISOR"); }} />
+                        </div>
+                        <div className="col-6">
                             <FieldSelect
                                 label={t(langKeys.supervisor)}
                                 className={classes.mb2}
@@ -395,6 +378,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 data={dataApplications.data}
                                 loading={dataApplications.loading}
                                 triggerOnChangeOnFirst={true}
+                                helperText={t(langKeys.default_application_tooltip)}
                                 optionDesc="description"
                                 optionValue="path"
                             />
@@ -408,6 +392,22 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 data={dataGroups.data}
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
+                            />
+                            <FieldMultiSelect //los multiselect te devuelven un array de objetos en OnChange por eso se le recorre
+                                label={t(langKeys.channel)}
+                                className={classes.mb2}
+                                valueDefault={row?.channels || ""}
+                                onChange={(value) => {
+                                    setValue('channels', value.map((o: Dictionary) => o.communicationchannelid).join())
+                                    setValue('channelsdesc', value.map((o: Dictionary) => o.description).join())
+                                    updatefield('channels', value.map((o: Dictionary) => o.communicationchannelid).join())
+                                    updatefield('channelsdesc', value.map((o: Dictionary) => o.description).join())
+                                }}
+                                error={errors?.channels?.message}
+                                loading={dataChannels.loading}
+                                data={dataChannels.data}
+                                optionDesc="description"
+                                optionValue="communicationchannelid"
                             />
                         </div>
                     </div>
@@ -886,22 +886,6 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        <div className="col-6" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                            <FieldEdit
-                                label={t(langKeys.firstname)}
-                                style={{ marginBottom: 8 }}
-                                valueDefault={row?.firstname || ""}
-                                onChange={(value) => setValue('firstname', value)}
-                                error={errors?.firstname?.message}
-                            />
-                            <FieldEdit
-                                label={t(langKeys.lastname)}
-                                className="col-6"
-                                valueDefault={row?.lastname || ""}
-                                onChange={(value) => setValue('lastname', value)}
-                                error={errors?.lastname?.message}
-                            />
-                        </div>
                         <div className="col-6" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <div style={{ position: 'relative' }}>
                                 <Avatar style={{ width: 120, height: 120 }} src={getValues('image')} />
@@ -923,51 +907,12 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={`${t(langKeys.user)}`}
+                            label={t(langKeys.firstname)}
+                            style={{ marginBottom: 8 }}
                             className="col-6"
-                            valueDefault={edit ? (row?.usr || "") : ""}
-                            onChange={(value) => setValue('usr', value)}
-                            error={errors?.usr?.message}
-                        />
-                        <FieldEdit
-                            label={`${t(langKeys.email)}`}
-                            className="col-6"
-                            valueDefault={edit ? (row?.email || "") : ""}
-                            onChange={(value) => setValue('email', value)}
-                            error={errors?.email?.message}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldSelect
-                            label={t(langKeys.company)}
-                            className="col-6"
-                            valueDefault={row?.company || ""}
-                            onChange={(value) => setValue('company', value ? value.domainvalue : '')}
-                            error={errors?.company?.message}
-                            data={dataCompanies}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                        />
-                        <FieldSelect
-                            label={t(langKeys.docType)}
-                            className="col-6"
-                            valueDefault={row?.doctype || ""}
-                            onChange={(value) => setValue('doctype', value ? value.domainvalue : '')}
-                            error={errors?.doctype?.message}
-                            data={dataDocType}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                        />
-                    </div>
-
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.docNumber)}
-                            className="col-6"
-                            valueDefault={row?.docnum || ""}
-                            type="number"
-                            onChange={(value) => setValue('docnum', value)}
-                            error={errors?.docnum?.message}
+                            valueDefault={row?.firstname || ""}
+                            onChange={(value) => setValue('firstname', value)}
+                            error={errors?.firstname?.message}
                         />
                         <FieldSelect
                             label={t(langKeys.billingGroup)}
@@ -978,15 +923,16 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             data={dataBillingGroups}
                             optionDesc="domaindesc"
                             optionValue="domainid"
+                            helperText={t(langKeys.billingGroup_tooltip)}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.registerCode)}
+                            label={t(langKeys.lastname)}
                             className="col-6"
-                            valueDefault={row?.registercode || ""}
-                            onChange={(value) => setValue('registercode', value)}
-                            error={errors?.registercode?.message}
+                            valueDefault={row?.lastname || ""}
+                            onChange={(value) => setValue('lastname', value)}
+                            error={errors?.lastname?.message}
                         />
                         <FieldSelect
                             label={t(langKeys.twofactorauthentication)}
@@ -996,9 +942,60 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             error={errors?.twofactorauthentication?.message}
                             data={dataStatus}
                             uset={true}
+                            helperText={t(langKeys.twofactorauthentication_tooltip)}
                             prefixTranslation="status_"
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={`${t(langKeys.email)}`}
+                            className="col-6"
+                            valueDefault={edit ? (row?.email || "") : ""}
+                            onChange={(value) => setValue('email', value)}
+                            error={errors?.email?.message}
+                        />
+                        <FieldSelect
+                            label={t(langKeys.company)}
+                            className="col-6"
+                            valueDefault={row?.company || ""}
+                            onChange={(value) => setValue('company', value ? value.domainvalue : '')}
+                            error={errors?.company?.message}
+                            data={dataCompanies}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                            helperText={t(langKeys.company_tooltip)}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldSelect
+                            label={t(langKeys.docType)}
+                            className="col-6"
+                            valueDefault={row?.doctype || ""}
+                            onChange={(value) => setValue('doctype', value ? value.domainvalue : '')}
+                            error={errors?.doctype?.message}
+                            data={dataDocType}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
+                        <FieldEdit
+                            label={t(langKeys.registerCode)}
+                            className="col-6"
+                            valueDefault={row?.registercode || ""}
+                            onChange={(value) => setValue('registercode', value)}
+                            error={errors?.registercode?.message}
+                            helperText={t(langKeys.registerCode_tooltip)}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.docNumber)}
+                            className="col-6"
+                            valueDefault={row?.docnum || ""}
+                            type="number"
+                            onChange={(value) => setValue('docnum', value)}
+                            error={errors?.docnum?.message}
                         />
                         <FieldSelect
                             label={t(langKeys.status)}
@@ -1011,6 +1008,17 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             prefixTranslation="status_"
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
+                            helperText={t(langKeys.userstatus_tooltip)}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={`${t(langKeys.user)}`}
+                            className="col-6"
+                            valueDefault={edit ? (row?.usr || "") : ""}
+                            onChange={(value) => setValue('usr', value)}
+                            error={errors?.usr?.message}
+                            helperText={t(langKeys.user_tooltip)}
                         />
                     </div>
                 </div>
@@ -1356,9 +1364,8 @@ const Users: FC = () => {
                     && (f.twofactorauthentication === undefined || Object.keys(domains.value?.genericstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.twofactorauthentication))
                     && (f.status === undefined || Object.keys(domains.value?.userstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.status))
                     && (f.pwdchangefirstlogin === undefined || ["true", "false"].includes('' + f.pwdchangefirstlogin))
-                    && (f.role === undefined || Object.keys(domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.roleid]: `${d.roleid}` }), {})).includes('' + f.role))
+                    && (f.role !== undefined)
             });
-
             const messageerrors = datainit.filter((f: any) => {
                 return !(f.company === undefined || Object.keys(domains.value?.company?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.company))
                     || !(f.doctype === undefined || Object.keys(domains.value?.docTypes?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.doctype))
@@ -1366,7 +1373,7 @@ const Users: FC = () => {
                     || !(f.twofactorauthentication === undefined || Object.keys(domains.value?.genericstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.twofactorauthentication))
                     || !(f.status === undefined || Object.keys(domains.value?.userstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.status))
                     || !(f.pwdchangefirstlogin === undefined || ["true", "false"].includes('' + f.pwdchangefirstlogin))
-                    || !(f.role === undefined || Object.keys(domains.value?.roles?.reduce((a: any, d) => ({ ...a, [d.roleid]: `${d.roleid}` }), {})).includes('' + f.role))
+                    || !(f.role !== undefined)
             }).reduce((acc, x) => acc + t(langKeys.error_estructure_user, { email: x.email }) + `\n`, '');
 
             setMessageError(messageerrors)
@@ -1399,14 +1406,14 @@ const Users: FC = () => {
                             billinggroupid: d.billinggroup,
                             image: d?.image || "",
                             detail: {
-                                roleid: d.role,
+                                rolegroups: d.role,
                                 orgid: user?.orgid,
                                 bydefault: true,
                                 labels: "",
                                 groups: d.groups || "",
                                 channels: d.channels || "",
                                 status: "DESCONECTADO",
-                                type: (domains?.value?.roles?.filter(x=>x.roleid===d.role)?.[0]?.roldesc||"").slice(0,6) === 'ASESOR' ? 'ASESOR' : 'SUPERVISOR',
+                                type: 'SUPERVISOR',
                                 supervisor: "",
                                 operation: "INSERT",
                                 redirect: "/usersettings"
