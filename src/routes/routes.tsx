@@ -36,6 +36,11 @@ import {
     LocationIcon,
     Corporation2Icon,
     ChannelsIcon,
+    WhitelistIcon,
+    ConfiguratuinIARouteIcon,
+    ConectivityIARouteIcon,
+    IAEntrenamientoIcon,
+    SLAIcon,
 } from 'icons';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import InputIcon from '@material-ui/icons/Input';
@@ -44,54 +49,63 @@ import { Trans } from "react-i18next";
 
 export const viewsClassifications: ViewsClassificationConfig[] = [
     {
+        id: 1,
         key: "analytics",
         description: <Trans i18nKey={langKeys.analytics} />,
-        tooltip: <Trans i18nKey={langKeys.analytics} />,
+        // tooltip: <Trans i18nKey={langKeys.analytics} />,
         icon: (className) => <AnalyticRouteIcon style={{ width: 22, height: 22 }} className={className} />,
-        options: [paths.DASHBOARD,paths.REPORTS,paths.KPIMANAGER]
+        // options: [paths.DASHBOARD,paths.REPORTS,paths.KPIMANAGER]
     },
     {
+        id: 2,
         key: "CRM",
-        description: <Trans i18nKey={langKeys.crm} />,
-        tooltip: <Trans i18nKey={langKeys.crm} />,
+        description: <span>CRM</span>, 
+        // description: <Trans i18nKey={langKeys.crm} />,
+        // tooltip: <Trans i18nKey={langKeys.crm} />,
         icon: (className) => <DashboardRouteIcon style={{ width: 22, height: 22 }} className={className} />,
-        options: [paths.MESSAGE_INBOX,paths.SUPERVISOR,paths.PERSON, paths.CRM, paths.CAMPAIGN, paths.MESSAGETEMPLATE, paths.POSTCREATOR, paths.TICKETS]
+        // options: [paths.MESSAGE_INBOX,paths.SUPERVISOR,paths.PERSON, paths.CRM, paths.CAMPAIGN, paths.MESSAGETEMPLATE, paths.POSTCREATOR, paths.TICKETS]
     },
     {
+        id: 3,
         key: "automatization",
         description: <Trans i18nKey={langKeys.automatization}/>,
-        tooltip: <Trans i18nKey={langKeys.automatization}/>,
+        // tooltip: <Trans i18nKey={langKeys.automatization}/>,
         icon: (className) => <AutomatizationRouteIcon style={{ width: 22, height: 22 }} className={className} />,
-        options:[paths.BOTDESIGNER, paths.VARIABLECONFIGURATION, paths.INTEGRATIONMANAGER, paths.CALENDAR, paths.AUTOMATIZATIONRULES, paths.REPORTSCHEDULER]
+        // options:[paths.BOTDESIGNER, paths.VARIABLECONFIGURATION,  paths.INTEGRATIONMANAGER, paths.CALENDAR, paths.AUTOMATIZATIONRULES, paths.REPORTSCHEDULER]
     },
     {
+        id: 4,
         key: "sales",
         description: <Trans i18nKey={langKeys.reason_sales} />,
-        tooltip: <Trans i18nKey={langKeys.reason_sales} />,
+        // tooltip: <Trans i18nKey={langKeys.reason_sales} />,
         icon: (className) => <SalesRouteIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
-        options: [paths.ORDERS,paths.PRODUCTCATALOG,paths.CATALOGMASTER]
+        // options: [paths.ORDERS,paths.PRODUCTCATALOG,paths.CATALOGMASTER]
     },
     {
+        id: 5,
         key: "servicedesk",
-        description: <Trans i18nKey={langKeys.servicedesk} />,
-        tooltip: <Trans i18nKey={langKeys.servicedesk} />,
+        description: <span>Service Desk</span>, 
+        // description: <Trans i18nKey={langKeys.servicedesk} />,
+        // tooltip: <Trans i18nKey={langKeys.servicedesk} />,
         icon: (className) => <ServiceDeskRouteIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
-        options: [paths.SERVICE_DESK,paths.SLA]
+        // options: [paths.SERVICE_DESK, paths.SLA]
     },
     {
+        id: 6,
         key: "ia",
         description: <Trans i18nKey={langKeys.ia} />, // prop:count for plural purposes
-        tooltip: <Trans i18nKey={langKeys.ia} />,
+        // tooltip: <Trans i18nKey={langKeys.ia} />,
         icon: (className) => <IARouteIcon style={{ width: 22, height: 22 }} className={className} />,
-        options: [paths.IACONECTORS,paths.INTELLIGENTMODELS,paths.IATRAINING, paths.IACONFIGURATION]
+        // options: [paths.IACONECTORS, paths.IACONFIGURATION,  paths.IATRAINING]
     },
     {
+        id: 7,
         key: "configuration",
         description: <Trans i18nKey={langKeys.configuration} />,
-        tooltip: <Trans i18nKey={langKeys.configuration} />,
+        // tooltip: <Trans i18nKey={langKeys.configuration} />,
         icon: (className) => <ConfigurationIcon style={{ width: 22, height: 22 }} className={className} />,
-        options: [paths.CORPORATIONS, paths.DOMAINS, paths.ORGANIZATIONS, paths.EMOJIS, paths.CHANNELS, paths.INAPPROPRIATEWORDS, paths.USERS, paths.INTEGRATIONMANAGER,paths.QUICKREPLIES,
-        paths.TIPIFICATIONS, paths.INPUTVALIDATION,paths.WHITELIST, paths.EXTRASLOCATION, paths.SECURITYRULES,paths.PROPERTIES, paths.BILLING_SETUPS, paths.INVOICE]
+        // options: [paths.CORPORATIONS, paths.ORGANIZATIONS, paths.DOMAINS,  paths.EMOJIS, paths.CHANNELS, paths.INAPPROPRIATEWORDS, paths.USERS, paths.QUICKREPLIES,
+        // paths.TIPIFICATIONS, paths.INPUTVALIDATION,paths.WHITELIST, paths.EXTRASLOCATION, paths.SECURITYRULES,paths.PROPERTIES, paths.BILLING_SETUPS, paths.INVOICE]
     },
 ];
 
@@ -264,8 +278,8 @@ export const routes: RouteConfig[] = [
     // },
     {
         key: paths.CORPORATIONS,
-        description: <Trans i18nKey={langKeys.corporation} />,
-        tooltip: <Trans i18nKey={langKeys.corporation} />,
+        description: <Trans i18nKey={langKeys.corporation_plural} />,
+        tooltip: <Trans i18nKey={langKeys.corporation_plural} />,
         subroute: true,
         path: paths.CORPORATIONS,
         initialSubroute: paths.CORPORATIONS,
@@ -273,8 +287,8 @@ export const routes: RouteConfig[] = [
     },
     {
         key: paths.ORGANIZATIONS,
-        description: <Trans i18nKey={langKeys.organization} />,
-        tooltip: <Trans i18nKey={langKeys.organization} />,
+        description: <Trans i18nKey={langKeys.organization_plural} />,
+        tooltip: <Trans i18nKey={langKeys.organization_plural} />,
         subroute: true,
         path: paths.ORGANIZATIONS,
         initialSubroute: paths.ORGANIZATIONS,
@@ -282,7 +296,7 @@ export const routes: RouteConfig[] = [
     },
     {
         key: '/channels',
-        description: <Trans i18nKey={langKeys.channel} />,
+        description: <Trans i18nKey={langKeys.channel_plural} />,
         tooltip: <Trans i18nKey={langKeys.channel} />,
         subroute: true,
         path: paths.CHANNELS,
@@ -386,7 +400,7 @@ export const routes: RouteConfig[] = [
     },
     {
         key: paths.USERS,
-        description: <Trans i18nKey={langKeys.user} />,
+        description: <Trans i18nKey={langKeys.user_plural} />,
         tooltip: "",
         path: paths.USERS,
         icon: (className) => <UserGroupIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
@@ -433,7 +447,7 @@ export const routes: RouteConfig[] = [
         description: <Trans i18nKey={langKeys.sla} count={2} />,
         tooltip: "",
         path: paths.SLA,
-        icon: (className) => <ExtrasIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
+        icon: (className) => <SLAIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
     },
     {
         key: paths.DOMAINS,
@@ -447,7 +461,7 @@ export const routes: RouteConfig[] = [
         description: <Trans i18nKey={langKeys.whitelist} count={2} />,
         tooltip: "",
         path: paths.WHITELIST,
-        icon: (className) => <ClassificationIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
+        icon: (className) => <WhitelistIcon style={{ width: 22, height: 22, opacity: 0.8}} className={className} />,
     },
     {
         key: paths.SECURITYRULES,
@@ -458,7 +472,7 @@ export const routes: RouteConfig[] = [
     },
     
     {
-        key: paths.PERSON,
+        key: '/person',
         description: <Trans i18nKey={langKeys.person_plural} count={2} />,
         tooltip: "",
         path: paths.PERSON,
@@ -502,12 +516,12 @@ export const routes: RouteConfig[] = [
     },
     {
         key: paths.IACONECTORS,
-        description: <Trans i18nKey={langKeys.iaconnectors} />,
+        description: <Trans i18nKey={langKeys.connectors} />,
         tooltip: <Trans i18nKey={langKeys.iaconnectors} />,
         subroute: true,
         path: paths.IACONECTORS,
         initialSubroute: paths.IACONECTORS,
-        icon: (className) => <Corporation2Icon style={{ width: 22, height: 22 }} className={className} />,
+        icon: (className) => <ConectivityIARouteIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
         key: paths.IACONFIGURATION,
@@ -516,16 +530,18 @@ export const routes: RouteConfig[] = [
         subroute: true,
         path: paths.IACONFIGURATION,
         initialSubroute: paths.IACONFIGURATION,
-        icon: (className) => <Corporation2Icon style={{ width: 22, height: 22 }} className={className} />,
+        icon: (className) => <ConfiguratuinIARouteIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     {
         key: paths.IATRAINING,
-        description: <Trans i18nKey={langKeys.trainingwithai} />,
+        description: <Trans i18nKey={langKeys.training} />,
         tooltip: <Trans i18nKey={langKeys.trainingwithai} />,
         subroute: true,
         path: paths.IATRAINING,
         initialSubroute: paths.IATRAINING,
-        icon: (className) => <Corporation2Icon style={{ width: 22, height: 22 }} className={className} />,
+        icon: (className) => <IAEntrenamientoIcon style={{ width: 22, height: 22 }} className={className} />,
     },
 ];
 
+export const subroutes: RouteConfig[] = [
+];
