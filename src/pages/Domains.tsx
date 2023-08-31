@@ -20,8 +20,6 @@ import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { getCollection, getMultiCollection, execute, getCollectionAux, resetMainAux, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { useHistory } from 'react-router-dom';
-import paths from 'common/constants/paths';
 
 interface RowSelected {
     row: Dictionary | null;
@@ -471,7 +469,6 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
 }
 
 const Domains: FC = () => {
-    const history = useHistory();
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const mainResult = useSelector(state => state.main);
@@ -483,14 +480,9 @@ const Domains: FC = () => {
     const superadmin = ["SUPERADMIN","ADMINISTRADOR","ADMINISTRADOR P"].includes(user?.roledesc || '');
 
     const arrayBread = [
-        { id: "view-0", name: t(langKeys.configuration_plural) },
         { id: "view-1", name: t(langKeys.domain_plural) },
     ];
     function redirectFunc(view:string){
-        if(view ==="view-0"){
-            history.push(paths.CONFIGURATION)
-            return;
-        }
         setViewSelected(view)
     }
     const columns = React.useMemo(
@@ -618,28 +610,11 @@ const Domains: FC = () => {
 
         return (
             <div style={{ width: "100%", display: 'flex', flexDirection: 'column', flex: 1 }}>
-                <div style={{ display: 'flex',  justifyContent: 'space-between',  alignItems: 'center'}}>
-                    <TemplateBreadcrumbs
-                        breadcrumbs={arrayBread}
-                        handleClick={redirectFunc}
-                    />
-                </div>
                 <TableZyx
                     columns={columns}
                     titlemodule={t(langKeys.domain_plural, { count: 2 })}
                     data={mainResult.mainData.data}
                     download={true}
-                    ButtonsElement={() => (
-                        <Button
-                            disabled={mainResult.mainData.loading}
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            startIcon={<ClearIcon color="secondary" />}
-                            style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => history.push(paths.CONFIGURATION)}
-                        >{t(langKeys.back)}</Button>
-                    )}
                     onClickRow={handleEdit}
                     loading={mainResult.mainData.loading}
                     register={superadmin}

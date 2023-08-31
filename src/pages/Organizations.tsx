@@ -19,8 +19,6 @@ import ClearIcon from '@material-ui/icons/Clear';
 import { Box, Grid, IconButton, InputAdornment, Tabs, FormControlLabel } from '@material-ui/core';
 import { Close, CloudUpload, Visibility, VisibilityOff, Refresh as RefreshIcon, CompareArrows } from '@material-ui/icons';
 import { getCountryList } from 'store/signup/actions';
-import { useHistory } from 'react-router-dom';
-import paths from 'common/constants/paths';
 import clsx from 'clsx';
 import { formatNumber } from 'common/helpers';
 import { getMaximumConsumption, transferAccountBalance, getAccountBalance, updateScenario } from "store/voximplant/actions";
@@ -1219,7 +1217,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
 }
 
 const Organizations: FC = () => {
-    const history = useHistory();
     const dispatch = useDispatch();
     const ressignup = useSelector(state => state.signup.currencyList);
     const { t } = useTranslation();
@@ -1230,14 +1227,9 @@ const Organizations: FC = () => {
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
     const arrayBread = [
-        { id: "view-0", name: t(langKeys.configuration_plural) },
         { id: "view-1", name: t(langKeys.organization_plural) },
     ];
     function redirectFunc(view: string) {
-        if (view === "view-0") {
-            history.push(paths.CONFIGURATION)
-            return;
-        }
         setViewSelected(view)
     }
 
@@ -1371,28 +1363,11 @@ const Organizations: FC = () => {
 
         return (
             <div style={{ width: "100%", display: 'flex', flexDirection: 'column', flex: 1 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <TemplateBreadcrumbs
-                        breadcrumbs={arrayBread}
-                        handleClick={redirectFunc}
-                    />
-                </div>
                 <TableZyx
                     columns={columns}
                     titlemodule={t(langKeys.organization_plural, { count: 2 })}
                     data={mainResult.mainData.data}
                     download={true}
-                    ButtonsElement={() => (
-                        <Button
-                            disabled={mainResult.mainData.loading}
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            startIcon={<ClearIcon color="secondary" />}
-                            style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => history.push(paths.CONFIGURATION)}
-                        >{t(langKeys.back)}</Button>
-                    )}
                     onClickRow={handleEdit}
                     loading={mainResult.mainData.loading}
                     register={true}

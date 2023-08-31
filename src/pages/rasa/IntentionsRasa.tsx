@@ -540,13 +540,13 @@ export const IntentionsRasa: React.FC<IntentionProps> = ({ setExternalViewSelect
                 }
             },
             {
-                Header: `${t(langKeys.examples)} ${t(langKeys.entities)}`,
+                Header: `${t(langKeys.entities)}`,
                 accessor: 'entities',
                 width: "auto",
                 NoFilter: true,
             },                 
             {
-                Header: `${t(langKeys.examples)} ${t(langKeys.quantity)}`,
+                Header: `${t(langKeys.examples)} ${t(langKeys.entities)}`,
                 accessor: 'entity_examples',
                 width: "auto",
                 NoFilter: true,
