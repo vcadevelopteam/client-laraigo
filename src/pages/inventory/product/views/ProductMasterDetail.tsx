@@ -36,7 +36,7 @@ interface DetailProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
-    fetchData?: () => void;
+    fetchData?: any;
 }
 
 

@@ -4052,3 +4052,19 @@ export const rasaModelSel = () => ({
     key: "UFN_RASA_MODEL_SEL",
     parameters: { },
 });
+
+export const getPaginatedProducts = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_PRODUCT_PAG",
+    methodCount: "UFN_PRODUCT_TOTALRECORDS",
+    parameters: {
+        startdate,
+        enddate,
+        skip,
+        take,
+        filters,
+        sorts,
+        origin: "product",
+        productid: 0,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})

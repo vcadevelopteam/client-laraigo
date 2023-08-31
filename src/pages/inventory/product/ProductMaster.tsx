@@ -2,9 +2,9 @@
 import { FC, useEffect, useState } from "react";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { getDomainSel } from "common/helpers";
-import { Dictionary } from "@types";
-import { getCollection, resetAllMain } from "store/main/actions";
+import { getPaginatedProducts } from "common/helpers";
+import { Dictionary, IFetchData } from "@types";
+import { getCollectionPaginated, resetAllMain } from "store/main/actions";
 import ProductMasterDetail from "./views/ProductMasterDetail";
 import ProductMasterMainView from "./views/ProductMasterMainView";
 
@@ -17,6 +17,7 @@ const ProductMaster: FC = () => {
   const dispatch = useDispatch();
   const mainResult = useSelector((state) => state.main);
   const [viewSelected, setViewSelected] = useState("main-view");
+  const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
   const [rowSelected, setRowSelected] = useState<RowSelected>({
     row: null,
     edit: false,
@@ -24,7 +25,21 @@ const ProductMaster: FC = () => {
   function redirectFunc(view: string) {
     setViewSelected(view);
   }
-  const fetchData = () => dispatch(getCollection(getDomainSel("")));
+  
+  const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
+    setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
+    dispatch(getCollectionPaginated(getPaginatedProducts({
+        startdate: daterange.startDate!,
+        enddate: daterange.endDate!,
+        take: pageSize,
+        skip: pageIndex * pageSize,
+        sorts: sorts,
+        filters: {
+            ...filters,
+        },
+    })))
+};
+
 
   useEffect(() => {
     return () => {
@@ -33,15 +48,12 @@ const ProductMaster: FC = () => {
   }, []);
 
   if (viewSelected === "main-view") {
-    if (mainResult.mainData.error) {
-      return <h1>ERROR</h1>;
-    }
     return (
       <ProductMasterMainView
         setViewSelected={setViewSelected}
         setRowSelected={setRowSelected}
         fetchData={fetchData}
-        mainData={mainResult.mainData}
+        fetchDataAux={fetchDataAux}
       />
     );
   } else
@@ -56,3 +68,4 @@ const ProductMaster: FC = () => {
 };
 
 export default ProductMaster;
+

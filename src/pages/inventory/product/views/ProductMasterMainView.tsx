@@ -4,16 +4,14 @@ import ChangeStatusDialog from "../dialogs/ChangeStatusDialog";
 import { Trans, useTranslation } from "react-i18next";
 import {
   TemplateIcons,
-  DateRangePicker,
   Title,
   DialogZyx,
   FieldSelect,
 } from "components";
-import TableZyx from "components/fields/table-simple";
 import { langKeys } from "lang/keys";
-import { CalendarIcon, DuplicateIcon, SearchIcon } from "icons";
+import { DuplicateIcon } from "icons";
 import { makeStyles } from "@material-ui/core/styles";
-import { Dictionary } from "@types";
+import { Dictionary, IFetchData } from "@types";
 import { useDispatch } from "react-redux";
 import { execute } from "store/main/actions";
 import {
@@ -21,19 +19,19 @@ import {
   showBackdrop,
   manageConfirmation,
 } from "store/popus/actions";
-import { getDateCleaned, insDomain } from "common/helpers";
+import { insDomain } from "common/helpers";
 import { useSelector } from "hooks";
-import { Range } from "react-date-range";
 import { Button } from "@material-ui/core";
 import BackupIcon from "@material-ui/icons/Backup";
+import TablePaginated from "components/fields/table-paginated";
 
-const selectionKey = "domainname";
+const selectionKey = "productid";
 
 interface ProductMasterMainViewProps {
   setViewSelected: (view: string) => void;
   setRowSelected: (rowdata: any) => void;
-  fetchData: () => void;
-  mainData: any;
+  fetchData: any;
+  fetchDataAux: any;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -52,32 +50,25 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const initialRange = {
-  startDate: new Date(new Date().setDate(1)),
-  endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
-  key: "selection",
-};
-
 const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
   setViewSelected,
   setRowSelected,
   fetchData,
-  mainData,
+  fetchDataAux,
 }) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const classes = useStyles();
 
   const executeResult = useSelector((state) => state.main.execute);
+  const mainPaginated = useSelector((state) => state.main.mainPaginated);
   const [waitSave, setWaitSave] = useState(false);
   const [selectedRows, setSelectedRows] = useState<Dictionary>({});
   const [cleanSelected, setCleanSelected] = useState(false);
-  const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] =
-    useState(false);
+  const [totalrow, settotalrow] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
   const [openModalChangeStatus, setOpenModalChangeStatus] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-  const [dateRangeCreateDate, setDateRangeCreateDate] =
-    useState<Range>(initialRange);
   const [selectedTemplate, setSelectedTemplate] = useState("false");
 
   const handleRegister = () => {
@@ -115,6 +106,17 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
   function handleImport() {
     setOpenModal(false);
   }
+
+  useEffect(() => {
+    if (!mainPaginated.loading && !mainPaginated.error) {
+      setPageCount(
+        fetchDataAux.pageSize
+          ? Math.ceil(mainPaginated.count / fetchDataAux.pageSize)
+          : 0
+      );
+      settotalrow(mainPaginated.count);
+    }
+  }, [mainPaginated]);
 
   useEffect(() => {
     if (waitSave) {
@@ -218,6 +220,25 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
     []
   );
 
+  const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
+    debugger;
+    /*const columnsExport = columns.filter(x => !x.isComponent).map(x => ({
+          key: x.accessor,
+          alias: x.Header
+      }))
+      dispatch(exportData(getTicketExport({
+          filters: {
+              ...filters,
+          },
+          sorts,
+          startdate: daterange.startDate!,
+          enddate: daterange.endDate!,
+          ...allParameters
+      }), "", "excel", false, columnsExport));
+      dispatch(showBackdrop(true));
+      setWaitSave(true);*/
+  };
+
   return (
     <div
       style={{
@@ -242,21 +263,27 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
           </Title>
         </div>
       </div>
-      <TableZyx
+      <TablePaginated
         columns={columns}
-        data={mainData.data}
+        data={mainPaginated.data}
+        totalrow={totalrow}
+        loading={mainPaginated.loading}
+        pageCount={pageCount}
+        filterrange={true}
         download={true}
+        fetchData={fetchData}
+        exportPersonalized={triggerExportData}
+        useSelection={true}
+        selectionKey={selectionKey}
+        setSelectedRows={setSelectedRows}
+        filterRangeDate="today"
         onClickRow={handleEdit}
-        loading={mainData.loading}
         handleRegister={handleRegister}
         filterGeneral={false}
-        useSelection={true}
-        setSelectedRows={setSelectedRows}
         initialSelectedRows={selectedRows}
         cleanSelection={cleanSelected}
         setCleanSelection={setCleanSelected}
         register={true}
-        selectionKey={selectionKey}
         ButtonsElement={() => (
           <div
             className={classes.containerHeader}
@@ -268,38 +295,6 @@ const ProductMasterMainView: FC<ProductMasterMainViewProps> = ({
             }}
           >
             <div style={{ display: "flex", gap: 8 }}>
-              <DateRangePicker
-                open={openDateRangeCreateDateModal}
-                setOpen={setOpenDateRangeCreateDateModal}
-                range={dateRangeCreateDate}
-                onSelect={setDateRangeCreateDate}
-              >
-                <Button
-                  className={classes.itemDate}
-                  startIcon={<CalendarIcon />}
-                  onClick={() =>
-                    setOpenDateRangeCreateDateModal(
-                      !openDateRangeCreateDateModal
-                    )
-                  }
-                >
-                  {getDateCleaned(dateRangeCreateDate.startDate!) +
-                    " - " +
-                    getDateCleaned(dateRangeCreateDate.endDate!)}
-                </Button>
-              </DateRangePicker>
-              <div>
-                <Button
-                  disabled={mainData.loading}
-                  variant="contained"
-                  color="primary"
-                  startIcon={<SearchIcon style={{ color: "white" }} />}
-                  style={{ width: 120, backgroundColor: "#55BD84" }}
-                  onClick={() => fetchData()}
-                >
-                  {t(langKeys.search)}
-                </Button>
-              </div>
               <div>
                 <Button
                   className={classes.button}
