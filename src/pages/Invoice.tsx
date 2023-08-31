@@ -5034,12 +5034,7 @@ const Payments: React.FC<{
                         showPayButton = true;
                     }
 
-                    if (
-                        row.hasreport &&
-                        row.invoicestatus !== "INVOICED" &&
-                        row.paymentstatus !== "PAID" &&
-                        user?.roledesc?.includes("SUPERADMIN")
-                    ) {
+                    if (row.invoicestatus !== "INVOICED" && row.paymentstatus !== "PAID" && row.hasreport && user?.roledesc?.includes("SUPERADMIN")) {
                         showUpdateButton = true;
                     }
 
@@ -5877,16 +5872,13 @@ const Billing: React.FC<{ dataCorp: any; dataOrg: any }> = ({ dataCorp, dataOrg 
 
         return () => {
             dispatch(cleanMemoryTable());
-            dispatch(
-                getMultiCollection([
-                    getCorpSel(user?.roledesc?.includes("ADMINISTRADOR") ? user?.corpid : 0),
-                    getMeasureUnit(),
-                    getValuesFromDomain("TYPECREDIT", null, user?.orgid, user?.corpid),
-                    getAppsettingInvoiceSel(),
-                ])
-            );
-        };
-    }, []);
+            dispatch(getMultiCollection([
+                getCorpSel(user?.roledesc?.includes("ADMINISTRADOR") ? user?.corpid : 0),
+                getMeasureUnit(),
+                getValuesFromDomain("TYPECREDIT", null, user?.orgid, user?.corpid),
+                getAppsettingInvoiceSel()]));
+        }
+    }, [])
 
     useEffect(() => {
         setdisableSearch(dataMain.year === "");

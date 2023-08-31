@@ -313,8 +313,6 @@ export const apiUrls = {
     RASAUPLOADINT: `${BASE_URL}/rasa/upload`,
     RASAMODELLIST: `${BASE_URL}/rasa/list`,
     RASAMODELDOWNLOAD: `${BASE_URL}/rasa/download-model`,
-
-
     GENERATE_APIKEY: `${BASE_URL}/user/generatetoken`,
     INTEGRATION_URL: `${BASE_URL}/load`,
     REPORT_DATA: `${BASE_URL}/report-data/`,

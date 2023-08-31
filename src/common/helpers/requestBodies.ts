@@ -1766,8 +1766,8 @@ export const dashboardKPIMonthSummarySel = ({ origin, usergroup, supervisorid, u
     method: 'UFN_DASHBOARD_KPI_SUMMARY_BY_MONTH',
     key: "UFN_DASHBOARD_KPI_SUMMARY_BY_MONTH",
     parameters: {
-        date:new Date(), origin, usergroup, supervisorid,
-        offset: (new Date().getTimezoneOffset() / 60) * -1,userid
+        date: new Date(), origin, usergroup, supervisorid,
+        offset: (new Date().getTimezoneOffset() / 60) * -1, userid
     }
 });
 export const dashboardKPISummaryGraphSel = ({ date, origin, usergroup, supervisorid, userid }: Dictionary): IRequestBody => ({

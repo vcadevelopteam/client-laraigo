@@ -84,7 +84,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
     const { t } = useTranslation();
     const [currentView, setCurrentView] = useState("view-1");
     const [waitSave, setWaitSave] = useState(false);
-    const [limitnumbers, setlimitnumbers] = useState(16);
+    const [limitnumbers, setlimitnumbers] = useState(22);
     const [icon, setIcon] = useState(<></>);
     const { getValues, control, setValue } = useFormContext<MainData>();
     const executeResultValidation = useSelector(state => state.subscription.requestValidateChannels);
@@ -336,8 +336,6 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                     if (currentView === "view-2") {
                                         if (value?.length === 0) {
                                             return t(langKeys.field_required) as string;
-                                        } else if ((value?.length !== limitnumbers) || (limitnumbers < 12)) {
-                                            return t(langKeys.creditcardvalidate) as string;
                                         }
                                     }
                                 }
@@ -379,7 +377,7 @@ export const LeftSide: FC<LeftSideProps> = ({ setOpenWarning }) => {
                                             setlimitnumbers(17)
                                         } else {
                                             setIcon(<></>)
-                                            setlimitnumbers(10)
+                                            setlimitnumbers(22)
                                         }
                                     }}
                                     InputProps={{
