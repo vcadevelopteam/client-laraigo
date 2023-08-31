@@ -1682,6 +1682,7 @@ const translation: LangKeys = {
 
   error_cos_unexpected: '5005: Hubo un error, comuniquese con el administrador',
   error_zero_records: '5005: Nada a exportar',
+  error_recaptcha_error: "Error en la validación del ReCAPTCHA",
   consulthistoricaldata: "Consultar data histórica",
   gotolaraigo: "Ir a laraigo",
 
