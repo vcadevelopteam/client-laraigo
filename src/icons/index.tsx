@@ -230,6 +230,7 @@ export { ReactComponent as XlsIcon } from './xlsIcon.svg';
 export { ReactComponent as DuplicateIcon } from './duplicate.svg';
 
 export { ReactComponent as LaraigoLogo } from './Laraigo-logo.svg';
+export { ReactComponent as LogoSuscription } from './LogoSuscription.svg';
 export { ReactComponent as LaraigoOnlyLogo } from './laraigo-onlylogo.svg';
 export { ReactComponent as EnvioIcon } from './envioAuto-01.svg';
 export { ReactComponent as TeamsIcon } from './teams.svg';
@@ -258,6 +259,7 @@ export { ReactComponent as EntidadesIALogo } from './EntidadesIALogo.svg';
 export { ReactComponent as SynonimsRasaLogo } from './sinonimosRasa.svg';
 export { ReactComponent as ModelsRasaLogo } from './modelosRasa.svg';
 export { ReactComponent as TestModelRasa } from './pruebaModeloRasa.svg';
+export { ReactComponent as DashboardIAIcon } from './iconBrainnet.svg';
 
 export { ReactComponent as ChannelAndroid } from './channel/channel-android.svg';
 export { ReactComponent as ChannelAppStore } from './channel/channel-appstore.svg';
@@ -291,7 +293,6 @@ export { ReactComponent as ChannelWorkplace } from './channel/channel-workplace.
 export { ReactComponent as ChannelYouTube } from './channel/channel-youtube.svg';
 
 // route icons
-
 export { ReactComponent as DashboardRouteIcon } from './dashboard_route.svg';
 export { ReactComponent as AnalyticRouteIcon } from './analytics_route.svg';
 export { ReactComponent as AutomatizationRouteIcon } from './automatizacion_route.svg';
