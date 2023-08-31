@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { apiUrls } from "common/constants";
 import { Box, Breadcrumbs, Button, FormControlLabel, makeStyles } from "@material-ui/core";
 import { ChannelWhatsApp01 } from "icons";

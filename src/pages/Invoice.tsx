@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Add, Close, FileCopy, GetApp, Refresh, Search } from "@material-ui/icons";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { Dictionary, MultiData } from "@types";
@@ -194,16 +196,6 @@ const StyledTableCell = withStyles((theme) => ({
 }))(TableCell);
 
 const StyledTableRow = withStyles(() => ({}))(TableRow);
-
-function getTaxableAmount(igv: number, num: number) {
-    if (num && igv) return (num / (igv + 1)).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
-    return "0.00";
-}
-
-function getIgv(igv: number, num: number) {
-    if (num && igv) return (num - num / (igv + 1)).toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
-    return "0.00";
-}
 
 function toISOLocalString(date: { getTimezoneOffset: () => number; getTime: () => number }) {
     const z = (n: string | number) => ("0" + n).slice(-2);
