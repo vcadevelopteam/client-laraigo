@@ -163,6 +163,7 @@ export const langKeys = {
   startnewconversation: "startnewconversation",
   startnewconversationTooltip: "startnewconversationTooltip",
   laraigoia: "laraigoia",
+  connectors: 'connectors',
   iaconnectors: "iaconnectors",
   iaconnectorsdescription: "iaconnectorsdescription",
   enter: "enter",

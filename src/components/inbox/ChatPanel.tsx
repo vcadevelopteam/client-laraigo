@@ -980,7 +980,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
     }
 
     useEffect(() => {
-        if(user?.roledesc === "ASESOR"){
+        if(user?.roledesc?.includes("ASESOR")){
             if(!!multiData){
                 let dataasesorsuspende = multiData?.data?.filter(x=>x.key==="UFN_PROPERTY_SELBYNAMEASESORSUSPENDE")?.[0]?.data
                 if(!user?.groups){
@@ -1070,7 +1070,7 @@ const ButtonsManageTicket: React.FC<{ classes: any; setShowSearcher: (param: any
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                {(ticketSelected?.status !== 'CERRADO' && ticketSelected?.communicationchanneltype !== "VOXI" && (user?.roledesc === "ASESOR" ? multiData?.data?.filter(x => x.key === "UFN_PROPERTY_SELBYNAMEASESORDELEGACION")?.[0]?.data?.[0]?.propertyvalue === "1" : true)) &&
+                {(ticketSelected?.status !== 'CERRADO' && ticketSelected?.communicationchanneltype !== "VOXI" && (user?.roledesc?.includes("ASESOR") ? multiData?.data?.filter(x => x.key === "UFN_PROPERTY_SELBYNAMEASESORDELEGACION")?.[0]?.data?.[0]?.propertyvalue === "1" : true)) &&
                     <MenuItem onClick={() => {
                         setOpenModalReassignticket(true)
                         setAnchorEl(null)

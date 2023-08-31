@@ -615,6 +615,7 @@ const translation: LangKeys = {
 
   type_gender_femenino: 'Female',
   laraigoia: "Laraigo AI",
+  connectors: 'Connectors',
   iaconnectors: "AI Connectors",
   iaconnectorsdescription: "Register your artificial intelligence connectors",
   enter: "Enter",

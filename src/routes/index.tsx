@@ -146,6 +146,21 @@ const cleanPath = (pathx: string) => {
 // insert: 2
 // delete: 3
 
+const cleanPath = (pathx: string) => {
+	if (pathx.includes('channels')) {
+		return pathx = "/channels";
+	} else if (pathx.includes('person')) {
+		return pathx = "/person";
+	} else if (pathx.includes('crm')) {
+		return pathx = "/crm";
+	} else if (pathx.includes('dashboard')) {
+		return pathx = "/dashboard";
+	} else if (pathx.includes('servicedesk')) {
+		return pathx = "/servicedesk";
+	}
+	return pathx
+}
+
 const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, ...rest }) => {
 	const resValidateToken = useSelector(state => state.login.validateToken);
 	const ignorePwdchangefirstloginValidation = useSelector(state => state.login.ignorePwdchangefirstloginValidation);
