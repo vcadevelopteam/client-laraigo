@@ -175,6 +175,7 @@ export { ReactComponent as BloggerColor } from './blogger.svg';
 export { ReactComponent as ChatWebColor } from './web-messenger-color.svg';
 export { ReactComponent as EmailColor } from './email-color.svg';
 export { ReactComponent as FacebookColor } from './facebook-color.svg';
+export { ReactComponent as MetaColor } from './meta-icon.svg';
 export { ReactComponent as FacebookColor2 } from './facebook-color2.svg';
 export { ReactComponent as FacebookMessengerColor } from './facebook-messenger-color.svg';
 export { ReactComponent as FacebookMessengerColor2 } from './facebook-messenger-color2.svg';
