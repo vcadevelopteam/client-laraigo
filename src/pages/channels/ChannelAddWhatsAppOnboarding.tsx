@@ -274,7 +274,7 @@ export const ChannelAddWhatsAppOnboarding: FC = () => {
                         label={t(langKeys.connect_whatsappnumber)}
                         partnerId={apiUrls.DIALOG360PARTNERID}
                         queryParameters={{
-                            redirect_url: `${window.location.origin}/channels/:id/add/ChannelAddWhatsAppOnboarding`
+                            redirect_url: `${window.location.origin}/channels/:id/add/ChannelAddWhatsAppOnboarding`,
                         }}
                         style={{
                             alignItems: "center",
