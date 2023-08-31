@@ -179,7 +179,6 @@ const MainHeatMap: React.FC<{dataChannels: any}> = ({dataChannels}) => {
                             width: '1%',
                             Cell: (props: any) => {
                                 const row = props.cell.row.original;
-                                debugger
                                 return (
                                     row.communicationchanneltype === 'VOXI'
                                     && row.postexternalid
@@ -220,7 +219,6 @@ const MainHeatMap: React.FC<{dataChannels: any}> = ({dataChannels}) => {
                             width: '1%',
                             Cell: (props: any) => {
                                 const row = props.cell.row.original;
-                                debugger
                                 return (
                                     row.communicationchanneltype === 'VOXI'
                                     && row.postexternalid
@@ -262,7 +260,6 @@ const MainHeatMap: React.FC<{dataChannels: any}> = ({dataChannels}) => {
                             width: '1%',
                             Cell: (props: any) => {
                                 const row = props.cell.row.original;
-                                debugger
                                 return (
                                     row.communicationchanneltype === 'VOXI'
                                     && row.postexternalid
@@ -304,7 +301,6 @@ const MainHeatMap: React.FC<{dataChannels: any}> = ({dataChannels}) => {
                             width: '1%',
                             Cell: (props: any) => {
                                 const row = props.cell.row.original;
-                                debugger
                                 return (
                                     row.communicationchanneltype === 'VOXI'
                                     && row.postexternalid
@@ -346,7 +342,6 @@ const MainHeatMap: React.FC<{dataChannels: any}> = ({dataChannels}) => {
                             width: '1%',
                             Cell: (props: any) => {
                                 const row = props.cell.row.original;
-                                debugger
                                 return (
                                     row.communicationchanneltype === 'VOXI'
                                     && row.postexternalid
@@ -1382,7 +1377,6 @@ const HeatMapAsesor: React.FC<{dataChannels:any, companydomain: any,groupsdomain
                             width: '1%',
                             Cell: (props: any) => {
                                 const row = props.cell.row.original;
-                                debugger
                                 return (
                                     row.communicationchanneltype === 'VOXI'
                                     && row.postexternalid
@@ -1422,7 +1416,6 @@ const HeatMapAsesor: React.FC<{dataChannels:any, companydomain: any,groupsdomain
                             width: '1%',
                             Cell: (props: any) => {
                                 const row = props.cell.row.original;
-                                debugger
                                 return (
                                     row.communicationchanneltype === 'VOXI'
                                     && row.postexternalid
@@ -1461,7 +1454,6 @@ const HeatMapAsesor: React.FC<{dataChannels:any, companydomain: any,groupsdomain
                             width: '1%',
                             Cell: (props: any) => {
                                 const row = props.cell.row.original;
-                                debugger
                                 return (
                                     row.communicationchanneltype === 'VOXI'
                                     && row.postexternalid
@@ -1501,7 +1493,6 @@ const HeatMapAsesor: React.FC<{dataChannels:any, companydomain: any,groupsdomain
                             width: '1%',
                             Cell: (props: any) => {
                                 const row = props.cell.row.original;
-                                debugger
                                 return (
                                     row.communicationchanneltype === 'VOXI'
                                     && row.postexternalid

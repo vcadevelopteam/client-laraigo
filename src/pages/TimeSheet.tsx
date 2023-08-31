@@ -470,7 +470,6 @@ const DetailTimeSheet: React.FC<DetailProps> = ({
     useEffect(() => {
         if (!multiResult.loading) {
             setProfileAllowed(multiResult.data[0] && multiResult.data[0].success ? multiResult.data[0].data : []);
-            console.log(multiResult.data[0] && multiResult.data[0].success ? multiResult.data[0].data : []);
         }
     }, [multiResult]);
 

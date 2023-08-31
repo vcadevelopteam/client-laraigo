@@ -309,7 +309,6 @@ const WitIA: React.FC<{arrayBread: any, setViewSelected: (view: string) => void}
 
     
     const functionChange = (change:string) => {
-        debugger
         if(change === "witia"){
             setViewSelectedTraining("view-1")
         }else{

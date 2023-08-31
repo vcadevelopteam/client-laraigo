@@ -1625,7 +1625,6 @@ const Reports: FC = () => {
             </>
         )
     }else {
-        debugger
         return (
             <ReportItem
                 setViewSelected={setViewSelected}

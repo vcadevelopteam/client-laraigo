@@ -568,7 +568,6 @@ const TabServiceTimes: React.FC<TabDetailProps> = ({ form,row, multiData }) => {
         })
         if(!Object.values(dataAddRow).includes('')){
             let attention = getValues('service_times')
-            debugger
             if (dataRow){
                 attention.filter((x:any)=>x.index===dataRow.index)[0].priority=dataAddRow.priority
                 setValue('service_times',attention)

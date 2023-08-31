@@ -448,7 +448,6 @@ export const SynonimsRasa: React.FC<IntentionProps> = ({ setExternalViewSelected
         }
     }, [exportResult, waitExport]);
     useEffect(() => {
-        console.log(mainResult)
     }, [mainResult]);
 
     const handleUpload = async (files: any[]) => {

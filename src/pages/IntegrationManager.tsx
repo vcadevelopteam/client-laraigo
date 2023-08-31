@@ -2633,7 +2633,6 @@ const ModalTestIntegrationManager: React.FC<
       missingParams.forEach((param) => {
          const { key, value } = param;
          newURL = newURL.replace(`{{${key}}}`, value);
-         // debugger;
       });
       setReplacedURL(newURL);
 
@@ -2648,8 +2647,6 @@ const ModalTestIntegrationManager: React.FC<
       return paramsCleaned;
    };
    const compareParams = (urlParams: Dictionary[], params: string[]) => {
-      //
-      debugger;
       const urlParamsCleaned = urlParams?.reduce(
          (acc: any, x: any) => [...acc, "...-1-1-11"],
          []
@@ -2672,7 +2669,7 @@ const ModalTestIntegrationManager: React.FC<
    };
 
    const testAPI = async (form: FormFields) => {
-      // debugger
+      // 
       const cleanedParams = cleanParams(formData?.url);
 
       const { hasMissingParams } = compareParams(
