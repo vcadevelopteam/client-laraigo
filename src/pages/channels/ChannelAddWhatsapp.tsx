@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { activateChannel, insertChannel } from "store/channel/actions";
 import { Box, Breadcrumbs, Button, FormControlLabel, makeStyles, TextField } from "@material-ui/core";
 import { ChannelWhatsApp01 } from "icons";

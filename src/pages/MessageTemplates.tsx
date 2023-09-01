@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { addTemplate, deleteTemplate, synchronizeTemplate } from "store/channel/actions";
 import { Box, CircularProgress, IconButton, Paper } from "@material-ui/core";
 import { Close, Delete, FileCopy, GetApp, Search } from "@material-ui/icons";
