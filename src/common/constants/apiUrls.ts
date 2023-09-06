@@ -1,4 +1,4 @@
-const ENV = "PRODUCTION";
+const ENV = "TESTING";
 
 const APIS_URL = {
     DEVELOP: {

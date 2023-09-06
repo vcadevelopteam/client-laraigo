@@ -5057,6 +5057,7 @@ export const langKeys = {
   executiontype_SCHEDULED: 'executiontype_SCHEDULED',
   greaterthanzero: "greaterthanzero",
   invoice_importvalidation: "invoice_importvalidation",
+  error_rows_channel: "error_rows_channel",
   registermeta: "registermeta",
   whatsapptitlemeta: "whatsapptitlemeta",
   metaaccesstoken: "metaaccesstoken",
