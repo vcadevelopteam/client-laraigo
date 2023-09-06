@@ -14,6 +14,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import clsx from 'clsx';
 import { ListItemIcon, Menu, MenuItem } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
+import { showSnackbar } from 'store/popus/actions';
 
 interface TemplateIconsProps {
     changeStatus?: (param: any) => void;
@@ -157,14 +158,19 @@ export const UploaderIcon: React.FC<{ classes: any, setFiles: (param: any) => vo
 
     const onSelectImage = (files: any) => {
         const selectedFile = files[0];
-        const idd = new Date().toISOString()
-        const fd = new FormData();
-        fd.append('file', selectedFile, selectedFile.name);
-        setvaluefile('')
-        setIdUpload(idd);
-        setFiles((x: IFile[]) => [...x, { id: idd, url: '', type: "file" }]);
-        dispatch(uploadFile(fd));
-        setWaitSave(true)
+        if(selectedFile.size>15 * 1024 * 1024){
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.filletoobigerror)}))
+        }else{
+            const idd = new Date().toISOString()
+            const fd = new FormData();
+            fd.append('file', selectedFile, selectedFile.name);
+            setvaluefile('')
+            setIdUpload(idd);
+            setFiles((x: IFile[]) => [...x, { id: idd, url: '', type: "file" }]);
+            dispatch(uploadFile(fd));
+            setWaitSave(true)
+
+        }
     }
 
     return (

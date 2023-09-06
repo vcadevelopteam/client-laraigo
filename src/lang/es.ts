@@ -1648,6 +1648,8 @@ const translation: LangKeys = {
   confirmation_save: '¿Está seguro de guardar el registro?',
   confirmation_reschedule: 'Se va a proceder con la reprogramación de su cita actual {{current_event}} para {{new_event}}. ¿Desea continuar?',
   confirmation_delete: '¿Está seguro de eliminar el registro?',
+  filletoobigerror: 'El archivo adjunto que desea cargar al sistema supera el tamaño permitido (15mb) como límite máximo',
+  imagetoobig: 'La imagen que desea cargar al sistema supera el tamaño permitido (5mb) como límite máximo',
   confirmation_stop: '¿Está seguro de detener la operación?',
   confirmation_duplicate: '¿Está seguro de duplicar el registro?',
   confirmation_delete_data: '¿Está seguro de eliminar toda la data?',

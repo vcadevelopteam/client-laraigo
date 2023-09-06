@@ -842,6 +842,8 @@ const translation: LangKeys = {
   refresh: 'Refresh',
   duplicate: 'Duplicate',
   stop: 'Stop',
+  filletoobigerror: 'The attached file that you want to upload to the system exceeds the size allowed (15mb) as the maximum limit',
+  imagetoobig: 'The image you want to upload to the system exceeds the allowed size (5mb) as the maximum limit',
   organizationclass: "Organization of Classifications",
   tablePageOf: 'Page <0>{{currentPage}}</0> of <1>{{totalPages}}</1>',
   tableShowingRecordOf: 'Showing {{itemCount}} records of {{totalItems}}',

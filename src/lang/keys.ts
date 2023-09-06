@@ -5059,6 +5059,8 @@ export const langKeys = {
   channel_businesstitle: 'channel_businesstitle',
   channel_businessalert1: 'channel_businessalert1',
   channel_businessalert2: 'channel_businessalert2',
+  filletoobigerror: 'filletoobigerror',
+  imagetoobig: 'imagetoobig',
   channel_playstore: 'channel_playstore',
   channel_playstoretitle1: 'channel_playstoretitle1',
   channel_playstoretitle2: 'channel_playstoretitle2',

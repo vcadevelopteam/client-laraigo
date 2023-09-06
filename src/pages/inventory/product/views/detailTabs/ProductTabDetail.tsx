@@ -13,6 +13,7 @@ import { uploadFile } from 'store/main/actions';
 import { useDispatch } from 'react-redux';
 import Box from '@material-ui/core/Box';
 import { ItemFile, UploaderIcon } from '../../components/components';
+import { showSnackbar } from 'store/popus/actions';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -85,10 +86,14 @@ const ProductTabDetail: React.FC<ProductDetailProps> = ({
 
     const onSelectImage = (files: any) => {
         const selectedFile = files[0];
-        var fd = new FormData();
-        fd.append('file', selectedFile, selectedFile.name);
-        dispatch(uploadFile(fd));
-        setWaitUploadFile(true);
+        if(selectedFile.size>5 * 1024 * 1024){
+            dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.imagetoobig)}))
+        }else{
+            var fd = new FormData();
+            fd.append('file', selectedFile, selectedFile.name);
+            dispatch(uploadFile(fd));
+            setWaitUploadFile(true);
+        }
     }
     return (
         <div className={classes.containerDetail}>
