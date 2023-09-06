@@ -1356,6 +1356,7 @@ const Users: FC = () => {
         if (file) {
             let excel: any = await uploadExcel(file, undefined);
             const datainit = array_trimmer(excel);
+            debugger
             const data = datainit.filter((f: any) => {
                 return (f.company === undefined || Object.keys(domains.value?.company?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.company))
                     && (f.doctype === undefined || Object.keys(domains.value?.docTypes?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.doctype))
@@ -1382,50 +1383,64 @@ const Users: FC = () => {
                     dispatch(showSnackbar({ show: true, severity: "error", message: t(langKeys.userlimit, { limit }) }))
                 }
                 else {
+
                     dispatch(showBackdrop(true));
                     setImportCount(data.length);
-                    let table: Dictionary = data.reduce((a: any, d) => ({
-                        ...a,
-                        [`${d.user}_${d.docnum}`]: {
-                            id: 0,
-                            usr: String(d.user||d.email),
-                            doctype: d.doctype,
-                            docnum: String(d.docnum),
-                            password: String(d.password),
-                            firstname: String(d.firstname),
-                            lastname: String(d.lastname),
-                            email: String(d.email),
-                            pwdchangefirstlogin: Boolean(d.pwdchangefirstlogin),
-                            type: "NINGUNO",
-                            status: d.status,
-                            operation: "INSERT",
-                            company: d.company,
-                            twofactorauthentication: d.twofactorauthentication === "ACTIVO",
-                            registercode: String(d.registercode),
-                            billinggroupid: d.billinggroup,
-                            image: d?.image || "",
-                            detail: {
-                                rolegroups: d.role,
-                                orgid: user?.orgid,
-                                bydefault: true,
-                                labels: "",
-                                groups: d.groups || "",
-                                channels: d.channels || "",
-                                status: "DESCONECTADO",
-                                type: 'SUPERVISOR',
-                                supervisor: "",
-                                operation: "INSERT",
-                                redirect: "/usersettings"
-                            }
+                    let channelError:any[]=[]
+                    data.forEach((x,i)=>{
+                        const pattern = /^(\d+(,\s*\d+)*)?$/;
+                        if(!pattern.test(x.channels)){
+                            channelError.push(x.email)
                         }
-                    }), {});
-                    Object.values(table).forEach((p) => {
-                        dispatch(saveUser({
-                            header: insUser({ ...p, key: p.usr }),
-                            detail: [insOrgUser({ ...p.detail })]
-                        }, true));
                     })
-                    setWaitImport(true)
+                    if(channelError.length === 0){
+                        let table: Dictionary = data.reduce((a: any, d) => ({
+                            ...a,
+                            [`${d.user}_${d.docnum}`]: {
+                                id: 0,
+                                usr: String(d.user||d.email),
+                                doctype: d.doctype,
+                                docnum: String(d.docnum),
+                                password: String(d.password),
+                                firstname: String(d.firstname),
+                                lastname: String(d.lastname),
+                                email: String(d.email),
+                                pwdchangefirstlogin: Boolean(d.pwdchangefirstlogin),
+                                type: "NINGUNO",
+                                status: d.status,
+                                operation: "INSERT",
+                                company: d.company,
+                                twofactorauthentication: d.twofactorauthentication === "ACTIVO",
+                                registercode: String(d.registercode),
+                                billinggroupid: parseInt(d.billinggroup.match(/\d+/)[0]),
+                                image: d?.image || "",
+                                detail: {
+                                    rolegroups: d.role,
+                                    orgid: user?.orgid,
+                                    bydefault: true,
+                                    labels: "",
+                                    groups: d.groups || "",
+                                    channels: d.channels || "",
+                                    status: "DESCONECTADO",
+                                    type: 'SUPERVISOR',
+                                    supervisor: "",
+                                    operation: "INSERT",
+                                    redirect: "/usersettings"
+                                }
+                            }
+                        }), {});
+                        Object.values(table).forEach((p) => {
+                            dispatch(saveUser({
+                                header: insUser({ ...p, key: p.usr }),
+                                detail: [insOrgUser({ ...p.detail })]
+                            }, true));
+                        })
+                        setWaitImport(true)
+                    }else{
+                        dispatch(showSnackbar({ show: true, severity: "error", 
+                        message: t(langKeys.error_rows_channel, { rows: channelError.join(','), }),
+                    }));
+                    }
                 }
 
             }

@@ -5144,6 +5144,7 @@ const translation: LangKeys = {
   executiontype_SCHEDULED: "SCHEDULED",
   greaterthanzero: "The maximum capacity value of the event must have a number greater than 0",
   invoice_importvalidation: 'Validation error for the column "{{column}}" at the row {{row}}. Verify that the data is valid',
+  error_rows_channel: "Users {{rows}} are invalid, the channel field must contain numbers separated by commas",
   registermeta: "Register as Meta",
   whatsapptitlemeta: "To connect a WhatsApp Meta account please enter the information of the app you want to connect in the following form",
   metaaccesstoken: "Access Token",
